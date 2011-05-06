@@ -39,21 +39,24 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Map;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-
 import org.hibernate.lob.ReaderInputStream;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -66,44 +69,41 @@ import org.springframework.core.io.Resource;
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class MailTransportMonitorTest extends TestCase {
+public class MailTransportMonitorTest {
 
     MailTransportMonitor m_monitor;
     Map<String, Object> m_params;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        Resource resource = new ClassPathResource("/etc/javamail-configuration.properties");
-        File homeDir = resource.getFile().getParentFile().getParentFile();
-        System.out.println("homeDir: " + homeDir.getAbsolutePath());
+        final Resource resource = new ClassPathResource("/etc/javamail-configuration.properties");
+        final File homeDir = resource.getFile().getParentFile().getParentFile();
 
+        System.out.println("homeDir: " + homeDir.getAbsolutePath());
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
 
         m_monitor = new MailTransportMonitor();
-        m_monitor.initialize(Collections.EMPTY_MAP);
+        m_monitor.initialize(new HashMap<String,Object>());
 
         m_params = new HashMap<String, Object>();
         m_params.put("timeout", "3000");
         m_params.put("retries", "1");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         MockLogAppender.assertNoWarningsOrGreater();
-
-        super.tearDown();
     }
     
-    public void dont_testSend() throws Exception {
+    @Test
+    @Ignore("requires real mail server")
+    public void testEndToEnd() throws Exception {
         
         setupLocalhostSendGoogleRead2();
 
-        PollStatus status = m_monitor.poll(getMailService("127.0.0.1"), m_params);
+        final PollStatus status = m_monitor.poll(getMailService("127.0.0.1"), m_params);
         
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
     }
@@ -111,7 +111,9 @@ public class MailTransportMonitorTest extends TestCase {
     /*
      * requires a gmail account that has a message in the INBOX subject: READTEST
      */
-    public void dont_readOnlyTest() throws Exception {
+    @Test
+    @Ignore("requires real mail server")
+    public void readOnlyTest() throws Exception {
         m_params.put("timeout", "3000");
         m_params.put("retry", "1");
         m_params.put("strict-timeouts", "true");
@@ -130,6 +132,7 @@ public class MailTransportMonitorTest extends TestCase {
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
     }
 
+    @Test
     public void testLoadXmlProperties() throws InvalidPropertiesFormatException, IOException {
         Properties props = new Properties();
         

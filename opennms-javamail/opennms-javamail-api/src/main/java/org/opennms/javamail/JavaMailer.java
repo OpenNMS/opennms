@@ -50,7 +50,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
@@ -141,6 +143,8 @@ public class JavaMailer {
     private InputStream m_inputStream;
     private String m_inputStreamName;
     private String m_inputStreamContentType;
+    
+    private Map<String,String> m_extraHeaders = new HashMap<String,String>();
 
     
     /**
@@ -298,15 +302,15 @@ public class JavaMailer {
                 MimeMultipart mp = new MimeMultipart();
                 mp.addBodyPart(streamBodyPart);
                 message.setContent(mp);
-                } else {
-                    BodyPart bp = new MimeBodyPart();
-                    bp.setContent(encodedText, m_contentType+"; charset="+m_charSet);
-                    MimeMultipart mp = new MimeMultipart();
-                    mp.addBodyPart(bp);
-                    mp = new MimeMultipart();
-                    mp.addBodyPart(createFileAttachment(new File(getFileName())));
-                    message.setContent(mp);
-                }
+            } else {
+                BodyPart bp = new MimeBodyPart();
+                bp.setContent(encodedText, m_contentType+"; charset="+m_charSet);
+                MimeMultipart mp = new MimeMultipart();
+                mp.addBodyPart(bp);
+                mp = new MimeMultipart();
+                mp.addBodyPart(createFileAttachment(new File(getFileName())));
+                message.setContent(mp);
+            }
 
             message.setHeader("X-Mailer", getMailer());
             message.setSentDate(new Date());
@@ -339,6 +343,9 @@ public class JavaMailer {
         message.setFrom(new InternetAddress(getFrom()));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getTo(), false));
         message.setSubject(getSubject());
+        for (final String key : getExtraHeaders().keySet()) {
+        	message.setHeader(key, m_extraHeaders.get(key));
+        }
         return message;
     }
 
@@ -1084,4 +1091,15 @@ public class JavaMailer {
         return m_mailProps;
     }
 
+    public Map<String,String> getExtraHeaders() {
+    	return m_extraHeaders;
+    }
+    
+    public void setExtraHeaders(final Map<String,String> headers) {
+    	m_extraHeaders = headers;
+    }
+    
+    public void addExtraHeader(final String key, final String value) {
+    	m_extraHeaders.put(key, value);
+    }
 }

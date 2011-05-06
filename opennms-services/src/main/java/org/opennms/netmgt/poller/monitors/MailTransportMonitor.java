@@ -39,27 +39,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 
+import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
-import javax.mail.Flags.Flag;
+import javax.mail.search.HeaderTerm;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.javamail.JavaMailer;
+import org.opennms.javamail.JavaMailerException;
 import org.opennms.netmgt.config.mailtransporttest.JavamailProperty;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailTest;
 import org.opennms.netmgt.config.mailtransporttest.SendmailTest;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-
-import org.opennms.javamail.JavaMailer;
-import org.opennms.javamail.JavaMailerException;
 
 //TODO: adjust to use new javamail-configuration.xml
 
@@ -80,20 +81,22 @@ import org.opennms.javamail.JavaMailerException;
 @Distributable
 public class MailTransportMonitor extends IPv4Monitor {
 
-    /** {@inheritDoc} */
+    private static final String MTM_HEADER_KEY = "X-OpenNMS-MTM-ID";
+    private final String m_headerValue = Integer.toString(new Random().nextInt(Integer.MAX_VALUE));
+
+	/** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        ThreadCategory log = ThreadCategory.getInstance();
         PollStatus status = null;
 
         try {
-            MailTransportParameters mailParms = MailTransportParameters.get(parameters);
+        	final MailTransportParameters mailParms = MailTransportParameters.get(parameters);
             
             try {
                 if ("${ipaddr}".equals(mailParms.getReadTestHost())) {
                 mailParms.setReadTestHost(svc.getIpAddr());
                 }
-            } catch (IllegalStateException ise) {
+            } catch (final IllegalStateException ise) {
                 //just ignore, don't have to have a both a read and send test configured
             }
 
@@ -101,17 +104,17 @@ public class MailTransportMonitor extends IPv4Monitor {
                 if ("${ipaddr}".equals(mailParms.getSendTestHost())) {
                     mailParms.setSendTestHost(svc.getIpAddr());
                 }
-            } catch (IllegalStateException ise) {
+            } catch (final IllegalStateException ise) {
                 //just ignore, don't have to have a both a read and send test configured
             }
             
             parseJavaMailProperties(mailParms);
             status = doMailTest(mailParms);
-        } catch (IllegalStateException ise) {
+        } catch (final IllegalStateException ise) {
             //ignore this because we don't have to have both a send and read
             
-        } catch (Throwable e) {
-            log.error("poll, Exception from mailer: ", e);
+        } catch (final Throwable e) {
+            LogUtils.errorf(this, e, "An error occurred while polling.");
             status = PollStatus.down("Exception from mailer: " + e.getLocalizedMessage());
         }
 
@@ -119,22 +122,21 @@ public class MailTransportMonitor extends IPv4Monitor {
     }
 
     private void parseJavaMailProperties(final MailTransportParameters mailParms) {
-        
-        ReadmailTest readTest = mailParms.getReadTest();
+    	final ReadmailTest readTest = mailParms.getReadTest();
 
-        List<JavamailProperty> propertyList = new ArrayList<JavamailProperty>();
+    	List<JavamailProperty> propertyList = new ArrayList<JavamailProperty>();
         if (readTest != null) {
             propertyList = readTest.getJavamailPropertyCollection();
         }
 
-        SendmailTest sendTest = mailParms.getSendTest();
+        final SendmailTest sendTest = mailParms.getSendTest();
         if (sendTest != null) {
-            List<JavamailProperty> sendTestProperties = sendTest.getJavamailPropertyCollection();
+        	final List<JavamailProperty> sendTestProperties = sendTest.getJavamailPropertyCollection();
             propertyList.addAll(sendTestProperties);
         }
         
-        Properties props = mailParms.getJavamailProperties();
-        for (JavamailProperty property : propertyList) {
+        final Properties props = mailParms.getJavamailProperties();
+        for (final JavamailProperty property : propertyList) {
             props.setProperty(property.getName(), property.getValue());
         }
         
@@ -147,8 +149,10 @@ public class MailTransportMonitor extends IPv4Monitor {
      * @param mailParms
      */
     private PollStatus doMailTest(final MailTransportParameters mailParms) {
-        long beginPoll = System.currentTimeMillis();
+    	final long beginPoll = System.currentTimeMillis();
         PollStatus status = PollStatus.unknown("Beginning poll.");
+        mailParms.setTestSubjectSuffix(Long.toString(beginPoll));
+
         /*
          * If both a send and receive test are configured, then were testing the
          * throughput (round trip delivery) of mail. This can be configured to
@@ -161,15 +165,13 @@ public class MailTransportMonitor extends IPv4Monitor {
              * matching.
              */
             mailParms.setEnd2EndTestInProgress(true);
-            mailParms.setTestSubjectSuffix(String.valueOf(beginPoll));
-
             status = sendTestMessage(mailParms);
 
             if (status.isAvailable()) {
-                log().debug("doMailTest: send test successfull.");
+                LogUtils.debugf(this, "doMailTest: send test successful.");
                 status = readTestMessage(mailParms);
             } else {
-                log().info("doMailTest: send test unsuccessfull... skipping read portion of test.");
+                LogUtils.infof(this, "doMailTest: send test unsuccessful... skipping read portion of test.");
             }
 
         } else if (mailParms.getReadTest() != null) {
@@ -183,18 +185,18 @@ public class MailTransportMonitor extends IPv4Monitor {
         if (status.isAvailable()) {
             status.setResponseTime(Double.valueOf(String.valueOf(System.currentTimeMillis() - beginPoll)));
         }
-        log().info("doMailTest: mailtest result: "+status);
+        LogUtils.infof(this, "doMailTest: mailtest result: %s", status);
         return status;
     }
 
     private PollStatus readTestMessage(final MailTransportParameters mailParms) {
-        log().debug("readTestMessage: Beginning read mail test.");
+        LogUtils.debugf(this, "readTestMessage: Beginning read mail test.");
         PollStatus status = PollStatus.unavailable("Test not completed.");
 
-        long interval = mailParms.getReadTestAttemptInterval();
-        
+        final long interval = mailParms.getReadTestAttemptInterval();
+
         if (mailParms.isEnd2EndTestInProgress()) {
-            log().debug("Initially delaying read test: "+mailParms.getReadTestAttemptInterval()+" because end to end test is in progress.");
+            LogUtils.debugf(this, "Initially delaying read test: %d because end to end test is in progress.", mailParms.getReadTestAttemptInterval());
             
             if (delayTest(status, interval) == PollStatus.SERVICE_UNKNOWN) {
                 return status;
@@ -204,43 +206,43 @@ public class MailTransportMonitor extends IPv4Monitor {
         Store mailStore = null;
         Folder mailFolder = null;
         try {
-            JavaMailer readMailer = new JavaMailer(mailParms.getJavamailProperties());
+        	final JavaMailer readMailer = new JavaMailer(mailParms.getJavamailProperties());
             setReadMailProperties(mailParms, readMailer);
 
-            TimeoutTracker tracker = new TimeoutTracker(mailParms.getParameterMap(), mailParms.getRetries(), mailParms.getTimeout());
+            final TimeoutTracker tracker = new TimeoutTracker(mailParms.getParameterMap(), mailParms.getRetries(), mailParms.getTimeout());
             for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
                 tracker.startAttempt();
                 
                 if (tracker.getAttempt() > 0) {
                     if (delayTest(status, interval) == PollStatus.SERVICE_UNKNOWN) {
-                        log().warn("readTestMessage: Status set to: "+status+" during delay, exiting test.");
+                        LogUtils.warnf(this, "readTestMessage: Status set to: %s during delay, exiting test.", status);
                         break;
                     }
                 }
-                log().debug("readTestMessage: reading mail attempt: "+String.valueOf((tracker.getAttempt()+1))+", elapsed time:"+tracker.elapsedTimeInMillis()+"ms.");
+                LogUtils.debugf(this, "readTestMessage: reading mail attempt: %d, elapsed time: %.2fms.", (tracker.getAttempt()+1), tracker.elapsedTimeInMillis());
                 try {
                     mailStore = readMailer.getSession().getStore();
                     mailFolder = retrieveMailFolder(mailParms, mailStore);
                     mailFolder.open(Folder.READ_WRITE);
-                } catch (MessagingException e) {
+                } catch (final MessagingException e) {
                     if (tracker.shouldRetry()) {
-                        log().warn("readTestMessage: error reading inbox: " +e);
+                        LogUtils.warnf(this, e, "readTestMessage: error reading INBOX");
                         closeStore(mailStore, mailFolder);
                         continue;  //try again to get mail Folder from Store
                     } else {
-                        log().warn("readTestMessage: error reading inbox: " +e);
+                        LogUtils.warnf(this, e, "readTestMessage: error reading INBOX");
                         return PollStatus.down(e.getLocalizedMessage());
                     }
                 }
                 if (mailFolder.isOpen() && (mailParms.getReadTest().getSubjectMatch() != null || mailParms.isEnd2EndTestInProgress())) {
-                    status = searchMailSubject(mailParms, mailFolder);
+                    status = processMailSubject(mailParms, mailFolder);
                     if (status.getStatusCode() == PollStatus.SERVICE_AVAILABLE) {
                         break;
                     }
                 }
             }
 
-        } catch (JavaMailerException e) {
+        } catch (final JavaMailerException e) {
             status = PollStatus.down(e.getLocalizedMessage());
         } finally {
             closeStore(mailStore, mailFolder);
@@ -253,18 +255,20 @@ public class MailTransportMonitor extends IPv4Monitor {
      * @param mailStore
      * @param mailFolder
      */
-    private void closeStore(Store mailStore, Folder mailFolder)  {
+    private void closeStore(final Store mailStore, final Folder mailFolder)  {
         try {
             if (mailFolder != null && mailFolder.isOpen()) {
                 mailFolder.close(true);
             }
-        } catch (MessagingException e) {
+        } catch (final MessagingException e) {
+        	LogUtils.debugf(this, e, "Unable to close mail folder.");
         } finally {
             try {
                 if (mailStore != null && mailStore.isConnected()) {
                     mailStore.close();
                 }
-            } catch (MessagingException e1) {
+            } catch (final MessagingException e1) {
+            	LogUtils.debugf(this, e1, "Unable to close message store.");
             }
         }
     }
@@ -278,48 +282,62 @@ public class MailTransportMonitor extends IPv4Monitor {
      * @return a PollStatus indicative of the success of matching a subject or just retieving
      *         mail folder contents... dependent on configuration.
      */
-    private PollStatus searchMailSubject(final MailTransportParameters mailParms, final Folder mailFolder) {
+    private PollStatus processMailSubject(final MailTransportParameters mailParms, final Folder mailFolder) {
         PollStatus status = PollStatus.unknown();
         try {
-            String subject = computeMatchingSubject(mailParms);
+        	final String subject = computeMatchingSubject(mailParms);
             if (mailFolder.isOpen() && subject != null) {
-                Message[] mailMessages = mailFolder.getMessages();
-                SearchTerm searchTerm = new SubjectTerm(subject);
-                log().debug(new StringBuilder("searchMailSubject: searching ")
-                  .append(mailMessages.length)
-                  .append(" messages for subject: ")
-                  .append(subject).toString());
+            	final Message[] mailMessages = mailFolder.getMessages();
+                final SearchTerm searchTerm = new SubjectTerm(subject);
+                final SearchTerm deleteTerm = new HeaderTerm(MTM_HEADER_KEY, m_headerValue);
 
+                LogUtils.debugf(this, "searchMailSubject: searching %d message(s) for subject '%s'", mailMessages.length, subject);
+
+                boolean delete = false;
                 boolean found = false;
                 for (int i = 1; i <= mailMessages.length; i++) {
-                    Message mailMessage = mailFolder.getMessage(i);
-                    log().debug("searchMailSubject: retrieved message subject:"+mailMessage.getSubject());
-                    
-                    if (!found && mailMessage.match(searchTerm)) {
+                	final Message mailMessage = mailFolder.getMessage(i);
+
+                	LogUtils.debugf(this, "searchMailSubject: retrieved message subject '%s'", mailMessage.getSubject());
+
+                    if (mailMessage.match(searchTerm)) {
                         found = true;
-                        log().debug("searchMailSubject: message with subject: '"+subject+"' found.");
+                        LogUtils.debugf(this, "searchMailSubject: message with subject '%s' found.", subject);
                         
                         if (mailParms.isEnd2EndTestInProgress()) {
-                            mailMessage.setFlag(Flag.DELETED, true);
-                            log().debug("searchMailSubject: flagging message: "+subject+" for deletion for end2end test.");
+                            if (!delete) LogUtils.debugf(this, "searchMailSubject: flagging message with subject '%s' for deletion for end2end test.", subject);
+                            delete = true;
                         }
                     }
-                    
-                    if (found && !mailParms.getReadTest().isDeleteAllMail()) {
-                        break;
-                    } else {
-                        mailMessage.setFlag(Flag.DELETED, true);
-                    }
+
+                	final boolean deleteAllMail = mailParms.getReadTest().isDeleteAllMail();
+					final boolean foundMTMHeader = mailMessage.match(deleteTerm);
+					LogUtils.debugf(this, "searchMailSubject: deleteAllMail = %s, MTM header found = %s", Boolean.toString(deleteAllMail), Boolean.toString(foundMTMHeader));
+					
+					if (deleteAllMail) {
+						if (!delete) LogUtils.debugf(this, "searchMailSubject: flagging message with subject '%s' for deletion because deleteAllMail is set.", subject);
+						delete = true;
+					} else if (foundMTMHeader) {
+						if (!delete) LogUtils.debugf(this, "searchMailSubject: flagging message with subject '%s' for deletion because we sent it (found header %s=%s)", subject, MTM_HEADER_KEY, m_headerValue);
+						delete = true;
+					}
+					
+					if (delete) {
+						mailMessage.setFlag(Flag.DELETED, true);
+					}
+                	
+                	// since we want to delete old messages matchin MTM_HEADER_KEY, we can't break early
+                	// if (found) break;
                 }
-                
+
                 if (!found) {
-                    log().debug("searchMailSubject: message with subject: '"+subject+"' NOT found.");
+                	LogUtils.debugf(this, "searchMailSubject: message with subject: '%s' NOT found.", subject);
                     status = PollStatus.down("searchMailSubject: matching test message: '"+subject+"', not found.");
                 } else {
                     status = PollStatus.available();
                 }
             }
-        } catch (MessagingException e) {
+        } catch (final MessagingException e) {
             return PollStatus.down(e.getLocalizedMessage());
         }
 
@@ -351,9 +369,9 @@ public class MailTransportMonitor extends IPv4Monitor {
      * @param readMailer
      */
     private void setReadMailProperties(final MailTransportParameters mailParms, final JavaMailer readMailer) {
-        Properties sendMailProps = readMailer.getSession().getProperties();
+    	final Properties sendMailProps = readMailer.getSession().getProperties();
 
-        String protocol = mailParms.getReadTestProtocol();
+    	final String protocol = mailParms.getReadTestProtocol();
         sendMailProps.put("mail." + protocol + ".host", mailParms.getReadTestHost());
         sendMailProps.put("mail." + protocol + ".user", mailParms.getReadTestUserName());
         sendMailProps.put("mail." + protocol + ".port", mailParms.getReadTestPort());
@@ -397,18 +415,18 @@ public class MailTransportMonitor extends IPv4Monitor {
         PollStatus status = PollStatus.unavailable("Test not completed.");
 
         final long interval = mailParms.getSendTestAttemptInterval();
-                
-        TimeoutTracker tracker = new TimeoutTracker(mailParms.getParameterMap(), mailParms.getRetries(), mailParms.getTimeout());
+
+        final TimeoutTracker tracker = new TimeoutTracker(mailParms.getParameterMap(), mailParms.getRetries(), mailParms.getTimeout());
         for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
             tracker.startAttempt();
-            log().debug("sendTestMessage: sending mail attempt: "+tracker.getAttempt()+", elapsed time:"+tracker.elapsedTimeInMillis()+"ms.");
+            LogUtils.debugf(this, "sendTestMessage: sending mail attempt: %d, elapsed time: %.2fms", (tracker.getAttempt() + 1), tracker.elapsedTimeInMillis());
             try {
                 final JavaMailer sendMailer = createMailer(mailParms);
                 overRideDefaultProperties(mailParms, sendMailer);
                 sendMailer.mailSend();
                 status = PollStatus.available();
                 break;
-            } catch (JavaMailerException e) {
+            } catch (final JavaMailerException e) {
                 status = PollStatus.unavailable(e.getLocalizedMessage());
             }
             
@@ -426,11 +444,11 @@ public class MailTransportMonitor extends IPv4Monitor {
      * @return returns an unchanged PollStatus unless an exception happens in which case status is changed to unknown. 
      */
     private int delayTest(PollStatus status, final long interval) {
-        log().debug("delayTest: delaying test for: "+interval+"ms. per configuration.");
+        LogUtils.debugf(this, "delayTest: delaying test for: %dms. per configuration.", interval);
         try {
             Thread.sleep(interval);
-        } catch (InterruptedException e) {
-            log().error("delayTest: An exception occurred while delaying mail test: ", e);
+        } catch (final InterruptedException e) {
+            LogUtils.errorf(this, e, "delayTest: An interrupt exception occurred while delaying the mail test");
             status = PollStatus.unknown(e.getLocalizedMessage());
         }
         return status.getStatusCode();
@@ -452,7 +470,7 @@ public class MailTransportMonitor extends IPv4Monitor {
         sendMailer.setEncoding(mailParms.getSendTestMessageEncoding());
         sendMailer.setMailer(mailParms.getSendTestMailer());
         sendMailer.setMailHost(mailParms.getSendTestHost());
-        
+
         //char_set, encoding, m_contentType
         sendMailer.setMessageText(mailParms.getSendTestMessageBody());
         sendMailer.setCharSet(mailParms.getSendTestCharSet());
@@ -469,7 +487,6 @@ public class MailTransportMonitor extends IPv4Monitor {
 
     private JavaMailer createMailer(final MailTransportParameters mailParms) throws JavaMailerException {
         final JavaMailer sendMailer = new JavaMailer(mailParms.getJavamailProperties());
-        
         final String mailPropsPrefix = new StringBuilder("mail.").append(mailParms.getSendTestTransport()).append('.').toString();
         final Properties props = sendMailer.getSession().getProperties();
         
@@ -526,8 +543,10 @@ public class MailTransportMonitor extends IPv4Monitor {
         //starttls.enable
         props.setProperty(mailPropsPrefix+"starttls.enable", String.valueOf(mailParms.isSendTestStartTls()));
         sendMailer.setStartTlsEnabled(mailParms.isSendTestStartTls());
+        sendMailer.addExtraHeader(MTM_HEADER_KEY, m_headerValue);
         
         sendMailer.setSession(Session.getInstance(props, sendMailer.createAuthenticator()));
+        
         return sendMailer;
     }
 
