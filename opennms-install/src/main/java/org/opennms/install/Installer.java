@@ -85,6 +85,8 @@ import org.opennms.netmgt.config.ConnectionFactoryUtil;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
+import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.icmp.jni.Ping;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.springframework.util.StringUtils;
@@ -213,7 +215,7 @@ public class Installer {
          */
 
         if (!Boolean.getBoolean("skip-native")) {
-            String icmp_path = findLibrary("jicmp", m_library_search_path, true);
+            String icmp_path = findLibrary("jicmp", m_library_search_path, false);
             String jrrd_path = findLibrary("jrrd", m_library_search_path, false);
             writeLibraryConfig(icmp_path, jrrd_path);
         }
@@ -392,19 +394,9 @@ public class Installer {
         m_opennms_home = fetchProperty("install.dir");
         m_etc_dir = fetchProperty("install.etc.dir");
         
-        try {
-            Properties opennmsProperties = new Properties();
-            InputStream ois = new FileInputStream(m_etc_dir + File.separator + "model-importer.properties");
-            opennmsProperties.load(ois);
-            // We only want to put() things that weren't already overridden in installer.properties
-            for (Entry<Object,Object> p : opennmsProperties.entrySet()) {
-                if (!m_properties.containsKey(p.getKey())) {
-                    m_properties.put(p.getKey(), p.getValue());
-                }
-            }
-        } catch(FileNotFoundException e) {
-            System.out.println("WARNING: unable to load " + m_etc_dir + File.separator + "opennms.properties");
-        }
+        loadEtcPropertiesFile("opennms.properties");
+        loadEtcPropertiesFile("model-importer.properties");
+        
         m_install_servletdir = fetchProperty("install.servlet.dir");
         m_import_dir = fetchProperty("importer.requisition.dir");
 
@@ -417,6 +409,23 @@ public class Installer {
 
         m_installerDb.setStoredProcedureDirectory(m_etc_dir);
         m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
+    }
+
+    private void loadEtcPropertiesFile(String propertiesFile)
+            throws IOException {
+        try {
+            Properties opennmsProperties = new Properties();
+            InputStream ois = new FileInputStream(m_etc_dir + File.separator + propertiesFile);
+            opennmsProperties.load(ois);
+            // We only want to put() things that weren't already overridden in installer.properties
+            for (Entry<Object,Object> p : opennmsProperties.entrySet()) {
+                if (!m_properties.containsKey(p.getKey())) {
+                    m_properties.put(p.getKey(), p.getValue());
+                }
+            }
+        } catch(FileNotFoundException e) {
+            System.out.println("WARNING: unable to load " + m_etc_dir + File.separator + propertiesFile);
+        }
     }
 
     /**
@@ -1147,32 +1156,9 @@ public class Installer {
      *
      * @throws java.io.IOException if any.
      */
-    public void pingLocalhost() throws IOException {
+    public void pingLocalhost() throws Exception {
         String host = "127.0.0.1";
-
-        IcmpSocket m_socket = null;
-
-        try {
-            m_socket = new IcmpSocket();
-        } catch (UnsatisfiedLinkError e) {
-            System.out.println("UnsatisfiedLinkError while creating an "
-                    + "IcmpSocket.  Most likely failed to load "
-                    + "libjicmp.so.  Try setting the property "
-                    + "'opennms.library.jicmp' to point at the "
-                    + "full path name of the libjicmp.so shared "
-                    + "library "
-                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
-            throw e;
-        } catch (NoClassDefFoundError e) {
-            System.out.println("NoClassDefFoundError while creating an "
-                    + "IcmpSocket.  Most likely failed to load "
-                    + "libjicmp.so.");
-            throw e;
-        } catch (IOException e) {
-            System.out.println("IOException while creating an " + "IcmpSocket.");
-            throw e;
-        }
-
+        
         java.net.InetAddress addr = null;
         try {
             addr = InetAddress.getByName(host);
@@ -1183,40 +1169,42 @@ public class Installer {
 
         }
 
-        System.out.println("PING " + host + " (" + InetAddressUtils.str(addr) + "): 56 data bytes");
-
-        short m_icmpId = 2;
-
-        Ping.Stuff s = new Ping.Stuff(m_socket, m_icmpId);
-        Thread t = new Thread(s, Ping.class.getSimpleName());
-        t.start();
-
-        int count = 3;
-        for (long attempt = 0; attempt < count; attempt++) {
-            // build a packet
-            org.opennms.protocols.icmp.ICMPEchoPacket pingPkt = new org.opennms.protocols.icmp.ICMPEchoPacket(attempt);
-            pingPkt.setIdentity(m_icmpId);
-            pingPkt.computeChecksum();
-
-            // convert it to a datagram to be sent
-            byte[] buf = pingPkt.toBytes();
-            DatagramPacket sendPkt = new DatagramPacket(buf, buf.length, addr, 0);
-            buf = null;
-            pingPkt = null;
-
-            try {
-                m_socket.send(sendPkt);
-            } catch (IOException e) {
-                System.out.println("IOException received when sending packet.");
-                throw e;
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // do nothing
-            }
+        Pinger pinger;
+        try {
+       
+            pinger = PingerFactory.getInstance();
+        
+        } catch (UnsatisfiedLinkError e) {
+            System.out.println("UnsatisfiedLinkError while creating an "
+                    + "ICMP Pinger.  Most likely failed to load "
+                    + "libjicmp.so.  Try setting the property "
+                    + "'opennms.library.jicmp' to point at the "
+                    + "full path name of the libjicmp.so shared "
+                    + "library or switch to using the JnaPinger"
+                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
+            throw e;
+        } catch (NoClassDefFoundError e) {
+            System.out.println("NoClassDefFoundError while creating an "
+                    + "IcmpSocket.  Most likely failed to load "
+                    + "libjicmp.so.");
+            throw e;
+        } catch (Exception e) {
+            System.out.println("Exception while creating an Pinger.");
+            throw e;
         }
+        
+        
+        // using regular InetAddress toString here since is just printed for the users benefit
+        System.out.print("Pinging " + host + " (" + addr + ")...");
 
+        Number rtt = pinger.ping(addr);
+        
+        if (rtt == null) {
+            System.out.println("failed.!");
+        } else {
+            System.out.printf("successful.. round trip time: %.3f ms\n", rtt.doubleValue() / 1000.0);
+        }
+        
     }
 
     /**

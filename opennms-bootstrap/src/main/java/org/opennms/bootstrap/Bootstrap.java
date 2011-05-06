@@ -286,7 +286,7 @@ public class Bootstrap {
      * been loaded. Sets the opennms.home system property to the path returned
      * from findOpenNMSHome.</li>
      * <li>Calls {@link #loadClasses(String, boolean, boolean) loadClasses} to create
-     * a new ClassLoader. ${opennms.home}/etc and ${opennms.home/lib} are
+     * a new ClassLoader. ${opennms.home}/etc and ${opennms.home}/lib are
      * passed to loadClasses.</li>
      * <li>Determines the proper default value for configuration options when
      * overriding system properties have not been set. Below are the default

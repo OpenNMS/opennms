@@ -40,6 +40,7 @@ package org.opennms.netmgt.icmp;
  * <p>PingerFactory class.</p>
  *
  * @author <A HREF="mailto:seth@opennms.org">Seth Leger</A>
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public abstract class PingerFactory {
@@ -54,7 +55,20 @@ public abstract class PingerFactory {
      * @return a {@link Pinger} object.
      */
     public static Pinger getInstance() {
-        assertState(m_pinger != null, "this factory has not been initialized");
+        if (m_pinger == null) {
+            String pingerClassName = System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
+            Class<? extends Pinger> clazz = null;
+            try {
+                clazz = Class.forName(pingerClassName).asSubclass(Pinger.class);
+                m_pinger = clazz.newInstance();
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("Unable to find class named " + pingerClassName, e);
+            } catch (InstantiationException e) {
+                throw new IllegalArgumentException("Error trying to create pinger of type " + clazz, e);
+            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException("Unable to create pinger of type " + clazz + ".  It does not appear to have a public constructor", e);
+            }
+        }
         return m_pinger;
     }
 
@@ -64,7 +78,6 @@ public abstract class PingerFactory {
      * @param pinger a {@link Pinger} object.
      */
     public static void setInstance(Pinger pinger) {
-        assertNotNull(pinger, "property pinger must not be null");
         m_pinger = pinger;
     }
     
@@ -76,15 +89,4 @@ public abstract class PingerFactory {
         m_pinger = null;
     }
     
-    private static void assertState(boolean b, String msg) {
-        if (!b) {
-            throw new IllegalStateException(msg);
-        }
-    }
-    
-    private static void assertNotNull(Object o, String msg) {
-        if (o == null) {
-            throw new IllegalArgumentException(msg);
-        }
-    }
 }

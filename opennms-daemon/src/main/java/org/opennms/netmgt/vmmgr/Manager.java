@@ -56,7 +56,7 @@ import javax.management.MBeanServerFactory;
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
-import org.opennms.protocols.icmp.IcmpSocket;
+import org.opennms.netmgt.icmp.PingerFactory;
 
 /**
  * <p>
@@ -224,7 +224,7 @@ public class Manager implements ManagerMBean {
     public void doTestLoadLibraries() {
         setLogPrefix();
 
-        testIcmpSocket();
+        testPinger();
         testGetLocalHost();
     }
 
@@ -236,14 +236,8 @@ public class Manager implements ManagerMBean {
         }
     }
 
-    private void testIcmpSocket() {
-        IcmpSocket s = null;
-        try {
-            s = new IcmpSocket();
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t, ("Could not initialize ICMP socket: " + t.getMessage()));
-        }
-        s.close();
+    private void testPinger() {
+        PingerFactory.getInstance();
     }
 
     private void setLogPrefix() {
