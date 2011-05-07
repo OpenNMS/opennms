@@ -42,6 +42,7 @@
   contentType="text/html"
   session="true"
   import="
+  org.opennms.web.api.Util,
   org.opennms.web.XssRequestWrapper,
   org.opennms.web.controller.ksc.CustomViewController
   "
@@ -51,10 +52,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%
-    HttpServletRequest req = new XssRequestWrapper(request);
-    String match = req.getParameter("match");
+    final HttpServletRequest req = new XssRequestWrapper(request);
+    final String match = req.getParameter("match");
     pageContext.setAttribute("match", match);
-    final String baseHref = org.opennms.web.api.Util.calculateUrlBase( request );
+    final String baseHref = Util.calculateUrlBase(request);
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -62,15 +63,15 @@
   <jsp:param name="headTitle" value="Performance" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="headTitle" value="KSC" />
-  <jsp:param name="breadcrumb" value="<a href='<%= baseHref %>report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='${baseHref}report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="KSC Reports" />
   <jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
 
-<script type="text/javascript" src="<%= baseHref %>js/opennms/ux/PageableGrid.js" ></script>
-<script type="text/javascript" src="<%= baseHref %>js/opennms/ux/ResourcesPageableGrid.js" ></script>
-<script type="text/javascript" src="<%= baseHref %>js/opennms/ux/LocalPageableProxy.js" ></script>
-<script type="text/javascript" src="<%= baseHref %>js/KSCIndexView.js" ></script>
+<script type="text/javascript" src="<%= Util.calculateUrlBase(request, "js/opennms/ux/PageableGrid.js") %>" ></script>
+<script type="text/javascript" src="<%= Util.calculateUrlBase(request, "js/opennms/ux/ResourcesPageableGrid.js") %>" ></script>
+<script type="text/javascript" src="<%= Util.calculateUrlBase(request, "js/opennms/ux/LocalPageableProxy.js") %>" ></script>
+<script type="text/javascript" src="<%= Util.calculateUrlBase(request, "js/KSCIndexView.js") %>" ></script>
 
 <!-- A script for validating Node ID Selection Form before submittal -->
 <script type="text/javascript" >
@@ -119,7 +120,7 @@
 				                             ]};
 		
 		Ext.onReady(function(){
-				customizedReportsInitView("custom-resources", customData, "<%= baseHref %>KSC/formProcMain.htm?report_action={action}");
+				customizedReportsInitView("custom-resources", customData, "<%= Util.calculateUrlBase(request) %>KSC/formProcMain.htm?report_action={action}");
 		})
 	</script>
 	<div id="custom-resources"></div>
@@ -148,7 +149,7 @@
 												</c:forEach>
       	                                  	]};
         	Ext.onReady(function(){
-					nodeSNMPReportsInitView("snmp-reports", nodeData, "<%= baseHref %>KSC/customView.htm?type={type}&report={id}")
+					nodeSNMPReportsInitView("snmp-reports", nodeData, "<%= Util.calculateUrlBase(request) %>KSC/customView.htm?type={type}&report={id}")
             });
       </script>
       <div id="snmp-reports"></div>
@@ -184,12 +185,12 @@
           <script type="text/javascript">
           	Ext.onReady(function(){
 				/*
-					domainGridInitView("domain-reports", domainData, "<%= baseHref %>KSC/customView.htm");
+					domainGridInitView("domain-reports", domainData, "<%= Util.calculateUrlBase(request, "KSC/customView.htm") %>");
 				*/
             });
           </script>
           <div id="domain-reports"></div>
-          <form method="get" name="choose_domain" action="<%= baseHref %>KSC/customView.htm" onsubmit="return validateDomain();">
+          <form method="get" name="choose_domain" action="<%= Util.calculateUrlBase(request, "KSC/customView.htm") %>" onsubmit="return validateDomain();">
             <input type="hidden" name="<%=CustomViewController.Parameters.type%>" value="domain">
 
                   <select style="width: 100%;" name="<%=CustomViewController.Parameters.domain%>" size="10">

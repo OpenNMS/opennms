@@ -66,7 +66,10 @@ import org.opennms.web.WebSecurityUtils;
  */
 public abstract class Util extends Object {
 
-    /**
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+	private static final HashMap EMPTY_HASH_MAP = new HashMap();
+
+	/**
      * Return a string that represents the fully qualified URL for our servlet
      * context, suitable for use in the HTML <em>base</em> tag.
      *
@@ -86,7 +89,7 @@ public abstract class Util extends Object {
      *            the servlet request you are servicing
      * @return a {@link java.lang.String} object.
      */
-    public static String calculateUrlBase(HttpServletRequest request) {
+    public static String calculateUrlBase(final HttpServletRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -95,9 +98,26 @@ public abstract class Util extends Object {
         if (tmpl == null) {
             tmpl = "%s://%x%c/";
         }
-        return substituteUrl(request, tmpl);
+        final String retval = substituteUrl(request, tmpl);
+        if (retval.endsWith("/")) {
+        	return retval;
+        } else {
+        	return retval + "/";
+        }
     }
 
+    public static String calculateUrlBase(final HttpServletRequest request, final String path) {
+    	if (request == null || path == null) {
+    		throw new IllegalArgumentException("Cannot take null parameters.");
+    	}
+    	
+    	String tmpl = Vault.getProperty("opennms.web.base-url");
+        if (tmpl == null) {
+            tmpl = "%s://%x%c";
+        }
+        return substituteUrl(request, tmpl).replaceAll("/+$", "") + "/" + path.replaceAll("^/+", "");
+    }
+    
     /** Constant <code>substKeywords={ 's', 'h', 'p', 'x', 'c' }</code> */
     protected static final char[] substKeywords = { 's', 'h', 'p', 'x', 'c' };
 
@@ -108,9 +128,8 @@ public abstract class Util extends Object {
      * @param tmpl a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    protected static String substituteUrl(HttpServletRequest request,
-                                          String tmpl) {
-        String[] replacements = {
+    protected static String substituteUrl(final HttpServletRequest request, final String tmpl) {
+    	final String[] replacements = {
             request.getScheme(),                        // %s
             request.getServerName(),                    // %h
             Integer.toString(request.getServerPort()),  // %p
@@ -118,11 +137,11 @@ public abstract class Util extends Object {
             request.getContextPath()                    // %c
         };
 
-        StringBuffer out = new StringBuffer(48);
+    	final StringBuffer out = new StringBuffer(48);
         for (int i = 0; i < tmpl.length();) {
-            char c = tmpl.charAt(i++);
+        	final char c = tmpl.charAt(i++);
             if (c == '%' && i < tmpl.length()) {
-                char d = tmpl.charAt(i++);
+                final char d = tmpl.charAt(i++);
                 for (int key = 0; key < substKeywords.length; ++key) {
                     if (d == substKeywords[key]) {
                         out.append(replacements[key]);
@@ -137,7 +156,6 @@ public abstract class Util extends Object {
         return out.toString();
     }
 
-    /** Constant <code>hostHeaders="{X-Forwarded-Host,     // Apache ProxyP"{trunked}</code> */
     protected static final String[] hostHeaders = {
         "X-Forwarded-Host",     // Apache ProxyPass
         "X-Host",               // lighttpd
@@ -150,15 +168,14 @@ public abstract class Util extends Object {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String getHostHeader(HttpServletRequest request) {
+    public static String getHostHeader(final HttpServletRequest request) {
         for (int i = 0; i < hostHeaders.length; ++i) {
-            String ret = request.getHeader(hostHeaders[i]);
+        	final String ret = request.getHeader(hostHeaders[i]);
             if (ret != null) {
                 return ret;
             }
         }
-        return request.getServerName() + ":"
-                + Integer.toString(request.getServerPort());
+        return request.getServerName() + ":" + Integer.toString(request.getServerPort());
     }
 
     /**
@@ -168,10 +185,10 @@ public abstract class Util extends Object {
      *            string to be encoded
      * @return encoded string
      */
-    public static String encode(String string) {
+    public static String encode(final String string) {
         try {
             return URLEncoder.encode(string, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             // UTF-8 should *never* throw this
             throw new UndeclaredThrowableException(e);
         }
@@ -184,7 +201,7 @@ public abstract class Util extends Object {
      *            string to be decoded
      * @return decoded string
      */
-    public static String decode(String string) {
+    public static String decode(final String string) {
         try {
             return URLDecoder.decode(string, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -203,8 +220,8 @@ public abstract class Util extends Object {
      *         <code>paramName</code>" value=" <code>paramValue</code>"
      *         /&gt; tag for each parameter.
      */
-    public static String makeHiddenTags(HttpServletRequest request) {
-        return (makeHiddenTags(request, new HashMap(), new String[0]));
+    public static String makeHiddenTags(final HttpServletRequest request) {
+        return (makeHiddenTags(request, EMPTY_HASH_MAP, EMPTY_STRING_ARRAY));
     }
 
     /**
@@ -219,8 +236,8 @@ public abstract class Util extends Object {
      *         <code>paramName</code>" value=" <code>paramValue</code>"
      *         /&gt; tag for each parameter.
      */
-    public static String makeHiddenTags(HttpServletRequest request, Map additions) {
-        return (makeHiddenTags(request, additions, new String[0]));
+    public static String makeHiddenTags(final HttpServletRequest request, final Map additions) {
+        return (makeHiddenTags(request, additions, EMPTY_STRING_ARRAY));
     }
 
     /**
@@ -235,8 +252,8 @@ public abstract class Util extends Object {
      *         <code>paramName</code>" value=" <code>paramValue</code>"
      *         /&gt; tag for each parameter.
      */
-    public static String makeHiddenTags(HttpServletRequest request, String[] ignores) {
-        return (makeHiddenTags(request, new HashMap(), ignores));
+    public static String makeHiddenTags(final HttpServletRequest request, final String[] ignores) {
+        return (makeHiddenTags(request, EMPTY_HASH_MAP, ignores));
     }
 
     /**
@@ -255,7 +272,7 @@ public abstract class Util extends Object {
      *         <code>paramName</code>" value=" <code>paramValue</code>"
      *         /&gt; tag for each parameter not in the ignore list.
      */
-    public static String makeHiddenTags(HttpServletRequest request, Map additions, String[] ignores) {
+    public static String makeHiddenTags(final HttpServletRequest request, final Map additions, final String[] ignores) {
         return (makeHiddenTags(request, additions, ignores, IgnoreType.BOTH));
     }
 
@@ -277,30 +294,30 @@ public abstract class Util extends Object {
      *         <code>paramName</code>" value=" <code>paramValue</code>"
      *         /&gt; tag for each parameter not in the ignore list.
      */
-    public static String makeHiddenTags(HttpServletRequest request, Map additions, String[] ignores, IgnoreType ignoreType) {
+    public static String makeHiddenTags(final HttpServletRequest request, final Map additions, final String[] ignores, final IgnoreType ignoreType) {
         if (request == null || additions == null || ignores == null || ignoreType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StringBuffer buffer = new StringBuffer();
+        final StringBuffer buffer = new StringBuffer();
 
-        ArrayList<String> ignoreList = new ArrayList<String>();
+        final ArrayList<String> ignoreList = new ArrayList<String>();
         for (int i = 0; i < ignores.length; i++) {
             ignoreList.add(ignores[i]);
         }
 
-        Enumeration names = request.getParameterNames();
+        final Enumeration names = request.getParameterNames();
 
         while (names.hasMoreElements()) {
-            String name = (String) names.nextElement();
-            String[] values = request.getParameterValues(name);
+        	final String name = (String) names.nextElement();
+        	final String[] values = request.getParameterValues(name);
 
             if ((ignoreType == IgnoreType.ADDITIONS_ONLY || !ignoreList.contains(name)) && values != null) {
-                for (int i = 0; i < values.length; i++) {
+            	for (final String value : values) {
                     buffer.append("<input type=\"hidden\" name=\"");
                     buffer.append(name);
                     buffer.append("\" value=\"");
-                    buffer.append(WebSecurityUtils.sanitizeString(values[i]));
+                    buffer.append(WebSecurityUtils.sanitizeString(value));
                     buffer.append("\" />");
                     buffer.append("\n");
                 }
@@ -310,20 +327,20 @@ public abstract class Util extends Object {
         // Add the additions in
         Set<String> keySet = additions.keySet();
         Iterator<String> keys = keySet.iterator();
-
+        
         while (keys.hasNext()) {
-            String name = keys.next();
+        	final String name = keys.next();
 
             // handle both a String value or a String[] value
-            Object tmp = additions.get(name);
-            String[] values = (tmp instanceof String[]) ? ((String[]) tmp) : (new String[] { (String) tmp });
+        	final Object tmp = additions.get(name);
+        	final String[] values = (tmp instanceof String[]) ? ((String[]) tmp) : (new String[] { (String) tmp });
 
             if ((ignoreType == IgnoreType.REQUEST_ONLY || !ignoreList.contains(name)) && values != null) {
-                for (int i = 0; i < values.length; i++) {
+            	for (final String value : values) {
                     buffer.append("<input type=\"hidden\" name=\"");
                     buffer.append(name);
                     buffer.append("\" value=\"");
-                    buffer.append(values[i]);
+                    buffer.append(value);
                     buffer.append("\" />");
                     buffer.append("\n");
                 }
@@ -341,8 +358,8 @@ public abstract class Util extends Object {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String makeQueryString(HttpServletRequest request) {
-        return (makeQueryString(request, new HashMap(), new String[0]));
+    public static String makeQueryString(final HttpServletRequest request) {
+        return (makeQueryString(request, EMPTY_HASH_MAP, EMPTY_STRING_ARRAY));
     }
 
     /**
@@ -355,8 +372,8 @@ public abstract class Util extends Object {
      * @param additions a {@link java.util.Map} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String makeQueryString(HttpServletRequest request, Map additions) {
-        return (makeQueryString(request, additions, new String[0]));
+    public static String makeQueryString(final HttpServletRequest request, final Map additions) {
+        return (makeQueryString(request, additions, EMPTY_STRING_ARRAY));
     }
 
     /**
@@ -369,8 +386,8 @@ public abstract class Util extends Object {
      * @param ignores an array of {@link java.lang.String} objects.
      * @return a {@link java.lang.String} object.
      */
-    public static String makeQueryString(HttpServletRequest request, String[] ignores) {
-        return (makeQueryString(request, new HashMap(), ignores));
+    public static String makeQueryString(final HttpServletRequest request, final String[] ignores) {
+        return (makeQueryString(request, EMPTY_HASH_MAP, ignores));
     }
 
     /**
@@ -389,7 +406,7 @@ public abstract class Util extends Object {
      * @return A string in the <em>x-www-form-urlencoded</em> format that is
      *         suitable for adding to a URL as a query string.
      */
-    public static String makeQueryString(HttpServletRequest request, Map additions, String[] ignores) {
+    public static String makeQueryString(final HttpServletRequest request, final Map additions, final String[] ignores) {
         return (makeQueryString(request, additions, ignores, IgnoreType.BOTH));
     }
 
@@ -410,23 +427,23 @@ public abstract class Util extends Object {
      *         suitable for adding to a URL as a query string.
      * @param ignoreType a {@link org.opennms.web.api.Util.IgnoreType} object.
      */
-    public static String makeQueryString(HttpServletRequest request, Map additions, String[] ignores, IgnoreType ignoreType) {
+    public static String makeQueryString(final HttpServletRequest request, final Map additions, final String[] ignores, final IgnoreType ignoreType) {
         if (request == null || additions == null || ignores == null || ignoreType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StringBuffer buffer = new StringBuffer();
+        final StringBuffer buffer = new StringBuffer();
 
-        ArrayList<String> ignoreList = new ArrayList<String>();
+        final ArrayList<String> ignoreList = new ArrayList<String>();
         for (int i = 0; i < ignores.length; i++) {
             ignoreList.add(ignores[i]);
         }
 
-        Enumeration names = request.getParameterNames();
+        final Enumeration names = request.getParameterNames();
 
         while (names.hasMoreElements()) {
-            String name = (String) names.nextElement();
-            String[] values = request.getParameterValues(name);
+        	final String name = (String) names.nextElement();
+        	final String[] values = request.getParameterValues(name);
 
             if ((ignoreType == IgnoreType.ADDITIONS_ONLY || !ignoreList.contains(name)) && values != null) {
                 for (int i = 0; i < values.length; i++) {
@@ -442,18 +459,17 @@ public abstract class Util extends Object {
         Iterator<String> keys = keySet.iterator();
 
         while (keys.hasNext()) {
-            String name = keys.next();
+        	final String name = keys.next();
 
             // handle both a String value or a String[] value
-            Object tmp = additions.get(name);
-            String[] values;
+        	final Object tmp = additions.get(name);
+        	final String[] values;
             if (tmp instanceof String[]) {
                 values = (String[]) tmp;
             } else if (tmp instanceof String) {
                 values = new String[] { (String) tmp };
             } else {
-                throw new IllegalArgumentException("addition \"" + name + "\" is not of type String or String[], but is of type: "
-                                                   + tmp.getClass().getName());
+                throw new IllegalArgumentException("addition \"" + name + "\" is not of type String or String[], but is of type: " + tmp.getClass().getName());
             }
 
             if ((ignoreType == IgnoreType.REQUEST_ONLY || !ignoreList.contains(name)) && values != null) {
@@ -504,8 +520,8 @@ public abstract class Util extends Object {
      * @param names an array of {@link java.lang.String} objects.
      * @return a {@link java.util.Map} object.
      */
-    public static Map<String, String> getOrderedMap(String names[][]) {
-        TreeMap<String, String> orderedMap = new TreeMap<String, String>();
+    public static Map<String, String> getOrderedMap(final String names[][]) {
+    	final TreeMap<String, String> orderedMap = new TreeMap<String, String>();
 
         for (int i = 0; i < names.length; i++) {
             orderedMap.put(names[i][1], names[i][0]);
@@ -520,7 +536,7 @@ public abstract class Util extends Object {
      * @param input a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String htmlify(String input) {
+    public static String htmlify(final String input) {
         return (input == null ? null : input.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
     }
     
@@ -533,10 +549,15 @@ public abstract class Util extends Object {
         /*
          * Rather than defaulting to localhost all the time, give an option in properties
          */
-        String proxyHostName = Vault.getProperty("opennms.rtc.event.proxy.host") == null ? "127.0.0.1" : Vault.getProperty("opennms.rtc.event.proxy.host");
-        String proxyHostPort = Vault.getProperty("opennms.rtc.event.proxy.port") == null ? Integer.toString(TcpEventProxy.DEFAULT_PORT) : Vault.getProperty("opennms.rtc.event.proxy.port");
-        String proxyHostTimeout = Vault.getProperty("opennms.rtc.event.proxy.timeout") == null ? Integer.toString(TcpEventProxy.DEFAULT_TIMEOUT) : Vault.getProperty("opennms.rtc.event.proxy.timeout");
-        InetAddress proxyAddr = null;
+    	final String vaultHost = Vault.getProperty("opennms.rtc.event.proxy.host");
+    	final String vaultPort = Vault.getProperty("opennms.rtc.event.proxy.port");
+    	final String vaultTimeout = Vault.getProperty("opennms.rtc.event.proxy.timeout");
+
+    	final String proxyHostName = vaultHost == null ? "127.0.0.1" : vaultHost;
+		final String proxyHostPort = vaultPort == null ? Integer.toString(TcpEventProxy.DEFAULT_PORT) : vaultPort;
+		final String proxyHostTimeout = vaultTimeout == null ? Integer.toString(TcpEventProxy.DEFAULT_TIMEOUT) : vaultTimeout;
+
+		InetAddress proxyAddr = null;
         EventProxy proxy = null;
 
         try {
@@ -548,7 +569,7 @@ public abstract class Util extends Object {
         if (proxyAddr == null) {
             try {
                 proxy = new TcpEventProxy();
-            } catch (UnknownHostException e) {
+            } catch (final UnknownHostException e) {
                 // XXX Ewwww!  We should just let the first UnknownException bubble up. 
                 throw new UndeclaredThrowableException(e);
             }
@@ -567,7 +588,7 @@ public abstract class Util extends Object {
      * @param date a {@link java.util.Date} object.
      * @return a {@link java.lang.String} object.
      */
-    public static final String formatDateToUIString(Date date) {
+    public static final String formatDateToUIString(final Date date) {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
     }
     
@@ -577,17 +598,14 @@ public abstract class Util extends Object {
      * @param str a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String convertToJsSafeString(String str){
-        
-        String retStr  = str
+    public static String convertToJsSafeString(final String str){
+        return str
         .replace("\\", "\\\\")
         .replace("\"", "\\\"")
         .replace("\t", "\\t")
         .replace("\r", "\\r")
         .replace("\n", "\\n")
         .replace("\b", "\\b");
-        
-        return retStr;
     }
 
 }

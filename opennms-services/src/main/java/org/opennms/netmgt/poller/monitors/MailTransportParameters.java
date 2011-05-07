@@ -43,6 +43,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
+import org.opennms.netmgt.config.mailtransporttest.ReadmailHost;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailTest;
 import org.opennms.netmgt.config.mailtransporttest.SendmailTest;
 import org.opennms.netmgt.dao.castor.CastorUtils;
@@ -157,7 +158,7 @@ public class MailTransportParameters {
 	 *
 	 * @param suffix a {@link java.lang.String} object.
 	 */
-	public void setTestSubjectSuffix(String suffix) {
+	public void setTestSubjectSuffix(final String suffix) {
 		m_testSubjectSuffix = suffix;
 	}
 
@@ -168,12 +169,14 @@ public class MailTransportParameters {
 	 */
 	public String getComputedTestSubject() {
 	    try {
-	        if (getSendTestSubject() != null) {
-	            return new StringBuilder(getSendTestSubject()).append(':').append(m_testSubjectSuffix == null ? null : m_testSubjectSuffix).toString();
+	        final String subject = getSendTestSubject();
+	        final String suffix = getTestSubjectSuffix();
+			if (subject != null) {
+	            return new StringBuilder(subject).append(':').append(suffix == null? "" : suffix).toString();
 	        } else {
 	            return null;
 	        }
-	    } catch (IllegalStateException e) {
+	    } catch (final IllegalStateException e) {
 	        return null;
 	    }
 	}
@@ -409,7 +412,12 @@ public class MailTransportParameters {
      * @return a {@link java.lang.String} object.
      */
     public String getReadTestHost() {
-        return getReadTest().getReadmailHost().getHost();
+        final ReadmailTest readTest = getReadTest();
+        if (readTest != null) {
+        	final ReadmailHost readmailHost = readTest.getReadmailHost();
+        	if (readmailHost != null) return readmailHost.getHost();
+        }
+        return null;
     }
 
     /**

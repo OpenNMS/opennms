@@ -1,5 +1,5 @@
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.*,org.opennms.web.element.*,java.util.*,java.io.*,org.opennms.web.element.NetworkElementFactory" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.api.Util,org.opennms.web.*,org.opennms.web.element.*,java.util.*,java.io.*,org.opennms.web.element.NetworkElementFactory" %>
 <%
 
         
@@ -15,7 +15,7 @@
 <html>
 <head>
     <title>Trace Route | OpenNMS Web Console</title>
-    <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
+    <base HREF="<%= Util.calculateUrlBase(request) %>" />
     <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
 
@@ -33,7 +33,7 @@ function checkIpAddress(ip){
 
 
 function doCommand(){
-    var url ='<%=org.opennms.web.Util.calculateUrlBase( request )%>ExecCommand.map?command='+document.getElementById("command").value;
+    var url ='<%= Util.calculateUrlBase(request, "ExecCommand.map?command=") %>'+document.getElementById("command").value;
     var address = document.getElementById("address").value;
     
     url = url+'&address='+address;

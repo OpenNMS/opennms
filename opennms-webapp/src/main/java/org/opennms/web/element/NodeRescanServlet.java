@@ -43,8 +43,8 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.MissingParameterException;
-import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.api.Util;
 
 /**
  * <p>NodeRescanServlet class.</p>
@@ -104,7 +104,7 @@ public class NodeRescanServlet extends HttpServlet {
             this.proxy.send(outEvent);
 
             // redirect the request for display
-            response.sendRedirect(Util.calculateUrlBase(request) + "/" + returnUrl);
+            response.sendRedirect(Util.calculateUrlBase(request, returnUrl));
         } catch (Exception e) {
             throw new ServletException("Exception sending node rescan event", e);
         }

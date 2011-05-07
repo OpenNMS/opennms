@@ -1,0 +1,253 @@
+<events>
+
+        <!-- Begin syslog event definitions for Apache HTTPD -->
+        <event>
+                <uei>uei.opennms.org/vendor/apache/syslog/httpd/documentRootDoesNotExist</uei>
+                <event-label>Apache HTTPD-defined event: documentRootDoesNotExist</event-label>
+                <descr>
+                        &lt;p&gt;The Apache HTTP daemon reports that a specified DocumentRoot does not exist.&lt;br&gt;
+                        DocumentRoot: %parm[documentRoot]%&lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;Apache HTTPD DocumentRoot %parm[documentRoot]% does not exist &lt;/p&gt;
+                </logmsg>
+                <severity>Minor</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[documentRoot]%" alarm-type="3" auto-clean="false" />
+        </event>
+        <!-- End syslog event definitions for Apache HTTPD -->
+
+        <!-- Begin syslog event definitions for Linux kernel -->
+        <event>
+                <uei>uei.opennms.org/vendor/linux/syslog/kernel/oomKilledProcess</uei>
+                <event-label>Linux-defined event: OOM killer killed process</event-label>
+                <descr>
+                        &lt;p&gt;The Linux kernel has killed a process because the system is out of memory &lt;br&gt;
+                        Killed process name: %parm[killedProcName]%&lt;br&gt;
+                        Killed process PID: %parm[killedProcID]%&lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;Linux OOM killer killed process %parm[killedProcName]% (PID %parm[killedProcID]%) &lt;/p&gt;
+                </logmsg>
+                <severity>Major</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[killedProcName]%" alarm-type="3" auto-clean="false" />
+        </event>
+        <!-- End syslog event definitions for Linux kernel -->
+
+        <!-- Begin syslog event definitions for OpenSSH  -->
+        <event>
+                <uei>uei.opennms.org/vendor/openssh/syslog/sshd/invalidUser</uei>
+                <event-label>OpenSSH-defined event: Invalid user</event-label>
+                <descr>
+                        &lt;p&gt;The OpenSSH sshd daemon reports an authentication failure for an invalid user &lt;br&gt;
+                        User name: %parm[user]%&lt;br&gt;
+                        Authentication method: %parm[authMethod]%&lt;br&gt;
+                        Remote host: %parm[remoteHost]%&lt;br&gt;
+                        Remote port: %parm[remotePort]%&lt;br&gt;
+                        SSH protocol version: %parm[protocolVersion]%&lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;Invalid user %parm[user]% from host %parm[remoteHost]% failed OpenSSH %parm[authMethod]% authentication &lt;/p&gt;
+                </logmsg>
+                <severity>Warning</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%" alarm-type="3" auto-clean="false" />
+        </event>
+        <event>
+                <uei>uei.opennms.org/vendor/openssh/syslog/sshd/passwordFailure</uei>
+                <event-label>OpenSSH-defined event: Password failure</event-label>
+                <descr>
+                        &lt;p&gt;The OpenSSH sshd daemon reports an authentication failure for a valid user &lt;br&gt;
+                        User name: %parm[user]%&lt;br&gt;
+                        Authentication method: %parm[authMethod]%&lt;br&gt;
+                        Remote host: %parm[remoteHost]%&lt;br&gt;
+                        Remote port: %parm[remotePort]%&lt;br&gt;
+                        SSH protocol version: %parm[protocolVersion]%&lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;User %parm[user]% from host %parm[remoteHost]% failed OpenSSH %parm[authMethod]% authentication &lt;/p&gt;
+                </logmsg>
+                <severity>Warning</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%" alarm-type="3" auto-clean="false" />
+        </event>
+        <event>
+                <uei>uei.opennms.org/vendor/openssh/syslog/sshd/bindFailure</uei>
+                <event-label>OpenSSH-defined event: Socket bind failure</event-label>
+                <descr>
+                        &lt;p&gt;The OpenSSH sshd daemon failed to bind to a requested address and port &lt;br&gt;
+                        Bind address: %parm[bindAddress]% &lt;br&gt;
+                        Bind port: %parm[bindPort]% &lt;br&gt;
+                        Error message: %parm[errorMessage]% &lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;OpenSSH sshd failed to bind to port %parm[bindPort]% of address %parm[bindAddress]% &lt;/p&gt;
+                </logmsg>
+                <severity>Minor</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[bindAddress]%:%parm[bindPort]%" alarm-type="3" auto-clean="false" />
+        </event>
+        <event>
+                <uei>uei.opennms.org/vendor/openssh/syslog/sshd/totalBindFailure</uei>
+                <event-label>OpenSSH-defined event: Total socket bind failure</event-label>
+                <descr>
+                        &lt;p&gt;The OpenSSH sshd daemon failed to bind to any requested addresses &lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;OpenSSH sshd failed to bind any address on host %nodelabel%  &lt;/p&gt;
+                </logmsg>
+                <severity>Major</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
+        </event>
+        <!-- End syslog event definitions for OpenSSH  -->
+
+        <!-- Begin syslog event definitions for POSIX utilities  -->
+        <event>
+                <uei>uei.opennms.org/vendor/posix/syslog/su/authenFailure</uei>
+                <event-label>POSIX-defined event: su authentication failure</event-label>
+                <descr>
+                        &lt;p&gt;A user failed to authenticate to the POSIX su command&lt;br&gt;
+                        Attempting user (UID): %parm[user]% (%parm[uid]%) &lt;br&gt;
+                        Target user (UID): %parm[targetUser]% (%parm[targetUid]%) &lt;br&gt;
+                        TTY: %parm[tty]% &lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;Apache HTTPD DocumentRoot %parm[documentRoot]% does not exist &lt;/p&gt;
+                </logmsg>
+                <severity>Warning</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%" alarm-type="3" auto-clean="false" />
+        </event>
+
+        <!-- Begin syslog event definitions for sudo  -->
+        <event>
+                <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/notAuthorizedOnHost</uei>
+                <event-label>sudo-defined event: user not authorized on host for command</event-label>
+                <descr>
+                        &lt;p&gt;A user attempted to use sudo to run a command not allowed for that user on that host &lt;br&gt;
+                        Attempting user: %parm[user]% &lt;br&gt;
+                        Target user: %parm[targetUser]% &lt;br&gt;
+                        Command: %parm[command]% &lt;br&gt;
+                        TTY: %parm[tty]% &lt;br&gt;
+                        Working directory: %parm[workingDirectory]% &lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;User %parm[user]% not authorized on host %nodelabel% to sudo command %parm[command]% &lt;/p&gt;
+                </logmsg>
+                <severity>Warning</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%:%parm[command]%" alarm-type="3" auto-clean="false" />
+        </event>
+        <event>
+                <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/commandNotAllowed</uei>
+                <event-label>sudo-defined event: command not allowed for user</event-label>
+                <descr>
+                        &lt;p&gt;A user attempted to use sudo to run a command not allowed for that user &lt;br&gt;
+                        Attempting user: %parm[user]% &lt;br&gt;
+                        Target user: %parm[targetUser]% &lt;br&gt;
+                        Command: %parm[command]% &lt;br&gt;
+                        TTY: %parm[tty]% &lt;br&gt;
+                        Working directory: %parm[workingDirectory]% &lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;User %parm[user]% not allowed to sudo command %parm[command]% &lt;/p&gt;
+                </logmsg>
+                <severity>Warning</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%:%parm[command]%" alarm-type="3" auto-clean="false" />
+        </event>
+        <event>
+                <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/userNotInSudoers</uei>
+                <event-label>sudo-defined event: user not in sudoers</event-label>
+                <descr>
+                        &lt;p&gt;A user attempted to use sudo who was not in sudoers &lt;br&gt;
+                        Attempting user: %parm[user]% &lt;br&gt;
+                        Target user: %parm[targetUser]% &lt;br&gt;
+                        Command: %parm[command]% &lt;br&gt;
+                        TTY: %parm[tty]% &lt;br&gt;
+                        Working directory: %parm[workingDirectory]% &lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;User %parm[user]% not in sudoers but tried to use sudo &lt;/p&gt;
+                </logmsg>
+                <severity>Warning</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%:%parm[command]%" alarm-type="3" auto-clean="false" />
+        </event>
+        <event>
+                <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/incorrectPassword</uei>
+                <event-label>sudo-defined event: incorrect password</event-label>
+                <descr>
+                        &lt;p&gt;A user failed to authenticate to the sudo utility&lt;br&gt;
+                        Attempting user: %parm[user]% &lt;br&gt;
+                        Target user: %parm[targetUser]% &lt;br&gt;
+                        Command: %parm[command]% &lt;br&gt;
+                        TTY: %parm[tty]% &lt;br&gt;
+                        Working directory: %parm[workingDirectory]% &lt;br&gt;
+                        Failure count: %parm[attempts]% &lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;User %parm[user]% failed %parm[attempts]% times to sudo %parm[command]% as user %[targetUser]% &lt;/p&gt;
+                </logmsg>
+                <severity>Warning</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%:%parm[command]%" alarm-type="3" auto-clean="false" />
+        </event>
+</events>
