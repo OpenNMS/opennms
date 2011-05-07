@@ -50,6 +50,7 @@
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%
     Service service = ElementUtil.getServiceByParams(request, getServletContext());
@@ -63,18 +64,22 @@
   <c:param name="filter" value="<%="interface=" + ipAddr%>"/>
   <c:param name="filter" value="<%="service=" + serviceId%>"/>
 </c:url>
-
+<c:url var="nodeLink" value="element/node.jsp">
+  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+</c:url>
+<c:url var="interfaceLink" value="element/interface.jsp">
+  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+  <c:param name="intf" value="<%=ipAddr%>"/>
+</c:url>
 
 <% String headTitle = service.getServiceName() + " Service on " + ipAddr; %>
-<% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
-<% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Service" />
-  <jsp:param name="headTitle" value="<%= headTitle %>" />
+  <jsp:param name="headTitle" value="<%=headTitle%>" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(nodeLink)}'>Node</a>" />
+  <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(interfaceLink)}'>Interface</a>" />
   <jsp:param name="breadcrumb" value="Service" />
 </jsp:include>
        
@@ -122,7 +127,7 @@ function doDelete() {
                   <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
                 </c:url>
                 <th>Node</th>
-                <td><a href="${nodeLink}"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId)%></a></td>
+                <td><a href="${fn:escapeXml(nodeLink)}"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId)%></a></td>
               </tr>
               <tr>
                 <c:url var="interfaceLink" value="element/interface.jsp">
@@ -130,7 +135,7 @@ function doDelete() {
                   <c:param name="intf" value="<%=ipAddr%>"/>
                 </c:url>
                 <th>Interface</th> 
-                <td><a href="${interfaceLink}"><%=ipAddr%></a></td>
+                <td><a href="${fn:escapeXml(interfaceLink)}"><%=ipAddr%></a></td>
               </tr>              
               <tr>
                 <th>Polling Status</th>
@@ -152,8 +157,8 @@ function doDelete() {
               <jsp:param name="ipAddr" value="<%=ipAddr%>" />
               <jsp:param name="service" value="<%=serviceId%>" />
               <jsp:param name="throttle" value="5" />
-              <jsp:param name="header" value="<a href='${eventUrl}'>Recent Events</a>" />
-              <jsp:param name="moreUrl" value="${eventUrl}" />
+              <jsp:param name="header" value="<a href='${fn:escapeXml(eventUrl)}'>Recent Events</a>" />
+              <jsp:param name="moreUrl" value="${fn:escapeXml(eventUrl)}" />
             </jsp:include>
       
             <!-- Recent outages box -->

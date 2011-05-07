@@ -62,6 +62,7 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%!
     protected int telnetServiceId;
@@ -302,12 +303,12 @@
           <c:param name="parentResource" value="<%= Integer.toString(nodeId) %>"/>
           <c:param name="reports" value="all"/>
         </c:url>
-          <a href="${resourceGraphsUrl}">Resource Graphs</a>
+          <a href="${fn:escapeXml(resourceGraphsUrl)}">Resource Graphs</a>
 	  </li>
         <% } %>
         
          <li>
-         <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>      
+         <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>
          </li>
         <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
            <li>
@@ -318,12 +319,16 @@
            <% if ( isSnmp && request.isUserInRole( Authentication.ADMIN_ROLE ))  { %>
               <% for( int i=0; i < intfs.length; i++ ) { %>
                 <% if( "P".equals( intfs[i].getIsSnmpPrimary() )) { %>
+                       <c:url var="updateSnmpLink" value="admin/updateSnmp.jsp">
+                           <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+                           <c:param name="ipaddr" value="<%=intfs[i].getIpAddress()%>"/>
+                       </c:url>
                        <li>
-                       <a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=intfs[i].getIpAddress()%>">Update SNMP</a>
+                       <a href="<c:out value="${updateSnmpLink}"/>">Update SNMP</a>
                        </li>
                 <% } %>
               <% } %>
-           <% } %>	    		        
+           <% } %>
 	  </ul>
 	  </div>
 	  
@@ -392,7 +397,12 @@
             <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
             <c:param name="intf" value="<%=intfs[i].getIpAddress()%>"/>
         </c:url>
-		<a href="${interfaceLink}"><%=intfs[i].getIpAddress()%></a>
+		<a href="<c:out value="${interfaceLink}"/>"><%=intfs[i].getIpAddress()%></a>
+		<!-- 
+			This is OK for now since getIpAddress() returns a String but if we refactor
+			NetworkElementFactory to return OnmsIpInterface instances, we will need to make
+			this comparison work between an InetAddress object and a String.
+		-->
 		<c:out value="<%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>"/>
 
 		</td>

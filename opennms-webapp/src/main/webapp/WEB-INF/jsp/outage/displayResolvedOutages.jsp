@@ -66,25 +66,30 @@
 
 		</ec:column>
 		<ec:column property="ipaddr" alias="Interface">
-			<a
-				href="element/interface.jsp?node=${tabledata.nodeid}&intf=${tabledata.ipaddr}">${tabledata.ipaddr}</a>
-				&nbsp;
-				
+			<c:url var="interfaceLink" value="element/interface.jsp">
+				<c:param name="node" value="${tabledata.nodeid}"/>
+				<c:param name="intf" value="${tabledata.ipaddr}"/>
+			</c:url>
+			<a href="<c:out value="${interfaceLink}"/>">${tabledata.ipaddr}</a>
+			
+			&nbsp;
+			
+			<c:url var="withIpaddrLink" value="${pageContext.request.contextPath}/displayResolvedOutages.htm">
+				<c:param name="ipaddr" value="${tabledata.ipaddr}"/>
+			</c:url>
+			<c:url var="withoutIpaddrLink" value="${pageContext.request.contextPath}/displayResolvedOutages.htm">
+				<c:param name="not_ipaddr" value="${tabledata.ipaddr}"/>
+			</c:url>
 			<c:choose>
 				<c:when test='${suffix == null}'>
-					<a
-						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?ipaddr=${tabledata.ipaddr}">[+]</a>
-					<a
-						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?not_ipaddr=${tabledata.ipaddr}">[-]</a>
+					<a href="<c:out value="${withIpaddrLink}"/>">[+]</a>
+					<a href="<c:out value="${withoutIpaddrLink}"/>">[-]</a>
 				</c:when>
 				<c:otherwise>
-					<a
-						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&ipaddr=${tabledata.ipaddr}">[+]</a>
-					<a
-						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&not_ipaddr=${tabledata.ipaddr}">[-]</a>
+					<a href="<c:out value="${withIpaddrLink + '&' + suffix}"/>">[+]</a>
+					<a href="<c:out value="${withoutIpaddrLink + '&' + suffix}"/>">[-]</a>
 				</c:otherwise>
 			</c:choose>
-
 		</ec:column>
 		<ec:column property="serviceid" alias="Service">
 			<a
