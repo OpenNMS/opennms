@@ -18,8 +18,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.joesnmp</artifactId>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.joesnmp</artifactId>
 		<version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
