@@ -13,27 +13,24 @@
     This module is used to provide a single artifact that the opennms project
     can depend on to use SNMP
   </description>
-  <properties>
-    <opennmsSnmpApiVersion>2.0.4</opennmsSnmpApiVersion>
-  </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
+		<version>${project.version}</version>
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
-      <version>${opennmsSnmpApiVersion}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.integration-tests</artifactId>
+		<version>${project.version}</version>
       <type>test-jar</type>
-      <exclusions>
-        <exclusion><groupId>org.opennms.core</groupId><artifactId>org.opennms.core.lib</artifactId></exclusion>
-        <exclusion><groupId>org.opennms</groupId><artifactId>opennms-util</artifactId></exclusion>
-        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>hibernate-dependencies</artifactId></exclusion>
-        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>spring-dependencies</artifactId></exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -43,20 +40,8 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
   </dependencies>
   <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-      <id>snmp4j-repo</id>
-      <name>SNMP4J Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/oosnmp.net-release</url>
-    </repository>
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
