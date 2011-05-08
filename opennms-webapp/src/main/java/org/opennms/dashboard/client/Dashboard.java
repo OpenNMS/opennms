@@ -37,6 +37,7 @@ package org.opennms.dashboard.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -198,7 +199,8 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         buttonPanel.setWidget(ok);
         buttonPanel.setStyleName("Button");
         panel.add(buttonPanel);
-
+        
+        dialog.setPopupPosition(Window.getScrollLeft() + 100, Window.getScrollTop() + 100);
         dialog.setWidget(panel);
         
         ok.addClickHandler(new ClickHandler() {
