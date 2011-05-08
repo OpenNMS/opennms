@@ -40,6 +40,7 @@
     <module>rxtx</module>
     <module>service-registration</module>
     <module>servlet</module>
+    <module>snmp4j</module>
     <module>snmp</module>
     <module>snmp-agent</module>
     <module>snmp-test</module>
