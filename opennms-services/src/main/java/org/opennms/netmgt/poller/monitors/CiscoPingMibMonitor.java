@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -45,13 +44,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.NodeDao;
@@ -60,7 +56,6 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -367,13 +362,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         //
         try {
             SnmpPeerFactory.init();
-        } catch (MarshalException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
+        } catch (final Throwable ex) {
         	log().fatal("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
@@ -591,7 +580,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 			LogUtils.debugf(getClass(), "Trying to look up proxy node with foreign-source %s, foreign-id %s for target interface %s", proxyNodeFS, proxyNodeFI, svc.getAddress());
 			proxyNode = s_nodeDao.findByForeignId(proxyNodeFS, proxyNodeFI);
 			LogUtils.debugf(getClass(), "Found a node via foreign-source / foreign-id '%s'/'%s' to use as proxy", proxyNodeFS, proxyNodeFI);
-			if (proxyNode != null && proxyNode.getPrimaryInterface() != null) proxyAddress = proxyNode.getPrimaryInterface().getInetAddress();
+			if (proxyNode != null && proxyNode.getPrimaryInterface() != null) proxyAddress = proxyNode.getPrimaryInterface().getIpAddress();
 		}
 		if (proxyAddress != null) {
 			LogUtils.infof(getClass(), "Using address %s from node '%s':'%s' as proxy for service '%s' on interface %s", proxyAddress, proxyNodeFS, proxyNodeFI, svc.getSvcName(), svc.getIpAddr());
@@ -602,7 +591,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		if (proxyNodeId != null && Integer.valueOf(proxyNodeId) != null) {
 			LogUtils.debugf(getClass(), "Trying to look up proxy node with database ID %d for target interface %s", proxyNodeId, svc.getAddress());
 			proxyNode = s_nodeDao.get(Integer.valueOf(proxyNodeId));
-			if (proxyNode != null && proxyNode.getPrimaryInterface() != null) proxyAddress = proxyNode.getPrimaryInterface().getInetAddress();
+			if (proxyNode != null && proxyNode.getPrimaryInterface() != null) proxyAddress = proxyNode.getPrimaryInterface().getIpAddress();
 		}
 		if (proxyAddress != null) {
 			LogUtils.infof(getClass(), "Using address %s from node with DBID %s as proxy for service '%s' on interface %s", proxyAddress, proxyNodeId, svc.getSvcName(), svc.getIpAddr());
