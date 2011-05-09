@@ -70,7 +70,7 @@ public class NodeCategoryBoxController extends AbstractController {
         ModelAndView modelAndView =
             new ModelAndView("/includes/nodeCategory-box", "categories",
                              categories);
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
             modelAndView.addObject("isAdmin", "true");
         }
         return modelAndView;

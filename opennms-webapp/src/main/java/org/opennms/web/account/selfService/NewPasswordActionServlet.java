@@ -78,7 +78,7 @@ public class NewPasswordActionServlet extends HttpServlet {
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");
 
-        if (!request.isUserInRole(Authentication.ADMIN_ROLE) && user.isReadOnly()) {
+        if (!request.isUserInRole(Authentication.ROLE_ADMIN) && user.isReadOnly()) {
             throw new ServletException("User " + user.getUserId() + " is read-only");
         }
 

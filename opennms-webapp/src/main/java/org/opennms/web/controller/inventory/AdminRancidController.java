@@ -52,9 +52,9 @@ public class AdminRancidController implements Controller {
         String group = request.getParameter("group");
         Map<String, Object> model;
         if (group != null) {
-            model   = m_inventoryService.getRancidNodeWithCLoginForGroup(nodeid,WebSecurityUtils.sanitizeString(group),request.isUserInRole(Authentication.ADMIN_ROLE));
+            model   = m_inventoryService.getRancidNodeWithCLoginForGroup(nodeid,WebSecurityUtils.sanitizeString(group),request.isUserInRole(Authentication.ROLE_ADMIN));
         } else {
-            model   = m_inventoryService.getRancidNodeWithCLogin(nodeid,request.isUserInRole(Authentication.ADMIN_ROLE));            
+            model   = m_inventoryService.getRancidNodeWithCLogin(nodeid,request.isUserInRole(Authentication.ROLE_ADMIN));            
         }
         ModelAndView modelAndView = new ModelAndView("admin/rancid/rancidAdmin","model",model);
         return modelAndView;

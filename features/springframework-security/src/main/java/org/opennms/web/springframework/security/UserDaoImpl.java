@@ -86,7 +86,7 @@ import org.springframework.util.Assert;
 public class UserDaoImpl implements UserDao, InitializingBean {
     private static final UpperCaseMd5PasswordEncoder PASSWORD_ENCODER = new UpperCaseMd5PasswordEncoder();
 
-    private static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.USER_ROLE);
+    private static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.ROLE_USER);
 
     private String m_usersConfigurationFile;
     
