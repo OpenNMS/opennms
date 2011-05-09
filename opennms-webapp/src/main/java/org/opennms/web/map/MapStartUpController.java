@@ -100,7 +100,7 @@ public class MapStartUpController extends SimpleFormController {
 	            log.debug("MapStartUp for user:" + user);
 
 			bw.write(ResponseAssembler.getStartupResponse(manager.getProperties(
-			                          request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE))));
+			                          request.isUserInRole(org.opennms.web.springframework.security.Authentication.ROLE_ADMIN))));
 		} catch (Throwable e) {
 			log.error("Error in map's startup",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.MAPS_STARTUP_ACTION));

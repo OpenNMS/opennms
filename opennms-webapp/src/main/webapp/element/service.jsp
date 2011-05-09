@@ -83,7 +83,7 @@
   <jsp:param name="breadcrumb" value="Service" />
 </jsp:include>
        
-<% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+<% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
 
 <script type="text/javascript" >
 function doDelete() {
@@ -99,7 +99,7 @@ function doDelete() {
 
       <h2><%=service.getServiceName()%> service on <%=service.getIpAddress()%></h2>
 
-         <% if (request.isUserInRole(Authentication.ADMIN_ROLE)) { %>
+         <% if (request.isUserInRole(Authentication.ROLE_ADMIN)) { %>
          <form method="post" name="delete" action="admin/deleteService">
          <input type="hidden" name="node" value="<%=nodeId%>"/>
          <input type="hidden" name="intf" value="<%=ipAddr%>"/>
@@ -108,12 +108,12 @@ function doDelete() {
       <p>
          <a href="${eventUrl}">View Events</a>
          
-         <% if (request.isUserInRole(Authentication.ADMIN_ROLE)) { %>
+         <% if (request.isUserInRole(Authentication.ROLE_ADMIN)) { %>
          &nbsp;&nbsp;&nbsp;<a href="admin/deleteService" onClick="return doDelete()">Delete</a>
          <% } %>
       </p>
  
-         <% if (request.isUserInRole( Authentication.ADMIN_ROLE)) { %>
+         <% if (request.isUserInRole( Authentication.ROLE_ADMIN)) { %>
          </form>
          <% } %>
 

@@ -240,7 +240,7 @@
       </c:choose>
       <li><a href="javascript:void()" onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "alarm/severity.jsp")%>','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
       
-      <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+      <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
         <% if ( alarmCount > 0 ) { %>
           <li>
             <!-- hidden form for acknowledging the result set -->
@@ -291,7 +291,7 @@
               </p>           
             <% } %>
 
-      <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+      <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <form action="<%= Util.calculateUrlBase(request, "alarm/acknowledge") %>" method="post" name="alarm_action_form">
           <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
           <input type="hidden" name="actionCode" value="<%=action%>" />
@@ -301,7 +301,7 @@
       <table>
 				<thead>
 					<tr>
-                                             <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+                                             <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
 						<% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
 						<th width="1%">Ack</th>
 						<% } else if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
@@ -354,7 +354,7 @@
                 <nobr>
                   <input type="checkbox" name="alarm" disabled="true" <%=alarms[i].isAcknowledged() ? "checked='true'" : ""%> /> 
                 </nobr>
-          <% } else if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+          <% } else if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
               <td class="divider" valign="middle" rowspan="1">
                 <nobr>
                   <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
@@ -482,7 +482,7 @@
       </table>
 			<hr />
 			 <p><%=alarms.length%> alarms &nbsp;
-      <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+      <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <input TYPE="reset" />
           <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
           <select name="alarmAction">
@@ -500,7 +500,7 @@
       </form>
 
       <%--<br/>
-      <% if(req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
+      <% if(req.isUserInRole(Authentication.ROLE_ADMIN)) { %>
         <a HREF="admin/alarms.jsp" title="Acknowledge or Unacknowledge All Alarms">[Acknowledge or Unacknowledge All Alarms]</a>
       <% } %>--%>
 

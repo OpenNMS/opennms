@@ -50,7 +50,7 @@ public class AdminUserNavBarEntry extends LocationBasedNavBarEntry {
     /** {@inheritDoc} */
     @Override
     public DisplayStatus evaluate(HttpServletRequest request) {
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
             return super.evaluate(request);
         } else {
             return DisplayStatus.NO_DISPLAY;
