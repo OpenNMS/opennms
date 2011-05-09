@@ -123,8 +123,12 @@ public class DefaultAdminCategoryService implements
 
         OnmsCategory category = findCategory(categoryIdString);
         
-        Collection<OnmsNode> memberNodes =
-            m_nodeDao.findByCategory(category);
+        final Collection<OnmsNode> memberNodes = new ArrayList<OnmsNode>();
+        for (final OnmsNode node : getNodeDao().findByCategory(category)) {
+        	if (!"D".equals(node.getType())) {
+        		memberNodes.add(node);
+        	}
+        }
         // XXX does anything need to be initialized in each member node?
         
         return new CategoryAndMemberNodes(category, memberNodes);
@@ -158,8 +162,12 @@ public class DefaultAdminCategoryService implements
      * @return a {@link java.util.List} object.
      */
     public List<OnmsNode> findAllNodes() {
-        List<OnmsNode> list =
-            new ArrayList<OnmsNode>(m_nodeDao.findAll());
+    	final List<OnmsNode> list = new ArrayList<OnmsNode>();
+    	for (final OnmsNode node : getNodeDao().findAll()) {
+    		if (!"D".equals(node.getType())) {
+    			list.add(node);
+    		}
+    	}
         Collections.sort(list);
         
         return list;
@@ -169,8 +177,7 @@ public class DefaultAdminCategoryService implements
     public EditModel findCategoryAndAllNodes(String categoryIdString) {
         CategoryAndMemberNodes cat = getCategory(categoryIdString); 
         List<OnmsNode> monitoredNodes = findAllNodes();
-        return new EditModel(cat.getCategory(), monitoredNodes,
-                             cat.getMemberNodes());
+        return new EditModel(cat.getCategory(), monitoredNodes, cat.getMemberNodes());
     }
 
     /**
@@ -207,7 +214,7 @@ public class DefaultAdminCategoryService implements
                                                        + idString
                                                        + "' is not an integer");
                 }
-                OnmsNode node = m_nodeDao.get(id);
+                OnmsNode node = getNodeDao().get(id);
                 if (node == null) {
                     throw new IllegalArgumentException("node with "
                                                        + "id of " + id
@@ -221,7 +228,7 @@ public class DefaultAdminCategoryService implements
                                                        + category.getName());
                 }
                 node.addCategory(category);
-                m_nodeDao.save(node);
+                getNodeDao().save(node);
             }
        } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null) {
@@ -238,7 +245,7 @@ public class DefaultAdminCategoryService implements
                                                        + idString
                                                        + "' is not an integer");
                 }
-                OnmsNode node = m_nodeDao.get(id);
+                OnmsNode node = getNodeDao().get(id);
                 if (node == null) {
                     throw new IllegalArgumentException("node with "
                                                        + "id of " + id
@@ -252,7 +259,7 @@ public class DefaultAdminCategoryService implements
                                                        + category.getName());
                 }
                 node.removeCategory(category);
-                m_nodeDao.save(node);
+                getNodeDao().save(node);
             }
        } else {
            throw new IllegalArgumentException("editAction of '"
@@ -304,11 +311,9 @@ public class DefaultAdminCategoryService implements
 
     /** {@inheritDoc} */
     public List<OnmsCategory> findByNode(int nodeId) {
-        OnmsNode node = m_nodeDao.get(nodeId);
+        final OnmsNode node = getNodeDao().get(nodeId);
         if (node == null) {
-            throw new IllegalArgumentException("node with "
-                                               + "id of " + nodeId
-                                               + "could not be found");
+            throw new IllegalArgumentException("node with id of " + nodeId + "could not be found");
         }
         
         List<OnmsCategory> categories = new ArrayList<OnmsCategory>(node.getCategories());
@@ -377,7 +382,7 @@ public class DefaultAdminCategoryService implements
                 node.getCategories().add(category);
             }
             
-            m_nodeDao.save(node);
+            getNodeDao().save(node);
             notifyCategoryChange(WebSecurityUtils.safeParseInt(nodeIdString));
        } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null) {
@@ -409,7 +414,7 @@ public class DefaultAdminCategoryService implements
                 node.getCategories().remove(category);
             }
 
-            m_nodeDao.save(node);
+            getNodeDao().save(node);
             notifyCategoryChange(WebSecurityUtils.safeParseInt(nodeIdString));
        } else {
            throw new IllegalArgumentException("editAction of '"
@@ -420,30 +425,26 @@ public class DefaultAdminCategoryService implements
 
 
     private OnmsNode findNode(String nodeIdString) {
-        int nodeId;
+    	final int nodeId;
         
         try {
             nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("parameter 'node' "
-                                               + "with value '"
-                                               + nodeIdString
-                                               + "' could not be parsed "
-                                               + "as an integer");
+        } catch (final NumberFormatException e) {
+            throw new IllegalArgumentException("parameter 'node' with value '" + nodeIdString + "' could not be parsed as an integer");
         }
-        return m_nodeDao.get(nodeId);
+        return getNodeDao().get(nodeId);
     }
 
-    private void notifyCategoryChange(int nodeId) {
+    private void notifyCategoryChange(final int nodeId) {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "CategoryUI");
         bldr.setNodeid(nodeId);
         send(bldr.getEvent());
     }
     
-    private void send(Event e) {
+    private void send(final Event e) {
         try {
             m_eventProxy.send(e);
-        } catch (EventProxyException e1) {
+        } catch (final EventProxyException e1) {
             throw new DataSourceLookupFailureException("Unable to send event to eventd", e1);
         }
     }
