@@ -46,27 +46,27 @@ import java.util.Map;
  * @version $Id: $
  */
 public final class Authentication extends Object {
-    public static final String USER_ROLE = "ROLE_USER";
-    public static final String ADMIN_ROLE = "ROLE_ADMIN";
-    public static final String READONLY_ROLE = "ROLE_READONLY";
-    public static final String DASHBOARD_ROLE = "ROLE_DASHBOARD";
-    public static final String RTC_ROLE = "ROLE_RTC";
-    public static final String PROVISION_ROLE = "ROLE_PROVISION";
-    public static final String REMOTING_ROLE = "ROLE_REMOTING";
-    public static final String REST_ROLE = "ROLE_REST";
+    public static final String ROLE_USER = "ROLE_USER";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_READONLY = "ROLE_READONLY";
+    public static final String ROLE_DASHBOARD = "ROLE_DASHBOARD";
+    public static final String ROLE_RTC = "ROLE_RTC";
+    public static final String ROLE_PROVISION = "ROLE_PROVISION";
+    public static final String ROLE_REMOTING = "ROLE_REMOTING";
+    public static final String ROLE_REST = "ROLE_REST";
     
     private static Map<String, String> s_oldToNewMap = new HashMap<String, String>();
     
     static {
-    	s_oldToNewMap.put("OpenNMS RTC Daemon", RTC_ROLE);
-    	s_oldToNewMap.put("OpenNMS Administrator", ADMIN_ROLE);
-        s_oldToNewMap.put("OpenNMS Read-Only User", READONLY_ROLE);
-        s_oldToNewMap.put("OpenNMS Dashboard User", DASHBOARD_ROLE);
-        s_oldToNewMap.put("OpenNMS Provision User", PROVISION_ROLE);
-        s_oldToNewMap.put("OpenNMS Remote Poller User", REMOTING_ROLE);
-        s_oldToNewMap.put("OpenNMS REST User", REST_ROLE);
+    	s_oldToNewMap.put("OpenNMS RTC Daemon", ROLE_RTC);
+    	s_oldToNewMap.put("OpenNMS Administrator", ROLE_ADMIN);
+        s_oldToNewMap.put("OpenNMS Read-Only User", ROLE_READONLY);
+        s_oldToNewMap.put("OpenNMS Dashboard User", ROLE_DASHBOARD);
+        s_oldToNewMap.put("OpenNMS Provision User", ROLE_PROVISION);
+        s_oldToNewMap.put("OpenNMS Remote Poller User", ROLE_REMOTING);
+        s_oldToNewMap.put("OpenNMS REST User", ROLE_REST);
         
-    	// There is no entry for USER_ROLE, because all authenticated people are users
+    	// There is no entry for ROLE_USER, because all authenticated people are users
     }
 
     /** Private, empty constructor so this class cannot be instantiated. */

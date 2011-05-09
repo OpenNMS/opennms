@@ -46,7 +46,7 @@
 <%
 	boolean canEdit = false;
     String userid = request.getRemoteUser();
-    if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+    if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
         canEdit = true;
     } else {
 	    try {

@@ -53,7 +53,7 @@ public class AdminStorageCreateBucketController extends SimpleFormController {
         AdminStorageCommClass bean = (AdminStorageCommClass) command;
                        
         log().debug("AdminStorageCreateBucketController ModelAndView onSubmit Create bucket["+ bean.getBucket() + "]");
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
 
         boolean done = m_inventoryService.createBucket(bean.getBucket());
         if (!done){

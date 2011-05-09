@@ -53,7 +53,7 @@ public class AdminRancidCreateController extends SimpleFormController {
         AdminRancidRouterDbCommClass bean = (AdminRancidRouterDbCommClass) command;
                        
         log().debug("AdminRancidCreateController ModelAndView onSubmit updating device["+ bean.getDeviceName() + "] group[" + bean.getGroupName() + "] status[" + bean.getStatusName()+"]");
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
             boolean done = m_inventoryService.createNodeOnRouterDb(bean.getGroupName(), bean.getDeviceName(), bean.getDeviceTypeName(), bean.getStatusName(),bean.getComment());
             if (!done){
                 log().debug("AdminRancidCreateController ModelAndView onSubmit error while updating status for"+ bean.getGroupName() + "/" + bean.getDeviceName());

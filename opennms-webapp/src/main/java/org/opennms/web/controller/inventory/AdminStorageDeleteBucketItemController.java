@@ -51,7 +51,7 @@ public class AdminStorageDeleteBucketItemController implements Controller {
 
         String bucket = request.getParameter("bucket");
         String filename = request.getParameter("filename");
-        if (bucket != null && filename != null && request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        if (bucket != null && filename != null && request.isUserInRole(Authentication.ROLE_ADMIN)) {
             boolean done = m_inventoryService.deleteBucketItem(bucket, filename);
             if (!done){
                 log().debug("AdminStorageDeleteBucketItemController ModelAndView onSubmit error while deleting status for: "+ bucket);

@@ -143,7 +143,7 @@ String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a
 </jsp:include>
 
 <%
-if (request.isUserInRole( Authentication.ADMIN_ROLE )) {
+if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
 %>
 
 <script type="text/javascript" >
@@ -167,7 +167,7 @@ function doDelete() {
       </h2>
 
         <%
-        if (request.isUserInRole( Authentication.ADMIN_ROLE )) {
+        if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
         %>
       <form method="post" name="delete" action="admin/deleteInterface">
       <input type="hidden" name="node" value="<%=nodeId%>"/>
@@ -237,24 +237,24 @@ function doDelete() {
                           }
       %>
         
-        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+        <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
 	 <li>
          <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
 	 </li>
          <% } %>
          
-        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+        <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
 	  <li>
             <a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
           </li>
          <% } %>
 
-        <% if (request.isUserInRole( Authentication.ADMIN_ROLE ) && hasSNMPData(intf_db) && "P".equals(intf_db.getIsSnmpPrimary())) { %>
+        <% if (request.isUserInRole( Authentication.ROLE_ADMIN ) && hasSNMPData(intf_db) && "P".equals(intf_db.getIsSnmpPrimary())) { %>
 	 <li>
          <a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Update SNMP</a>
 	 </li>
          <% } %>
-        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+        <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
 	  <li>
             <a href="admin/sched-outages/editoutage.jsp?newName=<%=ipAddr%>&addNew=true&ipAddr=<%=ipAddr%>">Schedule Outage</a>      
           </li>
@@ -263,7 +263,7 @@ function doDelete() {
       </ul>
       </div>
 
-      <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+      <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
       </form>
       <% } %>
 
@@ -280,7 +280,7 @@ function doDelete() {
                 <th>Polling Status</th>
                 <td><%=ElementUtil.getInterfaceStatusString(intf_db)%></td>
               </tr>
-              <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole( Authentication.ADMIN_ROLE )) {
+              <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole( Authentication.ROLE_ADMIN )) {
                   List inPkgs = pollerCfgFactory.getAllPackageMatches(ipAddr);
                   Iterator pkgiter = inPkgs.iterator();
                   while (pkgiter.hasNext()) { %>
@@ -308,7 +308,7 @@ function doDelete() {
 	            <th>Snmp Polling Status</th>
 	            <td><%=ElementUtil.getSnmpInterfaceStatusString(intf_db)%></td>
 	          </tr>  
-       <% if(request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+       <% if(request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
               <tr>
                 <th>Snmp Polling Package</th>
                 <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 

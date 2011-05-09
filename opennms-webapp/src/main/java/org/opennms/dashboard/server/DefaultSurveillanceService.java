@@ -367,7 +367,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     protected boolean isDashboardRole() {
         boolean isDashboardRole = true;
         SecurityContext context = SecurityContextHolder.getContext();
-        if((context != null) && !(context.toString().contains(org.opennms.web.springframework.security.Authentication.DASHBOARD_ROLE))) {
+        if((context != null) && !(context.toString().contains(org.opennms.web.springframework.security.Authentication.ROLE_DASHBOARD))) {
             isDashboardRole = false;
         }
         log().debug("User " + getUsername() + " is in dashboard role? " + isDashboardRole);

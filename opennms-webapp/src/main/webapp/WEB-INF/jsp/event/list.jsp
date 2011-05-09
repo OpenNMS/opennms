@@ -209,7 +209,7 @@
         <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
         <li><a href="<%=org.opennms.web.api.Util.calculateUrlBase(req, "event/severity.jsp")%>">Severity Legend</a></li>
 
-        <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+        <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <% if ( eventCount > 0 ) { %>
             <li>
               <!-- hidden form for acknowledging the result set -->
@@ -276,7 +276,7 @@
               </p>
             <% } %>
 
-    <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+    <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
       <form action="event/acknowledge" method="post" name="acknowledge_form">
         <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(req.getQueryString())%>" />
         <input type="hidden" name="actionCode" value="<%=action%>" />
@@ -286,7 +286,7 @@
       <table>
         <thead>
         <tr>
-          <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+          <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
             <% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
             <th width="1%">Ack</th>
             <% } else { %>
@@ -309,7 +309,7 @@
       %>
       
         <tr valign="top" class="<%=events[i].getSeverity().getLabel()%>">
-          <% if( request.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+          <% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <td valign="top" rowspan="3" class="divider">
                 <input type="checkbox" name="event" value="<%=events[i].getId()%>" /> 
             </td>
@@ -402,7 +402,7 @@
                   <a href="<%=this.makeLink( parms, new NegativeExactUEIFilter(events[i].getUei()), true)%>" class="filterLink" title="Do not show events for this UEI">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
-              <% if (req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
+              <% if (req.isUserInRole(Authentication.ROLE_ADMIN)) { %>
                	  <a href="javascript: void submitNewNotificationForm('<%=events[i].getUei()%>');" title="Edit notifications for this Event UEI">Edit notifications for event</a>
               <% } %>
             <% } else { %>
@@ -421,7 +421,7 @@
         <p><%=events.length%> events
           <% 
           String acknowledgeEvents = System.getProperty("opennms.eventlist.acknowledge");
-          if( (req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE )) && "true".equals(acknowledgeEvents)) { %>
+          if( (req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY )) && "true".equals(acknowledgeEvents)) { %>
             <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
               <input type="button" value="Acknowledge Events" onClick="submitForm('<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>')"/>
               <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>

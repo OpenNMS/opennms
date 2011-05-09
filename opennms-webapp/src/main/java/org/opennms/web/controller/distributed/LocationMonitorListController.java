@@ -57,7 +57,7 @@ public class LocationMonitorListController extends AbstractController implements
         LocationMonitorListModel model = m_distributedPollerService.getLocationMonitorList();
         ModelAndView modelAndView = new ModelAndView("distributed/locationMonitorList", "model", model);
         
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
             modelAndView.addObject("isAdmin", "true");
         }
         
