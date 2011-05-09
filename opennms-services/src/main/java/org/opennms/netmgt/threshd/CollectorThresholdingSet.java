@@ -30,12 +30,14 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.CollectionResource;
+import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -76,6 +78,8 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      */
     public boolean hasThresholds(CollectionAttribute attribute) {
         CollectionResource resource = attribute.getResource();
+        if (!isCollectionEnabled(attribute.getResource()))
+            return false;
         if (resource instanceof AliasedResource && !storeByIfAlias)
             return false;
         return hasThresholds(resource.getResourceTypeName(), attribute.getName());
@@ -87,6 +91,10 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      */
     /** {@inheritDoc} */
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap) {
+        if (!isCollectionEnabled(resource)) {
+            log().debug("applyThresholds: Ignoring resource " + resource + " because data collection is disabled for this resource.");
+            return new LinkedList<Event>();
+        }
         CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(m_interval, m_nodeId, m_hostAddress, m_serviceName, m_repository, resource, attributesMap);
         return applyThresholds(resourceWrapper, attributesMap);
     }
@@ -102,6 +110,13 @@ public class CollectorThresholdingSet extends ThresholdingSet {
             return false;
         }
         return super.passedThresholdFilters(resource, thresholdEntity);
+    }
+    
+    protected boolean isCollectionEnabled(CollectionResource resource) {
+        if (resource instanceof IfInfo) {
+            return ((IfInfo) resource).isCollectionEnabled();
+        }
+        return true;
     }
 
 }

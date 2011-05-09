@@ -1051,7 +1051,7 @@ public class ThresholdingVisitorTest {
         params.put("storeByIfAlias", "true");
         ThresholdingVisitor visitor = createVisitor(params);
 
-        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex);
+        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex, true);
         CollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
@@ -1092,7 +1092,7 @@ public class ThresholdingVisitorTest {
 
         ThresholdingVisitor visitor = createVisitor(); // equals to storeByIfAlias = false
 
-        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex);
+        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex, true);
         CollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
@@ -1113,6 +1113,46 @@ public class ThresholdingVisitorTest {
         EasyMock.verify(agent);
         verifyEvents(0);
     }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-bug3428.xml
+     * 
+     * Updated to reflect the fact that counter are treated as rates.
+     * 
+     * This is related with the cutomer support ticket number 300
+     */
+    @Test
+    public void testDisabledCollection() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-bug3428.xml");
+        Integer ifIndex = 1;
+        Long ifSpeed = 100000000l;
+        String ifName = "wlan0";
+        addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
+        
+        // Create interface resource with data collection disabled
+        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex, false);
+        CollectionAgent agent = createCollectionAgent();
+        IfResourceType resourceType = createInterfaceResourceType(agent);
+        ThresholdingVisitor visitor = createVisitor();
+        
+        // Step 1 (should be ignored)
+        SnmpCollectionResource resource = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(resource, resourceType, "ifInOctets", "counter", "ifIndex", 10000);
+        addAttributeToCollectionResource(resource, resourceType, "ifOutOctets", "counter", "ifIndex", 10000);
+        resource.visit(visitor);
+        
+        // Step 2 (should be ignored) - Increment Counters; real value = (46000 - 10000)/300 = 120
+        resource = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(resource, resourceType, "ifInOctets", "counter", "ifIndex", 46000);
+        addAttributeToCollectionResource(resource, resourceType, "ifOutOctets", "counter", "ifIndex", 46000);
+        resource.visit(visitor);
+
+        EasyMock.verify(agent);
+        verifyEvents(1);
+    }
+
     /*
      * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing for Pollerd.
      * 
@@ -1320,7 +1360,7 @@ public class ThresholdingVisitorTest {
     }
 
     private void runInterfaceResource(ThresholdingVisitor visitor, String ipAddress, String ifName, Long ifSpeed, Integer ifIndex, long v1, long v2) {
-        SnmpIfData ifData = createSnmpIfData(ipAddress, ifName, ifSpeed, ifIndex);
+        SnmpIfData ifData = createSnmpIfData(ipAddress, ifName, ifSpeed, ifIndex, true);
         CollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
@@ -1377,7 +1417,7 @@ public class ThresholdingVisitorTest {
         ThresholdingVisitor visitor = createVisitor();
         
         // Creating Interface Resource Type
-        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex);
+        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex, true);
         CollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
@@ -1562,7 +1602,7 @@ public class ThresholdingVisitorTest {
         m_anticipatedEvents.clear();
     }
 
-    private SnmpIfData createSnmpIfData(String ipAddress, String ifName, Long ifSpeed, Integer ifIndex) {
+    private SnmpIfData createSnmpIfData(String ipAddress, String ifName, Long ifSpeed, Integer ifIndex, boolean collectionEnabled) {
         OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("testNode");
@@ -1571,6 +1611,8 @@ public class ThresholdingVisitorTest {
         snmpIface.setIfName(ifName);
         snmpIface.setIfAlias(ifName);
         snmpIface.setIfSpeed(ifSpeed);
+        // If the SNMP interface doesn't have collection enable, threshold processing will be ignored for the interface
+        snmpIface.setCollectionEnabled(collectionEnabled);
         return new SnmpIfData(snmpIface);
     }
     
