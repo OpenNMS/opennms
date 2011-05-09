@@ -126,25 +126,12 @@ import org.opennms.netmgt.xml.event.Value;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.org">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.org">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.org">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class RescanProcessor implements Runnable {
     /**
      * SQL statement for retrieving the 'nodetype' field of the node table for
      * the specified nodeid. Used to determine if the node is active ('A') or
-     * been marked as deleted ('D')..
+     * been marked as deleted ('D').
      */
     final static String SQL_DB_RETRIEVE_NODE_TYPE = "SELECT nodetype FROM node WHERE nodeID=?";
 
@@ -152,13 +139,7 @@ public final class RescanProcessor implements Runnable {
      * SQL statement used to retrieve other nodeIds that have the same
      * ipinterface as the updating node.
      */
-    final static String SQL_DB_RETRIEVE_OTHER_NODES = "SELECT nodeid FROM ipinterface WHERE ismanaged != 'D' AND ipaddr = ? AND nodeid !=? ";
-
-    /**
-     * SQL statement for retrieving the nodeids that have the same ipaddr as the
-     * updating node no matter what ifindex they have.
-     */
-    final static String SQL_DB_RETRIEVE_DUPLICATE_NODEIDS = "SELECT nodeid FROM ipinterface WHERE ismanaged != 'D' AND ipaddr = ? AND nodeid !=? ";
+    final static String SQL_DB_RETRIEVE_OTHER_NODES = "SELECT ipinterface.nodeid FROM ipinterface, node WHERE ipinterface.ismanaged != 'D' AND ipinterface.ipaddr = ? AND ipinterface.nodeid = node.nodeid AND node.foreignsource IS NULL AND ipinterface.nodeid !=? ";
 
     /**
      * SQL statements used to reparent an interface and its associated services
@@ -1162,7 +1143,7 @@ public final class RescanProcessor implements Runnable {
         PreparedStatement stmt = null;
         final DBUtils d = new DBUtils(getClass());
         try {
-            stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_DUPLICATE_NODEIDS);
+            stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_OTHER_NODES);
             d.watch(stmt);
             stmt.setString(1, ifaddr.getHostAddress());
             stmt.setInt(2, nodeId);
