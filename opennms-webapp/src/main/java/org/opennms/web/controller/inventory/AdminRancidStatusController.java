@@ -54,7 +54,7 @@ public class AdminRancidStatusController extends SimpleFormController {
                        
         log().debug("AdminRancidStatusController ModelAndView onSubmit setting state to device["+ bean.getDeviceName() + "] group[" + bean.getGroupName() + "] status[" + bean.getStatusName()+"]");
 
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
 
             boolean done = m_inventoryService.switchStatus(bean.getGroupName(), bean.getDeviceName());
             if (!done){

@@ -56,9 +56,6 @@ import org.opennms.web.springframework.security.Authentication;
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
  * @since 1.8.1
  */
 public class SaveUserServlet extends HttpServlet {
@@ -70,7 +67,7 @@ public class SaveUserServlet extends HttpServlet {
 
         if (user != null) {
             User newUser = (User) user.getAttribute("user.modifyUser.jsp");
-            if (newUser.isReadOnly() && !request.isUserInRole(Authentication.ADMIN_ROLE)) {
+            if (newUser.isReadOnly() && !request.isUserInRole(Authentication.ROLE_ADMIN)) {
                 throw new ServletException("Error: user " + newUser.getUserId() + " is read-only!");
             }
 

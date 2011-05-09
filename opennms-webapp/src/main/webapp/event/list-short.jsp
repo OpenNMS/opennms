@@ -210,7 +210,7 @@
         <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
         <li><a href="<%= Util.calculateUrlBase(req, "event/severity.jsp") %>">Severity Legend</a></li>
       
-      <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+      <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
         <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 
           <% if ( eventCount == -1 ) { %>
             <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a></li>
@@ -274,7 +274,7 @@
               </p>           
             <% } %>
 
-    <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+    <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
       <form action="event/acknowledge" method="post" name="acknowledge_form">
         <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>"/>
         <input type="hidden" name="action" value="<%=action%>" />
@@ -299,7 +299,7 @@
         pageContext.setAttribute("event", event);
       %>
         <tr class="<%= events[i].getSeverity().getLabel() %>">
-          <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+          <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <td><input type="checkbox" name="event" value="<%=events[i].getId()%>" /></td>
             <% } %>
           <td class="noWrap"><a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a>
@@ -397,7 +397,7 @@
       <% } /*end for*/%>
       </table>
         <hr />
-        <p style="margin-top:10px;"><% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+        <p style="margin-top:10px;"><% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
             <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
 							<input TYPE="reset" />
 							<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
@@ -431,7 +431,7 @@
             <% } %>          
 
       <%--<br/>
-      <% if(req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
+      <% if(req.isUserInRole(Authentication.ROLE_ADMIN)) { %>
         <a HREF="admin/events.jsp" title="Acknowledge or Unacknowledge All Events">[Acknowledge or Unacknowledge All Events]</a>
       <% } %>--%>
 

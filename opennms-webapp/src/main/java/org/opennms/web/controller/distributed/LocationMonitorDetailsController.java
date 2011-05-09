@@ -51,9 +51,6 @@ import org.springframework.web.servlet.mvc.AbstractCommandController;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  * @since 1.8.1
  */
 public class LocationMonitorDetailsController extends AbstractCommandController implements InitializingBean {
@@ -68,7 +65,7 @@ public class LocationMonitorDetailsController extends AbstractCommandController 
         LocationMonitorListModel model = getDistributedPollerService().getLocationMonitorDetails(cmd, errors);
         ModelAndView modelAndView = new ModelAndView(getSuccessView(), "model", model);
         
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
             modelAndView.addObject("isAdmin", "true");
         }
         

@@ -258,6 +258,7 @@
         }
 
         %>
+            <!--
             <tr>
               <td valign="top">
                 <label id="readOnlyLabel" for="readOnly">Read-Only:</label>
@@ -266,6 +267,7 @@
                 <input id="readOnly" type="checkbox" name="readOnly"<%=  isReadOnly? " checked=\"true\"":"" %> />
               </td>
             </tr>
+				-->
             <tr>
               <td valign="top">
                 <label id="fullNameLabel" for="fullName">Full Name:</label>

@@ -69,7 +69,7 @@ public class ServiceApplicationBoxController extends AbstractController {
             new ModelAndView("/includes/serviceApplication-box", "applications",
                              applications);
         modelAndView.addObject("service", service);
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
             modelAndView.addObject("isAdmin", "true");
         }
         return modelAndView;

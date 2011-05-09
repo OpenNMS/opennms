@@ -106,7 +106,7 @@ public class OpenMapController implements Controller {
 		
 		String user = request.getRemoteUser();
 		
-		if ((request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE))) {
+		if ((request.isUserInRole(org.opennms.web.springframework.security.Authentication.ROLE_ADMIN))) {
 			log.info(user + " has Admin admin Role");
 		}					
 

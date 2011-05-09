@@ -171,7 +171,7 @@
 
 <div id="include-eventlist">
 
-<% if( request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+<% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
     <form action="event/acknowledge" method="post" name="acknowledge_form">
     <input type="hidden" name="redirect" value="<c:out value="<%= request.getServletPath() + "?" + request.getQueryString()%>"/>" />
     <input type="hidden" name="actionCode" value="<%=org.opennms.web.event.AcknowledgeType.ACKNOWLEDGED.getShortName() %>" />
@@ -186,7 +186,7 @@
        pageContext.setAttribute("event", event);
 %>
      <tr class="<%= event.getSeverity().getLabel() %>">
-       <% if( request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+       <% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
            <td class="divider">
              <nobr>
                <input type="checkbox" name="event" value="<%=event.getId()%>" />
@@ -204,7 +204,7 @@
        <td class="standard" colspan="2">
          <%
          String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");
-         if( (request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole( Authentication.READONLY_ROLE )) && "true".equals(acknowledgeEvent)) { %>
+         if( (request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY )) && "true".equals(acknowledgeEvent)) { %>
            <nobr>
              <input type="button" value="Acknowledge" onclick="submitAck()">
              <input TYPE="reset" />

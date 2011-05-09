@@ -53,7 +53,7 @@ public class AdminStorageDeleteBucketController extends SimpleFormController {
         AdminStorageCommClass bean = (AdminStorageCommClass) command;
                        
         log().debug("AdminStorageDeleteBucketController ModelAndView onSubmit delete bucket["+ bean.getBucket() + "]");
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
 
         boolean done = m_inventoryService.deleteBucket(bean.getBucket());
         if (!done){
