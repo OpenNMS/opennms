@@ -46,13 +46,13 @@ function runSetup() {
 #
 function runDbMaint() {
   # One time maintenance things
-  #runsql "DELETE FROM outages where iflostservice < '2007/1/1'::timestamp;"
+  #runsql 'DELETE FROM outages where iflostservice < \'2007/1/1\'::timestamp;'
 
   # Table trimming
-  runsql "DELETE FROM events e WHERE e.eventid IN (SELECT o.svcregainedeventid FROM outages o WHERE o.svcregainedeventid IS NOT NULL AND  (ifregainedservice - iflostservice)::interval < interval '35 seconds');"
+  runsql 'DELETE FROM events e WHERE e.eventid IN (SELECT o.svcregainedeventid FROM outages o WHERE o.svcregainedeventid IS NOT NULL AND  (ifregainedservice - iflostservice)::interval < interval \'35 seconds\');'
 
-  runsql "DELETE FROM notifications WHERE pagetime < now() - interval '3 months';"
-  runsql "DELETE 
+  runsql 'DELETE FROM notifications WHERE pagetime < now() - interval \'3 months\';'
+  runsql 'DELETE 
             FROM events 
             WHERE NOT EXISTS (
            SELECT svclosteventid 
@@ -66,13 +66,13 @@ function runDbMaint() {
            SELECT eventid 
              FROM notifications 
             WHERE eventid = events.eventid)
-              AND eventtime < now() - interval '6 weeks');"
+              AND eventtime < now() - interval \'6 weeks\');'
 
   # Routine maintenance if autovacuum isn't running
-  #runsql "VACUUM;"
-  #runsql "VACUUM ANALYZE;"
-  #runsql "VACUUM events;"
-  #runsql "REINDEX TABLE events;"
+  #runsql 'VACUUM;'
+  #runsql 'VACUUM ANALYZE;'
+  #runsql 'VACUUM events;'
+  #runsql 'REINDEX TABLE events;'
 }
 
 #
