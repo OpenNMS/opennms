@@ -51,7 +51,7 @@
 %>
 
 <%
-    boolean role = request.isUserInRole(Authentication.ADMIN_ROLE);
+    boolean role = request.isUserInRole(Authentication.ROLE_ADMIN);
 %> 
 
 <jsp:include page="/includes/header.jsp" flush="false" >

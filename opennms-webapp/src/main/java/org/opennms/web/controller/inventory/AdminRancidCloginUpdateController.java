@@ -32,7 +32,7 @@ public class AdminRancidCloginUpdateController extends SimpleFormController {
         log().debug("AdminRancidCloginUpdateController ModelAndView onSubmit");
         
         AdminRancidCloginCommClass bean = (AdminRancidCloginCommClass) command;
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
 
             boolean done = m_inventoryService.updateClogin(bean.getDeviceName(), bean.getGroupName(), bean.getUserID(), bean.getPass(),
                                             bean.getEnpass(), bean.getLoginM(), bean.getAutoE());

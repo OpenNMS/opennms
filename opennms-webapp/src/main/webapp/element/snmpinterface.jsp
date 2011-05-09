@@ -98,7 +98,7 @@ String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a
 </jsp:include>
 
 <%
-if (request.isUserInRole( Authentication.ADMIN_ROLE )) {
+if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
 %>
 
 <script type="text/javascript" >
@@ -119,7 +119,7 @@ function doDelete() {
       </h2>
 
         <%
-        if (request.isUserInRole( Authentication.ADMIN_ROLE )) {
+        if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
         %>
       <form method="post" name="delete" action="admin/deleteInterface">
       <input type="hidden" name="node" value="<%=nodeId%>"/>
@@ -162,7 +162,7 @@ function doDelete() {
                               }
                           }
       %>
-        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+        <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
 	 <li>
          <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
 	 </li>
@@ -171,7 +171,7 @@ function doDelete() {
       </ul>
       </div>
 
-      <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+      <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
       </form>
       <% } %>
 
@@ -222,7 +222,7 @@ function doDelete() {
 	              <th>Snmp Polling Status</th>
 	              <td><%=ElementUtil.getSnmpInterfaceStatusString(intf_db)%></td>
 	            </tr>  
-              <% if(request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+              <% if(request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
                 <tr>
 	                <th>Snmp Polling Package</th>
     	            <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 

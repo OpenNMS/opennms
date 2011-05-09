@@ -78,7 +78,7 @@ public class FormProcMainController extends AbstractController implements Initia
             modelAndView.addObject("type", "custom");
             return modelAndView;
           
-        } else if (( request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole(Authentication.READONLY_ROLE) ) && (request.getRemoteUser() != null)) {
+        } else if (( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole(Authentication.ROLE_READONLY) ) && (request.getRemoteUser() != null)) {
             // Fetch the KscReportEditor or create one if there isn't one already
             KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
 

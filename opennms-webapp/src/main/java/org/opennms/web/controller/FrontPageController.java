@@ -42,7 +42,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * <p>FrontPageController class.</p>
  *
  * @author ranger
- * @version $Id: $
  * @since 1.8.1
  */
 public class FrontPageController extends AbstractController {
@@ -51,7 +50,7 @@ public class FrontPageController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        if (request.isUserInRole(Authentication.DASHBOARD_ROLE)) {
+        if (request.isUserInRole(Authentication.ROLE_DASHBOARD)) {
             return new ModelAndView("redirect:/dashboard.jsp");
         } else {
             return new ModelAndView("redirect:/index.jsp");
