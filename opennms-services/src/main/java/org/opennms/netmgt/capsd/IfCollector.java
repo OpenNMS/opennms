@@ -64,15 +64,12 @@ import org.opennms.netmgt.config.CapsdProtocolInfo;
  * target designated during construction. The target is initially polled using
  * all the configured plugins, then tested for SMB and SNMP. If either of those
  * plugins were detected then an additional collection of the SMB/SNMP
- * information is preformed. If any node has multiple interfaces in it then
+ * information is performed. If any node has multiple interfaces in it then
  * addition probes of those interfaces are performed. The SNMP/SMB collections
- * are preformed only once though.
+ * are performed only once though.
  *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org">OpenNMS </a>
- * @version $Id: $
  */
 public final class IfCollector implements Runnable {
     private PluginManager m_pluginManager;
@@ -454,10 +451,7 @@ public final class IfCollector implements Runnable {
                                 continue;
 
                             // now check for loopback
-                            // now will allow loopback as long as its IP Address
-                            // doesn't
-                            // start with 127
-                            if (InetAddressUtils.str(subtarget).startsWith("127")) {
+                            if (subtarget.isLoopbackAddress()) {
                                 // Skip if loopback
                                 if (log().isDebugEnabled()) {
                                     log().debug("ifCollector.run: Loopback interface: " + InetAddressUtils.str(subtarget) + ", skipping...");
@@ -512,10 +506,7 @@ public final class IfCollector implements Runnable {
                         }
 
                         // now check for loopback
-                        // now will allow loopback as long as its IP Address
-                        // doesn't
-                        // start with 127
-                        if (InetAddressUtils.str(subtarget).startsWith("127")) {
+                        if (subtarget.isLoopbackAddress()) {
                             // Skip if loopback
                             if (log().isDebugEnabled()) {
                                 log().debug("ifCollector.run: Loopback interface: " + InetAddressUtils.str(subtarget) + ", skipping...");

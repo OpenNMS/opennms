@@ -248,7 +248,7 @@ final class SuspectEventProcessor implements Runnable {
                 // or if this interface is of type loopback
                 if (ipAddress == null
                         || str(ipAddress).equals("0.0.0.0")
-                        || str(ipAddress).startsWith("127."))
+                        || ipAddress.isLoopbackAddress())
                     continue;
 
                 if (firstAddress) {
@@ -831,7 +831,7 @@ final class SuspectEventProcessor implements Runnable {
 
             // At some point back in the day this was done with ifType
             // Skip loopback interfaces
-            if (addrs != null && str(addrs[0]).startsWith("127.")) {
+            if (addrs != null && addrs[0].isLoopbackAddress()) {
                 continue;
             }
 

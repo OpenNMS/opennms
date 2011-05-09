@@ -907,7 +907,7 @@ public final class RescanProcessor implements Runnable {
                 log().error("updateInterface: null ipAddrTable in the snmp "
                           + "collection");
             } else {
-                if (ifaddrString.equals("0.0.0.0") || ifaddrString.startsWith("127.")) {
+                if (ifaddrString.equals("0.0.0.0") || ifaddr.isLoopbackAddress()) {
                     if (log().isDebugEnabled()) {
                         log().debug("updateInterface: Skipping address from "
                                   + "snmpc ipAddrTable "
@@ -966,7 +966,7 @@ public final class RescanProcessor implements Runnable {
                                     
                                     // Skip non-IP or loopback interfaces
                                     final String addrString = str(addr);
-									if (addrString == null || addrString.equals("0.0.0.0") || addrString.startsWith("127.")) {
+									if (addrString == null || addrString.equals("0.0.0.0") || addr.isLoopbackAddress()) {
                                         continue;
                                     }
                                     
@@ -2676,7 +2676,7 @@ public final class RescanProcessor implements Runnable {
             
             // Skip non-IP or loopback interfaces
             final String ipaddrString = str(ipaddr);
-			if (ipaddrString == null || ipaddrString.equals("0.0.0.0") || ipaddrString.startsWith("127.")) {
+			if (ipaddrString == null || ipaddrString.equals("0.0.0.0") || ipaddr.isLoopbackAddress()) {
                 continue;
             }
 
@@ -2684,7 +2684,7 @@ public final class RescanProcessor implements Runnable {
             for (final InetAddress addr : ipAddrList) {
                 // Skip non-IP or loopback interfaces
                 final String addrString = str(addr);
-				if (addrString == null || addrString.equals("0.0.0.0") || addrString.startsWith("127.")) {
+				if (addrString == null || addrString.equals("0.0.0.0") || addr.isLoopbackAddress()) {
                     continue;
                 }
 
@@ -3030,7 +3030,7 @@ public final class RescanProcessor implements Runnable {
         final String ifaddrString = str(ifaddr);
         if (ifaddrString == null) return false;
 
-        final boolean localHostAddress = (ifaddrString.startsWith("127") && dbInterfaces.length > 1);
+        final boolean localHostAddress = (ifaddr.isLoopbackAddress() && dbInterfaces.length > 1);
         final boolean nonIpAddress = ifaddrString.equals("0.0.0.0");
         final boolean scannable = !localHostAddress && !nonIpAddress;
         return scannable;
