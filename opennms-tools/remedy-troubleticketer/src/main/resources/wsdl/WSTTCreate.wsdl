@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="urn:WSTTCreate" xmlns:s0="urn:WSTTCreate" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ <wsdl:types>
+  <xsd:schema elementFormDefault="qualified" targetNamespace="urn:WSTTCreate">
+   <xsd:element name="Create" type="s0:InputMapping1"/>
+   <xsd:complexType name="InputMapping1">
+    <xsd:sequence>
+     <xsd:element minOccurs="0" name="Serv_ID" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="Cust_Site_ID" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="Tic_Created_By_App" type="s0:Tic_Created_By_AppType"/>
+     <xsd:element minOccurs="0" name="Tick_Created_By_External" type="s0:Tick_Created_By_ExternalType"/>
+     <xsd:element minOccurs="0" name="caract_nome16_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome15_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome13_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome12_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome11_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome10_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome9_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome8_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome7_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome6_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome5_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome4_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome3_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome2_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_nome1_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_valor19_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="Cust_Email" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="Tick_Proact_Flag" type="s0:Tick_Proact_FlagType"/>
+     <xsd:element minOccurs="0" name="Tick_Prio" type="s0:Tick_PrioType"/>
+     <xsd:element minOccurs="0" name="Tick_Owner_Grp" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="Tick_Owner_SGrp" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="Tick_Entry_Class" type="s0:Tick_Entry_ClassType"/>
+     <xsd:element minOccurs="0" name="Tick_Created_By_ID" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="Tick_Status" type="s0:Tick_StatusType"/>
+     <xsd:element minOccurs="0" name="Tick_Class" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="Serv_Name" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="Cust_Site_Addr" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="Cust_Name" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="Aux_Operation" type="s0:Aux_OperationType"/>
+     <xsd:element minOccurs="0" name="caract_valor14_antigo" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="caract_valor15_antigo" type="xsd:string"/>
+    </xsd:sequence>
+   </xsd:complexType>
+   <xsd:simpleType name="Tic_Created_By_AppType">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="Trouble Ticket"/>
+     <xsd:enumeration value="Trouble Ticket - WEB"/>
+     <xsd:enumeration value="Pré-Ticket"/>
+     <xsd:enumeration value="Micromuse"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="Tick_Created_By_ExternalType">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="Sim"/>
+     <xsd:enumeration value="Alterado"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="Tick_Proact_FlagType">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="Não"/>
+     <xsd:enumeration value="Sim"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="Tick_PrioType">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="Crise"/>
+     <xsd:enumeration value="Alta"/>
+     <xsd:enumeration value="Média"/>
+     <xsd:enumeration value="Baixa"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="Tick_Entry_ClassType">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="Telefone"/>
+     <xsd:enumeration value="E-Mail"/>
+     <xsd:enumeration value="Fax"/>
+     <xsd:enumeration value="Remedy"/>
+     <xsd:enumeration value="Web"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="Tick_StatusType">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="Abertura"/>
+     <xsd:enumeration value="Em Diagnóstico"/>
+     <xsd:enumeration value="Em Resolução"/>
+     <xsd:enumeration value="Em Fecho"/>
+     <xsd:enumeration value="Fechado"/>
+     <xsd:enumeration value="Dummy"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="Aux_OperationType">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="CREATE"/>
+     <xsd:enumeration value="Submit"/>
+     <xsd:enumeration value="Modify"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:element name="CreateResponse" type="s0:OutputMapping1"/>
+   <xsd:complexType name="OutputMapping1">
+    <xsd:sequence>
+     <xsd:element name="Tick_ID" type="xsd:string"/>
+    </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="AuthenticationInfo" type="s0:AuthenticationInfo"/>
+   <xsd:complexType name="AuthenticationInfo">
+    <xsd:sequence>
+     <xsd:element name="userName" type="xsd:string"/>
+     <xsd:element name="password" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="authentication" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="locale" type="xsd:string"/>
+     <xsd:element minOccurs="0" name="timeZone" type="xsd:string"/>
+    </xsd:sequence>
+   </xsd:complexType>
+  </xsd:schema>
+ </wsdl:types>
+
+   <wsdl:message name="CreateSoapIn">
+
+      <wsdl:part element="s0:Create" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="ARAuthenticate">
+
+      <wsdl:part element="s0:AuthenticationInfo" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="CreateSoapOut">
+
+      <wsdl:part element="s0:CreateResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="Port_0PortType">
+
+      <wsdl:operation name="Create">
+
+         <wsdl:input message="s0:CreateSoapIn">
+
+       </wsdl:input>
+
+         <wsdl:output message="s0:CreateSoapOut">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="Port_0SoapBinding" type="s0:Port_0PortType">
+
+      <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="Create">
+
+         <soap:operation soapAction="urn:WSTTCreate/Create" style="document"/>
+
+         <wsdl:input>
+
+            <soap:header message="s0:ARAuthenticate" part="parameters" use="literal">
+
+            </soap:header>
+
+            <soap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output>
+
+            <soap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="WSTTCreateService">
+
+  <wsdl:documentation>
+Trouble Ticket Web Service  </wsdl:documentation>
+
+      <wsdl:port binding="s0:Port_0SoapBinding" name="Port_0Soap">
+
+         <soap:address location="http://srv-rmdmid-202/arsys/services/ARService?server=srv-remedy-202&amp;webService=WSTTCreate"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
+
