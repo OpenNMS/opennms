@@ -50,6 +50,9 @@
 		org.opennms.web.MissingParameterException
 	"
 %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%
 	
@@ -88,15 +91,20 @@
 	
 %>
 
-<% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
-<% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
+<c:url var="nodeLink" value="element/node.jsp">
+  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+</c:url>
+<c:url var="interfaceLink" value="element/interface.jsp">
+  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+  <c:param name="intf" value="<%=ipAddr%>"/>
+</c:url>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Interface Deleted" />
   <jsp:param name="headTitle" value="<%= ipAddr %>" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(nodeLink)}'>Node</a>" />
+  <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(interfaceLink)}'>Interface</a>" />
   <jsp:param name="breadcrumb" value="Interface Deleted" />
 </jsp:include>
 
