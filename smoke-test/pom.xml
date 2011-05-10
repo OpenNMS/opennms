@@ -9,6 +9,11 @@
   <name>OpenNMS Smoke Test</name>
   <dependencies>
       <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.lib</artifactId>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>net.sourceforge.jwebunit</groupId>
         <artifactId>jwebunit-htmlunit-plugin</artifactId>
         <scope>test</scope>
