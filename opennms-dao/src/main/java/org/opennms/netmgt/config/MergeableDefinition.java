@@ -40,6 +40,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.apache.log4j.Category;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.common.Range;
@@ -53,13 +54,14 @@ import org.opennms.netmgt.config.snmp.Definition;
  *
  */
 final class MergeableDefinition {
-
+    
     /**
      * This field should remaing encapsulated for there is
      * synchronization in the getter.
      * 
      */
     private final Definition m_snmpConfigDef;
+    private ConfigRangeList m_configRanges = new ConfigRangeList();
     
     /**
      * <p>Constructor for MergeableDefinition.</p>
@@ -68,67 +70,63 @@ final class MergeableDefinition {
      */
     public MergeableDefinition(Definition def) {
         m_snmpConfigDef = def;
-    }
-
-    /**
-     * This compares the attributes (ignoring IP specifics and ranges
-     * in the definitions) such as port, version, read-community, etc. to
-     * determine if the definitions match.
-     *
-     * @param def a {@link org.opennms.netmgt.config.snmp.Definition} object.
-     * @return a definition in the config matching the attributes of the
-     *   specified def or null if one is not found.
-     */
-    public boolean equals(Definition def) {
-        boolean compares = false;
-        if (compareStrings(getConfigDef().getReadCommunity(), def.getReadCommunity())
-                && compareStrings(getConfigDef().getVersion(), def.getVersion())
-                && getConfigDef().getPort() == def.getPort() 
-                && getConfigDef().getRetry() == def.getRetry()
-                && getConfigDef().getTimeout() == def.getTimeout()) {
-            compares = true;
-        }
-        return compares;
-    }
-    
-    /**
-     * {@inheritDoc}
-     *
-     * simple little override
-     */
-    public boolean equals(Object obj) {
-        boolean equals = false;
         
-        if (obj == null) {
-            equals = false;
-        } else if (obj instanceof Definition) {
-            equals = equals((Definition)obj);
+        for (Range r : def.getRangeCollection()) {
+            m_configRanges.add(new ConfigRange(r));
         }
-        return equals;
-    }
-
-    /**
-     * dirty little hashcode impl
-     *
-     * @return a int.
-     */
-    public int hashCode() {
-        return 0;
+        
+        for(String s : def.getSpecificCollection()) {
+            m_configRanges.add(new ConfigRange(s));
+        }
+       
+        
     }
     
+    public ConfigRangeList getConfigRanges() {
+        return m_configRanges;
+    }
+
     /**
      * This method is called when a definition is found in the config and
      * that has the same attributes as the params in the configureSNMP event and
      * the IP specific/range needs to be merged into the definition.
      *
-     * @param eventDef a {@link org.opennms.netmgt.config.snmp.Definition} object.
+     * @param eventDefefinition a {@link org.opennms.netmgt.config.MergeableDefinition} object.
      */
-    protected void mergeMatchingAttributeDef(final Definition eventDef)  {
-        if (defIsSpecific(eventDef)) {
-            handleSpecificMerge(eventDef);
-        } else {
-            handleRangeMerge(eventDef);
+    protected void mergeMatchingAttributeDef(MergeableDefinition eventDefinition)  {
+        
+        ConfigRange[] eventRanges = eventDefinition.getConfigRanges().toArray();
+        
+        for(ConfigRange r : eventRanges) {
+            m_configRanges.add(r);
         }
+        
+
+        ConfigRange[] currentRanges = m_configRanges.toArray();
+        
+        getConfigDef().removeAllRange();
+        getConfigDef().removeAllSpecific();
+        
+        for(ConfigRange r : currentRanges) {
+            if (r.isSpecific()) {
+                getConfigDef().addSpecific(r.getSpecificString());
+            } else {
+                Range xmlRange = new Range();
+                xmlRange.setBegin(r.getBegin());
+                xmlRange.setEnd(r.getEnd());
+                getConfigDef().addRange(xmlRange);
+            }
+            
+        }
+        
+        
+//        if (eventDefinition.isSpecific()) {
+//            handleSpecificMerge(eventDefinition.getConfigDef());
+//        } else {
+//            handleRangeMerge(eventDefinition.getConfigDef());
+//        }
+        
+        
     }
     
     /**
@@ -145,23 +143,6 @@ final class MergeableDefinition {
             specific = true;
         }
         return specific;
-    }
-    
-    /**
-     * Little helper method for determining if the definition created
-     * from a configureSNMP event containts a specific IP address vs.
-     * a range.
-     *
-     * @param eventDef a {@link org.opennms.netmgt.config.snmp.Definition} object.
-     * @return true if the number of ranges in the def is 0.
-     */
-    public boolean defIsSpecific(Definition eventDef) {
-        boolean specificDef = false;
-        
-        if (eventDef.getRangeCount() == 0) {
-            specificDef = true;
-        }
-        return specificDef;
     }
     
     /**
@@ -378,9 +359,7 @@ final class MergeableDefinition {
      * @return a {@link org.opennms.netmgt.config.snmp.Definition} object.
      */
     final public Definition getConfigDef() {
-        synchronized (m_snmpConfigDef) {
-            return m_snmpConfigDef;
-        }        
+        return m_snmpConfigDef;
     }
     
     final private boolean compareStrings(String str1, String str2) {
@@ -567,7 +546,7 @@ final class MergeableDefinition {
     /**
      * Converts ranges in the wrapped defintion that have equal begin and end addresses.
      */
-    public void optimizeZeroLengthRanges() {
+    private void optimizeZeroLengthRanges() {
         Range[] ranges = getConfigDef().getRange();
         
         for (int i = 0; i < ranges.length; i++) {
@@ -612,6 +591,65 @@ final class MergeableDefinition {
             nextRange.setEnd(previousRange.getEnd());
             getConfigDef().removeRange(previousRange);
         }
+    }
+
+    boolean matches(MergeableDefinition other) {
+        boolean compares = compareStrings(getConfigDef().getReadCommunity(), other.getConfigDef().getReadCommunity())
+                && compareStrings(getConfigDef().getVersion(), other.getConfigDef().getVersion())
+                && getConfigDef().getPort() == other.getConfigDef().getPort() 
+                && getConfigDef().getRetry() == other.getConfigDef().getRetry()
+                && getConfigDef().getTimeout() == other.getConfigDef().getTimeout()
+                && compareStrings(getConfigDef().getVersion(), other.getConfigDef().getVersion());
+        return compares;
+    }
+    
+    boolean isEmpty(String s) {
+        return s == null || "".equals(s.trim());
+    }
+    
+    boolean isTrivial() {
+        return isEmpty(getConfigDef().getReadCommunity()) 
+        && isEmpty(getConfigDef().getVersion())
+        && !getConfigDef().hasPort()
+        && !getConfigDef().hasRetry()
+        && !getConfigDef().hasTimeout();
+    }
+
+
+    void removeRanges(MergeableDefinition eventDefinition) {
+        ConfigRange[] eventRanges = eventDefinition.getConfigRanges().toArray();
+        
+        for(ConfigRange r : eventRanges) {
+            m_configRanges.remove(r);
+        }
+        
+
+        ConfigRange[] currentRanges = m_configRanges.toArray();
+        
+        getConfigDef().removeAllRange();
+        getConfigDef().removeAllSpecific();
+        
+        for(ConfigRange r : currentRanges) {
+            if (r.isSpecific()) {
+                getConfigDef().addSpecific(r.getSpecificString());
+            } else {
+                Range xmlRange = new Range();
+                xmlRange.setBegin(r.getBegin());
+                xmlRange.setEnd(r.getEnd());
+                getConfigDef().addRange(xmlRange);
+            }
+            
+        }
+
+//        if (eventDefinition.isSpecific()) {
+//            purgeSpecificFromDef(eventDefinition.getConfigDef().getSpecific(0));
+//        } else {
+//            purgeRangeFromDef(eventDefinition.getConfigDef().getRange(0));
+//        }
+    }
+
+    boolean isEmpty() {
+        return getConfigDef().getRangeCount() < 1 && getConfigDef().getSpecificCount() < 1;
     }
 
 }

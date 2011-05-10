@@ -64,7 +64,7 @@ public class SpecificComparator implements Comparator<String> {
             final long specific2 = InetAddressUtils.toIpAddrLong(InetAddress.getByName(spec2));
             compared = specific1 - specific2;
         } catch (UnknownHostException e) {
-            log.error("compare: Exception sorting ranges.", e);
+            ThreadCategory.getInstance(getClass()).error("compare: Exception sorting ranges.", e);
             throw new IllegalArgumentException(e.getLocalizedMessage());
         }
         return (int)compared;

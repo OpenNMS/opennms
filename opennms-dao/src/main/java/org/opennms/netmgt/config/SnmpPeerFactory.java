@@ -50,6 +50,10 @@ import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -98,6 +102,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     private static SnmpConfig m_config;
     
     private static File m_configFile;
+    private static ReadWriteLock m_readWriteLock = new ReentrantReadWriteLock();
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -150,6 +155,14 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, stream);
     }
 
+    public static Lock getReadLock() {
+        return m_readWriteLock.readLock();
+    }
+    
+    public static Lock getWriteLock() {
+        return m_readWriteLock.writeLock();
+    }
+    
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
@@ -213,6 +226,12 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      */
     public static synchronized void saveCurrent() throws IOException, MarshalException, ValidationException {
 
+        File configFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME);
+        saveToFile(configFile);
+        reload();
+    }
+
+    public static void saveToFile(File configFile) throws IOException {
         // Marshall to a string first, then write the string to the file. This
         // way the original config
         // isn't lost if the XML from the marshall is hosed.
@@ -223,8 +242,6 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
             fileWriter.flush();
             fileWriter.close();
         }
-
-        reload();
     }
 
 
@@ -394,12 +411,16 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         m_config.setDefinition(definitions);
     }
     
-    /** {@inheritDoc} */
-    public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
-        return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
+    public SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
+        getReadLock().lock();
+        try {
+            return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
-    private synchronized SnmpAgentConfig getAgentConfig(InetAddress agentInetAddress, int requestedSnmpVersion) {
+    private SnmpAgentConfig getAgentConfig(InetAddress agentInetAddress, int requestedSnmpVersion) {
 
         if (m_config == null) {
             SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
@@ -758,11 +779,6 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         return m_config;
     }
 
-    @SuppressWarnings("unused")
-    private static synchronized void setSnmpConfig(SnmpConfig m_config) {
-        SnmpPeerFactory.m_config = m_config;
-    }
-
     /**
      * Enhancement: Allows specific or ranges to be merged into snmp configuration
      * with many other attributes.  Uses new classes the wrap Castor generated code to
@@ -774,9 +790,14 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      *
      * @param info a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
      */
-    public synchronized void define(SnmpEventInfo info) {
-        SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
-        mgr.mergeIntoConfig(info.createDef());
+    public void define(SnmpEventInfo info) {
+        getWriteLock().lock();
+        try {
+            SnmpConfigManager mgr = new SnmpConfigManager(m_config);
+            mgr.mergeIntoConfig(info.createDef());
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
 
@@ -785,13 +806,18 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      *
      * @return Marshalled SnmpConfig
      */
-    public static synchronized String marshallConfig() {
+    public static String marshallConfig() {
         String marshalledConfig = null;
         
         StringWriter writer = null;
         try {
             writer = new StringWriter();
-            Marshaller.marshal(m_config, writer);
+            getReadLock().lock();
+            try {
+                Marshaller.marshal(m_config, writer);
+            } finally {
+                getReadLock().unlock();
+            }
             marshalledConfig = writer.toString();
         } catch (MarshalException e) {
             log().error("marshallConfig: Error marshalling configuration", e);
