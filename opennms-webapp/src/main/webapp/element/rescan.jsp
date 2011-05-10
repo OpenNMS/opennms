@@ -47,6 +47,9 @@
 		org.opennms.web.*
 	"
 %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%
     String nodeIdString = request.getParameter("node");
@@ -58,63 +61,59 @@
     
     int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
     String nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
-        
-    String returnUrl = null;        
-    if( ipAddr == null ) {        
-        returnUrl = "element/node.jsp?node=" + nodeIdString;
-    }
-    else {
-        returnUrl = "element/interface.jsp?node=" + nodeIdString + "&intf=" + ipAddr;    
-    }
 %>
 
-<% if( ipAddr == null ) { %>
-  <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
-  <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
-  <% String breadcrumb3 = "Rescan"; %>
-  <jsp:include page="/includes/header.jsp" flush="false" >
-    <jsp:param name="title" value="Rescan" />
-    <jsp:param name="headTitle" value="Rescan" />
-    <jsp:param name="headTitle" value="Element" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  </jsp:include>
-<% } else { %>
-  <% String intfCrumb = ""; %>
-  <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
-  <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
-  <% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
-  <% String breadcrumb4 = "Rescan"; %>
-  <jsp:include page="/includes/header.jsp" flush="false" >
-    <jsp:param name="title" value="Rescan" />
-    <jsp:param name="headTitle" value="Rescan" />
-    <jsp:param name="headTitle" value="Element" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
-  </jsp:include>
-<% } %>
+<c:url var="nodeLink" value="element/node.jsp">
+	<c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+</c:url>
+<c:choose>
+	<c:when test="<%=(ipAddr == null)%>">
+		<c:set var="returnUrl" value="${nodeLink}"/>
+		<jsp:include page="/includes/header.jsp" flush="false" >
+			<jsp:param name="title" value="Rescan" />
+			<jsp:param name="headTitle" value="Rescan" />
+			<jsp:param name="headTitle" value="Element" />
+			<jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
+			<jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(nodeLink)}'>Node</a>" />
+			<jsp:param name="breadcrumb" value="Rescan" />
+		</jsp:include>
+	</c:when>
+	<c:otherwise>
+		<c:url var="interfaceLink" value="element/interface.jsp">
+			<c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+			<c:param name="intf" value="<%=ipAddr%>"/>
+		</c:url>
+		<c:set var="returnUrl" value="${interfaceLink}"/>
+		<jsp:include page="/includes/header.jsp" flush="false" >
+			<jsp:param name="title" value="Rescan" />
+			<jsp:param name="headTitle" value="Rescan" />
+			<jsp:param name="headTitle" value="Element" />
+			<jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
+			<jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(nodeLink)}'>Node</a>" />
+			<jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(interfaceLink)}'>Interface</a>" />
+			<jsp:param name="breadcrumb" value="Rescan" />
+		</jsp:include>
+	</c:otherwise>
+</c:choose>
 
 <div class="TwoColLAdmin">
       <h3>Capability Rescan</h3>
       
-      <p>Are you sure you want to rescan the <nobr><%=nodeLabel%></nobr>      
+      <p>Are you sure you want to rescan the <nobr><%=nodeLabel%></nobr>
         <% if( ipAddr==null ) { %>
             node?
         <% } else { %>
-            (<%=ipAddr%>) interface?
+            interface <%=ipAddr%>?
         <% } %>
       </p>
       
       <form method="post" action="element/rescan">
         <p>
           <input type="hidden" name="node" value="<%=nodeId%>" />
-          <input type="hidden" name="returnUrl" value="<%=returnUrl%>" />             
+          <input type="hidden" name="returnUrl" value="${fn:escapeXml(returnUrl)}" />
 
           <input type="submit" value="Rescan" />
-          <input type="button" value="Cancel" onClick="window.open('<%= Util.calculateUrlBase(request, returnUrl) %>', '_self')" />             
+          <input type="button" value="Cancel" onClick="window.open('<%= Util.calculateUrlBase(request)%>${returnUrl}', '_self')" />
         </p>
       </form>
   </div>
