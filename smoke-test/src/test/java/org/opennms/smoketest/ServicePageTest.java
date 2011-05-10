@@ -31,13 +31,16 @@ package org.opennms.smoketest;
 
 
 
+import static org.junit.Assert.assertTrue;
 import net.sourceforge.jwebunit.exception.ExpectedJavascriptAlertException;
 import net.sourceforge.jwebunit.htmlunit.HtmlUnitTestingEngineImpl;
 import net.sourceforge.jwebunit.util.TestingEngineRegistry;
 
 import org.apache.log4j.BasicConfigurator;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.LogUtils;
 
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
 
@@ -58,7 +61,6 @@ public class ServicePageTest {
         
         web = new OpenNMSWebTester();
         web.setBaseUrl("http://localhost:8980/opennms");
-        //web.setBaseUrl("http://demo.opennms.org/opennms");
         
         web.setTestingEngineKey(TestingEngineRegistry.TESTING_ENGINE_HTMLUNIT);
         if (web.getTestingEngine() instanceof HtmlUnitTestingEngineImpl) {
@@ -66,11 +68,25 @@ public class ServicePageTest {
             engine.setRefreshHandler(new ThreadedRefreshHandler());
         }
     }
+
+    @Test
+    public void testGetVersion() throws Exception {
+        web.login();
+
+        final Double version = web.getVersionNumber();
+        assertTrue(version >= 1.8);
+        
+        web.logout();
+    }
     
     @Test
     public void provisionIPv6AddressAndVerifyElementPages() throws Exception {
         web.login();
-        
+
+        final Double version = web.getVersionNumber();
+        LogUtils.debugf(this, "version = %.1f", version);
+        Assume.assumeTrue(version >= 1.9);
+
         String groupName = "JWebUnitServicePageTest";
 
         web.createProvisiongGroup(groupName);
@@ -94,8 +110,8 @@ public class ServicePageTest {
     public void addUser() throws Exception{
         web.login();
         
-        String userName = "JWebUnitUser";
-        String password = "JWebUnitPassword";
+        String userName = "smokeAddUser";
+        String password = "smokeAddUserPassword";
         
         web.createUser(userName, password);
         web.logout();
@@ -105,8 +121,11 @@ public class ServicePageTest {
     public void addUserToGroup() throws Exception{
         web.login();
         
-        String userName = "user";
-        String groupName = "JWebUnitGroup";
+        String userName = "smokeAddUserToGroup";
+        String password = "smokeAddUserToGroupPassword";
+        String groupName = "smokeAddUserToGroupGroup";
+        
+        web.createUser(userName, password);
         
         web.createGroup(groupName);
         
@@ -117,7 +136,7 @@ public class ServicePageTest {
     }
     
     @Test
-    public void testAllTopLevelLinks() {
+    public void testAllTopLevelLinks() throws Exception {
         web.login();
         web.assertTextPresent("Home");
         
@@ -160,6 +179,9 @@ public class ServicePageTest {
         web.clickLinkWithExactText("Distributed Status");
         web.assertTextPresent("Distributed Status Summary");
         
+        // Account for the distributed status refresh
+        Thread.sleep(3000);
+
         web.clickLinkWithExactText("Map");
         web.assertTextPresent("Network Topology Maps");
         
@@ -171,10 +193,10 @@ public class ServicePageTest {
         
         web.clickLinkWithExactText("Support");
         web.assertTextPresent("Commercial Support");
+        
+        web.logout();
     }
     
-
-
     private void verifyServiceManagedOnInterface(String node, String foreignSource, String iface) {
         web.gotoPage("element/nodeList.htm?listInterfaces=true&nodename="+ node);
         

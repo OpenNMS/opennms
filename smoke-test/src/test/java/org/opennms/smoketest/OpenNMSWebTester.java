@@ -1,9 +1,11 @@
 package org.opennms.smoketest;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import junit.framework.Assert;
+import net.sourceforge.jwebunit.api.IElement;
 import net.sourceforge.jwebunit.junit.WebTester;
 
 public class OpenNMSWebTester extends WebTester {
@@ -12,9 +14,24 @@ public class OpenNMSWebTester extends WebTester {
         public void setField(String prefix);
     }
 
+    public Double getVersionNumber() throws InterruptedException {
+    	final String version = getVersion();
+    	final String[] versionData = version.split("\\.");
+    	if (versionData != null && versionData.length >= 2) {
+    		return Double.valueOf(versionData[0] + "." + versionData[1]);
+    	}
+    	return 0.0;
+    }
+    
+    public String getVersion() throws InterruptedException {
+    	gotoPage("support/about.jsp");
+    	final List<IElement> elements = getElementsByXPath("//td[@class=\"standard\"]");
+    	return elements.get(0).getTextContent();
+    }
+    
     public void addUserToGroup(String groupName, String userName) throws InterruptedException {
         gotoPage("admin/userGroupView/groups/list.htm");
-        clickElementByXPath("//a[@href=\"javascript:modifyGroup('JWebUnitGroup')\"]");
+        clickElementByXPath("//a[@href=\"javascript:modifyGroup('" + groupName + "')\"]");
         
         assertFormElementPresent("modifyGroup");
         selectOption("availableUsers", userName);
