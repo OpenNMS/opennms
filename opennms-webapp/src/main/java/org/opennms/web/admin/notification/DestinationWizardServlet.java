@@ -70,7 +70,12 @@ import org.opennms.web.WebSecurityUtils;
  * @since 1.8.1
  */
 public class DestinationWizardServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 836611092234429387L;
+
+    private String SESSION_ATTRIBUTE_NEW_PATH = "newPath";
+    private String SESSION_ATTRIBUTE_OLD_PATH = "oldPath";
+    private String SESSION_ATTRIBUTE_OLD_PATH_NAME = "oldName";
 
     private String SOURCE_PAGE_PATHS = "destinationPaths.jsp";
 
@@ -113,12 +118,12 @@ public class DestinationWizardServlet extends HttpServlet {
                 // get the path that was chosen in the select
                 try {
                     Path oldPath = DestinationPathFactory.getInstance().getPath(request.getParameter("paths"));
-                    user.setAttribute("oldPath", oldPath);
-                    user.setAttribute("oldName", oldPath.getName());
+                    user.setAttribute(SESSION_ATTRIBUTE_OLD_PATH, oldPath);
+                    user.setAttribute(SESSION_ATTRIBUTE_OLD_PATH_NAME, oldPath.getName());
 
                     // copy the old path into the new path
                     Path newPath = copyPath(oldPath);
-                    user.setAttribute("newPath", newPath);
+                    user.setAttribute(SESSION_ATTRIBUTE_NEW_PATH, newPath);
 
                     redirectString.append(SOURCE_PAGE_OUTLINE);
                 } catch (Throwable e) {
@@ -133,13 +138,16 @@ public class DestinationWizardServlet extends HttpServlet {
                 }
             } else if (action.equals("new")) {
                 Path newPath = new Path();
-                user.setAttribute("newPath", newPath);
+                user.setAttribute(SESSION_ATTRIBUTE_NEW_PATH, newPath);
+                // Make sure that no oldPath is set since we're creating a new path from scratch
+                user.removeAttribute(SESSION_ATTRIBUTE_OLD_PATH);
+                user.removeAttribute(SESSION_ATTRIBUTE_OLD_PATH_NAME);
 
                 redirectString.append(SOURCE_PAGE_OUTLINE);
             }
         } else if (sourcePage.equals(SOURCE_PAGE_OUTLINE)) {
             String action = request.getParameter("userAction");
-            Path path = (Path) user.getAttribute("newPath");
+            Path path = (Path) user.getAttribute(SESSION_ATTRIBUTE_NEW_PATH);
 
             // load all changeable values from the outline page into the editing
             // path
@@ -162,7 +170,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 requestParams.put("targetIndex", request.getParameter("index"));
                 redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
             } else if (action.equals("finish")) {
-                String oldName = (String) user.getAttribute("oldName");
+                String oldName = (String) user.getAttribute(SESSION_ATTRIBUTE_OLD_PATH_NAME);
                 path.setName(request.getParameter("name"));
                 path.setInitialDelay(request.getParameter("initialDelay"));
 
@@ -178,7 +186,8 @@ public class DestinationWizardServlet extends HttpServlet {
                     throw new ServletException("Couldn't save/reload destination path configuration file.", e);
                 }
                 // Must clear out this attribute for later edits
-                user.setAttribute("oldName", null);
+                user.removeAttribute(SESSION_ATTRIBUTE_OLD_PATH);
+                user.removeAttribute(SESSION_ATTRIBUTE_OLD_PATH_NAME);
 
                 redirectString.append(SOURCE_PAGE_PATHS);
             } else if (action.equals("cancel")) {
@@ -193,7 +202,7 @@ public class DestinationWizardServlet extends HttpServlet {
             String roleTargets[] = request.getParameterValues("roles");
             String emailTargets[] = request.getParameterValues("emails");
 
-            Path newPath = (Path) user.getAttribute("newPath");
+            Path newPath = (Path) user.getAttribute(SESSION_ATTRIBUTE_NEW_PATH);
             int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
             Target[] existingTargets = null;
 
@@ -303,7 +312,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 redirectString.append(makeQueryString(requestParams));
             }
         } else if (sourcePage.equals(SOURCE_PAGE_INTERVALS)) {
-            Path newPath = (Path) user.getAttribute("newPath");
+            Path newPath = (Path) user.getAttribute(SESSION_ATTRIBUTE_NEW_PATH);
             int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
             Target targets[] = null;
 
@@ -324,7 +333,7 @@ public class DestinationWizardServlet extends HttpServlet {
             requestParams.put("targetIndex", request.getParameter("targetIndex"));
             redirectString.append(SOURCE_PAGE_COMMANDS).append(makeQueryString(requestParams));
         } else if (sourcePage.equals(SOURCE_PAGE_COMMANDS)) {
-            Path newPath = (Path) user.getAttribute("newPath");
+            Path newPath = (Path) user.getAttribute(SESSION_ATTRIBUTE_NEW_PATH);
             int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
             Target targets[] = null;
 
@@ -357,7 +366,7 @@ public class DestinationWizardServlet extends HttpServlet {
         response.sendRedirect(redirectString.toString());
     }
 
-    private void saveOutlineForm(Path path, HttpServletRequest request) {
+    private static void saveOutlineForm(Path path, HttpServletRequest request) {
         path.setName(request.getParameter("name"));
         Escalate[] escalations = path.getEscalate();
 
@@ -366,12 +375,12 @@ public class DestinationWizardServlet extends HttpServlet {
         }
     }
 
-    private void removeEscalation(Path path, int index) {
+    private static void removeEscalation(Path path, int index) {
         Escalate escalate = path.getEscalate(index);
         path.removeEscalate(escalate);
     }
 
-    private String makeQueryString(Map<String,String> map) {
+    private static String makeQueryString(Map<String,String> map) {
         StringBuffer buffer = new StringBuffer();
         String separator = "?";
 
@@ -387,7 +396,7 @@ public class DestinationWizardServlet extends HttpServlet {
 
     // have to copy a path field by field until we get a cloning method in the
     // Castor generated classes
-    private Path copyPath(Path oldPath) {
+    private static Path copyPath(Path oldPath) {
         Path newPath = new Path();
 
         newPath.setName(oldPath.getName());
@@ -418,7 +427,7 @@ public class DestinationWizardServlet extends HttpServlet {
         return newPath;
     }
 
-    private Target copyTarget(Target target) {
+    private static Target copyTarget(Target target) {
         Target newTarget = new Target();
 
         newTarget.setName(target.getName());
