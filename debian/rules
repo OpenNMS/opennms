@@ -65,6 +65,9 @@ install: build
 	dh_installdirs
 	dh_testroot
 
+	rsync -avr --exclude=examples debian/temp/etc/ debian/opennms-common/var/lib/opennms/etc-pristine/
+	chmod -R go-w debian/opennms-common/var/lib/opennms/etc-pristine/
+
 	##
 	## Setup the provision adapter packages
 	##
