@@ -6,6 +6,19 @@
 
 	<!-- Start 1.9 -->
 
+	<section id="introduction-1.9.8">
+		<title>Release 1.9.8</title>
+
+		<para>
+			Release 1.9.8 is the latest in a series of development releases of OpenNMS.  This
+			represents what will eventually become OpenNMS 1.10.0 when it is declared
+			feature-complete and stable.
+		</para>
+		<para>
+				  The codename for 1.9.8 is <emphasis>Pulalu</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.9.7">
 		<title>Release 1.9.7</title>
 
@@ -120,11 +133,26 @@
 
 	<!-- Start 1.8 -->
 
-	<section id="introduction-1.8.11">
-		<title>Release 1.8.10</title>
+	<section id="introduction-1.8.12">
+		<title>Release 1.8.12</title>
 
 		<para>
-			Release 1.8.10 is the latest in the 1.8 series of production-ready OpenNMS releases.
+			Release 1.8.12 is the latest in the 1.8 series of production-ready OpenNMS releases.
+		</para>
+		<para>
+			Since 1.8.11, <ulink url="http://issues.opennms.org/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project+%3D+NMS+AND+fixVersion+%3D+%221.8.12%22">a
+			number of important bug fixes and a few enhancements</ulink> were added.
+		</para>
+		<para>
+			The codename for 1.8.12 is <emphasis>Black-capped Petrel</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.8.11">
+		<title>Release 1.8.11</title>
+
+		<para>
+			Release 1.8.11 is the latest in the 1.8 series of production-ready OpenNMS releases.
 		</para>
 		<para>
 			Since 1.8.10, <ulink url="http://issues.opennms.org/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project+%3D+NMS+AND+fixVersion+%3D+%221.8.11%22">a
