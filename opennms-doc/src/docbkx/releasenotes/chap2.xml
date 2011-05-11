@@ -6,6 +6,53 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="opennms-1.8.12">
+		<title>Changes in OpenNMS 1.8.12</title>
+
+		<section id="opennms-1.8.12-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>nsclient-datacollection-config.xml only collects on 1st attribute in wpm group (Issue <ulink url='http://issues.opennms.org/browse/NMS-2692'>NMS-2692</ulink>)</para></listitem>
+				<listitem><para>DemoUI - Leaving the search field blank causes an &quot;Unexpected Error&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-3500'>NMS-3500</ulink>)</para></listitem>
+				<listitem><para>archive_events.sh still uses the old lib/scripts/* style initialization (Issue <ulink url='http://issues.opennms.org/browse/NMS-3933'>NMS-3933</ulink>)</para></listitem>
+				<listitem><para>outage editor problems (Issue <ulink url='http://issues.opennms.org/browse/NMS-4093'>NMS-4093</ulink>)</para></listitem>
+				<listitem><para>prevent automatic start after installation / upgrade (Issue <ulink url='http://issues.opennms.org/browse/NMS-4110'>NMS-4110</ulink>)</para></listitem>
+				<listitem><para>null pointer exception from Admin ? Instrumentation Log Reader jsp page (Issue <ulink url='http://issues.opennms.org/browse/NMS-4118'>NMS-4118</ulink>)</para></listitem>
+				<listitem><para>Reports throughin Exception when doing traffic based reports and store-by-group (Issue <ulink url='http://issues.opennms.org/browse/NMS-4454'>NMS-4454</ulink>)</para></listitem>
+				<listitem><para>System Report: only &quot;full&quot; is working (Issue <ulink url='http://issues.opennms.org/browse/NMS-4465'>NMS-4465</ulink>)</para></listitem>
+				<listitem><para>RRD-based JasperReports fail with JRobin exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-4482'>NMS-4482</ulink>)</para></listitem>
+				<listitem><para>Mail Transport Monitor deletes all mail (Issue <ulink url='http://issues.opennms.org/browse/NMS-4537'>NMS-4537</ulink>)</para></listitem>
+				<listitem><para>Quoting problems in contrib/maint_events.sh (Issue <ulink url='http://issues.opennms.org/browse/NMS-4553'>NMS-4553</ulink>)</para></listitem>
+				<listitem><para>Page Sequence Monitor (PSM) doesn&#39;t appear to do retries (Issue <ulink url='http://issues.opennms.org/browse/NMS-4558'>NMS-4558</ulink>)</para></listitem>
+				<listitem><para>org.opennms.netmgt.snmp.TableTracker writes to stderr. (Issue <ulink url='http://issues.opennms.org/browse/NMS-4559'>NMS-4559</ulink>)</para></listitem>
+				<listitem><para>Report Issue - Average and Peak Traffic rates for Nodes by Interface (Issue <ulink url='http://issues.opennms.org/browse/NMS-4565'>NMS-4565</ulink>)</para></listitem>
+				<listitem><para>Remove ModelImporter stuff from log4j.properties (Issue <ulink url='http://issues.opennms.org/browse/NMS-4587'>NMS-4587</ulink>)</para></listitem>
+				<listitem><para>Report Issue - Surveillance Category Not Correctly Chosen (Issue <ulink url='http://issues.opennms.org/browse/NMS-4593'>NMS-4593</ulink>)</para></listitem>
+				<listitem><para>Role provision has no effect (Issue <ulink url='http://issues.opennms.org/browse/NMS-4598'>NMS-4598</ulink>)</para></listitem>
+				<listitem><para>MailTransportMonitor POP3 javax.mail.AuthenticationFailedException, but without connection to host at all (Issue <ulink url='http://issues.opennms.org/browse/NMS-4605'>NMS-4605</ulink>)</para></listitem>
+				<listitem><para>Changing the default password in 1.9.7 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4608'>NMS-4608</ulink>)</para></listitem>
+				<listitem><para>Node Rescan -&gt; node.jsp not found (Issue <ulink url='http://issues.opennms.org/browse/NMS-4610'>NMS-4610</ulink>)</para></listitem>
+				<listitem><para>Problem accessing /opennms/KSC/KSC/customGraphEditDetails.htm. Reason: Not Found - 404 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4614'>NMS-4614</ulink>)</para></listitem>
+				<listitem><para>Report Issue - Total Bytes Transferred by Interface (Issue <ulink url='http://issues.opennms.org/browse/NMS-4616'>NMS-4616</ulink>)</para></listitem>
+				<listitem><para>Don&#39;t print out the database administrator password during install. (Issue <ulink url='http://issues.opennms.org/browse/NMS-4638'>NMS-4638</ulink>)</para></listitem>
+				<listitem><para>Invalid asset field name in requisition causes node to lose interfaces, services (Issue <ulink url='http://issues.opennms.org/browse/NMS-4639'>NMS-4639</ulink>)</para></listitem>
+				<listitem><para>KSC reports &quot;add graph&quot; fails with a 404 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4643'>NMS-4643</ulink>)</para></listitem>
+				<listitem><para>Deleted nodes are showing up in available nodes when creating/editing a surveillance category (Issue <ulink url='http://issues.opennms.org/browse/NMS-4652'>NMS-4652</ulink>)</para></listitem>
+				<listitem><para>Inconsistent use of org.opennms.web.api.Util.calculateUrlBase( request ) (Issue <ulink url='http://issues.opennms.org/browse/NMS-4660'>NMS-4660</ulink>)</para></listitem>
+				<listitem><para>Thresholds being evaluated on interfaces marked DISABLE_COLLECTION (Issue <ulink url='http://issues.opennms.org/browse/NMS-4669'>NMS-4669</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.12-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Alphabetize the User List in the GUI (Issue <ulink url='http://issues.opennms.org/browse/NMS-4561'>NMS-4561</ulink>)</para></listitem>
+				<listitem><para>add a No SNMP checkbox to the Node Quick-Add web page (Issue <ulink url='http://issues.opennms.org/browse/NMS-4615'>NMS-4615</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.8.11">
 		<title>Changes in OpenNMS 1.8.11</title>
 
