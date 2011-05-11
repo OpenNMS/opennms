@@ -102,6 +102,9 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
              * Note: The recipient gets set by whichever of the two switches:
              * (PARAM_EMAIL or PARAM_PAGER_EMAIL) are specified last in the
              * notificationCommands.xml file
+             * 
+             * And the message body will get set to whichever is set last
+             * (PARAM_NUM_MSG or PARAM_TEXT_MSG)
              */
             if (NotificationManager.PARAM_EMAIL.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_EMAIL");
@@ -112,6 +115,9 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
             } else if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_SUBJECT");
                 jm.setSubject(arg.getValue());
+            } else if (NotificationManager.PARAM_NUM_MSG.equals(arg.getSwitch())) {
+                log().debug("Found: PARAM_NUM_MSG");
+                jm.setMessageText(arg.getValue());
             } else if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_TEXT_MSG");
                 jm.setMessageText(arg.getValue());
