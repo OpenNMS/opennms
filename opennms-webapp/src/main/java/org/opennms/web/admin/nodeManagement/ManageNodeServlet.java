@@ -65,6 +65,7 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -80,9 +81,6 @@ import org.opennms.web.api.Util;
  * @since 1.8.1
  */
 public class ManageNodeServlet extends HttpServlet {
-    /**
-     * 
-     */
     private static final long serialVersionUID = -544260517139205801L;
 
     // FIXME: Should this be deleted?
@@ -154,7 +152,7 @@ public class ManageNodeServlet extends HttpServlet {
                         addToURL.add(curInterface.getAddress());
                     }
 
-                    // determine what is managed and unmanged
+                    // determine what is managed and unmanaged
                     if (interfaceList.contains(intKey) && curInterface.getStatus().equals("unmanaged")) {
                         // Event newEvent = new Event();
                         // newEvent.setUei("uei.opennms.org/internal/interfaceManaged");
@@ -194,7 +192,7 @@ public class ManageNodeServlet extends HttpServlet {
                             // newEvent.setService(curService.getName());
                             // newEvent.setTime(curDate);
 
-                            stmt.setString(1, "R");
+                            stmt.setString(1, String.valueOf(DbIfServiceEntry.STATUS_RESUME));
                             stmt.setString(2, curInterface.getAddress());
                             stmt.setInt(3, curInterface.getNodeid());
                             stmt.setInt(4, curService.getId());
@@ -208,7 +206,7 @@ public class ManageNodeServlet extends HttpServlet {
                             bldr.setService(curService.getName());
                             sendEvent(bldr.getEvent());
 
-                            stmt.setString(1, "S");
+                            stmt.setString(1, String.valueOf(DbIfServiceEntry.STATUS_SUSPEND));
                             stmt.setString(2, curInterface.getAddress());
                             stmt.setInt(3, curInterface.getNodeid());
                             stmt.setInt(4, curService.getId());
@@ -306,9 +304,8 @@ public class ManageNodeServlet extends HttpServlet {
     }
 
     /**
+     * FIXME: This is totally the wrong place to be doing this.
      */
-    // FIXME: This is totally the wrong place to be doing this.
-    // FIXME: This is totally the wrong place to be doing this.
     private void writeURLFile(List<String> interfaceList) throws ServletException {
         String path = System.getProperty("opennms.home") + File.separator + "etc" + File.separator;
 

@@ -61,7 +61,7 @@ import org.opennms.web.WebSecurityUtils;
  * @since 1.8.1
  */
 public class AddGroupDutySchedulesServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -4167184420524735471L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

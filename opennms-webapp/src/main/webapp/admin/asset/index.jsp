@@ -52,7 +52,7 @@
   <jsp:param name="breadcrumb" value="Import/Export Assets" />
 </jsp:include>
 
-<div id="width: 40%; float: left;">
+<div class="TwoColLAdmin">
   <h3>Import and Export Assets</h3>
 
   <p>
@@ -64,7 +64,7 @@
   </p>
 </div>
 
-<div id="width: 60%; float: left;">
+<div class="TwoColRAdmin">
   <h3>Importing Asset Information</h3>
 
   <p>

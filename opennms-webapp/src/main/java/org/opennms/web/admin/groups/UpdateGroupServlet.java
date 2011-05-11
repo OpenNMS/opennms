@@ -65,7 +65,7 @@ import org.opennms.web.WebSecurityUtils;
  * @since 1.8.1
  */
 public class UpdateGroupServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -4328190323404240442L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
