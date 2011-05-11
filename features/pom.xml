@@ -24,6 +24,7 @@
     <module>springframework-security</module>
     <module>request-tracker</module>
     <module>system-report</module>
+    <module>isoc-ipv6-gui</module>
   </modules>
 
   <profiles>
