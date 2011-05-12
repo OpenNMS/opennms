@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
@@ -398,7 +399,7 @@ public final class IfCollector implements Runnable {
                 m_snmpCollector.run();
 
                 if (m_snmpCollector.hasIpAddrTable() && m_snmpCollector.hasIfTable()) {
-                    m_subTargets = new TreeMap<InetAddress, List<SupportedProtocol>>(KnownIPMgr.AddrComparator.comparator);
+                    m_subTargets = new TreeMap<InetAddress, List<SupportedProtocol>>(new InetAddressComparator());
                     m_nonIpInterfaces = new ArrayList<Integer>();
 
                     // Iterate over ifTable entries
@@ -489,7 +490,7 @@ public final class IfCollector implements Runnable {
                 } // end if(ipAddrTable and ifTable entries collected)
 
                 else if (m_snmpCollector.hasIpAddrTable()) {
-                    m_subTargets = new TreeMap<InetAddress, List<SupportedProtocol>>(KnownIPMgr.AddrComparator.comparator);
+                    m_subTargets = new TreeMap<InetAddress, List<SupportedProtocol>>(new InetAddressComparator());
 
                     List<InetAddress> ipAddrs = m_snmpCollector.getIpAddrTable().getIpAddresses();
                     // Iterate over this interface's IP address list

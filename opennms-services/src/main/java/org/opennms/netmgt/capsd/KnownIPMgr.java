@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -82,7 +83,7 @@ final class KnownIPMgr {
     /**
      * The set of all discovered addresses
      */
-    private static Map<InetAddress, Object> m_known = new TreeMap<InetAddress, Object>(AddrComparator.comparator);
+    private static Map<InetAddress, Object> m_known = new TreeMap<InetAddress, Object>(new InetAddressComparator());
 
     /**
      * This class is used to encapsulate the elements of importants from the IP
@@ -214,57 +215,6 @@ final class KnownIPMgr {
             } finally {
                 d.cleanUp();
             }
-        }
-    }
-
-    /**
-     * This class implements the {@link java.util.Comparator Comparator}
-     * interface and provides the infomation required for a Tree to be sorted.
-     * This implementation only works with objects of type
-     * {@link java.net.InetAddress InetAddress}.
-     * 
-     * @deprecated This comparator will not work properly with IPv6 addresses
-     * 
-     * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
-     * @author <a href="http://www.opennms.org/">OpenNMS </a>
-     * 
-     */
-    static final class AddrComparator implements Comparator<InetAddress> {
-        /**
-         * Singular instance of the comparator that can be used in multiple
-         * trees.
-         */
-        static final AddrComparator comparator = new AddrComparator();
-
-        /**
-         * The compare method returns the difference between to objects. This
-         * method expects both instances to be instances of
-         * {@link java.net.InetAddress InetAddress}or <code>null</code>.
-         * 
-         * @param a
-         *            an instance of an InetAddress.
-         * @param b
-         *            an instance of an InetAddress.
-         * 
-         * @return less than zero if <tt>a</tt> &lt; <tt>b</tt>, zero if
-         *         <tt>a</tt>==<tt>b</tt>, or greater than zero if
-         *         <tt>a</tt> &gt; <tt>b</tt>.
-         */
-        public int compare(InetAddress a, InetAddress b) {
-            int rc = 0;
-            if (a != null && b == null) {
-                rc = -1;
-            } else if (a == null && b != null) {
-                rc = 1;
-            } else if (a != null) // and b != null
-            {
-                byte[] ax = a.getAddress();
-                byte[] bx = b.getAddress();
-
-                for (int x = 0; x < ax.length && rc == 0; x++)
-                    rc = (ax[x] < 0 ? 256 + ax[x] : ax[x]) - (bx[x] < 0 ? 256 + bx[x] : bx[x]);
-            }
-            return rc;
         }
     }
 
