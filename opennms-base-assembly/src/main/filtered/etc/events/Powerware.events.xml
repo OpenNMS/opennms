@@ -123,6 +123,7 @@ for necessary action cannot be guaranteed.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false"/>
 </event>
 <event>
 	<mask>
