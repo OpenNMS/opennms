@@ -27,18 +27,24 @@ import org.xml.sax.ContentHandler;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Range implements Serializable {
 	private static final long serialVersionUID = 3386982883357355619L;
+	
 
-	/**
-     * Starting IP address of the range.
-     */
-	@XmlAttribute(name="begin", required=true)
-    private String _begin;
-
+	/* Note: Until a way to specify the order is found...
+	 * The jaxb code seems to put things in the reverse order 
+	 * of the order the attributes are declared.  So PRESERVE this 
+	 * ordering so we don't end up with end="" begin=""
+	 */
     /**
      * Ending IP address of the range.
      */
 	@XmlAttribute(name="end", required=true)
     private String _end;
+
+    /**
+     * Starting IP address of the range.
+     */
+    @XmlAttribute(name="begin", required=true)
+    private String _begin;
 
     public Range() {
         super();

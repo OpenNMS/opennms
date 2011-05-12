@@ -36,47 +36,10 @@ public class Configuration implements Serializable {
 	private static final long serialVersionUID = -6800972339377512259L;
 
 	/**
-	 * If set, overrides UDP port 161 as the port where SNMP GET/GETNEXT/GETBULK
-	 * requests are sent.
-	 */
-	@XmlAttribute(name="port")
-	private Integer _port;
-
-	/**
-	 * Default number of retries
-	 */
-	@XmlAttribute(name="retry")
-	private Integer _retry;
-
-	/**
-	 * Default timeout (in milliseconds)
-	 */
-	@XmlAttribute(name="timeout")
-	private Integer _timeout;
-
-	/**
-	 * Default read community string
-	 */
-	@XmlAttribute(name="read-community")
-	private String _readCommunity;
-
-	/**
-	 * Default write community string
-	 */
-	@XmlAttribute(name="write-community")
-	private String _writeCommunity;
-
-	/**
 	 * The proxy host to use when communiciating with this agent
 	 */
 	@XmlAttribute(name="proxy-host")
 	private String _proxyHost;
-
-	/**
-	 * If set, forces SNMP data collection to the specified version.
-	 */
-	@XmlAttribute(name="version")
-	private String _version;
 
 	/**
 	 * Number of variables to send per SNMP request.
@@ -160,6 +123,45 @@ public class Configuration implements Serializable {
 	 */
 	@XmlAttribute(name="enterprise-id")
 	private String _enterpriseId;
+	
+    /**
+     * If set, forces SNMP data collection to the specified version.
+     */
+    @XmlAttribute(name="version")
+    private String _version;
+
+    /**
+     * Default write community string
+     */
+    @XmlAttribute(name="write-community")
+    private String _writeCommunity;
+
+    /**
+     * Default read community string
+     */
+    @XmlAttribute(name="read-community")
+    private String _readCommunity;
+
+    /**
+     * Default timeout (in milliseconds)
+     */
+    @XmlAttribute(name="timeout")
+    private Integer _timeout;
+
+    /**
+     * Default number of retries
+     */
+    @XmlAttribute(name="retry")
+    private Integer _retry;
+
+	/**
+     * If set, overrides UDP port 161 as the port where SNMP GET/GETNEXT/GETBULK
+     * requests are sent.
+     */
+    @XmlAttribute(name="port")
+    private Integer _port;
+
+
 
 	public Configuration() {
 		super();

@@ -36,15 +36,23 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.*;
+
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.regex.MatchResult;
 
-import junit.framework.TestCase;
-
-import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.InetAddressUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
-import org.opennms.test.ConfigurationTestUtils;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -53,17 +61,209 @@ import org.springframework.core.io.ByteArrayResource;
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
  *
  */
-public class SnmpEventInfoTest extends TestCase {
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(ConfigurationTestUtils.getInputStreamForResource(this, "snmp-config-snmpEventInfoTest.xml")));
+public class SnmpEventInfoTest {
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testConfigRangeCreateOutOfOrder() {
+        new ConfigRange("192.168.1.2", "192.168.1.1");
     }
     
+    @Test
+    public void testConfigAddressIncr() {
+        ConfigAddress a = new ConfigAddress("::5");
+        assertEquals("::6", a.incr().toString());
+        
+        ConfigAddress b = new ConfigAddress("::ffff:ffff");
+        assertEquals("::1:0:0", b.incr().toString());
+        
+        ConfigAddress c = new ConfigAddress("::ff00:ffff");
+        assertEquals("::ff01:0", c.incr().toString());
+
+    }
+    
+    @Test
+    public void testConfigAddressDecr() {
+        ConfigAddress a = new ConfigAddress("::6");
+        assertEquals("::5", a.decr().toString());
+        
+        ConfigAddress b = new ConfigAddress("::1:0:0");
+        assertEquals("::ffff:ffff", b.decr().toString());
+        
+        ConfigAddress c = new ConfigAddress("ff::ffff:1:0");
+        assertEquals("ff::ffff:0:ffff", c.decr().toString());
+
+    }
+    
+    @Test
+    public void testContainsAddr() {
+        ConfigRange r = new ConfigRange("192.168.1.1", "192.168.1.3");
+        assertFalse(r.contains("192.168.0.1"));
+        assertTrue(r.contains("192.168.1.1"));
+        assertTrue(r.contains("192.168.1.2"));
+        assertTrue(r.contains("192.168.1.3"));
+        assertFalse(r.contains("192.168.1.4"));
+    }
+
+    @Test
+    public void testContainsAddrIPv6() {
+        ConfigRange r = new ConfigRange("2001:db8::10", "2001:db8::20");
+        assertFalse(r.contains("192.168.0.1"));
+        assertFalse(r.contains("2001:db8::1"));
+        assertTrue(r.contains("2001:db8::10"));
+        assertTrue(r.contains("2001:db8::15"));
+        assertTrue(r.contains("2001:db8::20"));
+        assertFalse(r.contains("2001:db8::21"));
+    }
+
+
+    @Test
+    public void testContainsRange() {
+        ConfigRange r = new ConfigRange("192.168.1.1", "192.168.1.10");
+        assertTrue(r.contains(new ConfigRange("192.168.1.1", "192.168.1.1")));
+        assertTrue(r.contains(new ConfigRange("192.168.1.10", "192.168.1.10")));
+        assertTrue(r.contains(new ConfigRange("192.168.1.2", "192.168.1.7")));
+        assertFalse(r.contains(new ConfigRange("192.168.1.0", "192.168.1.1")));
+        assertFalse(r.contains(new ConfigRange("192.168.1.2", "192.168.1.11")));
+        assertFalse(r.contains(new ConfigRange("192.168.1.0", "192.168.1.11")));
+
+    }
+
+    @Test
+    public void testPreceedsRange() {
+        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
+        assertTrue(r.preceeds(new ConfigRange("192.168.1.21", "192.168.1.30")));
+        assertTrue(r.preceeds(new ConfigRange("192.168.1.21", "192.168.1.21")));
+        assertFalse(r.preceeds(new ConfigRange("192.168.1.20", "192.168.1.30")));
+        assertFalse(r.preceeds(new ConfigRange("192.168.1.7", "192.168.1.9")));
+    }
+
+    @Test
+    public void testOverlapsRange() {
+        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
+        assertTrue(r.overlaps(new ConfigRange("192.168.1.10", "192.168.1.10")));
+        assertTrue(r.overlaps(new ConfigRange("192.168.1.20", "192.168.1.20")));
+        assertTrue(r.overlaps(new ConfigRange("192.168.1.10", "192.168.1.20")));
+        assertTrue(r.overlaps(new ConfigRange("192.168.1.9", "192.168.1.22")));
+        assertTrue(r.overlaps(new ConfigRange("192.168.1.15", "192.168.1.22")));
+        assertTrue(r.overlaps(new ConfigRange("192.168.1.9", "192.168.1.15")));
+        assertTrue(r.overlaps(new ConfigRange("192.168.1.11", "192.168.1.19")));
+        assertFalse(r.overlaps(new ConfigRange("192.168.1.5", "192.168.1.9")));
+        assertFalse(r.overlaps(new ConfigRange("192.168.1.21", "192.168.1.22")));
+
+    }
+
+    @Test
+    public void testAdjacentRange() {
+        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
+        assertTrue(r.adjacent(new ConfigRange("192.168.1.7", "192.168.1.9")));
+        assertFalse(r.adjacent(new ConfigRange("192.168.1.7", "192.168.1.8")));
+        assertFalse(r.adjacent(new ConfigRange("192.168.1.7", "192.168.1.21")));
+        assertTrue(r.adjacent(new ConfigRange("192.168.1.21", "192.168.1.21")));
+    }
+    
+    @Test
+    public void testConfigRangeEquals() {
+        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
+        assertEquals(r, r);
+        assertEquals(r, new ConfigRange("192.168.1.10", "192.168.1.20"));
+        assertFalse(r.equals( new ConfigRange("192.168.1.10", "192.168.1.19") ));
+    }
+    
+    @Test
+    public void testCombine() {
+        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
+        
+        assertEquals(r, r.combine(new ConfigRange("192.168.1.10", "192.168.1.20")));
+        assertEquals(r, r.combine(new ConfigRange("192.168.1.11", "192.168.1.20")));
+        assertEquals(r, r.combine(new ConfigRange("192.168.1.10", "192.168.1.19")));
+        assertEquals(r, r.combine(new ConfigRange("192.168.1.11", "192.168.1.19")));
+        assertEquals(new ConfigRange("192.168.1.9", "192.168.1.20"), r.combine(new ConfigRange("192.168.1.9", "192.168.1.12")));
+        assertEquals(new ConfigRange("192.168.1.10", "192.168.1.22"), r.combine(new ConfigRange("192.168.1.13", "192.168.1.22")));
+        assertEquals(new ConfigRange("192.168.1.9", "192.168.1.22"), r.combine(new ConfigRange("192.168.1.9", "192.168.1.22")));
+        assertEquals(new ConfigRange("192.168.1.7", "192.168.1.20"), r.combine(new ConfigRange("192.168.1.7", "192.168.1.9")));
+        assertEquals(new ConfigRange("192.168.1.10", "192.168.1.24"), r.combine(new ConfigRange("192.168.1.21", "192.168.1.24")));
+    }
+    
+    @Test
+    public void testRemove() {
+        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
+
+        assertArrayEquals(new ConfigRange[0], r.remove(r));
+        assertArrayEquals(new ConfigRange[0], r.remove(new ConfigRange("192.168.1.5", "192.168.1.27")));
+        assertArrayEquals(new ConfigRange[] { r }, r.remove(new ConfigRange("192.168.1.5", "192.168.1.7")));
+        assertArrayEquals(new ConfigRange[] { r }, r.remove(new ConfigRange("192.168.1.22", "192.168.1.27")));
+        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.15", "192.168.1.20") }, r.remove(new ConfigRange("192.168.1.5", "192.168.1.14")));
+        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.10", "192.168.1.14") }, r.remove(new ConfigRange("192.168.1.15", "192.168.1.24")));
+        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.10", "192.168.1.14"), new ConfigRange("192.168.1.16", "192.168.1.20") }, r.remove(new ConfigRange("192.168.1.15", "192.168.1.15")));
+    }
+    
+    @Test
+    public void testListAdd() {
+        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
+
+        ConfigRangeList ranges = new ConfigRangeList();
+        ranges.add(r);
+        
+        assertArrayEquals(new ConfigRange[] { r }, ranges.toArray());
+        
+        ConfigRange s = new ConfigRange("192.168.1.30", "192.168.1.40");
+        ranges.add(s);
+
+        assertArrayEquals(new ConfigRange[] { r, s }, ranges.toArray());
+
+        ConfigRange t = new ConfigRange("192.168.1.2", "192.168.1.8");
+        ranges.add(t);
+
+        assertArrayEquals(new ConfigRange[] { t, r, s }, ranges.toArray());
+
+        ConfigRange u = new ConfigRange("192.168.1.22", "192.168.1.28");
+        ranges.add(u);
+
+        assertArrayEquals(new ConfigRange[] { t, r, u, s }, ranges.toArray());
+        
+        ranges.add(new ConfigRange("192.168.1.18", "192.168.1.24"));
+        
+        assertArrayEquals(new ConfigRange[] { t, new ConfigRange("192.168.1.10", "192.168.1.28"), s }, ranges.toArray());
+
+        ranges.add(new ConfigRange("192.168.1.9", "192.168.1.9"));
+        
+        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.2", "192.168.1.28"), s }, ranges.toArray());
+
+    }
+    
+    @Test
+    public void testListRemove() {
+        ConfigRange r = new ConfigRange("192.168.1.1", "192.168.1.100");
+
+        ConfigRangeList ranges = new ConfigRangeList();
+        ranges.add(r);
+        
+        ConfigRange s = new ConfigRange("192.168.1.30", "192.168.1.40");
+        ranges.remove(s);
+
+        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.1", "192.168.1.29"), new ConfigRange("192.168.1.41", "192.168.1.100") }, ranges.toArray());
+
+        ConfigRange t = new ConfigRange("192.168.1.20", "192.168.1.35");
+        ranges.remove(t);
+
+        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.1", "192.168.1.19"), new ConfigRange("192.168.1.41", "192.168.1.100") }, ranges.toArray());
+
+        ConfigRange u = new ConfigRange("192.168.1.35", "192.168.1.50");
+        ranges.remove(u);
+
+        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.1", "192.168.1.19"), new ConfigRange("192.168.1.51", "192.168.1.100") }, ranges.toArray());
+        
+        ranges.remove(new ConfigRange("192.168.1.60", "192.168.1.70"));
+        
+        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.1", "192.168.1.19"), new ConfigRange("192.168.1.51", "192.168.1.59"), new ConfigRange("192.168.1.71", "192.168.1.100") }, ranges.toArray());
+
+        ranges.remove(new ConfigRange("192.168.1.10", "192.168.1.80"));
+        
+        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.1", "192.168.1.9"), new ConfigRange("192.168.1.81", "192.168.1.100") }, ranges.toArray());
+
+    }
+
+
     /**
      * This tests the ability of a configureSNMP event to change the community
      * string of a specific address.
@@ -72,42 +272,82 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public final void testModifySpecificInDef() throws IOException {
         
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
-        "   <definition version=\"v2c\">\n" + 
-        "       <specific>192.168.0.5</specific>\n" + 
-        "   </definition>\n" + 
-        "\n" + 
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <specific>192.168.0.5</specific>\n" + 
+        "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
+        
+        String expectedConfig = "" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition read-community=\"abc\">\n" + 
+        "        <specific>192.168.0.5</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" +
+        "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        
         SnmpEventInfo info = new SnmpEventInfo();
         info.setCommunityString("abc");
         info.setFirstIPAddress("192.168.0.5");
         
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
-        MergeableDefinition configDef = new MergeableDefinition(config.getDefinition(0));
-        MergeableDefinition matchingDef = SnmpConfigManager.findDefMatchingAttributes(SnmpPeerFactory.getSnmpConfig(), info.createDef());
-        assertNull(matchingDef);
-        assertTrue(configDef.hasMatchingSpecific(info.getFirstIPAddress()));
-        assertNull(configDef.getConfigDef().getReadCommunity());
+        SnmpPeerFactory.getInstance().define(info);
         
-        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
         
-//      String config = SnmpPeerFactory.marshallConfig();
-//      System.err.println(config);
+    }
+
+    /**
+     * This tests the ability of a configureSNMP event to change the community
+     * string of a specific address.
+     * 
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException 
+     */
+    @Test
+    public final void testModifySpecificInDefIPv6() throws IOException {
         
-        matchingDef = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
-        assertNotNull(matchingDef);
-        assertFalse(configDef.hasMatchingSpecific(info.getFirstIPAddress()));
-        assertTrue(matchingDef.hasMatchingSpecific(info.getFirstIPAddress()));
-        assertTrue(new ByteArrayComparator().compare(InetAddressUtils.addr("192.168.0.5").getAddress(), InetAddressUtils.addr(matchingDef.getConfigDef().getSpecific(0)).getAddress()) == 0);
-        assertEquals("abc", matchingDef.getConfigDef().getReadCommunity());
-        assertEquals(1, SnmpPeerFactory.getSnmpConfig().getDefinitionCount());
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <specific>2001:db8::10</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+        
+        String expectedConfig = "" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition read-community=\"abc\">\n" + 
+        "        <specific>2001:db8::10</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" +
+        "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setCommunityString("abc");
+        info.setFirstIPAddress("2001:db8::10");
+        
+        SnmpPeerFactory.getInstance().define(info);
+        
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+        
     }
 
     /**
@@ -118,46 +358,250 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public final void testAddAdjacentSpecificToDef() throws IOException {
-        
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
-        "   <definition version=\"v2c\">\n" + 
-        "       <specific>192.168.0.5</specific>\n" + 
-        "   </definition>\n" + 
-        "\n" + 
-        "</snmp-config>\n" + 
+
+        String snmpConfigXml = "" +
+        		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        		"<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        		"    <definition version=\"v2c\">\n" + 
+        		"        <specific>192.168.0.5</specific>\n" + 
+        		"    </definition>\n" + 
+        		"</snmp-config>\n" +
+        		"";
+
+        String expectedConfig = "" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.0.5\" end=\"192.168.0.6\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" +
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
         info.setFirstIPAddress("192.168.0.6");
         
-        MergeableDefinition configDef = new MergeableDefinition(SnmpPeerFactory.getSnmpConfig().getDefinition(0));
-        MergeableDefinition matchingDef = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
-        assertNotNull(matchingDef);
-        assertFalse(matchingDef.hasMatchingSpecific(info.getFirstIPAddress()));
-        assertEquals(1, matchingDef.getConfigDef().getSpecificCount());
-        assertEquals(0, matchingDef.getConfigDef().getRangeCount());
-        assertNull(configDef.getConfigDef().getReadCommunity());
+        SnmpPeerFactory.getInstance().define(info);
         
-        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
-//      String config = SnmpPeerFactory.marshallConfig();
-//      System.err.println(config);
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
         
-        assertEquals(matchingDef.getConfigDef(), SnmpConfigManager.findDefMatchingAttributes(config, info.createDef()).getConfigDef());
-        assertFalse(matchingDef.hasMatchingSpecific(info.getFirstIPAddress()));
-        assertEquals(0, matchingDef.getConfigDef().getSpecificCount());
-        assertEquals(1, matchingDef.getConfigDef().getRangeCount());
-        assertEquals("192.168.0.5", matchingDef.getConfigDef().getRange(0).getBegin());
-        assertEquals("192.168.0.6", matchingDef.getConfigDef().getRange(0).getEnd());
-        assertNull(configDef.getConfigDef().getReadCommunity());
     }
 
+
+    /**
+     * This tests the merging of a new specific into a definition that already contains a specific
+     * that is adjacent.  The two specifics should be converted to a single range in the definition.
+     * 
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException 
+     */
+    @Test
+    public final void testAddAdjacentSpecificToDefIPv6() throws IOException {
+
+        String snmpConfigXml = "" +
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+                "    <definition version=\"v2c\">\n" + 
+                "        <specific>2001:db8::10</specific>\n" + 
+                "    </definition>\n" + 
+                "</snmp-config>\n" +
+                "";
+
+        String expectedConfig = "" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"2001:db8::10\" end=\"2001:db8::11\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" +
+        "";
+
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v2c");
+        info.setFirstIPAddress("2001:db8::11");
+        
+        SnmpPeerFactory.getInstance().define(info);
+        
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+        
+    }
+    /**
+     * This tests the merging of a new specific into a definition that already contains a specific
+     * that is adjacent.  The two specifics should be converted to a single range in the definition.
+     * 
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException 
+     */
+    @Test
+    public final void testAddSpecificBetweenAdjacentsSpecifics() throws IOException {
+
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <specific>192.168.0.5</specific>\n" + 
+        "        <specific>192.168.0.7</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.0.5\" end=\"192.168.0.7\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v2c");
+        info.setFirstIPAddress("192.168.0.6");
+        
+        SnmpPeerFactory.getInstance().define(info);
+
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+        
+    }
+
+    /**
+     * This tests the merging of a new specific into a definition that already contains a specific
+     * that is adjacent.  The two specifics should be converted to a single range in the definition.
+     * 
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException 
+     */
+    @Test
+    public final void testAddSpecificBetweenAdjacentsSpecificsMostlyZeros() throws IOException {
+
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <specific>0.0.0.5</specific>\n" + 
+        "        <specific>0.0.0.7</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"0.0.0.5\" end=\"0.0.0.7\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v2c");
+        info.setFirstIPAddress("0.0.0.6");
+        
+        SnmpPeerFactory.getInstance().define(info);
+
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+        
+    }
+
+    /**
+     * This tests the merging of a new specific into a definition that already contains a specific
+     * that is adjacent.  The two specifics should be converted to a single range in the definition.
+     * 
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException 
+     */
+    @Test
+    public final void testAddSpecificBetweenAdjacentsSpecificsIPv6() throws IOException {
+
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <specific>::5</specific>\n" + 
+        "        <specific>::7</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"::5\" end=\"::7\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v2c");
+        info.setFirstIPAddress("::6");
+        
+        SnmpPeerFactory.getInstance().define(info);
+
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+        
+    }
+    @Test
+    public final void testAddSpecificBetweenAdjacentSpecificAndRange() throws IOException {
+
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.0.7\" end=\"192.168.0.9\"/>\n" + 
+        "        <specific>192.168.0.5</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.0.5\" end=\"192.168.0.9\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v2c");
+        info.setFirstIPAddress("192.168.0.6");
+        
+        SnmpPeerFactory.getInstance().define(info);
+
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+        
+}
     /**
      * This tests the ability to add a new range of IPs that create a new definition and these IPs
      * were previously defined withing the a range of a current definition.  The result should be
@@ -168,40 +612,46 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testSplitRange() throws IOException {
         
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
-        "   <definition version=\"v2c\">\n" + 
-        "       <range begin=\"192.168.1.100\" end=\"192.168.1.200\"/>" + 
-        "   </definition>\n" + 
-        "\n" + 
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.100\" end=\"192.168.1.200\"/>\n" + 
+        "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
+        
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.100\" end=\"192.168.1.119\"/>\n" + 
+        "        <range begin=\"192.168.1.131\" end=\"192.168.1.200\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition version=\"v1\">\n" + 
+        "        <range begin=\"192.168.1.120\" end=\"192.168.1.130\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+        
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.1.120");
         info.setLastIPAddress("192.168.1.130");
 
-        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
+        SnmpPeerFactory.getInstance().define(info);
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        assertEquals(2, config.getDefinitionCount());
-        assertEquals("192.168.1.100", config.getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.119", config.getDefinition(0).getRange(0).getEnd());
-        
-        assertEquals("192.168.1.131", config.getDefinition(0).getRange(1).getBegin());
-        assertEquals("192.168.1.200", config.getDefinition(0).getRange(1).getEnd());
-        
-        assertEquals("192.168.1.120", config.getDefinition(1).getRange(0).getBegin());
-        assertEquals("192.168.1.130", config.getDefinition(1).getRange(0).getEnd());
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
         
     }
 
@@ -214,48 +664,127 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testRemoveSpecificFromRange() throws IOException {
-        
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
-        "   <definition version=\"v2c\">\n" + 
-        "       <range begin=\"192.168.1.100\" end=\"192.168.1.200\"/>" + 
-        "   </definition>\n" + 
-        "\n" + 
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.100\" end=\"192.168.1.200\"/>\n" + 
+        "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.100\" end=\"192.168.1.119\"/>\n" + 
+        "        <range begin=\"192.168.1.121\" end=\"192.168.1.200\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition version=\"v1\">\n" + 
+        "        <specific>192.168.1.120</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.1.120");
 
-        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
+        SnmpPeerFactory.getInstance().define(info);
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        assertEquals(2, config.getDefinitionCount());
-        
-        assertEquals(2, config.getDefinition(0).getRangeCount());
-        assertEquals(0, config.getDefinition(0).getSpecificCount());
-        
-        assertEquals("192.168.1.100", config.getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.119", config.getDefinition(0).getRange(0).getEnd());
-        
-        assertEquals("192.168.1.121", config.getDefinition(0).getRange(1).getBegin());
-        assertEquals("192.168.1.200", config.getDefinition(0).getRange(1).getEnd());
-        
-        assertEquals(0, config.getDefinition(1).getRangeCount());
-        assertEquals(1, config.getDefinition(1).getSpecificCount());
-        
-        assertEquals("192.168.1.120", config.getDefinition(1).getSpecific(0));
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
         
     }
     
+    @Test
+    public void testRemoveSpecificNearEndOfRange() throws IOException {
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.100\" end=\"192.168.1.200\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.100\" end=\"192.168.1.198\"/>\n" + 
+        "        <specific>192.168.1.200</specific>\n" + 
+        "    </definition>\n" + 
+        "    <definition version=\"v1\">\n" + 
+        "        <specific>192.168.1.199</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
+
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v1");
+        info.setFirstIPAddress("192.168.1.199");
+
+        SnmpPeerFactory.getInstance().define(info);
+        
+//        String config = SnmpPeerFactory.marshallConfig();
+//        System.err.println(config);
+        
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+        
+    }
+
+    @Test
+    public void testRemoveSpecificAtEndOfRange() throws IOException {
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.100\" end=\"192.168.1.200\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.100\" end=\"192.168.1.199\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition version=\"v1\">\n" + 
+        "        <specific>192.168.1.200</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
+
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v1");
+        info.setFirstIPAddress("192.168.1.200");
+
+        SnmpPeerFactory.getInstance().define(info);
+        
+//        String config = SnmpPeerFactory.marshallConfig();
+//        System.err.println(config);
+        
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+        
+    }
     /**
      * This tests the ability to move a specific from one definition into a range of another definition.  The
      * results should be that the 2 ranges in the first definition are recombined into a single range based on 
@@ -266,41 +795,45 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testRecombineSpecificIntoRange() throws IOException {
-        
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
-        "   <definition version=\"v2c\">\n" + 
-        "       <range begin=\"192.168.1.10\" end=\"192.168.1.14\"/>" + 
-        "       <range begin=\"192.168.1.16\" end=\"192.168.1.40\"/>" + 
-        "   </definition>\n" + 
-        "   <definition version=\"v1\">\n" + 
-        "       <specific>192.168.1.15</specific>\n" + 
-        "   </definition>\n" + 
-        "\n" + 
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.10\" end=\"192.168.1.14\"/>\n" + 
+        "        <range begin=\"192.168.1.16\" end=\"192.168.1.40\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition version=\"v1\">\n" + 
+        "        <specific>192.168.1.15</specific>\n" + 
+        "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
+        
+        String expectedConfig = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.10\" end=\"192.168.1.40\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";    
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
         info.setFirstIPAddress("192.168.1.15");
 
-        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
+        SnmpPeerFactory.getInstance().define(info);
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        assertEquals(1, config.getDefinitionCount());
-        
-        assertEquals(1, config.getDefinition(0).getRangeCount());
-        assertEquals(0, config.getDefinition(0).getSpecificCount());
-        
-        assertEquals("192.168.1.10", config.getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.40", config.getDefinition(0).getRange(0).getEnd());
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
         
     }
     
@@ -311,45 +844,91 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testRemoveSpecificInSeparateDefWithNewRange() throws IOException {
         
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
-        "   <definition version=\"v2c\">\n" +
-        "       <specific>192.168.1.30</specific>" +
-        "       <specific>10.1.1.1</specific>" + 
-        "   </definition>\n" + 
-        "\n" + 
+        String snmpConfigXml = 
+            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        		"<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        		"    <definition version=\"v2c\">\n" + 
+        		"        <specific>192.168.1.30</specific>\n" + 
+        		"        <specific>10.1.1.1</specific>\n" + 
+        		"    </definition>\n" + 
+        		"</snmp-config>\n" + 
+        		"";
+
+        String expectedConfig = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <specific>10.1.1.1</specific>\n" + 
+        "    </definition>\n" + 
+        "    <definition version=\"v1\">\n" + 
+        "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" + 
+        "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.1.15");
         info.setLastIPAddress("192.168.1.35");
 
-        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
+        SnmpPeerFactory.getInstance().define(info);
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        assertEquals(2, config.getDefinitionCount());
-        assertEquals(0, config.getDefinition(0).getRangeCount());
-        assertEquals(1, config.getDefinition(0).getSpecificCount());
-        assertEquals(1, config.getDefinition(1).getRangeCount());
-        assertEquals(0, config.getDefinition(1).getSpecificCount());
-        
-        assertEquals("10.1.1.1", config.getDefinition(0).getSpecific(0));
-        
-        assertEquals("192.168.1.15", config.getDefinition(1).getRange(0).getBegin());
-        assertEquals("192.168.1.35", config.getDefinition(1).getRange(0).getEnd());
-        
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+
     }
     
+    @Test
+    public void testRemoveTrivialEntry() throws IOException {
+        
+        String snmpConfigXml = 
+            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+                "    <definition version=\"v2c\">\n" + 
+                "        <specific>192.168.1.30</specific>\n" + 
+                "        <specific>10.1.1.1</specific>\n" + 
+                "    </definition>\n" + 
+                "</snmp-config>\n" + 
+                "";
+
+        String expectedConfig = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <specific>10.1.1.1</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
+
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setFirstIPAddress("192.168.1.30");
+
+        SnmpPeerFactory.getInstance().define(info);
+        
+//        String config = SnmpPeerFactory.marshallConfig();
+//        System.err.println(config);
+        
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+
+    }
+
     /**
      * This tests the behavior of specifying an invalid range.
      * 
@@ -357,19 +936,18 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testInvalidRange() throws IOException {
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
+        String snmpConfigXml = "<?xml version=\"1.0\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "   <definition version=\"v2c\">\n" + 
         "       <range begin=\"192.168.0.3\" end=\"192.168.0.100\"/>" + 
         "   </definition>\n" + 
         "\n" + 
         "</snmp-config>\n" + 
         "";
-        
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
+                
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
@@ -377,7 +955,7 @@ public class SnmpEventInfoTest extends TestCase {
         info.setLastIPAddress("192.168.0.1");
 
         try {
-            SnmpConfigManager.mergeIntoConfig(config, info.createDef());
+            SnmpPeerFactory.getInstance().define(info);
             fail("Expected IllegalArgumentException.");
         } catch (IllegalArgumentException e) {
             
@@ -392,40 +970,46 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testNewSpecifcSameAsBeginInOldDef() throws IOException {
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
-        "   <definition version=\"v2c\">\n" + 
-        "       <range begin=\"192.168.0.3\" end=\"192.168.0.100\"/>" + 
-        "   </definition>\n" + 
-        "\n" + 
+        
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.0.3\" end=\"192.168.0.100\"/>\n" + 
+        "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
         
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
+        String expectedConfig = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.0.4\" end=\"192.168.0.100\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition version=\"v1\">\n" + 
+        "        <specific>192.168.0.3</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+        
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.0.3");
 
-        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
+        SnmpPeerFactory.getInstance().define(info);
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        assertEquals(2, config.getDefinitionCount());
-        assertEquals(1, config.getDefinition(0).getRangeCount());
-        assertEquals(0, config.getDefinition(0).getSpecificCount());
-        
-        assertEquals(0, config.getDefinition(1).getRangeCount());
-        assertEquals(1, config.getDefinition(1).getSpecificCount());
-        
-        assertEquals("192.168.0.4", config.getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.100", config.getDefinition(0).getRange(0).getEnd());
-        
-        assertEquals("192.168.0.3", config.getDefinition(1).getSpecific(0));
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
 
     }
     
@@ -437,46 +1021,94 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testOverlapsTwoRanges() throws IOException {
         
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
-        "   <definition version=\"v2c\">\n" + 
-        "       <range begin=\"192.168.1.10\" end=\"192.168.1.20\"/>" + 
-        "       <range begin=\"192.168.1.30\" end=\"192.168.1.40\"/>" + 
-        "   </definition>\n" + 
-        "\n" + 
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        		"<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        		"    <definition version=\"v2c\">\n" + 
+        		"        <range begin=\"192.168.1.10\" end=\"192.168.1.20\"/>\n" + 
+        		"        <range begin=\"192.168.1.30\" end=\"192.168.1.40\"/>\n" + 
+        		"    </definition>\n" + 
+        		"</snmp-config>\n" + 
+        		"";
+        
+        String expectedConfig = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.10\" end=\"192.168.1.14\"/>\n" + 
+        "        <range begin=\"192.168.1.36\" end=\"192.168.1.40\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition version=\"v1\">\n" + 
+        "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" + 
+        "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.1.15");
         info.setLastIPAddress("192.168.1.35");
 
-        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
+        SnmpPeerFactory.getInstance().define(info);
         
-//        String config = SnmpPeerFactory.marshallConfig();
-//        System.err.println(config);
-        
-        
-        assertEquals(2, config.getDefinitionCount());
-        
-        assertEquals("192.168.1.10", config.getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.14", config.getDefinition(0).getRange(0).getEnd());
-        
-        assertEquals("192.168.1.36", config.getDefinition(0).getRange(1).getBegin());
-        assertEquals("192.168.1.40", config.getDefinition(0).getRange(1).getEnd());
-        
-        assertEquals("192.168.1.15", config.getDefinition(1).getRange(0).getBegin());
-        assertEquals("192.168.1.35", config.getDefinition(1).getRange(0).getEnd());
-        
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
     }
 
+    public void testOverlapsTwoRangesAndCombinesThem(String firstIp, String lastIp) throws IOException {
+        
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+                "    <definition version=\"v2c\">\n" + 
+                "        <range begin=\"192.168.1.10\" end=\"192.168.1.20\"/>\n" + 
+                "        <range begin=\"192.168.1.30\" end=\"192.168.1.40\"/>\n" + 
+                "    </definition>\n" + 
+                "</snmp-config>\n" + 
+                "";
+        
+        String expectedConfig = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.10\" end=\"192.168.1.40\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
+
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v2c");
+        info.setFirstIPAddress(firstIp);
+        info.setLastIPAddress(lastIp);
+
+        SnmpPeerFactory.getInstance().define(info);
+
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+    }
+    
+    @Test
+    public void testCombineOverlappingRanges() throws Exception {
+        testOverlapsTwoRangesAndCombinesThem("192.168.1.15", "192.168.1.35");
+        testOverlapsTwoRangesAndCombinesThem("192.168.1.10", "192.168.1.35");
+        testOverlapsTwoRangesAndCombinesThem("192.168.1.20", "192.168.1.35");
+        testOverlapsTwoRangesAndCombinesThem("192.168.1.21", "192.168.1.35");
+        testOverlapsTwoRangesAndCombinesThem("192.168.1.15", "192.168.1.40");
+        testOverlapsTwoRangesAndCombinesThem("192.168.1.21", "192.168.1.30");
+        testOverlapsTwoRangesAndCombinesThem("192.168.1.21", "192.168.1.29");
+        testOverlapsTwoRangesAndCombinesThem("192.168.1.10", "192.168.1.40");
+    }
     /**
      * This tests moving a range that from one defintion into another defintion for which it overlaps
      * one range in the merging definition and creates 2 adjacent ranges that should be merged together.
@@ -485,42 +1117,45 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testRecombineRanges() throws IOException {
         
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
-        "   <definition version=\"v2c\">\n" + 
-        "       <range begin=\"192.168.1.10\" end=\"192.168.1.14\"/>" + 
-        "       <range begin=\"192.168.1.36\" end=\"192.168.1.40\"/>" + 
-        "   </definition>\n" + 
-        "   <definition version=\"v1\">\n" + 
-        "       <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>" + 
-        "   </definition>\n" + 
-        "\n" + 
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.10\" end=\"192.168.1.14\"/>\n" + 
+        "        <range begin=\"192.168.1.36\" end=\"192.168.1.40\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition version=\"v1\">\n" + 
+        "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" + 
+        "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
+        
+        String expectedConfig = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.10\" end=\"192.168.1.40\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";            
+        
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
         info.setFirstIPAddress("192.168.1.15");
         info.setLastIPAddress("192.168.1.35");
 
-        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
+        SnmpPeerFactory.getInstance().define(info);
         
-//        String config = SnmpPeerFactory.marshallConfig();
-//        System.err.println(config);
-        
-        
-        assertEquals(1, config.getDefinitionCount());
-        
-        assertEquals("192.168.1.10", config.getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.40", config.getDefinition(0).getRange(0).getEnd());
-        
-        
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+
     }
     
     /**
@@ -531,44 +1166,46 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testRecombineRangesNonAdjacentRange() throws IOException {
         
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
-        "   <definition version=\"v2c\">\n" + 
-        "       <range begin=\"192.168.1.10\" end=\"192.168.1.14\"/>" + 
-        "       <range begin=\"192.168.1.36\" end=\"192.168.1.40\"/>" + 
-        "   </definition>\n" + 
-        "   <definition version=\"v1\">\n" + 
-        "       <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>" + 
-        "   </definition>\n" + 
-        "\n" + 
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.10\" end=\"192.168.1.14\"/>\n" + 
+        "        <range begin=\"192.168.1.36\" end=\"192.168.1.40\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition version=\"v1\">\n" + 
+        "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+        
+        String expectedConfig = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <range begin=\"192.168.1.10\" end=\"192.168.1.40\"/>\n" + 
+        "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
         info.setFirstIPAddress("192.168.1.12");
         info.setLastIPAddress("192.168.1.38");
 
-        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
+        SnmpPeerFactory.getInstance().define(info);
         
-//        String config = SnmpPeerFactory.marshallConfig();
-//        System.err.println(config);
-        
-        
-        assertEquals(1, config.getDefinitionCount());
-        
-        assertEquals("192.168.1.10", config.getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.40", config.getDefinition(0).getRange(0).getEnd());
-        
-        
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
     }
-    
+
     /**
      * This tests moving the specific from a current defition to a new defintion.
      * 
@@ -576,55 +1213,45 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public final void testAddNewSpecificToConfig() throws IOException {
         
-        String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-        "   read-community=\"public\" write-community=\"private\">\n" + 
-        "   <definition version=\"v2c\">\n" + 
-        "       <specific>192.168.0.5</specific>\n" + 
-        "       <specific>192.168.0.6</specific>\n" + 
-        "   </definition>\n" + 
-        "\n" + 
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <specific>192.168.0.5</specific>\n" + 
+        "        <specific>192.168.0.6</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+        
+        String expectedConfig =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <specific>192.168.0.5</specific>\n" + 
+        "    </definition>\n" + 
+        "    <definition version=\"v1\">\n" + 
+        "        <specific>192.168.0.6</specific>\n" + 
+        "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.0.6");
         
-        MergeableDefinition configDef = new MergeableDefinition(config.getDefinition(0));
-        MergeableDefinition matchingDef = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
-        assertNull(matchingDef);
-        assertTrue(configDef.hasMatchingSpecific(info.getFirstIPAddress()));
-        assertEquals(2, configDef.getConfigDef().getSpecificCount());
-        assertEquals(0, configDef.getConfigDef().getRangeCount());
-        assertNull(configDef.getConfigDef().getReadCommunity());
-        assertEquals("v2c", configDef.getConfigDef().getVersion());
-        
-        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
-//      String config = SnmpPeerFactory.marshallConfig();
-//      System.err.println(config);
-        
-        matchingDef = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
-        assertNotNull(matchingDef);
-        assertFalse(configDef.hasMatchingSpecific(info.getFirstIPAddress()));
-        assertEquals(1, configDef.getConfigDef().getSpecificCount());
-        assertEquals(0, configDef.getConfigDef().getRangeCount());
-        assertEquals("v2c", configDef.getConfigDef().getVersion());
-        
-        assertEquals(1, matchingDef.getConfigDef().getSpecificCount());
-        assertEquals(0, matchingDef.getConfigDef().getRangeCount());
-        assertTrue(matchingDef.hasMatchingSpecific(info.getFirstIPAddress()));
-        assertNull(matchingDef.getConfigDef().getReadCommunity());
-        assertEquals("v1", matchingDef.getConfigDef().getVersion());
-        
-        assertTrue(matchingDef.getConfigDef() != configDef.getConfigDef());
-        assertEquals(2, SnmpPeerFactory.getSnmpConfig().getDefinitionCount());
-        
+        SnmpPeerFactory.getInstance().define(info);
+
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
+
+
     }
 
     /**
@@ -633,32 +1260,208 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws MarshalException 
      * @throws IOException 
      */
+    @Test
+    @Ignore("This is no longer really valid since we don't have to optimize in a separate pass")
     public final void testOptimizeAllDefs() throws IOException {
+        
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <specific>192.168.0.5</specific>\n" + 
+        "    </definition>\n" + 
+        "    <definition read-community=\"opennmsrules\">\n" + 
+        "        <range begin=\"192.168.100.1\" end=\"192.168.100.254\"/>\n" + 
+        "        <range begin=\"192.168.101.1\" end=\"192.168.101.254\"/>\n" + 
+        "        <range begin=\"192.168.102.1\" end=\"192.168.102.254\"/>\n" + 
+        "        <range begin=\"192.168.103.1\" end=\"192.168.103.254\"/>\n" + 
+        "        <range begin=\"192.168.104.1\" end=\"192.168.104.254\"/>\n" + 
+        "        <range begin=\"192.168.105.1\" end=\"192.168.105.254\"/>\n" + 
+        "        <range begin=\"192.168.106.1\" end=\"192.168.106.254\"/>\n" + 
+        "        <range begin=\"192.168.107.1\" end=\"192.168.107.254\"/>\n" + 
+        "        <range begin=\"192.168.0.1\" end=\"192.168.0.10\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition read-community=\"opennmsrules2\">\n" + 
+        "        <range begin=\"192.168.100.0\" end=\"192.168.100.255\"/>\n" + 
+        "        <range begin=\"192.168.101.0\" end=\"192.168.101.255\"/>\n" + 
+        "        <range begin=\"192.168.102.0\" end=\"192.168.102.255\"/>\n" + 
+        "        <range begin=\"192.168.103.0\" end=\"192.168.103.255\"/>\n" + 
+        "        <range begin=\"192.168.104.0\" end=\"192.168.104.255\"/>\n" + 
+        "        <range begin=\"192.168.105.0\" end=\"192.168.105.255\"/>\n" + 
+        "        <range begin=\"192.168.106.0\" end=\"192.168.106.255\"/>\n" + 
+        "        <range begin=\"192.168.107.0\" end=\"192.168.107.255\"/>\n" + 
+        "        <range begin=\"192.168.0.1\" end=\"192.168.0.10\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition read-community=\"splice-test\" version=\"v2c\">\n" + 
+        "        <range begin=\"10.1.2.1\" end=\"10.1.2.100\"/>\n" + 
+        "        <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
+        "        <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
+        "        <specific>10.1.1.1</specific>\n" + 
+        "        <specific>10.1.1.2</specific>\n" + 
+        "        <specific>10.1.1.3</specific>\n" + 
+        "        <specific>10.1.1.5</specific>\n" + 
+        "        <specific>10.1.1.6</specific>\n" + 
+        "        <specific>10.1.1.10</specific>\n" + 
+        "    </definition>\n" + 
+        "    <definition read-community=\"splice2-test\">\n" + 
+        "        <range begin=\"10.1.1.11\" end=\"10.1.1.100\"/>\n" + 
+        "        <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
+        "        <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
+        "        <specific>10.1.1.10</specific>\n" + 
+        "    </definition>\n" + 
+        "    <definition read-community=\"splice3-test\">\n" + 
+        "        <range begin=\"10.1.1.11\" end=\"10.1.1.100\"/>\n" + 
+        "        <range begin=\"11.1.2.1\" end=\"11.1.2.1\"/>\n" + 
+        "        <range begin=\"12.1.2.1\" end=\"12.1.2.1\"/>\n" + 
+        "        <specific>10.1.1.10</specific>\n" + 
+        "        <specific>10.1.1.12</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
+        
+ 
+        String expectedConfig = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?> standalone=\"yes\"\n" + 
+        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
+        "    <definition version=\"v2c\">\n" + 
+        "        <specific>192.168.0.5</specific>\n" + 
+        "    </definition>\n" + 
+        "    <definition read-community=\"opennmsrules\">\n" + 
+        "        <range begin=\"192.168.0.1\" end=\"192.168.0.10\"/>\n" + 
+        "        <range begin=\"192.168.100.1\" end=\"192.168.100.254\"/>\n" + 
+        "        <range begin=\"192.168.101.1\" end=\"192.168.101.254\"/>\n" + 
+        "        <range begin=\"192.168.102.1\" end=\"192.168.102.254\"/>\n" + 
+        "        <range begin=\"192.168.103.1\" end=\"192.168.103.254\"/>\n" + 
+        "        <range begin=\"192.168.104.1\" end=\"192.168.104.254\"/>\n" + 
+        "        <range begin=\"192.168.105.1\" end=\"192.168.105.254\"/>\n" + 
+        "        <range begin=\"192.168.106.1\" end=\"192.168.106.254\"/>\n" + 
+        "        <range begin=\"192.168.107.1\" end=\"192.168.107.254\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition read-community=\"opennmsrules2\">\n" + 
+        "        <range begin=\"192.168.0.1\" end=\"192.168.0.10\"/>\n" + 
+        "        <range begin=\"192.168.100.0\" end=\"192.168.107.255\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition read-community=\"splice-test\" version=\"v2c\">\n" + 
+        "        <range begin=\"10.1.1.1\" end=\"10.1.1.3\"/>\n" + 
+        "        <range begin=\"10.1.1.5\" end=\"10.1.1.6\"/>\n" + 
+        "        <range begin=\"10.1.2.1\" end=\"10.1.2.100\"/>\n" + 
+        "        <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
+        "        <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
+        "        <specific>10.1.1.10</specific>\n" + 
+        "    </definition>\n" + 
+        "    <definition read-community=\"splice2-test\">\n" + 
+        "        <range begin=\"10.1.1.10\" end=\"10.1.1.100\"/>\n" + 
+        "        <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
+        "        <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
+        "    </definition>\n" + 
+        "    <definition read-community=\"splice3-test\">\n" + 
+        "        <range begin=\"10.1.1.10\" end=\"10.1.1.100\"/>\n" + 
+        "        <specific>11.1.2.1</specific>\n" + 
+        "        <specific>12.1.2.1</specific>\n" + 
+        "    </definition>\n" + 
+        "</snmp-config>\n" + 
+        "";
 
-        MergeableDefinition def;
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
         
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
-        
+        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
         SnmpEventInfo info = new SnmpEventInfo();
         
-        SnmpConfig SnmpConfig = SnmpPeerFactory.getSnmpConfig();
-        assertEquals(6, SnmpConfig.getDefinitionCount());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
+        assertEquals(6, config.getDefinitionCount());
         
         info.setCommunityString("opennmsrules2");
-        def = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
-        assertNotNull(def);
-        assertEquals(9, def.getConfigDef().getRangeCount());
         
         //do bunch more...
         
-        SnmpConfigManager.optimizeAllDefs(config);
+        new SnmpConfigManager(config).optimizeAllDefs();
 //      String config = SnmpPeerFactory.marshallConfig();
 //      System.err.println(config);
         
-        def = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
-        assertNotNull(def);
-        assertEquals(2, def.getConfigDef().getRangeCount());
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertEquals(expectedConfig, actualConfig);
         
+
+    }
+    
+    @Test
+    @Ignore
+    public void testAddSpecificToBigFile() throws Exception {
+        Resource res = new FileSystemResource("/Users/brozow/big-snmp-config.xml");
+        
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(res));
+
+        
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setCommunityString("th3l04n3r");
+        info.setFirstIPAddress("192.168.1.15");
+        info.setLastIPAddress("192.168.1.35");
+        
+        SnmpPeerFactory.getInstance().define(info);
+
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        System.err.println(actualConfig);
+        //assertEquals(expectedConfig, actualConfig);
+        
+
+    }
+
+    @Test
+    @Ignore
+    public void testConfigTheHeckOutOfIt() throws Exception {
+        Resource configResource = new FileSystemResource("/Users/brozow/big-snmp-config.xml");
+        Resource events = new FileSystemResource("/Users/brozow/support/NEN/palin/wave-events.txt");
+        File configDir = new File("/Users/brozow/support/NEN/palin/configs");
+        configDir.mkdirs();
+        
+        SnmpEventInfo[] updates = readEventInfo(events.getInputStream());
+        assertNotNull(updates);
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(configResource));
+
+        
+        int index = 0;
+        for (SnmpEventInfo update : updates) {
+            try {
+                File dir = new File(configDir, String.format("%03d", index));
+                dir.mkdirs();
+                SnmpPeerFactory.saveToFile(new File(dir, "pre-config.xml"));
+                SnmpPeerFactory.getInstance().define(update);
+                File saveUpdate = new File(dir, "update");
+                FileUtils.writeStringToFile(saveUpdate, String.format("%s %s %s\n", update.getFirstIPAddress(), update.getLastIPAddress(), update.getCommunityString()));
+                SnmpPeerFactory.saveToFile(new File(dir, "post-config.xml"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail(String.format("Applying update with index %d change community string for %s  to %s failed.", index, update.getFirstIPAddress(), update.getCommunityString()));
+            }
+            index++;
+        }
+
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        System.err.println(actualConfig);
+        //assertEquals(expectedConfig, actualConfig);
+        
+
+    }
+    
+    private SnmpEventInfo[] readEventInfo(InputStream in) throws UnknownHostException {
+        List<SnmpEventInfo> updates = new ArrayList<SnmpEventInfo>(500);
+        Scanner s = new Scanner(in);
+        int lineCount = 0;
+        while(s.hasNextLine()) {
+            lineCount++;
+            s.findInLine("\\s*firstIPAddress=([0-9.]+) communityString=([^ ]*) lastIPAddress=([0-9.]+)\\s*");
+            MatchResult result = s.match();
+            System.out.printf("%d: %s - %s: %s\n", lineCount, result.group(1), result.group(3), result.group(2));
+            SnmpEventInfo info = new SnmpEventInfo();
+            info.setFirstIPAddress(result.group(1));
+            info.setLastIPAddress(result.group(3));
+            info.setCommunityString(result.group(2));
+            updates.add(info);
+            s.nextLine();
+        }
+        s.close();
+        return updates.toArray(new SnmpEventInfo[0]);
 
     }
 

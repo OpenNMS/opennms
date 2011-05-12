@@ -149,6 +149,8 @@ public class JaxbUtils {
 		try {
 			final JAXBContext context = JAXBContext.newInstance(clazz);
 			final Marshaller marshaller = context.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			marshallers.put(clazz, marshaller);
 			return marshaller;
 		} catch (JAXBException e) {

@@ -40,12 +40,14 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.util.concurrent.locks.Lock;
@@ -102,7 +104,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     private static SnmpConfig m_config;
     
     private static File m_configFile;
-
+    
     /**
      * This member is set to true if the configuration file has been loaded.
      */
@@ -151,6 +153,18 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         SnmpPeerFactory.getWriteLock().lock();
         try {
         	m_config = JaxbUtils.unmarshal(SnmpConfig.class, rdr);
+        } finally {
+            SnmpPeerFactory.getWriteLock().unlock();
+        }
+    }
+    
+    /**
+     * A constructor that takes a config string for use mostly in tests
+     */
+    public SnmpPeerFactory(String configString) throws IOException {
+        SnmpPeerFactory.getWriteLock().lock();
+        try {
+            m_config = JaxbUtils.unmarshal(SnmpConfig.class, configString);
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
         }
@@ -243,6 +257,12 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static void saveCurrent() throws IOException {
+        saveToFile(getFile());
+    }
+
+    public static void saveToFile(File file)
+            throws UnsupportedEncodingException, FileNotFoundException,
+            IOException {
         // Marshall to a string first, then write the string to the file. This
         // way the original config
         // isn't lost if the XML from the marshall is hosed.
@@ -251,7 +271,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         SnmpPeerFactory.getWriteLock().lock();
         try {
             if (marshalledConfig != null) {
-                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(getFile()), "UTF-8");
+                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
                 fileWriter.write(marshalledConfig);
                 fileWriter.flush();
                 fileWriter.close();
@@ -259,8 +279,6 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
         }
-
-        reload();
     }
 
 
@@ -707,12 +725,13 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      *
      * @param info a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
      */
-    public void define(final SnmpEventInfo info) {
-        SnmpPeerFactory.getWriteLock().lock();
+    public void define(SnmpEventInfo info) {
+        getWriteLock().lock();
         try {
-            SnmpConfigManager.mergeIntoConfig(getSnmpConfig(), info.createDef());
+            SnmpConfigManager mgr = new SnmpConfigManager(m_config);
+            mgr.mergeIntoConfig(info.createDef());
         } finally {
-            SnmpPeerFactory.getWriteLock().unlock();
+            getWriteLock().unlock();
         }
     }
 

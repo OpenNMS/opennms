@@ -33,8 +33,6 @@ package org.opennms.netmgt.model.discovery;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
 
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
@@ -46,15 +44,6 @@ import org.opennms.core.utils.InetAddressUtils;
  * @version $Id: $
  */
 public class IPAddress implements Comparable<IPAddress> {
-    private static final byte MAX_BYTE = -1; // 0xFF
-    private static final BigInteger MIN_INET_ADDRESS_BIG_INTEGER = new BigInteger("0");
-    private static final BigInteger MAX_INET_ADDRESS_BIG_INTEGER;
-    
-    static {
-        byte[] maxBytes = new byte[16];
-        Arrays.fill(maxBytes, MAX_BYTE);
-        MAX_INET_ADDRESS_BIG_INTEGER = new BigInteger(1, maxBytes);
-    }
 
     final byte[] m_ipAddr;
     
@@ -148,17 +137,16 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      */
     public IPAddress incr() {
-        BigInteger addr = new BigInteger(1, m_ipAddr);
-        addr = addr.add(new BigInteger("1"));
+        byte[] b = new byte[m_ipAddr.length];
 
-        if (addr.compareTo(MAX_INET_ADDRESS_BIG_INTEGER) > 0) {
-            throw new IllegalStateException("Cannot increment IP address above 2^128 - 1 (the maximum IPv6 address): " + this.toString());
+        int carry = 1;
+        for(int i = m_ipAddr.length-1; i >= 0; i--) {
+            b[i] = (byte)(m_ipAddr[i] + carry);
+            // if overflow we need to carry to the next byte
+            carry = b[i] == 0 ? carry : 0;
         }
-        try {
-            return new IPAddress(InetAddressUtils.convertBigIntegerIntoInetAddress(addr).getAddress());
-        } catch (UnknownHostException e) {
-            return null;
-        }
+        
+        return new IPAddress(b);
     }
     
     /**
@@ -167,16 +155,17 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      */
     public IPAddress decr() {
-        BigInteger addr = new BigInteger(1, m_ipAddr);
-        addr = addr.subtract(new BigInteger("1"));
-        if (addr.compareTo(MIN_INET_ADDRESS_BIG_INTEGER) < 0) {
-            throw new IllegalStateException("Cannot decrement IP address below zero: " + this.toString());
+        byte[] b = new byte[m_ipAddr.length];
+        
+        int borrow = 1;
+        for(int i = m_ipAddr.length-1; i >= 0; i--) {
+            b[i] = (byte)(m_ipAddr[i] - borrow);
+            // if underflow then we need to borrow from the next byte
+            borrow = b[i] == (byte)0xff ? borrow : 0;
         }
-        try {
-            return new IPAddress(InetAddressUtils.convertBigIntegerIntoInetAddress(addr).getAddress());
-        } catch (UnknownHostException e) {
-            return null;
-        }
+        
+        return new IPAddress(b);
+        
     }
     
     /**
