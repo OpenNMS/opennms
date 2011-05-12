@@ -49,8 +49,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;

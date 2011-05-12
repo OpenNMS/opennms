@@ -11,9 +11,6 @@ import java.util.Map;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 /**
  * <p>Abstract AbstractThresholdEvaluatorState class.</p>

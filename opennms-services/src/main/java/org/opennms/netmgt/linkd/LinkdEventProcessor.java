@@ -41,7 +41,6 @@
 
 package org.opennms.netmgt.linkd;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.model.events.annotations.EventHandler;

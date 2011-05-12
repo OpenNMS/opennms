@@ -268,9 +268,9 @@ public class Vault extends Object {
                             }
                         }
 
-                        Iterator i = p.entrySet().iterator();
+                        Iterator<Map.Entry<Object,Object>> i = p.entrySet().iterator();
                         while (i.hasNext()) {
-                            Map.Entry e = (Map.Entry) i.next();
+                            Map.Entry<Object,Object> e = i.next();
                             if (System.getProperty((String) e.getKey()) == null)
                                 System.setProperty((String) e.getKey(), (String) e.getValue());
                         }

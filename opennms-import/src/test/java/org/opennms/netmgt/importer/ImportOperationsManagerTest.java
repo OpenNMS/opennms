@@ -42,7 +42,6 @@ package org.opennms.netmgt.importer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
@@ -66,6 +65,7 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;

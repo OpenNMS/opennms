@@ -43,8 +43,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.InetAddressUtils;
-
 /**
  * <pre>
  * The key for an event - it extends the Hashtable and basically is a

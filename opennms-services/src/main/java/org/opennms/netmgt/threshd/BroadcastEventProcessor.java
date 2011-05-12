@@ -44,7 +44,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -52,7 +51,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -64,19 +62,6 @@ import org.opennms.netmgt.xml.event.Value;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 final class BroadcastEventProcessor implements EventListener {
-    /**
-     * The map of service names to service thresholders.
-     */
-    @SuppressWarnings("unused")
-    private Map m_monitors;
-
-    /**
-     * The scheduler associated with this receiver
-     * 
-     */
-    @SuppressWarnings("unused")
-    private final Scheduler m_scheduler;
-
     /**
      * List of ThresholdableService objects.
      */
@@ -102,7 +87,6 @@ final class BroadcastEventProcessor implements EventListener {
         // receiver.
         //
         m_threshd = threshd;
-        m_scheduler = m_threshd.getScheduler();
         m_thresholdableServices = thresholdableServices;
 
         // Create the message selector

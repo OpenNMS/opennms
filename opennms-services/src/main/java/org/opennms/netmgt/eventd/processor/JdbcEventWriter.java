@@ -55,7 +55,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.eventd.EventdConstants;
 import org.opennms.netmgt.eventd.db.AutoAction;

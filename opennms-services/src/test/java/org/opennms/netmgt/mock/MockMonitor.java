@@ -32,7 +32,6 @@
 
 package org.opennms.netmgt.mock;
 
-import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.LogUtils;

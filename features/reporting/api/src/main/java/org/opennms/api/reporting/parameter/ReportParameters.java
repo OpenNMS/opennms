@@ -38,7 +38,6 @@
 package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;

@@ -38,7 +38,6 @@ package org.opennms.netmgt.linkd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,7 +55,6 @@ import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 
 /**

@@ -37,7 +37,6 @@
 //
 package org.opennms.netmgt.mock;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.sql.ResultSet;
@@ -49,7 +48,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.model.OnmsSeverity;

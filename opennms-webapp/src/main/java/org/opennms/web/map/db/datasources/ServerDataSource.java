@@ -288,9 +288,9 @@ public class ServerDataSource implements DataSourceInterface {
 		getDataQuery+=") and "+STATUS_FIELD+"!='"+CLOSED_STATUS+"'";
 		String innerQuery = "select max("+SEVERITY_FIELD+") from "+TABLE_NAME+" where ip_address in (";
 		
-		Iterator it2 = ipAddrs.iterator();
+		Iterator<String> it2 = ipAddrs.iterator();
 		while(it2.hasNext()){
-			String ip = (String) it2.next();
+			String ip = it2.next();
 			innerQuery+="'"+ip+"'";
 			if(it2.hasNext()){
 				innerQuery+=",";

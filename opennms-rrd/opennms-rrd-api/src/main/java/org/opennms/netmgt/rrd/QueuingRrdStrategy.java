@@ -54,7 +54,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.opennms.core.utils.LogUtils;
 
 /**
  * Provides queuing implementation of RrdStrategy.

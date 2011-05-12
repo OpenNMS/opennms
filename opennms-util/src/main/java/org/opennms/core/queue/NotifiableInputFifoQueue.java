@@ -60,7 +60,7 @@ public interface NotifiableInputFifoQueue<T> extends FifoQueue<T> {
      * @param listener
      *            The instance to be notified on queue additions.
      */
-    public void addInputListener(InputFifoQueueListener listener);
+    public void addInputListener(InputFifoQueueListener<T> listener);
 
     /**
      * Removes an already registered listener. If the listener was not already
@@ -69,5 +69,5 @@ public interface NotifiableInputFifoQueue<T> extends FifoQueue<T> {
      * @param listener
      *            The listener to remove from the queue.
      */
-    public void removeInputListener(InputFifoQueueListener listener);
+    public void removeInputListener(InputFifoQueueListener<T> listener);
 }

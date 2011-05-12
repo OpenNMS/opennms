@@ -31,8 +31,6 @@
 //
 package org.opennms.netmgt.threshd;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -41,15 +39,11 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 /**
  * <p>LatencyInterface class.</p>

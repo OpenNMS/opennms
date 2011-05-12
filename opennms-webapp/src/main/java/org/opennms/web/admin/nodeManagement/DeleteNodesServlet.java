@@ -48,7 +48,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -65,9 +64,6 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.ResourceService;

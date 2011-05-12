@@ -40,7 +40,6 @@ package org.opennms.netmgt.trapd;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManager;

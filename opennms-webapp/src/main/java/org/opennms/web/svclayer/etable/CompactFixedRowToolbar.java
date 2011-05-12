@@ -175,11 +175,11 @@ public class CompactFixedRowToolbar extends CustomizableTwoColumnRowLayout {
 			}
 
 			if (showExports) {
-				Iterator iterator = model.getExportHandler().getExports()
+				Iterator<Export> iterator = model.getExportHandler().getExports()
 						.iterator();
-				for (Iterator iter = iterator; iter.hasNext();) {
+				for (Iterator<Export> iter = iterator; iter.hasNext();) {
 					html.td(5).close();
-					Export export = (Export) iter.next();
+					Export export = iter.next();
 					toolbarBuilder.exportItemAsImage(export);
 					html.tdEnd();
 				}

@@ -40,22 +40,16 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
-import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.PDU;
-import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
-import org.snmp4j.mp.PduHandle;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.USM;
-import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 

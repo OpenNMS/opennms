@@ -32,8 +32,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 

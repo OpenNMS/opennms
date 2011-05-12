@@ -31,7 +31,7 @@ package org.opennms.netmgt.snmp;
 
 import java.util.StringTokenizer;
 
-public class SnmpObjId implements Comparable {
+public class SnmpObjId implements Comparable<SnmpObjId> {
     
     /* FIXME: Change the implementation of this to cache oids and share common prefixes
      * This should enhance the amount of garbage we generate a great deal at least for
@@ -131,7 +131,7 @@ public class SnmpObjId implements Comparable {
 
     public boolean equals(Object obj) {
         if (obj instanceof SnmpObjId)
-            return compareTo(obj) == 0;
+            return compareTo((SnmpObjId)obj) == 0;
         else
             return false;
     }
@@ -155,7 +155,7 @@ public class SnmpObjId implements Comparable {
         return true;
     }
 
-    public int compareTo(Object o) {
+    public int compareTo(SnmpObjId o) {
         if (o == null) throw new NullPointerException("o is null");
         SnmpObjId other = (SnmpObjId)o;
 

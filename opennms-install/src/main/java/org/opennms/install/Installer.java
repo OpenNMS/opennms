@@ -56,7 +56,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -78,7 +77,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.ConnectionFactoryUtil;
@@ -87,8 +85,6 @@ import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.netmgt.icmp.jni.Ping;
-import org.opennms.protocols.icmp.IcmpSocket;
 import org.springframework.util.StringUtils;
 
 /*

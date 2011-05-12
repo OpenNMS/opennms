@@ -282,7 +282,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return sendRequest(request, expectedStatus);
     }
     
-    protected String getQueryString(@SuppressWarnings("rawtypes") final Map parameters) {
+    protected String getQueryString(@SuppressWarnings("unchecked") final Map parameters) {
     	final StringBuffer sb = new StringBuffer();
 
 		try {

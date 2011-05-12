@@ -40,7 +40,6 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpEventInfo;

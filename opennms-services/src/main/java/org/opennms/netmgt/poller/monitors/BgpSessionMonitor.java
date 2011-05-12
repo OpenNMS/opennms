@@ -51,8 +51,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Level;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;

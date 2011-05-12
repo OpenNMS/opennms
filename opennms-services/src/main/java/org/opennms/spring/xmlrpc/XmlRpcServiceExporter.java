@@ -151,7 +151,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
     }
 
     /** {@inheritDoc} */
-    public Object execute(String method, @SuppressWarnings("rawtypes") Vector params) throws Exception {
+    public Object execute(String method, @SuppressWarnings("unchecked") Vector params) throws Exception {
         
         log().debug("calling: "+method+'('+toArgList(params)+')');
         
@@ -201,7 +201,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
 
     }
 
-    private String toArgList(@SuppressWarnings("rawtypes") Vector params) {
+    private String toArgList(@SuppressWarnings("unchecked") Vector params) {
         StringBuffer sb = new StringBuffer();
         for(int i = 0; i < params.size(); i++) {
             if (i != 0) sb.append(", ");

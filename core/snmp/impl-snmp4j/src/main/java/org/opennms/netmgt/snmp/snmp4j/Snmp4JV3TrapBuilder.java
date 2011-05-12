@@ -38,7 +38,6 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
-import org.opennms.netmgt.snmp.SnmpValue;
 import org.snmp4j.ScopedPDU;
 
 public class Snmp4JV3TrapBuilder extends Snmp4JV2TrapBuilder implements SnmpV3TrapBuilder {

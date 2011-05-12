@@ -38,8 +38,6 @@ package org.opennms.web.svclayer.outage;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
-
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -110,10 +108,7 @@ public class DefaultOutageService implements OutageService {
 
         criteria.setProjection(Projections.rowCount());
         
-        Collection<OnmsOutage> outages = m_dao.findMatching(criteria);
-        
-        Iterator i = outages.iterator();
-        return (Integer) i.next();
+        return m_dao.countMatching(criteria);
     }
 
     /**

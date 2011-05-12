@@ -41,9 +41,6 @@ package org.opennms.javamail;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;

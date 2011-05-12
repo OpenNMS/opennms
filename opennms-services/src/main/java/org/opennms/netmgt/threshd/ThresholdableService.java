@@ -37,8 +37,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -57,7 +55,6 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  * <P>

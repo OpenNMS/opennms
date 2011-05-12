@@ -56,7 +56,6 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.filter.Table;

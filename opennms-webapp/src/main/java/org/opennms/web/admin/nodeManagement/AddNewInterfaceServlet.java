@@ -59,7 +59,6 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
 
 /**
