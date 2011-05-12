@@ -21,7 +21,8 @@ export BUILDDEFINES=\
 	-Dinstall.logs.dir=/var/log/opennms \
 	-Dinstall.pid.file=/var/run/opennms.pid \
 	-Dproduct.release=1 \
-	-Dproduct.snapshot=true
+	-Dproduct.snapshot=true \
+	'-P!jspc'
 
 configure:
 
