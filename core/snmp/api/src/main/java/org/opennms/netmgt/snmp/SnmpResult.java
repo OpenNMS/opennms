@@ -6,8 +6,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class SnmpResult implements Comparable<SnmpResult> {
-    private static final long serialVersionUID = 1L;
-
     private final SnmpObjId m_base;
     private final SnmpInstId m_instance;
     private final SnmpValue m_value;

@@ -86,7 +86,10 @@ import org.opennms.web.api.Util;
  * @since 1.8.1
  */
 public class NotificationWizardServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8394875468854510137L;
 
     //SOURCE_PAGE_EVENTS_VIEW is more of a tag than an actual page - can't be used for navigation as is
     /** Constant <code>SOURCE_PAGE_OTHER_WEBUI="eventslist"</code> */

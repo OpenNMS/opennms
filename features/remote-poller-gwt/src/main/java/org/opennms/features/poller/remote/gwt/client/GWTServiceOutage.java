@@ -17,8 +17,6 @@ import org.opennms.features.poller.remote.gwt.client.utils.HashCodeBuilder;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 public class GWTServiceOutage implements Serializable, IsSerializable, Comparable<GWTServiceOutage> {
-    private static final long serialVersionUID = 1L;
-
     private GWTLocationMonitor m_monitor;
 
     private GWTMonitoredService m_service;

@@ -43,12 +43,10 @@ package org.opennms.netmgt.scriptd.helper;
  *
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
- * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * @version $Id: $
  */
 public class SnmpTrapHelperException extends Exception {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -7866108381105769823L;
 
     /**
      * Construct an SnmpTrapHelperException with the specified message.

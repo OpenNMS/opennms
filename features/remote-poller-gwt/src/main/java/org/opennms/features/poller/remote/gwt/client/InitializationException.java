@@ -8,8 +8,6 @@
  */
 package org.opennms.features.poller.remote.gwt.client;
 public class InitializationException extends RuntimeException {
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * <p>Constructor for InitializationException.</p>
 	 */

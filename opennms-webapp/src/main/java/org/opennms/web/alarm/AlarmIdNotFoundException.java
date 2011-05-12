@@ -45,7 +45,10 @@ package org.opennms.web.alarm;
  * @since 1.8.1
  */
 public class AlarmIdNotFoundException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8128966294679333327L;
 
     protected String badId;
 

@@ -63,8 +63,8 @@ import org.opennms.web.WebSecurityUtils;
  * @since 1.8.1
  */
 public class AddDutySchedulesServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    
+    private static final long serialVersionUID = 4112359172139681476L;
+
     private static final List<Boolean> FALSE_LIST;
     
     static {

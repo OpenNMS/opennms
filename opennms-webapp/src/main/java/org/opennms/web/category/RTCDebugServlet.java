@@ -56,8 +56,10 @@ import org.exolab.castor.xml.ValidationException;
  * @since 1.8.1
  */
 public class RTCDebugServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2861682556760650660L;
     protected CategoryModel model;
 
     /**

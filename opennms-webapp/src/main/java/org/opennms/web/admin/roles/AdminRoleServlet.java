@@ -60,8 +60,10 @@ import org.opennms.web.WebSecurityUtils;
  * @since 1.8.1
  */
 public class AdminRoleServlet extends HttpServlet implements Servlet {
-    private static final long serialVersionUID = 1L;
-    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7805283401513004127L;
     private static final String LIST = "/admin/userGroupView/roles/list.jsp";
     private static final String VIEW = "/admin/userGroupView/roles/view.jsp";
     private static final String EDIT_DETAILS = "/admin/userGroupView/roles/editDetails.jsp";

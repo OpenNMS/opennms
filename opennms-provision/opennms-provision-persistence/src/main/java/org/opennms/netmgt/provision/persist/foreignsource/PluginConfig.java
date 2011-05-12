@@ -68,7 +68,8 @@ import org.opennms.netmgt.provision.support.PluginWrapper;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="plugin")
 public class PluginConfig implements Serializable, Comparable<PluginConfig> {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 4307231598310473690L;
 
     @XmlAttribute(name="name")
     private String m_name;

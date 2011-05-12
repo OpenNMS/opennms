@@ -83,7 +83,7 @@ import org.opennms.netmgt.config.poller.Service;
  * @since 1.8.1
  */
 public class AddPollerConfigServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -3318323869363206074L;
 
     PollerConfiguration pollerConfig = null;
 

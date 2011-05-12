@@ -468,7 +468,10 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
     
     public static class IpInterfaceComparator implements Comparator<OnmsIpInterface>, Serializable {
-        private static final long serialVersionUID = 1L;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1538654897829381114L;
 
         public int compare(final OnmsIpInterface o1, final OnmsIpInterface o2) {
             int diff;
@@ -533,7 +536,10 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
      *
      */
     public static class SnmpInterfaceComparator implements Comparator<OnmsSnmpInterface>, Serializable {
-        private static final long serialVersionUID = 1L;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 3751865611949289845L;
 
         public int compare(OnmsSnmpInterface o1, OnmsSnmpInterface o2) {
             int diff;

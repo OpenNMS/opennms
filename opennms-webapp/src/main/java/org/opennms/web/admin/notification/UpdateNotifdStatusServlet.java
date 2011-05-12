@@ -60,7 +60,10 @@ import org.opennms.netmgt.config.NotifdConfigFactory;
  * @since 1.8.1
  */
 public class UpdateNotifdStatusServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -841122529212545321L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

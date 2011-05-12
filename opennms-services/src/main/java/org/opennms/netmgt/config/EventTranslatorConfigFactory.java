@@ -308,8 +308,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 	}
     
 	static class TranslationFailedException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-		TranslationFailedException(String msg) {
+        private static final long serialVersionUID = -7219413891842193464L;
+
+        TranslationFailedException(String msg) {
     			super(msg);
     		}
     }

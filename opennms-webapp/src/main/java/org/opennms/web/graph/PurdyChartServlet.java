@@ -53,11 +53,10 @@ import org.opennms.netmgt.charts.ChartUtils;
  * @since 1.8.1
  */
 public class PurdyChartServlet extends HttpServlet {
-
     /**
      * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2449309268355063862L;
 
     /**
      * <p>Constructor for PurdyChartServlet.</p>

@@ -53,8 +53,10 @@ import javax.servlet.http.HttpServletResponse;
   * @since 1.8.1
   */
  public class UserRoleServlet extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
-    private static final long serialVersionUID = 1L;
-    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1078908981395901414L;
     private static final String LIST = "/roles/list.jsp";
     private static final String VIEW = "/roles/view.jsp";
     

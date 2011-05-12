@@ -124,7 +124,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
     
     public static class MonitoredServiceComparator implements Comparator<OnmsMonitoredService>, Serializable {
-        private static final long serialVersionUID = 1L;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 3000643751074224389L;
 
         public int compare(OnmsMonitoredService o1, OnmsMonitoredService o2) {
             int diff;
@@ -150,7 +153,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
      * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
      */
     public static class ServiceGraphComparator implements Comparator<ServiceGraph>, Serializable {
-        private static final long serialVersionUID = 1L;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -1365958323886041945L;
 
         public int compare(ServiceGraph o1, ServiceGraph o2) {
             if ((o1.getErrors().length == 0 && o2.getErrors().length == 0)
@@ -165,7 +171,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
     
     public static class LocationStatusComparator implements Comparator<OnmsLocationSpecificStatus>, Serializable {
-        private static final long serialVersionUID = 1L;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -5854706886193427256L;
 
         public int compare(OnmsLocationSpecificStatus o1, OnmsLocationSpecificStatus o2) {
             if ((o1.getPollResult().isUnknown() && o2.getPollResult().isUnknown())

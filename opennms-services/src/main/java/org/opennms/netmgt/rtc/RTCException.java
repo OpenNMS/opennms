@@ -44,7 +44,7 @@ package org.opennms.netmgt.rtc;
  * @version $Id: $
  */
 public final class RTCException extends Exception {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 4820494912936856052L;
 
     /**
      * Default class constructor. Constructs a new exception with a default

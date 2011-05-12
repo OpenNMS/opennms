@@ -9,7 +9,6 @@ package org.opennms.features.poller.remote.gwt.client.remoteevents;
  * @since 1.8.1
  */
 public class ApplicationRemovedRemoteEvent implements MapRemoteEvent {
-    private static final long serialVersionUID = 1L;
     private String m_applicationName;
 
     /**

@@ -72,10 +72,7 @@ import org.opennms.web.api.Util;
  * @since 1.8.1
  */
 public class AddNewInterfaceServlet extends HttpServlet {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 8246413657214969476L;
 
     private static final String SQL_INTERFACE_EXIST = "SELECT nodeid FROM ipinterface WHERE ipaddr = ? " + "AND ismanaged in ('M', 'A', 'U', 'F')";
 

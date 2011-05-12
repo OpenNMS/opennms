@@ -74,7 +74,10 @@ import org.opennms.web.WebSecurityUtils;
  * @since 1.8.1
  */
 public final class ManageSnmpIntfServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 996461881276250543L;
 
     protected int snmpServiceId;
 

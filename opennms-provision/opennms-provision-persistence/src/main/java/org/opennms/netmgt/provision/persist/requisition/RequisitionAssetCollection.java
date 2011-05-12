@@ -18,9 +18,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="assets")
 public class RequisitionAssetCollection extends LinkedList<RequisitionAsset> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -6944256042334743348L;
 
-	/**
+    /**
 	 * <p>Constructor for RequisitionAssetCollection.</p>
 	 */
 	public RequisitionAssetCollection() {

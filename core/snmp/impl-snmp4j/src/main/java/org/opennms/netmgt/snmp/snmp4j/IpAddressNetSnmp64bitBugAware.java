@@ -63,8 +63,11 @@ import org.snmp4j.smi.IpAddress;
  *
  */
 public class IpAddressNetSnmp64bitBugAware extends IpAddress {
-	private static final long serialVersionUID = 1L;
-	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5736688810851346588L;
+
 	public IpAddressNetSnmp64bitBugAware() {
 		super();
 	}

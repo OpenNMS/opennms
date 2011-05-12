@@ -12,8 +12,6 @@ import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 public class GWTLatLng implements IsSerializable, Serializable {
-	private static final long serialVersionUID = 1L;
-
 	private Double m_latitude;
 	private Double m_longitude;
 

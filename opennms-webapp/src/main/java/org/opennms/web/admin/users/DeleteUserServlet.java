@@ -57,7 +57,10 @@ import org.opennms.netmgt.config.UserManager;
  * @since 1.8.1
  */
 public class DeleteUserServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7274547687183446773L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

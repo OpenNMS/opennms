@@ -46,8 +46,8 @@ import org.opennms.netmgt.poller.remote.PollerConfiguration;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 class EmptyPollerConfiguration implements PollerConfiguration, Serializable {
-    
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 6908427719063336610L;
 
     /**
      * <p>getConfigurationTimestamp</p>

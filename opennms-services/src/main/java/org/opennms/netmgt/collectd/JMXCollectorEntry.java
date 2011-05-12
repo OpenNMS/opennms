@@ -45,11 +45,9 @@ import java.util.TreeMap;
  * @version $Id: $
  */
 public class JMXCollectorEntry extends TreeMap<String, String> {
-	
-	/**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -3201821397014064610L;
+
     private String m_objectName;
     
     /**

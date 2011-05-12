@@ -84,7 +84,10 @@ import org.opennms.web.filter.Filter;
  * @since 1.8.1
  */
 public class AlarmQueryServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 9140535159580534211L;
 
     /**
      * The list of parameters that are extracted by this servlet and not passed

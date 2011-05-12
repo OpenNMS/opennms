@@ -77,7 +77,10 @@ import org.opennms.web.filter.Filter;
  * @since 1.8.1
  */
 public class EventQueryServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1226547298266948865L;
 
     /**
      * The list of parameters that are extracted by this servlet and not passed

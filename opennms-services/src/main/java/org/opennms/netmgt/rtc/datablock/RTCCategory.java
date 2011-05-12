@@ -51,7 +51,8 @@ import org.opennms.netmgt.config.categories.Category;
  * @version $Id: $
  */
 public class RTCCategory extends Category {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -3599148594628072528L;
 
     /**
      * The 'effective' rule

@@ -48,7 +48,10 @@ import java.net.URLEncoder;
  * @since 1.8.1
  */
 public class ElementIdNotFoundException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6002934081158722933L;
 
     protected String badId;
 

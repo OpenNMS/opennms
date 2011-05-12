@@ -43,9 +43,9 @@ package org.opennms.netmgt.vacuumd;
  */
 public class AutomationException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -8873671974245928627L;
 
-	/**
+    /**
 	 * <p>Constructor for AutomationException.</p>
 	 *
 	 * @param arg0 a {@link java.lang.String} object.

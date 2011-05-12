@@ -61,7 +61,7 @@ import org.opennms.web.admin.groups.parsers.GroupInfo;
  * @since 1.8.1
  */
 public class RemoveGroupDutySchedulesServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -196901195544716793L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

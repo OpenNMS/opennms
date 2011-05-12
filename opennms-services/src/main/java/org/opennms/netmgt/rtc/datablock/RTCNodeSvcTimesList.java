@@ -59,7 +59,7 @@ import org.opennms.netmgt.config.RTCConfigFactory;
  * @version $Id: $
  */
 public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2606739258065019820L;
 
     /**
      * The time from which the current outtime 'm_outTime' is calculated

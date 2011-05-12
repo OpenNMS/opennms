@@ -38,7 +38,8 @@ package org.opennms.netmgt.scheduler;
  * @version $Id: $
  */
 public class PostponeNecessary extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -161577103512338545L;
 
     /**
      * <p>Constructor for PostponeNecessary.</p>

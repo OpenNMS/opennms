@@ -70,8 +70,10 @@ import org.opennms.web.WebSecurityUtils;
  * @since 1.8.1
  */
 public class ScheduleEditorServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7117332637559031820L;
     private Map<String, ScheduleOp> m_ops = new HashMap<String, ScheduleOp>();
     private Map<String, SingleMapping> m_maps = new HashMap<String, SingleMapping>();
     private ScheduleOp m_defaultOp;

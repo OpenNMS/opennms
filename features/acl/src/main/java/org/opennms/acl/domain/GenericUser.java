@@ -54,6 +54,10 @@ import org.springframework.util.Assert;
 public class GenericUser implements Serializable {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 2527391420135516265L;
+    /**
      * Constructor
      *
      * @param user a {@link org.opennms.acl.model.UserAuthoritiesDTO} object.
@@ -141,5 +145,4 @@ public class GenericUser implements Serializable {
     private UserAuthoritiesDTO user;
     private GroupService groupService;
     private UserService userService;
-    private static final long serialVersionUID = 1L;
 }

@@ -65,8 +65,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class UpdateGroupController extends AbstractController implements InitializingBean{
-    private static final long serialVersionUID = 1L;
-    
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

@@ -55,8 +55,8 @@ import java.util.Collection;
  * @version $Id: $
  */
 public class EventMaskValueList extends ArrayList<String> {
-    private static final long serialVersionUID = 1L;
-    
+    private static final long serialVersionUID = -7375744883429450497L;
+
     /**
      * The hash code calculated from the elements
      */

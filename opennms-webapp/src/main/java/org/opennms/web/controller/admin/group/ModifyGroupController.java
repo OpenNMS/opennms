@@ -49,7 +49,4 @@ package org.opennms.web.controller.admin.group;
  * @since 1.8.1
  */
 public class ModifyGroupController extends GroupController {
-    private static final long serialVersionUID = 1L;
-    
-    
 }

@@ -81,7 +81,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @since 1.8.1
  */
 public class DeleteNodesServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 573510937493956121L;
 
     private File m_snmpRrdDirectory;
 

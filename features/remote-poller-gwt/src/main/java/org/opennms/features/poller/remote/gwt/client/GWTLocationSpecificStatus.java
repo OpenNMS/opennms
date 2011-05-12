@@ -13,8 +13,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @since 1.8.1
  */
 public class GWTLocationSpecificStatus implements Serializable, IsSerializable {
-	private static final long serialVersionUID = 1L;
-
     private Integer m_id;
     private GWTLocationMonitor m_locationMonitor;
 	private GWTPollResult m_pollResult;

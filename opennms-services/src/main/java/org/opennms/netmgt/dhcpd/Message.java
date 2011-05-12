@@ -53,7 +53,8 @@ import edu.bucknell.net.JDHCP.DHCPMessage;
  * @version $Id: $
  */
 public final class Message implements Serializable {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -2712181407338192347L;
 
     private DHCPMessage m_dhcpmsg;
 

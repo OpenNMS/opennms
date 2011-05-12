@@ -62,7 +62,10 @@ import org.opennms.web.admin.users.parsers.User;
  * @since 1.8.1
  */
 public class RemoveDutySchedulesServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7251657805301792512L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

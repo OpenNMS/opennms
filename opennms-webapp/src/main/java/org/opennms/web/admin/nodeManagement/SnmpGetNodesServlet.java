@@ -69,7 +69,10 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * @since 1.8.1
  */
 public class SnmpGetNodesServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -9025129128736990895L;
 
     private static final String SNMP_SERVICE_QUERY = "SELECT serviceid FROM service WHERE servicename = 'SNMP'";
 

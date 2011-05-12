@@ -61,8 +61,10 @@ import org.opennms.web.WebSecurityUtils;
  * @since 1.8.1
  */
 public class SetCriticalPathServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5363097208855224954L;
     private static final String SQL_SET_CRITICAL_PATH = "INSERT INTO pathoutage (nodeid, criticalpathip, criticalpathservicename) VALUES (?, ?, ?)";
     private static final String SQL_DELETE_CRITICAL_PATH = "DELETE FROM pathoutage WHERE nodeid=?";
 

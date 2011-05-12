@@ -53,6 +53,10 @@ import org.opennms.acl.service.AuthorityService;
 public class Authority implements Serializable {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 8511033606854401267L;
+    /**
      * Constructor used by AuthorityFactory
      *
      * @param authority
@@ -177,5 +181,4 @@ public class Authority implements Serializable {
     private AuthorityDTO authority;
     private AuthorityService authorityService;
     private AclItemService aclItemService;
-    private static final long serialVersionUID = 1L;
 }

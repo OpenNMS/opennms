@@ -1,7 +1,8 @@
 package org.opennms.netmgt.syslogd;
 
 public class SyslogParserException extends Exception {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 8185991282482412701L;
 
     public SyslogParserException() {
         super();

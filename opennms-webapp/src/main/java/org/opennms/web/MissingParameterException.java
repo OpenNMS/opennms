@@ -44,7 +44,10 @@ package org.opennms.web;
  * @since 1.8.1
  */
 public class MissingParameterException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3100193382920197884L;
 
     protected String missingParameter;
 

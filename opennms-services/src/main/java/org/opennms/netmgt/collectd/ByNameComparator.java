@@ -42,7 +42,8 @@ import java.util.Comparator;
  * @version $Id: $
  */
 public final class ByNameComparator implements Comparator<AttributeDefinition>, Serializable {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -2596801053643459622L;
 
     /**
      * <p>compare</p>

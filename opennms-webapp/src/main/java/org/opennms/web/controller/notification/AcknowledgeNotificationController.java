@@ -61,8 +61,6 @@ import org.springframework.web.servlet.view.RedirectView;
  */
 public class AcknowledgeNotificationController extends AbstractController implements InitializingBean {
 
-    private static final long serialVersionUID = 1L;
-
     private WebNotificationRepository m_webNotificationRepository;
     
     private String m_redirectView;

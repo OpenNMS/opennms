@@ -38,9 +38,12 @@ package org.opennms.netmgt.snmp.mock;
 import java.util.NoSuchElementException;
 
 public class AgentNoSuchObjectException extends NoSuchElementException {
-    private static final long serialVersionUID = 1L;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1639945800324996617L;
 
-    public AgentNoSuchObjectException() {
+	public AgentNoSuchObjectException() {
         super();
         // TODO Auto-generated constructor stub
     }

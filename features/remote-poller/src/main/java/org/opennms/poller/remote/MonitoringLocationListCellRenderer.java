@@ -49,9 +49,12 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
  */
 public class MonitoringLocationListCellRenderer extends DefaultListCellRenderer {
 
-    private static final long serialVersionUID = 1L;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6166605236770433826L;
 
-    /** {@inheritDoc} */
+	/** {@inheritDoc} */
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         OnmsMonitoringLocationDefinition location = (OnmsMonitoringLocationDefinition)value;

@@ -17,13 +17,6 @@ import org.opennms.web.map.config.Status;
  * @since 1.8.1
  */
 public class VProperties {
-    
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
     boolean isUserAdmin=false;
     boolean reload=false;
 

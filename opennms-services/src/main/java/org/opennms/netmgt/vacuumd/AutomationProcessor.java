@@ -473,7 +473,8 @@ public class AutomationProcessor implements ReadyRunnable {
     }
     
     static class SQLExceptionHolder extends RuntimeException {
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 2479066089399740468L;
+
         private final SQLException m_ex;
         public SQLExceptionHolder(SQLException ex) {
             m_ex = ex;

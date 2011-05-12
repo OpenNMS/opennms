@@ -26,7 +26,8 @@ import org.opennms.netmgt.provision.support.PluginWrapper;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "m_key", "m_value" })
 public class PluginParameter implements Serializable, Comparable<PluginParameter> {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -6314596729655404812L;
 
     @XmlAttribute(name="key")
     private String m_key = null;

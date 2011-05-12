@@ -61,7 +61,10 @@ import org.opennms.netmgt.config.users.User;
  * @since 1.8.1
  */
 public class ModifyUserServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1842417702112069134L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

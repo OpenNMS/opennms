@@ -7,7 +7,7 @@ package org.opennms.netmgt.provision.persist;
  * @version $Id: $
  */
 public class NodeProvisionException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -9098358019487704928L;
 
     /**
      * <p>Constructor for NodeProvisionException.</p>

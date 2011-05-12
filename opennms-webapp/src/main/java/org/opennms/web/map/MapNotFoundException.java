@@ -45,7 +45,10 @@ package org.opennms.web.map;
  * @since 1.8.1
  */
 public class MapNotFoundException extends MapsException {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2982980097337281523L;
 
     /**
      * Create a new MapNotFoundException with no detail message.

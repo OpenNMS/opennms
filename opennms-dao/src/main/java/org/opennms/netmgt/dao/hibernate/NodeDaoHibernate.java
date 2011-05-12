@@ -265,7 +265,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                 		.setParameterList("rowCategories", rowCategories)
                 		.setParameterList("columnCategories", columnCategories)
                 		.setResultTransformer(new ResultTransformer() {
-                            private static final long serialVersionUID = 1L;
+                            private static final long serialVersionUID = 5152094813503430377L;
 
                             public Object transformTuple(Object[] tuple, String[] aliases) {
                                 logger.debug("tuple length = " + tuple.length);

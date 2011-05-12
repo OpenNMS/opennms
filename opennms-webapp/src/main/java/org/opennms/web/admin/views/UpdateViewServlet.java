@@ -60,7 +60,10 @@ import org.opennms.netmgt.config.views.View;
  * @since 1.8.1
  */
 public class UpdateViewServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -29922796393463161L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

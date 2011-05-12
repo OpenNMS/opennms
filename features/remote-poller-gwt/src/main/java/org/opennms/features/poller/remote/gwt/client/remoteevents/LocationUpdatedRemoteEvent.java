@@ -10,8 +10,6 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
  * @since 1.8.1
  */
 public class LocationUpdatedRemoteEvent implements MapRemoteEvent {
-	private static final long serialVersionUID = 1L;
-
 	private LocationInfo m_locationInfo;
 
 	/**

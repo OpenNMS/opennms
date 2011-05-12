@@ -57,10 +57,7 @@ import java.util.TimeZone;
  */
 public class SyslogTimeStamp extends Format {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -6116771489369028204L;
 
     /** Constant <code>DEFAULT_GMT_TZID="GMT+00"</code> */
     static public final String DEFAULT_GMT_TZID = "GMT+00";

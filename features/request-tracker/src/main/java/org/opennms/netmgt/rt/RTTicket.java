@@ -9,9 +9,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class RTTicket implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    private static Pattern m_trim = Pattern.compile("\\s*\\n*$");
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 445141747501076112L;
+	private static Pattern m_trim = Pattern.compile("\\s*\\n*$");
     private Long m_id;
     private String m_status;
     private String m_queue;

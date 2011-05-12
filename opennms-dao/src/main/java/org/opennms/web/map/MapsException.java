@@ -46,7 +46,8 @@ package org.opennms.web.map;
  * @since 1.8.1
  */
 public class MapsException extends Exception {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 4685820627958124083L;
 
     /**
      * Create a new MapsException with no detail mesage.

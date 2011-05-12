@@ -7,8 +7,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.rt.RTTicket;
 
 public class SupportResults implements Serializable {
-    private static final long serialVersionUID = 1L;
-    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2119247915337079075L;
     private boolean m_success = true;
     private boolean m_needsLogin = false;
     private String m_baseUrl;

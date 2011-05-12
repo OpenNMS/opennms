@@ -57,7 +57,7 @@ import org.opennms.netmgt.config.GroupManager;
  * @since 1.8.1
  */
 public class DeleteGroupServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -2354357068390448288L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

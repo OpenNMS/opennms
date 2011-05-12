@@ -15,7 +15,10 @@ import org.slf4j.Logger;
  */
 public class LogUtils {
     private static class SizeLimitedHashMap extends LinkedHashMap<Object,Logger> {
-        private static final long serialVersionUID = 1L;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -4975818830985716843L;
         private int m_maxSize;
         
         public SizeLimitedHashMap(final int size) {

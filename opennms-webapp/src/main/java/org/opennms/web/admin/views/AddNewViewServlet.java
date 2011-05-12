@@ -58,7 +58,10 @@ import org.opennms.web.admin.views.parsers.View;
  * @since 1.8.1
  */
 public class AddNewViewServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -2092767636140970345L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

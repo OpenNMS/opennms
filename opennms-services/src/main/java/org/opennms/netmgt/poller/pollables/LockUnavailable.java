@@ -42,7 +42,8 @@ package org.opennms.netmgt.poller.pollables;
  * @version $Id: $
  */
 public class LockUnavailable extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 6054183865580259303L;
 
     /**
      * <p>Constructor for LockUnavailable.</p>

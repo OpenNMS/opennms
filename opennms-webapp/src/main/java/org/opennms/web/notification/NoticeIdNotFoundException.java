@@ -44,7 +44,10 @@ package org.opennms.web.notification;
  * @since 1.8.1
  */
 public class NoticeIdNotFoundException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7747809406197871763L;
 
     protected String badId;
 

@@ -41,8 +41,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class MockTransactionTemplate extends TransactionTemplate {
-    private static final long serialVersionUID = 1L;
-    
+    private static final long serialVersionUID = -2067133200875390660L;
 
     public MockTransactionTemplate() {
         super(new MockPlatformTransactionManager());

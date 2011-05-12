@@ -10,7 +10,6 @@ import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
  * @since 1.8.1
  */
 public class ApplicationUpdatedRemoteEvent implements MapRemoteEvent {
-	private static final long serialVersionUID = 1L;
 	private ApplicationInfo m_applicationInfo;
 
 	/**

@@ -47,7 +47,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * @version $Id: $
  */
 public class NodeToNodeLink implements Serializable {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 3345863801030796787L;
 
     final int m_nodeId;
     final int m_ifIndex;

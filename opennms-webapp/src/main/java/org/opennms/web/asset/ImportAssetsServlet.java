@@ -83,9 +83,12 @@ public class ImportAssetsServlet extends HttpServlet {
     private List<String> errors = new ArrayList<String>();
 
     private class AssetException extends Exception {
-		private static final long serialVersionUID = 1L;
+		/**
+         * 
+         */
+        private static final long serialVersionUID = 2498335935646001342L;
 
-		public AssetException(String message) {
+        public AssetException(String message) {
     		super(message);
     	}
 

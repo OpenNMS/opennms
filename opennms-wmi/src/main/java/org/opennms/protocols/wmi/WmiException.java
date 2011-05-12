@@ -39,9 +39,12 @@ package org.opennms.protocols.wmi;
  * @version $Id: $
  */
 public class WmiException extends Exception {
-    private static final long serialVersionUID = 1L;
-
    /**
+     * 
+     */
+    private static final long serialVersionUID = -2373078958094279134L;
+
+/**
 	 * Constructor.
 	 */
 	public WmiException() {

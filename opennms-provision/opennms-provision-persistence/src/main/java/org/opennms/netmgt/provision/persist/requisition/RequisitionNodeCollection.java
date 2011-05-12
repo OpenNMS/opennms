@@ -18,9 +18,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="nodes")
 public class RequisitionNodeCollection extends LinkedList<RequisitionNode> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7563467532077046047L;
 
-	/**
+    /**
 	 * <p>Constructor for RequisitionNodeCollection.</p>
 	 */
 	public RequisitionNodeCollection() {

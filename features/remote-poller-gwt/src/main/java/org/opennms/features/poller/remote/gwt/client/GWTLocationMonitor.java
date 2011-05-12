@@ -15,8 +15,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @since 1.8.1
  */
 public class GWTLocationMonitor implements Serializable, IsSerializable, Comparable<GWTLocationMonitor> {
-	private static final long serialVersionUID = 1L;
-
 	private Integer m_id;
 	private String m_status;
 	private String m_definitionName;

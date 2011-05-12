@@ -5,9 +5,11 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class RTQueue implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    private long m_id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 875365658091878358L;
+	private long m_id;
     private String m_name;
 
     public RTQueue() {

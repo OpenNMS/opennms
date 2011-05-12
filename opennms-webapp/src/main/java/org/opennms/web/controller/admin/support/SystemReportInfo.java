@@ -8,8 +8,10 @@ import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
 
 public class SystemReportInfo implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4803853030354121419L;
     private final List<SystemReportPlugin> m_plugins;
     private final List<SystemReportFormatter> m_formatters;
 

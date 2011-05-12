@@ -60,7 +60,7 @@ import org.opennms.netmgt.config.groups.Group;
  * @since 1.8.1
  */
 public class AddNewGroupServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -8192400415788066048L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

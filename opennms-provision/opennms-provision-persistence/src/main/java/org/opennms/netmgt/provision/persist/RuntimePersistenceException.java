@@ -7,7 +7,8 @@ package org.opennms.netmgt.provision.persist;
  * @version $Id: $
  */
 public class RuntimePersistenceException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 8462261466853731107L;
 
     /**
      * <p>Constructor for RuntimePersistenceException.</p>

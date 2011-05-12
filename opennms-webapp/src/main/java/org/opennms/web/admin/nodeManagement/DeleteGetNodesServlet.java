@@ -64,8 +64,8 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * @since 1.8.1
  */
 public class DeleteGetNodesServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    
+    private static final long serialVersionUID = -34219022712246261L;
+
     private static final String NODE_QUERY =
     // "SELECT nodeid, nodelabel FROM node ORDER BY nodelabel, nodeid";
     "SELECT nodeid, nodelabel FROM node WHERE nodetype != 'D' ORDER BY nodelabel, nodeid";

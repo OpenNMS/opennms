@@ -5,9 +5,11 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class RTUser implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    private long m_id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4830811460415894277L;
+	private long m_id;
     private String m_username;
     private String m_realname;
     private String m_email;

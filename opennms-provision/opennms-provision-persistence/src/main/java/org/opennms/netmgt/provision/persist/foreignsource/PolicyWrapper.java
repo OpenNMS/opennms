@@ -11,8 +11,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="policy")
 public class PolicyWrapper extends PluginConfig {
-    private static final long serialVersionUID = 1L;
-    
+    private static final long serialVersionUID = 2274187366206871955L;
+
     /**
      * <p>Constructor for PolicyWrapper.</p>
      */

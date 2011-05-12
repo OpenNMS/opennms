@@ -20,7 +20,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @since 1.8.1
  */
 public class ApplicationState implements Serializable, IsSerializable {
-	private static final long serialVersionUID = 1L;
 	private Map<String,ApplicationDetails> m_statuses = new HashMap<String,ApplicationDetails>();
 
 	private StatusDetails m_statusDetails;

@@ -17,8 +17,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="events")
 public class OnmsEventCollection extends LinkedList<OnmsEvent> {
 
-	private static final long serialVersionUID = 1L;
-	private int m_totalCount;
+    private static final long serialVersionUID = 7330609869969767290L;
+
+    private int m_totalCount;
 
 	/**
 	 * <p>Constructor for OnmsEventCollection.</p>

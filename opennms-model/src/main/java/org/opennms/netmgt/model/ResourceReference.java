@@ -56,11 +56,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name="resourceReference")
 public class ResourceReference implements Serializable {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    
+    private static final long serialVersionUID = -8681671877772073153L;
+
     private Integer m_id;
     private String m_resourceId;
     

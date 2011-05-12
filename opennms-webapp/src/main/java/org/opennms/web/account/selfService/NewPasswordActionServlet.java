@@ -62,7 +62,7 @@ import org.opennms.web.springframework.security.Authentication;
  * @since 1.8.1
  */
 public class NewPasswordActionServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6803675433403988004L;
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

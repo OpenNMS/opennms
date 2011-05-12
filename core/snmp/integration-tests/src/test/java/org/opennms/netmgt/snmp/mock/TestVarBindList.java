@@ -41,11 +41,11 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 
 public class TestVarBindList extends ArrayList<TestVarBind> {
     /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+	 * 
+	 */
+	private static final long serialVersionUID = -2527997773492999718L;
 
-    public TestVarBindList() {
+	public TestVarBindList() {
         super();
     }
     

@@ -50,7 +50,8 @@ import java.lang.reflect.UndeclaredThrowableException;
  * @version $Id: $
  */
 public final class UndeclaredEventException extends UndeclaredThrowableException {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -3138934063775363857L;
 
     /**
      * <p>Constructor for UndeclaredEventException.</p>

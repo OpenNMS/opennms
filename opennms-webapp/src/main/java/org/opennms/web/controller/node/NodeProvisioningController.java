@@ -57,8 +57,6 @@ import org.springframework.web.servlet.view.RedirectView;
  */
 public class NodeProvisioningController extends AbstractController implements
         InitializingBean {
-    private static final long serialVersionUID = 1L;
-
     private NodeProvisionService m_nodeProvisionService;
     
     private String m_successView;

@@ -60,7 +60,10 @@ import org.opennms.web.api.Util;
  * @since 1.8.1
  */
 public class RTCPostServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5550051932055498432L;
 
     protected CategoryModel model;
 

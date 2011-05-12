@@ -39,10 +39,8 @@ package org.opennms.netmgt.threshd;
  */
 public class ThresholdingException extends Exception {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6271939129938598275L;
+
     private int m_failureCode;
 
     /**

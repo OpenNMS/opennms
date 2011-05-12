@@ -44,7 +44,10 @@ package org.opennms.web.outage;
  * @since 1.8.1
  */
 public class OutageIdNotFoundException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3055198304878733518L;
 
     protected String badId;
 

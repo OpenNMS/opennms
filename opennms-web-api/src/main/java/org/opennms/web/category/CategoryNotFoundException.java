@@ -43,9 +43,9 @@ package org.opennms.web.category;
  * @version $Id: $
  */
 public class CategoryNotFoundException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
-    
-    protected String category;
+	private static final long serialVersionUID = 5700012759168177139L;
+
+	protected String category;
 
     /**
      * <p>Constructor for CategoryNotFoundException.</p>

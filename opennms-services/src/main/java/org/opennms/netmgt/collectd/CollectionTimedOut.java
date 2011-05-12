@@ -42,7 +42,8 @@ package org.opennms.netmgt.collectd;
  * @version $Id: $
  */
 public class CollectionTimedOut extends CollectionException {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 7277882701768744179L;
 
     /**
      * <p>Constructor for CollectionTimedOut.</p>

@@ -67,8 +67,6 @@ import org.springframework.web.servlet.view.RedirectView;
  */
 public class AlarmSeverityChangeController extends AbstractController implements InitializingBean {
     
-    private static final long serialVersionUID = 1L;
-
     /** Constant <code>ESCALATE_ACTION="1"</code> */
     public final static String ESCALATE_ACTION = "1";
     /** Constant <code>CLEAR_ACTION="2"</code> */

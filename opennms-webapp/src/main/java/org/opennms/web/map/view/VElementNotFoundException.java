@@ -45,7 +45,10 @@ import org.opennms.web.map.MapsException;
  * @since 1.8.1
  */
 public class VElementNotFoundException extends MapsException {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6537412729900201824L;
 
     /**
      * Create a new NetworkNodeNotFoundException with no detail message.

@@ -42,7 +42,8 @@ package org.opennms.netmgt.poller.pollables;
  * @version $Id: $
  */
 public class ThreadInterrupted extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -5121399068267358176L;
 
     /**
      * <p>Constructor for ThreadInterrupted.</p>

@@ -71,7 +71,7 @@ import org.opennms.web.WebSecurityUtils;
  * @since 1.8.1
  */
 public class GetInterfacesServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6768576652872631928L;
 
     private static final String INTERFACE_QUERY = "SELECT ipaddr, isManaged FROM ipinterface " + "WHERE nodeid=? " + "AND ismanaged IN ('M','A','U','F') " + "AND ipaddr <> '0.0.0.0' " + "ORDER BY inet(ipaddr)";
 

@@ -15,8 +15,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @since 1.8.1
  */
 public class GWTPollResult implements Serializable, IsSerializable, Comparable<GWTPollResult> {
-	private static final long serialVersionUID = 1L;
-
 	private String m_status;
 	private Date m_timestamp;
 	private String m_reason;

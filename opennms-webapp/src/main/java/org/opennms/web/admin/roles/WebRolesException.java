@@ -43,7 +43,10 @@ package org.opennms.web.admin.roles;
  * @since 1.8.1
  */
 public class WebRolesException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7520091278102237241L;
 
     /**
      * <p>Constructor for WebRolesException.</p>

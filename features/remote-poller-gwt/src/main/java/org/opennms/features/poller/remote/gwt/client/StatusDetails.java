@@ -16,8 +16,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @since 1.8.1
  */
 public class StatusDetails implements Serializable, IsSerializable, Comparable<StatusDetails> {
-    private static final long serialVersionUID = 1L;
-
     private Status m_status;
 
     private String m_reason;

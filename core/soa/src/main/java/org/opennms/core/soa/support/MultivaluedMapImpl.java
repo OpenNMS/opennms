@@ -44,6 +44,11 @@ import java.util.Set;
 public class MultivaluedMapImpl<K, V> extends LinkedHashMap<K, Set<V>>  implements MultivaluedMap<K, V> {
     
     /**
+     * 
+     */
+    private static final long serialVersionUID = -4898439337217431661L;
+
+    /**
      * SynchronizedMultivaluedMap
      *
      * @author brozow
@@ -151,8 +156,6 @@ public class MultivaluedMapImpl<K, V> extends LinkedHashMap<K, Set<V>>  implemen
 
     }
 
-
-    private static final long serialVersionUID = 1L;
 
     /**
      * <p>Constructor for MultivaluedMapImpl.</p>

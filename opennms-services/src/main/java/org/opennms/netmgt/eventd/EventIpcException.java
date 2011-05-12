@@ -48,7 +48,8 @@ package org.opennms.netmgt.eventd;
  * @version $Id: $
  */
 public final class EventIpcException extends Exception {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 2603347979765739877L;
 
     /**
      * Default class constructor. Constructs a new exception with a default

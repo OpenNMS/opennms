@@ -64,8 +64,9 @@ import javax.persistence.Transient;
 @Entity
 @Table(name="statisticsReport")
 public class StatisticsReport implements Serializable {
-    private static final long serialVersionUID = 1L;
-    
+
+    private static final long serialVersionUID = -4311256943204150153L;
+
     private Integer m_id;
     private Date m_startDate;
     private Date m_endDate;

@@ -58,9 +58,9 @@ import org.opennms.netmgt.config.users.User;
  * @since 1.8.1
  */
 public class NewPasswordEntryServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 8979500859478109256L;
 
-	/** {@inheritDoc} */
+    /** {@inheritDoc} */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession userSession = request.getSession(false);
 		

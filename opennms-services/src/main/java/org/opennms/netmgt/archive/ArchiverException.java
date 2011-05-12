@@ -47,7 +47,8 @@ package org.opennms.netmgt.archive;
  * @version $Id: $
  */
 public class ArchiverException extends Exception {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -1724554468082066017L;
 
     /**
      * <p>Constructor for ArchiverException.</p>

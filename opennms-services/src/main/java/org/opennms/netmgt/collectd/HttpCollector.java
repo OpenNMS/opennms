@@ -448,7 +448,7 @@ public class HttpCollector implements ServiceCollector {
 
     public class HttpCollectorException extends RuntimeException {
 
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 4413332529546573490L;
 
         HttpCollectorException(String message) {
             super(message);

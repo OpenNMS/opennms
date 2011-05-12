@@ -41,7 +41,8 @@ package org.opennms.netmgt.protocols.ssh;
  * @version $Id: $
  */
 public class SshException extends Exception {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 1390108956262402029L;
 
     /**
      * <p>Constructor for SshException.</p>

@@ -39,7 +39,8 @@ package org.opennms.netmgt.poller.nsclient;
  * @version $Id: $
  */
 public class NsclientException extends Exception {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -5403442488340618492L;
 
     /**
      * Constructor.
