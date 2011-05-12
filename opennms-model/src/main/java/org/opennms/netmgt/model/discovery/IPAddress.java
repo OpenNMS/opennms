@@ -146,6 +146,11 @@ public class IPAddress implements Comparable<IPAddress> {
             carry = b[i] == 0 ? carry : 0;
         }
         
+        if (carry > 0) {
+            // we have overflowed the address
+            throw new IllegalStateException("you have tried to increment the max ip address");
+        }
+        
         return new IPAddress(b);
     }
     
@@ -162,6 +167,11 @@ public class IPAddress implements Comparable<IPAddress> {
             b[i] = (byte)(m_ipAddr[i] - borrow);
             // if underflow then we need to borrow from the next byte
             borrow = b[i] == (byte)0xff ? borrow : 0;
+        }
+        
+        if (borrow > 0) {
+            // we have underflowed the address
+            throw new IllegalStateException("you have tried to decrement the '0' ip address");
         }
         
         return new IPAddress(b);
