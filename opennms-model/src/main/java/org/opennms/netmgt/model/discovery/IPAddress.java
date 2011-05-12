@@ -119,10 +119,19 @@ public class IPAddress implements Comparable<IPAddress> {
     public int compareTo(IPAddress o) {
         return new ByteArrayComparator().compare(m_ipAddr, o.toOctets());
     }
-
+    
+    public String toUserString() {
+        // this returns dotted notation for ipv4 or the double colon format for ipv6
+        return toInetAddress().getHostAddress().replaceFirst("(^|:)(0:)+", "::");
+    }
+    
     /** {@inheritDoc} */
     @Override
     public String toString() {
+        return toUserString();
+    }
+
+    public String toDbString() {
         return InetAddressUtils.toIpAddrString(m_ipAddr);
     }
     
@@ -130,6 +139,8 @@ public class IPAddress implements Comparable<IPAddress> {
     public BigInteger toBigInteger() {
         return new BigInteger(1, m_ipAddr);
     }
+    
+    
     
     /**
      * <p>incr</p>

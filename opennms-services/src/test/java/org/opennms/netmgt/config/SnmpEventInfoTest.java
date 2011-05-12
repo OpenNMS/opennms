@@ -51,6 +51,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -69,31 +70,36 @@ public class SnmpEventInfoTest {
     }
     
     @Test
-    public void testConfigAddressIncr() {
-        ConfigAddress a = new ConfigAddress("::5");
-        assertEquals("::6", a.incr().toString());
+    public void testAddressIncr() {
+        IPAddress ipA = new IPAddress("::5");
+        assertEquals("::6", ipA.incr().toString());
         
-        ConfigAddress b = new ConfigAddress("::ffff:ffff");
-        assertEquals("::1:0:0", b.incr().toString());
+        IPAddress ipB = new IPAddress("::ffff:ffff");
+        assertEquals("::1:0:0", ipB.incr().toString());
         
-        ConfigAddress c = new ConfigAddress("::ff00:ffff");
-        assertEquals("::ff01:0", c.incr().toString());
+        IPAddress ipC = new IPAddress("::ff00:ffff");
+        assertEquals("::ff01:0", ipC.incr().toString());
+
+        IPAddress ipD = new IPAddress("::ff00:7fff");
+        assertEquals("::ff00:8000", ipD.incr().toString());
 
     }
     
     @Test
     public void testConfigAddressDecr() {
-        ConfigAddress a = new ConfigAddress("::6");
+        IPAddress a = new IPAddress("::6");
         assertEquals("::5", a.decr().toString());
         
-        ConfigAddress b = new ConfigAddress("::1:0:0");
+        IPAddress b = new IPAddress("::1:0:0");
         assertEquals("::ffff:ffff", b.decr().toString());
         
-        ConfigAddress c = new ConfigAddress("ff::ffff:1:0");
+        IPAddress c = new IPAddress("ff::ffff:1:0");
         assertEquals("ff::ffff:0:ffff", c.decr().toString());
 
+        IPAddress d = new IPAddress("ff::ffff:1:8000");
+        assertEquals("ff::ffff:1:7fff", d.decr().toString());
     }
-    
+
     @Test
     public void testContainsAddr() {
         ConfigRange r = new ConfigRange("192.168.1.1", "192.168.1.3");

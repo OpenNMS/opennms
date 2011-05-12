@@ -392,10 +392,10 @@ public class SnmpPoller extends AbstractServiceDaemon {
         IPAddressRange range = new IPAddressRange(info.getFirstIPAddress(), info.getLastIPAddress());
         for (IPAddress ipaddr : range) {
             log().debug("reloadSnmpConfig: found ipaddr: " + ipaddr);
-            if (getNetwork().hasPollableInterface(ipaddr.toString())) {
+            if (getNetwork().hasPollableInterface(ipaddr.toDbString())) {
                 log().debug("reloadSnmpConfig: recreating the Interface to poll: " + ipaddr);
-                getNetwork().delete(ipaddr.toString());
-                scheduleNewSnmpInterface(ipaddr.toString());
+                getNetwork().delete(ipaddr.toDbString());
+                scheduleNewSnmpInterface(ipaddr.toDbString());
             } else {
                 log().debug("reloadSnmpConfig: no Interface found for ipaddr: " + ipaddr);
             }

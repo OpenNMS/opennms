@@ -34,22 +34,23 @@ import java.util.List;
 
 import org.opennms.netmgt.config.ConfigRange;
 import org.opennms.netmgt.config.snmp.Range;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 class ConfigRange implements Comparable<ConfigRange> {
     
-    private ConfigAddress m_beginAddr;
-    private ConfigAddress m_endAddr;
+    private IPAddress m_begin;
+    private IPAddress m_end;
     
-    public ConfigRange(ConfigAddress beginAddr, ConfigAddress endAddr) {
-        m_beginAddr = beginAddr;
-        m_endAddr   = endAddr;
-        if (m_beginAddr.isGreaterThan(m_endAddr)) {
-            throw new IllegalArgumentException("Invalid range ["+m_beginAddr+", "+m_endAddr+"]");
+    public ConfigRange(IPAddress begin, IPAddress end) {
+        m_begin = begin;
+        m_end = end;
+        if (getBeginAddress().isGreaterThan(getEndAddress())) {
+            throw new IllegalArgumentException("Invalid range ["+getBeginAddress()+", "+getEndAddress()+"]");
         }
     }
-
+    
     public ConfigRange(String beginAddr, String endAddr) {
-        this(new ConfigAddress(beginAddr), new ConfigAddress(endAddr));
+        this(new IPAddress(beginAddr), new IPAddress(endAddr));
     }
     
     public ConfigRange(Range r) {
@@ -60,20 +61,20 @@ class ConfigRange implements Comparable<ConfigRange> {
         this(specific, specific);
     }
     
+    private IPAddress getBeginAddress() {
+        return m_begin;
+    }
+    
+    private IPAddress getEndAddress() {
+        return m_end;
+    }
+    
     public String getBegin() {
-        return m_beginAddr.toString();
+        return getBeginAddress().toString();
     }
 
     public String getEnd() {
-        return m_endAddr.toString();
-    }
-    
-    public ConfigAddress getBeginAddr() {
-        return m_beginAddr;
-    }
-
-    public ConfigAddress getEndAddr() {
-        return m_endAddr;
+        return getEndAddress().toString();
     }
     
     public String getSpecificString() {
@@ -84,27 +85,27 @@ class ConfigRange implements Comparable<ConfigRange> {
     }
     
     public boolean isSpecific() {
-        return m_beginAddr.equals(m_endAddr);
+        return getBeginAddress().equals(getEndAddress());
     }
     
-    public boolean contains(ConfigAddress addr) {
-        return m_beginAddr.isLessThanOrEqualTo(addr) && addr.isLessThanOrEqualTo(m_endAddr);
+    private boolean contains(IPAddress address) {
+        return getBeginAddress().isLessThanOrEqualTo(address) && address.isLessThanOrEqualTo(getEndAddress());
     }
 
     public boolean preceeds(ConfigRange r) {
-        return m_endAddr.isLessThan(r.getBeginAddr());
+        return getEndAddress().isLessThan(r.getBeginAddress());
     }
-    
+
     public boolean follows(ConfigRange r) {
         return r.preceeds(this);
     }
     
     public boolean overlaps(ConfigRange r) {
-        return m_beginAddr.isLessThanOrEqualTo(r.getEndAddr()) && r.getBeginAddr().isLessThanOrEqualTo(m_endAddr);
+        return getBeginAddress().isLessThanOrEqualTo(r.getEndAddress()) && r.getBeginAddress().isLessThanOrEqualTo(getEndAddress());
     }
-    
+
     public boolean contains(ConfigRange r) {
-        return m_beginAddr.isLessThanOrEqualTo(r.m_beginAddr) && r.m_endAddr.isLessThanOrEqualTo(m_endAddr);
+        return getBeginAddress().isLessThanOrEqualTo(r.getBeginAddress()) && r.getEndAddress().isLessThanOrEqualTo(getEndAddress());
     }
     
     public boolean combinable(ConfigRange r) {
@@ -115,10 +116,9 @@ class ConfigRange implements Comparable<ConfigRange> {
         if (!combinable(r)) {
             throw new IllegalArgumentException(String.format("Range %s is not combinable with range %s", this, r));
         }
-        
-        return new ConfigRange(ConfigAddress.min(m_beginAddr, r.m_beginAddr), ConfigAddress.max(m_endAddr, r.m_endAddr));
+        return new ConfigRange(IPAddress.min(r.getBeginAddress(), getBeginAddress()), IPAddress.max(getEndAddress(), r.getEndAddress()));
     }
-    
+
     public int compareTo(ConfigRange r) {
         if (preceeds(r)) {
             // this is less than 
@@ -136,14 +136,14 @@ class ConfigRange implements Comparable<ConfigRange> {
     public boolean equals(Object obj) {
         if (obj instanceof ConfigRange) {
             ConfigRange r = (ConfigRange)obj;
-            return m_beginAddr.equals(r.m_beginAddr) && m_endAddr.equals(r.m_endAddr);
+            return getBeginAddress().equals(r.getBeginAddress()) && getEndAddress().equals(r.getEndAddress());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return m_beginAddr.hashCode()*31+m_endAddr.hashCode();
+        return getBeginAddress().hashCode()*31+getEndAddress().hashCode();
     }
 
     @Override
@@ -158,11 +158,11 @@ class ConfigRange implements Comparable<ConfigRange> {
     }
 
     public boolean contains(String address) {
-        return contains(new ConfigAddress(address));
+        return contains(new IPAddress(address));
     }
 
     public boolean adjacent(ConfigRange r) {
-        return r.m_endAddr.immediatelyPreceeds(m_beginAddr) || r.m_beginAddr.immediatelyFollows(m_endAddr);
+        return r.getEndAddress().isPredecessorOf(getBeginAddress()) || r.getBeginAddress().isSuccessorOf(getEndAddress());
     }
 
     public ConfigRange[] remove(ConfigRange r) {
@@ -172,11 +172,11 @@ class ConfigRange implements Comparable<ConfigRange> {
             return new ConfigRange[] { this };
         } else {
             List<ConfigRange> ranges = new ArrayList<ConfigRange>(2);
-            if (m_beginAddr.isLessThan(r.m_beginAddr)) {
-                ranges.add(new ConfigRange(m_beginAddr, r.m_beginAddr.decr()));
+            if (getBeginAddress().isLessThan(r.getBeginAddress())) {
+                ranges.add(new ConfigRange(getBeginAddress(), r.getBeginAddress().decr()));
             }
-            if (r.m_endAddr.isLessThan(m_endAddr)) {
-                ranges.add(new ConfigRange(r.m_endAddr.incr(), m_endAddr));
+            if (r.getEndAddress().isLessThan(getEndAddress())) {
+                ranges.add(new ConfigRange(r.getEndAddress().incr(), getEndAddress()));
             }
             return ranges.toArray(new ConfigRange[ranges.size()]);
             

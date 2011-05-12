@@ -56,25 +56,23 @@ public class ByteArrayComparator implements Comparator<byte[]> {
         } else {
             // Make shorter byte arrays "less than" longer arrays
             int comparison = new Integer(a.length).compareTo(new Integer(b.length));
-            if (comparison == 0) {
+            if (comparison != 0) {
+                return comparison;
+            } else {
                 // Compare byte-by-byte
                 for (int i = 0; i < a.length; i++) {
-                    int byteComparison = new Long(unsignedByteToLong(a[i])).compareTo(new Long(unsignedByteToLong(b[i])));
-                    if (byteComparison == 0) {
-                        continue;
-                    } else {
+                    int byteComparison = Integer.valueOf(unsignedByteToInt(a[i])).compareTo(Integer.valueOf(unsignedByteToInt(b[i])));
+                    if (byteComparison != 0) {
                         return byteComparison;
                     }
                 }
                 // OK both arrays are the same length and every byte is identical so they are equal
                 return 0;
-            } else {
-                return comparison;
             }
         }
     }
 
-    private static long unsignedByteToLong(byte b) {
-        return b < 0 ? ((long)b)+256 : ((long)b);
+    private static int unsignedByteToInt(byte b) {
+        return b < 0 ? ((int)b)+256 : ((int)b);
     }
 }
