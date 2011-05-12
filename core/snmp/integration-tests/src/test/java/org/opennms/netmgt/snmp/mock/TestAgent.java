@@ -112,7 +112,7 @@ public class TestAgent {
         }
     }
 
-    public void loadSnmpTestData(Class clazz, String name) throws IOException {
+    public void loadSnmpTestData(Class<?> clazz, String name) throws IOException {
         InputStream dataStream = clazz.getResourceAsStream(name);
         Properties mibData = new Properties();
         mibData.load(dataStream);

@@ -40,39 +40,29 @@
  */
 package org.opennms.netmgt.rrd.tcp;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdDataSource;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
-import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
+
 /*
 import org.python.core.PyException;
 import org.python.core.PyDictionary;
@@ -80,7 +70,6 @@ import org.python.core.PyInteger;
 import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
  */
-import org.springframework.util.StringUtils;
 
 /**
  * Unit tests for the TcpRrdStrategy.
@@ -89,7 +78,7 @@ import org.springframework.util.StringUtils;
  */
 public class TcpRrdStrategyTest {
 
-    private RrdStrategy m_strategy;
+    private RrdStrategy<Object,Object> m_strategy;
     private FileAnticipator m_fileAnticipator;
     private static Thread m_listenerThread;
     private static String m_tempDir;

@@ -47,7 +47,7 @@ public interface WebGroupManager {
      *
      * @return a {@link java.util.Collection} object.
      */
-    public Collection getGroups();
+    public Collection<WebGroup> getGroups();
 
     /**
      * <p>getGroup</p>

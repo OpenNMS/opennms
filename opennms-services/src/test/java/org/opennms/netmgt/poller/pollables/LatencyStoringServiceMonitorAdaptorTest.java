@@ -86,7 +86,7 @@ import org.opennms.test.mock.MockLogAppender;
 public class LatencyStoringServiceMonitorAdaptorTest {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     private PollerConfig m_pollerConfig = m_mocks.createMock(PollerConfig.class);
-    private RrdStrategy m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
+    private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
     
     @Before
     public void setUp() throws Exception {

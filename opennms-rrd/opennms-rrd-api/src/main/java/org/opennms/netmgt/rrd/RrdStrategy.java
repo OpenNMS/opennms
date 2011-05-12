@@ -51,7 +51,7 @@ import java.util.Properties;
  * @author ranger
  * @version $Id: $
  */
-public interface RrdStrategy<D,F> {
+public interface RrdStrategy<D extends Object,F extends Object> {
 
     /**
      * <p>setConfigurationProperties</p>

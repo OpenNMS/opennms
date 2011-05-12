@@ -424,7 +424,7 @@ public class Vulnscand extends AbstractServiceDaemon {
 
 				// Grab the list of included addresses for this level
 				//Set levelAddresses = configFactory.getAllIpAddresses(scanLevel);
-				Set levelAddresses = new TreeSet();
+				Set<String> levelAddresses = new TreeSet<String>();
 
 				// If scanning of the managed IPs is enabled...
 				if (configFactory.getManagedInterfacesStatus()) {
@@ -445,17 +445,16 @@ public class Vulnscand extends AbstractServiceDaemon {
 
 				log().info("Adding " + levelAddresses.size() + " addresses to the vulnerability scan scheduler.");
 
-				Iterator itr = levelAddresses.iterator();
+				Iterator<String> itr = levelAddresses.iterator();
 				while (itr.hasNext()) {
-					Object next = itr.next();
+					String next = itr.next();
 					String nextAddress = null;
-					if (next instanceof String) {
-						nextAddress = (String) next;
-						// REMOVE SLASHES.... - 
-						//nextAddress = nextAddress.replaceAll("/", "");
-						//nextAddress = nextAddress + "/" + nextAddress;
-						log().debug("JOHAN LevelAddresses : " + nextAddress);
-					}
+					nextAddress = (String) next;
+					// REMOVE SLASHES.... - 
+					//nextAddress = nextAddress.replaceAll("/", "");
+					//nextAddress = nextAddress + "/" + nextAddress;
+					log().debug("JOHAN LevelAddresses : " + nextAddress);
+
 					// All we know right now is the IP.....
 					InetAddress frump = InetAddressUtils.addr(nextAddress);
 					addToKnownAddresses(frump, level);

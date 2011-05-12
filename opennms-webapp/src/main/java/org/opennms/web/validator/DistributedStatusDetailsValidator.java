@@ -56,7 +56,7 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
     private ApplicationDao m_applicationDao;
 
     /** {@inheritDoc} */
-    public boolean supports(Class clazz) {
+    public boolean supports(Class<?> clazz) {
         return clazz.equals(DistributedStatusDetailsCommand.class);
     }
 

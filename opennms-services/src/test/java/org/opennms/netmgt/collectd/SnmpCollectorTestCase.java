@@ -39,11 +39,6 @@ import org.easymock.EasyMock;
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.netmgt.collectd.AttributeVisitor;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionResource;
-import org.opennms.netmgt.collectd.OnmsSnmpCollection;
-import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -64,10 +59,10 @@ import org.springframework.core.io.ClassPathResource;
 public class SnmpCollectorTestCase extends OpenNMSTestCase {
 
     private final class AttributeVerifier extends AttributeVisitor {
-		private final List list;
+		private final List<MibObject> list;
 
 		public int attributeCount = 0;
-		private AttributeVerifier(List list) {
+		private AttributeVerifier(List<MibObject> list) {
 			this.list = list;
 		}
 
@@ -136,7 +131,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         super.tearDown();
     }
     
-    protected void assertMibObjectsPresent(CollectionResource resource, final List attrList) {
+    protected void assertMibObjectsPresent(CollectionResource resource, final List<MibObject> attrList) {
         assertNotNull(resource);
         
         AttributeVerifier attributeVerifier = new AttributeVerifier(attrList);
@@ -144,9 +139,9 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
 		assertEquals("Unexpected number of attributes", attrList.size(), attributeVerifier.attributeCount);
     }
 
-    protected void assertMibObjectPresent(SnmpAttribute attribute, List attrList) {
-        for (Iterator it = attrList.iterator(); it.hasNext();) {
-            MibObject mibObj = (MibObject) it.next();
+    protected void assertMibObjectPresent(SnmpAttribute attribute, List<MibObject> attrList) {
+        for (Iterator<MibObject> it = attrList.iterator(); it.hasNext();) {
+            MibObject mibObj = it.next();
             if (mibObj.getOid().equals(attribute.getAttributeType().getOid()))
                 return;
         }
@@ -266,7 +261,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     
     public void testDoNothing() {}
 
-    public List getAttributeList() {
+    public List<MibObject> getAttributeList() {
         return m_config.getAttrList();
     }
 

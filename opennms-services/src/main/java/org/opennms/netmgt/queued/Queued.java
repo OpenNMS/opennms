@@ -45,6 +45,7 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.rrd.QueuingRrdStrategy;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
@@ -59,7 +60,7 @@ import org.springframework.util.StringUtils;
 public class Queued extends AbstractServiceDaemon implements EventListener {
     
     private volatile EventIpcManager m_eventMgr; 
-    private volatile RrdStrategy m_rrdStrategy;
+    private volatile QueuingRrdStrategy m_rrdStrategy;
 
     /**
      * <p>Constructor for Queued.</p>
@@ -82,7 +83,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
      *
      * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    public RrdStrategy getRrdStrategy() {
+    public QueuingRrdStrategy getRrdStrategy() {
         return m_rrdStrategy;
     }
 
@@ -91,7 +92,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
      *
      * @param rrdStrategy a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    public void setRrdStrategy(RrdStrategy rrdStrategy) {
+    public void setRrdStrategy(QueuingRrdStrategy rrdStrategy) {
         m_rrdStrategy = rrdStrategy;
     }
     

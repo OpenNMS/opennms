@@ -144,7 +144,7 @@ public class GroupInfo {
      *
      * @return the list of users
      */
-    public List getUsers() {
+    public List<String> getUsers() {
         return m_users;
     }
 

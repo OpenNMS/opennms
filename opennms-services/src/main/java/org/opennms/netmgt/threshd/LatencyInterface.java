@@ -76,11 +76,11 @@ public class LatencyInterface {
 		return m_iface;
 	}
 
-	Map getThresholdMap() {
+	Map<String, ThresholdEntity> getThresholdMap() {
 	    NetworkInterface<InetAddress> iface = getNetworkInterface();
 		// ThresholdEntity map attributes
 	    //
-	    Map thresholdMap = (Map) iface.getAttribute(LatencyThresholder.THRESHOLD_MAP_KEY);
+	    Map<String, ThresholdEntity> thresholdMap = (Map<String, ThresholdEntity>) iface.getAttribute(LatencyThresholder.THRESHOLD_MAP_KEY);
 	    return thresholdMap;
 	}
 

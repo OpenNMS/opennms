@@ -54,7 +54,7 @@ public class StatisticsReportCommandValidator implements Validator, Initializing
     private StatisticsReportDao m_statisticsReportDao;
 
     /** {@inheritDoc} */
-    public boolean supports(Class clazz) {
+    public boolean supports(Class<?> clazz) {
         return clazz.equals(StatisticsReportCommand.class);
     }
 

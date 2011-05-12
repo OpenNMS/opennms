@@ -107,7 +107,7 @@ public class RrdStresser {
 
     static long filesPerZero = FILE_COUNT / ZERO_FILES;
 
-    static RrdStrategy rrd = null;
+    static RrdStrategy<Object,Object> rrd = null;
 
     /**
      * 

@@ -44,10 +44,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.netmgt.rrd.RrdStrategy;
-import org.springframework.util.StringUtils;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.StringUtils;
 
 /**
  * Unit tests for the JniRrdStrategy.  This requires that the shared object
@@ -59,7 +58,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class JniRrdStrategyTest {
     
-    private RrdStrategy m_strategy;
+    private JniRrdStrategy m_strategy;
 
     @Before
     public void setUp() throws Exception {

@@ -172,7 +172,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
             returnValue = new Hashtable<Object, Object>((Map<?, ?>)returnValue);
         }
         
-        else if (returnValue instanceof Collection && !(returnValue instanceof Vector)) {
+        else if (returnValue instanceof Collection<?> && !(returnValue instanceof Vector<?>)) {
             returnValue = new Vector<Object>((Collection<?>)returnValue);
         }
         

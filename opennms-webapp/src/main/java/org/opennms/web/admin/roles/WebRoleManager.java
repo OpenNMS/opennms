@@ -47,7 +47,7 @@ public interface WebRoleManager {
      *
      * @return a {@link java.util.Collection} object.
      */
-    public Collection getRoles();
+    public Collection<WebRole> getRoles();
 
     /**
      * <p>deleteRole</p>

@@ -105,7 +105,7 @@ public class SnmpGetNodesServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    private List getAllNodes(HttpSession userSession) throws SQLException {
+    private List<SnmpManagedNode> getAllNodes(HttpSession userSession) throws SQLException {
         Connection connection = null;
         List<SnmpManagedNode> allNodes = new ArrayList<SnmpManagedNode>();
         int lineCount = 0;

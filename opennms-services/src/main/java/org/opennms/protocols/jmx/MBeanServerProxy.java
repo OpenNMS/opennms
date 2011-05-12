@@ -52,7 +52,7 @@ public class MBeanServerProxy implements InvocationHandler {
 
     private Object remoteServer;
 
-    private static final Class[] INTERFACES = { MBeanServer.class };
+    private static final Class<?>[] INTERFACES = { MBeanServer.class };
 
 
     /**
@@ -76,7 +76,7 @@ public class MBeanServerProxy implements InvocationHandler {
      */
     public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
 
-        Class serverClass = this.remoteServer.getClass();
+        Class<?> serverClass = this.remoteServer.getClass();
         Method method = serverClass.getMethod(m.getName(),m.getParameterTypes());
        try {
            return method.invoke(this.remoteServer, args);

@@ -66,7 +66,7 @@ import org.opennms.test.mock.EasyMockUtils;
 public class SnmpAttributeTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     private IpInterfaceDao m_ipInterfaceDao = m_mocks.createMock(IpInterfaceDao.class);
-    private RrdStrategy m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
+    private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
     
     @Override
     protected void setUp() throws Exception {

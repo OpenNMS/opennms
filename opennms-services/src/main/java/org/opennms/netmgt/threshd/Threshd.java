@@ -230,7 +230,7 @@ public final class Threshd extends AbstractServiceDaemon {
                 if (log().isDebugEnabled()) {
                     log().debug("start: Loading thresholder " + thresholder.getService() + ", classname " + thresholder.getClassName());
                 }
-                Class tc = Class.forName(thresholder.getClassName());
+                Class<?> tc = Class.forName(thresholder.getClassName());
                 ServiceThresholder st = (ServiceThresholder) tc.newInstance();
 
                 // Attempt to initialize the service thresholder

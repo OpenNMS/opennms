@@ -170,7 +170,7 @@ public class Vault extends Object {
          * For backwards compatibility; put all these
          * properties into the system properties.
          */
-        Enumeration keys = properties.keys();
+        Enumeration<Object> keys = properties.keys();
         Properties sysProps = System.getProperties();
         while (keys.hasMoreElements()) {
             String key = (String) keys.nextElement();

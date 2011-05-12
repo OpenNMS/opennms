@@ -54,7 +54,7 @@ public class LocationMonitorIdValidator implements Validator, InitializingBean {
     private LocationMonitorDao m_locationMonitorDao;
 
     /** {@inheritDoc} */
-    public boolean supports(Class clazz) {
+    public boolean supports(Class<?> clazz) {
         return clazz.equals(LocationMonitorIdCommand.class);
     }
 

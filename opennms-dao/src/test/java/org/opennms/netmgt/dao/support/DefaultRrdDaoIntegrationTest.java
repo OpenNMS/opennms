@@ -55,7 +55,7 @@ import org.opennms.test.FileAnticipator;
 public class DefaultRrdDaoIntegrationTest extends TestCase {
     private FileAnticipator m_fileAnticipator;
 
-    private RrdStrategy m_rrdStrategy;
+    private RrdStrategy<Object,Object> m_rrdStrategy;
     
     private DefaultRrdDao m_dao;
     

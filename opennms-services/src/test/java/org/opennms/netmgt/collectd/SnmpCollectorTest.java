@@ -325,7 +325,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
 
         File rrdFile = new File(snmpDir, rrd("test"));
 
-        RrdStrategy m_rrdStrategy = RrdUtils.getStrategy();
+        RrdStrategy<Object,Object> m_rrdStrategy = RrdUtils.getStrategy();
 
         RrdDataSource rrdDataSource = new RrdDataSource("testAttr", "GAUGE", stepSize*2, "U", "U");
         Object def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));

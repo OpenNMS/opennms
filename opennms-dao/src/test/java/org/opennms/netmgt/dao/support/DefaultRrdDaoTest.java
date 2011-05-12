@@ -61,7 +61,7 @@ import org.springframework.util.StringUtils;
  */
 public class DefaultRrdDaoTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
-    private RrdStrategy m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
+    private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
     
     private DefaultRrdDao m_dao;
     

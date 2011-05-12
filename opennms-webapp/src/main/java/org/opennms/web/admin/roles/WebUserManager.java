@@ -47,7 +47,7 @@ public interface WebUserManager {
      *
      * @return a {@link java.util.Collection} object.
      */
-    public Collection getUsers();
+    public Collection<WebUser> getUsers();
 
     /**
      * <p>getUser</p>

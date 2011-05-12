@@ -133,7 +133,7 @@ public class JaxbUtils {
 	}
 
 	public static Marshaller getMarshallerFor(final Object obj) {
-		final Class<?> clazz = (Class<?>)(obj instanceof Class? obj : obj.getClass());
+		final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
 		
 		Map<Class<?>, Marshaller> marshallers = m_marshallers.get();
 		if (marshallers == null) {
@@ -159,7 +159,7 @@ public class JaxbUtils {
 	}
 
 	public static Unmarshaller getUnmarshallerFor(final Object obj) {
-		final Class<?> clazz = (Class<?>)(obj instanceof Class? obj : obj.getClass());
+		final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
 
 		Map<Class<?>, Unmarshaller> unmarshallers = m_unMarshallers.get();
 		if (unmarshallers == null) {

@@ -64,7 +64,7 @@ public class SuppressOutageCheckBox implements Cell {
 			Object bean = model.getCurrentRowBean();
 			String outageid = BeanUtils.getProperty(bean, "outageid");
 
-			Collection selectedoutagesIds = (Collection) model.getContext()
+			Collection<String> selectedoutagesIds = (Collection<String>) model.getContext()
 					.getSessionAttribute(
 							SuppressOutageCheckBoxConstants.SELECTED_OUTAGES);
 			if (selectedoutagesIds != null
