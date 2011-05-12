@@ -1,0 +1,6 @@
+To generate a working source tree, you must have autoconf, automake,
+and libtool installed.  Then run:
+
+  autoreconf -fvi
+  ./configure
+  make
