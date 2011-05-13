@@ -290,7 +290,9 @@ public class JavaMailer {
             checkEnvelopeAndContents();
             Message message = initializeMessage();
 
-            String encodedText = MimeUtility.encodeText(getMessageText(), m_charSet, m_encoding);
+            // The next line has been commented, because it prevents the usage of internationalized characters and makes the email unreadable.
+            // String encodedText = MimeUtility.encodeText(getMessageText(), m_charSet, m_encoding);
+            String encodedText = getMessageText();
             if ((getFileName() == null) && (getInputStream() == null))  {
                 message.setContent(encodedText, m_contentType+"; charset="+m_charSet);
             } else if (getFileName() == null) {
@@ -307,7 +309,6 @@ public class JavaMailer {
                 bp.setContent(encodedText, m_contentType+"; charset="+m_charSet);
                 MimeMultipart mp = new MimeMultipart();
                 mp.addBodyPart(bp);
-                mp = new MimeMultipart();
                 mp.addBodyPart(createFileAttachment(new File(getFileName())));
                 message.setContent(mp);
             }
@@ -324,9 +325,9 @@ public class JavaMailer {
         } catch (MessagingException e) {
             log().error("Java Mailer messaging exception: ", e);
             throw new JavaMailerException("Java Mailer messaging exception: ", e);
-        } catch (UnsupportedEncodingException e) {
-            log().error("Java Mailer messaging exception: ", e);
-            throw new JavaMailerException("Java Mailer encoding exception: ", e);
+//        } catch (UnsupportedEncodingException e) {
+//            log().error("Java Mailer messaging exception: ", e);
+//            throw new JavaMailerException("Java Mailer encoding exception: ", e);
         }
     }
 
