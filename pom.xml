@@ -972,6 +972,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
+        <version>${project.version}</version>
+      </dependency> 
+      <dependency>
+        <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.springframework-security</artifactId>
         <version>${project.version}</version>
       </dependency>
