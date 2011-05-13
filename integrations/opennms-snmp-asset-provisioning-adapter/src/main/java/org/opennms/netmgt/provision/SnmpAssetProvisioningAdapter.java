@@ -423,7 +423,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	private boolean isReloadConfigEventTarget(final Event event) {
 		boolean isTarget = false;
 
-		for (final Parm parm : event.getParms().getParmCollection()) {
+		for (final Parm parm : event.getParmCollection()) {
 			if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && ("Provisiond." + NAME).equalsIgnoreCase(parm.getValue().getContent())) {
 				isTarget = true;
 				break;

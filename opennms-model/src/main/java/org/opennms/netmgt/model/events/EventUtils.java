@@ -46,8 +46,8 @@ import static org.opennms.netmgt.EventConstants.PARM_NODE_SYSNAME;
 import static org.opennms.netmgt.EventConstants.SERVICE_DELETED_EVENT_UEI;
 
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.opennms.core.utils.ThreadCategory;
@@ -56,7 +56,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Forward;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Script;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
@@ -294,13 +293,10 @@ public abstract class EventUtils {
      *         not set
      */
     public static String getParm(Event e, String parmName, String defaultValue) {
-        Parms parms = e.getParms();
-        if (parms == null)
+        if (e.getParmCollection().size() < 1)
             return defaultValue;
     
-        Enumeration<Parm> parmEnum = parms.enumerateParm();
-        while (parmEnum.hasMoreElements()) {
-            Parm parm = parmEnum.nextElement();
+        for (Parm parm : e.getParmCollection()) {
             if (parmName.equals(parm.getParmName())) {
                 if (parm.getValue() != null && parm.getValue().getContent() != null) {
                     return parm.getValue().getContent();
@@ -424,8 +420,8 @@ public abstract class EventUtils {
         if (event.getOperinstruct() != null) {
             b.append(" Operinstruct: " + event.getOperinstruct() + "\n");
         }
-        if (event.getParms() != null) {
-            b.append(" Parms: " + toString(event.getParms()) + "\n");
+        if (event.getParmCollection().size() > 0) {
+            b.append(" Parms: " + toString(event.getParmCollection()) + "\n");
         }
         if (event.getScriptCount() > 0) {
             b.append(" Script:");
@@ -472,15 +468,14 @@ public abstract class EventUtils {
      * @param parms a {@link org.opennms.netmgt.xml.event.Parms} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String toString(Parms parms) {
-        if (parms.getParmCount() == 0) {
+    public static String toString(Collection<Parm> parms) {
+        if (parms.size() == 0) {
             return "Parms: (none)\n";
         }
         
         StringBuffer b = new StringBuffer();
         b.append("Parms:\n");
-        for (Enumeration<Parm> e = parms.enumerateParm(); e.hasMoreElements(); ) {
-            Parm p = e.nextElement();
+        for (Parm p : parms) {
             b.append(" ");
             b.append(p.getParmName());
             b.append(" = ");

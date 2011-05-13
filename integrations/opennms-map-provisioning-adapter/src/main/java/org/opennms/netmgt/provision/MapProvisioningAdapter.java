@@ -299,7 +299,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     private boolean isReloadConfigEventTarget(Event event) {
         boolean isTarget = false;
         
-        List<Parm> parmCollection = event.getParms().getParmCollection();
+        List<Parm> parmCollection = event.getParmCollection();
 
         for (Parm parm : parmCollection) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Provisiond.MapProvisioningAdapter".equalsIgnoreCase(parm.getValue().getContent())) {

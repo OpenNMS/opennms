@@ -47,7 +47,6 @@ package org.opennms.netmgt.capsd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -485,13 +484,7 @@ public abstract class EventUtils {
      * @param parmName a {@link java.lang.String} object.
      */
     public static void requireParm(Event e, String parmName) throws InsufficientInformationException {
-        Parms parms = e.getParms();
-        if (parms == null)
-            throw new InsufficientInformationException("parameter " + parmName + " required but but no parms are available.");
-
-        Enumeration<Parm> parmEnum = parms.enumerateParm();
-        while (parmEnum.hasMoreElements()) {
-            Parm parm = parmEnum.nextElement();
+        for (Parm parm : e.getParmCollection()) {
             if (parmName.equals(parm.getParmName())) {
                 if (parm.getValue() != null && parm.getValue().getContent() != null) {
                     // we found a matching parm
@@ -937,17 +930,6 @@ public abstract class EventUtils {
      */
     public static String toString(Snmp snmp) {
         return org.opennms.netmgt.model.events.EventUtils.toString(snmp);
-    }
-
-    /**
-     * <p>toString</p>
-     *
-     * @deprecated Use org.opennms.netmgt.model.events.EventUtils.toString(snmp) instead.
-     * @param parms a {@link org.opennms.netmgt.xml.event.Parms} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public static String toString(Parms parms) {
-        return org.opennms.netmgt.model.events.EventUtils.toString(parms);
     }
 
 	/**

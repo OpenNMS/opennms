@@ -64,7 +64,6 @@ import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
@@ -235,29 +234,26 @@ final class PollerEventProcessor implements EventListener {
         // Extract the old and new nodeId's from the event parms
         String oldNodeIdStr = null;
         String newNodeIdStr = null;
-        Parms parms = event.getParms();
-        if (parms != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
+        String parmName = null;
+        Value parmValue = null;
+        String parmContent = null;
 
-            for (Parm parm : parms.getParmCollection()) {
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null)
-                    continue;
-                else
-                    parmContent = parmValue.getContent();
+        for (Parm parm : event.getParmCollection()) {
+            parmName = parm.getParmName();
+            parmValue = parm.getValue();
+            if (parmValue == null)
+                continue;
+            else
+                parmContent = parmValue.getContent();
 
-                // old nodeid
-                if (parmName.equals(EventConstants.PARM_OLD_NODEID)) {
-                    oldNodeIdStr = parmContent;
-                }
+            // old nodeid
+            if (parmName.equals(EventConstants.PARM_OLD_NODEID)) {
+                oldNodeIdStr = parmContent;
+            }
 
-                // new nodeid
-                else if (parmName.equals(EventConstants.PARM_NEW_NODEID)) {
-                    newNodeIdStr = parmContent;
-                }
+            // new nodeid
+            else if (parmName.equals(EventConstants.PARM_NEW_NODEID)) {
+                newNodeIdStr = parmContent;
             }
         }
 
@@ -327,34 +323,31 @@ final class PollerEventProcessor implements EventListener {
 
         // Extract node label and transaction No. from the event parms
         long txNo = -1L;
-        Parms parms = event.getParms();
-        if (parms != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
+        String parmName = null;
+        Value parmValue = null;
+        String parmContent = null;
 
-            for (Parm parm : parms.getParmCollection()) {
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null)
-                    continue;
-                else
-                    parmContent = parmValue.getContent();
+        for (Parm parm : event.getParmCollection()) {
+            parmName = parm.getParmName();
+            parmValue = parm.getValue();
+            if (parmValue == null)
+                continue;
+            else
+                parmContent = parmValue.getContent();
 
-                // get the external transaction number
-                if (parmName.equals(EventConstants.PARM_TRANSACTION_NO)) {
-                    String temp = parmContent;
-                    LogUtils.debugf(this, "nodeDeletedHandler:  parmName: %s /parmContent: %s", parmName, parmContent);
-                    try {
-                        txNo = Long.valueOf(temp).longValue();
-                    } catch (final NumberFormatException nfe) {
-                        LogUtils.warnf(this, nfe, "nodeDeletedHandler: Parameter %s cannot be non-numeric", EventConstants.PARM_TRANSACTION_NO);
-                        txNo = -1;
-                    }
+            // get the external transaction number
+            if (parmName.equals(EventConstants.PARM_TRANSACTION_NO)) {
+                String temp = parmContent;
+                LogUtils.debugf(this, "nodeDeletedHandler:  parmName: %s /parmContent: %s", parmName, parmContent);
+                try {
+                    txNo = Long.valueOf(temp).longValue();
+                } catch (final NumberFormatException nfe) {
+                    LogUtils.warnf(this, nfe, "nodeDeletedHandler: Parameter %s cannot be non-numeric", EventConstants.PARM_TRANSACTION_NO);
+                    txNo = -1;
                 }
             }
         }
-        
+
         Date closeDate;
         try {
             closeDate = EventConstants.parseToDate(event.getTime());
@@ -388,34 +381,31 @@ final class PollerEventProcessor implements EventListener {
         
         // Extract node label and transaction No. from the event parms
         long txNo = -1L;
-        Parms parms = event.getParms();
-        if (parms != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
-            
-            for (Parm parm : parms.getParmCollection()) {
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null)
-                    continue;
-                else
-                    parmContent = parmValue.getContent();
+        String parmName = null;
+        Value parmValue = null;
+        String parmContent = null;
 
-                // get the external transaction number
-                if (parmName.equals(EventConstants.PARM_TRANSACTION_NO)) {
-                    String temp = parmContent;
-                    LogUtils.debugf(this, "interfaceDeletedHandlerHandler:  parmName: %s /parmContent: %s", parmName, parmContent);
-                    try {
-                        txNo = Long.valueOf(temp).longValue();
-                    } catch (final NumberFormatException nfe) {
-                        LogUtils.warnf(this, nfe, "interfaceDeletedHandlerHandler: Parameter %s cannot be non-numberic", EventConstants.PARM_TRANSACTION_NO);
-                        txNo = -1;
-                    }
+        for (Parm parm : event.getParmCollection()) {
+            parmName = parm.getParmName();
+            parmValue = parm.getValue();
+            if (parmValue == null)
+                continue;
+            else
+                parmContent = parmValue.getContent();
+
+            // get the external transaction number
+            if (parmName.equals(EventConstants.PARM_TRANSACTION_NO)) {
+                String temp = parmContent;
+                LogUtils.debugf(this, "interfaceDeletedHandlerHandler:  parmName: %s /parmContent: %s", parmName, parmContent);
+                try {
+                    txNo = Long.valueOf(temp).longValue();
+                } catch (final NumberFormatException nfe) {
+                    LogUtils.warnf(this, nfe, "interfaceDeletedHandlerHandler: Parameter %s cannot be non-numberic", EventConstants.PARM_TRANSACTION_NO);
+                    txNo = -1;
                 }
             }
         }
-        
+
         Date closeDate;
         try {
             closeDate = EventConstants.parseToDate(event.getTime());

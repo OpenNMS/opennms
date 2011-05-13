@@ -823,6 +823,8 @@ public class Event implements Serializable {
 	 * Returns the value of field 'parms'. The field 'parms' has the following
 	 * description: The varbinds from the trap
 	 * 
+	 * @deprecated Use {@link #getParmCollection()} instead
+	 * 
 	 * @return the value of field 'Parms'.
 	 */
 	public Parms getParms() {

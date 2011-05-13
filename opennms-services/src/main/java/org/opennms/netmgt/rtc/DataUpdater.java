@@ -230,9 +230,7 @@ final class DataUpdater implements Runnable {
         Value parmValue = null;
         String parmContent = null;
 
-        Enumeration<Parm> parmEnum = eventParms.enumerateParm();
-        while (parmEnum.hasMoreElements()) {
-            Parm parm = parmEnum.nextElement();
+        for (Parm parm : eventParms.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)

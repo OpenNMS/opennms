@@ -738,18 +738,15 @@ public class SnmpTrapHelper {
 
             // varbinds
 
-            Parm[] parms = event.getParms().getParm();
-
-            for (int i = 0; i < parms.length; i++) {
-                Parm parm = parms[i];
-                Value value = parm.getValue();
-
+            int i = 0;
+            for (Parm parm : event.getParmCollection()) {
                 try {
+                    Value value = parm.getValue();
                     addVarBinding(trap, parm.getParmName(), value.getType(), value.getEncoding(), value.getContent());
-                }
-
-                catch (SnmpTrapHelperException e) {
+                } catch (SnmpTrapHelperException e) {
                     throw new SnmpTrapHelperException(e.getMessage() + " in event parm[" + i + "]");
+                } finally {
+                    i++;
                 }
             }
         } else if ("v2".equals(version)) {
@@ -758,13 +755,9 @@ public class SnmpTrapHelper {
 
             trap.setEnterprise(SnmpObjId.get(snmpInfo.getId()));
 
-            Parm[] parms = event.getParms().getParm();
-            
             String addr = null;
 
-            for (int i = 0; i < parms.length; i++) {
-                Parm parm = parms[i];
-
+            for (Parm parm : event.getParmCollection()) {
                 if (SNMP_TRAP_ADDRESS_OID.equals(parm.getParmName())) {
                     addr = parm.getValue().getContent();
                     break;
@@ -791,8 +784,8 @@ public class SnmpTrapHelper {
 
             // varbinds
 
-            for (int i = 0; i < parms.length; i++) {
-                Parm parm = parms[i];
+            int i = 0;
+            for (Parm parm : event.getParmCollection()) {
                 Value value = parm.getValue();
 
                 // omit any parms with type=Counter64
@@ -807,6 +800,8 @@ public class SnmpTrapHelper {
                         throw new SnmpTrapHelperException(e.getMessage() + " in event parm[" + i + "]");
                     }
                 }
+
+                i++;
             }
 
         } else {
@@ -881,10 +876,8 @@ public class SnmpTrapHelper {
             boolean communityPresent = false;
             boolean enterprisePresent = false;
 
-            Parm[] parms = event.getParms().getParm();
-
-            for (int i = 0; i < parms.length; i++) {
-                Parm parm = parms[i];
+            int i = 0;
+            for (Parm parm : event.getParmCollection()) {
                 Value value = parm.getValue();
 
                 try {
@@ -902,6 +895,7 @@ public class SnmpTrapHelper {
                 } else if (SNMP_TRAP_ENTERPRISE_OID.equals(parm.getParmName())) {
                     enterprisePresent = true;
                 }
+                i++;
             }
 
             if (!addrPresent) {
@@ -928,11 +922,9 @@ public class SnmpTrapHelper {
             }
 
             addVarBinding(packet, SNMP_TRAP_OID, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER, oid);
-            
-        	Parm[] parms = event.getParms().getParm();
 
-            for (int i = 0; i < parms.length; i++) {
-                Parm parm = parms[i];
+            int i = 0;
+            for (Parm parm : event.getParmCollection()) {
                 Value value = parm.getValue();
 
                 try {
@@ -943,6 +935,7 @@ public class SnmpTrapHelper {
                     throw new SnmpTrapHelperException(e.getMessage() + " in event parm[" + i + "]");
                 }
 
+                i++;
             }
         } else {
             throw new SnmpTrapHelperException("Invalid SNMP version: " + version);

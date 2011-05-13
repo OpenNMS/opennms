@@ -118,10 +118,9 @@ public class Reportd implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.REPORTD_RUN_REPORT)
     public void handleRunReportEvent(Event e){
-       List <Parm> parmCollection = e.getParms().getParmCollection();
        String reportName = new String();
        
-       for(Parm parm : parmCollection){
+       for(Parm parm : e.getParmCollection()){
        
            if(EventConstants.PARM_REPORT_NAME.equals(parm.getParmName()))
                reportName = parm.getValue().getContent();
@@ -187,7 +186,7 @@ public class Reportd implements SpringServiceDaemon {
     private boolean isReloadConfigEventTarget(Event event) {
         boolean isTarget = false;
 
-        List<Parm> parmCollection = event.getParms().getParmCollection();
+        List<Parm> parmCollection = event.getParmCollection();
 
         for (Parm parm : parmCollection) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Reportd".equalsIgnoreCase(parm.getValue().getContent())) {

@@ -119,10 +119,9 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     log().debug("  src   = " + event.getSource());
                     log().debug("  iface = " + event.getInterface());
                     log().debug("  time  = " + event.getTime());
-                    final Parm[] parms = (event.getParms() == null ? null : event.getParms().getParm());
-                    if (parms != null) {
+                    if (event.getParmCollection().size() > 0) {
                         log().debug("  parms {");
-                        for (final Parm parm : parms) {
+                        for (final Parm parm : event.getParmCollection()) {
                             if ((parm.getParmName() != null) && (parm.getValue().getContent() != null)) {
                                 log().debug("    (" + parm.getParmName().trim() + ", " + parm.getValue().getContent().trim() + ")");
                             }

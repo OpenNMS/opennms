@@ -245,7 +245,7 @@ public final class BroadcastEventProcessor implements EventListener {
         boolean isTarget = false;
 
         if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            List<Parm> parmCollection = event.getParms().getParmCollection();
+            List<Parm> parmCollection = event.getParmCollection();
 
             for (Parm parm : parmCollection) {
                 if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Notifd".equalsIgnoreCase(parm.getValue().getContent())) {

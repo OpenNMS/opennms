@@ -319,50 +319,48 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event event) {
         String specifiedDaemon = null;
-        
+
         log().info("handleReloadConfigEvent: processing reload event: "+event+"...");
-        
-        if (event.getParms() != null && event.getParms().getParmCount() >=1 ) {
-            List<Parm> parms = event.getParms().getParmCollection();
-            
-            for (Parm parm : parms) {
-                specifiedDaemon = parm.getValue().getContent();
-                
-                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) 
-                        && getName().equalsIgnoreCase(specifiedDaemon)) {
-                    
-                    log().debug("handleReloadConfigEvent: reload event is for this daemon: "+getName()+"; reloading configuration...");
-                    
-                    try {
-                        m_configDao.reloadConfiguration();
-                        EventBuilder bldr = new EventBuilder(
-                                                             EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, 
-                                                             getName(), 
-                                                             Calendar.getInstance().getTime());
-                        bldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
-                        m_eventForwarder.sendNow(bldr.getEvent());
-                        
-                        log().debug("handleReloadConfigEvent: restarting readers due to reload configuration event...");
-                        this.restartReaders(true);
-                    } catch (Throwable e) {
-                        log().error("handleReloadConfigEvent: "+e, e);
-                        EventBuilder bldr = new EventBuilder(
-                                                             EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, 
-                                                             getName(), 
-                                                             Calendar.getInstance().getTime());
-                        bldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
-                        bldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
-                        m_eventForwarder.sendNow(bldr.getEvent());
-                    }
-                    
-                    log().debug("handleReloadConfigEvent: configuration reloaded.");
-                    
-                    return;  //return here because we are done.
+
+        List<Parm> parms = event.getParmCollection();
+
+        for (Parm parm : parms) {
+            specifiedDaemon = parm.getValue().getContent();
+
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) 
+                    && getName().equalsIgnoreCase(specifiedDaemon)) {
+
+                log().debug("handleReloadConfigEvent: reload event is for this daemon: "+getName()+"; reloading configuration...");
+
+                try {
+                    m_configDao.reloadConfiguration();
+                    EventBuilder bldr = new EventBuilder(
+                                                         EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, 
+                                                         getName(), 
+                                                         Calendar.getInstance().getTime());
+                    bldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+                    m_eventForwarder.sendNow(bldr.getEvent());
+
+                    log().debug("handleReloadConfigEvent: restarting readers due to reload configuration event...");
+                    this.restartReaders(true);
+                } catch (Throwable e) {
+                    log().error("handleReloadConfigEvent: "+e, e);
+                    EventBuilder bldr = new EventBuilder(
+                                                         EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, 
+                                                         getName(), 
+                                                         Calendar.getInstance().getTime());
+                    bldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+                    bldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
+                    m_eventForwarder.sendNow(bldr.getEvent());
                 }
-                
+
+                log().debug("handleReloadConfigEvent: configuration reloaded.");
+
+                return;  //return here because we are done.
             }
-            log().debug("handleReloadConfigEvent: reload event not for this daemon: "+getName()+"; daemon specified is: "+specifiedDaemon);
+
         }
+        log().debug("handleReloadConfigEvent: reload event not for this daemon: "+getName()+"; daemon specified is: "+specifiedDaemon);
     }
 
     private ThreadCategory log() {

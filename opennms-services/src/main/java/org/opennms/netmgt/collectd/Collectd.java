@@ -58,7 +58,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -96,7 +95,6 @@ import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -921,31 +919,26 @@ public class Collectd extends AbstractServiceDaemon implements
         // Extract the old and new nodeId's from the event parms
         String oldNodeIdStr = null;
         String newNodeIdStr = null;
-        Parms parms = event.getParms();
-        if (parms != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
+        String parmName = null;
+        Value parmValue = null;
+        String parmContent = null;
 
-            Enumeration<Parm> parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-                Parm parm = parmEnum.nextElement();
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null)
-                    continue;
-                else
-                    parmContent = parmValue.getContent();
+        for (Parm parm : event.getParmCollection()) {
+            parmName = parm.getParmName();
+            parmValue = parm.getValue();
+            if (parmValue == null)
+                continue;
+            else
+                parmContent = parmValue.getContent();
 
-                // old nodeid
-                if (parmName.equals(EventConstants.PARM_OLD_NODEID)) {
-                    oldNodeIdStr = parmContent;
-                }
+            // old nodeid
+            if (parmName.equals(EventConstants.PARM_OLD_NODEID)) {
+                oldNodeIdStr = parmContent;
+            }
 
-                // new nodeid
-                else if (parmName.equals(EventConstants.PARM_NEW_NODEID)) {
-                    newNodeIdStr = parmContent;
-                }
+            // new nodeid
+            else if (parmName.equals(EventConstants.PARM_NEW_NODEID)) {
+                newNodeIdStr = parmContent;
             }
         }
 
@@ -1095,8 +1088,7 @@ public class Collectd extends AbstractServiceDaemon implements
     private void handleReloadDaemonConfig(Event event) {
         final String daemonName = "Threshd";
         boolean isTarget = false;
-        List<Parm> parmCollection = event.getParms().getParmCollection();
-        for (Parm parm : parmCollection) {
+        for (Parm parm : event.getParmCollection()) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && daemonName.equalsIgnoreCase(parm.getValue().getContent())) {
                 isTarget = true;
                 break;
@@ -1106,7 +1098,7 @@ public class Collectd extends AbstractServiceDaemon implements
             String thresholdsFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
             String threshdFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
             String targetFile = thresholdsFile; // Default
-            for (Parm parm : parmCollection) {
+            for (Parm parm : event.getParmCollection()) {
                 if (EventConstants.PARM_CONFIG_FILE_NAME.equals(parm.getParmName()) && threshdFile.equalsIgnoreCase(parm.getValue().getContent())) {
                     targetFile = threshdFile;
                 }
@@ -1179,26 +1171,21 @@ public class Collectd extends AbstractServiceDaemon implements
         // event parms.
         //
         String oldPrimaryIfAddr = null;
-        Parms parms = event.getParms();
-        if (parms != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
+        String parmName = null;
+        Value parmValue = null;
+        String parmContent = null;
 
-            Enumeration<Parm> parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-                Parm parm = parmEnum.nextElement();
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null)
-                    continue;
-                else
-                    parmContent = parmValue.getContent();
+        for (Parm parm : event.getParmCollection()) {
+            parmName = parm.getParmName();
+            parmValue = parm.getValue();
+            if (parmValue == null)
+                continue;
+            else
+                parmContent = parmValue.getContent();
 
-                // old primary SNMP interface (optional parameter)
-                if (parmName.equals(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS)) {
-                    oldPrimaryIfAddr = parmContent;
-                }
+            // old primary SNMP interface (optional parameter)
+            if (parmName.equals(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS)) {
+                oldPrimaryIfAddr = parmContent;
             }
         }
 

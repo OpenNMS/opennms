@@ -35,8 +35,6 @@
  */
 package org.opennms.netmgt.xmlrpcd;
 
-import java.util.Enumeration;
-
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
@@ -46,7 +44,6 @@ import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
@@ -169,50 +166,43 @@ class EventQueueProcessor implements Runnable, PausableFiber {
         String notification = null;
         int status = -1;
 
-        final Parms parms = event.getParms();
-        if (parms != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
+        String parmName = null;
+        Value parmValue = null;
+        String parmContent = null;
 
-            @SuppressWarnings("deprecation")
-			final Enumeration<Parm> parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-            	final Parm parm = (Parm) parmEnum.nextElement();
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null) {
-                    continue;
-                } else {
-                    parmContent = parmValue.getContent();
+        for (Parm parm : event.getParmCollection()) {
+            parmName = parm.getParmName();
+            parmValue = parm.getValue();
+            if (parmValue == null) {
+                continue;
+            } else {
+                parmContent = parmValue.getContent();
+            }
+
+            LogUtils.debugf(this, "ParmName: %s /parmContent: ", parmName, parmContent);
+
+            // get txNo
+            if (parmName.equals(EventConstants.PARM_TRANSACTION_NO)) {
+                final String temp = parmContent;
+
+                try {
+                    txNo = Long.valueOf(temp).longValue();
+                } catch (final NumberFormatException nfe) {
+                    LogUtils.warnf(this, nfe, "Parameter %s cannot be non-numeric", EventConstants.PARM_TRANSACTION_NO);
+                    txNo = -1L;
                 }
-
-                LogUtils.debugf(this, "ParmName: %s /parmContent: ", parmName, parmContent);
-
-                // get txNo
-                if (parmName.equals(EventConstants.PARM_TRANSACTION_NO)) {
-                    final String temp = parmContent;
-
-                    try {
-                        txNo = Long.valueOf(temp).longValue();
-                    } catch (final NumberFormatException nfe) {
-                    	LogUtils.warnf(this, nfe, "Parameter %s cannot be non-numeric", EventConstants.PARM_TRANSACTION_NO);
-                        txNo = -1L;
-                    }
-                } else if (parmName.equals(EventConstants.PARM_SOURCE_EVENT_UEI)) {
-                    sourceUei = parmContent;
-                } else if (parmName.equals(EventConstants.PARM_SOURCE_EVENT_MESSAGE)) {
-                    notification = parmContent;
-                } else if (parmName.equals(EventConstants.PARM_SOURCE_EVENT_STATUS)) {
-                    String temp = parmContent;
-                    try {
-                        status = Integer.valueOf(temp).intValue();
-                    } catch (final NumberFormatException nfe) {
-                    	LogUtils.warnf(this, nfe, "Parameter %s cannot be non-numeric", EventConstants.PARM_SOURCE_EVENT_STATUS);
-                        status = -1;
-                    }
+            } else if (parmName.equals(EventConstants.PARM_SOURCE_EVENT_UEI)) {
+                sourceUei = parmContent;
+            } else if (parmName.equals(EventConstants.PARM_SOURCE_EVENT_MESSAGE)) {
+                notification = parmContent;
+            } else if (parmName.equals(EventConstants.PARM_SOURCE_EVENT_STATUS)) {
+                String temp = parmContent;
+                try {
+                    status = Integer.valueOf(temp).intValue();
+                } catch (final NumberFormatException nfe) {
+                    LogUtils.warnf(this, nfe, "Parameter %s cannot be non-numeric", EventConstants.PARM_SOURCE_EVENT_STATUS);
+                    status = -1;
                 }
-
             }
         }
 

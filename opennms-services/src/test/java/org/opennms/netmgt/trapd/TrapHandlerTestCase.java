@@ -251,7 +251,7 @@ public class TrapHandlerTestCase {
         boolean foundMacAddress = false;
         // Assert that the MAC address varbind has been formatted into a colon-separated octet string
         for (Event event : events) {
-            for (Parm parm : event.getParms().getParmCollection()) {
+            for (Parm parm : event.getParmCollection()) {
                 if (".1.3.6.1.4.1.14179.2.6.2.20.0".equals(parm.getParmName())) {
                     assertEquals("MAC address does not match", "00:14:F1:AD:A7:50", parm.getValue().getContent());
                     foundMacAddress = true;
@@ -284,7 +284,7 @@ public class TrapHandlerTestCase {
         boolean foundMacAddress = false;
         // Assert that the MAC address varbind has been formatted into a colon-separated octet string
         for (Event event : events) {
-            for (Parm parm : event.getParms().getParmCollection()) {
+            for (Parm parm : event.getParmCollection()) {
                 if (".1.3.6.1.4.1.14179.2.6.2.20.0".equals(parm.getParmName())) {
                     assertEquals("MAC address does not match", "00:14:F1:AD:A7:50", parm.getValue().getContent());
                     foundMacAddress = true;

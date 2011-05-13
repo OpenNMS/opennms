@@ -864,10 +864,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		public String getAttributeValue(Event e) {
 			
 			String attrName = getAttributeName();
-			Parms parms = e.getParms();
-			if (parms == null) return null;
-			
-			for (Parm parm : parms.getParmCollection()) {
+			for (Parm parm : e.getParmCollection()) {
 				
                 if (parm.getParmName().equals(attrName)) {
                     if (log().isDebugEnabled()) {

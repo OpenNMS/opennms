@@ -430,7 +430,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
 
         getNetwork().delete(new Long(event.getNodeid()).intValue());
         
-        for (Parm parm : event.getParms().getParmCollection()){
+        for (Parm parm : event.getParmCollection()){
             if (parm.isValid() && parm.getParmName().equals("newPrimarySnmpAddress")) {
                 scheduleNewSnmpInterface(parm.getValue().getContent());
                 return;

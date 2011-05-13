@@ -87,17 +87,11 @@ public class SnmpEventInfo {
         Value parmValue = null;
         String parmContent = null;
 
-        Parms parms = event.getParms();
-        
-        if (parms == null) {
-            throw new IllegalArgumentException("SnmpEventInfo constructor: Can't construct class with event containing no parameters. "+ event.toString());
-        }
-        
         if (!event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
             throw new IllegalArgumentException("Event not an a configure snmp event: "+event.toString());
         }
         
-        for (Parm parm : parms.getParmCollection()) {
+        for (Parm parm : event.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             

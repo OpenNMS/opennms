@@ -259,14 +259,13 @@ public class EventBuilder {
 
     
     public EventBuilder addParam(final Parm parm) {
-        
+
         if (m_event.getParms() == null) {
-        	final Parms parms = new Parms();
+            final Parms parms = new Parms();
             m_event.setParms(parms);
         }
 
         m_event.getParms().addParm(parm);
-
 
         return this;
     }
@@ -280,21 +279,16 @@ public class EventBuilder {
      */
     public EventBuilder addParam(final String parmName, final boolean val) {
         if (parmName != null) {
-        	final Value value = new Value();
+            final Value value = new Value();
             value.setContent(val ? "true" : "false");
 
             final Parm parm = new Parm();
             parm.setParmName(parmName);
             parm.setValue(value);
-        
-            if (m_event.getParms() == null) {
-            	final Parms parms = new Parms();
-                m_event.setParms(parms);
-            }
-        
-            m_event.getParms().addParm(parm);
+
+            this.addParam(parm);
         }
-        
+
         return this;
     }
     
@@ -306,12 +300,11 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder setParam(final String parmName, final String val) {
-    	final Parms parms = m_event.getParms();
-        if (parms == null) {
+        if (m_event.getParmCollection().size() < 1) {
             return addParam(parmName, val);
         }
 
-        for(final Parm parm : parms.getParmCollection()) {
+        for(final Parm parm : m_event.getParmCollection()) {
             if (parm.getParmName().equals(val)) {
             	final Value value = new Value();
                 value.setContent(val);

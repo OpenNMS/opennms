@@ -516,31 +516,26 @@ final class BroadcastEventProcessor implements EventListener {
         // Extract the old and new nodeId's from the event parms
         String oldNodeIdStr = null;
         String newNodeIdStr = null;
-        Parms parms = event.getParms();
-        if (parms != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
+        String parmName = null;
+        Value parmValue = null;
+        String parmContent = null;
 
-            Enumeration<Parm> parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-                Parm parm = parmEnum.nextElement();
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null)
-                    continue;
-                else
-                    parmContent = parmValue.getContent();
+        for (Parm parm : event.getParmCollection()) {
+            parmName = parm.getParmName();
+            parmValue = parm.getValue();
+            if (parmValue == null)
+                continue;
+            else
+                parmContent = parmValue.getContent();
 
-                // old nodeid
-                if (parmName.equals(EventConstants.PARM_OLD_NODEID)) {
-                    oldNodeIdStr = parmContent;
-                }
+            // old nodeid
+            if (parmName.equals(EventConstants.PARM_OLD_NODEID)) {
+                oldNodeIdStr = parmContent;
+            }
 
-                // new nodeid
-                else if (parmName.equals(EventConstants.PARM_NEW_NODEID)) {
-                    newNodeIdStr = parmContent;
-                }
+            // new nodeid
+            else if (parmName.equals(EventConstants.PARM_NEW_NODEID)) {
+                newNodeIdStr = parmContent;
             }
         }
 

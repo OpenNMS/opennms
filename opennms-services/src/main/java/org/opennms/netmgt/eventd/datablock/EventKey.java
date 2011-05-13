@@ -426,10 +426,9 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
             if (eventSnmpInfo != null) {
                 retParmVal = eventSnmpInfo.getCommunity();
             }
-        } else if (event.getParms() != null && event.getParms().getParmCount() > 0) {
+        } else if (event.getParmCollection().size() > 0) {
             ArrayList<String> eventparms = new ArrayList<String>();
-            org.opennms.netmgt.xml.event.Parms parms = event.getParms();
-            for (org.opennms.netmgt.xml.event.Parm evParm : parms.getParmCollection()) {
+            for (org.opennms.netmgt.xml.event.Parm evParm : event.getParmCollection()) {
                 eventparms.add(org.opennms.netmgt.eventd.EventUtil.getValueAsString(evParm.getValue()));
             }
             int vbnumber = Integer.parseInt(mename);

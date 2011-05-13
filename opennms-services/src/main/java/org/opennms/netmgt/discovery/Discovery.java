@@ -403,7 +403,7 @@ public class Discovery extends AbstractServiceDaemon {
     private boolean isReloadConfigEventTarget(Event event) {
         boolean isTarget = false;
         
-        final List<Parm> parmCollection = event.getParms().getParmCollection();
+        final List<Parm> parmCollection = event.getParmCollection();
 
         for (final Parm parm : parmCollection) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Discovery".equalsIgnoreCase(parm.getValue().getContent())) {
