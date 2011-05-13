@@ -35,6 +35,7 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.util.Collections;
+import java.util.Map;
 
 import org.opennms.core.utils.TimeoutTracker;
 
@@ -50,7 +51,8 @@ public class TimeoutTrackerTest extends TestCase {
         
         int retries = 2;
         
-        TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), retries, 3000);
+        Map<String,?> emptyMap = Collections.emptyMap();
+        TimeoutTracker tracker = new TimeoutTracker(emptyMap, retries, 3000);
         
         int count = 0;
         for(tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
@@ -65,7 +67,8 @@ public class TimeoutTrackerTest extends TestCase {
     
     public void testElapsedTimeButNoStartAttempt() {
         
-        TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), 0, 3000);
+        Map<String,?> emptyMap = Collections.emptyMap();
+        TimeoutTracker tracker = new TimeoutTracker(emptyMap, 0, 3000);
         
         try {
             tracker.elapsedTimeInMillis();
@@ -80,7 +83,8 @@ public class TimeoutTrackerTest extends TestCase {
         
         long sleepTime = 200L;
         
-        TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), 0, 3000);
+        Map<String,?> emptyMap = Collections.emptyMap();
+        TimeoutTracker tracker = new TimeoutTracker(emptyMap, 0, 3000);
 
         tracker.startAttempt();
         

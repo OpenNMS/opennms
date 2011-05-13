@@ -64,7 +64,7 @@ public class JRobinQueryExecuterTest {
      */
     public void fill() throws JRException{
         long start = System.currentTimeMillis();
-        Map params = new HashMap();
+        Map<String,Object> params = new HashMap<String,Object>();
         params.put("rrdDir", "src/test/resources");
         params.put("startDate", new Date("Wed Oct 13 17:25:00 EDT 2010"));
         params.put("endDate", new Date("Wed Oct 13 21:16:30 EDT 2010"));

@@ -88,6 +88,6 @@ public class ResourceGraph extends Image {
     }
 
     private String buildGraphUrl(String resourceId, String report, String start, String end) {
-        return "graph/graph.png?resourceId=" + URL.encodeComponent(resourceId) + "&report=" + URL.encodeComponent(report) + "&start=" + start + "&end=" + end;
+        return "graph/graph.png?resourceId=" + URL.encodeQueryString(resourceId) + "&report=" + URL.encodeQueryString(report) + "&start=" + start + "&end=" + end;
     }
 }

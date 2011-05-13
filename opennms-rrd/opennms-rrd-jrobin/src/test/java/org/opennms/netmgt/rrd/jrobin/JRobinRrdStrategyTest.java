@@ -49,7 +49,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.jrobin.core.RrdDb;
+import org.jrobin.core.RrdDef;
 import org.jrobin.core.Sample;
 import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
@@ -76,7 +78,7 @@ import org.springframework.util.StringUtils;
  */
 public class JRobinRrdStrategyTest {
     
-    private RrdStrategy m_strategy;
+    private RrdStrategy<RrdDef,RrdDb> m_strategy;
     private FileAnticipator m_fileAnticipator;
     
     @Before
@@ -162,7 +164,7 @@ public class JRobinRrdStrategyTest {
     public void testCreate() throws Exception {
         File rrdFile = createRrdFile();
         
-        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        RrdDb openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         //m_strategy.updateFile(openedFile, "huh?", "N:1,234234");
         
         Sample sample = ((RrdDb) openedFile).createSample();
@@ -176,7 +178,7 @@ public class JRobinRrdStrategyTest {
     public void testUpdate() throws Exception {
         File rrdFile = createRrdFile();
         
-        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        RrdDb openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         m_strategy.updateFile(openedFile, "huh?", "N:1.234234");
         m_strategy.closeFile(openedFile);
     }
@@ -185,9 +187,9 @@ public class JRobinRrdStrategyTest {
     public void testSampleSetFloatingPointValueGood() throws Exception {
         File rrdFile = createRrdFile();
         
-        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        RrdDb openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         
-        Sample sample = ((RrdDb) openedFile).createSample();
+        Sample sample = openedFile.createSample();
         sample.set("N:1.234");
         m_strategy.closeFile(openedFile);
         
@@ -202,7 +204,7 @@ public class JRobinRrdStrategyTest {
                 39.0, 94.0, 95.0, 101.0, 155.0, 262.0, 274.0, 302.0, 319.0, 402.0, 466.0, 468.0, 494.0, 549.0, 550.0, 575.0, 600.0, 615.0, 625.0, 703.0, 729.0, 824.0, 976.0, 1018.0, 1036.0, 1138.0, 1195.0, 1265.0, 1287.0, 1323.0, 1410.0, 1443.0, 1516.0, 1538.0, 1664.0, 1686.0, 1801.0, 1912.0, 1921.0, 1929.0, 1936.0, 1941.0, 1985.0, 2003.0, 2010.0, 2013.0, 2082.0, 2106.0, 2213.0, 2358.0, 2394.0, 2572.0, 2616.0, 2627.0, 2676.0, 2694.0, 2736.0, 2740.0, 2966.0, 3005.0, 3037.0, 3041.0, 3146.0, 3194.0, 3228.0, 3235.0, 3243.0, 3339.0, 3365.0, 3414.0, 3440.0, 3454.0, 3567.0, 3570.0, 3615.0, 3619.0, 3802.0, 3831.0, 3864.0, 4061.0, 4084.0, 4106.0, 4233.0, 4328.0, 4362.0, 4372.0, 4376.0, 4388.0, 4413.0, 4527.0, 4612.0, 4643.0, 4684.0, 4750.0, 4799.0, 4810.0, 4824.0, 4825.0, 4871.0, 4932.0, 5028.0, 5112.0, 5118.0, 5163.0, 5198.0, 5256.0, 5296.0, 5413.0, 5471.0, 5568.0, 5628.0, 5645.0, 5733.0, 5790.0, 5851.0, 5886.0, 5927.0, 5937.0, 6018.0, 6027.0, 6046.0, 6145.0, 6147.0, 6289.0, 6371.0, 6384.0, 6393.0, 6431.0, 6469.0, 6543.0, 6649.0, 6772.0, 6864.0, 6943.0, 7009.0, 7014.0, 7037.0, 7258.0, 7356.0, 7364.0, 7386.0, 7387.0, 7399.0, 7450.0, 7519.0, 7527.0, 7578.0, 7632.0, 7709.0, 7849.0, 7896.0, 7952.0, 7980.0, 8050.0, 8126.0, 8152.0, 8165.0, 8332.0, 8347.0, 8520.0, 8522.0, 8542.0, 8587.0, 8621.0, 8678.0, 8721.0, 8739.0, 8765.0, 8889.0, 8951.0, 8962.0, 9082.0, 9149.0, 9199.0, 9278.0, 9334.0, 9339.0, 9345.0, 9365.0, 9383.0, 9402.0, 9471.0, 9483.0, 9492.0, 9496.0, 9532.0, 9553.0, 9563.0, 9571.0, 9574.0, 100000.0, 120000.0, 150000.0, 200000.0, 500000.0, 1000000.0, 2000000.0, 4000000.0, 8000000.0, 16000000.0
         };
         File rrdFile = createRrdFile();
-        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        RrdDb openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         
         // This file's step size is 300
         int endTime = (int)(System.currentTimeMillis() / 1000);
@@ -305,9 +307,9 @@ public class JRobinRrdStrategyTest {
     public void testSampleSetFloatingPointValueWithComma() throws Exception {
         File rrdFile = createRrdFile();
         
-        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        RrdDb openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         
-        Sample sample = ((RrdDb) openedFile).createSample();
+        Sample sample = openedFile.createSample();
         sample.set("N:1,234");
         m_strategy.closeFile(openedFile);
         
@@ -326,9 +328,9 @@ public class JRobinRrdStrategyTest {
     public void testSampleSetFloatingPointValueWithExtraJunk() throws Exception {
         File rrdFile = createRrdFile();
         
-        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        RrdDb openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         
-        Sample sample = ((RrdDb) openedFile).createSample();
+        Sample sample = openedFile.createSample();
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new Exception("Some exception that complains about bogus data"));
@@ -501,7 +503,7 @@ public class JRobinRrdStrategyTest {
         dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));
         List<String> rraList = new ArrayList<String>();
         rraList.add("RRA:AVERAGE:0.5:1:2016");
-        Object def = m_strategy.createDefinition("hello!", m_fileAnticipator.getTempDir().getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
+        RrdDef def = m_strategy.createDefinition("hello!", m_fileAnticipator.getTempDir().getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
         m_strategy.createFile(def);
         
         return m_fileAnticipator.expecting(rrdFileBase + rrdExtension);

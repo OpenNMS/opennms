@@ -63,7 +63,7 @@ public class TimeoutTracker {
      * @param defaultRetry a int.
      * @param defaultTimeout a int.
      */
-    public TimeoutTracker(Map parameters, int defaultRetry, int defaultTimeout) {
+    public TimeoutTracker(Map<String,?> parameters, int defaultRetry, int defaultTimeout) {
         m_retry = ParameterMap.getKeyedInteger(parameters, "retry", defaultRetry);
 
         // make sure the timeout is a least 10 millis

@@ -33,6 +33,7 @@ package org.opennms.netmgt.provision.detector.ssh.client;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Collections;
+import java.util.Map;
 
 import org.apache.regexp.RE;
 import org.opennms.core.utils.LogUtils;
@@ -69,7 +70,8 @@ public class SshClient implements Client<NullRequest, SshResponse> {
 
     /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), SshClient.DEFAULT_RETRY, timeout);
+        Map<String,?> emptyMap = Collections.emptyMap();
+        TimeoutTracker tracker = new TimeoutTracker(emptyMap, SshClient.DEFAULT_RETRY, timeout);
         
         String banner = m_banner;
         String match = m_match;

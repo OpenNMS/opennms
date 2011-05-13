@@ -77,7 +77,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public abstract class RrdUtils {
 
-    private static RrdStrategy m_rrdStrategy = null;
+    private static RrdStrategy<?,?> m_rrdStrategy = null;
 
     private static BeanFactory m_context = new ClassPathXmlApplicationContext(new String[] {
             // Default RRD configuration context
@@ -96,24 +96,25 @@ public abstract class RrdUtils {
      *
      * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    public static RrdStrategy getStrategy() {
-        RrdStrategy retval = null;
+    @SuppressWarnings("unchecked")
+    public static <D,F> RrdStrategy<D,F> getStrategy() {
+        RrdStrategy<D,F> retval = null;
         if (m_rrdStrategy == null) {
             if ((Boolean)m_context.getBean("useQueue")) {
                 if ((Boolean)m_context.getBean("useTcp")) {
-                    retval = (RrdStrategy)m_context.getBean(StrategyName.tcpAndQueuingRrdStrategy.toString());
+                    retval = (RrdStrategy<D,F>)m_context.getBean(StrategyName.tcpAndQueuingRrdStrategy.toString());
                 } else {
-                    retval = (RrdStrategy)m_context.getBean(StrategyName.queuingRrdStrategy.toString());
+                    retval = (RrdStrategy<D,F>)m_context.getBean(StrategyName.queuingRrdStrategy.toString());
                 }
             } else {
                 if ((Boolean)m_context.getBean("useTcp")) {
-                    retval = (RrdStrategy)m_context.getBean(StrategyName.tcpAndBasicRrdStrategy.toString());
+                    retval = (RrdStrategy<D,F>)m_context.getBean(StrategyName.tcpAndBasicRrdStrategy.toString());
                 } else {
-                    retval = (RrdStrategy)m_context.getBean(StrategyName.basicRrdStrategy.toString());
+                    retval = (RrdStrategy<D,F>)m_context.getBean(StrategyName.basicRrdStrategy.toString());
                 }
             }
         } else {
-            retval = m_rrdStrategy;
+            retval = (RrdStrategy<D,F>)m_rrdStrategy;
         }
 
         if (retval == null) {
@@ -128,9 +129,10 @@ public abstract class RrdUtils {
      * @param strategy a {@link org.opennms.netmgt.rrd.RrdUtils.StrategyName} object.
      * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    public static RrdStrategy getSpecificStrategy(StrategyName strategy) {
-        RrdStrategy retval = null;
-        retval = (RrdStrategy)m_context.getBean(strategy.toString());
+    @SuppressWarnings("unchecked")
+    public static <D,F> RrdStrategy<D,F> getSpecificStrategy(StrategyName strategy) {
+        RrdStrategy<D,F> retval = null;
+        retval = (RrdStrategy<D,F>)m_context.getBean(strategy.toString());
         if (retval == null) {
             throw new IllegalStateException("RrdUtils not initialized");
         }
@@ -142,7 +144,7 @@ public abstract class RrdUtils {
      *
      * @param strategy a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    public static void setStrategy(RrdStrategy strategy) {
+    public static void setStrategy(RrdStrategy<?,?> strategy) {
         m_rrdStrategy = strategy;
     }
 

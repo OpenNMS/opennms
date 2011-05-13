@@ -139,7 +139,7 @@ public class OpenNMSProvisionerTest {
             "</capsd-configuration>\n";
 
     private EasyMockUtils m_mocks = new EasyMockUtils();
-    private RrdStrategy m_strategy = m_mocks.createMock(RrdStrategy.class);
+    private RrdStrategy<?,?> m_strategy = m_mocks.createMock(RrdStrategy.class);
 
     private MockEventIpcManager m_eventManager;
 
