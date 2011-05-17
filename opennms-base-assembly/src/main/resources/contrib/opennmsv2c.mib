@@ -304,7 +304,7 @@ synchronizing		OBJECT-TYPE
 	MAX-ACCESS		read-only
 	STATUS		current
 	DESCRIPTION 	"flag indicating if the alarm is due to 
-                         a synchronization session (SYNC) or not (NORMAL)"
+                         a synchronization session (SYNC) or not (null)"
 	::= { eventsAlarms 2 }
 					   							   
 eventTrap	NOTIFICATION-TYPE
