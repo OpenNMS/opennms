@@ -7,7 +7,7 @@ public class DbHelper {
 
 	private static String GETNODELABELSTRING = "select nodeLabel from node where nodeId = ?";
 	
-	public static String getNodeLabel(String nodeid) {
+	public static String getNodeLabel(Integer nodeid) {
 		SingleResultQuerier querier = new SingleResultQuerier(DataSourceFactory.getInstance(), GETNODELABELSTRING);
 		querier.execute(nodeid);
 		return (String) querier.getResult();
