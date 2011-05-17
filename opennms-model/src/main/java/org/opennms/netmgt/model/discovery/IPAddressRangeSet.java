@@ -27,22 +27,25 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.model.discovery;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-class ConfigRangeList  {
-    // The ranges are kept in order and non-overlapping
-    List<ConfigRange> m_ranges = new LinkedList<ConfigRange>();
 
-    public void add(ConfigRange range) {
-        ConfigRange working = range;
+public class IPAddressRangeSet implements Iterable<IPAddressRange> {
+    // The ranges are kept in order and non-overlapping
+    List<IPAddressRange> m_ranges = new LinkedList<IPAddressRange>();
+    
+    public void add(IPAddressRange range) {
+        IPAddressRange working = range;
         // we traverse the ordered list
-        for(ListIterator<ConfigRange> it = m_ranges.listIterator(); it.hasNext(); ) {
-            ConfigRange r = it.next();
-            if (working.preceeds(r) && !working.adjacent(r)) {
+        for(ListIterator<IPAddressRange> it = m_ranges.listIterator(); it.hasNext(); ) {
+            IPAddressRange r = it.next();
+            if (working.comesBefore(r) && !working.adjoins(r)) {
                 // We've found the insertion point so just insert it and we are finished
                 // go back one
                 it.previous();
@@ -51,8 +54,6 @@ class ConfigRangeList  {
                 // we have added the range so return
                 return;
             } else if (working.combinable(r)) {
-                // In this case we construct a new working range and continue on looking for its insertion point
-                // we make a new range that combines the working range and the current one on the list
                 working = working.combine(r);
                 // now we remove the one we just merged since it is part of the working range
                 it.remove();
@@ -67,11 +68,11 @@ class ConfigRangeList  {
         m_ranges.add(working);
     }
     
-    public void remove(ConfigRange range) {
-        for(ListIterator<ConfigRange> it = m_ranges.listIterator(); it.hasNext(); ) {
-            ConfigRange r = it.next();
-            ConfigRange[] remaining = r.remove(range);
-            // After remiving a range form another there are 4 cases
+    public void remove(IPAddressRange range) {
+        for(ListIterator<IPAddressRange> it = m_ranges.listIterator(); it.hasNext(); ) {
+            IPAddressRange r = it.next();
+            IPAddressRange[] remaining = r.remove(range);
+            // After removing a range form another there are 4 cases
             if (remaining.length == 0) {
                 // 1. r is completely eclipse by range to there is nothing remaining
                 // so we just remove it
@@ -90,19 +91,18 @@ class ConfigRangeList  {
             }
         }            
     }
-
-    public ConfigRange[] toArray() {
-        return m_ranges.toArray(new ConfigRange[m_ranges.size()]);
-    }
     
+    public IPAddressRange[] toArray() {
+        return m_ranges.toArray(new IPAddressRange[m_ranges.size()]);
+    }
+
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        ConfigRange[] ranges = toArray();
 
         buf.append("[");
         boolean first = true;
-        for(ConfigRange r : ranges) {
+        for(IPAddressRange r : this) {
             if (first) {
                 first = false;
             } else {
@@ -113,6 +113,23 @@ class ConfigRangeList  {
         buf.append("]");
         
         return buf.toString();
+    }
+
+    @Override
+    public Iterator<IPAddressRange> iterator() {
+        return Collections.unmodifiableList(m_ranges).iterator();
+    }
+
+    public void addAll(IPAddressRangeSet ranges) {
+        for(IPAddressRange r : ranges) {
+            add(r);
+        }
+    }
+    
+    public void removeAll(IPAddressRangeSet ranges) {
+        for(IPAddressRange r : ranges) {
+            remove(r);
+        }
     }
 
     

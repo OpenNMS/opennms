@@ -32,9 +32,10 @@
 package org.opennms.netmgt.model.discovery;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
-
 
 /**
  * IPAddressRange
@@ -42,11 +43,19 @@ import java.util.NoSuchElementException;
  * @author brozow
  * @version $Id: $
  */
-public class IPAddressRange implements Iterable<IPAddress> {
+public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAddress> {
     
     private final IPAddress m_begin;
     private final IPAddress m_end;
     
+    public IPAddressRange(String singleton) {
+        this(singleton, singleton);
+    }
+    
+    public IPAddressRange(IPAddress singleton) {
+        this(singleton, singleton);
+    }
+
     /**
      * <p>Constructor for IPAddressRange.</p>
      *
@@ -56,7 +65,7 @@ public class IPAddressRange implements Iterable<IPAddress> {
     public IPAddressRange(String begin, String end) {
         this(new IPAddress(begin), new IPAddress(end));
     }
-
+    
     /**
      * <p>Constructor for IPAddressRange.</p>
      *
@@ -113,6 +122,16 @@ public class IPAddressRange implements Iterable<IPAddress> {
             throw new IllegalArgumentException("addr should not be null");
         }
         return addr.isGreaterThanOrEqualTo(m_begin) && addr.isLessThanOrEqualTo(m_end);
+    }
+    
+    /**
+     * <p>contains</p>
+     *
+     * @param addr a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a boolean.
+     */
+    public boolean contains(String addr) {
+        return contains(new IPAddress(addr));
     }
     
     /**
@@ -235,7 +254,20 @@ public class IPAddressRange implements Iterable<IPAddress> {
         }
         
     }
-
+    
+    public int compareTo(IPAddressRange r) {
+        if (this.comesBefore(r)) {
+            // this is less than 
+            return -1;
+        } else if (this.comesAfter(r)) {
+            // this is greater than
+            return 1;
+        } else {
+            // otherwise it overlaps
+            return 0;
+        }
+    }
+    
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -258,6 +290,39 @@ public class IPAddressRange implements Iterable<IPAddress> {
         StringBuilder buf = new StringBuilder();
         buf.append('[').append(m_begin).append(',').append(m_end).append(']');
         return buf.toString();
+    }
+
+    public boolean isSingleton() {
+        return getBegin().equals(getEnd());
+    }
+
+    public boolean combinable(IPAddressRange range) {
+        return overlaps(range) || adjoins(range);
+    }
+
+    public IPAddressRange combine(IPAddressRange range) {
+        if (!combinable(range)) {
+            throw new IllegalArgumentException(String.format("Range %s is not combinable with range %s", this, range));
+        }
+        return new IPAddressRange(IPAddress.min(range.getBegin(), getBegin()),IPAddress.max(getEnd(), range.getEnd()));
+    }
+
+    public IPAddressRange[] remove(IPAddressRange range) {
+        if (range.contains(this)) {
+            return new IPAddressRange[0];
+        } else if (!overlaps(range)) {
+            return new IPAddressRange[] { this };
+        } else {
+            List<IPAddressRange> ranges = new ArrayList<IPAddressRange>(2);
+            if (getBegin().isLessThan(range.getBegin())) {
+                ranges.add(new IPAddressRange(getBegin(), range.getBegin().decr()));
+            }
+            if (range.getEnd().isLessThan(getEnd())) {
+                ranges.add(new IPAddressRange(range.getEnd().incr(), getEnd()));
+            }
+            return ranges.toArray(new IPAddressRange[ranges.size()]);
+            
+        }
     }
 
 }

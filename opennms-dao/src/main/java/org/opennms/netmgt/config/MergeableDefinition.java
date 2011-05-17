@@ -46,6 +46,8 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
+import org.opennms.netmgt.model.discovery.IPAddressRange;
+import org.opennms.netmgt.model.discovery.IPAddressRangeSet;
 
 /**
  * This is a wrapper class for the Definition class from the config package.  Has the logic for 
@@ -62,7 +64,7 @@ final class MergeableDefinition {
      * 
      */
     private final Definition m_snmpConfigDef;
-    private ConfigRangeList m_configRanges = new ConfigRangeList();
+    private IPAddressRangeSet m_configRanges = new IPAddressRangeSet();
     
     /**
      * <p>Constructor for MergeableDefinition.</p>
@@ -73,17 +75,17 @@ final class MergeableDefinition {
         m_snmpConfigDef = def;
         
         for (Range r : def.getRangeCollection()) {
-            m_configRanges.add(new ConfigRange(r));
+            m_configRanges.add(new IPAddressRange(r.getBegin(), r.getEnd()));
         }
         
         for(String s : def.getSpecificCollection()) {
-            m_configRanges.add(new ConfigRange(s));
+            m_configRanges.add(new IPAddressRange(s));
         }
        
         
     }
     
-    public ConfigRangeList getConfigRanges() {
+    public IPAddressRangeSet getAddressRanges() {
         return m_configRanges;
     }
 
@@ -96,25 +98,18 @@ final class MergeableDefinition {
      */
     protected void mergeMatchingAttributeDef(MergeableDefinition eventDefinition)  {
         
-        ConfigRange[] eventRanges = eventDefinition.getConfigRanges().toArray();
-        
-        for(ConfigRange r : eventRanges) {
-            m_configRanges.add(r);
-        }
-        
-
-        ConfigRange[] currentRanges = m_configRanges.toArray();
+        m_configRanges.addAll(eventDefinition.getAddressRanges());
         
         getConfigDef().removeAllRange();
         getConfigDef().removeAllSpecific();
         
-        for(ConfigRange r : currentRanges) {
-            if (r.isSpecific()) {
-                getConfigDef().addSpecific(r.getSpecificString());
+        for(IPAddressRange range : m_configRanges) {
+            if (range.isSingleton()) {
+                getConfigDef().addSpecific(range.getBegin().toUserString());
             } else {
                 Range xmlRange = new Range();
-                xmlRange.setBegin(r.getBegin());
-                xmlRange.setEnd(r.getEnd());
+                xmlRange.setBegin(range.getBegin().toUserString());
+                xmlRange.setEnd(range.getEnd().toUserString());
                 getConfigDef().addRange(xmlRange);
             }
             
@@ -600,7 +595,6 @@ final class MergeableDefinition {
 
     boolean matches(MergeableDefinition other) {
         boolean compares = compareStrings(getConfigDef().getReadCommunity(), other.getConfigDef().getReadCommunity())
-                && compareStrings(getConfigDef().getVersion(), other.getConfigDef().getVersion())
                 && getConfigDef().getPort() == other.getConfigDef().getPort() 
                 && getConfigDef().getRetry() == other.getConfigDef().getRetry()
                 && getConfigDef().getTimeout() == other.getConfigDef().getTimeout()
@@ -622,25 +616,19 @@ final class MergeableDefinition {
 
 
     void removeRanges(MergeableDefinition eventDefinition) {
-        ConfigRange[] eventRanges = eventDefinition.getConfigRanges().toArray();
         
-        for(ConfigRange r : eventRanges) {
-            m_configRanges.remove(r);
-        }
-        
+        m_configRanges.removeAll(eventDefinition.getAddressRanges());
 
-        ConfigRange[] currentRanges = m_configRanges.toArray();
-        
         getConfigDef().removeAllRange();
         getConfigDef().removeAllSpecific();
         
-        for(ConfigRange r : currentRanges) {
-            if (r.isSpecific()) {
-                getConfigDef().addSpecific(r.getSpecificString());
+        for(IPAddressRange r : m_configRanges) {
+            if (r.isSingleton()) {
+                getConfigDef().addSpecific(r.getBegin().toUserString());
             } else {
                 Range xmlRange = new Range();
-                xmlRange.setBegin(r.getBegin());
-                xmlRange.setEnd(r.getEnd());
+                xmlRange.setBegin(r.getBegin().toUserString());
+                xmlRange.setEnd(r.getEnd().toUserString());
                 getConfigDef().addRange(xmlRange);
             }
             
