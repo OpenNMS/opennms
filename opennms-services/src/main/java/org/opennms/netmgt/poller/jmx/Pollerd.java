@@ -45,7 +45,7 @@ public class Pollerd extends AbstractSpringContextJmxServiceDaemon<org.opennms.n
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Pollers";
+        return "OpenNMS.Poller";
     }
 
     /** {@inheritDoc} */

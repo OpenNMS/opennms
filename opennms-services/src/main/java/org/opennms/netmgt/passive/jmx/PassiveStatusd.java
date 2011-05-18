@@ -54,13 +54,6 @@ import org.opennms.netmgt.passive.PassiveStatusKeeper;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  */
 public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStatusdMBean {
 
@@ -72,7 +65,7 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
     }
 
     /** Constant <code>NAME="OpenNMS.PassiveStatus"</code> */
-    public final static String NAME = "OpenNMS.PassiveStatus";
+    public final static String NAME = "OpenNMS.PassiveStatusKeeper";
 
     /**
      * <p>onInit</p>
