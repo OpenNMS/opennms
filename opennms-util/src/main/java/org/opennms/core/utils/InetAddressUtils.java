@@ -148,10 +148,39 @@ abstract public class InetAddressUtils {
      */
     public static InetAddress getInetAddress(final String dottedNotation) {
         try {
-            return InetAddress.getByName(dottedNotation);
+            return getInetAddress(dottedNotation, false);
         } catch (final UnknownHostException e) {
             throw new IllegalArgumentException("Invalid IPAddress " + dottedNotation);
         }
+    }
+
+    public static InetAddress getInetAddress(final String hostname, final boolean preferInet6Address) throws UnknownHostException {
+        return getInetAddress(hostname, preferInet6Address, true);
+    }
+
+    /**
+     * This function is used inside XSLT documents, do a string search before refactoring.
+     */
+    public static InetAddress getInetAddress(final String hostname, final boolean preferInet6Address, final boolean throwException) throws UnknownHostException {
+        InetAddress retval = null;
+        try {
+            InetAddress[] addresses = InetAddress.getAllByName(hostname);
+            for (InetAddress address : addresses) {
+                retval = address;
+                if (!preferInet6Address && retval instanceof Inet4Address) break;
+                if (preferInet6Address && retval instanceof Inet6Address) break;
+            }
+            if (preferInet6Address && !(retval instanceof Inet6Address)) {
+                throw new UnknownHostException("No IPv6 address could be found for the hostname: " + hostname);
+            }
+        } catch (UnknownHostException e) {
+            if (throwException) {
+                throw e;
+            } else {
+                return null;
+            }
+        }
+        return retval;
     }
 
     /**
