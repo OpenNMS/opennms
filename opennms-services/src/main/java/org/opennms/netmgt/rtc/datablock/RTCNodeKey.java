@@ -34,30 +34,32 @@
 
 package org.opennms.netmgt.rtc.datablock;
 
+import java.net.InetAddress;
+
+import org.opennms.core.utils.InetAddressComparator;
+import org.opennms.core.utils.InetAddressUtils;
+
 /**
  * The key used to look up items in the data map
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public class RTCNodeKey implements Comparable<RTCNodeKey> {
     /**
      * The node ID
      */
-    private long m_nodeID;
+    private final long m_nodeID;
 
     /**
      * The ip address of the interface of the node
      */
-    private String m_ip;
+    private final InetAddress m_ip;
 
     /**
      * The service name
      */
-    private String m_svcName;
+    private final String m_svcName;
 
     /**
      * the constructor for this class
@@ -69,41 +71,11 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
      * @param svcname
      *            the service in the node
      */
-    public RTCNodeKey(long nodeid, String ip, String svcname) {
+    public RTCNodeKey(long nodeid, InetAddress ip, String svcname) {
         m_nodeID = nodeid;
         m_ip = ip;
         // m_svcName = svcname.toUpperCase();
         m_svcName = svcname;
-    }
-
-    /**
-     * Set the node ID
-     *
-     * @param id
-     *            the node ID
-     */
-    public void setNodeID(long id) {
-        m_nodeID = id;
-    }
-
-    /**
-     * Set the IP address
-     *
-     * @param ipStr
-     *            the ip address
-     */
-    public void setIP(String ipStr) {
-        m_ip = ipStr;
-    }
-
-    /**
-     * Set the service name
-     *
-     * @param svcName
-     *            the service name
-     */
-    public void setSvcName(String svcName) {
-        m_svcName = svcName;
     }
 
     /**
@@ -129,17 +101,18 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
      *
      * @return the IP address
      */
-    public String getIP() {
+    public InetAddress getIP() {
         return m_ip;
     }
 
     /**
      * Overrides the 'hashCode()' method in the 'Object' superclass
      *
-     * @return a sum of hashCodes of the inidividual attributes
+     * @return a sum of hashCodes of the individual attributes
      */
+    @Override
     public int hashCode() {
-        int hcode = (int) (m_nodeID + m_ip.hashCode() + m_svcName.hashCode());
+        int hcode = (int) (m_nodeID + (m_ip == null ? 0 : m_ip.hashCode()) + (m_svcName == null ? 0 : m_svcName.hashCode()));
 
         return hcode;
     }
@@ -149,18 +122,13 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
      *
      * Overrides the 'equals()' method in the 'Object' superclass
      */
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof RTCNodeKey)) {
             return false;
         }
 
-        RTCNodeKey obj = (RTCNodeKey) o;
-
-        if (m_nodeID == obj.getNodeID() && m_ip.equals(obj.getIP()) && m_svcName.equals(obj.getSvcName())) {
-            return true;
-        } else {
-            return false;
-        }
+        return compareTo((RTCNodeKey)o) == 0;
     }
 
     /**
@@ -169,18 +137,32 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
      * @param obj a {@link org.opennms.netmgt.rtc.datablock.RTCNodeKey} object.
      * @return a int.
      */
+    @Override
     public int compareTo(RTCNodeKey obj) {
         int rc = (int) (m_nodeID - obj.getNodeID());
-        if (rc != 0)
-            return rc;
-
-        rc = m_ip.compareTo(obj.getIP());
         if (rc != 0) {
             return rc;
         }
 
-        else
+        if (m_ip == null && obj.getIP() == null) {
+            rc = 0;
+        } else {
+            rc = new InetAddressComparator().compare(m_ip, obj.getIP());
+        }
+
+        if (rc != 0) {
+            return rc;
+        }
+
+        if(m_svcName == null) {
+            if (obj.getSvcName() == null) {
+                return 0;
+            } else {
+                return -1;
+            }
+        } else {
             return m_svcName.compareTo(obj.getSvcName());
+        }
     }
 
     /**
@@ -188,8 +170,9 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
      *
      * @return a string representation of this key
      */
+    @Override
     public String toString() {
-        String s = "RTCNodeKey\n[\n\t" + "nodeID    = " + m_nodeID + "\n\t" + "IP        = " + m_ip + "\n\t" + "Service   = " + m_svcName + "\n]\n";
+        String s = "RTCNodeKey\n[\n\t" + "nodeID    = " + m_nodeID + "\n\t" + "IP        = " + InetAddressUtils.str(m_ip) + "\n\t" + "Service   = " + m_svcName + "\n]\n";
         return s;
     }
 }

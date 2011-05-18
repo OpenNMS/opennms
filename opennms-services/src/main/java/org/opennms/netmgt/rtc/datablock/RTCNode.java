@@ -34,6 +34,7 @@
 
 package org.opennms.netmgt.rtc.datablock;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,12 +57,8 @@ import org.opennms.netmgt.rtc.RTCConstants;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTime
  * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTimesList
- * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTimesList
- * @version $Id: $
  */
 public class RTCNode {
     /**
@@ -72,7 +69,7 @@ public class RTCNode {
     /**
      * The ip address of the interface of the node.
      */
-    private String m_ip;
+    private InetAddress m_ip;
 
     /**
      * The service name.
@@ -90,13 +87,6 @@ public class RTCNode {
     private List<String> m_categories;
 
     /**
-     * Default constructor. Initializes all values
-     */
-    public RTCNode() {
-    	this(-1, null, null);
-    }
-    
-    /**
      * <p>Constructor for RTCNode.</p>
      *
      * @param key a {@link org.opennms.netmgt.rtc.datablock.RTCNodeKey} object.
@@ -110,15 +100,15 @@ public class RTCNode {
      *
      * @param nodeid
      *            the node id
-     * @param ip
+     * @param inetAddress
      *            the IP address
      * @param svcName
      *            the service
      */
-    public RTCNode(long nodeid, String ip, String svcName) {
+    public RTCNode(long nodeid, InetAddress inetAddress, String svcName) {
         m_nodeID = nodeid;
 
-        m_ip = ip;
+        m_ip = inetAddress;
 
         m_svcName = svcName;
 
@@ -149,11 +139,11 @@ public class RTCNode {
     /**
      * Set the IP address.
      *
-     * @param ipStr
+     * @param ip
      *            the ip address
      */
-    public void setIP(String ipStr) {
-        m_ip = ipStr;
+    public void setIP(InetAddress ip) {
+        m_ip = ip;
     }
 
     /**
@@ -269,7 +259,7 @@ public class RTCNode {
      *
      * @return the IP address
      */
-    public String getIP() {
+    public InetAddress getIP() {
         return m_ip;
     }
 

@@ -38,6 +38,7 @@
 
 package org.opennms.netmgt.rtc.datablock;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,60 +54,27 @@ import java.util.Map;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
-@SuppressWarnings("unchecked")
 // FIXME: THIS IS INSANE
+// FIXME: 2011-05-18 Seth: OK it is less insane now... but still insane
 public class RTCHashMap {
 	
-    Map m_map;
+    Map<RTCNodeKey,List<RTCNode>> m_map;
 	
-    /**
-     * Default constructor
-     */
-    public RTCHashMap() {
-    	m_map = new HashMap();
-    }
-
     /**
      * constructor
      *
      * @param initialCapacity a int.
      */
     public RTCHashMap(int initialCapacity) {
-        m_map = new HashMap(initialCapacity);
+        m_map = new HashMap<RTCNodeKey,List<RTCNode>>(initialCapacity);
     }
 
-    /**
-     * constructor
-     *
-     * @param initialCapacity a int.
-     * @param loadFactor a float.
-     */
-    public RTCHashMap(int initialCapacity, float loadFactor) {
-    	m_map = new HashMap(initialCapacity, loadFactor);
-    }
-    
-    private void put(Object key, Object value) {
-    	m_map.put(key, value);
-    }
-    
-    private Object get(Object key) {
-    	return m_map.get(key);
-    }
-    
-    private Object remove(Object key) {
-    	return m_map.remove(key);
-    }
-    
-    private List getNodeIDs() {
-    	List nodes = new LinkedList();
-    	for (Iterator it = m_map.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
-			if (key instanceof Long)
-				nodes.add(key);
+    private List<Long> getNodeIDs() {
+    	List<Long> nodes = new LinkedList<Long>();
+    	for (Iterator<RTCNodeKey> it = m_map.keySet().iterator(); it.hasNext();) {
+			RTCNodeKey key = it.next();
+			nodes.add(key.getNodeID());
 		}
     	return nodes;
     }
@@ -120,18 +88,18 @@ public class RTCHashMap {
      *            the RTCNode to add
      */
     private void add(long nodeid, RTCNode rtcN) {
-        Long key = new Long(nodeid);
+        RTCNodeKey key = new RTCNodeKey(nodeid, null, null);
 
-        List nodesList = (List) get(key);
+        List<RTCNode> nodesList = m_map.get(key);
         if (nodesList != null) {
             nodesList.add(rtcN);
         } else {
             // add current node to list
-            nodesList = new ArrayList();
+            nodesList = new ArrayList<RTCNode>();
             nodesList.add(rtcN);
 
             // add list to map
-            put(key, nodesList);
+            m_map.put(key, nodesList);
         }
     }
 
@@ -140,29 +108,29 @@ public class RTCHashMap {
      * 
      * @param nodeid
      *            the nodeid
-     * @param ip
+     * @param inetAddress
      *            the ip
      * @param rtcN
      *            the RTCNode to add
      */
-    private void add(long nodeid, String ip, RTCNode rtcN) {
-        String key = Long.toString(nodeid) + ip;
+    private void add(long nodeid, InetAddress inetAddress, RTCNode rtcN) {
+        RTCNodeKey key = new RTCNodeKey(nodeid, inetAddress, null);
 
-        List nodesList = (List) get(key);
+        List<RTCNode> nodesList = m_map.get(key);
         if (nodesList != null) {
             nodesList.add(rtcN);
         } else {
             // add current node to list
-            nodesList = new ArrayList();
+            nodesList = new ArrayList<RTCNode>();
             nodesList.add(rtcN);
 
             // add list to map
-            put(key, nodesList);
+            m_map.put(key, nodesList);
         }
     }
     
-    private void add(long nodeid, String ip, String svcName, RTCNode rtcN) {
-    	put(new RTCNodeKey(nodeid, ip, svcName), rtcN);
+    private void add(long nodeid, InetAddress ip, String svcName, RTCNode rtcN) {
+        m_map.put(new RTCNodeKey(nodeid, ip, svcName), Collections.singletonList(rtcN));
     }
     
     /**
@@ -197,9 +165,9 @@ public class RTCHashMap {
      *            the RTCNode to delete
      */
     private void delete(long nodeid, RTCNode rtcN) {
-        Long key = new Long(nodeid);
+        RTCNodeKey key = new RTCNodeKey(nodeid, null, null);
 
-        List nodesList = (List) get(key);
+        List<RTCNode> nodesList = m_map.get(key);
         if (nodesList != null) {
             nodesList.remove(rtcN);
         }
@@ -210,23 +178,23 @@ public class RTCHashMap {
      * 
      * @param nodeid
      *            the nodeid
-     * @param ip
+     * @param inetAddress
      *            the ip
      * @param rtcN
      *            the RTCNode to add
      */
-    private void delete(long nodeid, String ip, RTCNode rtcN) {
-        String key = Long.toString(nodeid) + ip;
+    private void delete(long nodeid, InetAddress inetAddress, RTCNode rtcN) {
+        RTCNodeKey key = new RTCNodeKey(nodeid, inetAddress, null);
 
-        List nodesList = (List) get(key);
+        List<RTCNode> nodesList = m_map.get(key);
         if (nodesList != null) {
             nodesList.remove(rtcN);
         }
     }
     
-    private void delete(long nodeid, String ip, String svcName, RTCNode rtcN) {
+    private void delete(long nodeid, InetAddress ip, String svcName, RTCNode rtcN) {
     	RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
-    	remove(key);
+    	m_map.remove(key);
     }
 
     /**
@@ -240,11 +208,8 @@ public class RTCHashMap {
      *            the category whose rule this ip is to pass
      * @return true if ip has already been validated, false otherwise
      */
-    public boolean isIpValidated(long nodeid, String ip, String catLabel) {
-        List nodesList = getRTCNodes(nodeid, ip);
-        Iterator iter = nodesList.iterator();
-        while (iter.hasNext()) {
-            RTCNode node = (RTCNode) iter.next();
+    public boolean isIpValidated(long nodeid, InetAddress ip, String catLabel) {
+        for (RTCNode node : getRTCNodes(nodeid, ip)) {
             if (node.belongsTo(catLabel)) {
                 return true;
             }
@@ -280,18 +245,12 @@ public class RTCHashMap {
         long downTime = 0;
 
         // get all nodes in the hashtable
-        List nodes = getNodeIDs();
-        Iterator it = nodes.iterator();
-        while (it.hasNext()) {
-            // get only values of nodeids
-            Long key = (Long)it.next();
-            List valList = getRTCNodes(key.longValue());
+        for (Long key : getNodeIDs()) {
+            List<RTCNode> valList = getRTCNodes(key.longValue());
             if (valList == null || valList.size() == 0)
                 continue;
 
-            Iterator valIter = valList.iterator();
-            while (valIter.hasNext()) {
-                RTCNode node = (RTCNode) valIter.next();
+            for (RTCNode node : valList) {
                 downTime = node.getDownTime(catLabel, curTime, rollingWindow);
                 if (downTime < 0)
                 // node does not belong to category
@@ -349,11 +308,7 @@ public class RTCHashMap {
         long downTime = 0;
 
         // get nodeslist
-        List nodesList = getRTCNodes(nodeid);
-        Iterator iter = nodesList.iterator();
-        while (iter.hasNext()) {
-            RTCNode node = (RTCNode) iter.next();
-
+        for (RTCNode node : getRTCNodes(nodeid)) {
             if (node.getNodeID() == nodeid) {
                 downTime = node.getDownTime(catLabel, curTime, rollingWindow);
                 if (downTime < 0)
@@ -399,14 +354,9 @@ public class RTCHashMap {
         int count = 0;
 
         // get nodeslist
-        List nodesList = getRTCNodes(nodeid);
-        Iterator iter = nodesList.iterator();
-        while (iter.hasNext()) {
-            RTCNode node = (RTCNode) iter.next();
-
+        for (RTCNode node : getRTCNodes(nodeid)) {
             if (node.belongsTo(catLabel))
                 count++;
-
         }
 
         return count;
@@ -428,11 +378,7 @@ public class RTCHashMap {
         int count = 0;
 
         // get nodeslist
-        List nodesList = getRTCNodes(nodeid);
-        Iterator iter = nodesList.iterator();
-        while (iter.hasNext()) {
-            RTCNode node = (RTCNode) iter.next();
-
+        for (RTCNode node : getRTCNodes(nodeid)) {
             if (node.belongsTo(catLabel) && node.isServiceCurrentlyDown()) {
                 count++;
             }
@@ -448,7 +394,12 @@ public class RTCHashMap {
 	 * @return a {@link org.opennms.netmgt.rtc.datablock.RTCNode} object.
 	 */
 	public RTCNode getRTCNode(RTCNodeKey key) {
-		return (RTCNode)get(key);
+		List<RTCNode> nodes = m_map.get(key);
+		if (nodes == null) return null;
+		if (nodes.size() != 1) {
+		    throw new IllegalStateException("Could not find single RTCNode that matched key: " + key.toString());
+		}
+		return nodes.get(0);
 	}
 	
 	/**
@@ -459,7 +410,7 @@ public class RTCHashMap {
 	 * @param svcname a {@link java.lang.String} object.
 	 * @return a {@link org.opennms.netmgt.rtc.datablock.RTCNode} object.
 	 */
-	public RTCNode getRTCNode(long nodeid, String ipaddr, String svcname) {
+	public RTCNode getRTCNode(long nodeid, InetAddress ipaddr, String svcname) {
 		return getRTCNode(new RTCNodeKey(nodeid, ipaddr, svcname));
 	}
 	
@@ -470,8 +421,8 @@ public class RTCHashMap {
 	 * @return a {@link java.util.List} object.
 	 */
 	public List<RTCNode> getRTCNodes(long nodeid) {
-		Long key = new Long(nodeid);
-		List<RTCNode> nodes = (List<RTCNode>)get(key);
+		RTCNodeKey key = new RTCNodeKey(nodeid, null, null);
+		List<RTCNode> nodes = m_map.get(key);
 		if (nodes == null) return Collections.emptyList();
 		return Collections.unmodifiableList(nodes); 
 	}
@@ -483,9 +434,9 @@ public class RTCHashMap {
 	 * @param ip a {@link java.lang.String} object.
 	 * @return a {@link java.util.List} object.
 	 */
-	public List<RTCNode> getRTCNodes(long nodeid, String ip) {
-		String key = Long.toString(nodeid)+ip;
-		List<RTCNode> nodes = (List<RTCNode>)get(key);
+	public List<RTCNode> getRTCNodes(long nodeid, InetAddress ip) {
+		RTCNodeKey key = new RTCNodeKey(nodeid, ip, null);
+		List<RTCNode> nodes = m_map.get(key);
 		if (nodes == null) return Collections.emptyList();
 		return Collections.unmodifiableList(nodes);
 	}
@@ -496,12 +447,11 @@ public class RTCHashMap {
 	 * @param nodeid a long.
 	 */
 	public void deleteNode(long nodeid) {
-		List nodeList = new ArrayList(getRTCNodes(nodeid));
-		for (Iterator it = nodeList.iterator(); it.hasNext();) {
-			RTCNode rtcN = (RTCNode) it.next();
-			delete(rtcN);
+	    // Construct a new ArrayList to contain the members of this collection
+	    // to avoid running into a java.util.ConcurrentModificationException
+	    // on the Collections.unmodifiableList() view.
+		for (RTCNode node : new ArrayList<RTCNode>(getRTCNodes(nodeid))) {
+			delete(node);
 		}
-		
 	}
-
 }
