@@ -87,23 +87,46 @@
     </plugins>
   </build>
 
+  <!-- indirect dependencies that belong in $OPENNMS_HOME/lib should
+       be <scope>provided</scope> and also included in opennms-base-assembly -->
+
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.api</artifactId>
+		<scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+		<scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
+		<scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
+		<scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
+		<scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
+		<scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
+		<scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>net.simon04.jelementtree</groupId>
@@ -111,22 +134,50 @@
       <version>20100506</version>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.geo-google</groupId>
-      <artifactId>geo-google</artifactId>
-      <version>1.5.0</version>
+      <groupId>geoGoogle</groupId>
+      <artifactId>geoGoogle</artifactId>
+      <version>1.5.1-20110518onms1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+		  </exclusion>
+        <exclusion>
+          <groupId>commons-collections</groupId>
+          <artifactId>commons-collections</artifactId>
+		  </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+		  </exclusion>
+        <exclusion>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+		  </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+		  </exclusion>
+        <exclusion>
+          <groupId>javax.xml</groupId>
+          <artifactId>jaxb-api</artifactId>
+		  </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+		  </exclusion>
+        <exclusion>
+          <groupId>javax.xml</groupId>
+          <artifactId>jaxb-api</artifactId>
+		  </exclusion>
+      </exclusions>
     </dependency>
-    <!-- used by geo-google -->
+    <!-- for geoGoogle -->
     <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
+		<scope>provided</scope>
     </dependency>
 
     <!-- GWT -->
@@ -134,6 +185,7 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>gwt-dependencies</artifactId>
       <type>pom</type>
+		<scope>provided</scope>
     </dependency>
 
     <!-- map APIs -->
@@ -197,27 +249,27 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.springframework-security</artifactId>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-tcp</artifactId>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Test Dependencies -->
