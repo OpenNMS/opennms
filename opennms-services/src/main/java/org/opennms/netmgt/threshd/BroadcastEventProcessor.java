@@ -50,6 +50,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -296,14 +297,14 @@ final class BroadcastEventProcessor implements EventListener {
         // address for reinitialization
         //
         synchronized (m_thresholdableServices) {
-            for (ThresholdableService tSvc : m_thresholdableServices) {
-                InetAddress addr = tSvc.getAddress();
-                if (addr.equals(event.getInterfaceAddress())) {
+            for (final ThresholdableService tSvc : m_thresholdableServices) {
+            	final IPAddress addr = new IPAddress(tSvc.getAddress());
+                if (addr.equals(new IPAddress(event.getInterfaceAddress()))) {
                     synchronized (tSvc) {
                         // Got a match! Retrieve the ThresholderUpdates object
                         // associated
                         // with this ThresholdableService.
-                        ThresholderUpdates updates = tSvc.getThresholderUpdates();
+                    	final ThresholderUpdates updates = tSvc.getThresholderUpdates();
                         // Now set the reinitialization flag
                         updates.markForReinitialization();
                         if (log.isDebugEnabled())
@@ -352,12 +353,13 @@ final class BroadcastEventProcessor implements EventListener {
        //Mark *all* thresholdable Services for reinit (very similar to reinitializePrimarySnmpInterfaceHandler but without the interface check)
         synchronized (m_thresholdableServices) {
             for (ThresholdableService tSvc : m_thresholdableServices) {
-                InetAddress addr = (InetAddress) tSvc.getAddress();
                 synchronized (tSvc) {
-                    ThresholderUpdates updates = tSvc.getThresholderUpdates();
+                	final ThresholderUpdates updates = tSvc.getThresholderUpdates();
                     updates.markForReinitialization();
-                    if (log.isDebugEnabled())
-                        log.debug("thresholdConfigurationChangedHandler: marking " + InetAddressUtils.str(addr) + " for reinitialization for service SNMP.");
+                    if (log.isDebugEnabled()) {
+                    	final IPAddress addr = new IPAddress(tSvc.getAddress());
+                        log.debug("thresholdConfigurationChangedHandler: marking " + addr + " for reinitialization for service SNMP.");
+                    }
                 }
             }
         }
@@ -454,18 +456,18 @@ final class BroadcastEventProcessor implements EventListener {
             //
             synchronized (m_thresholdableServices) {
                 ThresholdableService tSvc = null;
-                ListIterator<ThresholdableService> liter = m_thresholdableServices.listIterator();
+                final ListIterator<ThresholdableService> liter = m_thresholdableServices.listIterator();
                 while (liter.hasNext()) {
                     tSvc = liter.next();
 
-                    InetAddress addr = (InetAddress) tSvc.getAddress();
-                    oldPrimaryIfAddr = InetAddressUtils.normalize(oldPrimaryIfAddr);
-                    if (InetAddressUtils.str(addr).equals(oldPrimaryIfAddr)) {
+                    final IPAddress addr = new IPAddress(tSvc.getAddress());
+                    final IPAddress oldPrimaryAddr = new IPAddress(oldPrimaryIfAddr);
+                    if (addr.equals(oldPrimaryAddr)) {
                         synchronized (tSvc) {
                             // Got a match! Retrieve the ThresholderUpdates
                             // object associated
                             // with this ThresholdableService.
-                            ThresholderUpdates updates = tSvc.getThresholderUpdates();
+                        	final ThresholderUpdates updates = tSvc.getThresholderUpdates();
 
                             // Now set the deleted flag
                             updates.markForDeletion();
@@ -562,12 +564,12 @@ final class BroadcastEventProcessor implements EventListener {
         //boolean isPrimarySnmpInterface = false;
         synchronized (m_thresholdableServices) {
             ThresholdableService tSvc = null;
-            Iterator<ThresholdableService> iter = m_thresholdableServices.iterator();
+            final Iterator<ThresholdableService> iter = m_thresholdableServices.iterator();
             while (iter.hasNext()) {
                 tSvc = iter.next();
 
-                InetAddress addr = (InetAddress) tSvc.getAddress();
-                if (addr.equals(event.getInterface())) {
+                final IPAddress addr = new IPAddress(tSvc.getAddress());
+                if (addr.equals(new IPAddress(event.getInterfaceAddress()))) {
                     synchronized (tSvc) {
                         // Got a match!
                         if (log.isDebugEnabled())
@@ -575,7 +577,7 @@ final class BroadcastEventProcessor implements EventListener {
 
                         // Retrieve the ThresholderUpdates object associated
                         // with this ThresholdableService.
-                        ThresholderUpdates updates = tSvc.getThresholderUpdates();
+                        final ThresholderUpdates updates = tSvc.getThresholderUpdates();
 
                         // Now set the reparenting flag
                         updates.markForReparenting(oldNodeIdStr, newNodeIdStr);
@@ -647,26 +649,26 @@ final class BroadcastEventProcessor implements EventListener {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         long nodeId = event.getNodeid();
-        InetAddress ipAddr = event.getInterfaceAddress();
+        final IPAddress ipAddr = new IPAddress(event.getInterfaceAddress());
 
         // Iterate over the collectable services list and mark any entries
         // which match the deleted nodeId/IP address pair for deletion
         synchronized (m_thresholdableServices) {
             ThresholdableService tSvc = null;
-            ListIterator<ThresholdableService> liter = m_thresholdableServices.listIterator();
+            final ListIterator<ThresholdableService> liter = m_thresholdableServices.listIterator();
             while (liter.hasNext()) {
                 tSvc = liter.next();
 
                 // Only interested in entries with matching nodeId and IP
                 // address
-                InetAddress addr = (InetAddress) tSvc.getAddress();
+                final IPAddress addr = new IPAddress(tSvc.getAddress());
                 if (!(tSvc.getNodeId() == nodeId && addr.equals(ipAddr)))
                     continue;
 
                 synchronized (tSvc) {
                     // Retrieve the ThresholderUpdates object associated with
                     // this ThresholdableService if one exists.
-                    ThresholderUpdates updates = tSvc.getThresholderUpdates();
+                	final ThresholderUpdates updates = tSvc.getThresholderUpdates();
 
                     // Now set the update's deletion flag so the next
                     // time it is selected for execution by the scheduler
@@ -701,7 +703,7 @@ final class BroadcastEventProcessor implements EventListener {
             return;
 
         long nodeId = event.getNodeid();
-        InetAddress ipAddr = event.getInterfaceAddress();
+        final IPAddress ipAddr = new IPAddress(event.getInterfaceAddress());
         String svcName = event.getService();
 
         // Iterate over the collectable services list and mark any entries
@@ -709,20 +711,20 @@ final class BroadcastEventProcessor implements EventListener {
         // for deletion.
         synchronized (m_thresholdableServices) {
             ThresholdableService tSvc = null;
-            ListIterator<ThresholdableService> liter = m_thresholdableServices.listIterator();
+            final ListIterator<ThresholdableService> liter = m_thresholdableServices.listIterator();
             while (liter.hasNext()) {
                 tSvc = liter.next();
 
                 // Only interested in entries with matching nodeId, IP address
                 // and service
-                InetAddress addr = (InetAddress) tSvc.getAddress();
+                final IPAddress addr = new IPAddress(tSvc.getAddress());
                 if (!(tSvc.getNodeId() == nodeId && addr.equals(ipAddr)) && tSvc.getServiceName().equals(svcName))
                     continue;
 
                 synchronized (tSvc) {
                     // Retrieve the ThresholderUpdates object associated with
                     // this ThresholdableService if one exists.
-                    ThresholderUpdates updates = tSvc.getThresholderUpdates();
+                	final ThresholderUpdates updates = tSvc.getThresholderUpdates();
 
                     // Now set the update's deletion flag so the next
                     // time it is selected for execution by the scheduler
