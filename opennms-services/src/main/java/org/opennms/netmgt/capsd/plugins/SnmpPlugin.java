@@ -41,13 +41,13 @@
 package org.opennms.netmgt.capsd.plugins;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -92,9 +92,9 @@ public class SnmpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(IPAddress ipAddress) {
         try {
-            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
+            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddress.toInetAddress());
             return (getValue(agentConfig, DEFAULT_OID) != null);
 
         } catch (Throwable t) {
@@ -123,12 +123,12 @@ public class SnmpPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
         
         try {
 
             String oid = ParameterMap.getKeyedString(qualifiers, "vbname", DEFAULT_OID);
-            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
+            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddress.toInetAddress());
             String expectedValue = null;
             String isTable = null;
             

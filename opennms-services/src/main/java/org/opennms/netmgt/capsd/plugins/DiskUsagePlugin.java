@@ -40,7 +40,6 @@
 package org.opennms.netmgt.capsd.plugins;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.regex.Pattern;
 //import java.util.regex.Pattern;
@@ -48,6 +47,7 @@ import java.util.regex.Pattern;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 //import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -66,9 +66,6 @@ import org.opennms.core.utils.ThreadCategory;
  *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @version $Id: $
  */
 public final class DiskUsagePlugin extends AbstractPlugin {
     /**
@@ -108,9 +105,9 @@ public final class DiskUsagePlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(IPAddress ipAddress) {
         try {
-            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
+            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddress.toInetAddress());
             return (getValue(agentConfig, DEFAULT_OID) != null);
 
         } catch (Throwable t) {
@@ -133,7 +130,7 @@ public final class DiskUsagePlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
         int matchType = MATCH_TYPE_EXACT;
 
         try {
@@ -142,7 +139,7 @@ public final class DiskUsagePlugin extends AbstractPlugin {
         	
         	String disk = ParameterMap.getKeyedString(qualifiers, "disk",null);
         	
-            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
+            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddress.toInetAddress());
             if (qualifiers != null) {
                 // "port" parm
                 //
@@ -208,7 +205,7 @@ public final class DiskUsagePlugin extends AbstractPlugin {
                 }
 
                 for (Map.Entry<SnmpInstId, SnmpValue> e : descrResults.entrySet()) { 
-                    log().debug("capsd: SNMPwalk succeeded, addr=" + InetAddressUtils.str(address) + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+                    log().debug("capsd: SNMPwalk succeeded, addr=" + ipAddress + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
                   
                     if (isMatch(e.getValue().toString(), disk, matchType)) {
                     	log().debug("Found disk '" + disk + "' (matching hrStorageDescr was '" + e.getValue().toString() + "'");

@@ -55,6 +55,7 @@ import net.jradius.packet.attribute.AttributeList;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 /**
  * This plugin is used to check a host for Radius Authentication support.
@@ -206,8 +207,8 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress address) {
-        return isRadius(address, DEFAULT_AUTH_PORT, DEFAULT_ACCT_PORT, DEFAULT_AUTH_TYPE,
+    public boolean isProtocolSupported(IPAddress ipAddress) {
+        return isRadius(ipAddress.toInetAddress(), DEFAULT_AUTH_PORT, DEFAULT_ACCT_PORT, DEFAULT_AUTH_TYPE,
 			DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_SECRET, DEFAULT_NAS_ID,
 			DEFAULT_RETRY, DEFAULT_TIMEOUT);
     }
@@ -230,7 +231,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      * necessary
      * </p>
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
         int authport = DEFAULT_AUTH_PORT;
         int acctport = DEFAULT_ACCT_PORT;
         String authType = DEFAULT_AUTH_TYPE;
@@ -252,6 +253,6 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
             nasid = ParameterMap.getKeyedString(qualifiers, "nasid", DEFAULT_NAS_ID);
         }
 
-        return isRadius(address, authport, acctport, authType, user, password, secret, nasid, retry, timeout);
+        return isRadius(ipAddress.toInetAddress(), authport, acctport, authType, user, password, secret, nasid, retry, timeout);
     }
 }

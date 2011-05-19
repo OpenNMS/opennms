@@ -50,6 +50,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.utils.ExecRunner;
 
 /**
@@ -202,7 +203,7 @@ public final class GpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(IPAddress ipAddress) {
         throw new UnsupportedOperationException("Undirected GP checking not supported");
     }
 
@@ -215,7 +216,7 @@ public final class GpPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
         int retry = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;
         String banner = null;
@@ -259,7 +260,7 @@ public final class GpPlugin extends AbstractPlugin {
                 bannerResult = new StringBuffer();
             }
 
-            boolean result = isServer(address, retry, timeout, script, args, regex, bannerResult, hoption, toption);
+            boolean result = isServer(ipAddress.toInetAddress(), retry, timeout, script, args, regex, bannerResult, hoption, toption);
             if (result && qualifiers != null) {
                 if (bannerResult != null && bannerResult.length() > 0)
                     qualifiers.put("banner", bannerResult.toString());

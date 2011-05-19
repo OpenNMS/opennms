@@ -34,14 +34,14 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 /**
  * This class provides Capsd with the ability to check for ICMP support on new
@@ -74,15 +74,14 @@ public final class IcmpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(IPAddress ipAddress) {
 		try {
-	    	Number retval = PingerFactory.getInstance().ping(address);
+	    	Number retval = PingerFactory.getInstance().ping(ipAddress.toInetAddress());
 	    	if (retval != null) {
 	    		return true;
 	    	}
-		} catch (Throwable e) {
-	        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-			log.warn("Pinger failed to ping " + address, e);
+		} catch (final Throwable e) {
+			LogUtils.warnf(this, e, "Pinger failed to ping %s", ipAddress);
 		}
 		return false;
     }
@@ -96,7 +95,7 @@ public final class IcmpPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
     	int retries;
     	long timeout;
 
@@ -108,13 +107,12 @@ public final class IcmpPlugin extends AbstractPlugin {
     			retries = PingConstants.DEFAULT_RETRIES;
     			timeout = PingConstants.DEFAULT_TIMEOUT;
     		}
-    		Number retval = PingerFactory.getInstance().ping(address, timeout, retries);
+    		final Number retval = PingerFactory.getInstance().ping(ipAddress.toInetAddress(), timeout, retries);
     		if (retval != null) {
     			return true;
     		}
-    	} catch (Throwable e) {
-	        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-			log.warn("Pinger failed to ping " + address, e);
+    	} catch (final Throwable e) {
+    		LogUtils.warnf(this, e, "Pinger failed to ping %s", ipAddress.toUserString());
         }
     	
     	return false;

@@ -44,6 +44,7 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.protocols.dns.DNSAddressRequest;
 
 /**
@@ -54,14 +55,6 @@ import org.opennms.protocols.dns.DNSAddressRequest;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class DnsPlugin extends AbstractPlugin {
     /**
@@ -182,8 +175,8 @@ public final class DnsPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress address) {
-        return isServer(address, DEFAULT_PORT, DEFAULT_RETRY, DEFAULT_TIMEOUT, DEFAULT_LOOKUP);
+    public boolean isProtocolSupported(IPAddress ipAddress) {
+        return isServer(ipAddress.toInetAddress(), DEFAULT_PORT, DEFAULT_RETRY, DEFAULT_TIMEOUT, DEFAULT_LOOKUP);
     }
 
     /**
@@ -204,7 +197,7 @@ public final class DnsPlugin extends AbstractPlugin {
      * necessary
      * </p>
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
         int port = DEFAULT_PORT;
         int timeout = DEFAULT_TIMEOUT;
         int retries = DEFAULT_RETRY;
@@ -216,7 +209,7 @@ public final class DnsPlugin extends AbstractPlugin {
             lookup = ParameterMap.getKeyedString(qualifiers, "lookup", DEFAULT_LOOKUP);
         }
 
-        boolean result = isServer(address, port, retries, timeout, lookup);
+        boolean result = isServer(ipAddress.toInetAddress(), port, retries, timeout, lookup);
         if (result && qualifiers != null && !qualifiers.containsKey("port"))
             qualifiers.put("port", port);
 

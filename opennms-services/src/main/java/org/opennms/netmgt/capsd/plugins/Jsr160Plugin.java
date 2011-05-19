@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.opennms.protocols.jmx.connectors.Jsr160ConnectionFactory;
 
@@ -76,12 +77,12 @@ public class Jsr160Plugin extends JMXPlugin {
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress)
      */
     /** {@inheritDoc} */
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(IPAddress ipAddress) {
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("port",           "9004");
         map.put("factory",        "JMXRMI");
         map.put("friendlyname",   "jsr160");
     
-        return isProtocolSupported(address, map);
+        return isProtocolSupported(ipAddress, map);
     }
 }

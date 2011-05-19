@@ -33,11 +33,11 @@
  */
 package org.opennms.netmgt.capsd.plugins;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 /**
  * <p>Win32ServicePlugin class.</p>
@@ -50,7 +50,7 @@ public class Win32ServicePlugin extends SnmpPlugin {
 	private static final String DEFAULT_SERVICE_NAME = "Server";
 	
 	/** {@inheritDoc} */
-	public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+	public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
 		String serviceName = ParameterMap.getKeyedString(qualifiers, "service-name", DEFAULT_SERVICE_NAME);
 		int snLength = serviceName.length();
 		
@@ -66,7 +66,7 @@ public class Win32ServicePlugin extends SnmpPlugin {
 		qualifiers.put("vbname", serviceOidBuf.toString());
 		qualifiers.put("vbvalue", "1");
 		
-		return super.isProtocolSupported(address, qualifiers);
+		return super.isProtocolSupported(ipAddress, qualifiers);
 	}
 	
 	/**

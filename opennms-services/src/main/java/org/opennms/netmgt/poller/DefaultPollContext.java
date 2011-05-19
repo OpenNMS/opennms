@@ -47,6 +47,7 @@ import org.opennms.netmgt.capsd.plugins.IcmpPlugin;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
@@ -383,16 +384,10 @@ public class DefaultPollContext implements PollContext, EventListener {
         }
         IcmpPlugin p = new IcmpPlugin();
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put(
-                "retry",
-                new Long(
-                         OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
-        map.put(
-                "timeout",
-                new Long(
-                         OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
+        map.put("retry", new Long(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
+        map.put("timeout", new Long(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
 
-        result = p.isProtocolSupported(addr, map);
+        result = p.isProtocolSupported(new IPAddress(addr), map);
         return result;
     }
 

@@ -43,6 +43,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.dhcpd.Dhcpd;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 /**
  * <P>
@@ -147,8 +148,8 @@ public final class DhcpPlugin extends AbstractPlugin {
      * listenter that matches our original request then a value of true is
      * returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress host) {
-        return isServer(host, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+    public boolean isProtocolSupported(IPAddress ipAddress) {
+        return isServer(ipAddress.toInetAddress(), DEFAULT_RETRY, DEFAULT_TIMEOUT);
     }
 
     /**
@@ -160,7 +161,7 @@ public final class DhcpPlugin extends AbstractPlugin {
      * listenter that matches our original request then a value of true is
      * returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress host, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;
 
@@ -169,7 +170,7 @@ public final class DhcpPlugin extends AbstractPlugin {
             timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
         }
 
-        boolean isAServer = isServer(host, retries, timeout);
+        boolean isAServer = isServer(ipAddress.toInetAddress(), retries, timeout);
         if (isAServer && qualifiers != null)
             qualifiers.put("port", PORT_NUMBER);
 

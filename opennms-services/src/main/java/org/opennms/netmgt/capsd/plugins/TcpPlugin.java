@@ -61,6 +61,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 /**
  * <P>
@@ -212,7 +213,7 @@ public final class TcpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(IPAddress ipAddress) {
         throw new UnsupportedOperationException("Undirected TCP checking not supported");
     }
 
@@ -225,7 +226,7 @@ public final class TcpPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;
         int port = -1;
@@ -259,7 +260,7 @@ public final class TcpPlugin extends AbstractPlugin {
                 bannerResult = new StringBuffer();
             }
             
-            boolean result = isServer(address, port, retries, timeout, regex, bannerResult);
+            boolean result = isServer(ipAddress.toInetAddress(), port, retries, timeout, regex, bannerResult);
             if (result && qualifiers != null) {
                 if (bannerResult != null && bannerResult.length() > 0)
                     qualifiers.put("banner", bannerResult.toString());

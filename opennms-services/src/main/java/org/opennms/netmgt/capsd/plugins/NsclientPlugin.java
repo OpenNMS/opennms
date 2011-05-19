@@ -38,6 +38,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
 import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
 import org.opennms.netmgt.poller.nsclient.NsclientException;
@@ -92,10 +93,8 @@ public class NsclientPlugin extends AbstractPlugin {
      * map of parameters to determine how to issue a check to the target
      * server.
      */
-    public boolean isProtocolSupported(InetAddress address) {
-        throw new UnsupportedOperationException(
-                                                "Undirected TCP checking not "
-                                                        + "supported");
+    public boolean isProtocolSupported(IPAddress ipAddress) {
+        throw new UnsupportedOperationException("Undirected TCP checking not supported");
     }
 
     /**
@@ -126,7 +125,7 @@ public class NsclientPlugin extends AbstractPlugin {
      * <code>NsclientPacket.RES_STATE_OK</code> or
      * <code>NsclientPacket.RES_STATE_WARNING</code>.
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;
         int port = NsclientManager.DEFAULT_PORT;
@@ -163,7 +162,7 @@ public class NsclientPlugin extends AbstractPlugin {
                                                              parameter);
         // and perform the check, we'll get a packet back containing the check
         // data.
-        NsclientPacket pack = isServer(address, port, password, command, retries,
+        NsclientPacket pack = isServer(ipAddress.toInetAddress(), port, password, command, retries,
                                        timeout, params);
 
         if (pack == null) {

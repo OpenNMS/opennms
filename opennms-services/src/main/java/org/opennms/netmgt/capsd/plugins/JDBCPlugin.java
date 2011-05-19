@@ -32,7 +32,6 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
@@ -47,6 +46,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.DBTools;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 /**
  * This OpenNMS capsd plugin checks if a given server is running a server that
@@ -247,11 +247,11 @@ public class JDBCPlugin extends AbstractPlugin {
      * empty. is recomended to use the parametric method instead (unless your
      * DBA is dummy enugh to leave a JDBC server with no password!!!).
      */
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(IPAddress ipAddress) {
         boolean status = false;
 
         try {
-            status = isServer(address.getCanonicalHostName(), new HashMap<String, Object>());
+            status = isServer(ipAddress.toInetAddress().getCanonicalHostName(), new HashMap<String, Object>());
         } catch (final Exception exp) {
             LogUtils.errorf(this, exp, "an error occurred while checking whether the protocol is supported");
         }
@@ -274,10 +274,10 @@ public class JDBCPlugin extends AbstractPlugin {
      * <li><b>retry </b>- How many times will try to check for the service
      * </ul>
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
         boolean status = false;
 
-        if (address == null) {
+        if (ipAddress == null) {
             throw new NullPointerException(getClass().getName() + ": Internet address cannot be null");
         }
         if (qualifiers == null) {
@@ -285,7 +285,7 @@ public class JDBCPlugin extends AbstractPlugin {
         }
 
         try {
-            status = isServer(address.getCanonicalHostName(), qualifiers);
+            status = isServer(ipAddress.toInetAddress().getCanonicalHostName(), qualifiers);
         } catch (final Exception exp) {
             LogUtils.errorf(this, exp, "an error occurred while checking if the protocol is supported");
         }

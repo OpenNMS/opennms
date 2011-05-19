@@ -59,6 +59,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CapsdProtocolInfo;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 /**
  * This class is designed to collect all the relevant information from the
@@ -199,7 +200,7 @@ public final class IfCollector implements Runnable {
             try {
                 Plugin p = plugins[i].getPlugin();
                 Map<String, Object> q = plugins[i].getParameters();
-                boolean r = p.isProtocolSupported(target, q);
+                boolean r = p.isProtocolSupported(new IPAddress(target), q);
 
                 if (log().isDebugEnabled()) {
                     log().debug(logAddr + " protocol " + plugins[i].getProtocol() + " supported? " + (r ? "true" : "false"));

@@ -45,7 +45,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 public class FtpPluginTest extends TestCase {
     private FtpPlugin m_plugin = new FtpPlugin();
@@ -76,12 +76,12 @@ public class FtpPluginTest extends TestCase {
     
     // Let's not depend on external systems if we don't have to
     public void SKIPtestOpennmsOrgFtpSuccess() throws Exception {
-        assertTrue("Test for protocol FTP on ftp.opennms.org should have passed", m_plugin.isProtocolSupported(InetAddressUtils.addr("ftp.opennms.org")));
+        assertTrue("Test for protocol FTP on ftp.opennms.org should have passed", m_plugin.isProtocolSupported(new IPAddress("64.34.199.116"), null));
     }
     
     // Let's not depend on external systems if we don't have to
     public void SKIPtestRandomFtpFailure() throws Exception {
-        assertFalse("Test for protocol FTP on 1.1.1.1 should have failed (on most networks, at least)", m_plugin.isProtocolSupported(InetAddressUtils.addr("1.1.1.1")));
+        assertFalse("Test for protocol FTP on 1.1.1.1 should have failed (on most networks, at least)", m_plugin.isProtocolSupported(new IPAddress("1.1.1.1"), null));
     }
     
     public void testSuccess() throws Exception {
@@ -180,6 +180,6 @@ public class FtpPluginTest extends TestCase {
         m.put("port", m_serverSocket.getLocalPort());
         m.put("retries", 0);
         m.put("timeout", TIMEOUT);
-        return m_plugin.isProtocolSupported(m_serverSocket.getInetAddress(), m);
+        return m_plugin.isProtocolSupported(new IPAddress(m_serverSocket.getInetAddress()), m);
     }
 }

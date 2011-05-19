@@ -95,7 +95,7 @@ public class LoopMonitor implements ServiceMonitor {
     /** {@inheritDoc} */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         LoopPlugin lp = new LoopPlugin();
-        boolean isAvailable = lp.isProtocolSupported(svc.getAddress(), parameters);
+        boolean isAvailable = lp.isProtocolSupported(null, parameters);
         int status = (isAvailable ? PollStatus.SERVICE_AVAILABLE : PollStatus.SERVICE_UNAVAILABLE);
         StringBuffer sb = new StringBuffer();
         sb.append("LoopMonitor configured with is-supported =  ");

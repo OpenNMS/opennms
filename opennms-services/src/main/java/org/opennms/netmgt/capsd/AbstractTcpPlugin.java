@@ -43,15 +43,16 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 // TODO need to completely javadoc this class
 
@@ -82,7 +83,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * @param defaultTimeout a int.
      * @param defaultRetry a int.
      */
-    protected AbstractTcpPlugin(String protocol, int defaultTimeout, int defaultRetry) {
+    protected AbstractTcpPlugin(final String protocol, final int defaultTimeout, final int defaultRetry) {
         this(protocol, -1, defaultTimeout, defaultRetry);
     }
 
@@ -94,7 +95,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * @param defaultTimeout a int.
      * @param defaultRetry a int.
      */
-    protected AbstractTcpPlugin(String protocol, int defaultPort, int defaultTimeout, int defaultRetry) {
+    protected AbstractTcpPlugin(final String protocol, final int defaultPort, final int defaultTimeout, final int defaultRetry) {
         super();
         if (protocol == null)
             throw new NullPointerException("protocol is null");
@@ -117,14 +118,10 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * @return True if server supports Citrix on the specified port, false
      *         otherwise
      */
-    final protected boolean checkConnection(ConnectionConfig config) {
-        // get a log to send errors
-        //
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-
+    final protected boolean checkConnection(final ConnectionConfig config) {
         // don't let the user set the timeout to 0, an infinite loop will occur
         // if the server is down
-        int timeout = (config.getTimeout() == 0 ? 10 : config.getTimeout());
+    	final int timeout = (config.getTimeout() == 0 ? 10 : config.getTimeout());
 
         boolean isAServer = false;
         for (int attempts = 0; attempts <= config.getRetry() && !isAServer; attempts++) {
@@ -140,33 +137,33 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
                 // create a connected socket
                 //
                 socket = new Socket();
-                socket.connect(config.getSocketAddress(), timeout);
+                final InetSocketAddress socketAddress = config.getSocketAddress();
+				socket.connect(socketAddress, timeout);
                 socket.setSoTimeout(timeout);
-                log.debug(getPluginName() + ": connected to host: " + config.getInetAddress() + " on port: " + config.getPort());
+                LogUtils.debugf(this, "%s: connected to host: %s on port: %d", getPluginName(), config.getInetAddress(), config.getPort());
 
                 socket = wrapSocket(socket, config);
 
                 isAServer = checkProtocol(socket, config);
 
-            } catch (ConnectException cE) {
+            } catch (final ConnectException cE) {
                 // Connection refused!! Continue to retry.
-                //
-                log.debug(getPluginName() + ": connection refused to " + config.getInetAddress() + ":" + config.getPort());
+                LogUtils.debugf(this, cE, "%s: connection refused to %s:%d", getPluginName(), config.getInetAddress(), config.getPort());
                 isAServer = false;
-            } catch (NoRouteToHostException e) {
+            } catch (final NoRouteToHostException e) {
                 // No route to host!! No need to perform retries.
                 e.fillInStackTrace();
-                log.info(getPluginName() + ": Unable to test host " + config.getInetAddress() + ", no route available", e);
+                LogUtils.debugf(this, e, "%s: unable to test host %s, no route available", getPluginName(), config.getInetAddress());
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
-            } catch (InterruptedIOException e) {
-                log.debug(getPluginName() + ": did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            } catch (final InterruptedIOException e) {
+                LogUtils.debugf(this, e, "%s: did not connect to host %s within timeout: %d, attempt: %d", getPluginName(), config.getInetAddress(), timeout, attempts);
                 isAServer = false;
-            } catch (IOException e) {
-                log.info(getPluginName() + ": Error communicating with host " + config.getInetAddress(), e);
+            } catch (final IOException e) {
+                LogUtils.infof(this, e, "%s: error communicating with host %s", getPluginName(), config.getInetAddress());
                 isAServer = false;
-            } catch (Throwable t) {
-                log.warn(getPluginName() + ": Undeclared throwable exception caught contacting host " + config.getInetAddress(), t);
+            } catch (final Throwable t) {
+                LogUtils.debugf(this, t, "%s: undeclared throwable caught while contacting host %s", getPluginName(), config.getInetAddress());
                 isAServer = false;
             } finally {
                 if (socket != null)
@@ -208,28 +205,29 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
 
     /**
      * <p>createConnectionConfig</p>
-     *
-     * @param address a {@link java.net.InetAddress} object.
+     * @param ipAddress TODO
      * @param port a int.
+     *
      * @return a {@link org.opennms.netmgt.capsd.ConnectionConfig} object.
      */
-    protected ConnectionConfig createConnectionConfig(InetAddress address, int port) {
-        return new ConnectionConfig(address, port);
+    protected ConnectionConfig createConnectionConfig(final IPAddress ipAddress, final int port) {
+        return new ConnectionConfig(ipAddress.toInetAddress(), port);
     }
 
     /**
      * <p>getConnectionConfigList</p>
      *
      * @param qualifiers a {@link java.util.Map} object.
+     * @param ipAddress TODO
      * @param address a {@link java.net.InetAddress} object.
      * @return a {@link java.util.List} object.
      */
-    protected List<ConnectionConfig> getConnectionConfigList(Map<String, Object> qualifiers, InetAddress address) {
+    protected List<ConnectionConfig> getConnectionConfigList(Map<String, Object> qualifiers, IPAddress ipAddress) {
         if (m_defaultPort == -1)
             throw new IllegalStateException("m_defaultPort == -1");
 
         int port = getKeyedInteger(qualifiers, "port", m_defaultPort);
-        return Collections.singletonList(createConnectionConfig(address, port));
+        return Collections.singletonList(createConnectionConfig(ipAddress, port));
     }
 
     /**
@@ -292,8 +290,8 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
-    final public boolean isProtocolSupported(InetAddress address) {
-        return isProtocolSupported(address, null);
+    final public boolean isProtocolSupported(IPAddress ipAddress) {
+        return isProtocolSupported(ipAddress, null);
     }
 
     /**
@@ -305,9 +303,9 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
-    final public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    final public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
 
-        List<ConnectionConfig> connList = getConnectionConfigList(qualifiers, address);
+        List<ConnectionConfig> connList = getConnectionConfigList(qualifiers, ipAddress);
 
         for(ConnectionConfig config : connList) {
             populateConnectionConfig(config, qualifiers);

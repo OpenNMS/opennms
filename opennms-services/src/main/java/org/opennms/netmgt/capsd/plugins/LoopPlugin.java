@@ -33,13 +33,12 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.IPLike;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.Plugin;
+import org.opennms.netmgt.model.discovery.IPAddress;
 /**
  * <p>LoopPlugin class.</p>
  *
@@ -66,22 +65,22 @@ public class LoopPlugin implements Plugin {
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress)
      */
     /** {@inheritDoc} */
-    public boolean isProtocolSupported(InetAddress address) {
-        return isProtocolSupported(address, null);
+    public boolean isProtocolSupported(final IPAddress ipAddress) {
+        return isProtocolSupported(ipAddress, null);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress, java.util.Map)
      */
     /** {@inheritDoc} */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(final IPAddress ipAddress, final Map<String, Object> qualifiers) {
         
         if (qualifiers == null) {
             return false;
         }
         
-        String ipMatch = getIpMatch(qualifiers);
-        if (IPLike.matches(InetAddressUtils.str(address), ipMatch)) {
+        final String ipMatch = getIpMatch(qualifiers);
+        if (IPLike.matches(ipAddress.toDbString(), ipMatch)) {
             return isSupported(qualifiers);
         } else {
             return false;
@@ -89,11 +88,11 @@ public class LoopPlugin implements Plugin {
         
     }
 
-    private boolean isSupported(Map<String, Object> parameters) {
+    private boolean isSupported(final Map<String, Object> parameters) {
         return ParameterMap.getKeyedString(parameters, "is-supported", "false").equalsIgnoreCase("true");
     }
 
-    private String getIpMatch(Map<String, Object> parameters) {
+    private String getIpMatch(final Map<String, Object> parameters) {
         return ParameterMap.getKeyedString(parameters, "ip-match", "*.*.*.*");
     }
 

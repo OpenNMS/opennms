@@ -41,10 +41,10 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.poller.monitors.SshMonitor;
 
 /**
@@ -61,9 +61,6 @@ import org.opennms.netmgt.poller.monitors.SshMonitor;
  * @deprecated use {@link SshPlugin} instead
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="http://www.opennms.org">OpenNMS</a>
- * @version $Id: $
  */
 public final class JschSshPlugin extends AbstractPlugin {
 
@@ -88,7 +85,7 @@ public final class JschSshPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(IPAddress ipAddress) {
         throw new UnsupportedOperationException("Undirected SSH checking not supported");
     }
 
@@ -104,9 +101,9 @@ public final class JschSshPlugin extends AbstractPlugin {
      * to Provided that the interface's response is valid we mark the poll status
      * as available and return.
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> parameters) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> parameters) {
         SshMonitor m = new SshMonitor();
 
-        return m.poll(address, parameters).isAvailable();
+        return m.poll(ipAddress.toInetAddress(), parameters).isAvailable();
     }
 }

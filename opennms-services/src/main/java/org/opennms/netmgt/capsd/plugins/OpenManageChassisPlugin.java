@@ -33,11 +33,11 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -105,12 +105,12 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
      * return additional information by key-name. These key-value pairs can be
      * added to service events if needed.
      */
-    public boolean isProtocolSupported(InetAddress ipaddr,
+    public boolean isProtocolSupported(IPAddress ipAddress,
             Map<String, Object> qualifiers) {
         try {
             
-            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
-            if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
+            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddress.toInetAddress());
+            if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipAddress);
             
             if (qualifiers != null) {
                 // "port" parm
@@ -182,7 +182,7 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
         } catch (IllegalArgumentException e) {
             log().warn("Invalid Snmp Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            log().warn("Unexpected exception during SNMP poll of interface " + ipaddr, t);
+            log().warn("Unexpected exception during SNMP poll of interface " + ipAddress, t);
         }
         return false;
     }

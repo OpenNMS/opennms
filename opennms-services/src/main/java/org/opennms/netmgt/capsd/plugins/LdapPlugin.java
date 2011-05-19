@@ -47,17 +47,16 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPException;
@@ -105,12 +104,12 @@ public final class LdapPlugin extends AbstractPlugin {
 
         private int m_timeout;
 
-        public TimeoutLDAPSocket(int timeout) {
+        public TimeoutLDAPSocket(final int timeout) {
             m_timeout = timeout;
         }
 
-        public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
-            Socket socket = new Socket(host, port);
+        public Socket createSocket(final String host, final int port) throws IOException, UnknownHostException {
+        	final Socket socket = new Socket(host, port);
             socket.setSoTimeout(m_timeout);
             return socket;
         }
@@ -132,9 +131,7 @@ public final class LdapPlugin extends AbstractPlugin {
      * @return True if server supports HTTP on the specified port, false
      *         otherwise
      */
-    private boolean isServer(InetAddress host, int port, int retries, int timeout) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-
+    private boolean isServer(final IPAddress address, final int port, final int retries, final int timeout) {
         boolean isAServer = false;
 
         // first just try a connection to the box via socket. Just in case there
@@ -149,49 +146,50 @@ public final class LdapPlugin extends AbstractPlugin {
         try {
 
             socket = new Socket();
-            socket.connect(new InetSocketAddress(host, port), timeout);
+            socket.connect(new InetSocketAddress(address.toInetAddress(), port), timeout);
             socket.setSoTimeout(timeout);
 
-            log.debug("LDAPPlugin.isServer: connect successful");
+            LogUtils.debugf(this, "LDAPPlugin.isServer: connect successful");
 
             // now go ahead and attempt to determine if LDAP is on this host
             for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
-                log.debug("LDAPPlugin.isServer: attempt " + attempts + " to connect host " + InetAddressUtils.str(host));
+            	LogUtils.debugf(this, "LDAPPlugin.isServer: attempt %d to connect to host %s", attempts, address);
                 LDAPConnection lc = null;
                 try {
                     lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
-                    lc.connect(InetAddressUtils.str(host), port);
+                    lc.connect(address.toDbString(), port);
                     isAServer = true;
-                } catch (LDAPException e) {
+                } catch (final LDAPException e) {
+                	LogUtils.debugf(this, e, "Error while making LDAP connection.");
                     isAServer = false;
                 } finally {
                     try {
                         if (lc != null)
                             lc.disconnect();
                     } catch (LDAPException e) {
+                    	LogUtils.debugf(this, e, "Exception while closing LDAP socket.");
                     }
                 }
             }
-        } catch (ConnectException e) {
+        } catch (final ConnectException e) {
             // Connection refused!! No need to perform retries.
-            //
-            log.debug(getClass().getName() + ": connection refused to " + InetAddressUtils.str(host) + ":" + port);
-        } catch (NoRouteToHostException e) {
+        	LogUtils.debugf(this, e, "connection refused to %s:%d", address.toDbString(), port);
+        } catch (final NoRouteToHostException e) {
             // No route to host!! No need to perform retries.
             e.fillInStackTrace();
-            log.info(getClass().getName() + ": No route to host " + InetAddressUtils.str(host), e);
+            LogUtils.infof(this, e, "No route to host %s", address);
             throw new UndeclaredThrowableException(e);
-        } catch (InterruptedIOException e) {
+        } catch (final InterruptedIOException e) {
             // Connection failed, retry until attempts exceeded
-            log.debug("LDAPPlugin: failed to connect within specified timeout");
-        } catch (Throwable t) {
-            log.warn(getClass().getName() + ": An undeclared throwable exception caught contacting host " + InetAddressUtils.str(host), t);
+            LogUtils.debugf(this, "failed to connect to %s within specified timeout (%d)", address, timeout);
+        } catch (final Throwable t) {
+            LogUtils.warnf(this, t, "An undeclared throwable exception caught contacting host %s", address);
         } finally {
             try {
                 // close the socket channel
-                if (socket != null)
-                    socket.close();
-            } catch (IOException e) {
+                if (socket != null) socket.close();
+            } catch (final IOException e) {
+            	LogUtils.debugf(this, e, "Exception while closing LDAP socket.");
             }
         }
 
@@ -214,9 +212,9 @@ public final class LdapPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(final IPAddress ipAddress) {
         for (int i = 0; i < DEFAULT_PORTS.length; i++) {
-            if (isServer(address, DEFAULT_PORTS[i], DEFAULT_RETRY, DEFAULT_TIMEOUT))
+            if (isServer(ipAddress, DEFAULT_PORTS[i], DEFAULT_RETRY, DEFAULT_TIMEOUT))
                 return true;
         }
         return false;
@@ -231,13 +229,13 @@ public final class LdapPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
-        int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-        int[] ports = ParameterMap.getKeyedIntegerArray(qualifiers, "port", DEFAULT_PORTS);
+    public boolean isProtocolSupported(final IPAddress ipAddress, final Map<String, Object> qualifiers) {
+    	final int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
+        final int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+        final int[] ports = ParameterMap.getKeyedIntegerArray(qualifiers, "port", DEFAULT_PORTS);
 
         for (int i = 0; i < ports.length; i++) {
-            if (isServer(address, ports[i], retries, timeout)) {
+            if (isServer(ipAddress, ports[i], retries, timeout)) {
                 qualifiers.put("port", ports[i]);
                 return true;
             }

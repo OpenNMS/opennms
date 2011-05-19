@@ -37,11 +37,11 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 
 /**
@@ -81,7 +81,7 @@ public class K5Plugin extends AbstractPlugin {
      * protocol is not supported then a false value is returned to the caller.
      * Default to returning false unless K5 is set as active.
      */
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(IPAddress ipAddress) {
         return false;
     }
 
@@ -94,7 +94,7 @@ public class K5Plugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
         if (qualifiers != null) {
             String active = ParameterMap.getKeyedString(qualifiers, "active", DEFAULT_ACTIVE);
             if (active.equalsIgnoreCase("true")) {

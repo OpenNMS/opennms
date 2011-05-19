@@ -63,20 +63,6 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @version $Id: $
  */
 public final class FtpPlugin extends AbstractTcpPlugin {
     /**

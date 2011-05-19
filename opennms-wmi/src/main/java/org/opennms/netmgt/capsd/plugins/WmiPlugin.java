@@ -40,6 +40,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.WmiPeerFactory;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.protocols.wmi.WmiAgentConfig;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
@@ -90,7 +91,7 @@ public class WmiPlugin extends AbstractPlugin {
 	 * parameters to determine how to issue a check to the target server.
 	 */
 	@Override
-	public boolean isProtocolSupported(final InetAddress address) {
+	public boolean isProtocolSupported(IPAddress ipAddress) {
 		throw new UnsupportedOperationException("Undirected TCP checking not supported");
 	}
 
@@ -119,8 +120,8 @@ public class WmiPlugin extends AbstractPlugin {
 	 * <code>WmiResult.RES_STATE_WARNING</code>.
 	 */
 	@Override
-	public boolean isProtocolSupported(final InetAddress address, final Map<String, Object> qualifiers) {
-	    final WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(address);
+	public boolean isProtocolSupported(IPAddress ipAddress, final Map<String, Object> qualifiers) {
+	    final WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(ipAddress.toInetAddress());
 		String matchType = DEFAULT_WMI_MATCH_TYPE;
 		String compVal = DEFAULT_WMI_COMP_VAL;
 		String compOp = DEFAULT_WMI_COMP_OP;
@@ -174,7 +175,7 @@ public class WmiPlugin extends AbstractPlugin {
 
 
 		// Perform the operation specified in the parameters.
-		WmiResult result = isServer(address, agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), matchType,
+		WmiResult result = isServer(ipAddress.toInetAddress(), agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), matchType,
 				agentConfig.getRetries(), agentConfig.getTimeout(), clientParams);
 
 		// Only fail on critical and unknown returns.

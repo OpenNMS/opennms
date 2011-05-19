@@ -57,6 +57,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractTcpPlugin;
 import org.opennms.netmgt.capsd.ConnectionConfig;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 /**
  * <P>
@@ -154,8 +155,8 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
      *      java.util.Map)
      */
     /** {@inheritDoc} */
-    protected ConnectionConfig createConnectionConfig(InetAddress address, int port) {
-        return new DominoConnectionConfig(address, port);
+    protected ConnectionConfig createConnectionConfig(IPAddress ipAddress, int port) {
+        return new DominoConnectionConfig(ipAddress.toInetAddress(), port);
     }
 
     /*

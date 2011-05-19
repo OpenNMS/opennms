@@ -36,7 +36,6 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.regexp.RE;
@@ -49,6 +48,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.XmpConfigFactory;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
 
@@ -63,9 +63,6 @@ import org.opennms.netmgt.protocols.xmp.XmpUtilException;
  *
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @version $Id: $
  */
 public final class XmpPlugin extends AbstractPlugin {
 
@@ -169,7 +166,7 @@ public final class XmpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(IPAddress ipAddress) {
         throw new UnsupportedOperationException("Undirected XMP checking not supported");
     }
 
@@ -182,13 +179,14 @@ public final class XmpPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> qualifiers) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
         XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
         XmpSession session;
         SocketOpts sockopts = new SocketOpts();
-        // TODO how to apply timeout and retry to XMP operations?
-        int retry = protoConfig.hasRetry() ? protoConfig.getRetry() : DEFAULT_RETRY;
+        // TODO/FIXME: how to apply timeout and retry to XMP operations?
+        @SuppressWarnings("unused")
+		int retry = protoConfig.hasRetry() ? protoConfig.getRetry() : DEFAULT_RETRY;
         int timeout = protoConfig.hasTimeout() ? protoConfig.getTimeout() : DEFAULT_TIMEOUT;
         int port = DEFAULT_PORT;
         String authenUser = DEFAULT_AUTHEN_USER;
@@ -264,11 +262,7 @@ public final class XmpPlugin extends AbstractPlugin {
         }
 
         boolean result = false;
-        session = new XmpSession(sockopts, address, port, authenUser);
-        if (session == null) {
-            log.info("XMP connection failed to " + address + ":" + port + " with user " + authenUser + " and " + sockopts);
-            return false;
-        }
+        session = new XmpSession(sockopts, ipAddress.toInetAddress(), port, authenUser);
         if (requestType.equalsIgnoreCase("SelectTableRequest")) {
             try {
                 result = XmpUtil.handleTableQuery(session, mib, table, object, instance, instanceRegex, valueOperator, valueOperand, minMatches, maxMatches, maxMatchesUnbounded, log, valueCaseSensitive);

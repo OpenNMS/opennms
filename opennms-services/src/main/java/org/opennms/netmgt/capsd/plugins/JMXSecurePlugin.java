@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.opennms.protocols.jmx.connectors.JMXSecureConnectionFactory;
 
@@ -30,13 +31,13 @@ public class JMXSecurePlugin extends JMXPlugin
 	}
 
 	/** {@inheritDoc} */
-	public boolean isProtocolSupported(InetAddress address)
+	public boolean isProtocolSupported(IPAddress ipAddress)
 	{
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("username", "jmxmp");
 		map.put("password", "jmxmp");
 		map.put("friendly-name", "ssl-jmxmp");
 
-		return isProtocolSupported(address, map);
+		return isProtocolSupported(ipAddress, map);
 	}
 }

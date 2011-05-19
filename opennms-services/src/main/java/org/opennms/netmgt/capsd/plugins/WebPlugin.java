@@ -1,7 +1,6 @@
 package org.opennms.netmgt.capsd.plugins;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.util.Map;
 
@@ -26,10 +25,10 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 /**
  * <p>WebPlugin class.</p>
@@ -56,14 +55,14 @@ public class WebPlugin extends AbstractPlugin {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isProtocolSupported(InetAddress address) {
+    public boolean isProtocolSupported(IPAddress ipAddress) {
         // TODO Auto-generated method stub
         return false;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> map) {
+    public boolean isProtocolSupported(IPAddress ipAddress, Map<String, Object> map) {
 
         boolean retval=false;
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -71,7 +70,7 @@ public class WebPlugin extends AbstractPlugin {
         try {
             HttpGet getMethod = new HttpGet(URIUtils.createURI(
                                                     null, 
-                                                    InetAddressUtils.str(address), 
+                                                    ipAddress.toUserString(),
                                                     ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT), 
                                                     ParameterMap.getKeyedString(map, "path", DEFAULT_PATH), 
                                                     null, 

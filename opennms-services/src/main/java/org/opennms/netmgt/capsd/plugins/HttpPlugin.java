@@ -47,7 +47,6 @@ package org.opennms.netmgt.capsd.plugins;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.LinkedList;
@@ -60,6 +59,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractTcpPlugin;
 import org.opennms.netmgt.capsd.ConnectionConfig;
+import org.opennms.netmgt.model.discovery.IPAddress;
 
 /**
  * <P>
@@ -306,12 +306,12 @@ public class HttpPlugin extends AbstractTcpPlugin {
      *      java.net.InetAddress)
      */
     /** {@inheritDoc} */
-    protected List<ConnectionConfig> getConnectionConfigList(Map<String, Object> qualifiers, InetAddress address) {
+    protected List<ConnectionConfig> getConnectionConfigList(Map<String, Object> qualifiers, IPAddress ipAddress) {
         int[] ports = getKeyedIntegerArray(qualifiers, PROPERTY_NAME_PORT, m_defaultPorts);
 
         List<ConnectionConfig> list = new LinkedList<ConnectionConfig>();
         for (int i = 0; i < ports.length; i++) {
-            list.add(createConnectionConfig(address, ports[i]));
+            list.add(createConnectionConfig(ipAddress, ports[i]));
         }
         return list;
     }

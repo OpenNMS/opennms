@@ -46,8 +46,10 @@ import junit.framework.TestSuite;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
 import org.springframework.core.io.ByteArrayResource;
@@ -99,7 +101,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
         map.put("forced version", "snmpv1");
         
         if (m_runAssertions) {
-            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(address, map));
+            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(new IPAddress(address), map));
         }
     }
 
@@ -114,7 +116,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
         map.put("vbvalue", "\\.1\\.3\\.6\\.1\\.4\\.1.*");
         
         if (m_runAssertions) {
-            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(address, map));
+            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(new IPAddress(address), map));
         }
     }
     
@@ -123,7 +125,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
      */
     public final void testIsProtocolSupportedInetAddress() throws UnknownHostException {
         if (m_runAssertions) {
-            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(myLocalHost()));
+            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(new IPAddress(InetAddressUtils.getLocalHostAddress()), null));
         }
     }
     
@@ -133,7 +135,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rsrc));
 
         if (m_runAssertions) {
-            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(myLocalHost()));
+            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(new IPAddress(InetAddressUtils.getLocalHostAddress()), null));
         }
     }
 
@@ -146,7 +148,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
         qualifiers.put("force version", "snmpv1");
 
         if (m_runAssertions) {
-            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(myLocalHost(), qualifiers));
+            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(new IPAddress(myLocalHost()), qualifiers));
         }
     }
 
