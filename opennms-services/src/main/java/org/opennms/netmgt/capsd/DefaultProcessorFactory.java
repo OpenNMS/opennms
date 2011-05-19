@@ -35,6 +35,8 @@
  */
 package org.opennms.netmgt.capsd;
 
+import org.opennms.netmgt.model.discovery.IPAddress;
+
 /**
  * <p>DefaultProcessorFactory class.</p>
  *
@@ -68,8 +70,8 @@ public class DefaultProcessorFactory implements SuspectEventProcessorFactory, Re
      * @see org.opennms.netmgt.capsd.SuspectEventProcessorFactory#createSuspectEventProcessor(java.lang.String)
      */
     /** {@inheritDoc} */
-    public SuspectEventProcessor createSuspectEventProcessor(String ifAddress) {
-        return new SuspectEventProcessor(m_capsdDbSyncer, m_pluginManager, ifAddress);
+    public SuspectEventProcessor createSuspectEventProcessor(final IPAddress ipAddress) {
+        return new SuspectEventProcessor(m_capsdDbSyncer, m_pluginManager, ipAddress);
     }
     
     /* (non-Javadoc)

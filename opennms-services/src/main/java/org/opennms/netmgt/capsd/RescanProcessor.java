@@ -3289,7 +3289,7 @@ public final class RescanProcessor implements Runnable {
     }
     
     private EventBuilder eventBuilder(String uei) {
-        return new EventBuilder(uei, "OpenNMS.Capsd").setHost(Capsd.getLocalHostAddress());
+        return new EventBuilder(uei, "OpenNMS.Capsd").setHost(Capsd.getLocalHostAddress().toUserString());
     }
     
     private EventBuilder nodeEventBuilder(String uei, long nodeId) {

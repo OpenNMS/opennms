@@ -710,7 +710,7 @@ public final class ReparentViaSmb {
         EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_REPARENTED_EVENT_UEI, "OpenNMS.Capsd");
 
         bldr.setNodeid(newNodeId);
-        bldr.setHost(Capsd.getLocalHostAddress());
+        bldr.setHost(Capsd.getLocalHostAddress().toUserString());
         bldr.setInterface(addr(ipAddr));
         
         bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ipHostName);

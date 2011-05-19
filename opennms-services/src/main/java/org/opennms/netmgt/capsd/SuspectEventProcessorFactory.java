@@ -35,6 +35,8 @@
  */
 package org.opennms.netmgt.capsd;
 
+import org.opennms.netmgt.model.discovery.IPAddress;
+
 /**
  * <p>SuspectEventProcessorFactory interface.</p>
  *
@@ -45,11 +47,10 @@ public interface SuspectEventProcessorFactory {
 
     /**
      * <p>createSuspectEventProcessor</p>
+     * @param ipAddress TODO
      *
-     * @param ifAddress a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.capsd.SuspectEventProcessor} object.
      */
-    public abstract SuspectEventProcessor createSuspectEventProcessor(
-            String ifAddress);
+    public abstract SuspectEventProcessor createSuspectEventProcessor(IPAddress ipAddress);
 
 }

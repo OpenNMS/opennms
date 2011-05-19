@@ -58,6 +58,7 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -201,7 +202,7 @@ public class ScanSuspectTest extends OpenNMSTestCase {
     
     public final void testStartStop() throws MarshalException, ValidationException, IOException {
         m_capsd.start();
-        m_capsd.scanSuspectInterface(InetAddressUtils.str(this.myLocalHost()));
+        m_capsd.scanSuspectInterface(new IPAddress(this.myLocalHost()));
         m_capsd.stop();
     }
     

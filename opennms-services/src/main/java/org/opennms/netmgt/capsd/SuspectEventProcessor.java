@@ -95,6 +95,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
@@ -133,28 +134,29 @@ final class SuspectEventProcessor implements Runnable {
 
     private PluginManager m_pluginManager;
     
-    private static Set<String> m_queuedSuspectTracker;
+    private static Set<IPAddress> m_queuedSuspectTracker;
 
     /**
      * Constructor.
      * @param capsdDbSyncer for querying the database
      * @param pluginManager for accessing plugins
-     * @param ifAddress
-     *            Suspect interface address.
+     * @param ipAddress TODO
      */
-    SuspectEventProcessor(CapsdDbSyncer capsdDbSyncer, PluginManager pluginManager, String ifAddress) {
+    SuspectEventProcessor(final CapsdDbSyncer capsdDbSyncer, final PluginManager pluginManager, final IPAddress ipAddress) {
         Assert.notNull(capsdDbSyncer, "The capsdDbSyncer argument cannot be null");
         Assert.notNull(pluginManager, "The pluginManager argument cannot be null");
-        Assert.notNull(ifAddress, "The ifAddress argument cannot be null");
+        Assert.notNull(ipAddress, "The ipAddress argument cannot be null");
+
+        final String ifAddress = ipAddress.toDbString();
 
         m_capsdDbSyncer = capsdDbSyncer;
         m_pluginManager = pluginManager;
-        m_suspectIf = ifAddress;
+		m_suspectIf = ifAddress;
         
         // Add the interface address to the Set that tracks suspect
         // scans in the queue
         synchronized (m_queuedSuspectTracker) {
-        	m_queuedSuspectTracker.add(ifAddress);
+        	m_queuedSuspectTracker.add(ipAddress);
         }
     }
 
@@ -1685,7 +1687,7 @@ final class SuspectEventProcessor implements Runnable {
      *
      * @param queuedSuspectTracker a {@link java.util.Set} object.
      */
-    public static synchronized void setQueuedSuspectsTracker(Set<String> queuedSuspectTracker) {
+    public static synchronized void setQueuedSuspectsTracker(final Set<IPAddress> queuedSuspectTracker) {
     	m_queuedSuspectTracker = Collections.synchronizedSet(queuedSuspectTracker);
     }
     
@@ -1935,7 +1937,7 @@ final class SuspectEventProcessor implements Runnable {
 
     private EventBuilder createEventBuilder(String uei) {
         EventBuilder bldr = new EventBuilder(uei, EVENT_SOURCE);
-        bldr.setHost(Capsd.getLocalHostAddress());
+        bldr.setHost(Capsd.getLocalHostAddress().toUserString());
         return bldr;
     }
 

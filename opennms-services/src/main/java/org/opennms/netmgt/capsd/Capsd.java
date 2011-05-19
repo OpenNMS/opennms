@@ -40,7 +40,6 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashSet;
 
@@ -49,7 +48,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.daemon.DaemonUtils;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.model.events.StoppableEventListener;
 import org.springframework.util.Assert;
 
@@ -70,11 +69,6 @@ import org.springframework.util.Assert;
  */
 public class Capsd extends AbstractServiceDaemon {
     /**
-     * The log4j category used to log messages.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Capsd";
-
-    /**
      * Database synchronization lock for synchronizing write access to the
      * database between the SuspectEventProcessor and RescanProcessor thread
      * pools
@@ -87,7 +81,7 @@ public class Capsd extends AbstractServiceDaemon {
      * running. Used when capsd sends events out
      * </P>
      */
-    private static String m_address = null;
+    private static IPAddress m_address = null;
 
     /**
      * Rescan scheduler thread
@@ -127,7 +121,7 @@ public class Capsd extends AbstractServiceDaemon {
      */
 
     static {
-    	m_address = DaemonUtils.getLocalHostAddress();
+    	m_address = new IPAddress(InetAddressUtils.getLocalHostAddress());
     } // end static class initialization
 
     /**
@@ -197,7 +191,7 @@ public class Capsd extends AbstractServiceDaemon {
     protected void onStart() {
     	// Set the Set that SuspectEventProcessor will use to track
     	// suspect scans that are in progress
-    	SuspectEventProcessor.setQueuedSuspectsTracker(new HashSet<String>());
+    	SuspectEventProcessor.setQueuedSuspectsTracker(new HashSet<IPAddress>());
     	
     	// Likewise, a separate Set for the RescanProcessor
     	RescanProcessor.setQueuedRescansTracker(new HashSet<Integer>());
@@ -236,7 +230,7 @@ public class Capsd extends AbstractServiceDaemon {
      *
      * @return a {@link java.lang.String} object.
      */
-    public static String getLocalHostAddress() {
+    public static IPAddress getLocalHostAddress() {
         return m_address;
     }
 
@@ -256,13 +250,13 @@ public class Capsd extends AbstractServiceDaemon {
      *             Thrown if the address cannot be converted to aa proper
      *             internet address.
      */
-    public void scanSuspectInterface(String ifAddr) throws UnknownHostException {
+    public void scanSuspectInterface(final IPAddress ifAddr) throws UnknownHostException {
         String prefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(getName());
-            final InetAddress addr = InetAddress.getByName(ifAddr);
-            final SuspectEventProcessor proc = m_suspectEventProcessorFactory.createSuspectEventProcessor(InetAddressUtils.str(addr));
-            proc.run();
+        	if (ifAddr == null) {
+	            m_suspectEventProcessorFactory.createSuspectEventProcessor(ifAddr).run();
+        	}
         } finally {
             ThreadCategory.setPrefix(prefix);
         }

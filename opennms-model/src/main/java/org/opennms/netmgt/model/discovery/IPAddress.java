@@ -33,6 +33,7 @@ package org.opennms.netmgt.model.discovery;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
@@ -65,7 +66,15 @@ public class IPAddress implements Comparable<IPAddress> {
         m_ipAddr = InetAddressUtils.toIpAddrBytes(dottedNotation);
     }
     
-    /**
+	public static IPAddress fromName(final String hostname) {
+		try {
+			return new IPAddress(InetAddressUtils.getInetAddress(hostname, false));
+		} catch (final UnknownHostException e) {
+			return null;
+		}
+	}
+
+	/**
      * <p>Constructor for IPAddress.</p>
      *
      * @param inetAddress a {@link java.net.InetAddress} object.

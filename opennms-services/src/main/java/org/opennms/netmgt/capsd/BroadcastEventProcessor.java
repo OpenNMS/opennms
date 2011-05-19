@@ -62,6 +62,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -1652,8 +1653,9 @@ public class BroadcastEventProcessor implements InitializingBean {
         
         // new suspect event
         try {
-            log().debug("onMessage: Adding interface to suspectInterface Q: " + event.getInterface());
-            m_suspectQ.add(m_suspectEventProcessorFactory.createSuspectEventProcessor(event.getInterface()));
+        	final IPAddress addr = IPAddress.fromName(event.getInterface());
+            log().debug("onMessage: Adding interface to suspectInterface Q: " + addr.toString());
+            m_suspectQ.add(m_suspectEventProcessorFactory.createSuspectEventProcessor(addr));
         } catch (Throwable ex) {
             log().error("onMessage: Failed to add interface to suspect queue", ex);
         }
