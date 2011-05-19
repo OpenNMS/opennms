@@ -567,7 +567,7 @@ final class BroadcastEventProcessor implements EventListener {
                 tSvc = iter.next();
 
                 InetAddress addr = (InetAddress) tSvc.getAddress();
-                if (addr.equals(event.getInterface())) {
+                if (addr.equals(event.getInterfaceAddress())) {
                     synchronized (tSvc) {
                         // Got a match!
                         if (log.isDebugEnabled())
