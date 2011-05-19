@@ -32,6 +32,8 @@
 package org.opennms.netmgt.model.discovery;
 
 import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -279,5 +281,13 @@ public class IPAddress implements Comparable<IPAddress> {
     public static IPAddress max(IPAddress a, IPAddress b) {
         return (a.isGreaterThan(b) ? a : b);
     }
+
+	public boolean isIPv4() {
+        return InetAddressUtils.getInetAddress(m_ipAddr) instanceof Inet4Address;
+	}
+
+	public boolean isIPv6() {
+        return InetAddressUtils.getInetAddress(m_ipAddr) instanceof Inet6Address;
+	}
 
 }
