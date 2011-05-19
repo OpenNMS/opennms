@@ -1175,6 +1175,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         //node.setId(nodeId);
         node.setLastCapsdPoll(new Date());
         node.setForeignSource("imported:");
+        node.setLabel("default");
         
         m_nodeDao.save(node);
         m_nodeDao.flush();
