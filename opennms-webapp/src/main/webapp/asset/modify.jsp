@@ -227,10 +227,10 @@
             <td><%=getTextField(request, "text", "port", asset.getPort(), "20", "64")%></td>
           </tr>
           <tr>
+            <td>Rack&nbsp;unit&nbsp;height</td>
+            <td><%=getTextField(request, "text", "rackunitheight", asset.getRackunitheight(), "2", "2")%></td>
             <td>Circuit&nbsp;ID</td>
             <td><%=getTextField(request, "text", "circuitid", asset.getCircuitId(), "20", "64")%></td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
           </tr>
@@ -312,35 +312,35 @@
           </tr>
           <tr>
             <td>Cpu</td>
-            <td><%=getTextField( request, "text", "cpu", asset.getCpu(), "20", "32")%></td>
+            <td><%=getTextField( request, "text", "cpu", asset.getCpu(), "20", "64")%></td>
             <td>Ram</td>
             <td><%=getTextField( request, "text", "ram", asset.getRam(), "10", "10")%></td>
             <td>Storage Controller</td>
-            <td><%=getTextField( request, "text", "storagectrl", asset.getStoragectrl(), "20", "32")%></td>
+            <td><%=getTextField( request, "text", "storagectrl", asset.getStoragectrl(), "20", "64")%></td>
           </tr>
           <tr>
             <td>HDD 1</td>
-            <td><%=getTextField( request, "text", "hdd1", asset.getHdd1(), "20", "32")%></td>
+            <td><%=getTextField( request, "text", "hdd1", asset.getHdd1(), "20", "64")%></td>
             <td>HDD 4</td>
-            <td><%=getTextField( request, "text", "hdd4", asset.getHdd4(), "20", "32")%></td>
+            <td><%=getTextField( request, "text", "hdd4", asset.getHdd4(), "20", "64")%></td>
             <td>Additional hardware</td>
             <td><%=getTextField( request, "text", "additionalhardware", asset.getAdditionalhardware(), "20", "64")%></td>
           </tr>
           <tr>
             <td>HDD 2</td>
-            <td><%=getTextField( request, "text", "hdd2", asset.getHdd2(), "20", "32")%></td>
+            <td><%=getTextField( request, "text", "hdd2", asset.getHdd2(), "20", "64")%></td>
             <td>HDD 5</td>
-            <td><%=getTextField( request, "text", "hdd5", asset.getHdd5(), "20", "32")%></td>
+            <td><%=getTextField( request, "text", "hdd5", asset.getHdd5(), "20", "64")%></td>
             <td>Number of power supplies</td>
             <td><%=getTextField( request, "text", "numpowersupplies", asset.getNumpowersupplies(), "1", "1")%></td>
 	  </tr>
           <tr>
             <td>HDD 3</td>
-            <td><%=getTextField( request, "text", "hdd3", asset.getHdd3(), "20", "32")%></td>
+            <td><%=getTextField( request, "text", "hdd3", asset.getHdd3(), "20", "64")%></td>
             <td>HDD 6</td>
-            <td><%=getTextField( request, "text", "hdd6", asset.getHdd6(), "20", "32")%></td>
+            <td><%=getTextField( request, "text", "hdd6", asset.getHdd6(), "20", "64")%></td>
             <td>Inputpower</td>
-            <td><%=getTextField( request, "text", "inputpower", asset.getInputpower(), "6", "6")%></td>
+            <td><%=getTextField( request, "text", "inputpower", asset.getInputpower(), "11", "11")%></td>
 	  </tr>
          <tr>
             <td colspan="6"><h3>Comments</h3></td>

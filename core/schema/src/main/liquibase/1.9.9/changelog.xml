@@ -11,4 +11,36 @@
         <addNotNullConstraint tableName="node" columnName="nodelabel"/>
     </changeSet>
 
+    <changeSet author="kleind" id="1.9.9-add-rackunitheight-hardware-assets">
+      <addColumn tableName="assets">
+        <column name="rackunitheight" type="varchar(2)" />
+      </addColumn>
+      <rollback>
+        <dropColumn tableName="assets" columnName="rackunitheight" />
+      </rollback>
+    </changeSet>
+
+    <changeSet author="kleind" id="1.9.9-more-space-for-hardware-assets">
+      <modifyDataType tableName="assets" columnName="cpu"         newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="storagectrl" newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd1"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd2"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd3"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd4"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd5"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd6"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="inputpower"  newDataType="varchar(11)" /> <!-- allow "xxxxx Watts" -->
+      <rollback>
+        <modifyDataType tableName="assets" columnName="cpu"         newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="storagectrl" newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd1"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd2"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd3"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd4"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd5"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd6"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="inputpower"  newDataType="varchar(6)" />
+      </rollback>
+    </changeSet>
+
 </databaseChangeLog>
