@@ -90,7 +90,7 @@ abstract public class XmlTest<T> {
 
 	@Test
 	public void unmarshalXmlAndCompareToJaxb() throws Exception {
-		final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(new ByteArrayInputStream(m_sampleXml.getBytes())));
+		final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(new ByteArrayInputStream(m_sampleXml.getBytes())), null);
 		assertTrue("objects should match", getSampleObject().equals(obj));
 	}
 	
@@ -126,7 +126,7 @@ abstract public class XmlTest<T> {
 	@Test
 	public void validateJaxbXmlAgainstSchema() throws Exception {
 		LogUtils.debugf(this, "Validating against XSD: %s", m_schemaFile);
-		javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass());
+		javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass(), null);
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         final Schema schema = factory.newSchema(new StreamSource(m_schemaFile));
 		unmarshaller.setSchema(schema);

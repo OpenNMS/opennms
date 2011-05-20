@@ -2,6 +2,7 @@ package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
@@ -12,12 +13,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
@@ -161,17 +158,20 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
                 return;
             }
             final File outputFile = getOutputFileForForeignSource(foreignSource);
+            OutputStream outputStream = null;
             Writer writer = null;
             try {
                 if (m_updateDateStamps) {
                     foreignSource.updateDateStamp();
                 }
-                writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
-                getMarshaller(ForeignSource.class).marshal(foreignSource, writer);
+                outputStream = new FileOutputStream(outputFile);
+                writer = new OutputStreamWriter(outputStream, "UTF-8");
+                JaxbUtils.marshal(foreignSource, writer);
             } catch (final Throwable e) {
                 throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
             } finally {
                 IOUtils.closeQuietly(writer);
+                IOUtils.closeQuietly(outputStream);
             }
         } finally {
             m_writeLock.unlock();
@@ -272,16 +272,19 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         try {
             final File outputFile = getOutputFileForRequisition(requisition);
             Writer writer = null;
+            OutputStream outputStream = null;
             try {
                 if (m_updateDateStamps) {
                     requisition.updateDateStamp();
                 }
-                writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
-                getMarshaller(Requisition.class).marshal(requisition, writer);
+                outputStream = new FileOutputStream(outputFile);
+                writer = new OutputStreamWriter(outputStream, "UTF-8");
+                JaxbUtils.marshal(requisition, writer);
             } catch (final Throwable e) {
                 throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
             } finally {
                 IOUtils.closeQuietly(writer);
+                IOUtils.closeQuietly(outputStream);
             }
         } finally {
             m_writeLock.unlock();
@@ -351,20 +354,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     private ForeignSource get(final File inputFile) throws ForeignSourceRepositoryException {
-        try {
-            final Unmarshaller um = getUnmarshaller(ForeignSource.class);
-            final JAXBElement<ForeignSource> fs = um.unmarshal(new StreamSource(inputFile), ForeignSource.class);
-            return fs.getValue();
-        } catch (final JAXBException e) {
-            throw new ForeignSourceRepositoryException("unable to unmarshal " + inputFile.getPath(), e);
-        }
+    	return JaxbUtils.unmarshal(ForeignSource.class, inputFile);
     }
 
     private Requisition getRequisition(final File inputFile) throws ForeignSourceRepositoryException {
         try {
-            final Unmarshaller um = getUnmarshaller(Requisition.class);
-            final JAXBElement<Requisition> req = um.unmarshal(new StreamSource(inputFile), Requisition.class);
-            return req.getValue();
+        	return JaxbUtils.unmarshal(Requisition.class, inputFile);
         } catch (final Throwable e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + inputFile.getPath(), e);
         }
@@ -394,9 +389,4 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         createPath(reqPath);
         return encodeFileName(m_requisitionPath, requisition.getForeignSource());
     }
-
-    private Unmarshaller getUnmarshaller(final Class<?> objectType) throws JAXBException {
-        return getJaxbContext(objectType).createUnmarshaller();
-    }
-
 }

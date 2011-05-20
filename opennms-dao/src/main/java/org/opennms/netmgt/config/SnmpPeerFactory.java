@@ -178,7 +178,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     public SnmpPeerFactory(final InputStream stream) {
         SnmpPeerFactory.getWriteLock().lock();
         try {
-        	m_config = JaxbUtils.unmarshal(SnmpConfig.class, new InputSource(stream));
+        	m_config = JaxbUtils.unmarshal(SnmpConfig.class, new InputSource(stream), null);
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
         }

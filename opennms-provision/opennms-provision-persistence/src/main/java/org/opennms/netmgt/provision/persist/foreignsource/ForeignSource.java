@@ -55,6 +55,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
 
 /**
@@ -64,12 +65,13 @@ import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  */
 @XmlRootElement(name="foreign-source")
+@ValidateUsing("foreign-sources.xsd")
 public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     private static final long serialVersionUID = -1903289015976502808L;
 
     private static final PluginConfig[] OF_PLUGIN_CONFIGS = new PluginConfig[0];
 
-    @XmlAttribute(name="name")
+    @XmlAttribute(name="name", required=true)
     private String m_name;
 
     @XmlAttribute(name="date-stamp")

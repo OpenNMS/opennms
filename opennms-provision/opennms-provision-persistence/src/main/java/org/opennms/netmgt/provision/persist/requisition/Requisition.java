@@ -31,6 +31,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 
@@ -43,6 +44,7 @@ import org.opennms.netmgt.provision.persist.RequisitionVisitor;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="model-import")
+@ValidateUsing("model-import.xsd")
 public class Requisition implements Serializable, Comparable<Requisition> {
 
     private static final long serialVersionUID = 2099710942679236239L;

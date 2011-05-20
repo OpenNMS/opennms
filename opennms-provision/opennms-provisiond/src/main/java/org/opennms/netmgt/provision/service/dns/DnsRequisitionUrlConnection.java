@@ -38,9 +38,7 @@ package org.opennms.netmgt.provision.service.dns;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -52,15 +50,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.provision.persist.ProvisionPrefixContextResolver;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
@@ -349,14 +345,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      * @throws JAXBException
      */
     private String jaxBMarshal(Requisition r) throws JAXBException {
-        ProvisionPrefixContextResolver cr = new ProvisionPrefixContextResolver();
-        JAXBContext context = cr.getContext(r.getClass());
-        Marshaller m = context.createMarshaller();
-        Writer w = new StringWriter();
-        m.marshal(r, w);
-        
-        String xml = w.toString();
-        return xml;
+    	return JaxbUtils.marshal(r);
     }
     
     /**
