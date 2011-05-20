@@ -115,7 +115,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     
     protected boolean isCollectionEnabled(CollectionResource resource) {
         if (resource instanceof IfInfo) {
-            return ((IfInfo) resource).isCollectionEnabled();
+            return ((IfInfo) resource).isScheduledForCollection();
         }
         return true;
     }
