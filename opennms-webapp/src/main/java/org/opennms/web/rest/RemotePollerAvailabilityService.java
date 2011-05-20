@@ -2,12 +2,10 @@ package org.opennms.web.rest;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -20,17 +18,25 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
+import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsLocationAvailDataPoint;
+import org.opennms.netmgt.model.OnmsLocationAvailDefinition;
+import org.opennms.netmgt.model.OnmsLocationAvailDefinitionList;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.web.rest.support.TimeChunker;
+import org.opennms.web.rest.support.TimeChunker.TimeChunk;
 import org.opennms.web.svclayer.support.DefaultDistributedStatusService.Severity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,7 +46,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
 @PerRequest
-@Path("remotepoller")
+@Path("remotelocations")
 @Transactional
 public class RemotePollerAvailabilityService extends OnmsRestService {
 
@@ -58,42 +64,150 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     UriInfo m_uriInfo;
     
     @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    public String getAvailability() {
-        List<String> percentageList = new ArrayList<String>();
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public OnmsLocationAvailDefinitionList getAvailability() {
+        MultivaluedMap<String, String> queryParameters = m_uriInfo.getQueryParameters();
+        return getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), null, getSelectedServices(queryParameters));
+    }
+    
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Path("{location}")
+    public OnmsLocationAvailDefinitionList getAvailabilityByLocation(@PathParam("location") String location) {
+        MultivaluedMap<String, String> queryParameters = m_uriInfo.getQueryParameters();
         
-        List<OnmsLocationMonitor> monitors = m_locationMonitorDao.findAll();
+        Collection<OnmsMonitoredService> services = getSelectedServices(queryParameters);
+        
+        OnmsMonitoringLocationDefinition locationDefinition = m_locationMonitorDao.findMonitoringLocationDefinition(location);
+        Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
+        
+        OnmsLocationAvailDefinitionList availList = getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), monitors, services);
+        
+        return availList;
+    }
+
+    private Collection<OnmsMonitoredService> getSelectedServices(MultivaluedMap<String, String> queryParameters) {
+        
+        if(queryParameters.containsKey("host")) {
+            String host = queryParameters.getFirst("host");
+            OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
+            criteria.createAlias("ipInterface", "ipInterface", OnmsCriteria.LEFT_JOIN);
+            criteria.createAlias("ipInterface.node", "node", OnmsCriteria.LEFT_JOIN);
+            criteria.add(Restrictions.eq("node.label", host));
+        
+            return m_monitoredServiceDao.findMatching(criteria);
+        }else {
+            return m_monitoredServiceDao.findAll();
+        }
+    }
+    
+    private TimeChunker createTimeChunker(MultivaluedMap<String, String> params) {
+        TimeChunker timeChunker;
+        Date start = getStartTime(params);
+        Date end = getEndTime(params);
+        if((end.getTime() - start.getTime()) < TimeChunker.MINUTE) {
+            throw new IllegalArgumentException("The endTime has to be after the startTime by 5 minutes.\nCurrently the startTime is " + start + " and endTime is " + end);
+        }
+        
+        timeChunker = new TimeChunker(getResolution(params), start.getTime(), end.getTime() - start.getTime());
+        return timeChunker;
+    }
+
+    private List<OnmsApplication> getSortedApplications() {
+        List<OnmsApplication> sortedApplications;
         Collection<OnmsApplication> applications = m_applicationDao.findAll();
-        List<OnmsMonitoringLocationDefinition> locationDefinitions = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
         
         if (applications.size() == 0) {
             throw new IllegalArgumentException("there are no applications");
         }
         
-        List<OnmsApplication> sortedApplications = new ArrayList<OnmsApplication>(applications);
+        sortedApplications = new ArrayList<OnmsApplication>(applications);
         Collections.sort(sortedApplications);
+        return sortedApplications;
+    }
+
+    /**
+     * 
+     * @param timeChunker
+     * @param sortedApplications
+     * @param selectedMonitors 
+     * @param selectedHost TODO
+     * @param locationDefinitions
+     * @return
+     */
+    private OnmsLocationAvailDefinitionList getAvailabilityList(TimeChunker timeChunker, List<OnmsApplication> sortedApplications, Collection<OnmsLocationMonitor> selectedMonitors, Collection<OnmsMonitoredService> selectedServices) {
         
-        Collection<OnmsLocationSpecificStatus> statusesPeriod = new HashSet<OnmsLocationSpecificStatus>();
-        Date start = new GregorianCalendar(Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH).getTime();
-        Date end = new Date();
-        statusesPeriod.addAll(m_locationMonitorDao.getAllStatusChangesAt(start));
-        statusesPeriod.addAll(m_locationMonitorDao.getStatusChangesBetween(start, end));
+        OnmsLocationAvailDefinitionList availList = new OnmsLocationAvailDefinitionList();
         
-        for(OnmsMonitoringLocationDefinition locationDefinition : locationDefinitions) {
-            Collection<OnmsLocationMonitor> m = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
+        while(timeChunker.hasNext()) {
+            TimeChunk timeChunk = timeChunker.getNextSegment();
+            
+            Collection<OnmsLocationSpecificStatus> statusesPeriod = new HashSet<OnmsLocationSpecificStatus>();
+            statusesPeriod.addAll(m_locationMonitorDao.getAllStatusChangesAt(timeChunk.getStartDate()));
+            statusesPeriod.addAll(m_locationMonitorDao.getStatusChangesBetween(timeChunk.getStartDate(), timeChunk.getEndDate()));
+            
+            OnmsLocationAvailDataPoint point = new OnmsLocationAvailDataPoint();
+            point.setTime(timeChunk.getEndDate());
             
             for(OnmsApplication application : sortedApplications) {
-                Collection<OnmsMonitoredService> memberServices = m_monitoredServiceDao.findByApplication(application);
-                Set<OnmsLocationSpecificStatus> selectedStatuses = filterStatus(statusesPeriod, monitors, memberServices);
                 
-                percentageList.add(calculatePercentageUptime(memberServices, selectedStatuses, start, end));
+                Collection<OnmsLocationMonitor> monitors;
+                if(selectedMonitors != null) {
+                    monitors = selectedMonitors;
+                } else {
+                    monitors = m_locationMonitorDao.findByApplication(application);
+                }
+                
+                Set<OnmsLocationSpecificStatus> selectedStatuses = filterStatus(statusesPeriod, (List<OnmsLocationMonitor>) monitors, selectedServices);
+                
+                point.addAvailDefinition(new OnmsLocationAvailDefinition(application.getName(), calculatePercentageUptime(selectedServices, selectedStatuses, timeChunk.getStartDate(), timeChunk.getEndDate())));
                 
             }
+            
+            availList.add(point);
         }
         
-        return "percentageList Size: " + percentageList.size() + " sorted Applications: " + sortedApplications;
+        return availList;
     }
     
+    private int getResolution(MultivaluedMap<String, String> params) {
+        if(params.containsKey("resolution")) {
+            String resolution = params.getFirst("resolution");
+            if(resolution.equalsIgnoreCase("minute")) {
+                return TimeChunker.MINUTE;
+            } else if(resolution.equalsIgnoreCase("hourly")) {
+                return TimeChunker.HOURLY;
+            }else if(resolution.equalsIgnoreCase("daily")){
+                return TimeChunker.DAILY;
+            }else {
+                return TimeChunker.MINUTE;
+            }
+            
+        } else {
+            return TimeChunker.MINUTE;
+        }
+        
+    }
+
+    private Date getEndTime(MultivaluedMap<String, String> params) {
+        if(params.containsKey("endTime")) {
+            String value = params.getFirst("endTime");
+            return new Date(Long.valueOf(value));
+        } else {
+            return new Date();
+        }
+    }
+
+    private Date getStartTime(MultivaluedMap<String, String> params) {
+        if(params.containsKey("startTime")) {
+            String startTime = params.getFirst("startTime");
+            return new Date(Long.valueOf(startTime));
+        } else {
+            return new Date();
+        }
+        
+    }
+
     private String calculatePercentageUptime(Collection<OnmsMonitoredService> applicationServices, Set<OnmsLocationSpecificStatus> statuses, Date startDate, Date endDate) {
         /*
          * The methodology is as such:
@@ -123,16 +237,15 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
          *    percentage.
          */
 
-        List<OnmsLocationSpecificStatus> sortedStatuses =
-            new LinkedList<OnmsLocationSpecificStatus>(statuses);
+        List<OnmsLocationSpecificStatus> sortedStatuses = new LinkedList<OnmsLocationSpecificStatus>(statuses);
+        
         Collections.sort(sortedStatuses, new Comparator<OnmsLocationSpecificStatus>(){
             public int compare(OnmsLocationSpecificStatus o1, OnmsLocationSpecificStatus o2) {
                 return o1.getPollResult().getTimestamp().compareTo(o2.getPollResult().getTimestamp());
             }
         });
 
-        HashMap<OnmsMonitoredService,PollStatus> serviceStatus =
-            new HashMap<OnmsMonitoredService,PollStatus>();
+        HashMap<OnmsMonitoredService,PollStatus> serviceStatus = new HashMap<OnmsMonitoredService,PollStatus>();
         for (OnmsMonitoredService service : applicationServices) {
             serviceStatus.put(service, PollStatus.unknown("No history for this service from this location"));
         }
@@ -185,7 +298,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
 
         float percentage = normalMilliseconds /
             (endDate.getTime() - startDate.getTime()) * 100;
-        return new DecimalFormat("0.000").format((double) percentage) + "%";
+        return new DecimalFormat("0.000").format((double) percentage);
     }
 
     private Severity calculateStatus(Collection<PollStatus> pollStatuses) {
@@ -227,10 +340,4 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         return filteredStatuses;
     }
 
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @Path("{location}")
-    public String getLocationAvailability(@PathParam("location") String location) {
-        return "location";
-    }
 }
