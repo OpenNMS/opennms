@@ -146,7 +146,7 @@ final class CollectableService implements ReadyRunnable {
         
         m_spec.initialize(m_agent);
         
-        Map<String, String> roProps=m_spec.getReadOnlyPropertyMap();
+        Map<String, Object> roProps=m_spec.getReadOnlyPropertyMap();
         m_params=new ServiceParameters(roProps);
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
         

@@ -15,6 +15,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.jdbc.JdbcAgentState;
 import org.opennms.netmgt.collectd.jdbc.JdbcCollectionAttributeType;
@@ -143,7 +144,7 @@ public class JdbcCollector implements ServiceCollector {
         m_scheduledNodes.clear();
     }
 
-    public void initialize(CollectionAgent agent, Map<String, String> parameters) {        
+    public void initialize(CollectionAgent agent, Map<String, Object> parameters) {        
         log().debug("initialize: Initializing JDBC collection for agent: " + agent);
         
         Integer scheduledNodeKey = new Integer(agent.getNodeId());
@@ -175,7 +176,7 @@ public class JdbcCollector implements ServiceCollector {
         }
     }
 
-    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) throws CollectionException {
+    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
         JdbcAgentState agentState = null;
         if(parameters == null) {
             log().error("Null parameters is now allowed in JdbcCollector!!");
@@ -186,10 +187,10 @@ public class JdbcCollector implements ServiceCollector {
         Statement stmt = null;
         
         try {
-            String collectionName = parameters.get("collection");
+            String collectionName = ParameterMap.getKeyedString(parameters, "collection", null);
             if (collectionName == null) {
                 //Look for the old configuration style:
-                collectionName = parameters.get("jdbc-collection");
+                collectionName = ParameterMap.getKeyedString(parameters, "jdbc-collection", null);
             }
         
             JdbcDataCollection collection = m_jdbcCollectionDao.getDataCollectionByName(collectionName);

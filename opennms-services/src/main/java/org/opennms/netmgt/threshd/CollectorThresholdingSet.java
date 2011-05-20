@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.CollectionResource;
@@ -61,9 +62,9 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
      * @param interval a long.
      */
-    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval, Map<String,String> params) {
+    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval, Map<String, Object> roProps) {
         super(nodeId, hostAddress, serviceName, repository, interval);
-        String storeByIfAliasString = params.get("storeByIfAlias");
+        String storeByIfAliasString = ParameterMap.getKeyedString(roProps, "storeByIfAlias", null);
         storeByIfAlias = storeByIfAliasString != null && storeByIfAliasString.toLowerCase().equals("true");
     }
     

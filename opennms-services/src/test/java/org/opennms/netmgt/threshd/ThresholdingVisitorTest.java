@@ -902,7 +902,7 @@ public class ThresholdingVisitorTest {
 
         // Initialize Thresholding Visitors
 
-        Map<String,String> params = new HashMap<String,String>();
+        Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
 
         for (int i=1; i<=numOfNodes; i++) {
@@ -1046,7 +1046,7 @@ public class ThresholdingVisitorTest {
         addHighThresholdEvent(1, 90, 50, 120, label, null, "ifOutOctets", label, ifIndex.toString());
         addHighThresholdEvent(1, 90, 50, 120, label, null, "ifInOctets", label, ifIndex.toString());
 
-        Map<String,String> params = new HashMap<String,String>();
+        Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
         params.put("storeByIfAlias", "true");
         ThresholdingVisitor visitor = createVisitor(params);
@@ -1309,7 +1309,7 @@ public class ThresholdingVisitorTest {
         // Creating Node ResourceType
         CollectionAgent agent = createCollectionAgent();
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
 
         // Creating strings.properties file
@@ -1337,14 +1337,14 @@ public class ThresholdingVisitorTest {
     }
 
     private ThresholdingVisitor createVisitor() {
-        Map<String,String> params = new HashMap<String,String>();
+        Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
         ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params, 300000);
         assertNotNull(visitor);
         return visitor;
     }
 
-    private ThresholdingVisitor createVisitor(Map<String,String> params) {
+    private ThresholdingVisitor createVisitor(Map<String,Object> params) {
         ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params, 300000);
         assertNotNull(visitor);
         return visitor;
@@ -1454,13 +1454,13 @@ public class ThresholdingVisitorTest {
 
     private NodeResourceType createNodeResourceType(CollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         return new NodeResourceType(agent, collection);
     }
 
     private IfResourceType createInterfaceResourceType(CollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         return new IfResourceType(agent, collection);
     }
 
@@ -1475,7 +1475,7 @@ public class ThresholdingVisitorTest {
         pstrategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
         type.setPersistenceSelectorStrategy(pstrategy);
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         return new GenericIndexResourceType(agent, collection, type);
     }
 

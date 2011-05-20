@@ -73,6 +73,7 @@ import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpMessage;
 import org.krupczak.Xmp.XmpSession;
 import org.krupczak.Xmp.XmpVar;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.XmpAgentConfig;
 import org.opennms.netmgt.config.XmpConfigFactory;
@@ -391,7 +392,7 @@ public class XmpCollector implements ServiceCollector {
      * initialize the querying of a particular agent/interface with
      * parameters specific to this agent/interface *
      */
-    public void initialize(CollectionAgent agent, Map<String, String> parameters)
+    public void initialize(CollectionAgent agent, Map<String, Object> parameters)
     {
         log().debug("initialize agent/params called for "+agent);
 
@@ -458,7 +459,7 @@ public class XmpCollector implements ServiceCollector {
      *       Value passed in.  Keys come from collectd config
      */
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, 
-            Map<String, String> parameters)
+            Map<String, Object> parameters)
     {
         XmpCollectionSet collectionSet;
         XmpSession session;
@@ -479,14 +480,14 @@ public class XmpCollector implements ServiceCollector {
         xmpPort = peerConfig.getPort();
 
         if (parameters.get("authenUser") != null)
-            authenUser = (String)parameters.get("authenUser");
+            authenUser = ParameterMap.getKeyedString(parameters, "authenUser", null);
 
         if (parameters.get("timeout") != null) {
-            timeout = Integer.valueOf(parameters.get("timeout"));
+            timeout = ParameterMap.getKeyedInteger(parameters, "timeout", 3000);
         }
         
         if (parameters.get("retry") != null) {
-            retries = Integer.valueOf(parameters.get("retries"));
+            retries = ParameterMap.getKeyedInteger(parameters, "retries", 0);
         }
         parameters.get("collection");
 
@@ -496,7 +497,7 @@ public class XmpCollector implements ServiceCollector {
 
         //log().debug("collect got parameters for "+agent);
 
-        String collectionName = parameters.get("collection");
+        String collectionName = ParameterMap.getKeyedString(parameters, "collection", null);
 
         //log().debug("XMP collection name "+collectionName);
 

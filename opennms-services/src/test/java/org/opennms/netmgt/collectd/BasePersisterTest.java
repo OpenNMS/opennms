@@ -86,7 +86,7 @@ public class BasePersisterTest extends TestCase {
         m_intf.setIpAddress(InetAddressUtils.addr("1.1.1.1"));
         
         m_ifDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
-        m_serviceParams = new ServiceParameters(new HashMap<String,String>());
+        m_serviceParams = new ServiceParameters(new HashMap<String,Object>());
         
     }
     
@@ -176,7 +176,7 @@ public class BasePersisterTest extends TestCase {
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
         

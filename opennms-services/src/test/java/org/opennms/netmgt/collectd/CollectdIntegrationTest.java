@@ -267,7 +267,7 @@ public class CollectdIntegrationTest extends TestCase {
             System.err.println("Created a MockServiceCollector");
         }
 
-        public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
+        public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
             m_collectCount++;
             CollectionSet collectionSetResult=new CollectionSet() {
 
@@ -299,7 +299,7 @@ public class CollectdIntegrationTest extends TestCase {
 //            CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);
         }
 
-        public void initialize(CollectionAgent agent, Map<String, String> parameters) {
+        public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
             String testKey = (String)parameters.get(TEST_KEY_PARM_NAME);
             assertNotNull(testKey);
             CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);

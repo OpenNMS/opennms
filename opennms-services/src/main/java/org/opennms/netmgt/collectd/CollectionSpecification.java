@@ -67,7 +67,7 @@ public class CollectionSpecification {
     private CollectdPackage m_package;
     private String m_svcName;
     private ServiceCollector m_collector;
-    private Map<String, String> m_parameters;
+    private Map<String, Object> m_parameters;
 
     /**
      * <p>Constructor for CollectionSpecification.</p>
@@ -153,7 +153,7 @@ public class CollectionSpecification {
         return m_collector;
     }
 
-    private Map<String, String> getPropertyMap() {
+    private Map<String, Object> getPropertyMap() {
         return m_parameters;
     }
 
@@ -163,7 +163,7 @@ public class CollectionSpecification {
      *
      * @return A read only Map instance
      */
-    public Map<String, String> getReadOnlyPropertyMap() {
+    public Map<String, Object> getReadOnlyPropertyMap() {
         return Collections.unmodifiableMap(m_parameters);
     }
 
@@ -180,7 +180,7 @@ public class CollectionSpecification {
     }
 
     private void initializeParameters() {
-        Map<String, String> m = new TreeMap<String, String>();
+    	final Map<String, Object> m = new TreeMap<String, Object>();
         m.put("SERVICE", m_svcName);
         StringBuffer sb;
         Collection<Parameter> params = getService().getParameterCollection();
