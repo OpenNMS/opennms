@@ -60,6 +60,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
@@ -887,7 +888,9 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
         assertEquals(1, getNodeDao().countAll());
         // \u00f1 is unicode for n~ 
-        assertEquals("\u00f1ode2", getNodeDao().get(1).getLabel());
+        final OnmsNode onmsNode = getNodeDao().get(1);
+        LogUtils.debugf(this, "node = %s", onmsNode);
+		assertEquals("\u00f1ode2", onmsNode.getLabel());
         
     }
     

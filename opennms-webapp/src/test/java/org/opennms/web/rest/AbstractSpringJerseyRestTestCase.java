@@ -183,7 +183,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 dispatcher.service(filterRequest, filterResponse);
             }
         };
-        filter.doFilter(request, response, filterChain);
+        if (filter != null) filter.doFilter(request, response, filterChain);
     }
     
     protected MockHttpServletResponse createResponse() {
@@ -230,7 +230,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
         if(contentType.equals(MediaType.APPLICATION_FORM_URLENCODED)){
             request.setParameters(parseParamData(data));
-            request.setContent(data.getBytes());
+            request.setContent(new byte[] {});
         }else{
             request.setContent(data.getBytes());
         }
@@ -275,14 +275,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return retVal;
     }
 
-    protected String sendRequest(String requestType, String url, @SuppressWarnings("unchecked") Map parameters, int expectedStatus) throws Exception {
+    protected String sendRequest(String requestType, String url, @SuppressWarnings("rawtypes") Map parameters, int expectedStatus) throws Exception {
         final MockHttpServletRequest request = createRequest(requestType, url);
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
         return sendRequest(request, expectedStatus);
     }
     
-    protected String getQueryString(@SuppressWarnings("unchecked") final Map parameters) {
+    protected String getQueryString(@SuppressWarnings("rawtypes") final Map parameters) {
     	final StringBuffer sb = new StringBuffer();
 
 		try {
@@ -398,7 +398,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
 	    "<ifOperStatus>1</ifOperStatus>" +
 	    "<ifSpeed>10000000</ifSpeed>" +
 	    "<ifType>6</ifType>" +
-	    "<ipAddress>10.10.10.10</ipAddress>" +
 	    "<netMask>255.255.255.0</netMask>" +
 	    "<physAddr>001e5271136d</physAddr>" +
 	    "</snmpInterface>";
@@ -407,13 +406,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
 	protected void createService() throws Exception {
 	    createIpInterface();
-	    String service = "<service>" +
+	    String service = "<service source=\"P\" status=\"N\">" +
 	    "<notify>Y</notify>" +
 	    "<serviceType>" +
 	    "<name>ICMP</name>" +
 	    "</serviceType>" +
-	    "<source>P</source>" +
-	    "<status>N</status>" +
 	    "</service>";
 	    sendPost("/nodes/1/ipinterfaces/10.10.10.10/services", service);
 	}
