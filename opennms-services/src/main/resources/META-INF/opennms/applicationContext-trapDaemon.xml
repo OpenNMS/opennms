@@ -5,19 +5,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-  <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
-    <property name="trapdIpMgr" ref="trapdIpMgr"/>
-    <property name="eventReader" ref="eventReader"/>
-    <property name="backlogQ" ref="backlogQ"/>
-    <property name="processor" ref="processor"/>
-    <property name="snmpTrapPort" ref="snmpTrapPort"/>
-  </bean>
-  
-  <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
+  <tx:annotation-driven/>
+
+  <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="false">
     <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
   </bean>
 
-  <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
+  <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="false" factory-method="getInstance"/>
 
 <!-- 
   <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.JdbcTrapdIpMgr">
@@ -45,6 +39,16 @@
   <bean id="newSuspectOnTrap" factory-bean="trapdConfig" factory-method="getNewSuspectOnTrap"/>
   
   <bean id="snmpTrapPort" factory-bean="trapdConfig" factory-method="getSnmpTrapPort"/>
+
+  <bean id="snmpTrapAddress" factory-bean="trapdConfig" factory-method="getSnmpTrapAddress"/>
   
-  <tx:annotation-driven/>
+  <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd" depends-on="trapdConfig">
+    <property name="trapdIpMgr" ref="trapdIpMgr"/>
+    <property name="eventReader" ref="eventReader"/>
+    <property name="backlogQ" ref="backlogQ"/>
+    <property name="processor" ref="processor"/>
+    <property name="snmpTrapAddress" ref="snmpTrapAddress"/>
+    <property name="snmpTrapPort" ref="snmpTrapPort"/>
+  </bean>
+
 </beans>

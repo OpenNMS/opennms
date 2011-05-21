@@ -47,11 +47,13 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -379,35 +381,31 @@ public class Snmp4JStrategy implements SnmpStrategy {
     }
 
     public static class RegistrationInfo {
-        public TrapNotificationListener m_listener;
-        int m_trapPort;
+        private TrapNotificationListener m_listener;
         
         Snmp m_trapSession;
         Snmp4JTrapNotifier m_trapHandler;
         private TransportMapping m_transportMapping;
+		private InetAddress m_address;
+		private int m_port;
         
-        RegistrationInfo(TrapNotificationListener listener, int trapPort) {
-            if (listener == null) {
-                throw new NullPointerException("listener is null");
-            }
+        RegistrationInfo(TrapNotificationListener listener, int trapPort) throws SocketException {
+        	if (listener == null) throw new NullPointerException("You must specify a trap notification listener.");
+        	LogUtils.debugf(this, "trapPort = %d", trapPort);
     
             m_listener = listener;
-            m_trapPort = trapPort;
+            m_port = trapPort;
         }
     
-        public boolean equals(Object obj) {
-            if (obj instanceof RegistrationInfo) {
-                RegistrationInfo info = (RegistrationInfo) obj;
-                return (m_listener == info.m_listener) && (m_trapPort == info.m_trapPort);
-            }
-            return false;
-        }
-    
-        public int hashCode() {
-            return (m_listener.hashCode() ^ m_trapPort);
-        }
-        
-        public void setSession(Snmp trapSession) {
+        public RegistrationInfo(final TrapNotificationListener listener, final InetAddress address, final int snmpTrapPort) {
+        	if (listener == null) throw new NullPointerException("You must specify a trap notification listener.");
+
+        	m_listener = listener;
+        	m_address = address;
+        	m_port = snmpTrapPort;
+		}
+
+        public void setSession(final Snmp trapSession) {
             m_trapSession = trapSession;
         }
         
@@ -415,7 +413,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
             return m_trapSession;
         }
         
-        public void setHandler(Snmp4JTrapNotifier trapHandler) {
+        public void setHandler(final Snmp4JTrapNotifier trapHandler) {
             m_trapHandler = trapHandler;
         }
         
@@ -423,11 +421,15 @@ public class Snmp4JStrategy implements SnmpStrategy {
             return m_trapHandler;
         }
 
+        public InetAddress getAddress() {
+        	return m_address;
+        }
+        
         public int getPort() {
-            return m_trapPort;
+            return m_port;
         }
 
-        public void setTransportMapping(TransportMapping transport) {
+        public void setTransportMapping(final TransportMapping transport) {
             m_transportMapping = transport;
         }
         
@@ -435,18 +437,33 @@ public class Snmp4JStrategy implements SnmpStrategy {
             return m_transportMapping;
         }
         
+        public int hashCode() {
+            return (m_listener.hashCode() + m_address.hashCode() ^ m_port);
+        }
+        
+		public boolean equals(final Object obj) {
+            if (obj instanceof RegistrationInfo) {
+            	final RegistrationInfo info = (RegistrationInfo) obj;
+                return (m_listener == info.m_listener) && Arrays.equals(m_address.getAddress(), info.getAddress().getAddress()) && m_port == info.getPort();
+            }
+            return false;
+        }
         
     }
 
-
-
-    public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException {
-        RegistrationInfo info = new RegistrationInfo(listener, snmpTrapPort);
+    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort) throws IOException {
+    	final RegistrationInfo info = new RegistrationInfo(listener, address, snmpTrapPort);
         
-        Snmp4JTrapNotifier m_trapHandler = new Snmp4JTrapNotifier(listener, processorFactory);
+    	final Snmp4JTrapNotifier m_trapHandler = new Snmp4JTrapNotifier(listener, processorFactory);
         info.setHandler(m_trapHandler);
 
-        TransportMapping transport = new DefaultUdpTransportMapping(new UdpAddress(snmpTrapPort));
+        final UdpAddress udpAddress;
+        if (address == null) {
+        	udpAddress = new UdpAddress(snmpTrapPort);
+        } else {
+        	udpAddress = new UdpAddress(address, snmpTrapPort);
+        }
+        final TransportMapping transport = new DefaultUdpTransportMapping(udpAddress);
         info.setTransportMapping(transport);
         Snmp snmp = new Snmp(transport);
         snmp.addCommandResponder(m_trapHandler);
@@ -456,8 +473,17 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
         snmp.listen();
     }
+    
+    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final int snmpTrapPort) throws IOException {
+    	registerForTraps(listener, processorFactory, null, snmpTrapPort);
+    }
 
-    public void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException {
+    public void unregisterForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) throws IOException {
+        RegistrationInfo info = s_registrations.remove(listener);
+        closeQuietly(info.getSession());
+    }
+
+    public void unregisterForTraps(final TrapNotificationListener listener, final int snmpTrapPort) throws IOException {
         RegistrationInfo info = s_registrations.remove(listener);
         closeQuietly(info.getSession());
     }

@@ -53,10 +53,6 @@ import org.snmp4j.smi.VariableBinding;
 public class Snmp4JStrategyTest extends MockSnmpAgentTestCase {
     private final Snmp4JStrategy m_strategy = new Snmp4JStrategy();
 
-    public void testNothing() throws Exception {
-        // Just test our setUp()/tearDown()
-    }
-    
     public void XXXtestSendWithNullConfig() throws Exception {
         SnmpObjId[] oids = new SnmpObjId[] { SnmpObjId.get(".1.3.5.1.1.3.0") };
         SnmpValue[] retvalues = null;

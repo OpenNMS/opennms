@@ -39,6 +39,8 @@ package org.opennms.netmgt.config;
  * @version $Id: $
  */
 public interface TrapdConfig {
+	public abstract String getSnmpTrapAddress();
+	
     /**
      * <p>getSnmpTrapPort</p>
      *

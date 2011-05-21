@@ -48,6 +48,7 @@
 package org.opennms.protocols.snmp;
 
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
@@ -106,11 +107,6 @@ public final class SnmpTrapSession extends Object {
      * 
      */
     public final static int DEFAULT_PORT = 162;
-
-    /**
-     * The default port were traps are sent and received by this session.
-     */
-    private int m_port;
 
     /**
      * The default SNMP trap callback handler. If this is not set and it is
@@ -283,13 +279,12 @@ public final class SnmpTrapSession extends Object {
      *                Thrown if the security manager disallows the creation of
      *                the handler.
      */
-    public SnmpTrapSession(SnmpTrapHandler handler) throws SocketException {
-        m_port = DEFAULT_PORT;
+    public SnmpTrapSession(final SnmpTrapHandler handler) throws SocketException {
         m_encoder = (new SnmpParameters()).getEncoder();
         m_threadException = false;
         m_why = null;
         m_handler = handler;
-        m_portal = new SnmpPortal(new TrapHandler(this), m_encoder, m_port);
+        m_portal = new SnmpPortal(new TrapHandler(this), m_encoder, DEFAULT_PORT);
     }
 
     /**
@@ -299,16 +294,23 @@ public final class SnmpTrapSession extends Object {
      * @exception java.net.SocketException
      *                If thrown it is from the creation of a DatagramSocket.
      */
-    public SnmpTrapSession(SnmpTrapHandler handler, int port) throws SocketException {
-        m_port = port;
+    public SnmpTrapSession(final SnmpTrapHandler handler, final int port) throws SocketException {
         m_encoder = (new SnmpParameters()).getEncoder();
         m_handler = handler;
-        m_portal = new SnmpPortal(new TrapHandler(this), m_encoder, m_port);
+        m_portal = new SnmpPortal(new TrapHandler(this), m_encoder, port);
         m_threadException = false;
         m_why = null;
     }
 
-    /**
+    public SnmpTrapSession(final SnmpTrapHandler handler, final InetAddress address, final int snmpTrapPort) throws SocketException {
+        m_encoder = (new SnmpParameters()).getEncoder();
+        m_handler = handler;
+        m_portal = new SnmpPortal(new TrapHandler(this), m_encoder, address, snmpTrapPort);
+        m_threadException = false;
+        m_why = null;
+	}
+
+	/**
      * Returns the trap handler for this trap session.
      * 
      * @return The SnmpTrapHandler

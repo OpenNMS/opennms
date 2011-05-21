@@ -39,10 +39,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -249,34 +250,29 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     }
 
     public static class RegistrationInfo {
-        public TrapNotificationListener m_listener;
-        int m_trapPort;
+        private TrapNotificationListener m_listener;
+        private InetAddress m_address;
+        private int m_port;
         
         SnmpTrapSession m_trapSession;
         JoeSnmpTrapNotifier m_trapHandler;
         
-        RegistrationInfo(TrapNotificationListener listener, int trapPort) {
+        public RegistrationInfo(final TrapNotificationListener listener, final int trapPort) {
             if (listener == null) {
                 throw new NullPointerException("listener is null");
             }
     
             m_listener = listener;
-            m_trapPort = trapPort;
+            m_port = trapPort;
         }
     
-        public boolean equals(Object obj) {
-            if (obj instanceof RegistrationInfo) {
-                RegistrationInfo info = (RegistrationInfo) obj;
-                return (m_listener == info.m_listener) && (m_trapPort == info.m_trapPort);
-            }
-            return false;
-        }
-    
-        public int hashCode() {
-            return (m_listener.hashCode() ^ m_trapPort);
-        }
-        
-        public void setSession(SnmpTrapSession trapSession) {
+        public RegistrationInfo(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) {
+        	m_listener = listener;
+        	m_address = address;
+        	m_port = snmpTrapPort;
+		}
+
+        public void setSession(final SnmpTrapSession trapSession) {
             m_trapSession = trapSession;
         }
         
@@ -284,35 +280,56 @@ public class JoeSnmpStrategy implements SnmpStrategy {
             return m_trapSession;
         }
         
-        public void setHandler(JoeSnmpTrapNotifier trapHandler) {
+        public void setHandler(final JoeSnmpTrapNotifier trapHandler) {
             m_trapHandler = trapHandler;
         }
         
         public JoeSnmpTrapNotifier getHandler() {
             return m_trapHandler;
         }
+        
+        public InetAddress getAddress() {
+        	return m_address;
+        }
 
         public int getPort() {
-            return m_trapPort;
+        	return m_port;
         }
         
+        public int hashCode() {
+            return (m_listener.hashCode() + m_address.hashCode() ^ m_port);
+        }
         
+		public boolean equals(final Object obj) {
+            if (obj instanceof RegistrationInfo) {
+            	final RegistrationInfo info = (RegistrationInfo) obj;
+                return (m_listener == info.m_listener) && Arrays.equals(m_address.getAddress(), info.getAddress().getAddress()) && m_port == info.getPort();
+            }
+            return false;
+        }
+    
     }
 
-
-
-    public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException {
-        RegistrationInfo info = new RegistrationInfo(listener, snmpTrapPort);
-        
-        JoeSnmpTrapNotifier m_trapHandler = new JoeSnmpTrapNotifier(listener, processorFactory);
+    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort) throws IOException {
+    	final RegistrationInfo info = new RegistrationInfo(listener, address, snmpTrapPort);
+    	final JoeSnmpTrapNotifier m_trapHandler = new JoeSnmpTrapNotifier(listener, processorFactory);
         info.setHandler(m_trapHandler);
-        SnmpTrapSession m_trapSession = new SnmpTrapSession(m_trapHandler, snmpTrapPort);
+        SnmpTrapSession m_trapSession = new SnmpTrapSession(m_trapHandler, address, snmpTrapPort);
         info.setSession(m_trapSession);
         
         s_registrations.put(listener, info);
     }
+    
+    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final int snmpTrapPort) throws IOException {
+    	registerForTraps(listener, processorFactory, null, snmpTrapPort);
+    }
+    
+    public void unregisterForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) {
+    	RegistrationInfo info = s_registrations.remove(listener);
+    	info.getSession().close();
+    }
 
-    public void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) {
+    public void unregisterForTraps(final TrapNotificationListener listener, final int snmpTrapPort) {
         RegistrationInfo info = s_registrations.remove(listener);
         info.getSession().close();
     }
@@ -342,14 +359,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         trapSession.send(peer, trap);
     }
 
-    private synchronized static SnmpTrapSession getTrapSession() throws SocketException {
-        if (s_trapSession == null) {
-            s_trapSession = new SnmpTrapSession(null, -1);
-        }
-        return s_trapSession;
-    }
-
-    public static void send(String destAddr, int destPort, String community, SnmpPduRequest pdu) throws Exception {
+    public static void send(final String destAddr, final int destPort, final String community, final SnmpPduRequest pdu) throws Exception {
         SnmpTrapSession trapSession = getTrapSession();
         SnmpPeer peer = new SnmpPeer(InetAddress.getByName(destAddr), destPort);
         SnmpParameters parms = new SnmpParameters(community);
@@ -358,21 +368,26 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         trapSession.send(peer, pdu);
     }
 
-    public static void sendTest(String destAddr, int destPort, String community, SnmpPduRequest pdu) throws UnknownHostException {
-        InetAddress agentAddress = InetAddress.getByName(destAddr);
-        for (Iterator<RegistrationInfo> it = s_registrations.values().iterator(); it.hasNext();) {
-            RegistrationInfo info = it.next();
-            if (destPort == info.getPort()) {
+    private synchronized static SnmpTrapSession getTrapSession() throws SocketException {
+        if (s_trapSession == null) {
+            s_trapSession = new SnmpTrapSession(null, null, -1);
+        }
+        return s_trapSession;
+    }
+
+    public static void sendTest(final String destAddr, final int destPort, final String community, final SnmpPduRequest pdu) throws UnknownHostException {
+    	final InetAddress agentAddress = InetAddressUtils.getInetAddress(destAddr);
+        for (final RegistrationInfo info : s_registrations.values()) {
+            if (Arrays.equals(agentAddress.getAddress(), info.getAddress().getAddress())  && destPort == info.getPort()) {
                 info.getHandler().snmpReceivedTrap(info.getSession(), agentAddress, destPort, new SnmpOctetString(community.getBytes()), pdu);
             }
         }
     }
 
     public static void sendTest(String destAddr, int destPort, String community, SnmpPduTrap pdu) throws UnknownHostException {
-        InetAddress agentAddress = InetAddress.getByName(destAddr);
-        for (Iterator<RegistrationInfo> it = s_registrations.values().iterator(); it.hasNext();) {
-            RegistrationInfo info = it.next();
-            if (destPort == info.getPort()) {
+    	final InetAddress agentAddress = InetAddressUtils.getInetAddress(destAddr);
+        for (final RegistrationInfo info : s_registrations.values()) {
+            if (Arrays.equals(agentAddress.getAddress(), info.getAddress().getAddress()) && destPort == info.getPort()) {
                 info.getHandler().snmpReceivedTrap(info.getSession(), agentAddress, destPort, new SnmpOctetString(community.getBytes()), pdu);
             }
         }

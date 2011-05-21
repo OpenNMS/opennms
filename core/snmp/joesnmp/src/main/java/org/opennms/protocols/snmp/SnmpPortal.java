@@ -46,6 +46,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -160,8 +161,8 @@ public class SnmpPortal extends Object {
      *                Thrown if any of the parameters are null or invalid.
      * 
      */
-    SnmpPortal(SnmpPacketHandler handler, AsnEncoder encoder, int port) throws SocketException {
-        if (handler == null || encoder == null)
+    SnmpPortal(final SnmpPacketHandler handler, final AsnEncoder encoder, final int port) throws SocketException {
+    	if (handler == null || encoder == null)
             throw new IllegalArgumentException("Invalid argument");
 
         m_handler = handler;
@@ -172,7 +173,30 @@ public class SnmpPortal extends Object {
             m_comm = new DatagramSocket();
         }
 
-        //
+        initializePortal(encoder);
+    }
+
+    SnmpPortal(final SnmpPacketHandler handler, final AsnEncoder encoder, final InetAddress address, final int port) throws SocketException {
+    	if (handler == null || encoder == null)
+            throw new IllegalArgumentException("Invalid argument");
+
+        m_handler = handler;
+
+        if (address == null) {
+	        if (port >= 0) {
+	            m_comm = new DatagramSocket(port);
+	        } else {
+	            m_comm = new DatagramSocket();
+	        }
+        } else {
+        	m_comm = new DatagramSocket(port, address);
+        }
+
+        initializePortal(encoder);
+    }
+    
+	public void initializePortal(final AsnEncoder encoder) throws SocketException {
+		//
         // Determine whether or not it is necessary to use the
         // socket.setSoTimeout()
         // method to set the socket timeout value thereby mimic'ing non-blocking
@@ -219,10 +243,9 @@ public class SnmpPortal extends Object {
         m_encoder = encoder;
 
         m_recvThread.start();
+	}
 
-    }
-
-    /**
+	/**
      * Defines the inner class that monitors the datagram socket and receives
      * all the PDU responses. If an exception is generated then it is saved in
      * m_why and can be re-generated with a call to raise().

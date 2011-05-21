@@ -63,6 +63,7 @@
 package org.opennms.protocols.snmp;
 
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.LinkedList;
@@ -681,7 +682,7 @@ public class SnmpSession extends Object {
         m_stopRun = false;
 
         m_encoder = peer.getParameters().getEncoder();
-        m_portal = new SnmpPortal(new SessionHandler(), m_encoder, peer.getServerPort());
+        m_portal = new SnmpPortal(new SessionHandler(), m_encoder,  peer.getServerPort());
 
         m_threadException = false;
         m_why = null;
