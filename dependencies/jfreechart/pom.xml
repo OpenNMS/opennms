@@ -6,7 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
-  <artifactId>jfreechard-dependencies</artifactId>
+  <artifactId>jfreechart-dependencies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS JFreeChart Dependencies</name>
   <dependencies>
