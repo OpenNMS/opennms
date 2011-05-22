@@ -378,7 +378,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     public static void sendTest(final String destAddr, final int destPort, final String community, final SnmpPduRequest pdu) throws UnknownHostException {
     	final InetAddress agentAddress = InetAddressUtils.getInetAddress(destAddr);
         for (final RegistrationInfo info : s_registrations.values()) {
-            if (Arrays.equals(agentAddress.getAddress(), info.getAddress().getAddress())  && destPort == info.getPort()) {
+            if (destPort == info.getPort()) {
                 info.getHandler().snmpReceivedTrap(info.getSession(), agentAddress, destPort, new SnmpOctetString(community.getBytes()), pdu);
             }
         }
@@ -387,7 +387,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     public static void sendTest(String destAddr, int destPort, String community, SnmpPduTrap pdu) throws UnknownHostException {
     	final InetAddress agentAddress = InetAddressUtils.getInetAddress(destAddr);
         for (final RegistrationInfo info : s_registrations.values()) {
-            if (Arrays.equals(agentAddress.getAddress(), info.getAddress().getAddress()) && destPort == info.getPort()) {
+            if (destPort == info.getPort()) {
                 info.getHandler().snmpReceivedTrap(info.getSession(), agentAddress, destPort, new SnmpOctetString(community.getBytes()), pdu);
             }
         }
