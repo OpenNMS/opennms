@@ -53,7 +53,7 @@
       <releases><enabled>true</enabled></releases>
       <id>maven-repo</id>
       <name>Maven Central</name>
-      <url>http://repo1.maven.org/maven2</url>
+      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>
