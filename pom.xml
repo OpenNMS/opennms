@@ -1088,6 +1088,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jfreechart-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jinterop-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -1929,16 +1935,6 @@
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-jsp-2.1</artifactId>
         <version>${jettyVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>jfree</groupId>
-        <artifactId>jfreechart</artifactId>
-        <version>1.0.13</version>
-      </dependency>
-      <dependency>
-        <groupId>jfree</groupId>
-        <artifactId>jcommon</artifactId>
-        <version>1.0.0</version>
       </dependency>
       <dependency>
         <groupId>jivesoftware</groupId>
