@@ -54,7 +54,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.ws.WebServiceException;
 
+import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.ValidationError;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -441,7 +444,13 @@ public class RequisitionRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Transactional
-    public Response addOrReplaceRequisition(Requisition requisition) {
+    public Response addOrReplaceRequisition(final Requisition requisition) {
+    	try {
+			requisition.validate();
+		} catch (final ValidationError e) {
+			LogUtils.debugf(this, e, "error validating incoming requisition with foreign source '%s'", requisition.getForeignSource());
+			throw new WebServiceException(e.getMessage(), e);
+		}
         debug("addOrReplaceRequisition: Adding requisition %s", requisition.getForeignSource());
         m_pendingForeignSourceRepository.save(requisition);
         return Response.ok(requisition).build();

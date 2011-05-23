@@ -41,6 +41,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.ManualProvisioningService;
@@ -79,7 +81,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
         public Requisition getFormData() {
             return m_formData;
         }
-        public void setFormData(Requisition importData) {
+        public void setFormData(final Requisition importData) {
             m_formData = importData;
         }
         public String getFormPath() {
@@ -101,6 +103,17 @@ public class EditProvisioningGroupController extends SimpleFormController {
         public void setDataPath(String path) {
             //added nodeEditForm. to the formData. because somehow we are getting that attached a prefix as well.
             m_formPath = "nodeEditForm.formData."+path;
+        }
+        
+        public String toString() {
+        	return new ToStringBuilder(this)
+        		.append("action", getAction())
+        		.append("currentNode", getCurrentNode())
+        		.append("dataPath", getDataPath())
+        		.append("formData", getFormData())
+        		.append("formPath", getFormPath())
+        		.append("groupName", getGroupName())
+        		.toString();
         }
     }
 
@@ -218,10 +231,15 @@ public class EditProvisioningGroupController extends SimpleFormController {
     }
 
     private ModelAndView doSave(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-
-        Requisition formData = m_provisioningService.saveProvisioningGroup(treeCmd.getGroupName(), treeCmd.getFormData());
-        treeCmd.setFormData(formData);
-        treeCmd.setCurrentNode("");
+    	try {
+    		LogUtils.debugf(this, "treeCmd = %s", treeCmd);
+        	treeCmd.getFormData().validate();
+        	final Requisition formData = m_provisioningService.saveProvisioningGroup(treeCmd.getGroupName(), treeCmd.getFormData());
+            treeCmd.setFormData(formData);
+            treeCmd.setCurrentNode("");
+    	} catch (final Throwable t) {
+    		errors.reject(t.getMessage());
+    	}
         return showForm(request, response, errors);
     }
 

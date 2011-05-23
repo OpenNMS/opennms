@@ -3,6 +3,8 @@ package org.opennms.web.rest;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import javax.xml.ws.WebServiceException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
@@ -40,6 +42,22 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
 
         sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 204);
+    }
+
+    @Test
+    public void testDuplicateNodes() throws Exception {
+        String req =
+            "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +
+                "<node node-label=\"a\" foreign-id=\"a\" />" +
+                "<node node-label=\"b\" foreign-id=\"c\" />" +
+                "<node node-label=\"c\" foreign-id=\"c\" />" +
+            "</model-import>";
+
+        try {
+        	sendPost("/requisitions", req);
+        } catch (final WebServiceException e) {
+        	assertTrue("exception should say 'c' has duplicates", e.getMessage().contains("Duplicate nodes found on foreign source test: c (2 found)"));
+        }
     }
 
     @Test
