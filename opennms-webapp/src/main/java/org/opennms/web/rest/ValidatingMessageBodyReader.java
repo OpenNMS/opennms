@@ -27,14 +27,12 @@ public class ValidatingMessageBodyReader<T> implements MessageBodyReader<T> {
 	@Context
 	protected Providers providers;
 
-	@Override
 	public boolean isReadable(final Class<?> clazz, final Type type, final Annotation[] annotations, final MediaType mediaType) {
 		
 		LogUtils.debugf(this, "isReadable");
 		return true;
 	}
 
-	@Override
 	public T readFrom(final Class<T> clazz, final Type type, final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> parameters, final InputStream stream) throws IOException, WebApplicationException {
 		LogUtils.debugf(this, "readFrom: %s/%s/%s", clazz.getSimpleName(), type, mediaType);
 
