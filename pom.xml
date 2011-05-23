@@ -779,17 +779,29 @@
       </properties>
     </profile>
 
+    <profile>
+      <id>usr-bin-rrdtool</id>
+      <activation>
+        <file>
+          <exists>/usr/bin/rrdtool</exists>
+        </file>
+      </activation>
+
+      <properties>
+        <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
+      </properties>
+    </profile>
 
     <profile>
       <id>usr-local-bin-rrdtool</id>
       <activation>
         <file>
-          <exists>/usr/local/rrdtool/bin/rrdtool</exists>
+          <exists>/usr/local/bin/rrdtool</exists>
         </file>
       </activation>
 
       <properties>
-        <install.rrdtool.bin>/usr/local/rrdtool/bin/rrdtool</install.rrdtool.bin>
+        <install.rrdtool.bin>/usr/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
 
@@ -816,7 +828,7 @@
       <id>solaris-blastwave-rrdtool</id>
       <activation>
       <file>
-        <exists>/var/sadm/pkg/CSWrrd/pkginfo</exists>
+        <exists>/opt/csw/bin/rrdtool</exists>
       </file>
       </activation>
 
