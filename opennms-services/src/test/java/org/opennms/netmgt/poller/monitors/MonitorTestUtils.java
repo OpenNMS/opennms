@@ -14,7 +14,7 @@ public abstract class MonitorTestUtils {
     }
 
     public static MonitoredService getMonitoredService(int nodeId, String hostname, String svcName, boolean preferInet6Address) throws UnknownHostException {
-        InetAddress myAddress = InetAddressUtils.getInetAddress(hostname, preferInet6Address);
+        InetAddress myAddress = InetAddressUtils.resolveHostname(hostname, preferInet6Address);
         return new MockMonitoredService(nodeId, hostname, myAddress, svcName);
     }
 

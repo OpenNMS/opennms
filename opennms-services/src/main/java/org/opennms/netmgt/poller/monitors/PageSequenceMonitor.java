@@ -45,8 +45,11 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
@@ -71,6 +74,7 @@ import javax.net.ssl.SSLSessionContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -98,6 +102,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
@@ -148,9 +153,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         public double elapsedTimeInMillis() {
             return m_tracker.elapsedTimeInMillis();
         }
-
-        
-        
     }
     
     private static final int DEFAULT_SEQUENCE_RETRY = 0;
@@ -447,15 +449,19 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
         @Override
         public String toString() {
-            StringBuffer retval = new StringBuffer();
-            retval.append("HttpPage { ");
-            retval.append("page.host => ").append(m_page.getHost()).append(", ");
-            retval.append("page.port => ").append(m_page.getPort()).append(", ");
-            retval.append("page.path => ").append(m_page.getPath()).append(", ");
-            retval.append("page.successMatch => '").append(m_page.getSuccessMatch()).append("', ");
-            retval.append("page.failureMatch => '").append(m_page.getFailureMatch()).append("', ");
-            retval.append("page.locationMatch => '").append(m_page.getLocationMatch()).append("'");
-            retval.append(" }");
+            ToStringBuilder retval = new ToStringBuilder(this);
+            retval.append("page.httpVersion", m_page.getHttpVersion());
+            retval.append("page.host", m_page.getHost());
+            retval.append("page.requireIPv4", m_page.getRequireIPv4());
+            retval.append("page.requireIPv6", m_page.getRequireIPv6());
+            retval.append("page.port", m_page.getPort());
+            retval.append("page.method", m_page.getMethod());
+            retval.append("page.virtualHost", m_page.getVirtualHost());
+            retval.append("page.path", m_page.getPath());
+            retval.append("page.query", m_page.getQuery());
+            retval.append("page.successMatch", m_page.getSuccessMatch());
+            retval.append("page.failureMatch", m_page.getFailureMatch());
+            retval.append("page.locationMatch", m_page.getLocationMatch());
             return retval.toString();
         }
 
@@ -610,7 +616,26 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         private URI getURI(MonitoredService svc) throws URISyntaxException {
             Properties svcProps = getServiceProperties(svc);
             Properties seqProps = getSequenceProperties();
-            return URIUtils.createURI(getScheme(), getHost(seqProps, svcProps), getPort(), getPath(seqProps, svcProps), getQuery(seqProps, svcProps), getFragment(seqProps, svcProps));
+            String host = getHost(seqProps, svcProps);
+            if (m_page.getRequireIPv4()) {
+                try {
+                    InetAddress address = InetAddressUtils.resolveHostname(host, false);
+                    if (!(address instanceof Inet4Address)) throw new UnknownHostException();
+                    host = InetAddressUtils.str(address);
+                } catch (UnknownHostException e) {
+                    throw new PageSequenceMonitorException("failed to find IPv4 address for hostname: " + host);
+                }
+            } else if (m_page.getRequireIPv6()) {
+                try {
+                    InetAddress address = InetAddressUtils.resolveHostname(host, true);
+                    host = InetAddressUtils.str(address);
+                } catch (UnknownHostException e) {
+                    throw new PageSequenceMonitorException("failed to find IPv6 address for hostname: " + host);
+                }
+            } else {
+                // Just leave the hostname as-is, let httpclient resolve it using the platform preferences
+            }
+            return URIUtils.createURI(getScheme(), host, getPort(), getPath(seqProps, svcProps), getQuery(seqProps, svcProps), getFragment(seqProps, svcProps));
         }
 
         private String getFragment(Properties... p) {
