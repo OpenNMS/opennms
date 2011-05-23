@@ -8,8 +8,8 @@
     <fileSet>
       <directory>target/xsds</directory>
       <outputDirectory>xsds</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
-    <fileMode>0644</fileMode>
-    <directoryMode>0755</directoryMode>
   </fileSets>
 </assembly>
