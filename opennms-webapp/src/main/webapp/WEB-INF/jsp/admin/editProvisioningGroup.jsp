@@ -23,9 +23,12 @@
  <tree:actionButton label="Done" action="done" />
  <tree:actionButton label="Add Node" action="addNode"/> 
 
- <tree:tree root="${nodeEditForm.formData}" childProperty="node" var="node" varStatus="nodeIter">
+  <!-- FIXME: I have no idea how to get the errors from BindException.reject() to bubble up to here -->
+
+  <tree:tree root="${nodeEditForm.formData}" childProperty="node" var="node" varStatus="nodeIter">
     <!-- Form for editing node fields -->
     <tree:nodeForm>
+
       <tree:field label="Node" property="nodeLabel" />
       <tree:field label="ForeignId" property="foreignId" />
       <tree:field label="Site" property="building" />
