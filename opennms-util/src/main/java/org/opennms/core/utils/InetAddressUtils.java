@@ -172,6 +172,13 @@ abstract public class InetAddressUtils {
     public static InetAddress resolveHostname(final String hostname, final boolean preferInet6Address, final boolean throwException) throws UnknownHostException {
         InetAddress retval = null;
         //System.out.println(String.format("%s (%s)", hostname, preferInet6Address ? "6" : "4"));
+
+        // Do a special case for localhost since the DNS server will generally not
+        // return valid A and AAAA records for "localhost".
+        if ("localhost".equals(hostname)) {
+            return preferInet6Address ? InetAddress.getByName("::1") : InetAddress.getByName("127.0.0.1");
+        }
+
         try {
             // 2011-05-22 - Matt is seeing some platform-specific inconsistencies when using
             // InetAddress.getAllByName(). It seems to miss some addresses occasionally on Mac.

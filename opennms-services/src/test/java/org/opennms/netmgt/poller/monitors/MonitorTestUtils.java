@@ -9,6 +9,10 @@ import org.opennms.netmgt.poller.MonitoredService;
 
 public abstract class MonitorTestUtils {
 
+    public static MonitoredService getMonitoredService(int nodeId, InetAddress addr, String svcName) throws UnknownHostException {
+        return new MockMonitoredService(nodeId, InetAddressUtils.str(addr), addr, svcName);
+    }
+
     public static MonitoredService getMonitoredService(int nodeId, String hostname, String svcName) throws UnknownHostException {
         return getMonitoredService(nodeId, hostname, svcName, false);
     }
