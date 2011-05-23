@@ -8,6 +8,8 @@
     <fileSet>
       <directory>src/test/opennms-home/etc</directory>
       <outputDirectory>etc</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
 <!--
@@ -21,6 +23,8 @@
   <dependencySets>
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
   </dependencySets>
 </assembly>
