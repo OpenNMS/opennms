@@ -1,0 +1,35 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.navBlock{
+	       margin: 0px 0px 20px 0px;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+        <div class="{style.navBlock}">
+            <p>Select Location Type</p>
+	        <div>
+		       <g:RadioButton ui:field="m_allLocations" name="locations">All Locations</g:RadioButton>
+	        </div>
+	        <div>
+		       <g:RadioButton ui:field="m_singleLocation" name="locations">Single Location</g:RadioButton>
+	        </div>
+	        <div>
+	            <g:ListBox ui:field="m_locationList" visible="false"></g:ListBox>
+	        </div>
+        </div>
+        <div class="{style.navBlock}">
+            <p>Host Selection</p>
+	        <div>
+	            <g:RadioButton ui:field="m_allHosts" name="hosts">All Hosts</g:RadioButton>
+	        </div>
+	        <div>
+	            <g:RadioButton ui:field="m_singleHost" name="hosts">Single Host</g:RadioButton>
+	        </div>
+	        <div>
+	            <g:ListBox ui:field="m_hostList" visible="false"></g:ListBox>
+	        </div>
+        </div>
+	</g:HTMLPanel>
+</ui:UiBinder> 
