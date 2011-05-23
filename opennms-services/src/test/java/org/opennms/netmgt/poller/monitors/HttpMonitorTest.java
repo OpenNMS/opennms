@@ -54,6 +54,7 @@ import org.opennms.core.test.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -401,7 +402,7 @@ public class HttpMonitorTest {
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpsMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(1, "localhost", "HTTP", preferIPv6);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(1, "localhost", "HTTPS", preferIPv6);
 
         p.setKey("port");
         p.setValue("10342");
@@ -494,6 +495,61 @@ public class HttpMonitorTest {
 
         p.setKey("response-text");
         p.setValue("~.*Don.t you love twinkies..*");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("verbose");
+        p.setValue("true");
+        m.put(p.getKey(), p.getValue());
+
+        status = monitor.poll(svc, m);
+        MockUtil.println("Reason: "+status.getReason());
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+        assertNull(status.getReason());
+
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342)
+    public void testWithInvalidNodelabelHostName() throws UnknownHostException {
+        callTestWithInvalidNodelabelHostName(false);
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342)
+    public void testWithInvalidNodelabelHostNameIPv6() throws UnknownHostException {
+        callTestWithInvalidNodelabelHostName(true);
+    }
+
+    public void callTestWithInvalidNodelabelHostName(boolean preferIPv6) throws UnknownHostException {
+        if (m_runTests == false) return;
+
+        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Parameter p = new Parameter();
+        PollStatus status = null;
+
+        ServiceMonitor monitor = new HttpMonitor();
+        MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
+        svc.setNodeLabel("bad.virtual.host.example.com");
+
+        p.setKey("nodelabel-host-name");
+        p.setValue("true");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("port");
+        p.setValue("10342");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("retry");
+        p.setValue("0");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("timeout");
+        p.setValue("500");
+        m.put(p.getKey(), p.getValue());
+
+        // Ensure that we get a 404 for this GET since we're using an inappropriate virtual host
+        p.setKey("response");
+        p.setValue("404");
         m.put(p.getKey(), p.getValue());
 
         p.setKey("verbose");

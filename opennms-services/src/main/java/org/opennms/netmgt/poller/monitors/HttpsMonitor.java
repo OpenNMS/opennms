@@ -80,11 +80,13 @@ final public class HttpsMonitor extends HttpMonitor {
     private static final int[] DEFAULT_PORTS = { 443 };
 
     /** {@inheritDoc} */
+    @Override
     protected int[] determinePorts(Map<String, Object> parameters) {
         return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected Socket wrapSocket(Socket socket) throws IOException {
         SSLSocketFactory sslSF = null;
         TrustManager[] tm = { new RelaxedX509TrustManager() };
