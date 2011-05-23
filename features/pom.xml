@@ -10,6 +10,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS Features</name>
   <modules>
+    <module>invd</module>
     <module>acl</module>
     <module>jdbc-collector</module>
     <module>instrumentationLogReader</module>

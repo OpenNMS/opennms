@@ -92,7 +92,7 @@ public class OnmsServerMap extends OnmsEntity implements Serializable {
     @Id
     @Column(name="id")
     @SequenceGenerator(name="serverMapSequence", sequenceName="svrMapNxtId")
-    @GeneratedValue(generator="outageSequence")
+    @GeneratedValue(generator="serverMapSequence")
     public Integer getId() {
         return m_id;
     }

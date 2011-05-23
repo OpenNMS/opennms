@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<?castor class-name="org.opennms.netmgt.invd.InvdConfiguration"?>
+<invd-configuration
+	threads="50">
+
+	<package name="example1">
+		<filter>IPADDR IPLIKE *.*.*.*</filter>
+		<specific>0.0.0.0</specific>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+
+		<service name="WMI" interval="300000" user-defined="false" status="on">
+			<parameter key="collection" value="default"/>
+		</service>
+
+		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+	</package>
+
+    <package name="example2">
+		<filter>IPADDR IPLIKE 1.1.1.1</filter>
+		<specific>0.0.0.0</specific>
+		<include-range begin="1.1.1.1" end="1.1.1.1"/>
+<!--		<include-url>file:@install.etc.dir@/include2</include-url> -->
+
+		<service name="WMI" interval="300000" user-defined="false" status="on">
+			<parameter key="collection" value="default"/>
+		</service>
+        
+        <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+	</package>
+
+    <scanner service="WMI" 	class-name="org.opennms.netmgt.invd.scanners.wmi.WmiScanner"/>
+
+</invd-configuration>
+

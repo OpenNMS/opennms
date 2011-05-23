@@ -8,4 +8,5 @@ target
 .settings
 .springBeans
 .DS_Store
+.metadata
 build.properties

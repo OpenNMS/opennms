@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<surveillance-view-configuration 
+  xmlns:this="http://www.opennms.org/xsd/config/surveillance-views" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.opennms.org/xsd/config/surveillance-views http://www.opennms.org/xsd/config/surveillance-views.xsd ">
+  <views>
+  </views>
+</surveillance-view-configuration>

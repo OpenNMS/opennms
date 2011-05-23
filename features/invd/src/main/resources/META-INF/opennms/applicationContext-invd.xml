@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+    <tx:annotation-driven/>
+
+    <!-- Inventory Configuration DAO -->
+    <bean name="inventoryConfigDao" class="org.opennms.netmgt.dao.castor.InvdConfigDaoCastorImpl"/>
+
+    <!-- The inventory daemon event listener. -->
+    <bean name="invdEventListener" class="org.opennms.netmgt.invd.InvdEventListener">
+        <property name="transactionTemplate" ref="transactionTemplate"/>
+        <!-- <property name="invd" ref="daemon" /> -->
+        <property name="inventoryConfigDao" ref="invdConfigDao"/>
+        <property name="inventoryScheduler" ref="inventoryScheduler" />
+        <property name="scanableServices" ref="scanableServices" />
+    </bean>
+	
+    <bean name="scanableServices" class="org.opennms.netmgt.invd.ScanableServices">
+        
+    </bean>
+
+    <bean name="scannerCollection" class="org.opennms.netmgt.invd.ScannerCollection">
+        <property name="invdConfigDao" ref="invdConfigDao"/>
+    </bean>
+
+    <bean name="inventoryScheduler" class="org.opennms.netmgt.invd.InventoryScheduler">
+        <property name="invdConfigDao" ref="invdConfigDao"/>
+        <property name="transactionTemplate" ref="transactionTemplate"/>
+        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+        <property name="scannerCollection" ref="scannerCollection"/>
+        <property name="scanableServices" ref="scanableServices" />
+    </bean>
+
+    <bean id="daemon" class="org.opennms.netmgt.invd.Invd">
+        <property name="invdConfigDao" ref="invdConfigDao"/>
+        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+        <property name="scannerCollection" ref="scannerCollection"/>
+        <property name="inventoryScheduler" ref="inventoryScheduler" />
+        <property name="scanableServices" ref="scanableServices" />
+    </bean>
+
+</beans>

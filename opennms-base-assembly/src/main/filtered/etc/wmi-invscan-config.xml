@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<wmi-invscan-config xmlns="http://xmlns.opennms.org/xsd/config/wmi-invscan-config">
+    <wmi-inventory name="default">
+        <!-- Identify a category to sort things by -->
+        <wmi-category name="Network Adapters">
+            <wmi-asset name="Network Adapter" wmiClass="Win32_NetworkAdapter" nameProperty="Name" recheckInterval="3600000">
+                <wmi-asset-property name="Device ID" wmi-property="DeviceID"/>
+                <wmi-asset-property name="Connection Name" wmi-property="NetConnectionID"/>
+                <wmi-asset-property name="Status" wmi-property="NetConnectionStatus"/>
+                <wmi-asset-property name="Manufacturer" wmi-property="Manufacturer"/>
+                <wmi-asset-property name="Type" wmi-property="AdapterType"/>
+                <wmi-asset-property name="MAC Address" wmi-property="MACAddress"/>
+            </wmi-asset>
+
+            <wmi-asset name="Network Adapter Config" wmiClass="Win32_NetworkAdapterConfiguration" nameProperty="Description" recheckInterval="3600000">
+                <wmi-asset-property name="Device ID" wmi-property="Index"/>
+                <wmi-asset-property name="Description" wmi-property="Description"/>
+                <wmi-asset-property name="DHCP Enabled?" wmi-property="DHCPEnabled"/>               
+            </wmi-asset>
+        </wmi-category>
+    </wmi-inventory>
+</wmi-invscan-config>                         

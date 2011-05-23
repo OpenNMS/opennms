@@ -33,6 +33,13 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -42,6 +49,8 @@ import org.springframework.core.style.ToStringCreator;
  * @author ranger
  * @version $Id: $
  */
+@Entity
+@Table(name="vulnPlugins")
 public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
 
     /**
@@ -126,6 +135,10 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      * @hibernate.generator-param name="sequence" value="vlnPlgnNxtId"
      * @return a {@link java.lang.Integer} object.
      */
+    @Id
+    @SequenceGenerator(name="vulnPluginSequence", sequenceName="vlnPlgnNxtId")
+    @GeneratedValue(generator="vulnPluginSequence")
+    @Column(name="id")
     public Integer getId() {
         return m_id;
     }
@@ -146,6 +159,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Column(name="pluginId",nullable=false)
     public Integer getPluginId() {
         return m_pluginId;
     }
@@ -164,6 +178,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Column(name="pluginSubID",nullable=false)
     public Integer getPluginSubId() {
         return m_pluginSubId;
     }
@@ -182,6 +197,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="name")
     public String getName() {
         return m_name;
     }
@@ -200,6 +216,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="category")
     public String getCategory() {
         return m_category;
     }
@@ -218,6 +235,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="copyright")
     public String getCopyright() {
         return m_copyright;
     }
@@ -236,6 +254,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="descr",length=1024)
     public String getDescr() {
         return m_descr;
     }
@@ -254,6 +273,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="summary")
     public String getSummary() {
         return m_summary;
     }
@@ -272,6 +292,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="family")
     public String getFamily() {
         return m_family;
     }
@@ -290,6 +311,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="version")
     public String getVersion() {
         return m_version;
     }
@@ -308,6 +330,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="cvsEntry")
     public String getCveEntry() {
         return m_cveEntry;
     }
@@ -326,6 +349,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="md5")
     public String getMd5() {
         return m_md5;
     }

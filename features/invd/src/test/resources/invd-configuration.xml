@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<invd-configuration	threads="50" xmlns="http://xmlns.opennms.org/xsd/config/invd-configuration">
+
+	<package name="example1">
+		<filter>IPADDR IPLIKE *.*.*.*</filter>
+		<specific>0.0.0.0</specific>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+
+		<service name="WMI" interval="300000" user-defined="false" status="on">
+			<parameter key="collection" value="default"/>
+		</service>
+
+		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+	</package>
+
+    <scanner service="WMI" 	class-name="org.opennms.netmgt.invd.scanners.wmi.WmiScanner"/>
+
+</invd-configuration>
+

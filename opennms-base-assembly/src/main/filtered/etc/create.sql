@@ -74,6 +74,9 @@ drop table groups cascade;
 drop table group_user cascade;
 drop table category_user cascade;
 drop table category_group cascade;
+drop table inventorycategory cascade;
+drop table inventoryasset cascade;
+drop table inventoryassetproperty cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -2343,3 +2346,48 @@ insert into qrtz_locks values('STATE_ACCESS');
 insert into qrtz_locks values('MISFIRE_ACCESS');
 
 --# End Quartz persistence tables
+
+--# Begin Inventory persistence table structures
+
+--########################################################################
+--#
+--# inventorycategory table -- This table contains inventory categories
+--#
+--#  id                 : Unique ID
+--#  categoryname       : The name of an available inventory category.
+--########################################################################
+
+CREATE TABLE inventorycategory (
+    id       integer default nextval('opennmsnxtid') not null,
+    categoryname  varchar(64) not null,
+
+    constraint pk_inventorycategory_id primary key (id)
+);
+
+CREATE TABLE inventoryasset (
+    id          integer default nextval('opennmsnxtid') not null,
+    category    integer not null,
+    assetName   varchar(64),
+    assetSource varchar(64),
+    ownerNode   integer not null,
+    dateAdded   timestamp with time zone not null,
+    dateUpdated timestamp with time zone not null,
+    eff_status  boolean default TRUE not null,
+
+
+    constraint pk_inventoryasset_id primary key (id)
+);
+
+CREATE TABLE inventoryassetproperty (
+    id              integer default nextval('opennmsnxtid') not null,
+    inventoryAsset  integer,
+    assetKey        varchar(64) not null,
+    assetValue      varchar(64) not null,
+    dateAdded       timestamp with time zone not null,
+    dateUpdated     timestamp with time zone not null,
+    eff_status      boolean default TRUE not null,
+
+    constraint pk_inventoryassetproperty_id primary key (id)
+);
+
+--# End Inventory persistence table structures

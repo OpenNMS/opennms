@@ -69,7 +69,7 @@
     </property>
     <!--  property name="schemaUpdate" value="true">
       </property -->
-    <property name="annotatedPackages">
+    <property name="packagesToScan">
       <list>
         <value>org.opennms.netmgt.model</value>
       </list>
