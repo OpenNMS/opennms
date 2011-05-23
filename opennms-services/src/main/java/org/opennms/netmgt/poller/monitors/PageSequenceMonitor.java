@@ -628,7 +628,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             } else if (m_page.getRequireIPv6()) {
                 try {
                     InetAddress address = InetAddressUtils.resolveHostname(host, true);
-                    host = InetAddressUtils.str(address);
+                    host = "[" + InetAddressUtils.str(address) + "]";
                 } catch (UnknownHostException e) {
                     throw new PageSequenceMonitorException("failed to find IPv6 address for hostname: " + host);
                 }
