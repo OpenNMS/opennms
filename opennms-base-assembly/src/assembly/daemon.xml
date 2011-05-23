@@ -11,6 +11,8 @@
         <include>LICENSE*</include>
         <include>NOTICE*</include>
       </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/classes/bin</directory>
@@ -21,34 +23,66 @@
     <fileSet>
       <directory>target/classes/etc</directory>
       <outputDirectory>etc</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/jasper</directory>
       <outputDirectory>etc/report-templates</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/classes/contrib</directory>
+      <includes>
+        <include>**/*.pl</include>
+        <include>**/*.py</include>
+        <include>**/*.sh</include>
+      </includes>
       <outputDirectory>contrib</outputDirectory>
+      <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    <fileSet>
+      <directory>target/classes/contrib</directory>
+      <excludes>
+        <exclude>**/*.pl</exclude>
+        <exclude>**/*.py</exclude>
+        <exclude>**/*.sh</exclude>
+      </excludes>
+      <outputDirectory>contrib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/classes/logs</directory>
       <outputDirectory>logs</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/classes/share</directory>
       <outputDirectory>share</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/remote-poller/etc</directory>
       <outputDirectory>contrib/remote-poller</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/remote-poller/bin</directory>
       <outputDirectory>bin</outputDirectory>
+      <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/remote-poller/lib</directory>
       <outputDirectory>bin</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
   <dependencySets>
@@ -59,6 +93,8 @@
       <includes>
         <include>org.opennms:opennms-bootstrap:jar:${project.version}</include>
       </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
@@ -67,6 +103,8 @@
       <includes>
         <include>org.opennms:opennms-install:jar:${project.version}</include>
       </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
@@ -75,6 +113,8 @@
       <includes>
         <include>org.opennms.features:org.opennms.features.system-report:jar:${project.version}</include>
       </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
@@ -82,6 +122,8 @@
       <includes>
         <include>javax.xml.bind:com.springsource.javax.xml.bind</include>
       </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
@@ -92,6 +134,8 @@
         <exclude>org.opennms:opennms-install</exclude>
         <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
       </excludes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
   </dependencySets>
 </assembly>

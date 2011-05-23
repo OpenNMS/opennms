@@ -9,5 +9,7 @@
       <directory>target/jnlp</directory>
       <outputDirectory>/</outputDirectory>
     </fileSet>
+    <fileMode>0644</fileMode>
+    <directoryMode>0755</directoryMode>
   </fileSets>
 </assembly>

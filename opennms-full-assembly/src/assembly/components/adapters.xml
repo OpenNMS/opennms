@@ -14,6 +14,8 @@
         <include>org.opennms:opennms-snmp-asset-provisioning-adapter:jar:${project.version}</include>
         <include>org.opennms:opennms-rancid-provisioning-adapter:jar:${project.version}</include>
       </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
     <!-- configuration files -->
     <dependencySet>
@@ -25,6 +27,8 @@
         <include>org.opennms:opennms-link-provisioning-adapter:tar.gz:etc:${project.version}</include>
         <include>org.opennms:opennms-map-provisioning-adapter:tar.gz:etc:${project.version}</include>
       </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
   </dependencySets>
 </component>

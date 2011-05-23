@@ -8,10 +8,14 @@
     <fileSet>
       <directory>target/docbkx/html</directory>
       <outputDirectory>docs</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/docbkx/pdf</directory>
       <outputDirectory>docs</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
 </assembly>

@@ -12,6 +12,8 @@
       <outputDirectory>etc</outputDirectory>
       <includes><include>*.xml</include></includes>
       <excludes><exclude>beanRefContext.xml</exclude></excludes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
 </assembly>
