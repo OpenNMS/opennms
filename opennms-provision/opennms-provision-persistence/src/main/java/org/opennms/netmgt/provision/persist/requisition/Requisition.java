@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -33,7 +34,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 
@@ -391,7 +392,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      * Make sure that no data in the requisition is inconsistent.  Nodes should be unique,
      * interfaces should be unique per node, etc.
      */
-    public void validate() throws ValidationError {
+    public void validate() throws ValidationException {
     	final Map<String,Integer> foreignSourceCounts = new HashMap<String,Integer>();
     	final Set<String> errors = new HashSet<String>();
 
@@ -419,7 +420,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     				sb.append(", ");
     			}
     		}
-    		throw new ValidationError(sb.toString());
+    		throw new ValidationException(sb.toString());
     	}
     }
 }
