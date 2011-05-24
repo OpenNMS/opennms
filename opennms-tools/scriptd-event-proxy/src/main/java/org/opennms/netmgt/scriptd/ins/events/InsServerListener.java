@@ -108,9 +108,9 @@ public class InsServerListener extends InsServerAbstractListener {
 						} catch (final Throwable e) {
 							LogUtils.errorf(this, e, "Error while sending current event to client");
 						}
-					}	
+					}
 				}
-				
+
 			}
 		}
 	}
