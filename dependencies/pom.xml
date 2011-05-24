@@ -9,25 +9,21 @@
   <packaging>pom</packaging>
   <name>OpenNMS Complex Dependencies</name>
   <modules>
-    <module>opennms-castor</module>
-    <module>opennms-jaxb</module>
-    <module>opennms-drools</module>
-    <module>opennms-hibernate</module>
-    <module>opennms-spring</module>
-    <module>opennms-spring-web</module>
-    <module>opennms-spring-security</module>
-    <module>opennms-jasper</module>
-    <module>opennms-jersey</module>
-    <module>opennms-mina</module>
-    <module>opennms-spring-test</module>
     <module>asterisk</module>
+    <module>castor</module>
     <module>dbpool</module>
     <module>dnsjava</module>
+    <module>drools</module>
     <module>gwt</module>
+    <module>hibernate</module>
+    <module>jasper</module>
     <module>javamail</module>
+    <module>jaxb</module>
     <module>jcifs</module>
     <module>jdbc-pool</module>
     <module>jdhcp</module>
+    <module>jersey</module>
+    <module>jfreechart</module>
     <module>jinterop</module>
     <module>jmdns</module>
     <module>jna</module>
@@ -36,6 +32,7 @@
     <module>jrobin</module>
     <module>jrrd</module>
     <module>liquibase</module>
+    <module>mina</module>
     <module>quartz</module>
     <module>rancid</module>
     <!-- <module>rrd4j</module> -->
@@ -45,6 +42,10 @@
     <module>snmp</module>
     <module>snmp-agent</module>
     <module>snmp-test</module>
+    <module>spring</module>
+    <module>spring-security</module>
+    <module>spring-test</module>
+    <module>spring-web</module>
     <module>tracker</module>
     <module>twitter4j</module>
   </modules>
