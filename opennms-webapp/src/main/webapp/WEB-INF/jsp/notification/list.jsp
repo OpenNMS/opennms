@@ -254,8 +254,8 @@
           <td class="bright divider" rowspan="2"><%=eventSeverity%></td>
           <td class="divider"><%=org.opennms.web.Util.formatDateToUIString(notification.getTimeSent())%></td>
           <% final String responder = notification.getResponder(); %>
-          <% if (responder != null) { %>
             <td class="divider">
+          <% if (responder != null) { %>
             <% Filter responderFilter = new ResponderFilter(notification.getResponder()); %>      
               <%= responder %>
               <% if( !parms.filters.contains( responderFilter )) { %>
