@@ -448,11 +448,19 @@ public class EventBuilder {
      * @param val a {@link java.lang.String} object.
      */
     public void setField(String name, String val) {
-        BeanWrapper w = new BeanWrapperImpl(m_event);
-        try {
-            w.setPropertyValue(name, val);
-        } catch (BeansException e) {
-            ThreadCategory.getInstance(this.getClass()).warn("Could not set field on event: " + name, e);
+        if (name.equals("eventparms")) {
+            String[] parts = val.split(";");
+            for (String part : parts) {
+                String[] pair = part.split("=");
+                addParam(pair[0], pair[1].replaceFirst("[(]\\w+,\\w+[)]", ""));
+            }
+        } else {
+            BeanWrapper w = new BeanWrapperImpl(m_event);
+            try {
+                w.setPropertyValue(name, val);
+            } catch (BeansException e) {
+                ThreadCategory.getInstance(this.getClass()).warn("Could not set field on event: " + name, e);
+            }
         }
     }
     
