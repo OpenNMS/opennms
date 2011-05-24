@@ -6,9 +6,10 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.ValidationException;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.xml.ValidationError;
 import org.opennms.test.mock.MockLogAppender;
 
 public class RequisitionTest {
@@ -37,7 +38,7 @@ public class RequisitionTest {
 		
 		try {
 			req.validate();
-		} catch (final ValidationError e) {
+		} catch (final ValidationException e) {
 			fail();
 		}
 		
@@ -50,7 +51,7 @@ public class RequisitionTest {
 
 		try {
 			req.validate();
-		} catch (final ValidationError e) {
+		} catch (final ValidationException e) {
 			fail();
 		}
 		
@@ -64,7 +65,7 @@ public class RequisitionTest {
 		try {
 			req.validate();
 			fail();
-		} catch (final ValidationError e) {
+		} catch (final ValidationException e) {
 			assertTrue("error should say foreignId1 has a duplicate", e.getMessage().contains("foreignId1"));
 			assertTrue("error should it found 2 errors", e.getMessage().contains("foreignId1 (2 found)"));
 		}
@@ -75,7 +76,7 @@ public class RequisitionTest {
 		try {
 			req.validate();
 			fail();
-		} catch (final ValidationError e) {
+		} catch (final ValidationException e) {
 			assertTrue("error should say foreignId1 has a duplicate", e.getMessage().contains("foreignId1"));
 			assertTrue("error count should now be 3", e.getMessage().contains("foreignId1 (3 found)"));
 		}
@@ -86,7 +87,7 @@ public class RequisitionTest {
 		try {
 			req.validate();
 			fail();
-		} catch (final ValidationError e) {
+		} catch (final ValidationException e) {
 			assertTrue("error should say foreignId1 & 2 have duplicates", e.getMessage().contains("foreignId1") && e.getMessage().contains("foreignId2"));
 			assertTrue("foreignId1 should still have 3 errors", e.getMessage().contains("foreignId1 (3 found)"));
 			assertTrue("foreignId2 should have 2 errors", e.getMessage().contains("foreignId2 (2 found)"));
