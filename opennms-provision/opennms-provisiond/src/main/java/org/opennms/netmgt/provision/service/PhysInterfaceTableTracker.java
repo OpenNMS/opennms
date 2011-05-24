@@ -109,17 +109,17 @@ public class PhysInterfaceTableTracker extends TableTracker {
     
     class PhysicalInterfaceRow extends SnmpRowResult {
 
-        public PhysicalInterfaceRow(int columnCount, SnmpInstId instance) {
+        public PhysicalInterfaceRow(final int columnCount, final SnmpInstId instance) {
             super(columnCount, instance);
         }
         
         public Integer getIfIndex() {
-            SnmpValue value = getValue(IF_INDEX);
+        	final SnmpValue value = getValue(IF_INDEX);
             if (value != null) {
                 return value.toInt();
             } else {
-                // ifIndex is the instance id as well
-                SnmpInstId inst = getInstance();
+            	// ifIndex is the instance id as well
+                final SnmpInstId inst = getInstance();
                 if (inst != null && inst.length() == 1) {
                     return inst.toInt();
                 }
@@ -128,53 +128,53 @@ public class PhysInterfaceTableTracker extends TableTracker {
         }
         
         private Integer getIfType() {
-            SnmpValue value = getValue(IF_TYPE);
+            final SnmpValue value = getValue(IF_TYPE);
             return value == null ? null : value.toInt();
 
         }
 
         private Long getIfSpeed() {
-            SnmpValue value = getValue(IF_SPEED);
+            final SnmpValue value = getValue(IF_SPEED);
             return value == null ? null : value.toLong();
         }
         
         private Long getIfHighSpeed() {
-            SnmpValue value = getValue(IF_HIGH_SPEED);
+            final SnmpValue value = getValue(IF_HIGH_SPEED);
             return value == null ? null : value.toLong()*1000000L;
         }
         
         private Long getSpeed() {
-            Long highSpeed = getIfHighSpeed();
+            final Long highSpeed = getIfHighSpeed();
             return highSpeed != null && highSpeed > 0 ? highSpeed : getIfSpeed(); 
         }
 
         private Integer getIfOperStatus() {
-            SnmpValue value = getValue(IF_OPER_STATUS);
+            final SnmpValue value = getValue(IF_OPER_STATUS);
             return value == null ? null : value.toInt();
         }
 
         private String getIfName() {
-            SnmpValue value = getValue(IF_NAME);
+            final SnmpValue value = getValue(IF_NAME);
             return value == null ? null : value.toDisplayString();
         }
 
         private String getIfDescr() {
-            SnmpValue value = getValue(IF_DESCR);
+            final SnmpValue value = getValue(IF_DESCR);
             return value == null ? null : value.toDisplayString();
         }
 
         private String getIfAlias() {
-            SnmpValue value = getValue(IF_ALIAS);
+            final SnmpValue value = getValue(IF_ALIAS);
             return value == null ? null : value.toDisplayString();
         }
 
         private Integer getIfAdminStatus() {
-            SnmpValue value = getValue(IF_ADMIN_STATUS);
+            final SnmpValue value = getValue(IF_ADMIN_STATUS);
             return value == null ? null : value.toInt();
         }
         
         public OnmsSnmpInterface createInterfaceFromRow() {
-            OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("0.0.0.0", getIfIndex(), null);
+            final OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("0.0.0.0", getIfIndex(), null);
             snmpIface.setIfAdminStatus(getIfAdminStatus());
             snmpIface.setIfAlias(getIfAlias());
             snmpIface.setIfDescr(getIfDescr());
@@ -199,19 +199,19 @@ public class PhysInterfaceTableTracker extends TableTracker {
      *
      * @param rowProcessor a {@link org.opennms.netmgt.snmp.RowCallback} object.
      */
-    public PhysInterfaceTableTracker(RowCallback rowProcessor) {
+    public PhysInterfaceTableTracker(final RowCallback rowProcessor) {
         super(rowProcessor, s_tableColumns);
     }
     
     /** {@inheritDoc} */
     @Override
-    public SnmpRowResult createRowResult(int columnCount, SnmpInstId instance) {
+    public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {
         return new PhysicalInterfaceRow(columnCount, instance);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void rowCompleted(SnmpRowResult row) {
+    public void rowCompleted(final SnmpRowResult row) {
         processPhysicalInterfaceRow((PhysicalInterfaceRow)row);
     }
 
@@ -220,7 +220,7 @@ public class PhysInterfaceTableTracker extends TableTracker {
      *
      * @param row a {@link org.opennms.netmgt.provision.service.PhysInterfaceTableTracker.PhysicalInterfaceRow} object.
      */
-    public void processPhysicalInterfaceRow(PhysicalInterfaceRow row) {
+    public void processPhysicalInterfaceRow(final PhysicalInterfaceRow row) {
         
     }
 
