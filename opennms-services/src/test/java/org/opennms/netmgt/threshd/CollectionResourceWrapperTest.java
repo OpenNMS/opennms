@@ -241,7 +241,7 @@ public class CollectionResourceWrapperTest {
         // Creating IfResourceType
         CollectionAgent agent = createCollectionAgent();
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         IfResourceType resourceType = new IfResourceType(agent, collection);
 
         // Creating Resource
@@ -269,7 +269,7 @@ public class CollectionResourceWrapperTest {
     
     private SnmpCollectionResource createNodeResource(CollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
         return new NodeInfo(resourceType, agent);
     }

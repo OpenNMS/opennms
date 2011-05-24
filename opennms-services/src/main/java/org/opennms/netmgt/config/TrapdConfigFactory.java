@@ -61,13 +61,6 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class TrapdConfigFactory implements TrapdConfig {
     /**
@@ -191,6 +184,10 @@ public final class TrapdConfigFactory implements TrapdConfig {
     public static synchronized void setInstance(TrapdConfig config) {
         m_singleton = config;
         m_loaded = true;
+    }
+
+    public synchronized String getSnmpTrapAddress() {
+    	return m_config.getSnmpTrapAddress();
     }
 
     /**

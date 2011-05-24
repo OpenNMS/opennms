@@ -198,7 +198,7 @@ public class NSClientCollector implements ServiceCollector {
     }
     
     /** {@inheritDoc} */
-    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
+    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
         int status = ServiceCollector.COLLECTION_FAILED;
         final ServiceParameters serviceParams = new ServiceParameters(parameters);
         String collectionName = serviceParams.getCollectionName();
@@ -364,7 +364,7 @@ public class NSClientCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
-    public void initialize(CollectionAgent agent, Map<String, String> parameters) {
+    public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
         log().debug("initialize: Initializing NSClient collection for agent: " + agent);
         Integer scheduledNodeKey = agent.getNodeId();
         NSClientAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
@@ -409,7 +409,7 @@ public class NSClientCollector implements ServiceCollector {
         private String m_address;
         private HashMap<String, NSClientGroupState> m_groupStates = new HashMap<String, NSClientGroupState>();
 
-        public NSClientAgentState(InetAddress address, Map<String, String> parameters) {
+        public NSClientAgentState(InetAddress address, Map<String, Object> parameters) {
             m_address = InetAddressUtils.str(address);
             m_agentConfig = NSClientPeerFactory.getInstance().getAgentConfig(address);
             m_manager = new NsclientManager(m_address);

@@ -160,10 +160,12 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
         OnmsNode node = new OnmsNode();
         node.setId(1);
+        node.setLabel("default-1");
         m_nodeDao.save(node);
 
         node = new OnmsNode();
         node.setId(2);
+        node.setLabel("default-2");
         m_nodeDao.save(node);
 
         MockUtil.println("------------ Finished setup for: "+ this.getClass().getName() +" --------------------------");

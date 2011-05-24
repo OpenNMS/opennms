@@ -89,6 +89,7 @@ import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -132,7 +133,7 @@ public class HttpCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
-    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
+    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
         HttpCollectionSet collectionSet = new HttpCollectionSet(agent, parameters);
         collectionSet.collect();
         return collectionSet;
@@ -144,7 +145,7 @@ public class HttpCollector implements ServiceCollector {
 
     protected class HttpCollectionSet implements CollectionSet {
         private CollectionAgent m_agent;
-        private Map<String, String> m_parameters;
+        private Map<String, Object> m_parameters;
         private Uri m_uriDef;
         private int m_status;
         private List<HttpCollectionResource> m_collectionResourceList;
@@ -156,17 +157,22 @@ public class HttpCollector implements ServiceCollector {
             m_uriDef = uriDef;
         }
 
-        HttpCollectionSet(CollectionAgent agent, Map<String, String> parameters) {
+        HttpCollectionSet(CollectionAgent agent, Map<String, Object> parameters) {
             m_agent = agent;
             m_parameters = parameters;
             m_status=ServiceCollector.COLLECTION_FAILED;
         }
 
         public void collect() {
-            String collectionName=m_parameters.get("collection");
+            String collectionName=ParameterMap.getKeyedString(m_parameters, "collection", null);
             if(collectionName==null) {
                 //Look for the old configuration style:
-                collectionName=m_parameters.get("http-collection");               
+            	collectionName=ParameterMap.getKeyedString(m_parameters, "http-collection", null);
+            }
+            if (collectionName==null) {
+            	LogUtils.debugf(this, "no collection name found in parameters");
+            	m_status=ServiceCollector.COLLECTION_FAILED;
+            	return;
             }
             HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(collectionName);
             m_collectionResourceList = new ArrayList<HttpCollectionResource>();
@@ -199,11 +205,11 @@ public class HttpCollector implements ServiceCollector {
             m_agent = agent;
         }
 
-        public Map<String, String> getParameters() {
+        public Map<String, Object> getParameters() {
             return m_parameters;
         }
 
-        public void setParameters(Map<String, String> parameters) {
+        public void setParameters(Map<String, Object> parameters) {
             m_parameters = parameters;
         }
 
@@ -689,7 +695,7 @@ public class HttpCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
-    public void initialize(CollectionAgent agent, Map<String, String> parameters) {
+    public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
         log().debug("initialize: Initializing HTTP collection for agent: "+agent);
         final Integer scheduledNodeKey = agent.getNodeId();
         final String scheduledAddress = m_scheduledNodes.get(scheduledNodeKey);
@@ -714,7 +720,7 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private static String determineServiceName(final Map<String, String> parameters) {
+    private static String determineServiceName(final Map<String, Object> parameters) {
         return ParameterMap.getKeyedString(parameters, "service-name", "HTTP");
     }
 

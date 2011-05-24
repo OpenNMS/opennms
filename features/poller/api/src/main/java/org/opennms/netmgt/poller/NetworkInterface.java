@@ -51,9 +51,6 @@ package org.opennms.netmgt.poller;
  *
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public interface NetworkInterface<T> {
     /**
@@ -63,7 +60,7 @@ public interface NetworkInterface<T> {
 
     /**
      * <P>
-     * Defines a standard IPv4 address. This is usually modeled by an
+     * Defines a standard IPv4 or IPv6 address. This is usually modeled by an
      * InetAddress object.
      * </P>
      */

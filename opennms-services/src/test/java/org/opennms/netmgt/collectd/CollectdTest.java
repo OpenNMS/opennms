@@ -288,7 +288,7 @@ public class CollectdTest extends TestCase {
      * Test override of read community string and max repetitions in Collectd configuration parameters
      */
     public void testOverrides() {
-    	Map<String, String> map = new HashMap<String, String>();
+    	Map<String, Object> map = new HashMap<String, Object>();
     	map.put("max-repetitions", "11");
     	map.put("read-community", "notPublic");
 		ServiceParameters params = new ServiceParameters(map);
@@ -354,7 +354,7 @@ public class CollectdTest extends TestCase {
 				return false;
 			}
         };      
-        expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isAMap(String.class, String.class))).andReturn(collectionSetResult);
+        expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isAMap(String.class, Object.class))).andReturn(collectionSetResult);
         setupInterface(iface);
         
         setupTransactionManager();
@@ -440,7 +440,7 @@ public class CollectdTest extends TestCase {
             s_delegate = delegate;
         }
         
-        public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) throws CollectionException {
+        public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
             return s_delegate.collect(agent, eproxy, parameters);
         }
 
@@ -448,7 +448,7 @@ public class CollectdTest extends TestCase {
             s_delegate.initialize(parameters);
         }
 
-        public void initialize(CollectionAgent agent, Map<String, String> parameters) {
+        public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
             s_delegate.initialize(agent, parameters);
         }
 

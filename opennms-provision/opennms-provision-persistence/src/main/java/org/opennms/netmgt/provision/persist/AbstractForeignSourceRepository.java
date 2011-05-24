@@ -2,60 +2,43 @@ package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
-/**
- * <p>Abstract AbstractForeignSourceRepository class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public abstract class AbstractForeignSourceRepository implements ForeignSourceRepository {
-    private final ProvisionPrefixContextResolver m_jaxbContextResolver;
-
     /**
      * <p>Constructor for AbstractForeignSourceRepository.</p>
      */
     public AbstractForeignSourceRepository() {
+    	/* using JAXBUtils now, it should resolve properly
         try {
             m_jaxbContextResolver = new ProvisionPrefixContextResolver();
         } catch (JAXBException e) {
             throw new ForeignSourceRepositoryException("unable to get JAXB context resolver", e);
         }
+        */
     }
 
     /** {@inheritDoc} */
     public Requisition importResourceRequisition(Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
-        try {
-            InputStream resourceStream = resource.getInputStream();
-            JAXBContext context = JAXBContext.newInstance(Requisition.class);
-            Unmarshaller um = context.createUnmarshaller();
-            um.setSchema(null);
-            Requisition req = (Requisition) um.unmarshal(resourceStream);
-            save(req);
-            return req;
-        } catch (Throwable e) {
-            throw new ForeignSourceRepositoryException("unable to import requisition resource " + resource, e);
-        }
+ 
+        final Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource);
+        save(requisition);
+        return requisition;
     }
-    
+
     /**
      * <p>getDefaultForeignSource</p>
      *
@@ -67,17 +50,9 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         if (!defaultForeignSource.exists()) {
             defaultForeignSource = new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml");
         }
-        try {
-            InputStream fsStream = defaultForeignSource.getInputStream();
-            JAXBContext context = JAXBContext.newInstance(ForeignSource.class);
-            Unmarshaller um = context.createUnmarshaller();
-            um.setSchema(null);
-            ForeignSource fs = (ForeignSource) um.unmarshal(fsStream);
-            fs.setDefault(true);
-            return fs;
-        } catch (Throwable e) {
-            throw new ForeignSourceRepositoryException("unable to access default foreign source resource", e);
-        }
+        final ForeignSource fs = JaxbUtils.unmarshal(ForeignSource.class, defaultForeignSource);
+        fs.setDefault(true);
+        return fs;
     }
 
     /** {@inheritDoc} */
@@ -87,17 +62,20 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         }
         foreignSource.setName("default");
         foreignSource.updateDateStamp();
-        
-        File outputFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
+ 
+        final File outputFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
         Writer writer = null;
+        OutputStream outputStream = null;
         try {
             foreignSource.updateDateStamp();
-            writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
-            getMarshaller(ForeignSource.class).marshal(foreignSource, writer);
-        } catch (Throwable e) {
+            outputStream = new FileOutputStream(outputFile);
+			writer = new OutputStreamWriter(outputStream, "UTF-8");
+            JaxbUtils.marshal(foreignSource, writer);
+        } catch (final Throwable e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
         } finally {
             IOUtils.closeQuietly(writer);
+            IOUtils.closeQuietly(outputStream);
         }
     }
 
@@ -107,46 +85,18 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
     public void resetDefaultForeignSource() throws ForeignSourceRepositoryException {
-        File deleteFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
+    	final File deleteFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
         if (!deleteFile.exists()) {
             return;
         }
         if (!deleteFile.delete()) {
-            log().warn("unable to remove " + deleteFile.getPath());
+            LogUtils.warnf(this, "unable to remove %s", deleteFile.getPath());
         }
-    }
-
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(AbstractForeignSourceRepository.class);
     }
 
     /** {@inheritDoc} */
     public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         Requisition req = getRequisition(foreignSource);
         return (req == null ? null : req.getNodeRequistion(foreignId));
-    }
-    
-    /**
-     * <p>getMarshaller</p>
-     *
-     * @param clazz a {@link java.lang.Class} object.
-     * @return a {@link javax.xml.bind.Marshaller} object.
-     * @throws javax.xml.bind.JAXBException if any.
-     */
-    protected synchronized Marshaller getMarshaller(Class<?> clazz) throws JAXBException {
-        Marshaller marshaller = m_jaxbContextResolver.getContext(clazz).createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        return marshaller;
-    }
-    
-    /**
-     * <p>getJaxbContext</p>
-     *
-     * @param objectType a {@link java.lang.Class} object.
-     * @return a {@link javax.xml.bind.JAXBContext} object.
-     */
-    protected JAXBContext getJaxbContext(Class<?> objectType) {
-        return m_jaxbContextResolver.getContext(objectType);
     }
 }

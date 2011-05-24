@@ -16,6 +16,7 @@ import org.opennms.core.test.JUnitDNSServerExecutionListener;
 import org.opennms.core.test.annotations.DNSEntry;
 import org.opennms.core.test.annotations.DNSZone;
 import org.opennms.core.test.annotations.JUnitDNSServer;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.model.PollStatus;
@@ -83,7 +84,7 @@ public class DnsMonitorTest {
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new DnsMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "::1", "DNS", true);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "localhost", "DNS", true);
 
 
         p.setKey("port");
@@ -113,7 +114,7 @@ public class DnsMonitorTest {
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new DnsMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "::1", "DNS", true);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "localhost", "DNS", true);
 
         p.setKey("port");
         p.setValue("9153");
@@ -142,7 +143,7 @@ public class DnsMonitorTest {
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new DnsMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "192.168.1.120", "DNS", false);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("192.168.1.120"), "DNS");
 
 
         p.setKey("port");
@@ -168,7 +169,7 @@ public class DnsMonitorTest {
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new DnsMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "127.0.0.1", "DNS", false);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "localhost", "DNS", false);
 
 
         p.setKey("port");

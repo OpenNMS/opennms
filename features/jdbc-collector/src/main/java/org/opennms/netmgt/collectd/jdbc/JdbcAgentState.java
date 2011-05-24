@@ -37,7 +37,7 @@ public class JdbcAgentState {
         return ThreadCategory.getInstance(getClass());
     }
     
-    public JdbcAgentState(InetAddress address, Map<String, String> parameters) {
+    public JdbcAgentState(InetAddress address, Map<String, Object> parameters) {
         // Save the target's address or hostname.
         m_address = address.getCanonicalHostName();
         
@@ -49,7 +49,7 @@ public class JdbcAgentState {
         //setupDatabaseConnections(parameters);
     }
     
-    public void setupDatabaseConnections(Map<String, String> parameters) {
+    public void setupDatabaseConnections(Map<String, Object> parameters) {
         String dataSourceName = ParameterMap.getKeyedString(parameters, "data-source", JAS_NO_DATASOURCE_FOUND);
         if(dataSourceName.equals(JAS_NO_DATASOURCE_FOUND)) {
             // No 'data-source' parameter was set in the configuration file.
@@ -62,7 +62,7 @@ public class JdbcAgentState {
         }
     }
     
-    protected void setupJdbcUrl(Map<String, String> parameters) {
+    protected void setupJdbcUrl(Map<String, Object> parameters) {
         m_useDataSourceName = false;
         
         // Extract the driver class name and create a driver class instance.

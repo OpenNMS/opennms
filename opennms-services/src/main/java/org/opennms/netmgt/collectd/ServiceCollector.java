@@ -47,9 +47,6 @@ import org.opennms.netmgt.model.events.EventProxy;
  *
  * @author <a href="mailto:mike@opennms.org">Mike</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @author <a href="mailto:mike@opennms.org">Mike</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @version $Id: $
  */
 public interface ServiceCollector {
     /**
@@ -88,7 +85,7 @@ public interface ServiceCollector {
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      * @param parameters a {@link java.util.Map} object.
      */
-    void initialize(CollectionAgent agent, Map<String, String> parameters);
+    void initialize(CollectionAgent agent, Map<String, Object> parameters);
 
     /**
      * <p>release</p>
@@ -106,7 +103,7 @@ public interface ServiceCollector {
      * @return a {@link org.opennms.netmgt.collectd.CollectionSet} object.
      * @throws org.opennms.netmgt.collectd.CollectionException if any.
      */
-    CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) throws CollectionException;
+    CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException;
 
     /**
      * <p>getRrdRepository</p>

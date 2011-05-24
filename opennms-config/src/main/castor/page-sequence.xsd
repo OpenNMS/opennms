@@ -48,6 +48,8 @@
       <attribute name="scheme" type="string" use="optional" default="http" />
       <attribute name="user-info" type="string" use="optional" />
       <attribute name="host" type="string" use="optional" default="${ipaddr}" />
+      <attribute name="requireIPv6" type="boolean" use="optional" default="false" />
+      <attribute name="requireIPv4" type="boolean" use="optional" default="false" />
       <attribute name="disable-ssl-verification" type="string" use="optional" default="true">
         <annotation>
           <documentation>

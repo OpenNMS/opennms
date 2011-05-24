@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -40,7 +41,7 @@ public class RadiusAuthMonitorTest {
 		final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
 
 		final ServiceMonitor monitor = new RadiusAuthMonitor();
-		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "192.168.211.11", "RADIUS", false);
+		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("192.168.211.11"), "RADIUS");
 
         m.put("user", "testing");
         m.put("password", "password");

@@ -2,7 +2,11 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.9.9-IPREFACTOR-SNAPSHOT</version>
+<<<<<<< HEAD
+    <version>1.11.0-IPREFACTOR-SNAPSHOT</version>
+=======
+    <version>1.11.0-IPREFACTOR-SNAPSHOT</version>
+>>>>>>> origin/master
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>

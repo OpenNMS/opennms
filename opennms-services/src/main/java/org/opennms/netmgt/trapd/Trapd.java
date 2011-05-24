@@ -45,6 +45,7 @@ package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 import java.sql.SQLException;
 
 import org.apache.log4j.Category;
@@ -52,6 +53,8 @@ import org.apache.log4j.Logger;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TrapNotification;
@@ -85,9 +88,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapProcessorFactory,
-                                    TrapNotificationListener,
-                                    InitializingBean {
+public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapProcessorFactory, TrapNotificationListener, InitializingBean {
     /*
      * The last status sent to the service control manager.
      */
@@ -113,10 +114,11 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
      */
     private TrapdIpMgr m_trapdIpMgr;
 
+	private String m_snmpTrapAddress;
+
     private Integer m_snmpTrapPort;
 
     private boolean m_registeredForTraps;
-
 
     /**
      * <P>
@@ -150,9 +152,10 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
         try {
             m_backlogQ.add(o);
         } catch (InterruptedException e) {
-            log().warn("addTrap: Error adding trap to queue, it was interrupted", e);
-        } catch (FifoQueueException e) {
-            log().warn("addTrap: Error adding trap to queue", e);
+            LogUtils.warnf(this, e, "addTrap: Error adding trap to queue, it was interrupted");
+            Thread.currentThread().interrupt();
+        } catch (final FifoQueueException e) {
+            LogUtils.warnf(this, e, "addTrap: Error adding trap to queue");
         }
     }
 
@@ -163,37 +166,47 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
         Assert.state(m_trapdIpMgr != null, "trapdIpMgr must be set");
         Assert.state(m_eventReader != null, "eventReader must be set");
         Assert.state(m_backlogQ != null, "backlogQ must be set");
+        Assert.state(m_snmpTrapAddress != null, "snmpTrapAddress must be set");
         Assert.state(m_snmpTrapPort != null, "snmpTrapPort must be set");
         Assert.state(m_processor != null, "processor must be set");
 
         try {
             m_trapdIpMgr.dataSourceSync();
-        } catch (SQLException e) {
-            log().error("init: Failed to load known IP address list: " + e, e);
+        } catch (final SQLException e) {
+            LogUtils.errorf(this, e, "init: Failed to load known IP address list");
             throw new UndeclaredThrowableException(e);
         }
 
         try {
-            SnmpUtils.registerForTraps(this, this, getSnmpTrapPort());
+        	InetAddress address = getInetAddress();
+    		LogUtils.infof(this, "Listening on %s:%d", InetAddressUtils.str(address), getSnmpTrapPort());
+            SnmpUtils.registerForTraps(this, this, address, getSnmpTrapPort());
             m_registeredForTraps = true;
 
-            log().debug("init: Creating the trap session");
-        } catch (IOException e) {
+            LogUtils.debugf(this, "init: Creating the trap session");
+        } catch (final IOException e) {
             if (e instanceof java.net.BindException) {
                 managerLog().error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
-                log().error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
+                LogUtils.errorf(this, e, "init: Failed to listen on SNMP trap port, perhaps something else is already listening?");
             } else {
-                log().error("init: Failed to initialize SNMP trap socket", e);
+                LogUtils.errorf(this, e, "init: Failed to initialize SNMP trap socket");
             }
             throw new UndeclaredThrowableException(e);
         }
 
         try {
             m_eventReader.open();
-        } catch (Throwable e) {
-            log().error("init: Failed to open event reader: " + e, e);
+        } catch (final Throwable e) {
+            LogUtils.errorf(this, e, "init: Failed to open event reader");
             throw new UndeclaredThrowableException(e);
         }
+    }
+
+    private InetAddress getInetAddress() {
+    	if (m_snmpTrapAddress.equals("*")) {
+    		return null;
+    	}
+		return InetAddressUtils.addr(m_snmpTrapAddress);
     }
 
     private Category managerLog() {
@@ -212,13 +225,12 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
     public synchronized void onStart() {
         m_status = STARTING;
 
-        log().debug("start: Initializing the trapd config factory");
+        LogUtils.debugf(this, "start: Initializing the trapd config factory");
 
         m_processor.start();
-
         m_status = RUNNING;
 
-        log().debug("start: Trapd ready to receive traps");
+        LogUtils.debugf(this, "start: Trapd ready to receive traps");
     }
 
     /**
@@ -231,15 +243,12 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
         m_status = PAUSE_PENDING;
 
-        log().debug("pause: Calling pause on processor");
+        LogUtils.debugf(this, "pause: Calling pause on processor");
 
         m_processor.pause();
-
-        log().debug("pause: Processor paused");
-
         m_status = PAUSED;
 
-        log().debug("pause: Trapd paused");
+        LogUtils.debugf(this, "pause: Trapd paused");
     }
 
     /**
@@ -252,15 +261,12 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
         m_status = RESUME_PENDING;
 
-        log().debug("resume: Calling resume on processor");
+        LogUtils.debugf(this, "resume: Calling resume on processor");
 
         m_processor.resume();
-
-        log().debug("resume: Processor resumed");
-
         m_status = RUNNING;
 
-        log().debug("resume: Trapd resumed");
+        LogUtils.debugf(this, "resume: Trapd resumed");
     }
 
     /**
@@ -271,33 +277,31 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
         m_status = STOP_PENDING;
 
         // shutdown and wait on the background processing thread to exit.
-        log().debug("stop: closing communication paths.");
+        LogUtils.debugf(this, "stop: closing communication paths.");
 
         try {
             if (m_registeredForTraps) {
-                log().debug("stop: Closing SNMP trap session.");
-                SnmpUtils.unregisterForTraps(this, getSnmpTrapPort());
-                log().debug("stop: SNMP trap session closed.");
+                LogUtils.debugf(this, "stop: Closing SNMP trap session.");
+                SnmpUtils.unregisterForTraps(this, getInetAddress(), getSnmpTrapPort());
+                LogUtils.debugf(this, "stop: SNMP trap session closed.");
             } else {
-                log().debug("stop: not attemping to closing SNMP trap session--it was never opened");
+            	LogUtils.debugf(this, "stop: not attemping to closing SNMP trap session--it was never opened");
             }
 
-        } catch (IOException e) {
-            log().warn("stop: exception occurred closing session: " + e, e);
-        } catch (IllegalStateException e) {
-            log().debug("stop: The SNMP session was already closed");
+        } catch (final IOException e) {
+            LogUtils.warnf(this, e, "stop: exception occurred closing session");
+        } catch (final IllegalStateException e) {
+            LogUtils.debugf(this, e, "stop: The SNMP session was already closed");
         }
 
-        log().debug("stop: Stopping queue processor.");
+        LogUtils.debugf(this, "stop: Stopping queue processor.");
 
-        // interrupt the processor daemon thread
         m_processor.stop();
-
         m_eventReader.close();
 
         m_status = STOPPED;
 
-        log().debug("stop: Trapd stopped");
+        LogUtils.debugf(this, "stop: Trapd stopped");
     }
 
     /**
@@ -310,9 +314,8 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
     }
 
     /** {@inheritDoc} */
-    public void trapError(int error, String msg) {
-        log().warn("Error Processing Received Trap: error = " + error
-                 + (msg != null ? ", ref = " + msg : ""));
+    public void trapError(final int error, final String msg) {
+        LogUtils.warnf(this, "Error Processing Received Trap: error = " + error + (msg != null ? ", ref = " + msg : ""));
     }
 
     /**
@@ -387,6 +390,14 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
         m_processor = processor;
     }
 
+    public String getSnmpTrapAddress() {
+    	return m_snmpTrapAddress;
+    }
+    
+    public void setSnmpTrapAddress(final String snmpTrapAddress) {
+    	m_snmpTrapAddress = snmpTrapAddress;
+    }
+    
     /**
      * <p>getSnmpTrapPort</p>
      *

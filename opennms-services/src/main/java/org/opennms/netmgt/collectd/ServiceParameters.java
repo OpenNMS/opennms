@@ -52,14 +52,14 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  */
 public class ServiceParameters {
     
-    Map<String, String> m_parameters;
+    Map<String, Object> m_parameters;
 
     /**
      * <p>Constructor for ServiceParameters.</p>
      *
      * @param parameters a {@link java.util.Map} object.
      */
-    public ServiceParameters(Map<String, String> parameters) {
+    public ServiceParameters(Map<String, Object> parameters) {
         m_parameters = parameters;
     }
     
@@ -68,7 +68,7 @@ public class ServiceParameters {
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<String, String> getParameters() {
+    public Map<String, Object> getParameters() {
         return m_parameters;
     }
 

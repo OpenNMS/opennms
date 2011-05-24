@@ -314,7 +314,7 @@ public class SnmpCollector implements ServiceCollector {
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for data collection.
      */
-    public void initialize(CollectionAgent agent, Map<String, String> parameters) {
+    public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
         agent.validateAgent();
         
         // XXX: Experimental code that creates an OnmsSnmpCollection only once
@@ -339,7 +339,7 @@ public class SnmpCollector implements ServiceCollector {
      *
      * Perform data collection.
      */
-    public CollectionSet collect(CollectionAgent agent, EventProxy eventProxy, Map<String, String> parameters) throws CollectionException {
+    public CollectionSet collect(CollectionAgent agent, EventProxy eventProxy, Map<String, Object> parameters) throws CollectionException {
         try {
             // XXX: Experimental code that reuses the OnmsSnmpCollection
             // OnmsSnmpCollection snmpCollection = (OnmsSnmpCollection)agent.getAttribute("SNMP_COLLECTION");

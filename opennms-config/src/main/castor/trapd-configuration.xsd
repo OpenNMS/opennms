@@ -19,6 +19,13 @@
     </annotation>
 
     <complexType>
+      <attribute name="snmp-trap-address" use="optional" type="string" default="*" >
+        <annotation>
+          <documentation>The IP address on which trapd listens for connections.
+          If "*" is specified, trapd will bind to all addresses.  The default is *.</documentation>
+        </annotation>
+      </attribute>
+
       <attribute name="snmp-trap-port" use="required">
         <annotation>
           <documentation>The port on which trapd listens for SNMP traps. The

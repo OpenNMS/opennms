@@ -41,6 +41,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.wmi.WmiAgentState;
 import org.opennms.netmgt.collectd.wmi.WmiCollectionAttributeType;
 import org.opennms.netmgt.collectd.wmi.WmiCollectionResource;
@@ -83,13 +84,9 @@ public class WmiCollector implements ServiceCollector {
     private HashMap<String, WmiCollectionAttributeType> m_attribTypeList = new HashMap<String, WmiCollectionAttributeType>();
 
     /** {@inheritDoc} */
-    public CollectionSet collect(final CollectionAgent agent, final EventProxy eproxy, final Map<String, String> parameters) {
+    public CollectionSet collect(final CollectionAgent agent, final EventProxy eproxy, final Map<String, Object> parameters) {
 
-        String collectionName = parameters.get("collection");
-        if (collectionName == null) {
-            //Look for the old configuration style:
-            collectionName = parameters.get("wmi-collection");
-        }
+        String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "wmi-collection", null));
         // Find attributes to collect - check groups in configuration. For each,
         // check scheduled nodes to see if that group should be collected
         final WmiCollection collection = WmiDataCollectionConfigFactory.getInstance().getWmiCollection(collectionName);
@@ -310,7 +307,7 @@ public class WmiCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
-    public void initialize(final CollectionAgent agent, final Map<String, String> parameters) {
+    public void initialize(final CollectionAgent agent, final Map<String, Object> parameters) {
         LogUtils.debugf(this, "initialize: Initializing WMI collection for agent: %s", agent);
         final Integer scheduledNodeKey = new Integer(agent.getNodeId());
         WmiAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);

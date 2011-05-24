@@ -29,7 +29,7 @@
 	  <xsl:attribute name="foreign-id"><xsl:value-of select="hostname"/></xsl:attribute>
 	  <xsl:if test="v4_only != ''">
 		<xsl:variable name="dnsName" select="v4_only"/>
-		<xsl:variable name="address" select="java:org.opennms.core.utils.InetAddressUtils.getInetAddress($dnsName, $javaFalse, $javaFalse)"/>
+		<xsl:variable name="address" select="java:org.opennms.core.utils.InetAddressUtils.resolveHostname($dnsName, $javaFalse, $javaFalse)"/>
 		<xsl:if test="string($address)">
 		  <interface status="1" snmp-primary="N">
 			<xsl:attribute name="ip-addr">
@@ -44,7 +44,7 @@
 		</xsl:if>
 		<xsl:if test="dual_hostname != ''">
 		  <xsl:variable name="dnsName" select="dual_hostname"/>
-		  <xsl:variable name="dualAddress" select="java:org.opennms.core.utils.InetAddressUtils.getInetAddress($dnsName, $javaFalse, $javaFalse)"/>
+		  <xsl:variable name="dualAddress" select="java:org.opennms.core.utils.InetAddressUtils.resolveHostname($dnsName, $javaFalse, $javaFalse)"/>
 		  <xsl:if test="string($dualAddress) and (not(string($address)) or (java:getHostAddress($dualAddress) != java:getHostAddress($address)))">
 			<interface status="1" snmp-primary="N">
 			  <xsl:attribute name="ip-addr">
@@ -61,7 +61,7 @@
 	  </xsl:if>
 	  <xsl:if test="v6_only != ''">
 		<xsl:variable name="dnsName" select="v6_only"/>
-		<xsl:variable name="address" select="java:org.opennms.core.utils.InetAddressUtils.getInetAddress($dnsName, $javaTrue, $javaFalse)"/>
+		<xsl:variable name="address" select="java:org.opennms.core.utils.InetAddressUtils.resolveHostname($dnsName, $javaTrue, $javaFalse)"/>
 		<xsl:if test="string($address)">
 		  <interface status="1" snmp-primary="N">
 			<xsl:attribute name="ip-addr">
@@ -76,7 +76,7 @@
 		</xsl:if>
 		<xsl:if test="dual_hostname != ''">
 		  <xsl:variable name="dnsName" select="dual_hostname"/>
-		  <xsl:variable name="dualAddress" select="java:org.opennms.core.utils.InetAddressUtils.getInetAddress($dnsName, $javaTrue, $javaFalse)"/>
+		  <xsl:variable name="dualAddress" select="java:org.opennms.core.utils.InetAddressUtils.resolveHostname($dnsName, $javaTrue, $javaFalse)"/>
 		  <xsl:if test="string($dualAddress) and (not(string($address)) or (java:getHostAddress($dualAddress) != java:getHostAddress($address)))">
 			<interface status="1" snmp-primary="N">
 			  <xsl:attribute name="ip-addr">
@@ -94,7 +94,7 @@
 	  <!-- If there are no v4_only or v6_only address, then emit interfaces for the dual stack hostnames -->
 	  <xsl:if test="dual_hostname != '' and v4_only = '' and v6_only = ''">
 		<xsl:variable name="dnsName" select="dual_hostname"/>
-		<xsl:variable name="address" select="java:org.opennms.core.utils.InetAddressUtils.getInetAddress($dnsName, $javaFalse, $javaFalse)"/>
+		<xsl:variable name="address" select="java:org.opennms.core.utils.InetAddressUtils.resolveHostname($dnsName, $javaFalse, $javaFalse)"/>
 		<xsl:if test="string($address)">
 		  <interface status="1" snmp-primary="N">
 			<xsl:attribute name="ip-addr">
@@ -107,7 +107,7 @@
 			<!-- <monitored-service service-name="HTTP-V4"/> -->
 		  </interface>
 		</xsl:if>
-		<xsl:variable name="address" select="java:org.opennms.core.utils.InetAddressUtils.getInetAddress($dnsName, $javaTrue, $javaFalse)"/>
+		<xsl:variable name="address" select="java:org.opennms.core.utils.InetAddressUtils.resolveHostname($dnsName, $javaTrue, $javaFalse)"/>
 		<xsl:if test="string($address)">
 		  <interface status="1" snmp-primary="N">
 			<xsl:attribute name="ip-addr">

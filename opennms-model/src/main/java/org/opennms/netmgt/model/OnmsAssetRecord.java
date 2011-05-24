@@ -259,6 +259,9 @@ public class OnmsAssetRecord implements Serializable {
     /** identifier field */
     private String m_snmpcommunity;
 
+    /** identifier field */
+    private String m_rackunitheight;
+
     /** persistent field */
     private OnmsNode m_node;
 
@@ -1259,6 +1262,25 @@ public class OnmsAssetRecord implements Serializable {
      */
     public void setSnmpcommunity(String snmpcommunity) {
             m_snmpcommunity = snmpcommunity;
+    }
+
+    /**
+     * <p>getRackunitheight</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="rackunitheight", length=2)
+    public String getRackunitheight() {
+        return m_rackunitheight;
+    }
+
+    /**
+     * <p>setRackunitheight</p>
+     *
+     * @param snmpcommunity a {@link java.lang.String} object.
+     */
+    public void setRackunitheight(String rackunitheight) {
+            m_rackunitheight = rackunitheight;
     }
 
     /**

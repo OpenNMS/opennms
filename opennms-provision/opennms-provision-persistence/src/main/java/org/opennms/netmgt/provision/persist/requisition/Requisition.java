@@ -11,11 +11,15 @@ package org.opennms.netmgt.provision.persist.requisition;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -30,7 +34,8 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 
@@ -43,6 +48,7 @@ import org.opennms.netmgt.provision.persist.RequisitionVisitor;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="model-import")
+@ValidateUsing("model-import.xsd")
 public class Requisition implements Serializable, Comparable<Requisition> {
 
     private static final long serialVersionUID = 2099710942679236239L;
@@ -72,9 +78,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         if (m_nodes != null) {
             for (RequisitionNode n : m_nodes) {
                 if (n.getForeignId().equals(foreignId)) {
-                    if (log().isDebugEnabled()) {
-                        log().debug(String.format("returning node '%s' for foreign id '%s'", n, foreignId));
-                    }
+                	LogUtils.debugf(this, "returning node '%s' for foreign id '%s'", n, foreignId);
                     return n;
                 }
             }
@@ -105,11 +109,11 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      *
      * @param foreignId a {@link java.lang.String} object.
      */
-    public void deleteNode(String foreignId) {
+    public void deleteNode(final String foreignId) {
         if (m_nodes != null) {
-            Iterator<RequisitionNode> i = m_nodes.iterator();
+        	final Iterator<RequisitionNode> i = m_nodes.iterator();
             while (i.hasNext()) {
-                RequisitionNode n = i.next();
+                final RequisitionNode n = i.next();
                 if (n.getForeignId().equals(foreignId)) {
                     i.remove();
                     break;
@@ -143,7 +147,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      *
      * @param nodes a {@link java.util.List} object.
      */
-    public void setNodes(List<RequisitionNode> nodes) {
+    public void setNodes(final List<RequisitionNode> nodes) {
         m_nodes = nodes;
         updateNodeCache();
     }
@@ -153,9 +157,9 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      *
      * @param node a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
      */
-    public void insertNode(RequisitionNode node) {
+    public void insertNode(final RequisitionNode node) {
         if (m_nodeReqs.containsKey(node.getForeignId())) {
-            RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
+        	final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
             m_nodes.remove(n);
         }
         m_nodes.add(0, node);
@@ -167,9 +171,9 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      *
      * @param node a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
      */
-    public void putNode(RequisitionNode node) {
+    public void putNode(final RequisitionNode node) {
         if (m_nodeReqs.containsKey(node.getForeignId())) {
-            RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
+        	final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
             m_nodes.remove(n);
         }
         m_nodes.add(node);
@@ -190,7 +194,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      *
      * @param value a {@link javax.xml.datatype.XMLGregorianCalendar} object.
      */
-    public void setDateStamp(XMLGregorianCalendar value) {
+    public void setDateStamp(final XMLGregorianCalendar value) {
         m_dateStamp = value;
     }
 
@@ -200,8 +204,8 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     public void updateDateStamp() {
         try {
             m_dateStamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
-        } catch (DatatypeConfigurationException e) {
-            log().warn("unable to update datestamp", e);
+        } catch (final DatatypeConfigurationException e) {
+            LogUtils.warnf(this, e, "unable to update datestamp");
         }
     }
 
@@ -223,7 +227,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      *
      * @param value a {@link java.lang.String} object.
      */
-    public void setForeignSource(String value) {
+    public void setForeignSource(final String value) {
         m_foreignSource = value;
     }
 
@@ -241,7 +245,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      *
      * @param value a {@link javax.xml.datatype.XMLGregorianCalendar} object.
      */
-    public void setLastImport(XMLGregorianCalendar value) {
+    public void setLastImport(final XMLGregorianCalendar value) {
         m_lastImport = value;
     }
 
@@ -251,8 +255,8 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     public void updateLastImported() {
         try {
             m_lastImport = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
-        } catch (DatatypeConfigurationException e) {
-            log().warn("unable to update last import datestamp", e);
+        } catch (final DatatypeConfigurationException e) {
+            LogUtils.warnf(this, e, "unable to update last import datestamp");
         }
     }
 
@@ -271,7 +275,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      *
      * @param foreignSource a {@link java.lang.String} object.
      */
-    public Requisition(String foreignSource) {
+    public Requisition(final String foreignSource) {
         this();
         m_foreignSource = foreignSource;
     }
@@ -279,7 +283,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     private void updateNodeCache() {
         m_nodeReqs.clear();
         if (m_nodes != null) {
-            for (RequisitionNode n : m_nodes) {
+            for (final RequisitionNode n : m_nodes) {
                 m_nodeReqs.put(n.getForeignId(), new OnmsNodeRequisition(getForeignSource(), n));
             }
         }
@@ -290,19 +294,19 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      *
      * @param visitor a {@link org.opennms.netmgt.provision.persist.RequisitionVisitor} object.
      */
-    public void visit(RequisitionVisitor visitor) {
+    public void visit(final RequisitionVisitor visitor) {
         if (m_nodeReqs.size() == 0 && m_nodes != null && m_nodes.size() > 0) {
             updateNodeCache();
         }
 
         if (visitor == null) {
-            log().warn("no visitor specified!");
+            LogUtils.warnf(this, "no visitor specified!");
             return;
         }
 
         visitor.visitModelImport(this);
         
-        for (OnmsNodeRequisition nodeReq : m_nodeReqs.values()) {
+        for (final OnmsNodeRequisition nodeReq : m_nodeReqs.values()) {
             nodeReq.visit(visitor);
         }
         
@@ -315,7 +319,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      * @param foreignId a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.persist.OnmsNodeRequisition} object.
      */
-    public OnmsNodeRequisition getNodeRequistion(String foreignId) {
+    public OnmsNodeRequisition getNodeRequistion(final String foreignId) {
         if (m_nodeReqs.size() == 0 && m_nodes != null && m_nodes.size() > 0) {
             updateNodeCache();
         }
@@ -330,10 +334,6 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     @XmlTransient
     public int getNodeCount() {
         return (m_nodes == null) ? 0 : m_nodes.size();
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(Requisition.class);
     }
 
     /** {@inheritDoc} */
@@ -353,7 +353,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      * @param obj a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
      * @return a int.
      */
-    public int compareTo(Requisition obj) {
+    public int compareTo(final Requisition obj) {
         return new CompareToBuilder()
             .append(getForeignSource(), obj.getForeignSource())
             .append(getDateStamp(), obj.getDateStamp())
@@ -366,7 +366,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Requisition) {
-            Requisition other = (Requisition) obj;
+        	final Requisition other = (Requisition) obj;
             return new EqualsBuilder()
                 .append(getForeignSource(), other.getForeignSource())
                 /*
@@ -390,4 +390,39 @@ public class Requisition implements Serializable, Comparable<Requisition> {
             .toHashCode();
       }
 
+    /**
+     * Make sure that no data in the requisition is inconsistent.  Nodes should be unique,
+     * interfaces should be unique per node, etc.
+     */
+    public void validate() throws ValidationException {
+    	final Map<String,Integer> foreignSourceCounts = new HashMap<String,Integer>();
+    	final Set<String> errors = new HashSet<String>();
+
+    	for (final RequisitionNode node : m_nodes) {
+    		final String foreignId = node.getForeignId();
+			Integer count = foreignSourceCounts.get(foreignId);
+			foreignSourceCounts.put(foreignId, count == null? 1 : ++count);
+    	}
+    	
+    	for (final String foreignId : foreignSourceCounts.keySet()) {
+    		final Integer count = foreignSourceCounts.get(foreignId);
+    		if (count > 1) {
+    			errors.add( foreignId + " (" + count + " found)");
+    		}
+    	}
+    	
+    	if (errors.size() > 0) {
+    		final StringBuilder sb = new StringBuilder();
+    		sb.append("Duplicate nodes found on foreign source ").append(getForeignSource()).append(": ");
+    		final Iterator<String> it = errors.iterator();
+    		while (it.hasNext()) {
+    			final String error = it.next();
+    			sb.append(error);
+    			if (it.hasNext()) {
+    				sb.append(", ");
+    			}
+    		}
+    		throw new ValidationException(sb.toString());
+    	}
+    }
 }

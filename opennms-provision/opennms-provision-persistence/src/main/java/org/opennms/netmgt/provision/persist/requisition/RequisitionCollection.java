@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+
 
 /**
  * <p>RequisitionCollection class.</p>
@@ -16,6 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Id: $
  */
 @XmlRootElement(name="requisitions")
+@ValidateUsing("model-import.xsd")
 public class RequisitionCollection extends LinkedList<Requisition> {
 
     private static final long serialVersionUID = 3613062331927556776L;

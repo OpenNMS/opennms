@@ -126,6 +126,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
         OnmsNode node = new OnmsNode();
         node.setId(1);
+        node.setLabel("node1");
         m_nodeDao.save(node);
     }
 

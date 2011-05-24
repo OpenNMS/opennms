@@ -115,7 +115,7 @@ public class PersistOperationBuilderTest extends TestCase {
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
         
@@ -136,7 +136,7 @@ public class PersistOperationBuilderTest extends TestCase {
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
         
@@ -168,7 +168,7 @@ public class PersistOperationBuilderTest extends TestCase {
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
         

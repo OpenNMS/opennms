@@ -40,7 +40,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
@@ -397,8 +399,9 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         }
     }
 
-    boolean checkDisableForceRescan(String disabledString) {
-        String src = m_snmpCollection.getServiceParameters().getParameters().get("disableForceRescan");
+    boolean checkDisableForceRescan(final String disabledString) {
+        final Map<String, Object> parameters = m_snmpCollection.getServiceParameters().getParameters();
+        final String src = ParameterMap.getKeyedString(parameters, "disableForceRescan", null);
         return ((src != null) && (src.toLowerCase().equals("all") || src.toLowerCase().equals(disabledString)));
     }
 

@@ -41,13 +41,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.utils.NodeLabel;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.api.Util;
+import org.opennms.web.rest.MultivaluedMapImpl;
+import org.opennms.web.rest.RequisitionRestService;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Changes the label of a node, throws an event signalling that change, and then
@@ -98,7 +107,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
         }
 
         try {
-            int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
+            final int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
             NodeLabel oldLabel = NodeLabel.retrieveLabel(nodeId);
             NodeLabel newLabel = null;
 
@@ -110,9 +119,33 @@ public class NodeLabelChangeServlet extends HttpServlet {
                 throw new ServletException("Unexpected labeltype value: " + labelType);
             }
 
-            NodeLabel.assignLabel(nodeId, newLabel);
+            WebApplicationContext beanFactory = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+            TransactionTemplate transactionTemplate = beanFactory.getBean(TransactionTemplate.class);
+            final RequisitionRestService requisitionService = beanFactory.getBean(RequisitionRestService.class);
+            final NodeDao nodeDao = beanFactory.getBean(NodeDao.class);
+
+            final String newNodeLabel = newLabel.getLabel();
+            String foreignSource = transactionTemplate.execute(new TransactionCallback<String>() {
+                public String doInTransaction(TransactionStatus status) {
+                    OnmsNode node = nodeDao.get(nodeId);
+                    if (node.getForeignSource() != null && node.getForeignId() != null) {
+                        MultivaluedMapImpl params = new MultivaluedMapImpl();
+                        params.putSingle("node-label", newNodeLabel);
+                        requisitionService.updateNode(node.getForeignSource(), node.getForeignId(), params);
+                        return node.getForeignSource();
+                    }
+                    return null;
+                }
+            });
+
             this.sendLabelChangeEvent(nodeId, oldLabel, newLabel);
-            response.sendRedirect(Util.calculateUrlBase(request, "element/node.jsp?node=" + nodeIdString));
+
+            if (foreignSource != null) {
+                response.sendRedirect(Util.calculateUrlBase(request, "admin/nodelabelProvisioned.jsp?node=" + nodeIdString + "&foreignSource=" + foreignSource));
+            } else {
+                NodeLabel.assignLabel(nodeId, newLabel);
+                response.sendRedirect(Util.calculateUrlBase(request, "element/node.jsp?node=" + nodeIdString));
+            }
         } catch (SQLException e) {
             throw new ServletException("Database exception", e);
         } catch (Throwable e) {

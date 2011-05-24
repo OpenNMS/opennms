@@ -29,6 +29,8 @@
         <include>org.opennms:opennms-webapp:jar:xsds:${project.version}</include>
         <include>org.opennms.features.sms-reflector:sms-monitor:jar:xsds:${project.version}</include>
       </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
   </dependencySets>
 </assembly>
