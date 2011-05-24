@@ -31,13 +31,16 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+import static org.opennms.core.utils.LogUtils.debugf;
+import static org.opennms.core.utils.LogUtils.infof;
+
 import java.net.InetAddress;
 
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
@@ -65,7 +68,7 @@ public class NewSuspectScan implements RunInBatch {
      * @param agentConfigFactory a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
      */
-    public NewSuspectScan(InetAddress ipAddress, ProvisionService provisionService, EventForwarder eventForwarder, SnmpAgentConfigFactory agentConfigFactory, DefaultTaskCoordinator taskCoordinator) {
+    public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final DefaultTaskCoordinator taskCoordinator) {
         m_ipAddress = ipAddress;
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;
@@ -83,7 +86,7 @@ public class NewSuspectScan implements RunInBatch {
     }
     
     /** {@inheritDoc} */
-    public void run(BatchTask phase) {
+    public void run(final BatchTask phase) {
         scanUndiscoveredNode(phase);
     }
 
@@ -92,10 +95,10 @@ public class NewSuspectScan implements RunInBatch {
      *
      * @param phase a {@link org.opennms.core.tasks.BatchTask} object.
      */
-    protected void scanUndiscoveredNode(BatchTask phase) {
-        
-        final String hostAddress = InetAddressUtils.str(m_ipAddress);
-		final OnmsNode node = m_provisionService.createUndiscoveredNode(hostAddress);
+    protected void scanUndiscoveredNode(final BatchTask phase) {
+    	final String addrString = str(m_ipAddress);
+		infof(this, "Attempting to scan new suspect address %s", addrString);
+        final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString);
         
         if (node != null) {
 
@@ -111,7 +114,7 @@ public class NewSuspectScan implements RunInBatch {
     private ScanProgress createScanProgress() {
         return new ScanProgress() {
             private boolean m_aborted = false;
-            public void abort(String message) {
+            public void abort(final String message) {
                 m_aborted = true;
                 LogUtils.infof(this, message);
             }
@@ -127,8 +130,8 @@ public class NewSuspectScan implements RunInBatch {
      * @param batch a {@link org.opennms.core.tasks.BatchTask} object.
      * @param nodeId a {@link java.lang.Integer} object.
      */
-    protected void reparentNodes(BatchTask batch, Integer nodeId) {
-        
+    protected void reparentNodes(final BatchTask batch, final Integer nodeId) {
+        debugf(this, "reparenting node ID %d not supported", nodeId);
     }
     
 
