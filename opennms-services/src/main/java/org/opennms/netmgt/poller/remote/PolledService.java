@@ -207,8 +207,8 @@ public class PolledService implements MonitoredService, Serializable, Comparable
             .append(this.getNodeId(), that.getNodeId())
             .append(this.getNodeLabel(), that.getNodeLabel())
             .append(this.getIpAddr(), that.getIpAddr())
-            .append(this.getServiceId(), that.getServiceId())
             .append(this.getSvcName(), that.getSvcName())
+            .append(this.getServiceId(), that.getServiceId())
             .toComparison();
     }
 
