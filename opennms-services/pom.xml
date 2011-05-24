@@ -278,14 +278,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>jfree</groupId>
-      <artifactId>jfreechart</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>jfree</groupId>
-      <artifactId>jcommon</artifactId>
-      <scope>compile</scope>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jfreechart-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>
