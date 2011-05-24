@@ -114,6 +114,10 @@
       <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.xml</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jersey-dependencies</artifactId>
       <type>pom</type>
@@ -138,6 +142,13 @@
 
 
     <!-- test dependencies -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+      <classifier>xsds</classifier>
+      <version>${project.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
