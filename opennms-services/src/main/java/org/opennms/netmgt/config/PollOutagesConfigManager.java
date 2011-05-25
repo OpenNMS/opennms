@@ -205,7 +205,7 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
         if (out == null) return false;
 
         for (final Interface ointerface : out.getInterfaceCollection()) {
-            if (ointerface.getAddress().equals(linterface)) {
+            if (ointerface.getAddress().equals("match-any") || ointerface.getAddress().equals(linterface)) {
                 return true;
             }
         }

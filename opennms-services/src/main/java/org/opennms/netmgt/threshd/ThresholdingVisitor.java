@@ -138,7 +138,15 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     public void reload() {
         m_thresholdingSet.reinitialize();
     }
-    
+
+    public void reloadScheduledOutages() {
+        m_thresholdingSet.updateScheduledOutages();
+    }
+
+    public boolean isNodeInOutage() {
+        return m_thresholdingSet.isNodeInOutage();
+    }
+
     /*
      *  Initialize required attributes map (m_attributesMap)
      */
