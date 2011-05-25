@@ -296,6 +296,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
     }
 
+    @Transactional
     private void importFromResource(String path) throws Exception {
         m_provisioner.importModelFromResource(m_resourceLoader.getResource(path));
     }

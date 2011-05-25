@@ -30,6 +30,7 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.LogUtils.infof;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 import java.util.Collection;
@@ -40,7 +41,6 @@ import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SyncServiceDetector;
@@ -133,7 +133,7 @@ public class IpInterfaceScan implements RunInBatch {
     public Callback<Boolean> servicePersister(final BatchTask currentPhase, final String serviceName) {
         return new Callback<Boolean>() {
             public void complete(final Boolean serviceDetected) {
-                final String hostAddress = InetAddressUtils.str(getAddress());
+                final String hostAddress = str(getAddress());
 				infof(this, "Attempted to detect service %s on address %s: %s", serviceName, hostAddress, serviceDetected);
                 if (serviceDetected) {
 
@@ -158,7 +158,7 @@ public class IpInterfaceScan implements RunInBatch {
             }
 
             public void handleException(final Throwable t) {
-                infof(this, t, "Exception occurred while trying to detect service %s on address %s", serviceName, InetAddressUtils.str(getAddress()));
+                infof(this, t, "Exception occurred while trying to detect service %s on address %s", serviceName, str(getAddress()));
             }
         };
     }
@@ -167,7 +167,7 @@ public class IpInterfaceScan implements RunInBatch {
         return new Runnable() {
             public void run() {
                 try {
-                    infof(this, "Attemping to detect service %s on address %s", detector.getServiceName(), InetAddressUtils.str(getAddress()));
+                    infof(this, "Attemping to detect service %s on address %s", detector.getServiceName(), str(getAddress()));
                     cb.complete(detector.isServiceDetected(getAddress(), new NullDetectorMonitor()));
                 } catch (final Throwable t) {
                     cb.handleException(t);
@@ -178,7 +178,7 @@ public class IpInterfaceScan implements RunInBatch {
 
             @Override
             public String toString() {
-                return String.format("Run detector %s on address %s", detector.getServiceName(), InetAddressUtils.str(getAddress()));
+                return String.format("Run detector %s on address %s", detector.getServiceName(), str(getAddress()));
             }
 
         };
@@ -208,7 +208,7 @@ public class IpInterfaceScan implements RunInBatch {
     public void run(final BatchTask currentPhase) {
     	final Collection<ServiceDetector> detectors = getProvisionService().getDetectorsForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
 
-        infof(this, "Detecting services for node %d/%s on address %s: found %d detectors", getNodeId(), getForeignSource(), InetAddressUtils.str(getAddress()), detectors.size());
+        infof(this, "Detecting services for node %d/%s on address %s: found %d detectors", getNodeId(), getForeignSource(), str(getAddress()), detectors.size());
 
         for (final ServiceDetector detector : detectors) {
             currentPhase.add(createDetectorTask(currentPhase, detector));
@@ -217,7 +217,7 @@ public class IpInterfaceScan implements RunInBatch {
     }
 
     private void setupAgentInfo(final BatchTask currentphase) {
-        getProvisionService().setIsPrimaryFlag(getNodeId(), InetAddressUtils.str(getAddress()));
+        getProvisionService().setIsPrimaryFlag(getNodeId(), str(getAddress()));
     }
 
 }
