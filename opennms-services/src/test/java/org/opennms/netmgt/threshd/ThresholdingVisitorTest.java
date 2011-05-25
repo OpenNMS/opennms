@@ -37,17 +37,23 @@ import static org.junit.Assert.fail;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import junit.framework.Assert;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
@@ -77,6 +83,7 @@ import org.opennms.netmgt.collectd.SnmpIfData;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -101,6 +108,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -138,6 +146,24 @@ public class ThresholdingVisitorTest {
         EventIpcManager eventdIpcMgr = (EventIpcManager)eventMgr;
         EventIpcManagerFactory.setIpcManager(eventdIpcMgr);
         
+        DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        sb.append("<outages>");
+        sb.append("<outage name=\"junit outage\" type=\"specific\">");
+        sb.append("<time begins=\"");
+        sb.append(formatter.format(new Date(System.currentTimeMillis() - 3600000)));
+        sb.append("\" ends=\"");
+        sb.append(formatter.format(new Date(System.currentTimeMillis() + 3600000)));
+        sb.append("\"/>");
+        sb.append("<interface address=\"match-any\"/>");
+        sb.append("</outage>");
+        sb.append("</outages>");
+        File file = new File("target/poll-outages.xml");
+        FileWriter writer = new FileWriter(file);
+        writer.write(sb.toString());
+        writer.close();
+        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
+        PollOutagesConfigFactory.getInstance().afterPropertiesSet();
         initFactories("/threshd-configuration.xml","/test-thresholds.xml");
         m_anticipatedEvents = new ArrayList<Event>();
         
@@ -1072,6 +1098,19 @@ public class ThresholdingVisitorTest {
         EasyMock.verify(agent);
         verifyEvents(0);
     }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - threshd-configuration-outages.xml
+     * - test-thresholds.xml
+     */
+     @Test
+     public void testBug4261_scheduledOutages() throws Exception {
+         initFactories("/threshd-configuration-outages.xml","/test-thresholds.xml");
+         ThresholdingVisitor visitor = createVisitor();
+         Assert.assertEquals(1, visitor.m_thresholdingSet.m_scheduledOutages.size());
+         Assert.assertTrue("is node on outage", visitor.isNodeInOutage());
+     }
 
     /*
      * This test uses this files from src/test/resources:
