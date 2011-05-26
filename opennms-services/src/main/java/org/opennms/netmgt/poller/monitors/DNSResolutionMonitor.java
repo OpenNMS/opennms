@@ -37,6 +37,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.xbill.DNS.AAAARecord;
@@ -51,6 +52,7 @@ import org.xbill.DNS.Type;
  *
  * @author brozow
  */
+@Distributable
 public class DNSResolutionMonitor extends AbstractServiceMonitor {
     
     public static final String RESOLUTION_TYPE_PARM = "resolution-type";
