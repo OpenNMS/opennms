@@ -86,6 +86,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -550,6 +551,35 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
         //Verify snmpInterface count
         assertEquals("Unexpected number of SNMP interfaces found: " + getSnmpInterfaceDao().findAll(), 6, getSnmpInterfaceDao().countAll());
+    }
+
+    // fail if we take more than five minutes
+    @Test(timeout=300000)
+    @Transactional
+    @JUnitSnmpAgent(resource="classpath:snmpwalk-demo.properties")
+    public void testPopulateAndForceUnmanage() throws Exception {
+        importFromResource("classpath:/requisition_then_scanv6.xml");
+
+        List<OnmsNode> nodes = getNodeDao().findAll();
+        OnmsNode node = nodes.get(0);
+
+        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        runScan(scan);
+
+        node = getNodeDao().get(node.getId());
+
+        OnmsIpInterface iface = node.getIpInterfaceByIpAddress("10.1.15.245");
+        iface.setIsManaged("F");
+        node.addIpInterface(iface);
+        getNodeDao().saveOrUpdate(node);
+        
+        scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        runScan(scan);
+
+        node = getNodeDao().get(node.getId());
+
+        iface = node.getIpInterfaceByIpAddress("10.1.15.245");
+        assertEquals("F", iface.getIsManaged());
     }
 
     // fail if we take more than five minutes
