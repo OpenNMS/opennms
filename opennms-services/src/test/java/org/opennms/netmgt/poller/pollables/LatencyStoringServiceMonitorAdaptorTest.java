@@ -42,6 +42,7 @@ import static org.easymock.EasyMock.endsWith;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockLogAppender;
@@ -81,6 +83,7 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.core.io.FileSystemResource;
 
 public class LatencyStoringServiceMonitorAdaptorTest {
     private EasyMockUtils m_mocks = new EasyMockUtils();
@@ -93,6 +96,9 @@ public class LatencyStoringServiceMonitorAdaptorTest {
 
         RrdTestUtils.initializeNullStrategy();
         RrdUtils.setStrategy(m_rrdStrategy);
+
+        System.setProperty("opennms.home", "src/test/resources");
+        PollOutagesConfigFactory.init();
     }
 
     @After
