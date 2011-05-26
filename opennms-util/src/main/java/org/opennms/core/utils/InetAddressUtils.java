@@ -186,6 +186,30 @@ abstract public class InetAddressUtils {
             //
             // InetAddress[] addresses = InetAddress.getAllByName(hostname);
             //
+            List<InetAddress> v4Addresses = new ArrayList<InetAddress>();
+            try {
+                Record[] aRecs = new Lookup(hostname, Type.A).run();
+                if (aRecs != null) {
+                    for (Record aRec : aRecs) {
+                        if (aRec instanceof ARecord) {
+                            InetAddress addr = ((ARecord)aRec).getAddress();
+                            if (addr instanceof Inet4Address) {
+                                v4Addresses.add(addr);
+                            } else {
+                                // Should never happen
+                                throw new UnknownHostException("Non-IPv4 address found via A record DNS lookup of host: " + hostname + ": " + addr.toString());
+                            }
+                        }
+                    }
+                } else {
+                    //throw new UnknownHostException("No IPv4 addresses found via A record DNS lookup of host: " + hostname);
+                }
+            } catch (TextParseException e) {
+                UnknownHostException ex = new UnknownHostException("Could not perform A record lookup for host: " + hostname);
+                ex.initCause(e);
+                throw ex;
+            }
+
             List<InetAddress> v6Addresses = new ArrayList<InetAddress>();
             try {
                 Record[] quadARecs = new Lookup(hostname, Type.AAAA).run();
@@ -200,32 +224,10 @@ abstract public class InetAddressUtils {
                         }
                     }
                 } else {
-                    //throw new UnknownHostException("No IPv6 addresses found via AAAA record DNS lookup of host: " + hostname);
+                    // throw new UnknownHostException("No IPv6 addresses found via AAAA record DNS lookup of host: " + hostname);
                 }
             } catch (TextParseException e) {
                 UnknownHostException ex = new UnknownHostException("Could not perform AAAA record lookup for host: " + hostname);
-                ex.initCause(e);
-                throw ex;
-            }
-
-            List<InetAddress> v4Addresses = new ArrayList<InetAddress>();
-            try {
-                Record[] aRecs = new Lookup(hostname, Type.A).run();
-                if (aRecs != null) {
-                    for (Record aRec : aRecs) {
-                        InetAddress addr = ((ARecord)aRec).getAddress();
-                        if (addr instanceof Inet4Address) {
-                            v4Addresses.add(addr);
-                        } else {
-                            // Should never happen
-                            throw new UnknownHostException("Non-IPv4 address found via A record DNS lookup of host: " + hostname + ": " + addr.toString());
-                        }
-                    }
-                } else {
-                    // throw new UnknownHostException("No IPv4 addresses found via A record DNS lookup of host: " + hostname);
-                }
-            } catch (TextParseException e) {
-                UnknownHostException ex = new UnknownHostException("Could not perform A record lookup for host: " + hostname);
                 ex.initCause(e);
                 throw ex;
             }
