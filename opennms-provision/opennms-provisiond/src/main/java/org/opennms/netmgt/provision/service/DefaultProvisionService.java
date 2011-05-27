@@ -75,6 +75,7 @@ import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
+import org.opennms.netmgt.model.updates.NodeUpdate;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -414,7 +415,18 @@ public class DefaultProvisionService implements ProvisionService {
         
         return node;
     }
-    
+
+
+	@Override
+	public NodeUpdate getRequisitionedNodeUpdate(final String foreignSource, final String foreignId) {
+    	final OnmsNodeRequisition nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
+        if (nodeReq == null) {
+			warnf(this, "nodeReq for node %s:%s cannot be null!", foreignSource, foreignId);
+            return null;
+        }
+        return nodeReq.constructNodeUpdate();
+	}
+
     /** {@inheritDoc} */
     @Transactional
     public OnmsServiceType createServiceTypeIfNecessary(final String serviceName) {
@@ -655,7 +667,7 @@ public class DefaultProvisionService implements ProvisionService {
      */
     /** {@inheritDoc} */
     @Transactional
-    public OnmsNode updateNodeAttributes(final OnmsNode node) {
+    public OnmsNode updateNodeAttributes(final OnmsNode node, NodeUpdate nodeUpdate) {
     	final OnmsNode dbNode = getDbNode(node);
 
         if (dbNode == null) {

@@ -45,6 +45,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.updates.NodeUpdate;
 
 /**
  * <p>NewSuspectScan class.</p>
@@ -99,7 +100,9 @@ public class NewSuspectScan implements RunInBatch {
     	final String addrString = str(m_ipAddress);
 		infof(this, "Attempting to scan new suspect address %s", addrString);
         final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString);
-        
+
+        final NodeUpdate update = new NodeUpdate(node.getId(), node.getForeignSource(), node.getForeignId());
+
         if (node != null) {
 
             phase.getBuilder().addSequence(

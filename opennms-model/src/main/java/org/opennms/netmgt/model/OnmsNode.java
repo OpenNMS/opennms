@@ -194,7 +194,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     	setLabel(label);
     }
     
-    /**
+	/**
      * Unique identifier for node.
      *
      * @return a {@link java.lang.Integer} object.
@@ -913,13 +913,22 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     public OnmsIpInterface getIpInterfaceByIpAddress(InetAddress ipAddress) {
-        for (OnmsIpInterface iface : getIpInterfaces()) {
+        for (final OnmsIpInterface iface : getIpInterfaces()) {
             if (ipAddress.equals(iface.getIpAddress())) {
                 return iface;
             }
         }
         return null;
     }
+
+	public OnmsCategory getCategoryByName(final String categoryName) {
+		for (final OnmsCategory category : getCategories()) {
+			if (categoryName.equals(category.getName())) {
+				return category;
+			}
+		}
+		return null;
+	}
 
     /**
      * <p>compareTo</p>

@@ -1147,7 +1147,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
         assertTrue(node.hasCategory(TEST_CATEGORY));
         
-        m_provisionService.updateNodeAttributes(node);
+        m_provisionService.updateNodeAttributes(node, new NodeUpdate(asdf));
         
         // flush here to force a write so we are sure that the OnmsCategories are correctly created
         m_nodeDao.flush();

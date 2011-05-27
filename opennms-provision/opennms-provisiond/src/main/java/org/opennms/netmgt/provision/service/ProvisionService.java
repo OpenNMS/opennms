@@ -41,6 +41,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.updates.NodeUpdate;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -113,10 +114,11 @@ public interface ProvisionService {
      * <p>updateNodeAttributes</p>
      *
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param nodeUpdate TODO
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @Transactional
-    public abstract OnmsNode updateNodeAttributes(OnmsNode node);
+    public abstract OnmsNode updateNodeAttributes(OnmsNode node, NodeUpdate nodeUpdate);
    
     /**
      * <p>getDbNodeInitCat</p>
@@ -177,6 +179,16 @@ public interface ProvisionService {
      */
     @Transactional
     public abstract OnmsNode getRequisitionedNode(String foreignSource, String foreignId);
+
+    /**
+     * Get a node update which represents the data provided in a requisition for a given
+     * foreign source and foreign ID.
+     * @param foreignSource the foreign source
+     * @param foreignId the foreign ID
+     * @return
+     */
+    @Transactional
+    public abstract NodeUpdate getRequisitionedNodeUpdate(String foreignSource, String foreignId);
 
     /**
      * Delete the indicated node form the database.
@@ -388,8 +400,5 @@ public interface ProvisionService {
      */
     @Transactional
     public abstract OnmsNode getNode(Integer nodeId);
-
-
-
 
 }

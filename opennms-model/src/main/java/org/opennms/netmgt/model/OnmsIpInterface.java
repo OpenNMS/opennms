@@ -192,7 +192,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private String m_ipHostName;
 
-    private String m_isManaged;
+    private String m_isManaged = "M";
 
     private PrimaryType m_isSnmpPrimary = PrimaryType.NOT_ELIGIBLE;
 
@@ -216,7 +216,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @param ipAddr a {@link java.lang.String} object.
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    public OnmsIpInterface(String ipAddr, OnmsNode node) {
+    public OnmsIpInterface(final String ipAddr, final OnmsNode node) {
         this(InetAddressUtils.getInetAddress(ipAddr), node);
     }
 
@@ -226,7 +226,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @param ipAddr a {@link java.lang.String} object.
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    public OnmsIpInterface(InetAddress ipAddr, OnmsNode node) {
+    public OnmsIpInterface(final InetAddress ipAddr, final OnmsNode node) {
         m_ipAddress = ipAddr;
         m_node = node;
         if (node != null) {
@@ -264,7 +264,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param id a {@link java.lang.Integer} object.
      */
-    public void setId(Integer id) {
+    public void setId(final Integer id) {
         m_id = id;
     }
 
@@ -300,7 +300,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param ifindex a {@link java.lang.Integer} object.
      */
-    public void setIfIndex(Integer ifindex) {
+    public void setIfIndex(final Integer ifindex) {
         if (m_snmpInterface == null) {
             throw new IllegalStateException("Cannot set ifIndex if snmpInterface relation isn't setup");
         }
@@ -324,7 +324,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param iphostname a {@link java.lang.String} object.
      */
-    public void setIpHostName(String iphostname) {
+    public void setIpHostName(final String iphostname) {
         m_ipHostName = iphostname;
     }
 
@@ -344,7 +344,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param ismanaged a {@link java.lang.String} object.
      */
-    public void setIsManaged(String ismanaged) {
+    public void setIsManaged(final String ismanaged) {
         m_isManaged = ismanaged;
     }
 
@@ -375,7 +375,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param iplastcapsdpoll a {@link java.util.Date} object.
      */
-    public void setIpLastCapsdPoll(Date iplastcapsdpoll) {
+    public void setIpLastCapsdPoll(final Date iplastcapsdpoll) {
         m_ipLastCapsdPoll = iplastcapsdpoll;
     }
 
@@ -394,7 +394,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param primaryType a {@link java.lang.String} object.
      */
-    public void setPrimaryString(String primaryType) {
+    public void setPrimaryString(final String primaryType) {
         m_isSnmpPrimary = new PrimaryType(primaryType.charAt(0));
     }
     
@@ -414,7 +414,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param issnmpprimary a {@link org.opennms.netmgt.model.OnmsIpInterface.PrimaryType} object.
      */
-    public void setIsSnmpPrimary(PrimaryType issnmpprimary) {
+    public void setIsSnmpPrimary(final PrimaryType issnmpprimary) {
         m_isSnmpPrimary = issnmpprimary;
     }
     
@@ -446,7 +446,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    public void setNode(org.opennms.netmgt.model.OnmsNode node) {
+    public void setNode(final org.opennms.netmgt.model.OnmsNode node) {
         m_node = node;
     }
 
@@ -469,10 +469,13 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param ifServices a {@link java.util.Set} object.
      */
-    public void setMonitoredServices(Set<OnmsMonitoredService> ifServices) {
+    public void setMonitoredServices(final Set<OnmsMonitoredService> ifServices) {
         m_monitoredServices = ifServices;
     }
 
+	public void addMonitoredService(final OnmsMonitoredService service) {
+		m_monitoredServices.add(service);
+	}
 
     /**
      * The SnmpInterface associated with this interface if any
@@ -492,7 +495,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param snmpInterface a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
-    public void setSnmpInterface(OnmsSnmpInterface snmpInterface) {
+    public void setSnmpInterface(final OnmsSnmpInterface snmpInterface) {
         m_snmpInterface = snmpInterface;
     }
 
@@ -513,10 +516,10 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
     /** {@inheritDoc} */
-    public void visit(EntityVisitor visitor) {
+    public void visit(final EntityVisitor visitor) {
         visitor.visitIpInterface(this);
 
-        for (OnmsMonitoredService monSvc : getMonitoredServices()) {
+        for (final OnmsMonitoredService monSvc : getMonitoredServices()) {
             monSvc.visit(visitor);
         }
 
@@ -541,7 +544,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param ipaddr a {@link java.lang.String} object.
      */
-    public void setIpAddress(InetAddress ipaddr) {
+    public void setIpAddress(final InetAddress ipaddr) {
         m_ipAddress = ipaddr;
     }
 
@@ -554,7 +557,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @XmlAttribute(name="isDown")
     public boolean isDown() {
         boolean down = true;
-        for (OnmsMonitoredService svc : m_monitoredServices) {
+        for (final OnmsMonitoredService svc : m_monitoredServices) {
             if (!svc.isDown()) {
                 return !down;
             }
@@ -575,8 +578,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @param svcName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      */
-    public OnmsMonitoredService getMonitoredServiceByServiceType(String svcName) {
-        for (OnmsMonitoredService monSvc : getMonitoredServices()) {
+    public OnmsMonitoredService getMonitoredServiceByServiceType(final String svcName) {
+        for (final OnmsMonitoredService monSvc : getMonitoredServices()) {
             if (monSvc.getServiceType().getName().equals(svcName)) {
                 return monSvc;
             }
@@ -589,7 +592,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param scannedIface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
-    public void mergeInterfaceAttributes(OnmsIpInterface scannedIface) {
+    public void mergeInterfaceAttributes(final OnmsIpInterface scannedIface) {
         
         if (hasNewValue(scannedIface.getIsManaged(), getIsManaged())) {
             setIsManaged(scannedIface.getIsManaged());
@@ -615,7 +618,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @param existingVal a {@link org.opennms.netmgt.model.OnmsIpInterface.PrimaryType} object.
      * @return a boolean.
      */
-    protected static boolean hasNewCollectionTypeValue(PrimaryType newVal, PrimaryType existingVal) {
+    protected static boolean hasNewCollectionTypeValue(final PrimaryType newVal, final PrimaryType existingVal) {
         return newVal != null && !newVal.equals(existingVal) && newVal != PrimaryType.NOT_ELIGIBLE;
     }
 
@@ -627,20 +630,20 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
-    public void mergeMonitoredServices(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {
+    public void mergeMonitoredServices(final OnmsIpInterface scannedIface, final EventForwarder eventForwarder, final boolean deleteMissing) {
     
         // create map of services to serviceType
-        Map<OnmsServiceType, OnmsMonitoredService> serviceTypeMap = new HashMap<OnmsServiceType, OnmsMonitoredService>();
-        for (OnmsMonitoredService svc : scannedIface.getMonitoredServices()) {
+    	final Map<OnmsServiceType, OnmsMonitoredService> serviceTypeMap = new HashMap<OnmsServiceType, OnmsMonitoredService>();
+        for (final OnmsMonitoredService svc : scannedIface.getMonitoredServices()) {
             serviceTypeMap.put(svc.getServiceType(), svc);
         }
     
         // for each service in the database
-        for (Iterator<OnmsMonitoredService> it = getMonitoredServices().iterator(); it.hasNext();) {
-            OnmsMonitoredService svc = it.next();
+        for (final Iterator<OnmsMonitoredService> it = getMonitoredServices().iterator(); it.hasNext();) {
+        	final OnmsMonitoredService svc = it.next();
             
             // find the corresponding scanned service
-            OnmsMonitoredService imported = serviceTypeMap.get(svc.getServiceType());
+        	final OnmsMonitoredService imported = serviceTypeMap.get(svc.getServiceType());
             if (imported == null) {
                 if (deleteMissing) {
                     // there is no scanned service... delete it from the database 
@@ -658,8 +661,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         }
         
         // for any services not found in the database, add them
-        Collection<OnmsMonitoredService> newServices = serviceTypeMap.values();
-        for (OnmsMonitoredService svc : newServices) {
+        final Collection<OnmsMonitoredService> newServices = serviceTypeMap.values();
+        for (final OnmsMonitoredService svc : newServices) {
             svc.setIpInterface(this);
             getMonitoredServices().add(svc);
             svc.visit(new AddEventVisitor(eventForwarder));
@@ -671,7 +674,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param scannedIface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
-    public void updateSnmpInterface(OnmsIpInterface scannedIface) {
+    public void updateSnmpInterface(final OnmsIpInterface scannedIface) {
         
         if (!hasNewValue(scannedIface.getIfIndex(), getIfIndex())) {
             /* no ifIndex in currently scanned interface so don't bother
@@ -686,7 +689,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         } else {
             // locate the snmpInterface on this node that has the new ifIndex and set it
             // into the interface
-            OnmsSnmpInterface snmpIface = getNode().getSnmpInterfaceWithIfIndex(scannedIface.getIfIndex());
+            final OnmsSnmpInterface snmpIface = getNode().getSnmpInterfaceWithIfIndex(scannedIface.getIfIndex());
             setSnmpInterface(snmpIface);
         }
         
@@ -701,7 +704,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
-    public void mergeInterface(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {
+    public void mergeInterface(final OnmsIpInterface scannedIface, final EventForwarder eventForwarder, final boolean deleteMissing) {
         mergeInterfaceAttributes(scannedIface);
         updateSnmpInterface(scannedIface);
         mergeMonitoredServices(scannedIface, eventForwarder, deleteMissing);

@@ -31,14 +31,22 @@
  */
 package org.opennms.netmgt.provision.persist;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.NodeBuilder;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.updates.AssetRecordUpdate;
+import org.opennms.netmgt.model.updates.IpInterfaceUpdate;
+import org.opennms.netmgt.model.updates.MonitoredServiceUpdate;
+import org.opennms.netmgt.model.updates.NodeUpdate;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
@@ -171,7 +179,6 @@ public class OnmsNodeRequisition {
 
         @Override
         public void visitNode(OnmsNodeRequisition nodeReq) {
-            
             NodeBuilder nodeBldr = bldr.addNode(nodeReq.getNodeLabel());
             nodeBldr.setLabelSource("U");
             nodeBldr.setType("A");
@@ -184,6 +191,77 @@ public class OnmsNodeRequisition {
         
         
     }
+
+    private static class NodeUpdateBuilder extends AbstractRequisitionVisitor {
+    	NodeUpdate m_update = null;
+    	IpInterfaceUpdate m_ipInterfaceUpdate = null;
+    	MonitoredServiceUpdate m_monitoredServiceUpdate = null;
+
+		@Override
+		public void visitAsset(final OnmsAssetRequisition assetReq) {
+			m_update.assetRecord().setAssetAttribute(assetReq.getName(), assetReq.getValue());
+		}
+
+		@Override
+		public void visitInterface(final OnmsIpInterfaceRequisition ifaceReq) {
+            String ipAddr = ifaceReq.getIpAddr();
+            if (ipAddr == null || "".equals(ipAddr)) {
+            	LogUtils.warnf(this, "Requisition contains an invalid (empty or null) IP address in node %s (%s/%s)", m_update.getLabel(), m_update.getForeignSource(), m_update.getForeignId());
+                return;
+            }
+
+        	InetAddress addr = InetAddressUtils.addr(ipAddr);
+        	m_ipInterfaceUpdate = m_update.ipAddress(addr);
+            if (ifaceReq.getStatus() == 3) {
+				m_ipInterfaceUpdate.setIsManaged("U");
+            }
+            if (ifaceReq.getSnmpPrimary() != null) {
+            	m_ipInterfaceUpdate.setIsSnmpPrimary(PrimaryType.get(ifaceReq.getSnmpPrimary()));
+            }
+		}
+
+		@Override
+		public void completeInterface(final OnmsIpInterfaceRequisition ifaceReq) {
+			m_ipInterfaceUpdate = null;
+		}
+		
+		@Override
+		public void visitMonitoredService(final OnmsMonitoredServiceRequisition monSvcReq) {
+			m_monitoredServiceUpdate = m_ipInterfaceUpdate.monitoredService(monSvcReq.getServiceName());
+		}
+
+		@Override
+		public void completeMonitoredService(final OnmsMonitoredServiceRequisition monSvcReq) {
+			m_monitoredServiceUpdate = null;
+		}
+
+		@Override
+		public void visitNode(final OnmsNodeRequisition nodeReq) {
+			m_update = new NodeUpdate(nodeReq.getForeignSource(), nodeReq.getForeignId());
+
+			if (nodeReq.getNodeLabel() != null) m_update.setLabel(nodeReq.getNodeLabel());
+			m_update.setLabelSource("U");
+			m_update.setType("A");
+
+			final AssetRecordUpdate assetRecord = m_update.assetRecord();
+			if (nodeReq.getBuilding() != null) assetRecord.setBuilding(nodeReq.getBuilding());
+			if (nodeReq.getCity() != null) assetRecord.setCity(nodeReq.getCity());
+		}
+
+		@Override
+		public void visitNodeCategory(final OnmsNodeCategoryRequisition catReq) {
+			m_update.category(catReq.getName());
+		}
+
+		@Override
+		public void visitServiceCategory(final OnmsServiceCategoryRequisition catReq) {
+			m_monitoredServiceUpdate.category(catReq.getName());
+		}
+
+		public NodeUpdate getNodeUpdate() {
+			return m_update;
+		}
+    }
     
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.persist.NodeRequisition#constructOnmsNodeFromRequisition()
@@ -194,12 +272,18 @@ public class OnmsNodeRequisition {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     public OnmsNode constructOnmsNodeFromRequisition() {
-        OnmsNodeBuilder visitor = new OnmsNodeBuilder();
+    	final OnmsNodeBuilder visitor = new OnmsNodeBuilder();
         visit(visitor);
         return visitor.getNode();
     }
 
-    /* (non-Javadoc)
+	public NodeUpdate constructNodeUpdate() {
+		final NodeUpdateBuilder visitor = new NodeUpdateBuilder();
+		visit(visitor);
+		return visitor.getNodeUpdate();
+	}
+
+	/* (non-Javadoc)
      * @see org.opennms.netmgt.provision.persist.NodeRequisition#log()
      */
     /**

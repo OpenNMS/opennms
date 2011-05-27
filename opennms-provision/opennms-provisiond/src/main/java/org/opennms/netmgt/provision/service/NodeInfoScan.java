@@ -12,6 +12,7 @@ import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.updates.NodeUpdate;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -25,6 +26,7 @@ final class NodeInfoScan implements RunInBatch {
     private final InetAddress m_agentAddress;
     private final String m_foreignSource;
     private OnmsNode m_node;
+    private NodeUpdate m_nodeUpdate;
     private Integer m_nodeId;
     private boolean restoreCategories = false;
     private final ProvisionService m_provisionService;
@@ -33,6 +35,7 @@ final class NodeInfoScan implements RunInBatch {
 
     NodeInfoScan(OnmsNode node, InetAddress agentAddress, String foreignSource, ScanProgress scanProgress, SnmpAgentConfigFactory agentConfigFactory, ProvisionService provisionService, Integer nodeId){
         m_node = node;
+        m_nodeUpdate = new NodeUpdate(node);
         m_agentAddress = agentAddress;
         m_foreignSource = foreignSource;
         m_scanProgress = scanProgress;
@@ -83,6 +86,10 @@ final class NodeInfoScan implements RunInBatch {
 
     private OnmsNode getNode() {
         return m_node;
+    }
+    
+    private NodeUpdate getNodeUpdate() {
+    	return m_nodeUpdate;
     }
     
     private Integer getNodeId() {
@@ -159,7 +166,7 @@ final class NodeInfoScan implements RunInBatch {
             debugf(this, "doPersistNodeInfo: Restoring %d categories to DB", getNode().getCategories().size());
         }
         if (!isAborted() || restoreCategories) {
-            getProvisionService().updateNodeAttributes(getNode());
+            getProvisionService().updateNodeAttributes(getNode(), getNodeUpdate());
         }
     }
 
