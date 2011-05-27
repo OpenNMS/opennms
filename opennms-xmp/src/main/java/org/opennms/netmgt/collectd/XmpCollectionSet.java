@@ -59,6 +59,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,6 +74,7 @@ public class XmpCollectionSet implements CollectionSet {
     CollectionAgent agent;
     XmpCollectionResource collectionResource;
     Set<XmpCollectionResource>listOfResources;
+    private Date m_timestamp;
 
     /* constructors  ************************************* */
     XmpCollectionSet(CollectionAgent agent) 
@@ -197,5 +199,13 @@ public class XmpCollectionSet implements CollectionSet {
 
         visitor.completeCollectionSet(this);
     }
+
+    @Override
+	public Date getCollectionTimestamp() {
+		return m_timestamp;
+	}
+    public void setCollectionTimestamp(Date timestamp) {
+    	this.m_timestamp = timestamp;
+	}
 
 } /* class XmpCollectionSet */

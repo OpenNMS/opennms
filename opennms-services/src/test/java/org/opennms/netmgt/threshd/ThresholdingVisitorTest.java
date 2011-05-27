@@ -67,6 +67,8 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.AttributeGroupType;
 import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.CollectionSet;
+import org.opennms.netmgt.collectd.CollectionSetVisitor;
 import org.opennms.netmgt.collectd.GenericIndexResource;
 import org.opennms.netmgt.collectd.GenericIndexResourceType;
 import org.opennms.netmgt.collectd.IfInfo;
@@ -76,6 +78,7 @@ import org.opennms.netmgt.collectd.NodeResourceType;
 import org.opennms.netmgt.collectd.NumericAttributeType;
 import org.opennms.netmgt.collectd.OnmsSnmpCollection;
 import org.opennms.netmgt.collectd.ResourceType;
+import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.collectd.SnmpAttributeType;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
@@ -289,17 +292,24 @@ public class ThresholdingVisitorTest {
         addHighThresholdEvent(1, 10, 5, 15, "Unknown", null, "myCounter", null, null);
         addHighRearmEvent(1, 10, 5, 2, "Unknown", null, "myCounter", null, null);
 
+        long baseDate = new Date().getTime();
+        // Step 0: Visit a CollectionSet with a timestamp, so that the thresholder knows how when the collection was held 
+        // Normally visiting the CollectionSet would end up visiting the resources, but we're fudging that for the test
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate));
+
         // Collect Step 1 : Initialize counter cache.
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(1000));
         resource.visit(visitor);
 
         // Collect Step 2 : Trigger. (last-current)/step => (5500-1000)/300=15
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate+300000));
         resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(5500));
         resource.visit(visitor);
 
         // Collect Step 3 : Rearm. (last-current)/step => (6100-5500)/300=2
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate+600000));
         resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(6100));
         resource.visit(visitor);
@@ -322,7 +332,10 @@ public class ThresholdingVisitorTest {
         String ifName = "wlan0";
         addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
         addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
-        runInterfaceResource(createVisitor(), "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        
+        ThresholdingVisitor visitor = createVisitor();
+        visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
+        runInterfaceResource(visitor, "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
     }
 
@@ -348,7 +361,10 @@ public class ThresholdingVisitorTest {
         p.put("myMockParam", "myMockValue");
         ResourceTypeUtils.saveUpdatedProperties(new File(resourceDir, "strings.properties"), p);
         
-        runInterfaceResource(createVisitor(), "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        ThresholdingVisitor visitor = createVisitor();
+        visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
+
+        runInterfaceResource(visitor, "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
         deleteDirectory(new File(getRepository().getRrdBaseDir(), "1"));
     }
@@ -597,25 +613,30 @@ public class ThresholdingVisitorTest {
         addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
         addHighThresholdEvent(1, 70, 60, 80, "Unknown", null, "myCounter - 30", null, null);
         addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
-        addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);            
-
+        addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);
+        
+        long baseDate = new Date().getTime();
         // Collect Step 1 : First Data: Last should be NaN
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate));
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(2000));
         resource.visit(visitor);
 
         // Collect Step 2 : First Value: (last-current)/step => (20000-2000)/300=60
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate+300000));
         resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(20000));
         resource.visit(visitor);
 
         // Collect Step 3 : Second Value: (last-current)/step => (53000-20000)/300=110 => Trigger
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate+600000));
         resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(53000));
         resource.visit(visitor);
 
         // Collect Step 3 : Third Value (last-current)/step => (65000-53000)/300=40 => Rearm
-        resource = new NodeInfo(resourceType, agent);
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate+900000));
+		resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(65000));
         resource.visit(visitor);
 
@@ -767,7 +788,7 @@ public class ThresholdingVisitorTest {
         
         // Visitor with Mock FilterDao
         ThresholdingVisitor visitor = createVisitor();
-        
+        visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
         // Do nothing, just to check visitor
         runInterfaceResource(visitor, "127.0.0.1", "eth0", 10000000l, 1, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         
@@ -875,7 +896,9 @@ public class ThresholdingVisitorTest {
         initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
         addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
         addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
-        runInterfaceResource(createVisitor(), "0.0.0.0", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        ThresholdingVisitor visitor = createVisitor();
+        visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
+        runInterfaceResource(visitor, "0.0.0.0", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(remainingEvents);
     }
 
@@ -934,7 +957,7 @@ public class ThresholdingVisitorTest {
         for (int i=1; i<=numOfNodes; i++) {
             System.err.println("----------------------------------------------------------------------------------- visitor #" + i);
             String ipAddress = baseIpAddress + i;
-            ThresholdingVisitor visitor = ThresholdingVisitor.create(1, ipAddress, "SNMP", getRepository(), params, 300000);
+            ThresholdingVisitor visitor = ThresholdingVisitor.create(1, ipAddress, "SNMP", getRepository(), params);
             assertNotNull(visitor);
             assertEquals(4, visitor.getThresholdGroups().size()); // mib2, cisco, ciscoIPRA, ciscoNAS
         }
@@ -963,7 +986,7 @@ public class ThresholdingVisitorTest {
     public void testBug3488() throws Exception {
         String ipAddress = "127.0.0.1";
         setupSnmpInterfaceDatabase(ipAddress, null);
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "HTTP", getRepository(), 0);
+        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "HTTP", getRepository());
         assertTrue(thresholdingSet.hasThresholds()); // Global Test
         Map<String, Double> attributes = new HashMap<String, Double>();
         attributes.put("http", 200.0);
@@ -997,7 +1020,7 @@ public class ThresholdingVisitorTest {
         String ipAddress = "127.0.0.1";
         String ifName = "eth0";
         setupSnmpInterfaceDatabase(ipAddress, ifName);
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "StrafePing", getRepository(), 0);
+        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "StrafePing", getRepository());
         assertTrue(thresholdingSet.hasThresholds());
         Map<String, Double> attributes = new HashMap<String, Double>();
         for (double i=1; i<21; i++)
@@ -1029,7 +1052,9 @@ public class ThresholdingVisitorTest {
         Long ifSpeed = 10000000l; // 10Mbps - Bad Speed
         String ifName = "wlan0";
         addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
-        runInterfaceResource(createVisitor(), "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        ThresholdingVisitor visitor = createVisitor();
+        visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
+        runInterfaceResource(visitor, "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(1);
     }
 
@@ -1047,7 +1072,9 @@ public class ThresholdingVisitorTest {
         Long ifSpeed = 100000000l; // 100Mbps - Correct Speed!
         String ifName = "wlan0";
         addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
-        runInterfaceResource(createVisitor(), "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        ThresholdingVisitor visitor = createVisitor();
+        visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
+        runInterfaceResource(visitor, "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
     }
 
@@ -1081,7 +1108,9 @@ public class ThresholdingVisitorTest {
         CollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
+        long timestamp = new Date().getTime();
         // Step 1
+        visitor.visitCollectionSet(this.createAnonymousCollectionSet(timestamp));
         IfInfo ifInfo = new IfInfo(resourceType, agent, ifData);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 10000);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 10000);
@@ -1089,6 +1118,7 @@ public class ThresholdingVisitorTest {
         resource.visit(visitor);
 
         // Step 2 - Increment Counters
+        visitor.visitCollectionSet(this.createAnonymousCollectionSet(timestamp+300000));
         ifInfo = new IfInfo(resourceType, agent, ifData);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 46000);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 46000);
@@ -1204,7 +1234,7 @@ public class ThresholdingVisitorTest {
         String ifName = "lo0";
         setupSnmpInterfaceDatabase("127.0.0.1", ifName);
 
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository(), 0);
+        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository());
         assertTrue(thresholdingSet.hasThresholds()); // Global Test
         Map<String, Double> attributes = new HashMap<String, Double>();
         attributes.put("http", 90.0);
@@ -1257,7 +1287,7 @@ public class ThresholdingVisitorTest {
         String ifName = "lo0";
         setupSnmpInterfaceDatabase("127.0.0.1", ifName);
 
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository(), 0);
+        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository());
         assertTrue(thresholdingSet.hasThresholds()); // Global Test
         Map<String, Double> attributes = new HashMap<String, Double>();
         attributes.put("http", 90.0);
@@ -1378,13 +1408,13 @@ public class ThresholdingVisitorTest {
     private ThresholdingVisitor createVisitor() {
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
-        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params, 300000);
+        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params);
         assertNotNull(visitor);
         return visitor;
     }
 
     private ThresholdingVisitor createVisitor(Map<String,Object> params) {
-        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params, 300000);
+        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params);
         assertNotNull(visitor);
         return visitor;
     }
@@ -1404,12 +1434,14 @@ public class ThresholdingVisitorTest {
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
         // Step 1
+        visitor.visitCollectionSet(createAnonymousCollectionSet(visitor.getCollectionTimestamp().getTime()));
         SnmpCollectionResource resource = new IfInfo(resourceType, agent, ifData);
         addAttributeToCollectionResource(resource, resourceType, "ifInOctets", "counter", "ifIndex", v1);
         addAttributeToCollectionResource(resource, resourceType, "ifOutOctets", "counter", "ifIndex", v1);
         resource.visit(visitor);
         
         // Step 2 - Increment Counters
+        visitor.visitCollectionSet(createAnonymousCollectionSet(visitor.getCollectionTimestamp().getTime()+300000));
         resource = new IfInfo(resourceType, agent, ifData);
         addAttributeToCollectionResource(resource, resourceType, "ifInOctets", "counter", "ifIndex", v2);
         addAttributeToCollectionResource(resource, resourceType, "ifOutOctets", "counter", "ifIndex", v2);
@@ -1464,7 +1496,9 @@ public class ThresholdingVisitorTest {
         MibObject object = createMibObject("counter", "ifOutOctets", "ifIndex");
         SnmpAttributeType objectType = new NumericAttributeType(resourceType, "default", object, new AttributeGroupType("mibGroup", "ignore"));
 
+        long timestamp = new Date().getTime();
         // Step 1 - Initialize Counter
+        visitor.visitCollectionSet(this.createAnonymousCollectionSet(timestamp));
         BigDecimal n = new BigDecimal(Math.pow(2, bits) - 20000);
         SnmpValue snmpValue1 = SnmpUtils.getValueFactory().getCounter64(n.toBigInteger());
         SnmpCollectionResource resource1 = new IfInfo(resourceType, agent, ifData);
@@ -1472,6 +1506,7 @@ public class ThresholdingVisitorTest {
         resource1.visit(visitor);
         
         // Step 2 - Wrap Counter
+        visitor.visitCollectionSet(this.createAnonymousCollectionSet(timestamp+300000));
         SnmpValue snmpValue2 = SnmpUtils.getValueFactory().getCounter64(new BigInteger("40000"));
         SnmpCollectionResource resource2 = new IfInfo(resourceType, agent, ifData);
         resource2.setAttributeValue(objectType, snmpValue2);
@@ -1686,6 +1721,31 @@ public class ThresholdingVisitorTest {
             }
         }
         return path.delete();
+    }
+    
+    private CollectionSet createAnonymousCollectionSet(long timestamp) {
+    	final Date internalTimestamp = new Date(timestamp);
+    	return new CollectionSet() {
+			@Override
+			public void visit(CollectionSetVisitor visitor) {
+				//Nothing to do
+			}
+			
+			@Override
+			public boolean ignorePersist() {
+				return true;
+			}
+			
+			@Override
+			public int getStatus() {
+				return ServiceCollector.COLLECTION_SUCCEEDED;
+			}
+			
+			@Override
+			public Date getCollectionTimestamp() {
+				return internalTimestamp;
+			}
+		};
     }
 
     private ThreadCategory log() {

@@ -76,11 +76,6 @@ public abstract class ThresholdingSet {
     List<ThresholdGroup> m_thresholdGroups;
     List<String> m_scheduledOutages;
 
-    /*
-     * Holds collection interval step. Counter attributes values must be returned as rates.
-     */
-    long m_interval;
-
     /**
      * <p>Constructor for ThresholdingSet.</p>
      *
@@ -90,12 +85,11 @@ public abstract class ThresholdingSet {
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
      * @param interval a long.
      */
-    public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval) {
+    public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {
         m_nodeId = nodeId;
         m_hostAddress = hostAddress;
         m_serviceName = serviceName;
         m_repository = repository;      
-        m_interval = interval / 1000; // Store interval in seconds
         m_scheduledOutages = new ArrayList<String>();
         initThresholdsDao();
         initialize();

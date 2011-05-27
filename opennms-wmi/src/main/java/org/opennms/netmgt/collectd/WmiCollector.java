@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,6 +101,7 @@ public class WmiCollector implements ServiceCollector {
 
         // Create a new collection set.
         final WmiCollectionSet collectionSet = new WmiCollectionSet(agent);        
+        collectionSet.setCollectionTimestamp(new Date());
 
         // Iterate through the WMI collection groups.
         for (final Wpm wpm : collection.getWpms().getWpm()) {
