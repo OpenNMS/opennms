@@ -405,11 +405,12 @@ public class NodeScan implements RunInBatch {
                 final IPInterfaceTableTracker ipIfTracker = new IPInterfaceTableTracker() {
                     @Override
                     public void processIPInterfaceRow(final IPInterfaceRow row) {
-                		infof(this, "Processing IPInterface table row with ipAddr %s for node %d/%s/%s", row.getIpAddress(), getNode().getId(), getNode().getForeignSource(), getNode().getForeignId());
-                        if (!row.getIpAddress().startsWith("127.0.0")) {
+                    	final String ipAddress = row.getIpAddress();
+                    	infof(this, "Processing IPInterface table row with ipAddr %s for node %d/%s/%s", ipAddress, getNode().getId(), getNode().getForeignSource(), getNode().getForeignId());
+                    	if (ipAddress != null && !ipAddress.startsWith("127.0.0")) {
 
                             // mark any provisioned interface as scanned
-                            provisionedIps.remove(row.getIpAddress());
+                            provisionedIps.remove(ipAddress);
 
                             // save the interface
                             OnmsIpInterface iface = row.createInterfaceFromRow();
