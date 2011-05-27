@@ -18,7 +18,6 @@ import org.gwtopenmaps.openlayers.client.event.MapMoveListener;
 import org.gwtopenmaps.openlayers.client.event.MapZoomListener;
 import org.gwtopenmaps.openlayers.client.event.MarkerBrowserEventListener;
 import org.gwtopenmaps.openlayers.client.layer.Markers;
-import org.gwtopenmaps.openlayers.client.layer.WMSParams;
 import org.gwtopenmaps.openlayers.client.layer.XYZ;
 import org.gwtopenmaps.openlayers.client.layer.XYZOptions;
 import org.gwtopenmaps.openlayers.client.popup.Popup;
@@ -150,8 +149,6 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         XYZ x = new XYZ("OpenStreetMap", getLayerUrl(), xyzOptions);
         x.setIsBaseLayer(true);
         x.setIsVisible(true);
-        WMSParams params = new WMSParams();
-        params.
         m_map.addLayer(x);
 
         m_markersLayer = new Markers("Remote Pollers");
