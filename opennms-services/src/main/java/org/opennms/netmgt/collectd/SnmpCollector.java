@@ -48,6 +48,7 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
@@ -359,6 +360,7 @@ public class SnmpCollector implements ServiceCollector {
             final ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
 
             SnmpCollectionSet collectionSet = snmpCollection.createCollectionSet(agent);
+            collectionSet.setCollectionTimestamp(new Date());
             if (!collectionSet.hasDataToCollect()) {
                 logNoDataToCollect(agent);
                 // should we return here?

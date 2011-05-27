@@ -1,6 +1,7 @@
 package org.opennms.netmgt.collectd.jdbc;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -12,6 +13,7 @@ import org.opennms.netmgt.collectd.ServiceCollector;
 public class JdbcCollectionSet implements CollectionSet {
     private int m_status;
     private List<JdbcCollectionResource> m_collectionResources;
+    private Date m_timestamp;
     
     public JdbcCollectionSet(CollectionAgent agent) {
         m_status = ServiceCollector.COLLECTION_FAILED;
@@ -46,5 +48,13 @@ public class JdbcCollectionSet implements CollectionSet {
     public boolean ignorePersist() {
         return false;
     }
+    
+	@Override
+	public Date getCollectionTimestamp() {
+		return m_timestamp;
+	}
+    public void setCollectionTimestamp(Date timestamp) {
+    	this.m_timestamp = timestamp;
+	}
 
 }

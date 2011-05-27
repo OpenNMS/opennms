@@ -38,6 +38,7 @@ package org.opennms.netmgt.collectd;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,6 +53,11 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 
 /**
  * <p>SnmpCollectionSet class.</p>
+ * 
+ * After creation, be sure to call setCollectionTimestamp with the time the collection is taken
+ * It is inappropriate to require it in the constructor, as instances may be created independently
+ * and at a different time from when the data is collected.  (They're not currently, but it's better not to
+ * make assumptions)
  *
  * @author ranger
  * @version $Id: $
@@ -78,6 +84,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     private SnmpNodeCollector m_nodeCollector;
     private int m_status=ServiceCollector.COLLECTION_FAILED;
     private boolean m_ignorePersist;
+    private Date m_timestamp;
 
     /**
      * <p>toString</p>
@@ -579,5 +586,14 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     public boolean ignorePersist() {
         return m_ignorePersist;
     }
+
+	@Override
+	public Date getCollectionTimestamp() {
+		return m_timestamp;
+	}
+
+	public void setCollectionTimestamp(Date m_timestamp) {
+		this.m_timestamp = m_timestamp;
+	}
 
 }

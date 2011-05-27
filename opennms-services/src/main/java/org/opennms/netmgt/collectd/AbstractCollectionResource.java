@@ -37,6 +37,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +54,7 @@ import org.opennms.netmgt.model.RrdRepository;
  * @version $Id: $
  */
 public abstract class AbstractCollectionResource implements CollectionResource {
+
     private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
@@ -144,5 +146,6 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     public String getLabel() {
         return null;
     }
+    
 
 }

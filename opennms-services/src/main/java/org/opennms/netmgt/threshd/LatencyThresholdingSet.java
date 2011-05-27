@@ -30,6 +30,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +58,8 @@ public class LatencyThresholdingSet extends ThresholdingSet {
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
      * @param interval a long.
      */
-    public LatencyThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval) {
-        super(nodeId, hostAddress, serviceName, repository, interval);
+    public LatencyThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {
+        super(nodeId, hostAddress, serviceName, repository);
     }
     
     /*
@@ -81,7 +82,7 @@ public class LatencyThresholdingSet extends ThresholdingSet {
     }
 
     /*
-     * Apply thresholds definitions for specified service using attribuesMap as current values.
+     * Apply thresholds definitions for specified service using attributesMap as current values.
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
      */
     /** {@inheritDoc} */
@@ -91,7 +92,10 @@ public class LatencyThresholdingSet extends ThresholdingSet {
         for (String ds : attributes.keySet()) {
             attributesMap.put(ds, new LatencyCollectionAttribute(latencyResource, ds, attributes.get(ds)));
         }
-        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(m_interval, m_nodeId, m_hostAddress, m_serviceName, m_repository, latencyResource, attributesMap);
+        //The timestamp is irrelevant; latency is never a COUNTER (which is the only reason the date is used).  
+        //Yes, we have to know a little too much about the implementation details of CollectionResourceWrapper to say that, but
+        // we have little choice
+        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(new Date(), m_nodeId, m_hostAddress, m_serviceName, m_repository, latencyResource, attributesMap);
         return applyThresholds(resourceWrapper, attributesMap);
     }
     

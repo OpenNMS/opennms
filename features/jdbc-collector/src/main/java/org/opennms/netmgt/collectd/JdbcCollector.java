@@ -9,6 +9,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -205,6 +206,7 @@ public class JdbcCollector implements ServiceCollector {
         
             // Create a new collection set.
             JdbcCollectionSet collectionSet = new JdbcCollectionSet(agent);
+            collectionSet.setCollectionTimestamp(new Date());
         
             // Cycle through all of the queries for this collection
             for(JdbcQuery query : collection.getQueries()) {

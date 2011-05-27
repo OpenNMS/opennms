@@ -1,6 +1,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.util.Date;
 
 import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.collectd.CollectionSetVisitor;
@@ -10,7 +11,7 @@ import org.opennms.netmgt.model.RrdRepository;
 public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
 
     public MockCollectionResourceWrapper(final String instance) {
-        super(0, 0, null, null, null, new CollectionResource() {
+        super(new Date(), 0, null, null, null, new CollectionResource() {
             public String getInstance() {
                 return instance;
             }

@@ -133,7 +133,7 @@ public class NSClientCollector implements ServiceCollector {
     
     class NSClientCollectionResource extends AbstractCollectionResource {
          
-        NSClientCollectionResource(CollectionAgent agent) { 
+		NSClientCollectionResource(CollectionAgent agent) { 
             super(agent);
         }
         
@@ -162,15 +162,17 @@ public class NSClientCollector implements ServiceCollector {
         public String getInstance() {
             return null; //For node type resources, use the default instance
         }
+
     }
     
     class NSClientCollectionSet implements CollectionSet {
         private int m_status;
+        private Date m_timestamp;
         private NSClientCollectionResource m_collectionResource;
         
-        NSClientCollectionSet(CollectionAgent agent) {
-            m_status=ServiceCollector.COLLECTION_FAILED;
-            m_collectionResource=new NSClientCollectionResource(agent);
+        NSClientCollectionSet(CollectionAgent agent, Date timestamp) {
+            m_status = ServiceCollector.COLLECTION_FAILED;
+            m_collectionResource = new NSClientCollectionResource(agent);
         }
         
         public int getStatus() {
@@ -178,7 +180,7 @@ public class NSClientCollector implements ServiceCollector {
         }
         
         void setStatus(int status) {
-            m_status=status;
+            m_status = status;
         }
 
         public void visit(CollectionSetVisitor visitor) {
@@ -193,6 +195,11 @@ public class NSClientCollector implements ServiceCollector {
 
 		public boolean ignorePersist() {
 			return false;
+		}
+
+		@Override
+		public Date getCollectionTimestamp() {
+			return m_timestamp;
 		}        
     }
     
@@ -209,7 +216,7 @@ public class NSClientCollector implements ServiceCollector {
         NsclientCollection collection = NSClientDataCollectionConfigFactory.getInstance().getNSClientCollection(collectionName);
         NSClientAgentState agentState = m_scheduledNodes.get(agent.getNodeId());
         
-        NSClientCollectionSet collectionSet=new NSClientCollectionSet(agent);
+        NSClientCollectionSet collectionSet=new NSClientCollectionSet(agent, new Date());
         NSClientCollectionResource collectionResource=collectionSet.getResource();
         
         for (Wpm wpm : collection.getWpms().getWpm()) {

@@ -30,6 +30,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -59,10 +60,9 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @param interval a long.
      */
-    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval, Map<String,String> params) {
-        super(nodeId, hostAddress, serviceName, repository, interval);
+    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, Map<String,String> params) {
+        super(nodeId, hostAddress, serviceName, repository);
         String storeByIfAliasString = params.get("storeByIfAlias");
         storeByIfAlias = storeByIfAliasString != null && storeByIfAliasString.toLowerCase().equals("true");
     }
@@ -90,12 +90,14 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
      */
     /** {@inheritDoc} */
-    public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap) {
+    public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap, Date collectionTimestamp) {
         if (!isCollectionEnabled(resource)) {
             log().debug("applyThresholds: Ignoring resource " + resource + " because data collection is disabled for this resource.");
             return new LinkedList<Event>();
         }
-        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(m_interval, m_nodeId, m_hostAddress, m_serviceName, m_repository, resource, attributesMap);
+		CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(
+				collectionTimestamp, m_nodeId, m_hostAddress, m_serviceName,
+				m_repository, resource, attributesMap);
         return applyThresholds(resourceWrapper, attributesMap);
     }
 
