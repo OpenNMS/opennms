@@ -35,7 +35,7 @@ final class NodeInfoScan implements RunInBatch {
 
     NodeInfoScan(OnmsNode node, InetAddress agentAddress, String foreignSource, ScanProgress scanProgress, SnmpAgentConfigFactory agentConfigFactory, ProvisionService provisionService, Integer nodeId){
         m_node = node;
-        m_nodeUpdate = new NodeUpdate(node);
+        m_nodeUpdate = new NodeUpdate(nodeId, foreignSource, node.getForeignId());
         m_agentAddress = agentAddress;
         m_foreignSource = foreignSource;
         m_scanProgress = scanProgress;

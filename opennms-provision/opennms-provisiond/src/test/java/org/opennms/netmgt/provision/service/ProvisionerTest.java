@@ -89,6 +89,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.updates.NodeUpdate;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
@@ -1147,7 +1148,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
         assertTrue(node.hasCategory(TEST_CATEGORY));
         
-        m_provisionService.updateNodeAttributes(node, new NodeUpdate(asdf));
+        m_provisionService.updateNodeAttributes(node, new NodeUpdate(node.getId(), node.getForeignSource(), node.getForeignId()));
         
         // flush here to force a write so we are sure that the OnmsCategories are correctly created
         m_nodeDao.flush();
