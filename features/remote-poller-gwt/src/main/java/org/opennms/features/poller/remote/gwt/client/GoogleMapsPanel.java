@@ -78,7 +78,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     }
 
     /** {@inheritDoc} */
-    public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
+    public void showLocationDetails(final String name, final String htmlTitle, final String htmlContent) {
         final Marker m = m_markers.get(name);
 
         getMapWidget().savePosition();
@@ -142,7 +142,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         markerOptions.setClickable(true);
         markerOptions.setTitle(marker.getName());
         markerOptions.setIcon(icon);
-        
+
         Marker m = new Marker(toLatLng(marker.getLatLng()), markerOptions);
         m.setVisible(marker.isVisible());
         m.addMarkerClickHandler(new DefaultMarkerClickHandler(marker));
@@ -158,9 +158,8 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         	m = createMarker(marker);
         	m_markers.put(marker.getName(), m);
         	addOverlay(m);
-        } else {
-        	updateMarkerFromState(m, marker);
         }
+    	updateMarkerFromState(m, marker);
     }
 
     private void updateMarkerFromState(Marker m, GWTMarkerState marker) {
