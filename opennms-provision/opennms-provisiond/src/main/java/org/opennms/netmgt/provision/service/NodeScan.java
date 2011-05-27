@@ -411,7 +411,7 @@ public class NodeScan implements RunInBatch {
             		final String ipAddress = row.getIpAddress();
 					infof(this, "Processing IPAddress table row with ipAddr %s", ipAddress);
             		
-            		if (!ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
+            		if (ipAddress != null && !ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
                         // mark any provisioned interface as scanned
                         provisionedIps.remove(ipAddress);
 
@@ -453,8 +453,7 @@ public class NodeScan implements RunInBatch {
             	public void processIPInterfaceRow(final IPInterfaceRow row) {
             		final String ipAddress = row.getIpAddress();
             		infof(this, "Processing IPInterface table row with ipAddr %s for node %d/%s/%s", ipAddress, node.getId(), node.getForeignSource(), node.getForeignId());
-            		storeIfIndexIpAddress(row.getIfIndex(), row.getIpAddress());
-            		if (!ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
+            		if (ipAddress != null && !ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
 
                         // mark any provisioned interface as scanned
                         provisionedIps.remove(ipAddress);
