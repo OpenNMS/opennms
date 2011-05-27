@@ -1,4 +1,4 @@
-package org.opennms.isoc.ipv6.gui.client;
+package org.opennms.ipv6.summary.gui.client;
 
 import com.google.gwt.event.shared.GwtEvent;
 
