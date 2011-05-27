@@ -35,6 +35,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.util.Date;
+
 /**
  * <p>CollectionSet interface.</p>
  *
@@ -46,7 +48,7 @@ public interface CollectionSet {
     /**
      * <p>getStatus</p>
      *
-     * @return a int.
+     * @return an int (one of the ServiceCollector.COLLECTION_<FOO> values)
      */
     public int getStatus();
     
@@ -64,4 +66,11 @@ public interface CollectionSet {
      * @return a boolean.
      */
     public boolean ignorePersist();
+    
+    /**
+     * Returns the timestamp of when this data collection was taken.
+     * Used by thresholding
+     * @return
+    */
+	public Date getCollectionTimestamp();
 }
