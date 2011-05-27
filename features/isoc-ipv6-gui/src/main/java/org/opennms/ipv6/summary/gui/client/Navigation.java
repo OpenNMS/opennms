@@ -47,8 +47,10 @@ public class Navigation extends Composite implements HasHandlers {
     public Navigation() {
         initWidget(uiBinder.createAndBindUi(this));
         m_handlerManager = new SimpleEventBus();
+        m_allHosts.setValue(true);
+        m_allLocations.setValue(true);
     }
-    
+
     @Override
     public void fireEvent(GwtEvent<?> event) {
         m_handlerManager.fireEvent(event);
@@ -65,23 +67,25 @@ public class Navigation extends Composite implements HasHandlers {
     @UiHandler("m_allLocations")
     public void allLocationsClick(ClickEvent event) {
         hideLocationSelection();
+        fireEvent(new LocationUpdateEvent("All"));
     }
     
     @UiHandler("m_singleLocation")
     public void singleLocationClick(ClickEvent event) {
         showLocationSelection();
+        fireEvent(new LocationUpdateEvent(m_locationList.getItemText(m_locationList.getSelectedIndex())));
     }
     
     
     @UiHandler("m_locationList")
     public void locationListClick(ClickEvent event) {
         fireEvent(new LocationUpdateEvent(m_locationList.getItemText(m_locationList.getSelectedIndex())));
-        //updateGraphResults();
     }
     
     @UiHandler("m_allHosts")
     public void allHostsClick(ClickEvent event) {
         hideHostSelection();
+        fireEvent(new HostUpdateEvent("All"));
     }
     
     
@@ -89,12 +93,12 @@ public class Navigation extends Composite implements HasHandlers {
     @UiHandler("m_singleHost")
     public void singleHostClick(ClickEvent event) {
         showHostSelection();
+        fireEvent(new HostUpdateEvent(m_hostList.getItemText(m_hostList.getSelectedIndex())));
     }
     
     @UiHandler("m_hostList")
     public void hostListClick(ClickEvent event) {
         fireEvent(new HostUpdateEvent(m_hostList.getItemText(m_hostList.getSelectedIndex())));
-        //updateGraphResults();
     }
     
     public void loadLocations(List<String> locations) {
@@ -121,10 +125,6 @@ public class Navigation extends Composite implements HasHandlers {
     
     private void showLocationSelection() {
         m_locationList.setVisible(true);
-    }
-    
-    private void updateGraphResults() {
-        
     }
     
     private void hideHostSelection() {

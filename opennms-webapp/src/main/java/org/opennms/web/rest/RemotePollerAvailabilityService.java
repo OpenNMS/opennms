@@ -2,10 +2,12 @@ package org.opennms.web.rest;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -25,6 +27,7 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsLocationAvailDataPoint;
@@ -34,6 +37,8 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.opennms.netmgt.model.OnmsMonitoringLocationDefinitionList;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.web.rest.support.TimeChunker;
 import org.opennms.web.rest.support.TimeChunker.TimeChunk;
@@ -60,19 +65,59 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @Autowired
     MonitoredServiceDao m_monitoredServiceDao;
     
+    @Autowired
+    NodeDao m_nodeDao;
+    
     @Context
     UriInfo m_uriInfo;
     
+    
+    
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public OnmsMonitoringLocationDefinitionList getRemoteLocationList(){
+        List<OnmsMonitoringLocationDefinition> monitors = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+        return new OnmsMonitoringLocationDefinitionList(monitors);
+    }
+    
+    /**
+     * Currently only here for world IPv6 day, returns all nodelabels. 
+     * @return
+     */
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("participants")
+    public String getParticipants(){
+        List<OnmsNode> nodes = m_nodeDao.findAll();
+        StringBuffer retVal = new StringBuffer();
+        
+        retVal.append("{\"participants\":[");
+        for(int i  = 0; i < nodes.size(); i++) {
+            OnmsNode node = nodes.get(i);
+            if(i == 0) {
+                retVal.append("{\"name\":\"" + node.getLabel() + "\"}");
+            }else {
+                retVal.append(",{\"name\":\"" + node.getLabel() + "\"}");
+            }
+        }
+        retVal.append("]}");
+        
+        return retVal.toString();
+        
+    }
+    
+    
+    @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Path("availability")
     public OnmsLocationAvailDefinitionList getAvailability() {
         MultivaluedMap<String, String> queryParameters = m_uriInfo.getQueryParameters();
         return getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), null, getSelectedServices(queryParameters));
     }
     
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @Path("{location}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Path("availability/{location}")
     public OnmsLocationAvailDefinitionList getAvailabilityByLocation(@PathParam("location") String location) {
         MultivaluedMap<String, String> queryParameters = m_uriInfo.getQueryParameters();
         
@@ -197,13 +242,14 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
             return new Date();
         }
     }
-
+    
     private Date getStartTime(MultivaluedMap<String, String> params) {
         if(params.containsKey("startTime")) {
             String startTime = params.getFirst("startTime");
             return new Date(Long.valueOf(startTime));
         } else {
-            return new Date();
+            Calendar calendar = Calendar.getInstance();
+            return new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0, 0).getTime();
         }
         
     }

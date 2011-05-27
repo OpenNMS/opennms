@@ -43,6 +43,8 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     @Autowired
     DatabasePopulator m_databasePopulator;
     
+    public static final String BASE_REST_URL = "/remotelocations/availability";
+    
     public void beforeServletStart() throws IOException {
         String monitoringLocations = "<?xml version='1.0' encoding='UTF-8'?>\n" +
                                      "<monitoring-locations-configuration xmlns='http://xmlns.opennms.org/xsd/config/monitoring-locations'>\n" +
@@ -86,10 +88,26 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     }
     
     @Test
-    public void testRemotePollerAvailability() throws Exception {
+    public void testGetLocations() throws Exception {
         String url = "/remotelocations";
+        String responseString = sendRequest(GET, url, 200);
+        
+        assertTrue(responseString != null);
+    }
+    
+    @Test
+    public void testGetParticipants() throws Exception {
+        String url = "/remotelocations/participants";
+        String responseString = sendRequest(GET, url, 200);
+        
+        assertTrue(responseString != null);
+    }
+    
+    @Test
+    public void testRemotePollerAvailability() throws Exception {
+        String url = BASE_REST_URL;
         Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("startTime", "" + (new Date().getTime() - 300000));
+        parameters.put("startTime", "" + (new Date().getTime() - 900000));
         parameters.put("endTime", "" + new Date().getTime());
         parameters.put("resolution", "minute");
         
@@ -99,14 +117,14 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         assertTrue(responseString.contains("IPv4"));
         
         //Get Specific Location
-        String rduURL = "/remotelocations/RDU";
+        String rduURL = BASE_REST_URL + "/RDU";
         String rduResponse = sendRequest(GET, rduURL, parameters, 200);
         assertTrue(rduResponse.contains("IPv6") && rduResponse.contains("IPv4"));
         //assertTrue(rduResponse.contains("\"availability\":\"3.343\""));
         
         //Get Specific Location and Host
         parameters.put("host", "node1");
-        rduURL = "/remotelocations/RDU";
+        rduURL = BASE_REST_URL + "/RDU";
         rduResponse = sendRequest(GET, rduURL, parameters, 200);
         assertTrue(rduResponse.contains("IPv6") && rduResponse.contains("IPv4"));
         //assertTrue(rduResponse.contains("\"availability\":\"3.342\""));
@@ -120,7 +138,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     
     @Test
     public void testLocationSpecificAvailability() throws Exception {
-        String url = "/remotelocations/CLT";
+        String url = BASE_REST_URL + "/CLT";
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("startTime", "" + (new Date().getTime() - 300000));
         parameters.put("endTime", "" + new Date().getTime());
@@ -132,7 +150,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         assertTrue(responseString.contains("IPv6"));
         assertTrue(responseString.contains("\"availability\":\"0.000\""));
         
-        String rduURL = "/remotelocations/RDU";
+        String rduURL = BASE_REST_URL + "/RDU";
         String rduResponse = sendRequest(GET, rduURL, parameters, 200);
         assertTrue(rduResponse.contains("IPv6") && rduResponse.contains("IPv4"));
         assertTrue(rduResponse.contains("\"availability\":\"3.344\""));
@@ -140,7 +158,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     
     @Test
     public void testLocationAndHostSpecificAvailability() throws Exception {
-        String url = "/remotelocations/CLT";
+        String url = BASE_REST_URL + "/CLT";
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("startTime", "" + (new Date().getTime() - 300000));
         parameters.put("endTime", "" + new Date().getTime());
@@ -152,7 +170,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         assertTrue(responseString.contains("IPv6"));
         assertTrue(responseString.contains("\"availability\":\"0.000\""));
         
-        String rduURL = "/remotelocations/RDU";
+        String rduURL = BASE_REST_URL + "/RDU";
         String rduResponse = sendRequest(GET, rduURL, parameters, 200);
         assertTrue(rduResponse.contains("IPv6") && rduResponse.contains("IPv4"));
         assertTrue(rduResponse.contains("\"availability\":\"3.342\""));

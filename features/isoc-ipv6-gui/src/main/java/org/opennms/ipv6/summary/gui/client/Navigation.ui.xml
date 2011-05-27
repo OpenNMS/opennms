@@ -20,12 +20,12 @@
 	        </div>
         </div>
         <div class="{style.navBlock}">
-            <p>Host Selection</p>
+            <p>Select Participant</p>
 	        <div>
-	            <g:RadioButton ui:field="m_allHosts" name="hosts">All Hosts</g:RadioButton>
+	            <g:RadioButton ui:field="m_allHosts" name="hosts">All Participants</g:RadioButton>
 	        </div>
 	        <div>
-	            <g:RadioButton ui:field="m_singleHost" name="hosts">Single Host</g:RadioButton>
+	            <g:RadioButton ui:field="m_singleHost" name="hosts">Single Participant</g:RadioButton>
 	        </div>
 	        <div>
 	            <g:ListBox ui:field="m_hostList" visible="false"></g:ListBox>

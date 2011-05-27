@@ -1,72 +1,153 @@
 package org.opennms.ipv6.summary.gui.client;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 
 public class ChartUtils {
-
+    
+    public static final String[] SUPPORTED_APPLICATIONS = {"IPV6", "IPV4", "QUAD A", "SINGLE A"};
+    
     public static DataTable convertJSONToDataTable(String text) {
-        //FIXME: convert the text to DataTable
+        
+        DataTable dataTable = DataTable.create();
+        dataTable.addColumn(ColumnType.DATE, "Date");
+        dataTable.addColumn(ColumnType.NUMBER, "Quad A records");
+        dataTable.addColumn(ColumnType.STRING, "title1");
+        dataTable.addColumn(ColumnType.STRING, "text1");
+        dataTable.addColumn(ColumnType.NUMBER, "Single A Records");
+        dataTable.addColumn(ColumnType.STRING, "title2");
+        dataTable.addColumn(ColumnType.STRING, "text2");
+        dataTable.addColumn(ColumnType.NUMBER, "IPv6");
+        dataTable.addColumn(ColumnType.STRING, "title2");
+        dataTable.addColumn(ColumnType.STRING, "text2");
+        dataTable.addColumn(ColumnType.NUMBER, "IPv4");
+        dataTable.addColumn(ColumnType.STRING, "title2");
+        dataTable.addColumn(ColumnType.STRING, "text2");
         
         
-        DataTable data = DataTable.create();
-        data.addColumn(ColumnType.DATE, "Date");
-        data.addColumn(ColumnType.NUMBER, "Quad A records");
-        data.addColumn(ColumnType.STRING, "title1");
-        data.addColumn(ColumnType.STRING, "text1");
-        data.addColumn(ColumnType.NUMBER, "Single A Records");
-        data.addColumn(ColumnType.STRING, "title2");
-        data.addColumn(ColumnType.STRING, "text2");
-        data.addColumn(ColumnType.NUMBER, "IPv6");
-        data.addColumn(ColumnType.STRING, "title2");
-        data.addColumn(ColumnType.STRING, "text2");
-        data.addColumn(ColumnType.NUMBER, "IPv4");
-        data.addColumn(ColumnType.STRING, "title2");
-        data.addColumn(ColumnType.STRING, "text2");
-        data.addRows(12);
-        data.setValue(0, 0, new Date(1209614400000L));
-        data.setValue(0, 1, Math.random() * 65000);
-        data.setValue(0, 4, Math.random() * 65000);
-        data.setValue(0, 7, Math.random() * 65000);
-        data.setValue(0, 10, Math.random() * 65000);
+        JSONObject jsonData = (JSONObject) JSONParser.parseStrict(text);
+        JSONObject data;
         
-        data.setValue(1, 0, new Date(1209700800000L));
-        data.setValue(1, 1, Math.random() * 65000);
-        data.setValue(1, 4, Math.random() * 65000);
-        data.setValue(1, 7, Math.random() * 65000);
-        data.setValue(1, 10, Math.random() * 65000);
+        if(jsonData.get("data").isObject() != null) {
+            data = jsonData.get("data").isObject();
+            JSONArray values = data.get("values").isArray();
+            dataTable.addRow();
+            Date date = new Date(Long.valueOf(data.get("time").isString().stringValue()));
+            dataTable.setValue(0, 0, date);
+            
+            for(int i = 0; i < values.size(); i++) {
+                JSONObject value = values.get(i).isObject();
+                if(value != null) {
+                    String application = value.get("application").isString().stringValue();
+                    insertApplicationData(dataTable, 0, value, application);
+                }
+            }
+            
+        }else if(jsonData.get("data").isArray() != null) {
+            JSONArray d = jsonData.get("data").isArray();
+            
+            for(int j = 0; j < d.size(); j++) {
+                JSONObject dataPoint = d.get(j).isObject();
+                JSONArray values = dataPoint.get("values").isArray(); 
+                dataTable.addRow();
+                Date date = new Date(Long.valueOf(dataPoint.get("time").isString().stringValue()));
+                dataTable.setValue(j, 0, date);
+                
+                for(int i = 0; i < values.size(); i++) {
+                    JSONObject value = values.get(i).isObject();
+                    if(value != null) {
+                        String application = value.get("application").isString().stringValue();
+                        insertApplicationData(dataTable, j, value, application);
+                    }
+                }
+                
+            }
+            
+        }
         
-        data.setValue(2, 0, new Date(1209787200000L));
-        data.setValue(2, 1, Math.random() * 65000);
-        data.setValue(2, 4, Math.random() * 65000);
-        data.setValue(2, 7, Math.random() * 65000);
-        data.setValue(2, 10, Math.random() * 65000);
         
-        data.setValue(3, 0, new Date(1209873600000L));
-        data.setValue(3, 1, Math.random() * 65000);
-        data.setValue(3, 4, Math.random() * 65000);
-        data.setValue(3, 5, "Outage");
-        data.setValue(3, 6, "Google.com IPv6 outage");
-        data.setValue(3, 7, Math.random() * 65000);
-        data.setValue(3, 10, Math.random() * 65000);
+        return dataTable;
+    }
+
+    private static void insertApplicationData(DataTable dataTable, int index, JSONObject value, String application) {
+        if(application.equals("IPv6")) {
+            double avail = Double.valueOf(value.get("availability").isString().stringValue());
+            dataTable.setValue(index, 7, avail);
+            //dataTable.setValue(index, 1, avail);
+        }else if(application.equals("IPv4")) {
+            double avail = Double.valueOf(value.get("availability").isString().stringValue());
+            dataTable.setValue(index, 10, avail);
+            //dataTable.setValue(index, 4, avail);
+        }else if(application.equals("Quad A")) {
+            double avail = Double.valueOf(value.get("availability").isString().stringValue());
+            dataTable.setValue(index, 1, avail);
+        }else if(application.equals("Single A")) {
+            double avail = Double.valueOf(value.get("availability").isString().stringValue());
+            dataTable.setValue(index, 4, avail);
+        }
+    }
+
+    public static List<String> convertJSONToLocationList(String jsonString) {
+        List<String> locs = new ArrayList<String>();
+        JSONObject locationList = JSONParser.parseStrict(jsonString).isObject();
+         
+        if(locationList.get("locations").isArray() != null) {
+            JSONArray locations = locationList.get("locations").isArray();
+            for(int i = 0; i < locations.size(); i++) {
+                String value = locations.get(i).isObject().get("area").isString().stringValue();
+                locs.add(value);
+            }
+            return locs;
+        }else if(locationList.get("locations").isObject() != null) {
+            JSONObject location = locationList.get("locations").isObject();
+            locs.add(location.get("area").isString().stringValue());
+            return locs;
+        }else {
+            return locs;
+        }
         
-        data.setValue(4, 0, new Date(1209960000000L));
-        data.setValue(4, 1, 41476);
-        data.setValue(4, 2, "Outage");
-        data.setValue(4, 3, "yahoo.com outage at 3pm");
-        data.setValue(4, 4, Math.random() * 65000);
-        data.setValue(4, 7, Math.random() * 65000);
-        data.setValue(4, 10, Math.random() * 65000);
+    }
+
+    public static List<String> convertJSONToParticipants(String jsonString) {
+        List<String> locs = new ArrayList<String>();
         
-        data.setValue(5, 0, new Date(1210046400000L));
-        data.setValue(5, 1, Math.random() * 65000);
-        data.setValue(5, 4, Math.random() * 65000);
-        data.setValue(5, 7, Math.random() * 65000);
-        data.setValue(5, 10, Math.random() * 65000);
-        
-        return data;
+        JSONObject participantList = JSONParser.parseStrict(jsonString).isObject();
+         
+        if(participantList.get("participants").isArray() != null) {
+            JSONArray participants = participantList.get("participants").isArray();
+            
+            for(int i = 0; i < participants.size(); i++) {
+                String value = participants.get(i).isObject().get("name").isString().stringValue();
+                locs.add(value);
+            }
+            return locs;
+        }else if(participantList.get("participants").isObject() != null) {
+            JSONObject participant = participantList.get("participants").isObject();
+            locs.add(participant.get("name").isString().stringValue());
+            return locs;
+        }else {
+            return locs;
+        }
+    }
+
+    private static List<String> parseJSONArrayToList(JSONArray participants) {
+        if(participants != null) {
+            List<String> locs = new ArrayList<String>();
+            for(int i = 0; i < participants.size(); i++) {
+                String value = participants.get(i).isObject().get("value").isString().stringValue();
+                locs.add(value);
+            }
+            return locs;
+        }else {
+            return null;
+        }
     }
 
 }
