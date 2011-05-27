@@ -18,6 +18,7 @@ import javax.xml.bind.Unmarshaller;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.test.mock.MockLogAppender;
@@ -40,9 +41,6 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testNode() throws Exception {
-        JAXBContext context = JAXBContext.newInstance(OnmsNodeList.class);
-        Unmarshaller unmarshaller = context.createUnmarshaller();
-
         // Testing POST
         createNode();
         String url = "/nodes";
@@ -50,13 +48,13 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         // Testing GET Collection
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0"));
-        OnmsNodeList list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        OnmsNodeList list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
         assertEquals(1, list.getNodes().size());
         assertEquals(xml, "TestMachine0", list.getNodes().get(0).getLabel());
 
         // Testing orderBy
         xml = sendRequest(GET, url, parseParamData("orderBy=sysObjectId"), 200);
-        list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
         assertEquals(1, list.getNodes().size());
         assertEquals("TestMachine0", list.getNodes().get(0).getLabel());
 
@@ -67,7 +65,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
         // Testing limit/offset
         xml = sendRequest(GET, url, parseParamData("limit=3&offset=0&orderBy=label"), 200);
-        list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
         assertEquals(3, list.getNodes().size());
         assertEquals(3, list.getCount());
         assertEquals(5, list.getTotalCount());
@@ -78,14 +76,14 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         // This filter should match
         xml = sendRequest(GET, url, parseParamData("comparator=like&label=%25Test%25"), 200);
         LogUtils.infof(this, xml);
-        list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
         assertEquals(5, list.getCount());
         assertEquals(5, list.getTotalCount());
 
         // This filter should fail (return 0 results)
         xml = sendRequest(GET, url, parseParamData("comparator=like&label=%25DOES_NOT_MATCH%25"), 200);
         LogUtils.infof(this, xml);
-        list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
         assertEquals(0, list.getCount());
         assertEquals(0, list.getTotalCount());
 
@@ -149,7 +147,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         parameters.put("orderBy", "id");
         String xml = sendRequest(GET, url, parameters, 200);
         assertTrue(xml, xml.contains("Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0"));
-        Pattern p = Pattern.compile("<node id=", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+        Pattern p = Pattern.compile("<node [^>]*\\s*id=", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
         Matcher m = p.matcher(xml);
         int count = 0;
         while (m.find()) {
@@ -258,7 +256,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         createIpInterface();
         String url = "/nodes";
         String xml = sendRequest(GET, url, parseParamData("comparator=ilike&match=any&label=1%25&ipInterface.ipAddress=1%25&ipInterface.ipHostName=1%25"), 200);
-        assertTrue(xml, xml.contains("<node id=\"1\" label=\"TestMachine0\">"));
+        assertTrue(xml, xml.contains("<node type=\"A\" id=\"1\" label=\"TestMachine0\">"));
         assertTrue(xml, xml.contains("count=\"1\""));
         assertTrue(xml, xml.contains("totalCount=\"1\""));
 
@@ -270,7 +268,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Override
     protected void createNode() throws Exception {
-        String node = "<node label=\"TestMachine" + m_nodeCounter + "\">" +
+        String node = "<node type=\"A\" label=\"TestMachine" + m_nodeCounter + "\">" +
         "<labelSource>H</labelSource>" +
         "<sysContact>The Owner</sysContact>" +
         "<sysDescription>" +
@@ -279,7 +277,6 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         "<sysLocation>DevJam</sysLocation>" +
         "<sysName>TestMachine" + m_nodeCounter + "</sysName>" +
         "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
-        "<type>A</type>" +
         "</node>";
         sendPost("/nodes", node);
     }
@@ -290,7 +287,6 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String ipInterface = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
         "<ipAddress>10.10.10.10</ipAddress>" +
         "<hostName>TestMachine" + m_nodeCounter + "</hostName>" +
-        "<ipStatus>1</ipStatus>" +
         "</ipInterface>";
         sendPost("/nodes/1/ipinterfaces", ipInterface);
     }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="seth" id="1.9.9-add-not-null-constraint-nodelabel" failOnError="true">
+        <addNotNullConstraint tableName="node" columnName="nodelabel"/>
+    </changeSet>
+
+    <changeSet author="kleind" id="1.9.9-add-rackunitheight-hardware-assets">
+      <addColumn tableName="assets">
+        <column name="rackunitheight" type="varchar(2)" />
+      </addColumn>
+      <rollback>
+        <dropColumn tableName="assets" columnName="rackunitheight" />
+      </rollback>
+    </changeSet>
+
+    <changeSet author="kleind" id="1.9.9-more-space-for-hardware-assets">
+      <modifyDataType tableName="assets" columnName="cpu"         newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="storagectrl" newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd1"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd2"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd3"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd4"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd5"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="hdd6"        newDataType="varchar(64)" />
+      <modifyDataType tableName="assets" columnName="inputpower"  newDataType="varchar(11)" /> <!-- allow "xxxxx Watts" -->
+      <rollback>
+        <modifyDataType tableName="assets" columnName="cpu"         newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="storagectrl" newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd1"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd2"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd3"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd4"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd5"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="hdd6"        newDataType="varchar(32)" />
+        <modifyDataType tableName="assets" columnName="inputpower"  newDataType="varchar(6)" />
+      </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -114,7 +114,7 @@ public class SnmpAttributeTest extends TestCase {
         m_mocks.replayAll();
         
         CollectionAgent agent = DefaultCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
-        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), new MockDataCollectionConfig());
+        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), new MockDataCollectionConfig());
         NodeResourceType resourceType = new NodeResourceType(agent, snmpCollection);
         NodeInfo nodeInfo = new NodeInfo(resourceType, agent);
         
@@ -131,7 +131,7 @@ public class SnmpAttributeTest extends TestCase {
         RrdRepository repository = new RrdRepository();
         repository.setRraList(new ArrayList<String>(Collections.singleton("RRA:AVERAGE:0.5:1:2016")));
         
-        BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, String>()), repository);
+        BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository);
         persister.createBuilder(nodeInfo, "baz", attributeType);
         
         attr.storeAttribute(persister);

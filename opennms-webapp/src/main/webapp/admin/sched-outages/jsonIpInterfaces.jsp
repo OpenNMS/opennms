@@ -3,7 +3,6 @@
         session="true"
         import="java.util.*,
         org.opennms.netmgt.config.*,
-        org.opennms.netmgt.config.common.*,
         org.opennms.netmgt.config.poller.*,
         org.opennms.web.WebSecurityUtils,
         org.opennms.web.element.*,

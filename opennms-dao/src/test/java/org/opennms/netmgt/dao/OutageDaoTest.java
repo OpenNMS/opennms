@@ -37,6 +37,9 @@
 //
 package org.opennms.netmgt.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,6 +47,16 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -55,34 +68,108 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.outage.OutageSummary;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * @author mhuot
  *
  */
-public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
-    @Override
-    @SuppressWarnings("deprecation")
-    protected void onSetUpBeforeTransaction() throws Exception {
-        super.onSetUpBeforeTransaction();
-    }
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase(tempDbClass=TemporaryDatabase.class)
+public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
+    @Autowired
+    private DistPollerDao m_distPollerDao;
     
-    @Override
-    protected void onSetUpInTransactionIfEnabled() {
-        super.onSetUpInTransactionIfEnabled();
-        
-        // Ensure that we get a new JdbcFilterDao every time since our DataSource changes
-        FilterDaoFactory.setInstance(null);
-        FilterDaoFactory.getInstance();
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
+    private MonitoredServiceDao m_monitoredServiceDao;
+
+    @Autowired
+    private OutageDao m_outageDao;
+
+    @Autowired
+    private ServiceTypeDao m_serviceTypeDao;
+
+    @Autowired
+    private EventDao m_eventDao;
+
+    @Autowired
+    TransactionTemplate m_transTemplate;
+
+    private TemporaryDatabase m_database;
+
+    public void setTemporaryDatabase(TemporaryDatabase database) {
+        m_database = database;
     }
-    
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        assertNotNull(m_distPollerDao);
+        assertNotNull(m_nodeDao);
+        assertNotNull(m_ipInterfaceDao);
+        assertNotNull(m_monitoredServiceDao);
+        assertNotNull(m_outageDao);
+        assertNotNull(m_serviceTypeDao);
+        assertNotNull(m_eventDao);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        OnmsServiceType t = new OnmsServiceType("ICMP");
+        m_serviceTypeDao.save(t);
+
+        // Initialize Filter DAO
+        // Give the filter DAO access to the same TemporaryDatabase data source
+        // as the autowired DAOs
+
+        System.setProperty("opennms.home", "src/test/resources");
+        DatabaseSchemaConfigFactory.init();
+        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+        jdbcFilterDao.setDataSource(m_database);
+        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+        jdbcFilterDao.afterPropertiesSet();
+        FilterDaoFactory.setInstance(jdbcFilterDao);
+    }
+
+    @Test
+    @Transactional
     public void testSave() {
         OnmsNode node = new OnmsNode(getLocalHostDistPoller());
-        getNodeDao().save(node);
+        node.setLabel("localhost");
+        m_nodeDao.save(node);
 
         OnmsIpInterface ipInterface = new OnmsIpInterface("172.16.1.1", node);
 
-        OnmsServiceType serviceType = getServiceTypeDao().findByName("ICMP");
+        OnmsServiceType serviceType = m_serviceTypeDao.findByName("ICMP");
         assertNotNull(serviceType);
 
         OnmsMonitoredService monitoredService = new OnmsMonitoredService(ipInterface, serviceType);
@@ -93,118 +180,142 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
         outage.setServiceLostEvent(event);
         outage.setIfLostService(new Date());
         outage.setMonitoredService(monitoredService);
-        getOutageDao().save(outage);
+        m_outageDao.save(outage);
 
         //it works we're so smart! hehe
-        outage = getOutageDao().load(outage.getId());
+        outage = m_outageDao.load(outage.getId());
         assertEquals("ICMP", outage.getMonitoredService().getServiceType().getName());
 //        outage.setEventBySvcRegainedEvent();
         
     }
-    
+
+    @Test
     public void testGetMatchingOutages() {
-        OnmsNode node = new OnmsNode(getLocalHostDistPoller());
-        getNodeDao().save(node);
-        insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
-        
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                OnmsNode node = new OnmsNode(getLocalHostDistPoller());
+                node.setLabel("localhost");
+                m_nodeDao.save(node);
+                insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
+                return null;
+            }
+        });
+
         /*
          * We need to flush and finish the transaction because JdbcFilterDao
          * gets its own connection from the DataSource and won't see our data
          * otherwise.
          */
-        flushOutageDaoAndStartNewTransaction();
-        
-        String[] svcs = new String[] { "ICMP" };
-        ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", Arrays.asList(svcs));
-    	Collection<OnmsOutage> outages = getOutageDao().matchingCurrentOutages(selector);
-    	assertEquals("outage count", 1, outages.size());
+
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                String[] svcs = new String[] { "ICMP" };
+                ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", Arrays.asList(svcs));
+                Collection<OnmsOutage> outages = m_outageDao.matchingCurrentOutages(selector);
+                assertEquals("outage count", 1, outages.size());
+                return null;
+            }
+        });
     }
-    
+
+    @Test
     public void testGetMatchingOutagesWithEmptyServiceList() {
-        OnmsNode node = new OnmsNode(getLocalHostDistPoller());
-        getNodeDao().save(node);
-        insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
-        
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                OnmsNode node = new OnmsNode(getLocalHostDistPoller());
+                node.setLabel("localhost");
+                m_nodeDao.save(node);
+                insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
+                return null;
+            }
+        });
+
         /*
          * We need to flush and finish the transaction because JdbcFilterDao
          * gets its own connection from the DataSource and won't see our data
          * otherwise.
          */
-        flushOutageDaoAndStartNewTransaction();
 
-        ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", new ArrayList<String>(0));
-    	Collection<OnmsOutage> outages = getOutageDao().matchingCurrentOutages(selector);
-    	assertEquals(1, outages.size());
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", new ArrayList<String>(0));
+                Collection<OnmsOutage> outages = m_outageDao.matchingCurrentOutages(selector);
+                assertEquals(1, outages.size());
+                return null;
+            }
+        });
     }
 
+    @Test
     public void testDuplicateOutages() {
-        for (final OnmsNode node : getNodeDao().findAll()) {
-            getNodeDao().delete(node);
+        for (final OnmsNode node : m_nodeDao.findAll()) {
+            m_nodeDao.delete(node);
         }
         OnmsNode node = new OnmsNode(getLocalHostDistPoller());
         node.setLabel("shoes");
-        getNodeDao().save(node);
+        m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
         insertEntitiesAndOutage("172.20.1.1", "ICMP", node);
         
         node = new OnmsNode(getLocalHostDistPoller());
         node.setLabel("megaphone");
-        getNodeDao().save(node);
+        m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.17.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.18.1.2", "ICMP", node);
 
         node = new OnmsNode(getLocalHostDistPoller());
         node.setLabel("grunties");
-        getNodeDao().save(node);
+        m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.3", "ICMP", node);
 
-        List<OutageSummary> outages = getOutageDao().getNodeOutageSummaries(0);
+        List<OutageSummary> outages = m_outageDao.getNodeOutageSummaries(0);
         System.err.println(outages);
         assertEquals(3, outages.size());
     }
 
+    @Test
     public void testLimitDuplicateOutages() {
-        for (final OnmsNode node : getNodeDao().findAll()) {
-            getNodeDao().delete(node);
+        for (final OnmsNode node : m_nodeDao.findAll()) {
+            m_nodeDao.delete(node);
         }
         OnmsNode node = new OnmsNode(getLocalHostDistPoller());
         node.setLabel("shoes");
-        getNodeDao().save(node);
+        m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
         insertEntitiesAndOutage("172.20.1.1", "ICMP", node);
         
         node = new OnmsNode(getLocalHostDistPoller());
         node.setLabel("megaphone");
-        getNodeDao().save(node);
+        m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.17.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.18.1.2", "ICMP", node);
 
         node = new OnmsNode(getLocalHostDistPoller());
         node.setLabel("grunties");
-        getNodeDao().save(node);
+        m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.3", "ICMP", node);
 
-        List<OutageSummary> outages = getOutageDao().getNodeOutageSummaries(2);
+        List<OutageSummary> outages = m_outageDao.getNodeOutageSummaries(2);
         System.err.println(outages);
         assertEquals(2, outages.size());
 
-        outages = getOutageDao().getNodeOutageSummaries(3);
+        outages = m_outageDao.getNodeOutageSummaries(3);
         System.err.println(outages);
         assertEquals(3, outages.size());
 
-        outages = getOutageDao().getNodeOutageSummaries(4);
+        outages = m_outageDao.getNodeOutageSummaries(4);
         System.err.println(outages);
         assertEquals(3, outages.size());
 
-        outages = getOutageDao().getNodeOutageSummaries(5);
+        outages = m_outageDao.getNodeOutageSummaries(5);
         System.err.println(outages);
         assertEquals(3, outages.size());
     }
 
     private OnmsDistPoller getLocalHostDistPoller() {
-        return getDistPollerDao().load("localhost");
+        return m_distPollerDao.load("localhost");
     }
     
     private OnmsOutage insertEntitiesAndOutage(final String ipAddr, final String serviceName, OnmsNode node) {
@@ -224,7 +335,7 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
         outage.setMonitoredService(monitoredService);
         outage.setServiceLostEvent(event);
         outage.setIfLostService(new Date());
-        getOutageDao().save(outage);
+        m_outageDao.save(outage);
         return outage;
     }
 
@@ -238,7 +349,7 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
         event.setEventSource("your mom");
         event.setEventLog("Y");
         event.setEventDisplay("Y");
-        getEventDao().save(event);
+        m_eventDao.save(event);
         return event;
     }
 
@@ -246,37 +357,29 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class)
             .add(Restrictions.eq("ipInterface", ipInterface))
             .add(Restrictions.eq("serviceType", serviceType));
-        final List<OnmsMonitoredService> services = getMonitoredServiceDao().findMatching(criteria);
+        final List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(criteria);
         OnmsMonitoredService monitoredService;
         if (services.size() > 0) {
             monitoredService = services.get(0);
         } else {
             monitoredService = new OnmsMonitoredService(ipInterface, serviceType);
         }
-        getMonitoredServiceDao().save(monitoredService);
+        m_monitoredServiceDao.save(monitoredService);
         return monitoredService;
     }
 
     private OnmsServiceType getServiceType(final String serviceName) {
-        OnmsServiceType serviceType = getServiceTypeDao().findByName(serviceName);
-        assertNotNull(serviceType);
+        OnmsServiceType serviceType = m_serviceTypeDao.findByName(serviceName);
+        assertNotNull("Couldn't find " + serviceName + " in the database", serviceType);
         return serviceType;
     }
 
     private OnmsIpInterface getIpInterface(String ipAddr, OnmsNode node) {
-        OnmsIpInterface ipInterface = getIpInterfaceDao().findByNodeIdAndIpAddress(node.getId(), ipAddr);
+        OnmsIpInterface ipInterface = m_ipInterfaceDao.findByNodeIdAndIpAddress(node.getId(), ipAddr);
         if (ipInterface == null) {
             ipInterface = new OnmsIpInterface(ipAddr, node);
-            getIpInterfaceDao().save(ipInterface);
+            m_ipInterfaceDao.save(ipInterface);
         }
         return ipInterface;
-    }
-
-    @SuppressWarnings("deprecation")
-    private void flushOutageDaoAndStartNewTransaction() {
-        getOutageDao().flush();
-        setComplete();
-        endTransaction();
-        startNewTransaction();
     }
 }

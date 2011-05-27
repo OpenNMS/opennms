@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.collectd.CollectionAttribute;
@@ -83,20 +84,20 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
      * @param repo a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @param params a {@link java.util.Map} object.
+     * @param roProps a {@link java.util.Map} object.
      * @param interval a long.
      * @return a {@link org.opennms.netmgt.threshd.ThresholdingVisitor} object.
      */
-    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map<String,String> params, long interval) {
+    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map<String, Object> roProps, long interval) {
         ThreadCategory log = ThreadCategory.getInstance(ThresholdingVisitor.class);
 
-        String enabled = params.get("thresholding-enabled");
+        String enabled = ParameterMap.getKeyedString(roProps, "thresholding-enabled", null);
         if (enabled != null && !"true".equals(enabled)) {
             log.info("create: Thresholds processing is not enabled. Check thresholding-enabled param on collectd package");
             return null;
         }
 
-        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, interval, params);
+        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, interval, roProps);
         if (thresholdingSet.hasThresholds()) {
             return new ThresholdingVisitor(thresholdingSet);
         }
@@ -138,7 +139,15 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     public void reload() {
         m_thresholdingSet.reinitialize();
     }
-    
+
+    public void reloadScheduledOutages() {
+        m_thresholdingSet.updateScheduledOutages();
+    }
+
+    public boolean isNodeInOutage() {
+        return m_thresholdingSet.isNodeInOutage();
+    }
+
     /*
      *  Initialize required attributes map (m_attributesMap)
      */

@@ -66,10 +66,9 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import static org.opennms.core.utils.InetAddressUtils.*;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CatFactory;
@@ -111,7 +110,7 @@ public class DataManager extends Object {
 		Map<String,Set<InetAddress>> m_categoryIpLists = new HashMap<String,Set<InetAddress>>();
 
 		public void processRow(ResultSet rs) throws SQLException {
-			RTCNodeKey key = new RTCNodeKey(rs.getLong("nodeid"), rs.getString("ipaddr"), rs.getString("servicename"));
+			RTCNodeKey key = new RTCNodeKey(rs.getLong("nodeid"), InetAddressUtils.addr(rs.getString("ipaddr")), rs.getString("servicename"));
 			processKey(key);
 			processOutage(key, rs.getTimestamp("ifLostService"), rs.getTimestamp("ifRegainedService"));
 		}
@@ -151,9 +150,9 @@ public class DataManager extends Object {
 			return cat.containsService(key.getSvcName()) && catContainsIp(cat, key.getIP());
 		}
 
-		private boolean catContainsIp(RTCCategory cat, String ip) {
+		private boolean catContainsIp(RTCCategory cat, InetAddress inetAddress) {
 			Set<InetAddress> ips = catGetIpAddrs(cat);
-			return ips.contains(addr(ip));
+			return ips.contains(inetAddress);
 		}
 
 		private Set<InetAddress> catGetIpAddrs(RTCCategory cat) {
@@ -217,10 +216,10 @@ public class DataManager extends Object {
      * 
      * @return the 'status' from the ifServices table
      */
-    private char getServiceStatus(long nodeid, String ip, String svc) {
+    private char getServiceStatus(long nodeid, InetAddress ip, String svc) {
     	
     	JdbcTemplate template = new JdbcTemplate(getConnectionFactory());
-    	String status= (String)template.queryForObject(RTCConstants.DB_GET_SERVICE_STATUS, new Object[] { new Long(nodeid), ip, svc }, String.class);
+    	String status= (String)template.queryForObject(RTCConstants.DB_GET_SERVICE_STATUS, new Object[] { new Long(nodeid), InetAddressUtils.str(ip), svc }, String.class);
 
     	if (status == null) return '\0';
     	return status.charAt(0);
@@ -445,7 +444,7 @@ public class DataManager extends Object {
      * @param svcName
      *            the service name
      */
-    public synchronized void nodeGainedService(long nodeid, String ip, String svcName) {
+    public synchronized void nodeGainedService(long nodeid, InetAddress ip, String svcName) {
         //
         // check the 'status' flag for the service
         //
@@ -510,7 +509,7 @@ public class DataManager extends Object {
      * @param t
      *            the time at which service was lost
      */
-    public synchronized void nodeLostService(long nodeid, String ip, String svcName, long t) {
+    public synchronized void nodeLostService(long nodeid, InetAddress ip, String svcName, long t) {
         RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
@@ -534,7 +533,7 @@ public class DataManager extends Object {
      * @param t
      *            the time at which service was lost
      */
-    public synchronized void interfaceDown(long nodeid, String ip, long t) {
+    public synchronized void interfaceDown(long nodeid, InetAddress ip, long t) {
         for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid, ip)) {
             rtcN.nodeLostService(t);
         }
@@ -578,7 +577,7 @@ public class DataManager extends Object {
      * @param t
      *            the time at which service was regained
      */
-    public synchronized void interfaceUp(long nodeid, String ip, long t) {
+    public synchronized void interfaceUp(long nodeid, InetAddress ip, long t) {
         for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid, ip)) {
             rtcN.nodeRegainedService(t);
         }
@@ -596,7 +595,7 @@ public class DataManager extends Object {
      * @param t
      *            the time at which service was regained
      */
-    public synchronized void nodeRegainedService(long nodeid, String ip, String svcName, long t) {
+    public synchronized void nodeRegainedService(long nodeid, InetAddress ip, String svcName, long t) {
         RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
@@ -619,7 +618,7 @@ public class DataManager extends Object {
      * @param svcName
      *            the service that was deleted
      */
-    public synchronized void serviceDeleted(long nodeid, String ip, String svcName) {
+    public synchronized void serviceDeleted(long nodeid, InetAddress ip, String svcName) {
         // create lookup key
         RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
 
@@ -756,7 +755,7 @@ public class DataManager extends Object {
      * @param newNodeId
      *            the node that the IP now belongs to
      */
-    public synchronized void interfaceReparented(String ip, long oldNodeId, long newNodeId) {
+    public synchronized void interfaceReparented(InetAddress ip, long oldNodeId, long newNodeId) {
         // get all RTCNodes with the IP/old node ID
     	List<RTCNode> nodesList = m_map.getRTCNodes(oldNodeId, ip);
         ListIterator<RTCNode> listIter = new LinkedList<RTCNode>(nodesList).listIterator();

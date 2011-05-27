@@ -174,10 +174,8 @@ public class PolledService implements MonitoredService, Serializable, Comparable
     @Override
     public int hashCode() {
         return new HashCodeBuilder(3, 57)
-        .append(this.getNodeLabel())
-        .append(this.getIpAddr())
         .append(this.getNodeId())
-        .append(this.getSvcName())
+        .append(this.getIpAddr())
         .append(this.getServiceId())
         .toHashCode();
     }
@@ -191,9 +189,9 @@ public class PolledService implements MonitoredService, Serializable, Comparable
         }
         final PolledService that = (PolledService)o;
         return new EqualsBuilder()
-            .append(this.getServiceId(), that.getServiceId())
             .append(this.getNodeId(), that.getNodeId())
             .append(this.getIpAddr(), that.getIpAddr())
+            .append(this.getServiceId(), that.getServiceId())
             .isEquals();
     }
 
@@ -206,9 +204,9 @@ public class PolledService implements MonitoredService, Serializable, Comparable
     public int compareTo(final PolledService that) {
         if (that == null) return -1;
         return new CompareToBuilder()
+            .append(this.getNodeId(), that.getNodeId())
             .append(this.getNodeLabel(), that.getNodeLabel())
             .append(this.getIpAddr(), that.getIpAddr())
-            .append(this.getNodeId(), that.getNodeId())
             .append(this.getSvcName(), that.getSvcName())
             .append(this.getServiceId(), that.getServiceId())
             .toComparison();

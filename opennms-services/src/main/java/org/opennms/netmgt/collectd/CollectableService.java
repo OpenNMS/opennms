@@ -146,7 +146,7 @@ final class CollectableService implements ReadyRunnable {
         
         m_spec.initialize(m_agent);
         
-        Map<String, String> roProps=m_spec.getReadOnlyPropertyMap();
+        Map<String, Object> roProps=m_spec.getReadOnlyPropertyMap();
         m_params=new ServiceParameters(roProps);
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
         
@@ -216,6 +216,8 @@ final class CollectableService implements ReadyRunnable {
 	 */
 	public void refreshPackage(CollectorConfigDao collectorConfigDao) {
 		m_spec.refresh(collectorConfigDao);
+		if (m_thresholdVisitor != null)
+		    m_thresholdVisitor.reloadScheduledOutages();
 	}
 
     /** {@inheritDoc} */
@@ -393,7 +395,11 @@ final class CollectableService implements ReadyRunnable {
                          * The first person who actually needs to configure that sort of thing on the fly can code it up.
                          */
                         if (m_thresholdVisitor != null) {
-                            result.visit(m_thresholdVisitor);
+                            if (m_thresholdVisitor.isNodeInOutage()) {
+                                log().info("run: the threshold processing will be skipped because the node " + m_nodeId + " is on a scheduled outage.");
+                            } else {
+                                result.visit(m_thresholdVisitor);
+                            }
                         }
                        
                         if (result.getStatus() == ServiceCollector.COLLECTION_SUCCEEDED) {

@@ -416,7 +416,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a {@link java.lang.String} object.
      */
     @XmlAttribute(name="label")
-    @Column(name="nodeLabel", length=256)
+    @Column(name="nodeLabel", length=256, nullable=false)
     public String getLabel() {
         return m_label;
     }

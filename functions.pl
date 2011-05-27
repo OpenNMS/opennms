@@ -94,6 +94,10 @@ if (defined $TESTS) {
 }
 unshift(@ARGS, '-Djava.awt.headless=true');
 
+if (not grep { $_ =~ /^-Dmaven.metadata.legacy/ } @ARGS) {
+	unshift(@ARGS, '-Dmaven.metadata.legacy=true');
+}
+
 if (grep { $_ =~ /^-Droot.dir=/ } @ARGS) {
 	debug("root.dir defined");
 } else {

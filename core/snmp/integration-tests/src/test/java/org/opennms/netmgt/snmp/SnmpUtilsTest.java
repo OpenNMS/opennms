@@ -117,12 +117,12 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
         super.setUp();
         
         m_trapListener = new TestTrapListener();
-        SnmpUtils.registerForTraps(m_trapListener, this, 9162);
+        SnmpUtils.registerForTraps(m_trapListener, this, null, 9162);
     }
 
     @Override
     protected void tearDown() throws Exception {
-        SnmpUtils.unregisterForTraps(m_trapListener, 9162);
+        SnmpUtils.unregisterForTraps(m_trapListener, null, 9162);
         
         super.tearDown();
     }

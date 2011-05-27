@@ -121,8 +121,10 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         m_distPollerDao.saveOrUpdate(dp);
 
         OnmsNode localhostNode = new OnmsNode(dp);
+        localhostNode.setLabel("localhost");
         m_nodeDao.saveOrUpdate(localhostNode);
         OnmsNode googleNode = new OnmsNode(dp);
+        googleNode.setLabel("google");
         m_nodeDao.saveOrUpdate(googleNode);
 
         OnmsIpInterface localhostIpInterface = new OnmsIpInterface("127.0.0.1", localhostNode);

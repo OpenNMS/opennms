@@ -204,6 +204,7 @@ public class ModifyAssetServlet extends HttpServlet {
         asset.setAdditionalhardware(getRequestParameter(request, "additionalhardware"));
         asset.setAdmin(getRequestParameter(request, "admin"));
         asset.setSnmpcommunity(getRequestParameter(request, "snmpcommunity"));
+        asset.setRackunitheight(getRequestParameter(request, "rackunitheight"));
 
         asset.setUserLastModified(request.getRemoteUser());
         asset.setLastModifiedDate(new Date());

@@ -167,6 +167,8 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 				parsedArgs[XMPP_TO] = arg.getValue();
 			} else if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) {
 				parsedArgs[XMPP_MESSAGE] = arg.getValue();
+			} else if (NotificationManager.PARAM_NUM_MSG.equals(arg.getSwitch())) {
+				parsedArgs[XMPP_MESSAGE] = arg.getValue();
 			}
 
 		}

@@ -207,6 +207,29 @@ public class Asset extends Object {
 
     protected String snmpcommunity ="";
 
+    protected String rackunitheight ="";
+
+    /**
+     * <p>Getter for the field <code>rackunitheight</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getRackunitheight() {
+        return rackunitheight;
+    }
+
+    /**
+     * <p>Setter for the field <code>rackunitheight</code>.</p>
+     *
+     * @param rackunitheight a {@link java.lang.String} object.
+     */
+    public void setRackunitheight(String rackunitheight) {
+        if (rackunitheight != null) {
+            this.rackunitheight = rackunitheight;
+        } else {
+            this.rackunitheight = "";
+        }        
+      }
     /**
      * <p>Getter for the field <code>snmpcommunity</code>.</p>
      *

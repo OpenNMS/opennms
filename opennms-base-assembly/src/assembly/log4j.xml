@@ -10,6 +10,8 @@
       <outputDirectory>/</outputDirectory>
       <directory>target/classes/etc</directory>
       <includes><include>log4j.properties</include></includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
 </assembly>

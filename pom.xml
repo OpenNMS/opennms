@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.9.9-SNAPSHOT</version>
+  <version>1.9.90-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org</url>
@@ -779,17 +779,29 @@
       </properties>
     </profile>
 
+    <profile>
+      <id>usr-bin-rrdtool</id>
+      <activation>
+        <file>
+          <exists>/usr/bin/rrdtool</exists>
+        </file>
+      </activation>
+
+      <properties>
+        <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
+      </properties>
+    </profile>
 
     <profile>
       <id>usr-local-bin-rrdtool</id>
       <activation>
         <file>
-          <exists>/usr/local/rrdtool/bin/rrdtool</exists>
+          <exists>/usr/local/bin/rrdtool</exists>
         </file>
       </activation>
 
       <properties>
-        <install.rrdtool.bin>/usr/local/rrdtool/bin/rrdtool</install.rrdtool.bin>
+        <install.rrdtool.bin>/usr/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
 
@@ -816,7 +828,7 @@
       <id>solaris-blastwave-rrdtool</id>
       <activation>
       <file>
-        <exists>/var/sadm/pkg/CSWrrd/pkginfo</exists>
+        <exists>/opt/csw/bin/rrdtool</exists>
       </file>
       </activation>
 
@@ -1083,6 +1095,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jcifs-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jfreechart-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -1929,16 +1947,6 @@
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-jsp-2.1</artifactId>
         <version>${jettyVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>jfree</groupId>
-        <artifactId>jfreechart</artifactId>
-        <version>1.0.13</version>
-      </dependency>
-      <dependency>
-        <groupId>jfree</groupId>
-        <artifactId>jcommon</artifactId>
-        <version>1.0.0</version>
       </dependency>
       <dependency>
         <groupId>jivesoftware</groupId>

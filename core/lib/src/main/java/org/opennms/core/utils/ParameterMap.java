@@ -211,4 +211,25 @@ public abstract class ParameterMap {
         }
         return value;
     }
+
+    /**
+     * This method is used to lookup a specific key in the map. If the value 
+     * cannot be found in the map then the default value is stored
+     * in the map. If the specified key does not exist in the map then the
+     * default value is returned.
+     *
+     */
+    public static <T> T getKeyedValue(final Map<String,T> map, final String key, final T defValue) {
+
+        if (map == null) return defValue;
+
+        T oValue = map.get(key);
+
+        if (oValue != null) {
+            return oValue;
+        } else {
+            map.put(key, defValue);
+            return defValue;
+        }
+    }
 }

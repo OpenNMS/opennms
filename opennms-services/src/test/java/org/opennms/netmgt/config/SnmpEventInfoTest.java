@@ -52,6 +52,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.model.discovery.IPAddress;
+import org.opennms.netmgt.model.discovery.IPAddressRange;
+import org.opennms.netmgt.model.discovery.IPAddressRangeSet;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -66,7 +68,7 @@ public class SnmpEventInfoTest {
     
     @Test(expected=IllegalArgumentException.class)
     public void testConfigRangeCreateOutOfOrder() {
-        new ConfigRange("192.168.1.2", "192.168.1.1");
+        new IPAddressRange("192.168.1.2", "192.168.1.1");
     }
     
     @Test
@@ -102,17 +104,27 @@ public class SnmpEventInfoTest {
 
     @Test
     public void testContainsAddr() {
-        ConfigRange r = new ConfigRange("192.168.1.1", "192.168.1.3");
-        assertFalse(r.contains("192.168.0.1"));
-        assertTrue(r.contains("192.168.1.1"));
-        assertTrue(r.contains("192.168.1.2"));
-        assertTrue(r.contains("192.168.1.3"));
-        assertFalse(r.contains("192.168.1.4"));
+        IPAddressRange range = new IPAddressRange("192.168.1.1", "192.168.1.3");
+        assertFalse(range.contains("192.168.0.1"));
+        assertTrue(range.contains("192.168.1.1"));
+        assertTrue(range.contains("192.168.1.2"));
+        assertTrue(range.contains("192.168.1.3"));
+        assertFalse(range.contains("192.168.1.4"));
+    }
+
+    @Test
+    public void testFollows() {
+        IPAddressRange s = new IPAddressRange("192.168.1.5", "192.168.1.6");
+        IPAddressRange q = new IPAddressRange("192.168.1.1", "192.168.1.2");
+        IPAddressRange r = new IPAddressRange("192.168.1.3", "192.168.1.4");
+        assertTrue(r.comesAfter(q));
+        assertFalse(r.comesAfter(r));
+        assertFalse(r.comesAfter(s));
     }
 
     @Test
     public void testContainsAddrIPv6() {
-        ConfigRange r = new ConfigRange("2001:db8::10", "2001:db8::20");
+        IPAddressRange r = new IPAddressRange("2001:db8::10", "2001:db8::20");
         assertFalse(r.contains("192.168.0.1"));
         assertFalse(r.contains("2001:db8::1"));
         assertTrue(r.contains("2001:db8::10"));
@@ -124,148 +136,146 @@ public class SnmpEventInfoTest {
 
     @Test
     public void testContainsRange() {
-        ConfigRange r = new ConfigRange("192.168.1.1", "192.168.1.10");
-        assertTrue(r.contains(new ConfigRange("192.168.1.1", "192.168.1.1")));
-        assertTrue(r.contains(new ConfigRange("192.168.1.10", "192.168.1.10")));
-        assertTrue(r.contains(new ConfigRange("192.168.1.2", "192.168.1.7")));
-        assertFalse(r.contains(new ConfigRange("192.168.1.0", "192.168.1.1")));
-        assertFalse(r.contains(new ConfigRange("192.168.1.2", "192.168.1.11")));
-        assertFalse(r.contains(new ConfigRange("192.168.1.0", "192.168.1.11")));
+        IPAddressRange r = new IPAddressRange("192.168.1.1", "192.168.1.10");
+        assertTrue(r.contains(new IPAddressRange("192.168.1.1", "192.168.1.1")));
+        assertTrue(r.contains(new IPAddressRange("192.168.1.10", "192.168.1.10")));
+        assertTrue(r.contains(new IPAddressRange("192.168.1.2", "192.168.1.7")));
+        assertFalse(r.contains(new IPAddressRange("192.168.1.0", "192.168.1.1")));
+        assertFalse(r.contains(new IPAddressRange("192.168.1.2", "192.168.1.11")));
+        assertFalse(r.contains(new IPAddressRange("192.168.1.0", "192.168.1.11")));
 
     }
 
     @Test
     public void testPreceedsRange() {
-        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
-        assertTrue(r.preceeds(new ConfigRange("192.168.1.21", "192.168.1.30")));
-        assertTrue(r.preceeds(new ConfigRange("192.168.1.21", "192.168.1.21")));
-        assertFalse(r.preceeds(new ConfigRange("192.168.1.20", "192.168.1.30")));
-        assertFalse(r.preceeds(new ConfigRange("192.168.1.7", "192.168.1.9")));
+        IPAddressRange r = new IPAddressRange("192.168.1.10", "192.168.1.20");
+        assertTrue(r.comesBefore(new IPAddressRange("192.168.1.21", "192.168.1.30")));
+        assertTrue(r.comesBefore(new IPAddressRange("192.168.1.21", "192.168.1.21")));
+        assertFalse(r.comesBefore(new IPAddressRange("192.168.1.20", "192.168.1.30")));
+        assertFalse(r.comesBefore(new IPAddressRange("192.168.1.7", "192.168.1.9")));
     }
 
     @Test
     public void testOverlapsRange() {
-        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
-        assertTrue(r.overlaps(new ConfigRange("192.168.1.10", "192.168.1.10")));
-        assertTrue(r.overlaps(new ConfigRange("192.168.1.20", "192.168.1.20")));
-        assertTrue(r.overlaps(new ConfigRange("192.168.1.10", "192.168.1.20")));
-        assertTrue(r.overlaps(new ConfigRange("192.168.1.9", "192.168.1.22")));
-        assertTrue(r.overlaps(new ConfigRange("192.168.1.15", "192.168.1.22")));
-        assertTrue(r.overlaps(new ConfigRange("192.168.1.9", "192.168.1.15")));
-        assertTrue(r.overlaps(new ConfigRange("192.168.1.11", "192.168.1.19")));
-        assertFalse(r.overlaps(new ConfigRange("192.168.1.5", "192.168.1.9")));
-        assertFalse(r.overlaps(new ConfigRange("192.168.1.21", "192.168.1.22")));
+        IPAddressRange r = new IPAddressRange("192.168.1.10", "192.168.1.20");
+        assertTrue(r.overlaps(new IPAddressRange("192.168.1.10", "192.168.1.10")));
+        assertTrue(r.overlaps(new IPAddressRange("192.168.1.20", "192.168.1.20")));
+        assertTrue(r.overlaps(new IPAddressRange("192.168.1.10", "192.168.1.20")));
+        assertTrue(r.overlaps(new IPAddressRange("192.168.1.9", "192.168.1.22")));
+        assertTrue(r.overlaps(new IPAddressRange("192.168.1.15", "192.168.1.22")));
+        assertTrue(r.overlaps(new IPAddressRange("192.168.1.9", "192.168.1.15")));
+        assertTrue(r.overlaps(new IPAddressRange("192.168.1.11", "192.168.1.19")));
+        assertFalse(r.overlaps(new IPAddressRange("192.168.1.5", "192.168.1.9")));
+        assertFalse(r.overlaps(new IPAddressRange("192.168.1.21", "192.168.1.22")));
 
     }
 
     @Test
     public void testAdjacentRange() {
-        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
-        assertTrue(r.adjacent(new ConfigRange("192.168.1.7", "192.168.1.9")));
-        assertFalse(r.adjacent(new ConfigRange("192.168.1.7", "192.168.1.8")));
-        assertFalse(r.adjacent(new ConfigRange("192.168.1.7", "192.168.1.21")));
-        assertTrue(r.adjacent(new ConfigRange("192.168.1.21", "192.168.1.21")));
+        IPAddressRange r = new IPAddressRange("192.168.1.10", "192.168.1.20");
+        assertTrue(r.adjoins(new IPAddressRange("192.168.1.7", "192.168.1.9")));
+        assertFalse(r.adjoins(new IPAddressRange("192.168.1.7", "192.168.1.8")));
+        assertFalse(r.adjoins(new IPAddressRange("192.168.1.7", "192.168.1.21")));
+        assertTrue(r.adjoins(new IPAddressRange("192.168.1.21", "192.168.1.21")));
     }
     
     @Test
     public void testConfigRangeEquals() {
-        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
+        IPAddressRange r = new IPAddressRange("192.168.1.10", "192.168.1.20");
         assertEquals(r, r);
-        assertEquals(r, new ConfigRange("192.168.1.10", "192.168.1.20"));
-        assertFalse(r.equals( new ConfigRange("192.168.1.10", "192.168.1.19") ));
+        assertEquals(r, new IPAddressRange("192.168.1.10", "192.168.1.20"));
+        assertFalse(r.equals(new IPAddressRange("192.168.1.10", "192.168.1.19")));
     }
     
     @Test
     public void testCombine() {
-        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
-        
-        assertEquals(r, r.combine(new ConfigRange("192.168.1.10", "192.168.1.20")));
-        assertEquals(r, r.combine(new ConfigRange("192.168.1.11", "192.168.1.20")));
-        assertEquals(r, r.combine(new ConfigRange("192.168.1.10", "192.168.1.19")));
-        assertEquals(r, r.combine(new ConfigRange("192.168.1.11", "192.168.1.19")));
-        assertEquals(new ConfigRange("192.168.1.9", "192.168.1.20"), r.combine(new ConfigRange("192.168.1.9", "192.168.1.12")));
-        assertEquals(new ConfigRange("192.168.1.10", "192.168.1.22"), r.combine(new ConfigRange("192.168.1.13", "192.168.1.22")));
-        assertEquals(new ConfigRange("192.168.1.9", "192.168.1.22"), r.combine(new ConfigRange("192.168.1.9", "192.168.1.22")));
-        assertEquals(new ConfigRange("192.168.1.7", "192.168.1.20"), r.combine(new ConfigRange("192.168.1.7", "192.168.1.9")));
-        assertEquals(new ConfigRange("192.168.1.10", "192.168.1.24"), r.combine(new ConfigRange("192.168.1.21", "192.168.1.24")));
+        IPAddressRange rr = new IPAddressRange("192.168.1.10", "192.168.1.20");
+        assertEquals(rr, rr.combine(new IPAddressRange("192.168.1.10", "192.168.1.20")));
+        assertEquals(rr, rr.combine(new IPAddressRange("192.168.1.11", "192.168.1.20")));
+        assertEquals(rr, rr.combine(new IPAddressRange("192.168.1.10", "192.168.1.19")));
+        assertEquals(rr, rr.combine(new IPAddressRange("192.168.1.11", "192.168.1.19")));
+        assertEquals(new IPAddressRange("192.168.1.9", "192.168.1.20"), rr.combine(new IPAddressRange("192.168.1.9", "192.168.1.12")));
+        assertEquals(new IPAddressRange("192.168.1.10", "192.168.1.22"), rr.combine(new IPAddressRange("192.168.1.13", "192.168.1.22")));
+        assertEquals(new IPAddressRange("192.168.1.9", "192.168.1.22"), rr.combine(new IPAddressRange("192.168.1.9", "192.168.1.22")));
+        assertEquals(new IPAddressRange("192.168.1.7", "192.168.1.20"), rr.combine(new IPAddressRange("192.168.1.7", "192.168.1.9")));
+        assertEquals(new IPAddressRange("192.168.1.10", "192.168.1.24"), rr.combine(new IPAddressRange("192.168.1.21", "192.168.1.24")));
     }
     
     @Test
     public void testRemove() {
-        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
-
-        assertArrayEquals(new ConfigRange[0], r.remove(r));
-        assertArrayEquals(new ConfigRange[0], r.remove(new ConfigRange("192.168.1.5", "192.168.1.27")));
-        assertArrayEquals(new ConfigRange[] { r }, r.remove(new ConfigRange("192.168.1.5", "192.168.1.7")));
-        assertArrayEquals(new ConfigRange[] { r }, r.remove(new ConfigRange("192.168.1.22", "192.168.1.27")));
-        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.15", "192.168.1.20") }, r.remove(new ConfigRange("192.168.1.5", "192.168.1.14")));
-        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.10", "192.168.1.14") }, r.remove(new ConfigRange("192.168.1.15", "192.168.1.24")));
-        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.10", "192.168.1.14"), new ConfigRange("192.168.1.16", "192.168.1.20") }, r.remove(new ConfigRange("192.168.1.15", "192.168.1.15")));
+        IPAddressRange r = new IPAddressRange("192.168.1.10", "192.168.1.20");
+        assertArrayEquals(new IPAddressRange[0], r.remove(r));
+        assertArrayEquals(new IPAddressRange[0], r.remove(new IPAddressRange("192.168.1.5", "192.168.1.27")));
+        assertArrayEquals(new IPAddressRange[] { r }, r.remove(new IPAddressRange("192.168.1.5", "192.168.1.7")));
+        assertArrayEquals(new IPAddressRange[] { r }, r.remove(new IPAddressRange("192.168.1.22", "192.168.1.27")));
+        assertArrayEquals(new IPAddressRange[] { new IPAddressRange("192.168.1.15", "192.168.1.20") }, r.remove(new IPAddressRange("192.168.1.5", "192.168.1.14")));
+        assertArrayEquals(new IPAddressRange[] { new IPAddressRange("192.168.1.10", "192.168.1.14") }, r.remove(new IPAddressRange("192.168.1.15", "192.168.1.24")));
+        assertArrayEquals(new IPAddressRange[] { new IPAddressRange("192.168.1.10", "192.168.1.14"), new IPAddressRange("192.168.1.16", "192.168.1.20") }, r.remove(new IPAddressRange("192.168.1.15", "192.168.1.15")));
     }
     
     @Test
     public void testListAdd() {
-        ConfigRange r = new ConfigRange("192.168.1.10", "192.168.1.20");
+        IPAddressRange r = new IPAddressRange("192.168.1.10", "192.168.1.20");
 
-        ConfigRangeList ranges = new ConfigRangeList();
+        IPAddressRangeSet ranges = new IPAddressRangeSet();
         ranges.add(r);
         
-        assertArrayEquals(new ConfigRange[] { r }, ranges.toArray());
+        assertArrayEquals(new IPAddressRange[] { r }, ranges.toArray());
         
-        ConfigRange s = new ConfigRange("192.168.1.30", "192.168.1.40");
+        IPAddressRange s = new IPAddressRange("192.168.1.30", "192.168.1.40");
         ranges.add(s);
 
-        assertArrayEquals(new ConfigRange[] { r, s }, ranges.toArray());
+        assertArrayEquals(new IPAddressRange[] { r, s }, ranges.toArray());
 
-        ConfigRange t = new ConfigRange("192.168.1.2", "192.168.1.8");
+        IPAddressRange t = new IPAddressRange("192.168.1.2", "192.168.1.8");
         ranges.add(t);
 
-        assertArrayEquals(new ConfigRange[] { t, r, s }, ranges.toArray());
+        assertArrayEquals(new IPAddressRange[] { t, r, s }, ranges.toArray());
 
-        ConfigRange u = new ConfigRange("192.168.1.22", "192.168.1.28");
+        IPAddressRange u = new IPAddressRange("192.168.1.22", "192.168.1.28");
         ranges.add(u);
 
-        assertArrayEquals(new ConfigRange[] { t, r, u, s }, ranges.toArray());
+        assertArrayEquals(new IPAddressRange[] { t, r, u, s }, ranges.toArray());
         
-        ranges.add(new ConfigRange("192.168.1.18", "192.168.1.24"));
+        ranges.add(new IPAddressRange("192.168.1.18", "192.168.1.24"));
         
-        assertArrayEquals(new ConfigRange[] { t, new ConfigRange("192.168.1.10", "192.168.1.28"), s }, ranges.toArray());
+        assertArrayEquals(new IPAddressRange[] { t, new IPAddressRange("192.168.1.10", "192.168.1.28"), s }, ranges.toArray());
 
-        ranges.add(new ConfigRange("192.168.1.9", "192.168.1.9"));
+        ranges.add(new IPAddressRange("192.168.1.9", "192.168.1.9"));
         
-        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.2", "192.168.1.28"), s }, ranges.toArray());
+        assertArrayEquals(new IPAddressRange[] { new IPAddressRange("192.168.1.2", "192.168.1.28"), s }, ranges.toArray());
 
     }
     
     @Test
     public void testListRemove() {
-        ConfigRange r = new ConfigRange("192.168.1.1", "192.168.1.100");
+        IPAddressRange r = new IPAddressRange("192.168.1.1", "192.168.1.100"); //{[1..100]}
 
-        ConfigRangeList ranges = new ConfigRangeList();
+        IPAddressRangeSet ranges = new IPAddressRangeSet();
         ranges.add(r);
         
-        ConfigRange s = new ConfigRange("192.168.1.30", "192.168.1.40");
-        ranges.remove(s);
+        IPAddressRange s = new IPAddressRange("192.168.1.30", "192.168.1.40"); 
+        ranges.remove(s); //{[1..29],[41..100]}
 
-        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.1", "192.168.1.29"), new ConfigRange("192.168.1.41", "192.168.1.100") }, ranges.toArray());
+        assertArrayEquals(new IPAddressRange[] { new IPAddressRange("192.168.1.1", "192.168.1.29"), new IPAddressRange("192.168.1.41", "192.168.1.100") }, ranges.toArray());
 
-        ConfigRange t = new ConfigRange("192.168.1.20", "192.168.1.35");
-        ranges.remove(t);
+        IPAddressRange t = new IPAddressRange("192.168.1.20", "192.168.1.35"); 
+        ranges.remove(t); //{[1..19],[41..100]}
 
-        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.1", "192.168.1.19"), new ConfigRange("192.168.1.41", "192.168.1.100") }, ranges.toArray());
+        assertArrayEquals(new IPAddressRange[] { new IPAddressRange("192.168.1.1", "192.168.1.19"), new IPAddressRange("192.168.1.41", "192.168.1.100") }, ranges.toArray());
 
-        ConfigRange u = new ConfigRange("192.168.1.35", "192.168.1.50");
-        ranges.remove(u);
+        IPAddressRange u = new IPAddressRange("192.168.1.35", "192.168.1.50"); 
+        ranges.remove(u); //{[1..19],[51..100]}
 
-        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.1", "192.168.1.19"), new ConfigRange("192.168.1.51", "192.168.1.100") }, ranges.toArray());
+        assertArrayEquals(new IPAddressRange[] { new IPAddressRange("192.168.1.1", "192.168.1.19"), new IPAddressRange("192.168.1.51", "192.168.1.100") }, ranges.toArray());
         
-        ranges.remove(new ConfigRange("192.168.1.60", "192.168.1.70"));
+        ranges.remove(new IPAddressRange("192.168.1.60", "192.168.1.70")); //{1..19],[51..59],[71..100]}
         
-        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.1", "192.168.1.19"), new ConfigRange("192.168.1.51", "192.168.1.59"), new ConfigRange("192.168.1.71", "192.168.1.100") }, ranges.toArray());
+        assertArrayEquals(new IPAddressRange[] { new IPAddressRange("192.168.1.1", "192.168.1.19"), new IPAddressRange("192.168.1.51", "192.168.1.59"), new IPAddressRange("192.168.1.71", "192.168.1.100") }, ranges.toArray());
 
-        ranges.remove(new ConfigRange("192.168.1.10", "192.168.1.80"));
+        ranges.remove(new IPAddressRange("192.168.1.10", "192.168.1.80")); //{1..9],[81..100}
         
-        assertArrayEquals(new ConfigRange[] { new ConfigRange("192.168.1.1", "192.168.1.9"), new ConfigRange("192.168.1.81", "192.168.1.100") }, ranges.toArray());
+        assertArrayEquals(new IPAddressRange[] { new IPAddressRange("192.168.1.1", "192.168.1.9"), new IPAddressRange("192.168.1.81", "192.168.1.100") }, ranges.toArray());
 
     }
 

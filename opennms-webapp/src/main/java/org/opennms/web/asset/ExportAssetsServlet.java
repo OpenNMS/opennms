@@ -152,7 +152,8 @@ public class ExportAssetsServlet extends HttpServlet {
 		"Inputpower",
 		"Additional hardware",
 		"Admin",
-		"SNMP Community"
+		"SNMP Community",
+		"Rack unit height"
         };
         
         out.writeNext(header);
@@ -220,6 +221,7 @@ public class ExportAssetsServlet extends HttpServlet {
             entries.add(asset.getAdditionalhardware());
             entries.add(asset.getAdmin());
             entries.add(asset.getSnmpcommunity());
+            entries.add(asset.getRackunitheight());
             
             out.writeNext(entries.toArray(new String[0]));
         }

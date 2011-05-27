@@ -66,7 +66,11 @@ public class OnmsNodeList extends LinkedList<OnmsNode> {
     public int getCount() {
         return this.size();
     }
-    
+
+    // The property has a getter "" but no setter. For unmarshalling, please define setters.
+    public void setCount(final int count) {
+    }
+
     /**
      * <p>getTotalCount</p>
      *

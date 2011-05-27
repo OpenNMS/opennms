@@ -33,6 +33,7 @@ package org.opennms.netmgt.model.discovery;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.util.Arrays;
 
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
@@ -52,7 +53,7 @@ public class IPAddress implements Comparable<IPAddress> {
      *
      * @param addr a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      */
-    public IPAddress(IPAddress addr) {
+    public IPAddress(final IPAddress addr) {
         m_ipAddr = addr.m_ipAddr;
     }
     
@@ -61,7 +62,7 @@ public class IPAddress implements Comparable<IPAddress> {
      *
      * @param dottedNotation a {@link java.lang.String} object.
      */
-    public IPAddress(String dottedNotation) {
+    public IPAddress(final String dottedNotation) {
         m_ipAddr = InetAddressUtils.toIpAddrBytes(dottedNotation);
     }
     
@@ -70,7 +71,7 @@ public class IPAddress implements Comparable<IPAddress> {
      *
      * @param inetAddress a {@link java.net.InetAddress} object.
      */
-    public IPAddress(InetAddress inetAddress) {
+    public IPAddress(final InetAddress inetAddress) {
         m_ipAddr = inetAddress.getAddress();
     }
     
@@ -79,7 +80,7 @@ public class IPAddress implements Comparable<IPAddress> {
      *
      * @param ipAddrOctets an array of byte.
      */
-    public IPAddress(byte[] ipAddrOctets) {
+    public IPAddress(final byte[] ipAddrOctets) {
         m_ipAddr = ipAddrOctets;
     }
     
@@ -103,20 +104,25 @@ public class IPAddress implements Comparable<IPAddress> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof IPAddress) {
-            return new ByteArrayComparator().compare(m_ipAddr, ((IPAddress) obj).toOctets()) == 0;
+        	return Arrays.equals(m_ipAddr, ((IPAddress) obj).toOctets());
         }
         return false;
     }
 
+    @Override
+    public int hashCode() {
+    	return Arrays.hashCode(m_ipAddr);
+    }
+    
     /**
      * <p>compareTo</p>
      *
      * @param o a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      * @return a int.
      */
-    public int compareTo(IPAddress o) {
+    public int compareTo(final IPAddress o) {
         return new ByteArrayComparator().compare(m_ipAddr, o.toOctets());
     }
     
@@ -148,7 +154,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      */
     public IPAddress incr() {
-        byte[] b = new byte[m_ipAddr.length];
+    	final byte[] b = new byte[m_ipAddr.length];
 
         int carry = 1;
         for(int i = m_ipAddr.length-1; i >= 0; i--) {
@@ -171,7 +177,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      */
     public IPAddress decr() {
-        byte[] b = new byte[m_ipAddr.length];
+    	final byte[] b = new byte[m_ipAddr.length];
         
         int borrow = 1;
         for(int i = m_ipAddr.length-1; i >= 0; i--) {
@@ -195,7 +201,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      * @return a boolean.
      */
-    public boolean isPredecessorOf(IPAddress other) {
+    public boolean isPredecessorOf(final IPAddress other) {
         return other.decr().equals(this);
     }
     
@@ -205,7 +211,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      * @return a boolean.
      */
-    public boolean isSuccessorOf(IPAddress other) {
+    public boolean isSuccessorOf(final IPAddress other) {
         return other.incr().equals(this);
     }
     
@@ -215,7 +221,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      * @return a boolean.
      */
-    public boolean isLessThan(IPAddress other) {
+    public boolean isLessThan(final IPAddress other) {
         return compareTo(other) < 0;
     }
     
@@ -225,7 +231,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      * @return a boolean.
      */
-    public boolean isLessThanOrEqualTo(IPAddress other) {
+    public boolean isLessThanOrEqualTo(final IPAddress other) {
         return compareTo(other) <= 0;
     }
     
@@ -235,7 +241,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      * @return a boolean.
      */
-    public boolean isGreaterThan(IPAddress other) {
+    public boolean isGreaterThan(final IPAddress other) {
         return compareTo(other) > 0;
     }
     
@@ -245,7 +251,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      * @return a boolean.
      */
-    public boolean isGreaterThanOrEqualTo(IPAddress other) {
+    public boolean isGreaterThanOrEqualTo(final IPAddress other) {
         return compareTo(other) >= 0;
     }
 
@@ -256,7 +262,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @param b a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      */
-    public static IPAddress min(IPAddress a, IPAddress b) {
+    public static IPAddress min(final IPAddress a, final IPAddress b) {
         return (a.isLessThan(b) ? a : b);
     }
 
@@ -267,7 +273,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @param b a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      */
-    public static IPAddress max(IPAddress a, IPAddress b) {
+    public static IPAddress max(final IPAddress a, final IPAddress b) {
         return (a.isGreaterThan(b) ? a : b);
     }
 

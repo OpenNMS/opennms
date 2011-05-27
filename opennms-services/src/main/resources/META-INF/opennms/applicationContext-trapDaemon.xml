@@ -10,6 +10,7 @@
     <property name="eventReader" ref="eventReader"/>
     <property name="backlogQ" ref="backlogQ"/>
     <property name="processor" ref="processor"/>
+    <property name="snmpTrapAddress" ref="snmpTrapAddress"/>
     <property name="snmpTrapPort" ref="snmpTrapPort"/>
   </bean>
   
@@ -43,6 +44,8 @@
   </bean>
   
   <bean id="newSuspectOnTrap" factory-bean="trapdConfig" factory-method="getNewSuspectOnTrap"/>
+  
+  <bean id="snmpTrapAddress" factory-bean="trapdConfig" factory-method="getSnmpTrapAddress"/>
   
   <bean id="snmpTrapPort" factory-bean="trapdConfig" factory-method="getSnmpTrapPort"/>
   

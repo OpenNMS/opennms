@@ -239,7 +239,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * Responsible for performing all necessary initialization for the
      * specified interface in preparation for data collection.
      */
-    public void initialize(CollectionAgent agent, Map<String, String> parameters) {
+    public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
         InetAddress ipAddr = (InetAddress) agent.getAddress();
 
         // Retrieve the name of the JMX data collector
@@ -327,18 +327,18 @@ public abstract class JMXCollector implements ServiceCollector {
     /**
      * <p>getMBeanServerConnection</p>
      *
-     * @param parameterMap a {@link java.util.Map} object.
+     * @param map a {@link java.util.Map} object.
      * @param address a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.protocols.jmx.connectors.ConnectionWrapper} object.
      */
-    public abstract ConnectionWrapper getMBeanServerConnection(Map<String, String> parameterMap, InetAddress address);
+    public abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> map, InetAddress address);
 
     /**
      * {@inheritDoc}
      *
      * Perform data collection.
      */
-    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> map) {
+    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> map) {
         InetAddress ipaddr = (InetAddress) agent.getAddress();
         JMXNodeInfo nodeInfo = (JMXNodeInfo) agent.getAttribute(NODE_INFO_KEY);
         Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();

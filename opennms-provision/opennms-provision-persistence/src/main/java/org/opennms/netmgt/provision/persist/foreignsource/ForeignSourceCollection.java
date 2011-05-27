@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+
 
 /**
  * <p>ForeignSourceCollection class.</p>
@@ -18,6 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Id: $
  */
 @XmlRootElement(name="foreign-sources")
+@ValidateUsing("foreign-sources.xsd")
 public class ForeignSourceCollection implements List<ForeignSource> {
     private LinkedList<ForeignSource> m_list = null;
 

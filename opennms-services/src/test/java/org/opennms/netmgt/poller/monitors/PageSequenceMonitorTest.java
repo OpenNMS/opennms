@@ -416,5 +416,30 @@ public class PageSequenceMonitorTest {
              assertTrue("Expected a DS called 'test1' but did not find one", status.getProperties().containsKey("test1"));
              assertTrue("Expected a DS called 'test2' but did not find one", status.getProperties().containsKey("test2"));
     }
-    
+
+    @Test
+    @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
+    public void testRequireIPv6() throws Exception {
+        m_params.put("page-sequence", "" +
+                     "<?xml version=\"1.0\"?>" +
+                     "<page-sequence>\n" + 
+                     "  <page host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv6=\"true\"/>\n" +
+                     "</page-sequence>\n");
+                          
+             PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
+             assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
+    public void testRequireIPv4() throws Exception {
+        m_params.put("page-sequence", "" +
+                     "<?xml version=\"1.0\"?>" +
+                     "<page-sequence>\n" + 
+                     "  <page host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv4=\"true\"/>\n" +
+                     "</page-sequence>\n");
+                          
+             PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
+             assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+    }
 }

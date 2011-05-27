@@ -46,6 +46,8 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
+import org.opennms.netmgt.snmp.SnmpV2TrapBuilder;
+import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -626,6 +628,92 @@ public class SnmpTrapHelper {
         return packet;
     }
 
+    /**
+     * Create an SNMP V2 inform with the specified trap object ID, and sysUpTime
+     * value.
+     *
+     * @param trapOid
+     *            The trap object id.
+     * @param sysUpTime
+     *            The system up time.
+     * @return The newly-created trap.
+     * @exception Throws
+     *                SnmpTrapHelperException if the trap cannot be created for
+     *                any reason.
+     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     */
+    public SnmpV2TrapBuilder createV2Inform(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
+
+        SnmpV2TrapBuilder packet = SnmpUtils.getV2InformBuilder();
+
+        addVarBinding(packet, SNMP_SYSUPTIME_OID, EventConstants.TYPE_SNMP_TIMETICKS, sysUpTime);
+        addVarBinding(packet, SNMP_TRAP_OID, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER, trapOid);
+
+        return packet;
+    }
+
+    /**
+     * Create an SNMP V3 trap with the specified trap object ID, and sysUpTime
+     * value.
+     *
+     * @param trapOid
+     *            The trap object id.
+     * @param sysUpTime
+     *            The system up time.
+     * @return The newly-created trap.
+     * @exception Throws
+     *                SnmpTrapHelperException if the trap cannot be created for
+     *                any reason.
+     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     */
+    public SnmpV3TrapBuilder createV3Trap(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
+
+        SnmpV3TrapBuilder packet = SnmpUtils.getV3TrapBuilder();
+
+        addVarBinding(packet, SNMP_SYSUPTIME_OID, EventConstants.TYPE_SNMP_TIMETICKS, sysUpTime);
+        addVarBinding(packet, SNMP_TRAP_OID, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER, trapOid);
+
+        return packet;
+    }
+
+    /**
+     * Create an SNMP V3 trap with the specified trap object ID, and sysUpTime
+     * value.
+     *
+     * @param trapOid
+     *            The trap object id.
+     * @param sysUpTime
+     *            The system up time.
+     * @return The newly-created trap.
+     * @exception Throws
+     *                SnmpTrapHelperException if the trap cannot be created for
+     *                any reason.
+     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     */
+    public SnmpV3TrapBuilder createV3Inform(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
+
+        SnmpV3TrapBuilder packet = SnmpUtils.getV3InformBuilder();
+
+        addVarBinding(packet, SNMP_SYSUPTIME_OID, EventConstants.TYPE_SNMP_TIMETICKS, sysUpTime);
+        addVarBinding(packet, SNMP_TRAP_OID, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER, trapOid);
+
+        return packet;
+    }
+
+    /**
+     * 
+     * This helper methis helps snmp trap daemon
+     * administrator to set up authentication
+     * An snmpv3 trap is sent using the sender 
+     * EngineID that needs to be known 
+     * over remote trap receivers
+     * 
+     * @return The local engine ID
+     * 
+     */
+    public String getLocalEngineID() {
+    	return "0x"+SnmpUtils.getLocalEngineID();
+    }
     /**
      * Create a new variable binding and add it to the specified SNMP V1 trap.
      * The value encoding is assumed to be XML_ENCODING_TEXT.

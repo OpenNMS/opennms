@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
@@ -114,6 +115,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
     public static final String PARAMETER_USER = "user";
     public static final String PARAMETER_PASSWORD = "password";
     public static final String PARAMETER_RESOLVE_IP = "resolve-ip";
+    public static final String PARAMETER_NODE_LABEL_HOST_NAME = "nodelabel-host-name";
     public static final String PARAMETER_HOST_NAME = "host-name";
     public static final String PARAMETER_RESPONSE_TEXT = "response-text";
     public static final String PARAMETER_RESPONSE = "response";
@@ -133,6 +135,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
+        String nodeLabel = svc.getNodeLabel();
 
         if (iface.getType() != NetworkInterface.TYPE_INET) {
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
@@ -141,7 +144,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
         // Cycle through the port list
         //
         int currentPort = -1;
-        HttpMonitorClient httpClient = new HttpMonitorClient(iface, new TreeMap<String, Object>(parameters));
+        HttpMonitorClient httpClient = new HttpMonitorClient(nodeLabel, iface, new TreeMap<String, Object>(parameters));
 
         for (int portIndex = 0; portIndex < determinePorts(httpClient.getParameters()).length && httpClient.getPollStatus() != PollStatus.SERVICE_AVAILABLE; portIndex++) {
             currentPort = determinePorts(httpClient.getParameters())[portIndex];
@@ -227,12 +230,12 @@ public class HttpMonitor extends AbstractServiceMonitor {
         return socket;
     }
 
-    private boolean determineVerbosity(final Map<String, Object> parameters) {
+    private static boolean determineVerbosity(final Map<String, Object> parameters) {
         final String verbose = ParameterMap.getKeyedString(parameters, PARAMETER_VERBOSE, null);
         return (verbose != null && verbose.equalsIgnoreCase("true")) ? true : false;
     }
 
-    private String determineUserAgent(final Map<String, Object> parameters) {
+    private static String determineUserAgent(final Map<String, Object> parameters) {
         String agent = ParameterMap.getKeyedString(parameters, PARAMETER_USER_AGENT, null);
         if (isBlank(agent)) {
             return "OpenNMS HttpMonitor";
@@ -240,7 +243,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
         return agent;
     }
 
-    String determineBasicAuthentication(final Map<String, Object> parameters) {
+    static String determineBasicAuthentication(final Map<String, Object> parameters) {
         String credentials = ParameterMap.getKeyedString(parameters, PARAMETER_BASIC_AUTHENTICATION, null);
 
         if (isNotBlank(credentials)) {
@@ -260,35 +263,19 @@ public class HttpMonitor extends AbstractServiceMonitor {
         return credentials;
     }
 
-    private String determineHttpHeader(final Map<String, Object> parameters, String key) {
+    private static String determineHttpHeader(final Map<String, Object> parameters, String key) {
         return ParameterMap.getKeyedString(parameters, key, null);
     }
     
-    private String determineVirtualHost(NetworkInterface<InetAddress> iface, final Map<String, Object> parameters) {
-        boolean res = ParameterMap.getKeyedBoolean(parameters, PARAMETER_RESOLVE_IP, false);
-        String virtualHost = ParameterMap.getKeyedString(parameters, PARAMETER_HOST_NAME, null);
-
-        
-        if (isBlank(virtualHost)) {
-            if (res) {
-                virtualHost = ((InetAddress) iface.getAddress()).getCanonicalHostName();
-            } else {
-                virtualHost = InetAddressUtils.str(((InetAddress) iface.getAddress()));
-            }
-        }
-        return virtualHost;
-    }
-
-
-    private String determineResponseText(final Map<String, Object> parameters) {
+    private static String determineResponseText(final Map<String, Object> parameters) {
         return ParameterMap.getKeyedString(parameters, PARAMETER_RESPONSE_TEXT, null);
     }
 
-    private String determineResponse(final Map<String, Object> parameters) {
+    private static String determineResponse(final Map<String, Object> parameters) {
         return ParameterMap.getKeyedString(parameters, PARAMETER_RESPONSE, determineDefaultResponseRange(determineUrl(parameters)));
     }
 
-    private String determineUrl(final Map<String, Object> parameters) {
+    private static String determineUrl(final Map<String, Object> parameters) {
         return ParameterMap.getKeyedString(parameters, PARAMETER_URL, DEFAULT_URL);
     }
 
@@ -302,25 +289,25 @@ public class HttpMonitor extends AbstractServiceMonitor {
         return ParameterMap.getKeyedIntegerArray(parameters, PARAMETER_PORT, DEFAULT_PORTS);
     }
 
-    private String determineDefaultResponseRange(String url) {
+    private static String determineDefaultResponseRange(String url) {
         if (url == null || url.equals(DEFAULT_URL)) {
             return "100-499";
         }
         return "100-399";
     }
     
-    private boolean isNotBlank(String str) {
+    private static boolean isNotBlank(String str) {
         return org.apache.commons.lang.StringUtils.isNotBlank(str);
     }
 
-    private boolean isBlank(String str) {
+    private static boolean isBlank(String str) {
         return org.apache.commons.lang.StringUtils.isBlank(str);
     }
 
     final class HttpMonitorClient {
         private double m_responseTime;
-        NetworkInterface<InetAddress> m_iface;
-        Map<String, Object> m_parameters;
+        final NetworkInterface<InetAddress> m_iface;
+        final Map<String, Object> m_parameters;
         String m_httpCmd;
         Socket m_httpSocket;
         private BufferedReader m_lineRdr;
@@ -333,8 +320,10 @@ public class HttpMonitor extends AbstractServiceMonitor {
         private int m_currentPort;
         private String m_responseText;
         private boolean m_responseTextFound = false;
+        private final String m_nodeLabel;
         
-        HttpMonitorClient(NetworkInterface<InetAddress> iface, TreeMap<String, Object>parameters) {
+        HttpMonitorClient(String nodeLabel, NetworkInterface<InetAddress> iface, TreeMap<String, Object>parameters) {
+            m_nodeLabel = nodeLabel;
             m_iface = iface;
             m_parameters = parameters;
             buildCommand();
@@ -364,6 +353,29 @@ public class HttpMonitor extends AbstractServiceMonitor {
         }
         public void setResponseTextFound(boolean found) {
             m_responseTextFound  = found;
+        }
+
+        private String determineVirtualHost(NetworkInterface<InetAddress> iface, final Map<String, Object> parameters) {
+            boolean res = ParameterMap.getKeyedBoolean(parameters, PARAMETER_RESOLVE_IP, false);
+            boolean useNodeLabel = ParameterMap.getKeyedBoolean(parameters, PARAMETER_NODE_LABEL_HOST_NAME, false);
+            String virtualHost = ParameterMap.getKeyedString(parameters, PARAMETER_HOST_NAME, null);
+
+            
+            if (isBlank(virtualHost)) {
+                if (res) {
+                    virtualHost = iface.getAddress().getCanonicalHostName();
+                } else if (useNodeLabel) {
+                    virtualHost = m_nodeLabel;
+                } else {
+                    InetAddress addr = iface.getAddress();
+                    virtualHost = InetAddressUtils.str(iface.getAddress());
+                    // Wrap IPv6 addresses in square brackets
+                    if (addr instanceof Inet6Address) {
+                        virtualHost = "[" + virtualHost + "]";
+                    }
+                }
+            }
+            return virtualHost;
         }
 
         public boolean checkCurrentLineMatchesResponseText() {

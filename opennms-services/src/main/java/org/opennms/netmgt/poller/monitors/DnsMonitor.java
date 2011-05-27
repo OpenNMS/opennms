@@ -174,7 +174,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                     if(l.getResult() == Lookup.SUCCESSFUL) {
                         return logUp(Level.DEBUG, responseTime, "valid DNS request received, responseTime= " + responseTime + "ms");
                     }else if(l.getResult() == Lookup.HOST_NOT_FOUND) {
-                        return logUp(Level.DEBUG, responseTime, "host not found on DNS (" + l.getErrorString() + "), responseTime= " + responseTime + "ms");
+                        return logDown(Level.DEBUG, "host not found on DNS (" + l.getErrorString() + "), responseTime= " + responseTime + "ms");
                     }else if(l.getResult() == Lookup.TRY_AGAIN) {
                         if(!timeoutTracker.shouldRetry()) {
                             return logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
