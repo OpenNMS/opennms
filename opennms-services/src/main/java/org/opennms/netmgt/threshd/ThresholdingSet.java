@@ -438,12 +438,17 @@ public abstract class ThresholdingSet {
         m_scheduledOutages.clear();
         for (org.opennms.netmgt.config.threshd.Package pkg : m_configManager.getConfiguration().getPackage()) {
             for (String outageCal : pkg.getOutageCalendarCollection()) {
-                Outage outage = PollOutagesConfigFactory.getInstance().getOutage(outageCal);
-                if (outage == null) {
-                    log().info("updateScheduledOutages[node=" + m_nodeId + "]: scheduled outage '" + outageCal + "' is not defined.");
-                } else {
-                    log().debug("updateScheduledOutages[node=" + m_nodeId + "]: outage calendar '" + outage.getName() + "' found on package '" + pkg.getName() + "'");
-                    m_scheduledOutages.add(outageCal);
+                log().info("updateScheduledOutages[node=" + m_nodeId + "]: checking scheduled outage '" + outageCal + "'");
+                try {
+                    Outage outage = PollOutagesConfigFactory.getInstance().getOutage(outageCal);
+                    if (outage == null) {
+                        log().info("updateScheduledOutages[node=" + m_nodeId + "]: scheduled outage '" + outageCal + "' is not defined.");
+                    } else {
+                        log().debug("updateScheduledOutages[node=" + m_nodeId + "]: outage calendar '" + outage.getName() + "' found on package '" + pkg.getName() + "'");
+                        m_scheduledOutages.add(outageCal);
+                    }
+                } catch (Exception e) {
+                    log().info("updateScheduledOutages[node=" + m_nodeId + "]: scheduled outage '" + outageCal + "' does not exist.");                    
                 }
             }
         }
