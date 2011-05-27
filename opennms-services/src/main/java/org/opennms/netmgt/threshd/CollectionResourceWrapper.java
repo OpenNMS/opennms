@@ -1,6 +1,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,6 +17,11 @@ import org.opennms.netmgt.poller.LatencyCollectionResource;
 
 /**
  * <p>CollectionResourceWrapper class.</p>
+ * 
+ * Wraps a CollectionResource with some methods and caching for the efficient application of thresholds (without
+ * pulling thresholding code into CollectionResource itself)
+ * 
+ * A fresh instance should be created for each collection cycle (assumptions are made based on that premise)
  *
  * @author ranger
  * @version $Id: $
@@ -32,10 +38,26 @@ public class CollectionResourceWrapper {
     private CollectionResource m_resource;
     private Map<String, CollectionAttribute> m_attributes;
     
+    /**
+     * Keeps track of both the Double value, and when it was collected, for the static cache of attributes
+     * 
+     * This is necessary for the *correct* calculation of Counter rates, across variable collection times and possible
+     * collection failures (see NMS-4244)
+     * 
+     * Just a holder class for two associated values; no need for the formality of accessors
+     */
+    class CacheEntry {
+    	Date timestamp;
+    	Double value;
+    	public CacheEntry(Date timestamp, Double value) {
+    		this.timestamp = timestamp;
+    		this.value = value;
+    	}
+    }
     /*
      * Holds last values for counter attributes (in order to calculate delta)
      */
-    static Map<String, Double> s_cache = new ConcurrentHashMap<String,Double>();
+    static Map<String, CacheEntry> s_cache = new ConcurrentHashMap<String,CacheEntry>();
     
     /*
      * To avoid update static cache on every call of getAttributeValue.
@@ -50,9 +72,9 @@ public class CollectionResourceWrapper {
     private Map<String, String> m_ifInfo;
     
     /*
-     * Holds collection interval step. Counter attributes values must be returned as rates.
+	 * Holds the timestamp of the collection being thresholded, for the calculation of counter rates
      */
-    private long m_interval;
+    private Date m_collectionTimestamp;
         
     /**
      * <p>Constructor for CollectionResourceWrapper.</p>
@@ -65,8 +87,8 @@ public class CollectionResourceWrapper {
      * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
      * @param attributes a {@link java.util.Map} object.
      */
-    public CollectionResourceWrapper(long interval, int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
-        m_interval = interval;
+    public CollectionResourceWrapper(Date collectionTimestamp, int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
+        m_collectionTimestamp = collectionTimestamp;
         m_nodeId = nodeId;
         m_hostAddress = hostAddress;
         m_serviceName = serviceName;
@@ -267,16 +289,26 @@ public class CollectionResourceWrapper {
      */
     private Double getCounterValue(String id, Double current) {
         if (m_localCache.containsKey(id) == false) {
-            Double last = s_cache.get(id);
+            CacheEntry last = s_cache.get(id);
             if (log().isDebugEnabled()) {
-                log().debug("getCounterValue: id=" + id + ", last=" + last + ", current=" + current);
+                log().debug("getCounterValue: id=" + id + ", last=" + 
+                		(last==null ? last : last.value +"@"+last.timestamp) + 
+                		", current=" + current);
             }
-            s_cache.put(id, current);
+            s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
             if (last == null) {
                 m_localCache.put(id, Double.NaN);
                 log().info("getCounterValue: unknown last value, ignoring current");
             } else {                
-                Double delta = current.doubleValue() - last.doubleValue();
+            	if ( m_collectionTimestamp == null ) {
+            		//If you get this, you need to ensure you passed a non-null timestamp to the constructor.  
+            		// This usually comes from the CollectionSet that is being visited.
+                    log().error("getCounterValue: Haven't got a collection timestamp while calculating a counter for key "+ id + " on " + m_resource
+                    		+".  This is a programmer error and should be reported");
+            		return null;
+            	} 
+            	
+                Double delta = current.doubleValue() - last.value.doubleValue();
                 // wrapped counter handling(negative delta), rrd style
                 if (delta < 0) {
                     double newDelta = delta.doubleValue();
@@ -287,13 +319,21 @@ public class CollectionResourceWrapper {
                         // try 64-bit adjustment
                         newDelta += Math.pow(2, 64) - Math.pow(2, 32);
                     }
-                    log().info("getCounterValue: " + id + "(counter) wrapped counter adjusted last=" + last + ", current=" + current + ", olddelta=" + delta + ", newdelta=" + newDelta);
+                    log().info("getCounterValue: " + id + 
+                    		"(counter) wrapped counter adjusted last=" + 
+                    		last.value +"@"+last.timestamp +
+                    		", current=" + current + 
+                    		", olddelta=" + delta + 
+                    		", newdelta=" + newDelta);
                     delta = newDelta;
                 }
-                m_localCache.put(id, delta);
+                //Get the interval between when this current collection was taken, and the last time this
+                // value was collected (and had a counter rate calculated for it)
+                long interval = ( m_collectionTimestamp.getTime() - last.timestamp.getTime() ) / 1000;
+                m_localCache.put(id, delta / interval);
             }
         }
-        return m_localCache.get(id) / m_interval;
+        return m_localCache.get(id);
     }
 
     /**

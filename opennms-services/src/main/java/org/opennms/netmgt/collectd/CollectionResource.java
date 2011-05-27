@@ -100,4 +100,5 @@ public interface CollectionResource extends ResourceIdentifier {
      * @return a {@link java.lang.String} object.
      */
     public String getLabel();
+
 }

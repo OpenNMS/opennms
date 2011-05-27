@@ -56,6 +56,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -135,6 +136,7 @@ public class HttpCollector implements ServiceCollector {
     /** {@inheritDoc} */
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
         HttpCollectionSet collectionSet = new HttpCollectionSet(agent, parameters);
+        collectionSet.setCollectionTimestamp(new Date());
         collectionSet.collect();
         return collectionSet;
     }
@@ -149,11 +151,12 @@ public class HttpCollector implements ServiceCollector {
         private Uri m_uriDef;
         private int m_status;
         private List<HttpCollectionResource> m_collectionResourceList;
+		private Date m_timestamp;
         public Uri getUriDef() {
             return m_uriDef;
         }
 
-        public void setUriDef(Uri uriDef) {
+		public void setUriDef(Uri uriDef) {
             m_uriDef = uriDef;
         }
 
@@ -229,9 +232,17 @@ public class HttpCollector implements ServiceCollector {
             visitor.completeCollectionSet(this);
         }
 
-        public boolean ignorePersist() {
-            return false;
-        }       
+		public boolean ignorePersist() {
+			return false;
+		}       
+
+		@Override
+		public Date getCollectionTimestamp() {
+			return m_timestamp;
+		}
+		public void setCollectionTimestamp(Date timestamp) {
+			this.m_timestamp = timestamp;
+		}
     }
 
 

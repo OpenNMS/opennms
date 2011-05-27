@@ -37,6 +37,7 @@ import org.opennms.netmgt.collectd.CollectionSetVisitor;
 import org.opennms.netmgt.collectd.CollectionSet;
 import org.opennms.netmgt.collectd.CollectionResource;
 
+import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -49,6 +50,7 @@ import java.util.ArrayList;
 public class WmiCollectionSet implements CollectionSet {
     private int m_status;
     private List<WmiCollectionResource> m_collectionResources;
+    private Date m_timestamp;
 
     /**
      * <p>Constructor for WmiCollectionSet.</p>
@@ -106,4 +108,13 @@ public class WmiCollectionSet implements CollectionSet {
     public boolean ignorePersist() {
         return false;
     }
+    
+	@Override
+	public Date getCollectionTimestamp() {
+		return m_timestamp;
+	}
+    public void setCollectionTimestamp(Date timestamp) {
+    	this.m_timestamp = timestamp;
+	}
+
 }

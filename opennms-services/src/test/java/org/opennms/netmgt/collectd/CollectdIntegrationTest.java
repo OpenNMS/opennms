@@ -38,6 +38,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -270,6 +271,7 @@ public class CollectdIntegrationTest extends TestCase {
         public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
             m_collectCount++;
             CollectionSet collectionSetResult=new CollectionSet() {
+            	private Date m_timestamp = new Date();
 
                 public int getStatus() {
                     return ServiceCollector.COLLECTION_SUCCEEDED;
@@ -282,6 +284,10 @@ public class CollectdIntegrationTest extends TestCase {
 
 				public boolean ignorePersist() {
 					return false;
+				}
+				
+				public Date getCollectionTimestamp() {
+					return m_timestamp;
 				}
             }; 
             return collectionSetResult;
