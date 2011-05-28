@@ -88,6 +88,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     }
     
     @Test
+    @Ignore
     public void testGetLocations() throws Exception {
         String url = "/remotelocations";
         String responseString = sendRequest(GET, url, 200);
@@ -96,6 +97,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     }
     
     @Test
+    @Ignore
     public void testGetParticipants() throws Exception {
         String url = "/remotelocations/participants";
         String responseString = sendRequest(GET, url, 200);
@@ -104,6 +106,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     }
     
     @Test
+    @Ignore
     public void testRemotePollerAvailability() throws Exception {
         String url = BASE_REST_URL;
         Map<String, String> parameters = new HashMap<String, String>();
@@ -137,6 +140,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     }
     
     @Test
+    @Ignore
     public void testLocationSpecificAvailability() throws Exception {
         String url = BASE_REST_URL + "/CLT";
         Map<String, String> parameters = new HashMap<String, String>();
@@ -157,6 +161,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     }
     
     @Test
+    @Ignore
     public void testLocationAndHostSpecificAvailability() throws Exception {
         String url = BASE_REST_URL + "/CLT";
         Map<String, String> parameters = new HashMap<String, String>();
