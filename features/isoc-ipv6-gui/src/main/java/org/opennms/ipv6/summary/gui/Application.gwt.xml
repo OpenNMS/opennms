@@ -5,12 +5,14 @@
       <inherits name='com.google.gwt.user.User'/>
       <inherits name="com.google.gwt.uibinder.UiBinder" />
       <inherits name='com.google.gwt.visualization.Visualization'/>
+      <inherits name="com.google.gwt.http.HTTP" />
+      <inherits name="com.google.gwt.json.JSON"/>
 
       <!--  inherit css based theme -->
       <inherits name='com.google.gwt.user.theme.standard.Standard'/>
 
       <!-- Specify the app entry point class.                         -->
-      <entry-point class='org.opennms.isoc.ipv6.gui.client.Application'/>
+      <entry-point class='org.opennms.ipv6.summary.gui.client.Application'/>
 
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='Application.css' />

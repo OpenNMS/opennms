@@ -25,6 +25,6 @@
 
     <servlet-mapping>
      <servlet-name>Jersey Web Application</servlet-name>
-     <url-pattern>/rest/*</url-pattern>
+     <url-pattern>/opennms/rest/*</url-pattern>
     </servlet-mapping>
 </web-app>

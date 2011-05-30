@@ -35,12 +35,16 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * <p>OnmsMonitoringLocationDefinition class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
+@XmlRootElement
 public class OnmsMonitoringLocationDefinition implements Serializable {
 
     private static final long serialVersionUID = 1389369619460044379L;
@@ -139,6 +143,7 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlElement(name="name")
     public String getName() {
         return m_name;
     }

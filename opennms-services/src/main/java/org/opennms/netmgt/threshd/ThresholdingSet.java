@@ -76,11 +76,6 @@ public abstract class ThresholdingSet {
     List<ThresholdGroup> m_thresholdGroups;
     List<String> m_scheduledOutages;
 
-    /*
-     * Holds collection interval step. Counter attributes values must be returned as rates.
-     */
-    long m_interval;
-
     /**
      * <p>Constructor for ThresholdingSet.</p>
      *
@@ -90,12 +85,11 @@ public abstract class ThresholdingSet {
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
      * @param interval a long.
      */
-    public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval) {
+    public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {
         m_nodeId = nodeId;
         m_hostAddress = hostAddress;
         m_serviceName = serviceName;
         m_repository = repository;      
-        m_interval = interval / 1000; // Store interval in seconds
         m_scheduledOutages = new ArrayList<String>();
         initThresholdsDao();
         initialize();
@@ -444,12 +438,17 @@ public abstract class ThresholdingSet {
         m_scheduledOutages.clear();
         for (org.opennms.netmgt.config.threshd.Package pkg : m_configManager.getConfiguration().getPackage()) {
             for (String outageCal : pkg.getOutageCalendarCollection()) {
-                Outage outage = PollOutagesConfigFactory.getInstance().getOutage(outageCal);
-                if (outage == null) {
-                    log().info("updateScheduledOutages[node=" + m_nodeId + "]: scheduled outage '" + outageCal + "' is not defined.");
-                } else {
-                    log().debug("updateScheduledOutages[node=" + m_nodeId + "]: outage calendar '" + outage.getName() + "' found on package '" + pkg.getName() + "'");
-                    m_scheduledOutages.add(outageCal);
+                log().info("updateScheduledOutages[node=" + m_nodeId + "]: checking scheduled outage '" + outageCal + "'");
+                try {
+                    Outage outage = PollOutagesConfigFactory.getInstance().getOutage(outageCal);
+                    if (outage == null) {
+                        log().info("updateScheduledOutages[node=" + m_nodeId + "]: scheduled outage '" + outageCal + "' is not defined.");
+                    } else {
+                        log().debug("updateScheduledOutages[node=" + m_nodeId + "]: outage calendar '" + outage.getName() + "' found on package '" + pkg.getName() + "'");
+                        m_scheduledOutages.add(outageCal);
+                    }
+                } catch (Exception e) {
+                    log().info("updateScheduledOutages[node=" + m_nodeId + "]: scheduled outage '" + outageCal + "' does not exist.");                    
                 }
             }
         }

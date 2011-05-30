@@ -2,13 +2,10 @@ package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.LogUtils.debugf;
 import static org.opennms.core.utils.LogUtils.infof;
-import static org.opennms.core.utils.LogUtils.tracef;
 
 import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -16,7 +13,6 @@ import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -25,9 +21,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.updates.NodeUpdate;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
-import org.opennms.netmgt.provision.service.IPAddressTableTracker.IPAddressRow;
-import org.opennms.netmgt.provision.service.IPInterfaceTableTracker.IPInterfaceRow;
-import org.opennms.netmgt.provision.service.PhysInterfaceTableTracker.PhysicalInterfaceRow;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -43,13 +36,11 @@ public class AgentScan extends BaseAgentScan implements NeedsContainer, ScanProg
 
     private InetAddress m_agentAddress;
     private String m_agentType;
-    private Map<Integer,String> m_nodeMap;
 
     public AgentScan(final Integer nodeId, final OnmsNode node, final NodeUpdate nodeUpdate, final InetAddress agentAddress, final String agentType, ProvisionService x, NodeScan parent) {
         super(nodeId, node, nodeUpdate, parent);
         m_agentAddress = agentAddress;
         m_agentType = agentType;
-        m_nodeMap = new HashMap<Integer,String>();
     }
     
     public InetAddress getAgentAddress() {
@@ -102,7 +93,7 @@ public class AgentScan extends BaseAgentScan implements NeedsContainer, ScanProg
         		final String ipAddress = row.getIpAddress();
 				infof(this, "Processing IPAddress table row with ipAddr %s", ipAddress);
         		
-        		if (!ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
+        		if (ipAddress != null && !ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
                     // mark any provisioned interface as scanned
                     provisionedIps.remove(ipAddress);
 
@@ -144,8 +135,7 @@ public class AgentScan extends BaseAgentScan implements NeedsContainer, ScanProg
         	public void processIPInterfaceRow(final IPInterfaceRow row) {
         		final String ipAddress = row.getIpAddress();
         		infof(this, "Processing IPInterface table row with ipAddr %s for node %d/%s/%s", ipAddress, node.getId(), node.getForeignSource(), node.getForeignId());
-        		storeIfIndexIpAddress(row.getIfIndex(), row.getIpAddress());
-        		if (!ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
+        		if (ipAddress != null && !ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
 
                     // mark any provisioned interface as scanned
                     provisionedIps.remove(ipAddress);
@@ -219,23 +209,6 @@ public class AgentScan extends BaseAgentScan implements NeedsContainer, ScanProg
 		}
 	}
     
-	public void storeIfIndexIpAddress(final Integer ifIndex, final String ipAddress) {
-		tracef(this, "storeIfIndexIpAddress ifIndex %s", ifIndex);
-		tracef(this, "storeIfIndexIpAddress ipAddr %s", ipAddress);
-		m_nodeMap.put(ifIndex, ipAddress);
-		
-	}
-
-	public String getIpAddress(final Integer ifIndex) {
-		tracef(this, "getIpAddress ifIndex %s", ifIndex);
-		return m_nodeMap.get(ifIndex);
-	}
-	
-	public void cleanIfIndexIpAddressMap(final Integer nodeId) {
-		if (m_nodeMap != null)
-			m_nodeMap.remove(nodeId);
-	}
-
     public void detectPhysicalInterfaces(final BatchTask currentPhase) {
         if (isAborted()) { return; }
         final SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress());
@@ -246,13 +219,6 @@ public class AgentScan extends BaseAgentScan implements NeedsContainer, ScanProg
             public void processPhysicalInterfaceRow(PhysicalInterfaceRow row) {
             	infof(this, "Processing ifTable row for ifIndex %d on node %d/%s/%s", row.getIfIndex(), getNodeId(), getForeignSource(), getForeignId());
             	OnmsSnmpInterface snmpIface = row.createInterfaceFromRow();
-            	final InetAddress ipAddr = InetAddressUtils.addr(getIpAddress(row.getIfIndex()));
-                if (ipAddr != null ) {
-                	final OnmsIpInterface ipIf = getNode().getIpInterfaceByIpAddress(ipAddr);
-                	if (ipIf != null) {
-                		snmpIface.addIpInterface(ipIf);
-                	}
-                }
                 snmpIface.setLastCapsdPoll(getScanStamp());
                 
                 final List<SnmpInterfacePolicy> policies = getProvisionService().getSnmpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
@@ -302,12 +268,12 @@ public class AgentScan extends BaseAgentScan implements NeedsContainer, ScanProg
                 new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), this, getAgentConfigFactory(), getProvisionService(), getNodeId()),
                 new RunInBatch() {
                     public void run(final BatchTask phase) {
-                        detectIpInterfaceTable(phase);
+                        detectIpAddressTable(phase);
                     }
                 },
                 new RunInBatch() {
                     public void run(final BatchTask phase) {
-                        detectIpAddressTable(phase);
+                        detectIpInterfaceTable(phase);
                     }
                 },
                 new RunInBatch() {

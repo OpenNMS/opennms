@@ -64,6 +64,7 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -514,6 +515,7 @@ public class XmpCollector implements ServiceCollector {
 
         // get/create our collections set
         collectionSet = new XmpCollectionSet(agent);
+        collectionSet.setCollectionTimestamp(new Date());
         collectionSet.setStatusFailed(); // default
         collectionSet.ignorePersistTrue(); // default not to persist
 
