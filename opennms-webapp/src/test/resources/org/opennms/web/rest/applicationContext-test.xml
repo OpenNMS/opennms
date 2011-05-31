@@ -15,7 +15,7 @@
   </bean>
   
   <bean id="locationMonitorConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:${opennms.home}/etc/monitoring-locations.xml" />
+    <constructor-arg value="file:src/test/opennms-home/etc/monitoring-locations.xml" />
   </bean>
 
   <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate">

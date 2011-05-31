@@ -2,15 +2,11 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.LocationMonitorDao;
@@ -24,12 +20,9 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-
-@Transactional
 public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
@@ -46,29 +39,6 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     
     public static final String BASE_REST_URL = "/remotelocations/availability";
     
-    public void beforeServletStart() throws IOException {
-        String monitoringLocations = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                                     "<monitoring-locations-configuration xmlns='http://xmlns.opennms.org/xsd/config/monitoring-locations'>\n" +
-                                     "<locations>\n" +
-                                         "<location-def location-name='RDU' monitoring-area='raleigh'\n" +
-                                             "polling-package-name='raleigh'\n" +
-                                             "geolocation='35.7174,-79.1619'\n" +
-                                             "coordinates='35.7174,-79.1619' priority='100'>\n" +
-                                             "<ns1:tags xmlns:ns1='http://xmlns.opennms.org/xsd/config/tags'/>\n" +
-                                          "</location-def>\n" +
-                                          "<location-def location-name='CLT' monitoring-area='charlotte'\n" +
-                                          "polling-package-name='raleigh'\n" +
-                                          "geolocation='35.7174,-79.1619'\n" +
-                                          "coordinates='35.7174,-79.1619' priority='100'>\n" +
-                                          "<ns1:tags xmlns:ns1='http://xmlns.opennms.org/xsd/config/tags'/>\n" +
-                                       "</location-def>\n" +
-                                     "</locations>\n" +
-                                     "</monitoring-locations-configuration>";
-        
-        
-        File locationDefs = new File("target/test/opennms-home/etc/monitoring-locations.xml");
-        FileUtils.writeStringToFile(locationDefs, monitoringLocations);
-    }
     
     public void afterServletStart() {
         MockLogAppender.setupLogging();
@@ -89,7 +59,6 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     }
     
     @Test
-    @Ignore
     public void testGetLocations() throws Exception {
         String url = "/remotelocations";
         String responseString = sendRequest(GET, url, 200);
@@ -98,7 +67,6 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     }
     
     @Test
-    @Ignore
     public void testGetParticipants() throws Exception {
         String url = "/remotelocations/participants";
         String responseString = sendRequest(GET, url, 200);
@@ -107,7 +75,6 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     }
     
     @Test
-    @Ignore
     public void testRemotePollerAvailability() throws Exception {
         String url = BASE_REST_URL;
         Map<String, String> parameters = new HashMap<String, String>();
@@ -124,62 +91,16 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         String rduURL = BASE_REST_URL + "/RDU";
         String rduResponse = sendRequest(GET, rduURL, parameters, 200);
         assertTrue(rduResponse.contains("IPv6") && rduResponse.contains("IPv4"));
-        //assertTrue(rduResponse.contains("\"availability\":\"3.343\""));
         
         //Get Specific Location and Host
         parameters.put("host", "node1");
         rduURL = BASE_REST_URL + "/RDU";
         rduResponse = sendRequest(GET, rduURL, parameters, 200);
         assertTrue(rduResponse.contains("IPv6") && rduResponse.contains("IPv4"));
-        //assertTrue(rduResponse.contains("\"availability\":\"3.342\""));
         
         //Get All Locations and Specific Host
-        
         responseString = sendRequest(GET, url, parameters, 200);
         assertTrue(responseString.contains("IPv6") && rduResponse.contains("IPv4"));
-        //assertTrue(responseString.contains("\"availability\":\"3.342\""));
-    }
-    
-    @Test
-    @Ignore
-    public void testLocationSpecificAvailability() throws Exception {
-        String url = BASE_REST_URL + "/CLT";
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("startTime", "" + (new Date().getTime() - 300000));
-        parameters.put("endTime", "" + new Date().getTime());
-        parameters.put("resolution", "minute");
-        
-        String responseString = sendRequest(GET, url, parameters, 200);
-        
-        System.err.println("server response: " + responseString);
-        assertTrue(responseString.contains("IPv6"));
-        assertTrue(responseString.contains("\"availability\":\"0.000\""));
-        
-        String rduURL = BASE_REST_URL + "/RDU";
-        String rduResponse = sendRequest(GET, rduURL, parameters, 200);
-        assertTrue(rduResponse.contains("IPv6") && rduResponse.contains("IPv4"));
-        assertTrue(rduResponse.contains("\"availability\":\"3.344\""));
-    }
-    
-    @Test
-    @Ignore
-    public void testLocationAndHostSpecificAvailability() throws Exception {
-        String url = BASE_REST_URL + "/CLT";
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("startTime", "" + (new Date().getTime() - 300000));
-        parameters.put("endTime", "" + new Date().getTime());
-        parameters.put("resolution", "minute");
-        parameters.put("host", "node1");
-        
-        String responseString = sendRequest(GET, url, parameters, 200);
-        
-        assertTrue(responseString.contains("IPv6"));
-        assertTrue(responseString.contains("\"availability\":\"0.000\""));
-        
-        String rduURL = BASE_REST_URL + "/RDU";
-        String rduResponse = sendRequest(GET, rduURL, parameters, 200);
-        assertTrue(rduResponse.contains("IPv6") && rduResponse.contains("IPv4"));
-        assertTrue(rduResponse.contains("\"availability\":\"3.342\""));
     }
     
     
@@ -196,12 +117,6 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
                 locMon1.setLastCheckInTime(new Date());
                 locMon1.setStatus(MonitorStatus.STARTED);
                 m_locationMonitorDao.save(locMon1);
-                
-                OnmsLocationMonitor locMon2 = new OnmsLocationMonitor();
-                locMon2.setDefinitionName("CLT");
-                locMon2.setLastCheckInTime(new Date());
-                locMon2.setStatus(MonitorStatus.STARTED);
-                m_locationMonitorDao.save(locMon2);
                 
                 OnmsApplication ipv6App = new OnmsApplication();
                 ipv6App.setName("IPv6");
