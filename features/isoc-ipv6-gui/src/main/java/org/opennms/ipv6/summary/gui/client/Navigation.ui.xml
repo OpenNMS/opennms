@@ -1,9 +1,22 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style>
+	<ui:style >
 		.navBlock{
-	       margin: 0px 0px 20px 0px;
+	       float: left;
+	       font-family: "Lucida Grande", Verdana, sans-serif;
+	       font-size: 70%;
+		}
+		
+		.opennmsLink{
+			position: relative;
+			top: 30px;
+			left: 250px;
+            font-family: "Lucida Grande", Verdana, sans-serif;
+            font-size: 70%;
+            cursor: pointer;
+            color: #366903;
+            text-decoration: none;
 		}
 	</ui:style>
 	<g:HTMLPanel>
@@ -19,7 +32,7 @@
 	            <g:ListBox ui:field="m_locationList" visible="false"></g:ListBox>
 	        </div>
         </div>
-        <div class="{style.navBlock}">
+        <div class="{style.navBlock}" style="margin: 0px 0px 20px 20px;">
             <p>Select Participant</p>
 	        <div>
 	            <g:RadioButton ui:field="m_allHosts" name="hosts">All Participants</g:RadioButton>
@@ -30,6 +43,12 @@
 	        <div>
 	            <g:ListBox ui:field="m_hostList" visible="false"></g:ListBox>
 	        </div>
+        </div>
+        <div class="{style.opennmsLink}" >
+            <g:Anchor ui:field="m_link">Want to see more, click here.</g:Anchor>
+        </div>
+        <div class="{style.opennmsLink}" >
+            <g:Anchor href="http://www.choopa.com/">Hosting Sponsored by Choopa</g:Anchor>
         </div>
 	</g:HTMLPanel>
 </ui:UiBinder> 
