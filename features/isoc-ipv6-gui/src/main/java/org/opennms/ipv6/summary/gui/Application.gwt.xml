@@ -9,12 +9,9 @@
       <inherits name="com.google.gwt.json.JSON"/>
 
       <!--  inherit css based theme -->
-      <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+      <!-- <inherits name='com.google.gwt.user.theme.standard.Standard'/> -->
 
       <!-- Specify the app entry point class.                         -->
       <entry-point class='org.opennms.ipv6.summary.gui.client.Application'/>
-
-      <!-- Specify the application specific style sheet.              -->
-      <stylesheet src='Application.css' />
 
 </module>

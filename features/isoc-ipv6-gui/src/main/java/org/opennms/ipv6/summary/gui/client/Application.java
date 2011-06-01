@@ -1,13 +1,15 @@
 package org.opennms.ipv6.summary.gui.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.dom.client.Style.Float;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine;
@@ -47,16 +49,25 @@ public class Application implements EntryPoint, LocationUpdateEventHandler, Host
   public void onModuleLoad() {
       m_chartService = new DefaultChartService();
       
-      FlowPanel navHolder = new FlowPanel();
-      navHolder.getElement().getStyle().setFloat(Float.LEFT);
+      Image img = new Image();
+      img.setUrl("../images/logo.png");
+      img.getElement().getStyle().setPaddingTop(14, Unit.PX);
+      img.getElement().getStyle().setPaddingLeft(14, Unit.PX);
+      
+      FlowPanel header = new FlowPanel();
+      header.getElement().setId("header");
+      header.add(img);
+      
+      final DockLayoutPanel dockLayoutPanel = new DockLayoutPanel(Unit.PX);
+      dockLayoutPanel.addNorth(header, 75.00);
+      RootLayoutPanel.get().add(dockLayoutPanel);
+      
       
       m_nav = new Navigation();
       m_nav.addLocationUpdateEventHandler(this);
       m_nav.addHostUpdateEventHandler(this);
-      navHolder.add(m_nav);
       
       m_flowPanel = new FlowPanel();
-      m_flowPanel.add(navHolder);
       
       
       Runnable timelineCallback = new Runnable() {
@@ -71,7 +82,9 @@ public class Application implements EntryPoint, LocationUpdateEventHandler, Host
                         m_timeline = new AnnotatedTimeLine(ChartUtils.convertJSONToDataTable(response.getText()), createTimelineOptions(), "800px", "350px");
                         
                         m_flowPanel.add(m_timeline);
-                        RootPanel.get().add(m_flowPanel);
+                        m_flowPanel.add(m_nav);
+                        dockLayoutPanel.add(m_flowPanel);
+                        //RootPanel.get().add(m_flowPanel);
                     }
                 }
 
