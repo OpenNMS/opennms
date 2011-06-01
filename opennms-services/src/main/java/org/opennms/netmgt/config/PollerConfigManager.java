@@ -68,6 +68,7 @@ import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.MarshallingResourceFailureException;
+import org.opennms.netmgt.config.poller.CriticalService;
 import org.opennms.netmgt.config.poller.ExcludeRange;
 import org.opennms.netmgt.config.poller.IncludeRange;
 import org.opennms.netmgt.config.poller.Monitor;
@@ -383,7 +384,8 @@ abstract public class PollerConfigManager implements PollerConfig {
     public String getCriticalService() {
         getReadLock().lock();
         try {
-            return m_config.getNodeOutage().getCriticalService().getName();
+            CriticalService service = m_config.getNodeOutage().getCriticalService();
+            return service == null ? null : service.getName();
         } finally {
             getReadLock().unlock();
         }
