@@ -92,10 +92,10 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
                 return logDown(Level.INFO, "Unable to resolve " + nodeLabel);
             } 
             if (requireV4 && !v4found) {
-                return logDown(Level.INFO, nodeLabel + "count only be resolved to a v6 address");
+                return logDown(Level.INFO, nodeLabel + " could only be resolved to an IPv6 address");
             }
             if (requireV6 && !v6found) {
-                return logDown(Level.INFO, nodeLabel + "count only be resolved to a v4 address");
+                return logDown(Level.INFO, nodeLabel + " could only be resolved to an IPv4 address");
             }
             return logUp(Level.INFO, (double)(end - start), "Resolved " + nodeLabel + " correctly!");
 
