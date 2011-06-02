@@ -29,8 +29,9 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.trapd;
+package org.opennms.netmgt.model.events.snmp;
 
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;

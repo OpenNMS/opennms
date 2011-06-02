@@ -29,10 +29,6 @@
       <type>pom</type>
     </dependency>
 
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-    </dependency>
 
     <!-- test dependencies -->
     <dependency>
@@ -58,6 +54,12 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Because it requires EventIpcManager and applicationContext-daemon.xml -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
