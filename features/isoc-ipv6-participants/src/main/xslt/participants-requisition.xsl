@@ -4,7 +4,7 @@
   <xsl:output method="xml"/> 
 
   <xsl:template match="/">
-	<model-import foreign-source="ISOC">
+	<model-import foreign-source="participants">
 	  <xsl:apply-templates/>
 	</model-import>
   </xsl:template>
