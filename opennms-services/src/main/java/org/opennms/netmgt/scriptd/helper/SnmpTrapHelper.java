@@ -41,6 +41,7 @@ import java.util.HashMap;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
@@ -48,7 +49,6 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV2TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
-import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
