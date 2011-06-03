@@ -200,7 +200,6 @@ public class XmpCollectionSet implements CollectionSet {
         visitor.completeCollectionSet(this);
     }
 
-    @Override
 	public Date getCollectionTimestamp() {
 		return m_timestamp;
 	}

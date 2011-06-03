@@ -49,7 +49,6 @@ public class JdbcCollectionSet implements CollectionSet {
         return false;
     }
     
-	@Override
 	public Date getCollectionTimestamp() {
 		return m_timestamp;
 	}
