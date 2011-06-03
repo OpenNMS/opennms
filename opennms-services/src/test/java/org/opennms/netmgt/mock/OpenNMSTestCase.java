@@ -98,6 +98,8 @@ public class OpenNMSTestCase extends TestCase {
     protected static EventIpcManagerDefaultImpl m_eventdIpcMgr;
 
     protected static boolean m_runSupers = true;
+    public static int PROXY_PORT = Integer.getInteger("proxy.port", 5837);
+
 
     /**
      * String representing snmp-config.xml
