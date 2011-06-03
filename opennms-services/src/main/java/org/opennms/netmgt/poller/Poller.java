@@ -55,6 +55,7 @@ import javax.sql.DataSource;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
@@ -553,18 +554,22 @@ public class Poller extends AbstractServiceDaemon {
     private boolean scheduleService(int nodeId, String nodeLabel, String ipAddr, String serviceName, boolean active, Number svcLostEventId, Date date, String svcLostUei) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
+        // We don't want to adjust the management state of the service if we're
+        // on a machine that uses multiple servers with access to the same database
+        // so check the value of OpennmsServerConfigFactory.getInstance().verifyServer()
+        // before doing any updates.
         Package pkg = findPackageForService(ipAddr, serviceName);
         if (pkg == null) {
-            if(active){
+            if(active && !OpennmsServerConfigFactory.getInstance().verifyServer()){
                 log.warn("Active service "+serviceName+" on "+ipAddr+" not configured for any package. Marking as Not Polled.");
                 updateServiceStatus(nodeId, ipAddr, serviceName, "N");
             }
             return false;
-        } else if (!active) {
+        } else if (!active && !OpennmsServerConfigFactory.getInstance().verifyServer()) {
             log.info("Active service "+serviceName+" on "+ipAddr+" is now configured for any package. Marking as active.");
             updateServiceStatus(nodeId, ipAddr, serviceName, "A");
         }
-        
+
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(serviceName);
         if (monitor == null) {
             log.info("Could not find service monitor associated with service "+serviceName);
