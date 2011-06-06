@@ -100,7 +100,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         Assert.notNull(styles, "styles argument cannot be null");
         Assert.isTrue(end > start, "end time must be after start time");
         
-        AdhocGraphType t = m_graphDao.findAdhocByName("performance");
+        AdhocGraphType t = m_graphDao.findAdhocGraphTypeByName("performance");
 
         OnmsResource r = m_resourceDao.getResourceById(resourceId);
         Assert.notNull(r, "resource \"" + resourceId + "\" could not be located");
@@ -158,7 +158,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         Assert.notNull(report, "report argument cannot be null");
         Assert.isTrue(end > start, "end time must be after start time");
 
-        PrefabGraphType t = m_graphDao.findByName("performance");
+        PrefabGraphType t = m_graphDao.findPrefabGraphTypeByName("performance");
         if (t == null) {
             throw new IllegalArgumentException("graph type \"" + "performance"
                                                + "\" is not valid");
