@@ -347,7 +347,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 
     private String getSummary(final GWTMonitoredService service) {
         final StringBuilder sb = new StringBuilder();
-        sb.append(service.getServiceName()).append(" (node ").append(service.getNodeId()).append(")");
+        sb.append(service.getServiceName()).append(" (Node ").append(service.getNodeId()).append(")");
         if (service.getHostname() != null) {
             sb.append("<br>\n").append(service.getHostname());
             if (service.getIpAddress() != null && !service.getIpAddress().equals(service.getHostname())) {

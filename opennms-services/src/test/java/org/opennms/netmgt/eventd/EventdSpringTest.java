@@ -44,8 +44,20 @@
  */
 package org.opennms.netmgt.eventd;
 
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
-import org.opennms.test.DaoTestConfigBean;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /**
  * Test the startup and shutdown of eventd with the default wiring and
@@ -54,31 +66,28 @@ import org.opennms.test.DaoTestConfigBean;
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-    private Eventd m_daemon;
-    private EventIpcManager m_eventIpcManager;
-    
-    @Override
-    protected void setUpConfiguration() {
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.afterPropertiesSet();
-        
-        super.setAutowireMode(AUTOWIRE_BY_NAME);
-    }
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:META-INF/opennms/applicationContext-eventDaemon.xml"
+})
+public class EventdSpringTest implements InitializingBean {
+    @Autowired
+    Eventd m_daemon;
 
     @Override
-    protected String[] getConfigLocations() {
-        /**
-         * Don't put any bean override files in here.  We want to use the
-         * default bean files.
-         */
-        return new String[] {
-                "classpath:META-INF/opennms/applicationContext-dao.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath:META-INF/opennms/applicationContext-daemon.xml",
-                "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
-                "classpath:META-INF/opennms/applicationContext-eventDaemon.xml"
-        };
+    public void afterPropertiesSet() throws Exception {
+        assertNotNull(m_daemon);
     }
 
     /**
@@ -87,26 +96,9 @@ public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpri
      * Eclipse when there are multiple tests due to the large number of events
      * that are loaded by default.
      */
+    @Test
     public void testDaemon() throws Exception {
-        assertNotNull("daemon bean", m_daemon);
-        
         m_daemon.onStart();
         m_daemon.onStop();
-    }
-    
-    public Eventd getDaemon() {
-        return m_daemon;
-    }
-
-    public void setDaemon(Eventd daemon) {
-        m_daemon = daemon;
-    }
-
-    public EventIpcManager getEventIpcManager() {
-        return m_eventIpcManager;
-    }
-
-    public void setEventIpcManager(EventIpcManager eventIpcManager) {
-        m_eventIpcManager = eventIpcManager;
     }
 }
