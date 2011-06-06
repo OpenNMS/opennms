@@ -36,8 +36,6 @@
 //
 package org.opennms.netmgt.model;
 
-import java.util.Map;
-
 /**
  * <p>PrefabGraphType class.</p>
  *
@@ -45,7 +43,6 @@ import java.util.Map;
  * @version $Id: $
  */
 public class PrefabGraphType {
-    private Map<String, PrefabGraph> m_reportMap;
 
     private String m_defaultReport;
 
@@ -59,11 +56,14 @@ public class PrefabGraphType {
 
     private String m_graphHeight;
 
+    private String m_includeDirectory;
+
+    private int m_includeRescanInterval;
+
     /**
      * <p>Constructor for PrefabGraphType.</p>
      */
     public PrefabGraphType() {
-        
     }
     
     /**
@@ -102,33 +102,6 @@ public class PrefabGraphType {
         return m_defaultReport;
     }
     
-    /**
-     * <p>setReportMap</p>
-     *
-     * @param reportMap a {@link java.util.Map} object.
-     */
-    public void setReportMap(Map<String, PrefabGraph> reportMap) {
-        m_reportMap = reportMap;
-    }
-    
-    /**
-     * <p>getReportMap</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
-    public Map<String, PrefabGraph> getReportMap() {
-        return m_reportMap;
-    }
-
-    /**
-     * <p>getQuery</p>
-     *
-     * @param queryName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.PrefabGraph} object.
-     */
-    public PrefabGraph getQuery(String queryName) {
-        return m_reportMap.get(queryName);
-    }
     
     /**
      * <p>setGraphWidth</p>
@@ -202,4 +175,36 @@ public class PrefabGraphType {
         return m_outputMimeType;
     }
 
+    /**
+     * Set the directory from which individual graph files should be included
+     * @param includeDirectory - the new path for the include directory 
+     * If not absolute, is a path relative to the directory containing the main configuration file
+     */
+    public void setIncludeDirectory(String includeDirectory) {
+        m_includeDirectory = includeDirectory;
+    }
+    
+    /** 
+     * @return the include directory in which to look for any individual graph files
+     */
+    public String getIncludeDirectory() {
+        return m_includeDirectory;
+    }
+
+    /**
+     * Set the interval between rescans of the include directory, in milliseconds.  
+     * The includeDirectory will only be rescanned for new files if it's been at least 
+     * this long since the last scan, or the initial load.
+     * @param timeout - the new timeout, in milliseconds
+     */
+    public void setIncludeDirectoryRescanInterval(int interval) {
+        m_includeRescanInterval = interval;
+    }
+
+    /**
+     * @return the timeout used
+     */
+    public int getIncludeDirectoryRescanTimeout() {
+        return m_includeRescanInterval;
+    }
 }

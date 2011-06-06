@@ -56,6 +56,16 @@ import org.apache.log4j.spi.LoggingEvent;
  * <p>MockLogAppender class. If you do not specify the log level specifically, the level
  * will default to DEBUG and you can control the level by setting the <code>mock.logLevel</code>
  * system property.</p>
+ * 
+ * Used in unit tests to check that the level of logging produced by a test was suitable.
+ * In some cases, the test will be that no messages were logged at a higher priority than
+ * specified, e.g. Error messages logged when only Notice were expected.
+ * 
+ * Some other tests may wish to ensure that an Error or Warn message was indeed logged as expected
+ * 
+ * Remember: "Greater" in regards to level relates to priority; the higher the level, the less should
+ * usually be logged (e.g. Errors (highest) should be only the highest priority messages about really bad things, 
+ * as compared to Debug (lowest) which is any old rubbish that might be interesting to a developer)
  *
  * @author brozow
  * @version $Id: $
@@ -123,6 +133,28 @@ public class MockLogAppender extends AppenderSkeleton {
      * @return an array of {@link org.apache.log4j.spi.LoggingEvent} objects.
      */
     public static LoggingEvent[] getEventsGreaterOrEqual(final Level level) {
+        LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
+
+        synchronized (s_events) {
+            for (final LoggingEvent event : s_events) {
+                if (event.getLevel().isGreaterOrEqual(level)) {
+                    matching.add(event);
+                }
+            }
+        }
+
+        return matching.toArray(new LoggingEvent[0]);
+    }
+
+    /**
+     * <p>getEventsAtLevel</p>
+     *
+     * Returns events that were logged at the specified level
+     * 
+     * @param level a {@link org.apache.log4j.Level} object.
+     * @return an array of {@link org.apache.log4j.spi.LoggingEvent} objects.
+     */
+    public static LoggingEvent[] getEventsAtLevel(final Level level) {
         LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
 
         synchronized (s_events) {
@@ -294,4 +326,32 @@ public class MockLogAppender extends AppenderSkeleton {
     public static void assertNoWarningsOrGreater() throws AssertionFailedError {
         assertNotGreaterOrEqual(Level.WARN);
     }
+    
+    /**
+     * <p>assertLogAtLevel</p>
+     * Asserts that a message was logged at the requested level.
+     * 
+     * Useful for testing code that *should* have logged an error message 
+     * (or a notice or some other special case)
+     *
+     * @param level a {@link org.apache.log4j.Level} object.
+     * @throws junit.framework.AssertionFailedError if any.
+     */
+    public static void assertLogAtLevel(final Level level) throws AssertionFailedError {
+        if (!isLoggingSetup()) {
+            throw new AssertionFailedError("MockLogAppender has not been initialized");
+        }
+
+        try {
+            Thread.sleep(500);
+        } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+        }
+        final LoggingEvent[] events = getEventsAtLevel(level);
+        if (events.length == 0) {
+            throw new AssertionFailedError("No messages were received at level " + level);
+        }
+
+    }
+
 }
