@@ -21,3 +21,6 @@ X-Separate errors from successful in collection attempts
  -Sort service stats
  -output sorted service stats
  -Close log file in finally
+ -Hide 100% fail 
+ -Hide 100% succeed
+ -Persist time

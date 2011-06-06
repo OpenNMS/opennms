@@ -126,6 +126,7 @@ the <em>log4j.properties</em> configuration file.
 <th>Unsuccessful Collections</th>
 <th>Unsuccessful Percentage</th>
 <th>Average Unsuccessful Collection Time</th>
+<th>Average Persistence Time</th>
 </tr>
 <c:forEach var="svcCollector" items="${collector.serviceCollectors}">
 <c:choose>
@@ -163,6 +164,7 @@ the <em>log4j.properties</em> configuration file.
 	</c:otherwise>
 </c:choose>
 <td align="right">${svcCollector.averageErrorCollectionDuration}</td>
+<td align="right">${svcCollector.averagePersistDuration}</td>
 </tr>
 
 </c:forEach>

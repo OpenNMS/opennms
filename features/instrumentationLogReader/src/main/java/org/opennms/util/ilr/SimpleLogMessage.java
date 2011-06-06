@@ -38,6 +38,12 @@ public class SimpleLogMessage implements LogMessage {
 	public boolean isPersistMessage() {
 		return getMessage().contains("persist");
 	}
+	public boolean isPersistBeginMessage() {
+            return getMessage().contains("persistDataQueueing: begin");
+        }
+	public boolean isPersistEndMessage() {
+            return getMessage().contains("persistDataQueueing: end");
+        }
 	/* (non-Javadoc)
 	 * @see org.opennms.util.ilr.LogMessage#isBeginMessage()
 	 */
