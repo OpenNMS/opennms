@@ -11,8 +11,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -37,10 +39,29 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 public class JaxbUtils {
-    private static final MarshallingExceptionTranslator EXCEPTION_TRANSLATOR = new MarshallingExceptionTranslator();
+    private static final class LoggingValidationEventHandler implements
+			ValidationEventHandler {
+		private final Class<?> m_clazz;
+
+		private LoggingValidationEventHandler(Class<?> clazz) {
+			m_clazz = clazz;
+		}
+
+		@Override
+		public boolean handleEvent(final ValidationEvent event) {
+			LogUtils.debugf(m_clazz, event.getLinkedException(), "event = %s", event);
+			return false;
+		}
+	}
+
+	private static final MarshallingExceptionTranslator EXCEPTION_TRANSLATOR = new MarshallingExceptionTranslator();
+	/*
 	private static ThreadLocal<Map<Class<?>, Marshaller>> m_marshallers = new ThreadLocal<Map<Class<?>, Marshaller>>();
 	private static ThreadLocal<Map<Class<?>, Unmarshaller>> m_unMarshallers = new ThreadLocal<Map<Class<?>, Unmarshaller>>();
-	
+	private static final Map<Class<?>,JAXBContext> m_contexts = Collections.synchronizedMap(new WeakHashMap<Class<?>,JAXBContext>());
+	private static final Map<Class<?>,Schema> m_schemas = Collections.synchronizedMap(new WeakHashMap<Class<?>,Schema>());
+	*/
+
 	private JaxbUtils() {
 	}
 
@@ -102,18 +123,11 @@ public class JaxbUtils {
 		
 		LogUtils.debugf(clazz, "unmarshalling class %s from input source %s with unmarshaller %s", clazz.getSimpleName(), inputSource, um);
 		try {
-			XMLFilter filter = getXMLFilterForClass(clazz);
+			final XMLFilter filter = getXMLFilterForClass(clazz);
 			final SAXSource source = new SAXSource(filter, inputSource);
 
-			um.setEventHandler(new ValidationEventHandler() {
-				
-				@Override
-				public boolean handleEvent(final ValidationEvent event) {
-					LogUtils.debugf(clazz, event.getLinkedException(), "event = %s", event);
-					return false;
-				}
-			});
-			
+			um.setEventHandler(new LoggingValidationEventHandler(clazz));
+
 			final JAXBElement<T> element = um.unmarshal(source, clazz);
 			return element.getValue();
 		} catch (final SAXException e) {
@@ -124,16 +138,17 @@ public class JaxbUtils {
 	}
 
 	public static <T> XMLFilter getXMLFilterForClass(final Class<T> clazz) throws SAXException {
-		XMLFilter filter = null;
+		final XMLFilter filter;
 		final XmlSchema schema = clazz.getPackage().getAnnotation(XmlSchema.class);
 		if (schema != null) {
 			final String namespace = schema.namespace();
 			if (namespace != null && !"".equals(namespace)) {
 				LogUtils.debugf(clazz, "found namespace %s for class %s", namespace, clazz);
 				filter = new SimpleNamespaceFilter(namespace, true);
+			} else {
+				filter = new SimpleNamespaceFilter("", false);
 			}
-		}
-		if (filter == null) {
+		} else {
 			filter = new SimpleNamespaceFilter("", false);
 		}
 
@@ -145,10 +160,11 @@ public class JaxbUtils {
 	public static Marshaller getMarshallerFor(final Object obj, final JAXBContext jaxbContext) {
 		final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
 
+		/*
 		Map<Class<?>, Marshaller> marshallers = m_marshallers.get();
 		if (jaxbContext == null) {
 			if (marshallers == null) {
-				marshallers = new HashMap<Class<?>, Marshaller>();
+				marshallers = new WeakHashMap<Class<?>, Marshaller>();
 				m_marshallers.set(marshallers);
 			}
 			if (marshallers.containsKey(clazz)) {
@@ -156,12 +172,13 @@ public class JaxbUtils {
 				return marshallers.get(clazz);
 			}
 		}
+		*/
 		LogUtils.debugf(clazz, "creating unmarshaller for %s", clazz);
 
 		try {
 			final JAXBContext context;
 			if (jaxbContext == null) {
-				context = JAXBContext.newInstance(clazz);
+				context = getContextFor(clazz);
 			} else {
 				context = jaxbContext;
 			}
@@ -170,7 +187,7 @@ public class JaxbUtils {
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			final Schema schema = getValidatorFor(clazz);
 			marshaller.setSchema(schema);
-			if (jaxbContext == null) marshallers.put(clazz, marshaller);
+			// if (jaxbContext == null) marshallers.put(clazz, marshaller);
 			
 			return marshaller;
 		} catch (JAXBException e) {
@@ -185,13 +202,14 @@ public class JaxbUtils {
 	 * @param jaxbContext An optional JAXB context to create the unmarshaller from.
 	 * @return an Unmarshaller
 	 */
-	public static Unmarshaller getUnmarshallerFor(final Object obj, JAXBContext jaxbContext) {
+	public static Unmarshaller getUnmarshallerFor(final Object obj, final JAXBContext jaxbContext) {
 		final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
 
+		/*
 		Map<Class<?>, Unmarshaller> unmarshallers = m_unMarshallers.get();
 		if (jaxbContext == null) {
 			if (unmarshallers == null) {
-				unmarshallers = new HashMap<Class<?>, Unmarshaller>();
+				unmarshallers = new WeakHashMap<Class<?>, Unmarshaller>();
 				m_unMarshallers.set(unmarshallers);
 			}
 			if (unmarshallers.containsKey(clazz)) {
@@ -199,14 +217,20 @@ public class JaxbUtils {
 				return unmarshallers.get(clazz);
 			}
 		}
+		*/
 		LogUtils.debugf(clazz, "creating unmarshaller for %s", clazz);
 
 		try {
-			final JAXBContext context = JAXBContext.newInstance(clazz);
+			final JAXBContext context;
+			if (jaxbContext == null) {
+				context = getContextFor(clazz);
+			} else {
+				context = jaxbContext;
+			}
 			final Unmarshaller unmarshaller = context.createUnmarshaller();
 			final Schema schema = getValidatorFor(clazz);
 			unmarshaller.setSchema(schema);
-			if (jaxbContext == null) unmarshallers.put(clazz, unmarshaller);
+			// if (jaxbContext == null) unmarshallers.put(clazz, unmarshaller);
 
 			return unmarshaller;
 		} catch (JAXBException e) {
@@ -214,8 +238,29 @@ public class JaxbUtils {
 		}
 	}
 
-	public static Schema getValidatorFor(final Class<?> clazz) {
+	private static JAXBContext getContextFor(final Class<?> clazz) throws JAXBException {
+		return JAXBContext.newInstance(clazz);
+		/* NO!  Leaks SymbolTable objects  :(
+		final JAXBContext context;
+		if (m_contexts.containsKey(clazz)) {
+			context = m_contexts.get(clazz);
+		} else {
+			context = JAXBContext.newInstance(clazz);
+			m_contexts.put(clazz, context);
+		}
+		return context;
+		*/
+	}
+
+	private static Schema getValidatorFor(final Class<?> origClazz) {
+		final Class<?> clazz = (Class<?>)(origClazz instanceof Class<?> ? origClazz : origClazz.getClass());
 		LogUtils.tracef(clazz, "finding XSD for class %s", clazz);
+
+		/* NO!  Leaks SymbolTable objects  :(
+		if (m_schemas.containsKey(clazz)) {
+			return m_schemas.get(clazz);
+		}
+		*/
 
 		final ValidateUsing schemaFileAnnotation = clazz.getAnnotation(ValidateUsing.class);
 		if (schemaFileAnnotation == null || schemaFileAnnotation.value() == null) {
@@ -243,7 +288,6 @@ public class JaxbUtils {
 			}
 			if (schemaInputStream == null) {
 				final URL schemaResource = Thread.currentThread().getContextClassLoader().getResource("xsds/" + schemaFileName);
-//				final URL schemaResource = clazz.getClassLoader().getResource("xsds/" + schemaFileName);
 				if (schemaResource == null) {
 					LogUtils.debugf(clazz, "Unable to load resource xsds/%s from the classpath.", schemaFileName);
 				} else {
@@ -256,6 +300,7 @@ public class JaxbUtils {
 				return null;
 			}
 			final Schema schema = factory.newSchema(new StreamSource(schemaInputStream));
+//			m_schemas.put(clazz, schema);
 			return schema;
 		} catch (final Throwable t) {
 			LogUtils.warnf(clazz, t, "an error occurred while attempting to load %s for validation", schemaFileName);

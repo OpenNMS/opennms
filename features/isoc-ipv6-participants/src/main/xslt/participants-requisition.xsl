@@ -4,7 +4,7 @@
   <xsl:output method="xml"/> 
 
   <xsl:template match="/">
-	<model-import foreign-source="ISOC">
+	<model-import foreign-source="participants">
 	  <xsl:apply-templates/>
 	</model-import>
   </xsl:template>
@@ -17,11 +17,12 @@
   </xsl:template> 
   -->
 
+  <!--
   <xsl:template match="/participants/participant">
-    <!-- 
+    <!- - 
       I tried all permutations of creating a primitive boolean with Xalan... 
       this seems to be the only one that works.
-    -->
+    - ->
     <xsl:variable name="javaTrue" select="java:java.lang.Boolean.parseBoolean('true')"/>
     <xsl:variable name="javaFalse" select="java:java.lang.Boolean.parseBoolean('false')"/>
 	<node building="Participants">
@@ -67,7 +68,7 @@
 		  </xsl:if>
 		</xsl:if>
 	  </xsl:if>
-	  <!-- If there are no v4_only or v6_only address, then emit interfaces for the dual stack hostnames -->
+	  <!- - If there are no v4_only or v6_only address, then emit interfaces for the dual stack hostnames - ->
 	  <xsl:if test="dual_hostname != '' and v4_only = '' and v6_only = ''">
 		<xsl:variable name="dnsName" select="dual_hostname"/>
 		<xsl:variable name="address" select="java:org.opennms.core.utils.InetAddressUtils.resolveHostname($dnsName, $javaFalse, $javaFalse)"/>
@@ -85,7 +86,7 @@
 		  </xsl:call-template>
 		</xsl:if>
 	  </xsl:if>
-	  <!-- If there are no addresses at all, then emit interfaces for the main hostname -->
+	  <!- - If there are no addresses at all, then emit interfaces for the main hostname - ->
 	  <xsl:if test="dual_hostname = '' and v4_only = '' and v6_only = ''">
 		<xsl:variable name="dnsName" select="hostname"/>
 		<xsl:variable name="address" select="java:org.opennms.core.utils.InetAddressUtils.resolveHostname($dnsName, $javaFalse, $javaFalse)"/>
@@ -104,7 +105,7 @@
 		</xsl:if>
 	  </xsl:if>
 	</node>
-	<!--
+	<!- -
 	<xsl:value-of select="join_date"/>
 	<xsl:value-of select="name"/>
 	<xsl:value-of select="hostname"/>
@@ -117,7 +118,30 @@
 	<xsl:value-of select="dual_fetchable-url/@notsmall"/>
 	<xsl:value-of select="alerts_to"/>
 	</tr>
-	-->
+	- ->
+  </xsl:template>
+  -->
+
+  <xsl:template match="/participants/participant">
+    <!-- 
+      I tried all permutations of creating a primitive boolean with Xalan... 
+      this seems to be the only one that works.
+    -->
+    <xsl:variable name="javaTrue" select="java:java.lang.Boolean.parseBoolean('true')"/>
+    <xsl:variable name="javaFalse" select="java:java.lang.Boolean.parseBoolean('false')"/>
+	<!-- If there are no addresses at all, then emit interfaces for the main hostname -->
+	<xsl:variable name="dnsName" select="hostname"/>
+	<xsl:variable name="address" select="java:org.opennms.core.utils.InetAddressUtils.resolveHostname($dnsName, $javaFalse, $javaFalse)"/>
+	<xsl:if test="string($address)">
+	  <node building="Participants">
+		<xsl:attribute name="node-label"><xsl:value-of select="hostname"/></xsl:attribute>
+		<xsl:attribute name="foreign-id"><xsl:value-of select="hostname"/></xsl:attribute>
+		<xsl:call-template name="interface-entry">
+		  <xsl:with-param name="address"><xsl:value-of select="java:org.opennms.core.utils.InetAddressUtils.str($address)"/></xsl:with-param>
+		  <xsl:with-param name="dnsName"><xsl:value-of select="$dnsName"/></xsl:with-param>
+		</xsl:call-template>
+	  </node>
+	</xsl:if>
   </xsl:template>
 
   <xsl:template name="interface-entry">
@@ -130,11 +154,12 @@
 	  <xsl:attribute name="descr">
 		<xsl:value-of select="$dnsName"/>
 	  </xsl:attribute>
+	  <monitored-service service-name="ICMP"/>
 	  <monitored-service service-name="HTTP"/>
-	  <!-- <monitored-service service-name="DNS-A"/> -->
-	  <!-- <monitored-service service-name="DNS-AAAA"/> -->
-	  <!-- <monitored-service service-name="HTTP-IPv4"/> -->
-	  <!-- <monitored-service service-name="HTTP-IPv6"/> -->
+	  <monitored-service service-name="DNS-A"/>
+	  <monitored-service service-name="DNS-AAAA"/>
+	  <monitored-service service-name="HTTP-v4"/>
+	  <monitored-service service-name="HTTP-v6"/>
 	</interface>
   </xsl:template>
 
