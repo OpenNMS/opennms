@@ -32,5 +32,9 @@ public class OnmsLocationAvailDefinitionList extends LinkedList<OnmsLocationAvai
         clear();
         addAll(defs);
     }
+    
+    public void addDefinition(OnmsLocationAvailDataPoint def) {
+        add(def);
+    }
 
 }

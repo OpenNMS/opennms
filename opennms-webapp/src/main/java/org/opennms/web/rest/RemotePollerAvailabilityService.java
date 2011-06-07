@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -35,7 +37,10 @@ import org.opennms.web.rest.support.TimeChunker;
 import org.opennms.web.rest.support.TimeChunker.TimeChunk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
@@ -58,10 +63,30 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @Autowired
     NodeDao m_nodeDao;
     
+    @Autowired
+    TransactionTemplate m_transactionTemplate;
+    
     @Context
     UriInfo m_uriInfo;
     
+    OnmsLocationAvailDefinitionList m_defList = null;
     
+    private Timer m_timer = null;
+    
+    public RemotePollerAvailabilityService() {
+        super();
+        
+    }
+    
+    
+    protected TimeChunker getTimeChunkerFromMidnight() {
+        Calendar calendar = Calendar.getInstance();
+        Date startTime = new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0,0,0).getTime();
+        TimeChunker chunker = new TimeChunker(TimeChunker.MINUTE, startTime, new Date(System.currentTimeMillis()));
+        return chunker;
+    }
+
+
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public OnmsMonitoringLocationDefinitionList getRemoteLocationList(){
@@ -99,14 +124,33 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("availability")
-    public OnmsLocationAvailDefinitionList getAvailability() {
+    public OnmsLocationAvailDefinitionList getAvailability() throws InterruptedException {
         
-        MultivaluedMap<String, String> queryParameters = m_uriInfo.getQueryParameters();
-        OnmsLocationAvailDefinitionList retVal =  getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), null, getNodeLabel(queryParameters), getSelectedNodes(queryParameters));
+        if(m_timer == null) {
+            MultivaluedMap<String, String> queryParameters = m_uriInfo.getQueryParameters();
+            m_defList =  getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), null, getSelectedNodes(queryParameters));
+            
+            TimerTask task = new TimerTask() {
+
+                @Override
+                public void run() {
+                    m_defList = m_transactionTemplate.execute(new TransactionCallback<OnmsLocationAvailDefinitionList>() {
+
+                        @Override
+                        public OnmsLocationAvailDefinitionList doInTransaction(TransactionStatus status) {
+                            return getAvailabilityList(getTimeChunkerFromMidnight(), getSortedApplications(), null, null);
+                        }
+                        
+                    });
+                }
+            };
+            
+            m_timer = new Timer("AvailCalculator-Timer");
+            m_timer.scheduleAtFixedRate(task, TimeChunker.MINUTE, TimeChunker.MINUTE);
+        }
         
-        return retVal;
+        return m_defList;
     }
-    
     
 
     @GET
@@ -118,68 +162,21 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         OnmsMonitoringLocationDefinition locationDefinition = m_locationMonitorDao.findMonitoringLocationDefinition(location);
         Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
         
-        OnmsLocationAvailDefinitionList availList = getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), monitors, getNodeLabel(queryParameters), null);
+        OnmsLocationAvailDefinitionList availList = getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), monitors, null);
         
         return availList;
     }
     
     
-    private Collection<OnmsNode> getSelectedNodes(MultivaluedMap<String, String> queryParameters) {
-        if(queryParameters.containsKey("host")) {
-            String nodeLabel = queryParameters.getFirst("host");
-            return m_nodeDao.findByLabel(nodeLabel);
-        }else {
-            return null;
-        }
-    }
-    
-    private String getNodeLabel(MultivaluedMap<String, String> queryParameters) {
-        
-        if(queryParameters.containsKey("host")) {
-            String nodeLabel = queryParameters.getFirst("host");
-            return nodeLabel;
-        }else {
-            return null;
-        }
-    }
-    
-    private TimeChunker createTimeChunker(MultivaluedMap<String, String> params) {
-        TimeChunker timeChunker;
-        Date start = getStartTime(params);
-        Date end = getEndTime(params);
-        if((end.getTime() - start.getTime()) < TimeChunker.MINUTE) {
-            throw new IllegalArgumentException("The endTime has to be after the startTime by 5 minutes.\nCurrently the startTime is " + start + " and endTime is " + end);
-        }
-        
-        timeChunker = new TimeChunker(getResolution(params), start, end);
-        return timeChunker;
-    }
-
-    private List<OnmsApplication> getSortedApplications() {
-        List<OnmsApplication> sortedApplications;
-        Collection<OnmsApplication> applications = m_applicationDao.findAll();
-        
-        if (applications.size() == 0) {
-            throw new IllegalArgumentException("there are no applications");
-        }
-        
-        sortedApplications = new ArrayList<OnmsApplication>(applications);
-        Collections.sort(sortedApplications);
-        return sortedApplications;
-    }
-
     /**
      * 
      * @param timeChunker
      * @param sortedApplications
-     * @param selectedMonitors 
-     * @param nodeLabel TODO
-     * @param nodes TODO
-     * @param selectedHost TODO
-     * @param locationDefinitions
+     * @param selectedMonitors
+     * @param selectedNodes
      * @return
      */
-    private OnmsLocationAvailDefinitionList getAvailabilityList(TimeChunker timeChunker, List<OnmsApplication> sortedApplications, Collection<OnmsLocationMonitor> selectedMonitors, String x, Collection<OnmsNode> selectedNodes) {
+    private OnmsLocationAvailDefinitionList getAvailabilityList(TimeChunker timeChunker, List<OnmsApplication> sortedApplications, Collection<OnmsLocationMonitor> selectedMonitors, Collection<OnmsNode> selectedNodes) {
         
         OnmsLocationAvailDefinitionList availList = new OnmsLocationAvailDefinitionList();
         
@@ -191,16 +188,14 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         Collection<OnmsLocationSpecificStatus> statusesPeriod = m_locationMonitorDao.getStatusChangesBetweenForApplications(timeChunker.getStartDate(), timeChunker.getEndDate(), names);
         
         AvailCalculator availCalc = new AvailCalculator(timeChunker);
-        System.err.println(new Date() + " Before Removing unneeded");
+
         removeUnneededMonitors(statusesPeriod, selectedMonitors);
         removeUnneededServices(statusesPeriod, selectedNodes);
-        System.err.println(new Date() + "After Removing Unneeded");
-        System.err.println(new Date() + "Before add status changes");
+
         for(OnmsLocationSpecificStatus statusChange : statusesPeriod) {
             availCalc.onStatusChange(statusChange);
         }
-        System.err.println(new Date() + "After add status changes");
-        System.err.println(new Date() + "Before Calculations");
+
         int counter = 0;
         for(int i =0; i < timeChunker.getSegmentCount(); i++) {
             counter++;
@@ -213,7 +208,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
             for(OnmsApplication application : sortedApplications) {
                 
                 double percentage = availCalc.getAvailabilityFor(m_monitoredServiceDao.findByApplication(application), i);
-                String strPercent = new DecimalFormat("0.00").format((double) percentage);
+                String strPercent = new DecimalFormat("0.0").format(percentage * 100);
                 point.addAvailDefinition(new OnmsLocationAvailDefinition(application.getName(), strPercent));
                 
             }
@@ -299,6 +294,40 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
             return new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0, 0).getTime();
         }
         
+    }
+    
+    private Collection<OnmsNode> getSelectedNodes(MultivaluedMap<String, String> queryParameters) {
+        if(queryParameters.containsKey("host")) {
+            String nodeLabel = queryParameters.getFirst("host");
+            return m_nodeDao.findByLabel(nodeLabel);
+        }else {
+            return null;
+        }
+    }
+    
+    private TimeChunker createTimeChunker(MultivaluedMap<String, String> params) {
+        TimeChunker timeChunker;
+        Date start = getStartTime(params);
+        Date end = getEndTime(params);
+        if((end.getTime() - start.getTime()) < TimeChunker.MINUTE) {
+            throw new IllegalArgumentException("The endTime has to be after the startTime by 5 minutes.\nCurrently the startTime is " + start + " and endTime is " + end);
+        }
+        
+        timeChunker = new TimeChunker(getResolution(params), start, end);
+        return timeChunker;
+    }
+
+    private List<OnmsApplication> getSortedApplications() {
+        List<OnmsApplication> sortedApplications;
+        Collection<OnmsApplication> applications = m_applicationDao.findAll();
+        
+        if (applications.size() == 0) {
+            throw new IllegalArgumentException("there are no applications");
+        }
+        
+        sortedApplications = new ArrayList<OnmsApplication>(applications);
+        Collections.sort(sortedApplications);
+        return sortedApplications;
     }
 
 }

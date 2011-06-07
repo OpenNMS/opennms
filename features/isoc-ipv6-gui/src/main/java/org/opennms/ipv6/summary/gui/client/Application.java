@@ -84,7 +84,6 @@ public class Application implements EntryPoint, LocationUpdateEventHandler, Host
                         m_flowPanel.add(m_timeline);
                         m_flowPanel.add(m_nav);
                         dockLayoutPanel.add(m_flowPanel);
-                        //RootPanel.get().add(m_flowPanel);
                     }
                 }
 
@@ -138,8 +137,9 @@ public class Application implements EntryPoint, LocationUpdateEventHandler, Host
 
   protected AnnotatedTimeLine.Options createTimelineOptions() {
       AnnotatedTimeLine.Options options = AnnotatedTimeLine.Options.create();
-      options.setDisplayAnnotations(true);
+      options.setDisplayAnnotations(false);
       options.setDisplayZoomButtons(false);
+      options.setOption("displayRangeSelector", false);
       options.setLegendPosition(AnnotatedTimeLine.AnnotatedLegendPosition.SAME_ROW);
       return options;
   }

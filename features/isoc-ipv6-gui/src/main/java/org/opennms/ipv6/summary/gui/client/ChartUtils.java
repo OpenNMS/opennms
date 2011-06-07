@@ -101,7 +101,7 @@ public class ChartUtils {
         if(locationList.get("locations").isArray() != null) {
             JSONArray locations = locationList.get("locations").isArray();
             for(int i = 0; i < locations.size(); i++) {
-                String value = locations.get(i).isObject().get("area").isString().stringValue();
+                String value = locations.get(i).isObject().get("name").isString().stringValue();
                 locs.add(value);
             }
             return locs;
