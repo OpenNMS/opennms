@@ -48,8 +48,8 @@ import java.sql.Statement;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.sql.DataSource;
 
@@ -123,7 +123,7 @@ public class TemporaryDatabase implements DataSource {
     public TemporaryDatabase(String testDatabase, String driver, String url,
                              String adminUser, String adminPassword, boolean useExisting) throws Exception {
         // Append the current object's hashcode to make this value truly unique
-        m_testDatabase = testDatabase + "_" + this.hashCode();
+        m_testDatabase = testDatabase;
         m_driver = driver;
         m_url = url;
         m_adminUser = adminUser;

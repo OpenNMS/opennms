@@ -109,9 +109,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
         MockDatabase db = new MockDatabase(true);
         DataSourceFactory.setInstance(db);
                 
-        servletContext = new MockServletContext("file:src/main/webapp");
+        setServletContext(new MockServletContext("file:src/main/webapp"));
 
-        servletContext.addInitParameter("contextConfigLocation", 
+        getServletContext().addInitParameter("contextConfigLocation", 
                 "classpath:/org/opennms/web/rest/applicationContext-test.xml " +
                 "classpath*:/META-INF/opennms/component-service.xml " +
                 "classpath*:/META-INF/opennms/component-dao.xml " +
@@ -123,25 +123,25 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 "/WEB-INF/applicationContext-spring-security.xml " +
                 "/WEB-INF/applicationContext-jersey.xml");
         
-        servletContext.addInitParameter("parentContextKey", "daoContext");
+        getServletContext().addInitParameter("parentContextKey", "daoContext");
                 
-        ServletContextEvent e = new ServletContextEvent(servletContext);
-        contextListener = new ContextLoaderListener();
-        contextListener.contextInitialized(e);
+        ServletContextEvent e = new ServletContextEvent(getServletContext());
+        setContextListener(new ContextLoaderListener());
+        getContextListener().contextInitialized(e);
 
-        servletContext.setContextPath(contextPath);
-        servletConfig = new MockServletConfig(servletContext, "dispatcher");    
-        servletConfig.addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
-        servletConfig.addInitParameter("com.sun.jersey.config.property.packages", "org.opennms.web.rest");
+        getServletContext().setContextPath(contextPath);
+        setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));    
+        getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
+        getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.opennms.web.rest");
         
         try {
 
-            MockFilterConfig filterConfig = new MockFilterConfig(servletContext, "openSessionInViewFilter");
-            filter = new OpenSessionInViewFilter();        
-            filter.init(filterConfig);
+            MockFilterConfig filterConfig = new MockFilterConfig(getServletContext(), "openSessionInViewFilter");
+            setFilter(new OpenSessionInViewFilter());        
+            getFilter().init(filterConfig);
 
-            dispatcher = new SpringServlet();
-            dispatcher.init(servletConfig);
+            setDispatcher(new SpringServlet());
+            getDispatcher().init(getServletConfig());
 
         } catch (ServletException se) {
             throw se.getRootCause();
@@ -167,9 +167,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
     public void tearDown() throws Exception {
         System.err.println("------------------------------------------------------------------------------");
         beforeServletDestroy();
-        contextListener.contextDestroyed(new ServletContextEvent(servletContext));
-        if (dispatcher != null) {
-            dispatcher.destroy();
+        getContextListener().contextDestroyed(new ServletContextEvent(getServletContext()));
+        if (getDispatcher() != null) {
+            getDispatcher().destroy();
         }
         afterServletDestroy();
     }
@@ -184,10 +184,10 @@ public abstract class AbstractSpringJerseyRestTestCase {
     protected void dispatch(final MockHttpServletRequest request, final MockHttpServletResponse response) throws Exception {
         final FilterChain filterChain = new FilterChain() {
             public void doFilter(final ServletRequest filterRequest, final ServletResponse filterResponse) throws IOException, ServletException {
-                dispatcher.service(filterRequest, filterResponse);
+                getDispatcher().service(filterRequest, filterResponse);
             }
         };
-        if (filter != null) filter.doFilter(request, response, filterChain);
+        if (getFilter() != null) getFilter().doFilter(request, response, filterChain);
     }
     
     protected MockHttpServletResponse createResponse() {
@@ -195,7 +195,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected MockHttpServletRequest createRequest(final String requestType, final String urlPath) {
-    	final MockHttpServletRequest request = new MockHttpServletRequest(servletContext, requestType, contextPath + urlPath) {
+    	final MockHttpServletRequest request = new MockHttpServletRequest(getServletContext(), requestType, contextPath + urlPath) {
 
             @Override
             public void setContentType(final String contentType) {
@@ -437,6 +437,42 @@ public abstract class AbstractSpringJerseyRestTestCase {
     
     public <T> T getBean(String name, Class<T> beanClass) {
         return m_webAppContext.getBean(name, beanClass);
+    }
+
+    public void setServletContext(MockServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
+
+    public void setContextListener(ContextLoaderListener contextListener) {
+        this.contextListener = contextListener;
+    }
+
+    public ContextLoaderListener getContextListener() {
+        return contextListener;
+    }
+
+    public void setServletConfig(MockServletConfig servletConfig) {
+        this.servletConfig = servletConfig;
+    }
+
+    public MockServletConfig getServletConfig() {
+        return servletConfig;
+    }
+
+    public void setFilter(Filter filter) {
+        this.filter = filter;
+    }
+
+    public Filter getFilter() {
+        return filter;
+    }
+
+    public void setDispatcher(ServletContainer dispatcher) {
+        this.dispatcher = dispatcher;
+    }
+
+    public ServletContainer getDispatcher() {
+        return dispatcher;
     }
 
 
