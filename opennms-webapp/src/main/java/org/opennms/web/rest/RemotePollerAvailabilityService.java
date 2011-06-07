@@ -208,7 +208,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
             for(OnmsApplication application : sortedApplications) {
                 
                 double percentage = availCalc.getAvailabilityFor(m_monitoredServiceDao.findByApplication(application), i);
-                String strPercent = new DecimalFormat("0.00").format(percentage);
+                String strPercent = new DecimalFormat("0.00").format(percentage * 100);
                 point.addAvailDefinition(new OnmsLocationAvailDefinition(application.getName(), strPercent));
                 
             }

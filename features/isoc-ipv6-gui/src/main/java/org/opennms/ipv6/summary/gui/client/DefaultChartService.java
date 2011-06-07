@@ -21,7 +21,6 @@ public class DefaultChartService implements ChartService {
     public void getAvailabilityByLocation(String location, RequestCallback callback) {
         String url = AVAILABILITY_SERVICE_URL + "/" + location;
         sendRequest(url, callback);
-        
     }
 
     
