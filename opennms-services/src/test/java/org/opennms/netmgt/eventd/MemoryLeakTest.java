@@ -30,13 +30,10 @@
 package org.opennms.netmgt.eventd;
 
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.utils.TcpEventProxy;
 
 
@@ -46,21 +43,23 @@ import org.opennms.netmgt.utils.TcpEventProxy;
  * @author brozow
  */
 public class MemoryLeakTest extends OpenNMSTestCase {
+    
+    private static final long MINS = 8*60*60*1000L;
 
-    public void xxxTestMemory() throws Exception {
-        EventProxy proxy = new TcpEventProxy(new InetSocketAddress(InetAddressUtils.addr("127.0.0.1"), 5837));
-        double eventRate = 10.0 / 1000.0;
+    public void xxxtestMemory() throws Exception {
+        EventProxy proxy = new TcpEventProxy(new InetSocketAddress("127.0.0.1", OpenNMSTestCase.PROXY_PORT));
+        double eventRate = 20.0 / 1000.0;
         
         long start = System.currentTimeMillis();
         long count = 0;
-        while(true) {
+        while(System.currentTimeMillis() - start < MINS) {
             long now = Math.max(System.currentTimeMillis(), 1);
             double actualRate = ((double)count) / ((double)(now - start));
             if (actualRate < eventRate) {
                 sendEvent(proxy, count);
                 count++;
             }
-            Thread.sleep(10);
+            Thread.sleep(30);
             System.err.println(String.format("Expected Rate: %f Actual Rate: %f Events Sent: %d", eventRate, actualRate, count));
         }
         
@@ -71,6 +70,17 @@ public class MemoryLeakTest extends OpenNMSTestCase {
         bldr.addParam("user", "brozow");
         
         proxy.send(bldr.getEvent());
+
+        long free = Runtime.getRuntime().freeMemory();
+        long max = Runtime.getRuntime().maxMemory();
+        
+        double pct = ((double)free)/((double)max);
+        System.err.println("% Free Memory is "+pct);
+        
+        if (pct < 0.01) {
+            throw new IllegalStateException("Memory Used up!");
+        }
+
     }
     
 

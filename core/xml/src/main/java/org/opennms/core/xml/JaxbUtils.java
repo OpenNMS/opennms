@@ -185,8 +185,8 @@ public class JaxbUtils {
 			final Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			final Schema schema = getValidatorFor(clazz);
-			marshaller.setSchema(schema);
+			//final Schema schema = getValidatorFor(clazz);
+			//marshaller.setSchema(schema);
 			// if (jaxbContext == null) marshallers.put(clazz, marshaller);
 			
 			return marshaller;
@@ -228,8 +228,8 @@ public class JaxbUtils {
 				context = jaxbContext;
 			}
 			final Unmarshaller unmarshaller = context.createUnmarshaller();
-			final Schema schema = getValidatorFor(clazz);
-			unmarshaller.setSchema(schema);
+			//final Schema schema = getValidatorFor(clazz);
+			//unmarshaller.setSchema(schema);
 			// if (jaxbContext == null) unmarshallers.put(clazz, unmarshaller);
 
 			return unmarshaller;

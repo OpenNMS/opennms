@@ -161,6 +161,16 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
      * @since 1.8.1
      */
     Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationBetween(final Date startDate, final Date endDate, final String applicationName);
+    
+    /**
+     * <p>getStatusChangesBetweenForApplications</p>
+     * 
+     * @param startDate a {@link java.util.Date} object.
+     * @param endDate a {@link java.util.Date} object.
+     * @param application a {@link java.util.Collection} object.
+     * @return a {@link java.util.Collection} object.
+     */
+    Collection<OnmsLocationSpecificStatus> getStatusChangesBetweenForApplications(final Date startDate, final Date endDate, final Collection<String> applicationNames);
 
     /**
      * <p>getMostRecentStatusChangesForLocation</p>

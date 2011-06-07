@@ -487,6 +487,7 @@
             <runRtTests>${runRtTests}</runRtTests>
             <runMailTests>${runMailTests}</runMailTests>
             <runPingTests>${runPingTests}</runPingTests>
+            <proxy.port>${proxy.port}</proxy.port>
           </systemPropertyVariables>
           <forkMode>pertest</forkMode>
           <argLine>-Xmx1024m</argLine>

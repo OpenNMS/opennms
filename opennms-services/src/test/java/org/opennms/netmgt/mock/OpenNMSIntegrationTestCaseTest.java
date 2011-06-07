@@ -34,25 +34,44 @@
  */
 package org.opennms.netmgt.mock;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class OpenNMSIntegrationTestCaseTest extends OpenNMSIntegrationTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:META-INF/opennms/applicationContext-daemon.xml" 
+})
+public class OpenNMSIntegrationTestCaseTest {
     
-    
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { 
-                "classpath:META-INF/opennms/applicationContext-dao.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath:META-INF/opennms/applicationContext-daemon.xml" 
-        };
-    }
 
+    @Test
     public void testHomeDirCreated() {
 
         String homePath = System.getProperty("opennms.home");
@@ -62,6 +81,7 @@ public class OpenNMSIntegrationTestCaseTest extends OpenNMSIntegrationTestCase {
         
     }
     
+    @Test
     public void testEtcDirExists() {
         
         String homePath = System.getProperty("opennms.home");
@@ -72,7 +92,4 @@ public class OpenNMSIntegrationTestCaseTest extends OpenNMSIntegrationTestCase {
         
         assertTrue(etcDir.exists());
     }
-
-
-
 }

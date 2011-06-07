@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import javax.xml.ws.WebServiceException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
@@ -249,6 +250,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     }
 
     @Test
+    @Ignore // Ignore this test while XML validation is disabled
     public void testBadRequisition() throws Exception {
         String req =
             "<model-import date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +
