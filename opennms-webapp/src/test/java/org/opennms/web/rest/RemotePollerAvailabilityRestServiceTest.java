@@ -209,6 +209,8 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         
         String responseString = sendRequest(GET, url, parameters, 200);
         
+        
+        
         if(USE_EXISTING) {
             assertTrue(responseString.contains("HTTP-v6"));
             assertTrue(responseString.contains("HTTP-v4"));
@@ -218,6 +220,22 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         }
         System.err.println("total time taken: " + (System.currentTimeMillis() - startTime) + "UptimeCalculator.count = " + UptimeCalculator.count);
         
+        Thread.sleep(360000);
+        
+        startTime = System.currentTimeMillis();
+        responseString = sendRequest(GET, url, parameters, 200);
+        
+        
+        
+        if(USE_EXISTING) {
+            assertTrue(responseString.contains("HTTP-v6"));
+            assertTrue(responseString.contains("HTTP-v4"));
+        } else {
+            assertTrue(responseString.contains("IPv6"));
+            assertTrue(responseString.contains("IPv4"));
+        }
+        
+        System.err.println("total time taken for cache: " + (System.currentTimeMillis() - startTime) + "UptimeCalculator.count = " + UptimeCalculator.count);
     }
     
     @Test
