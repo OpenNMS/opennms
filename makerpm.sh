@@ -40,6 +40,8 @@ fi
 
 if [ $RELEASE_MAJOR = 0 ]; then
 	RELEASE_MINOR=`date '+%Y%m%d'`
+	# custom, for the RS branch
+	RELEASE_MAJOR=2000
 	RELEASE=$RELEASE_MAJOR.$RELEASE_MINOR.$RELEASE_MICRO
 else
 	RELEASE=$RELEASE_MAJOR
