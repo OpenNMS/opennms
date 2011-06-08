@@ -32,8 +32,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class JaxbUtils {
     private static final MarshallingExceptionTranslator EXCEPTION_TRANSLATOR = new MarshallingExceptionTranslator();
-	private static ThreadLocal<Map<Class<?>, Marshaller>> m_marshallers = new ThreadLocal<Map<Class<?>, Marshaller>>();
-	private static ThreadLocal<Map<Class<?>, Unmarshaller>> m_unMarshallers = new ThreadLocal<Map<Class<?>, Unmarshaller>>();
+	//private static ThreadLocal<Map<Class<?>, Marshaller>> m_marshallers = new ThreadLocal<Map<Class<?>, Marshaller>>();
+	//private static ThreadLocal<Map<Class<?>, Unmarshaller>> m_unMarshallers = new ThreadLocal<Map<Class<?>, Unmarshaller>>();
 	
 	private JaxbUtils() {
 	}
@@ -121,9 +121,10 @@ public class JaxbUtils {
 			if (namespace != null && !"".equals(namespace)) {
 				LogUtils.debugf(JaxbUtils.class, "found namespace %s for class %s", namespace, clazz);
 				filter = new SimpleNamespaceFilter(namespace, true);
+			} else {
+				filter = new SimpleNamespaceFilter("", false);
 			}
-		}
-		if (filter == null) {
+		} else {
 			filter = new SimpleNamespaceFilter("", false);
 		}
 
@@ -135,6 +136,7 @@ public class JaxbUtils {
 	public static Marshaller getMarshallerFor(final Object obj) {
 		final Class<?> clazz = (Class<?>)(obj instanceof Class? obj : obj.getClass());
 		
+		/*
 		Map<Class<?>, Marshaller> marshallers = m_marshallers.get();
 		if (marshallers == null) {
 			marshallers = new HashMap<Class<?>, Marshaller>();
@@ -145,11 +147,12 @@ public class JaxbUtils {
 			return marshallers.get(clazz);
 		}
 		LogUtils.debugf(JaxbUtils.class, "creating unmarshaller for %s", clazz);
-
+		*/
+		
 		try {
 			final JAXBContext context = JAXBContext.newInstance(clazz);
 			final Marshaller marshaller = context.createMarshaller();
-			marshallers.put(clazz, marshaller);
+			//marshallers.put(clazz, marshaller);
 			return marshaller;
 		} catch (JAXBException e) {
 			throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
@@ -159,6 +162,7 @@ public class JaxbUtils {
 	public static Unmarshaller getUnmarshallerFor(final Object obj) {
 		final Class<?> clazz = (Class<?>)(obj instanceof Class? obj : obj.getClass());
 
+		/*
 		Map<Class<?>, Unmarshaller> unmarshallers = m_unMarshallers.get();
 		if (unmarshallers == null) {
 			unmarshallers = new HashMap<Class<?>, Unmarshaller>();
@@ -169,15 +173,14 @@ public class JaxbUtils {
 			return unmarshallers.get(clazz);
 		}
 		LogUtils.debugf(JaxbUtils.class, "creating unmarshaller for %s", clazz);
-
+		*/
 		try {
 			final JAXBContext context = JAXBContext.newInstance(clazz);
 			final Unmarshaller unmarshaller = context.createUnmarshaller();
-			unmarshallers.put(clazz, unmarshaller);
+			//unmarshallers.put(clazz, unmarshaller);
 			return unmarshaller;
 		} catch (JAXBException e) {
 			throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
 		}
 	}
-
 }
