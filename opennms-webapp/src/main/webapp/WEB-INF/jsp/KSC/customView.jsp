@@ -56,8 +56,8 @@
   <jsp:param name="headTitle" value="Performance" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="headTitle" value="KSC" />
-  <jsp:param name="breadcrumb" value="<a href='<%= baseHref %>report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='<%= baseHref %>KSC/index.htm'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.htm'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom View" />
 </jsp:include>
 
