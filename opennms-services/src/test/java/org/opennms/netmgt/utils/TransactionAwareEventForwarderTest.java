@@ -34,128 +34,171 @@
  */
 package org.opennms.netmgt.utils;
 
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.DaoTestConfigBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class TransactionAwareEventForwarderTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-    
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:org/opennms/netmgt/utils/applicationContext-testTAEventForwarderTest.xml",
+        "classpath:META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:META-INF/opennms/smallEventConfDao.xml"
+})
+@JUnitTemporaryDatabase(tempDbClass=TemporaryDatabase.class)
+public class TransactionAwareEventForwarderTest implements InitializingBean {
+
+    @Autowired
     private TransactionAwareEventForwarder m_proxy;
+
     private int m_eventNumber = 1;
+
+    @Autowired
     private MockEventIpcManager m_eventIpcManager;
-    
-    @Override
-    protected void setUpConfiguration() throws Exception {
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.afterPropertiesSet();
-    }
+
+    @Autowired
+    TransactionTemplate m_transTemplate;
 
     @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-          "META-INF/opennms/applicationContext-dao.xml",
-          "classpath*:/META-INF/opennms/component-dao.xml",
-          "META-INF/opennms/applicationContext-daemon.xml",
-          "org/opennms/netmgt/utils/applicationContext-testTAEventForwarderTest.xml",
-          "META-INF/opennms/mockEventIpcManager.xml",
-          "META-INF/opennms/smallEventConfDao.xml"
-        };
+    public void afterPropertiesSet() throws Exception {
+        assertNotNull(m_proxy);
+        assertNotNull(m_transTemplate);
     }
     
-    public void setTransactionAwareEventForwarder(TransactionAwareEventForwarder proxy) {
-        m_proxy = proxy;
+    @After
+    public void verifyAnticipated() {
+        getEventAnticipator().verifyAnticipated(1000, 0, 0, 0, 0);
     }
-    
+
+    @Test
     public void testSendEventsOnCommit() {
-        
-        sendEventAndCommit();
-        
-        getEventAnticipator().verifyAnticipated(1000, 0, 0, 0, 0);
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                Event event = sendEvent();
+                getEventAnticipator().anticipateEvent(event);
+                event = sendEvent();
+                getEventAnticipator().anticipateEvent(event);
+                event = sendEvent();
+                getEventAnticipator().anticipateEvent(event);
+                event = sendEvent();
+                getEventAnticipator().anticipateEvent(event);
+                return null;
+            }
+        });
     }
-    
+
+    @Test
     public void testSendEventsOnRollback() {
-        
-        sendEventAndRollback();
-        
-        // we expect no events
-        getEventAnticipator().verifyAnticipated(1000, 0, 0, 0, 0);
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                sendEvent();
+                status.setRollbackOnly();
+                return null;
+            }
+        });
     }
-    
 
+
+    @Test
     public void testTwoTransactions() {
-        sendEventAndCommit();
-        
-        this.startNewTransaction();
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                Event event = sendEvent();
+                getEventAnticipator().anticipateEvent(event);
+                return null;
+            }
+        });
 
-        sendEventAndCommit();
-        
-        getEventAnticipator().verifyAnticipated(1000, 0, 0, 0, 0);
-
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                Event event = sendEvent();
+                getEventAnticipator().anticipateEvent(event);
+                return null;
+            }
+        });
     }
 
+    @Test
     public void testCommitRollbackCommit() {
-        
-        sendEventAndCommit();
-        
-        this.startNewTransaction();
-        
-        sendEventAndRollback();
-        
-        this.startNewTransaction();
-        
-        sendEventAndCommit();
-        
-        getEventAnticipator().verifyAnticipated(1000, 0, 0, 0, 0);
-        
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                Event event = sendEvent();
+                getEventAnticipator().anticipateEvent(event);
+                return null;
+            }
+        });
+
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                // Doesn't matter how many events we send here, they're
+                // all gonna get rolled back
+                sendEvent();
+                sendEvent();
+                sendEvent();
+                sendEvent();
+                status.setRollbackOnly();
+                return null;
+            }
+        });
+
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                Event event = sendEvent();
+                getEventAnticipator().anticipateEvent(event);
+                return null;
+            }
+        });
     }
 
-    private void sendEventAndCommit() {
-        sendEventAndEndTransaction(true);
-    }
-    
-    private void sendEventAndRollback() {
-        sendEventAndEndTransaction(false);
-    }
-
-    private void sendEventAndEndTransaction(boolean complete) {
-        
+    private Event sendEvent() {
         Event event = new EventBuilder(EventConstants.ADD_INTERFACE_EVENT_UEI, "Test")
-                        .setNodeid(m_eventNumber++)
-                        .getEvent();
-        
-        if (complete) {
-            getEventAnticipator().anticipateEvent(event);
-        }
-        
+        .setNodeid(m_eventNumber++)
+        .getEvent();
+
         m_proxy.sendNow(event);
-        
-        if (complete) {
-            this.setComplete();
-        }
-        this.endTransaction();
+
+        return event;
     }
-    
+
     private EventAnticipator getEventAnticipator() {
         return m_eventIpcManager.getEventAnticipator();
     }
-
-    public MockEventIpcManager getEventIpcManager() {
-        return m_eventIpcManager;
-    }
-
-    public void setEventIpcManager(MockEventIpcManager eventIpcManager) {
-        m_eventIpcManager = eventIpcManager;
-    }
-
 
 }
