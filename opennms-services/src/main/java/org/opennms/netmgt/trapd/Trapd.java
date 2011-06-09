@@ -179,7 +179,7 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
         try {
         	InetAddress address = getInetAddress();
-    		LogUtils.infof(this, "Listening on %s:%d", InetAddressUtils.str(address), getSnmpTrapPort());
+    		LogUtils.infof(this, "Listening on %s:%d", address == null ? "[all interfaces]" : InetAddressUtils.str(address), getSnmpTrapPort());
             SnmpUtils.registerForTraps(this, this, address, getSnmpTrapPort());
             m_registeredForTraps = true;
 
