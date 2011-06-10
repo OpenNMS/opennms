@@ -128,16 +128,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
 
         // Host to lookup?
         //
-        String lookup = ParameterMap.getKeyedString(parameters, "lookup", null);
-        if (lookup == null || lookup.length() == 0) {
-            // Get hostname of local machine for future DNS lookups
-            try {
-            	lookup = InetAddressUtils.str(InetAddress.getLocalHost());
-            } catch (final UnknownHostException ukE) {
-                ukE.fillInStackTrace();
-                throw new UndeclaredThrowableException(ukE);
-            }
-        }
+        String lookup = ParameterMap.getKeyedString(parameters, "lookup", "localhost");
         
         // get the address and DNS address request
         //
@@ -168,6 +159,8 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                     double timeout = timeoutTracker.getSoTimeout()/1000;
                     resolver.setTimeout((timeout < 1 ? 1 : (int) timeout));
                     l.setResolver(resolver);
+                    l.setCache(null);
+                    l.setSearchPath((String[])null);
                     l.run();
 
                     double responseTime = timeoutTracker.elapsedTimeInMillis();
