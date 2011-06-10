@@ -59,8 +59,14 @@ public class Navigation extends Composite implements HasHandlers {
         initWidget(uiBinder.createAndBindUi(this));
         m_handlerManager = new SimpleEventBus();
         m_allHosts.setValue(true);
-        m_allLocations.setValue(true);
+        m_allHosts.setVisible(false);
+        m_singleHost.setVisible(false);
+        m_hostList.setVisible(false);
         
+        m_allLocations.setValue(true);
+        m_allLocations.setVisible(false);
+        m_singleLocation.setVisible(false);
+        m_locationList.setVisible(false);
     }
 
     @Override
@@ -132,7 +138,7 @@ public class Navigation extends Composite implements HasHandlers {
                 @Override
                 public void onResponseReceived(Request request, Response response) {
                     if(response.getStatusCode() == 200) {
-                        Window.open("/opennms/RemotePollerMap/index.jsp", "_target", null);
+                        Window.open("/opennms/index.jsp", "_target", null);
                     }else {
                         Window.alert("Failed to login");
                     }

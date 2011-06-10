@@ -79,7 +79,7 @@ public class Application implements EntryPoint, LocationUpdateEventHandler, Host
                 @Override
                 public void onResponseReceived(Request request,Response response) {
                     if(response.getStatusCode() == 200) {
-                        m_timeline = new AnnotatedTimeLine(ChartUtils.convertJSONToDataTable(response.getText()), createTimelineOptions(), "800px", "350px");
+                        m_timeline = new AnnotatedTimeLine(ChartUtils.convertJSONToDataTable(response.getText()), createTimelineOptions(), "440px", "250px");
                         
                         m_flowPanel.add(m_timeline);
                         m_flowPanel.add(m_nav);
@@ -139,7 +139,8 @@ public class Application implements EntryPoint, LocationUpdateEventHandler, Host
       AnnotatedTimeLine.Options options = AnnotatedTimeLine.Options.create();
       options.setDisplayAnnotations(false);
       options.setDisplayZoomButtons(false);
-      options.setOption("displayRangeSelector", false);
+      options.setOption("dateFormat", "MMMM dd, yyyy");
+      options.setOption("displayRangeSelector", true);
       options.setLegendPosition(AnnotatedTimeLine.AnnotatedLegendPosition.SAME_ROW);
       return options;
   }
