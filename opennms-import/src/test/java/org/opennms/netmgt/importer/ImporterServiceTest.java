@@ -38,43 +38,63 @@
 //
 package org.opennms.netmgt.importer;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Properties;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-importer.xml",
+        "classpath:/META-INF/opennms/smallEventConfDao.xml",
+        "classpath:/importerServiceTest.xml"
+})
+@JUnitTemporaryDatabase(tempDbClass=TemporaryDatabase.class)
+public class ImporterServiceTest implements InitializingBean {
+    @Autowired
     private MockEventIpcManager m_eventIpcMgr;
+    @Autowired
     private ImporterService m_daemon;
 
-    @Override
-    protected void setUpConfiguration() {
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.afterPropertiesSet();
+    public void afterPropertiesSet() throws Exception {
+        assertNotNull(m_eventIpcMgr);
+        assertNotNull(m_daemon);
     }
 
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-                "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-                "classpath:/META-INF/opennms/applicationContext-importer.xml",
-                "classpath:/META-INF/opennms/smallEventConfDao.xml",
-                "classpath:/importerServiceTest.xml"
-        };
-    }
-
-    @Override
-    protected void onSetUpInTransactionIfEnabled() throws Exception {
-        super.onSetUpInTransactionIfEnabled();
-        
+    @Before
+    public void onSetUpInTransactionIfEnabled() throws Exception {
         Properties logConfig = new Properties();
         
         logConfig.put("log4j.logger.org.exolab.castor", "INFO");
@@ -85,10 +105,11 @@ public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseS
         MockLogAppender.setupLogging(logConfig);
     }
 
+    @Test
     public void testSchedule() throws Exception {
         expectImportStarted();
         
-        getDaemon().start();
+        m_daemon.start();
 
         // we wait a while here because the start up time could be long
         // this will end as soon as the event is received so no harm in waiting
@@ -96,7 +117,7 @@ public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseS
 
         expectImportSuccessful();
 
-        getDaemon().destroy();
+        m_daemon.destroy();
         
         // this will end as soon as the event is received so no harm in waiting
         waitForImportSuccessful(300000);
@@ -127,17 +148,5 @@ public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseS
     }
     private void anticipateEvent(Event e, boolean checkUnanticipatedList) {
         m_eventIpcMgr.getEventAnticipator().anticipateEvent(e, checkUnanticipatedList);
-    }
-
-    public void setEventIpcManager(MockEventIpcManager eventIpcMgr) {
-        m_eventIpcMgr = eventIpcMgr;
-    }
-
-    public ImporterService getDaemon() {
-        return m_daemon;
-    }
-
-    public void setDaemon(ImporterService daemon) {
-        m_daemon = daemon;
     }
 }

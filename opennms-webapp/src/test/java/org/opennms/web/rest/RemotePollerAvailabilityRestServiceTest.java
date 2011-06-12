@@ -241,7 +241,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     @Test
     public void testRemotePollerAvailabilitySingleLocation() throws Exception {
         long startTime = System.currentTimeMillis();
-        String url = BASE_REST_URL + "/Pittsboro-NC";
+        String url = BASE_REST_URL + "/RDU";
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("resolution", "minute");
         addStartTime(parameters);

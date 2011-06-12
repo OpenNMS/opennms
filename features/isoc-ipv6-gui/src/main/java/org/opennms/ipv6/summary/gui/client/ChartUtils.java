@@ -17,7 +17,7 @@ public class ChartUtils {
     public static DataTable convertJSONToDataTable(String text) {
         
         DataTable dataTable = DataTable.create();
-        dataTable.addColumn(ColumnType.DATE, "Date");
+        dataTable.addColumn(ColumnType.DATETIME, "Date");
         dataTable.addColumn(ColumnType.NUMBER, "DNS-AAAA");
         dataTable.addColumn(ColumnType.STRING, "title1");
         dataTable.addColumn(ColumnType.STRING, "text1");
@@ -77,8 +77,9 @@ public class ChartUtils {
     }
 
     private static void insertApplicationData(DataTable dataTable, int index, JSONObject value, String application) {
+        String decimal = value.get("availability").isString().stringValue().substring(0, 2);
         if(application.equals("HTTP-v6")) {
-            double avail = Double.valueOf(value.get("availability").isString().stringValue());
+            double avail = Double.valueOf(decimal);
             dataTable.setValue(index, 7, avail);
             //dataTable.setValue(index, 1, avail);
         }else if(application.equals("HTTP-v4")) {
