@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		
+	</ui:style>
+	<g:FlowPanel>
+	   <g:TabPanel ui:field="m_tabPanel">
+	       <g:Tab text="IP Interfaces">
+	           
+	           <g:HTML>This is tab one</g:HTML>
+	       </g:Tab>
+	       <g:Tab text="Physical Interfaces">
+              
+               <g:HTML>This is tab two</g:HTML>
+           </g:Tab>
+	   </g:TabPanel>
+	</g:FlowPanel>
+</ui:UiBinder> 

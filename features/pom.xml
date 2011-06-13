@@ -25,6 +25,7 @@
     <module>request-tracker</module>
     <module>system-report</module>
     <module>isoc-ipv6-gui</module>
+    <module>node-page-list</module>
   </modules>
 
   <profiles>
