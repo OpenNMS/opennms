@@ -37,6 +37,12 @@
  */
 package org.opennms.test;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
+
+import org.opennms.core.utils.PropertiesUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -71,8 +77,28 @@ public class DaoTestConfigBean implements InitializingBean {
         Assert.state(m_relativeHomeDirectory == null || m_absoluteHomeDirectory == null, "Only one of the properties relativeHomeDirectory and absoluteHomeDirectory can be set.");
 
         if (System.getProperty("org.opennms.netmgt.icmp.pingerClass") == null) {
-        	System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
+            System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
         }
+        
+        // Load opennms.properties into the system properties
+        Properties opennmsProperties = new Properties();
+        try {
+            opennmsProperties.load(ConfigurationTestUtils.getInputStreamForConfigFile("opennms.properties"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        // Do any necessary substitutions that are normally handled by maven
+        Properties substitutions = new Properties();
+        substitutions.setProperty("install.webapplogs.dir", "target/test/logs/webapp");
+        for (Map.Entry<Object, Object> entry : opennmsProperties.entrySet()) {
+            //System.err.println((String)entry.getKey() + " -> " + PropertiesUtils.substitute((String)entry.getValue(), substitutions));
+            System.setProperty((String)entry.getKey(), PropertiesUtils.substitute((String)entry.getValue(), substitutions));
+        }
+
         if (m_absoluteHomeDirectory != null) {
             ConfigurationTestUtils.setAbsoluteHomeDirectory(m_absoluteHomeDirectory);
         } else if (m_relativeHomeDirectory != null) {

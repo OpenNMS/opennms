@@ -34,75 +34,80 @@
  */
 package org.opennms.dashboard.server;
 
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.dashboard.client.NodeRtc;
 import org.opennms.dashboard.client.SurveillanceService;
 import org.opennms.dashboard.client.SurveillanceSet;
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
-import org.opennms.test.WebAppTestConfigBean;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /**
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath*:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/org/opennms/dashboard/applicationContext-svclayer-dashboard-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
+})
+@JUnitTemporaryDatabase(tempDbClass=TemporaryDatabase.class)
+public class DefaultSurveillanceServiceIntegrationTest {
+    @Autowired
     private SurveillanceService m_gwtSurveillanceService;
 
-    @Override
-    protected void setUpConfiguration() {
-        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
-        webAppTestConfig.afterPropertiesSet();
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
-                "classpath*:/META-INF/opennms/applicationContext-reportingCore.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath*:/META-INF/opennms/component-service.xml",
-                "classpath:/org/opennms/dashboard/applicationContext-svclayer-dashboard-test.xml",
-                "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
-        };
-    }
-    
-    @Override
-    protected void onSetUpInTransactionIfEnabled() throws Exception {
-        super.onSetUpInTransactionIfEnabled();
-        
+    @Before
+    public void setUp() throws Exception {
         /*
          * Since the SecurityContext is stored in a ThreadLocal we need to
          * be sure to clear it before every test.
          */
         SecurityContextHolder.clearContext();
     }
-    
+
+    @Test
     public void testGetRtcForSet() {
         populateSecurityContext();
 
         NodeRtc[] rtcs = m_gwtSurveillanceService.getRtcForSet(SurveillanceSet.DEFAULT);
-        
+
         assertNotNull("rtcs should not be null", rtcs);
     }
-    
-    private UserDetails populateSecurityContext() {
+
+    private static UserDetails populateSecurityContext() {
         UserDetails details = new User("user", "password", true, true, true, true, new GrantedAuthority[0]);
         Authentication auth = new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
         return details;
-    }
-
-    public SurveillanceService getGwtSurveillanceService() {
-        return m_gwtSurveillanceService;
-    }
-
-    public void setGwtSurveillanceService(SurveillanceService gwtSurveillanceService) {
-        m_gwtSurveillanceService = gwtSurveillanceService;
     }
 }
