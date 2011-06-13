@@ -184,7 +184,6 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
      * @see org.springframework.security.providers.dao.AbstractUserDetailsAuthenticationProvider#retrieveUser(java.lang.String, org.springframework.security.providers.UsernamePasswordAuthenticationToken)
      */
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     protected UserDetails retrieveUser(String username,
             UsernamePasswordAuthenticationToken token)
@@ -242,6 +241,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
             logger.debug("rolesAttribute not set, using default roles ("+defaultRoles+") for user "+username);
             roles = new String(defaultRoles);
         } else {
+            @SuppressWarnings("unchecked")
             Iterator<RadiusAttribute> attributes = reply.getAttributes().getAttributeList().iterator();
             while (attributes.hasNext()) {
                 RadiusAttribute attribute = attributes.next();

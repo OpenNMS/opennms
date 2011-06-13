@@ -279,14 +279,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return retVal;
     }
 
-    protected String sendRequest(String requestType, String url, @SuppressWarnings("rawtypes") Map parameters, int expectedStatus) throws Exception {
+    protected String sendRequest(String requestType, String url, @SuppressWarnings("unchecked") Map parameters, int expectedStatus) throws Exception {
         final MockHttpServletRequest request = createRequest(requestType, url);
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
         return sendRequest(request, expectedStatus);
     }
     
-    protected String getQueryString(@SuppressWarnings("rawtypes") final Map parameters) {
+    protected String getQueryString(@SuppressWarnings("unchecked") final Map parameters) {
     	final StringBuffer sb = new StringBuffer();
 
 		try {

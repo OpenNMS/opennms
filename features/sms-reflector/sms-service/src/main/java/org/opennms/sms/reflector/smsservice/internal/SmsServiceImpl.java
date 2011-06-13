@@ -232,8 +232,7 @@ public class SmsServiceImpl implements SmsService {
      *
      * @param properties a {@link java.util.Map} object.
      */
-    @SuppressWarnings("unchecked")
-	public void refresh(Map properties) {
+	public void refresh(Map<?,?> properties) {
     	log.debug("Received a configuration refresh! " + properties);
 	}
 	
