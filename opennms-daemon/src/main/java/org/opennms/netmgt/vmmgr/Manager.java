@@ -53,7 +53,7 @@ import java.util.Map.Entry;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.netmgt.icmp.PingerFactory;
@@ -213,9 +213,8 @@ public class Manager implements ManagerMBean {
         log().debug("Thread dump completed.");
     }
 
-    @SuppressWarnings("deprecation")
     private void shutdownLogging() {
-        Logger.shutdown();
+        LogManager.shutdown();
     }
     
     /**

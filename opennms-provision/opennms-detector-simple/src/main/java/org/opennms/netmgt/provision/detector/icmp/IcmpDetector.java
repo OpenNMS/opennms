@@ -53,7 +53,6 @@ public class IcmpDetector extends AbstractDetector {
     /**
      * <p>Constructor for IcmpDetector.</p>
      */
-    @SuppressWarnings("deprecation")
     public IcmpDetector() {
         init();
     }

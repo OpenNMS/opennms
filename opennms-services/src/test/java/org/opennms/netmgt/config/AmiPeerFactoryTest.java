@@ -36,8 +36,8 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 
 import junit.framework.TestCase;
 
@@ -81,7 +81,7 @@ public class AmiPeerFactoryTest extends TestCase {
         "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new StringReader(amiConfigXml)));
+        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
 
@@ -112,7 +112,7 @@ public class AmiPeerFactoryTest extends TestCase {
         "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new StringReader(amiConfigXml)));
+        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(2, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -141,7 +141,7 @@ public class AmiPeerFactoryTest extends TestCase {
         "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new StringReader(amiConfigXml)));
+        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(2, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -170,7 +170,7 @@ public class AmiPeerFactoryTest extends TestCase {
         "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new StringReader(amiConfigXml)));
+        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(2, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -199,7 +199,7 @@ public class AmiPeerFactoryTest extends TestCase {
         "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new StringReader(amiConfigXml)));
+        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(2, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -238,7 +238,7 @@ public class AmiPeerFactoryTest extends TestCase {
         "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new StringReader(amiConfigXml)));
+        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -278,7 +278,7 @@ public class AmiPeerFactoryTest extends TestCase {
         "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new StringReader(amiConfigXml)));
+        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -317,7 +317,7 @@ public class AmiPeerFactoryTest extends TestCase {
         "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new StringReader(amiConfigXml)));
+        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -354,7 +354,7 @@ public class AmiPeerFactoryTest extends TestCase {
         "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new StringReader(amiConfigXml)));
+        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -392,7 +392,7 @@ public class AmiPeerFactoryTest extends TestCase {
         "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new StringReader(amiConfigXml)));
+        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(0, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());

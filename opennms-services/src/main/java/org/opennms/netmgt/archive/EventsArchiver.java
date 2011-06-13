@@ -48,6 +48,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -467,7 +468,6 @@ public class EventsArchiver {
      * Close the database statements and the connection and close log4j
      * Appenders and categories
      */
-    @SuppressWarnings("deprecation")
     private void close() {
 
         try {
@@ -494,7 +494,7 @@ public class EventsArchiver {
          * with 'SocketAppender's or 'AsyncAppender's, these appenders
          * should be closed explictly before shutdown()
          */
-        Category.shutdown();
+        LogManager.shutdown();
         // m_logCat.shutdown();
     }
 

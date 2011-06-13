@@ -22,7 +22,7 @@ public class CompareToBuilder {
 	 * @param b a {@link java.lang.Object} object.
 	 * @return a {@link org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder} object.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	public CompareToBuilder append(Object a, Object b) {
 		if (comparison != 0) return this;
 		if (a == b) return this;
@@ -33,14 +33,14 @@ public class CompareToBuilder {
 			comparison = 1;
 		} else {
 			if (a instanceof Set<?>) {
-                Object[] aL = new ArrayList((Set)a).toArray();
-				Object[] bL = new ArrayList((Set)b).toArray();
+                Object[] aL = new ArrayList<Object>((Set<?>)a).toArray();
+				Object[] bL = new ArrayList<Object>((Set<?>)b).toArray();
 				append(aL, bL);
 			}
 			if (a.getClass().isArray()) {
 				append((Object[])a, (Object[])b);
 			} else {
-				comparison = ((Comparable)a).compareTo(b);
+				comparison = ((Comparable<Object>)a).compareTo(b);
 			}
 		}
 		return this;

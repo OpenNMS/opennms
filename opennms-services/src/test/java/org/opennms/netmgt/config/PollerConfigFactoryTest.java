@@ -35,6 +35,7 @@
 //
 package org.opennms.netmgt.config;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -150,9 +151,8 @@ public class PollerConfigFactoryTest extends TestCase {
             save();
         }
 
-        @SuppressWarnings("deprecation")
         public void update() throws IOException, MarshalException, ValidationException {
-            m_config = CastorUtils.unmarshal(PollerConfiguration.class, new StringReader(m_xml));
+            m_config = CastorUtils.unmarshal(PollerConfiguration.class, new ByteArrayInputStream(m_xml.getBytes("UTF-8")));
             setUpInternalData();
         }
 

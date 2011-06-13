@@ -34,12 +34,11 @@
 package org.opennms.netmgt.charts;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringReader;
 import java.sql.SQLException;
 
 import org.exolab.castor.xml.MarshalException;
@@ -170,10 +169,9 @@ public class ChartUtilsTest extends OpenNMSTestCase {
         assertEquals(300, bi.getHeight());
     }
 
-    @SuppressWarnings("deprecation")
     private void initalizeChartFactory() throws MarshalException, ValidationException, IOException {
         ChartConfigFactory.setInstance(new ChartConfigFactory());
-        Reader rdr = new StringReader(CHART_CONFIG);
+        ByteArrayInputStream rdr = new ByteArrayInputStream(CHART_CONFIG.getBytes("UTF-8"));
         ChartConfigFactory.parseXml(rdr);
         rdr.close();        
 //        m_config = ChartConfigFactory.getInstance().getConfiguration();

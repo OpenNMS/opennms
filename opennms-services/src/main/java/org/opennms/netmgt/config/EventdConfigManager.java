@@ -39,7 +39,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -65,21 +64,6 @@ public class EventdConfigManager {
      */
     protected EventdConfiguration m_config;
 
-    /**
-     * Constructor
-     *
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws java.io.IOException if any.
-     * @param reader a {@link java.io.Reader} object.
-     */
-    @Deprecated
-    protected EventdConfigManager(final Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(EventdConfiguration.class, reader);
-        reader.close();
-
-    }
-    
     /**
      * <p>Constructor for EventdConfigManager.</p>
      *

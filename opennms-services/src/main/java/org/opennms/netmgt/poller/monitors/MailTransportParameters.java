@@ -35,7 +35,9 @@
  */
 package org.opennms.netmgt.poller.monitors;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -93,14 +95,15 @@ public class MailTransportParameters {
         return m_transportTest;
     }
 
-    @SuppressWarnings("deprecation")
     MailTransportTest parseMailTransportTest(String test) {
         try {
-            return CastorUtils.unmarshal(MailTransportTest.class, new StringReader(test));
+            return CastorUtils.unmarshal(MailTransportTest.class, new ByteArrayInputStream(test.getBytes("UTF-8")));
         } catch (MarshalException e) {
             throw new IllegalArgumentException("Unable to parse mail-test-sequence for MailTransportMonitor: "+test, e);
         } catch (ValidationException e) {
-            throw new IllegalArgumentException("Unable to parse page-sequence for HttpMonitor: "+test, e);
+            throw new IllegalArgumentException("Unable to parse mail-test-sequence for MailTransportMonitor: "+test, e);
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("Unable to parse mail-test-sequence for MailTransportMonitor: "+test, e);
         }
     
     }
