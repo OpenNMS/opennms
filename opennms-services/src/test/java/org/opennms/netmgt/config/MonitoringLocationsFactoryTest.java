@@ -43,6 +43,7 @@ package org.opennms.netmgt.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -123,9 +124,8 @@ public class MonitoringLocationsFactoryTest {
             super(stream, localServer, verifyServer);
         }
 
-        @SuppressWarnings("deprecation")
         public void update() throws IOException, MarshalException, ValidationException {
-            m_config = CastorUtils.unmarshal(PollerConfiguration.class, new StringReader(m_xml));
+            m_config = CastorUtils.unmarshal(PollerConfiguration.class, new ByteArrayInputStream(m_xml.getBytes("UTF-8")));
             setUpInternalData();
         }
 

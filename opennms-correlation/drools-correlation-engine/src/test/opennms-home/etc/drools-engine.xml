@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://xmlns.opennms.org/xsd/drools-engine ../../../main/castor/drools-engine.xsd ">
   <rule-set name="locationMonitorRules">
-    <rule-file>${opennms.home}/etc/LocationMonitorRules.drl</rule-file>
+    <rule-file>file:src/test/opennms-home/etc/LocationMonitorRules.drl</rule-file>
     <event>uei.opennms.org/remote/nodes/nodeLostService</event>
     <event>uei.opennms.org/remote/nodes/nodeRegainedService</event>
     <global name="WIDE_SPREAD_THRESHOLD" type="java.lang.Integer" value="3"/>
@@ -12,10 +12,10 @@
     <global name="FLAP_COUNT" type="java.lang.Integer" value="3" />
   </rule-set>
   <rule-set name="nodeParentRules">
-    <rule-file>${opennms.home}/etc/NodeParentRules.drl</rule-file>
+    <rule-file>file:src/test/opennms-home/etc/NodeParentRules.drl</rule-file>
     <event>uei.opennms.org/nodes/nodeDown</event>
     <event>uei.opennms.org/nodes/nodeUp</event>
-    <app-context>${opennms.home}/etc/nodeParentRules-context.xml</app-context>
+    <app-context>file:src/test/opennms-home/etc/nodeParentRules-context.xml</app-context>
     <global name="POLL_INTERVAL" type="java.lang.Long" value="3000" />
     <global name="nodeService" type="org.opennms.netmgt.correlation.drools.NodeService" ref="nodeService" />
   </rule-set>

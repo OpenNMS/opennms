@@ -117,7 +117,6 @@ public class MockAgentTest extends TestCase {
 
     }
 
-    @SuppressWarnings("unchecked")
     public void testWalkSystem() throws IOException {
         
         Snmp snmp = new Snmp(new DefaultUdpTransportMapping());
@@ -131,6 +130,7 @@ public class MockAgentTest extends TestCase {
         target.setTimeout(3000);
         target.setRetries(3);
         
+        @SuppressWarnings("unchecked")
         List results = walker.getTable(target, new OID[] {new OID("1.3.6.1.2.1.1")}, null, null);
         
         assertNotNull(results);

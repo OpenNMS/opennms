@@ -80,7 +80,6 @@ final class BroadcastEventProcessor implements EventListener {
      *            thresholding.
      * 
      */
-    @SuppressWarnings("deprecation")
     BroadcastEventProcessor(Threshd threshd, List<ThresholdableService> thresholdableServices) {
 
         // Set the configuration for this event
@@ -279,7 +278,6 @@ final class BroadcastEventProcessor implements EventListener {
      * @param event
      *            The event to process.
      */
-    @SuppressWarnings("deprecation")
     private void reinitializePrimarySnmpInterfaceHandler(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
@@ -403,7 +401,6 @@ final class BroadcastEventProcessor implements EventListener {
      *            The event to process.
      * 
      */
-    @SuppressWarnings("deprecation")
     private void primarySnmpInterfaceChangedHandler(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())

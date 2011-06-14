@@ -1,6 +1,7 @@
 package org.opennms.netmgt.config.tester;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -40,7 +41,7 @@ public class ConfigTesterTest {
     public void done() {
     	ConfigTesterDataSource dataSource = (ConfigTesterDataSource) DataSourceFactory.getDataSource();
     	
-    	if (dataSource.getConnectionGetAttempts().size() > 0) {
+    	if (dataSource != null && dataSource.getConnectionGetAttempts().size() > 0) {
     		StringWriter writer = new StringWriter();
     		PrintWriter printWriter = new PrintWriter(writer);
     		for (SQLException e : dataSource.getConnectionGetAttempts()) {
@@ -50,6 +51,12 @@ public class ConfigTesterTest {
     				+ " DataSource.getConnection attempts were made: \n"
     				+ writer.toString());
     	}
+    }
+
+    @Test
+    public void testSystemProperties() {
+        assertEquals("false", System.getProperty("distributed.layoutApplicationsVertically"));
+        assertEquals("target/test/logs/webapp", System.getProperty("opennms.webapplogs.dir"));
     }
 
 	@Test

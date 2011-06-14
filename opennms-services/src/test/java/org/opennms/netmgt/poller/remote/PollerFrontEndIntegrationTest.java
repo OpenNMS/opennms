@@ -180,7 +180,7 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
 
         assertEquals(System.getProperty("os.name"), m_database.getJdbcTemplate().queryForObject("select propertyValue from location_monitor_details where locationMonitorId = ? and property = ?", String.class, monitorId, "os.name"));
 
-        Thread.sleep(20000);
+        Thread.sleep(60000);
 
         assertEquals(1, m_database.getJdbcTemplate().queryForInt("select count(*) from location_monitors where id=?", monitorId));
         assertEquals(0, m_database.getJdbcTemplate().queryForInt("select count(*) from location_monitors where status='DISCONNECTED' and id=?", monitorId));

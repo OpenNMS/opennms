@@ -37,7 +37,6 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
