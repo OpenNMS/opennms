@@ -48,9 +48,6 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  * @since 1.8.1
  */
 public class AddRefreshHeaderFilter extends Object implements Filter {
