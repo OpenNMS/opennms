@@ -63,6 +63,19 @@
   </filter>
 
   <filter>
+    <description>Allows "cross-site scripting" for the REST services.</description>
+    <filter-name>AccessControlAllowOrigin</filter-name>
+    <filter-class>org.opennms.web.AddAccessControlHeaderFilter</filter-class>
+    <!-- 
+    <init-param>
+      <description>This parameter specifies what origins to allow.</description>
+      <param-name>origin</param-name>
+      <param-value>*</param-value>
+    </init-param>
+    -->
+  </filter>
+
+  <filter>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
     <filter-name>AddRefreshHeader-300</filter-name>
     <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
@@ -143,6 +156,11 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+  <filter-mapping>
+    <filter-name>AccessControlAllowOrigin</filter-name>
+    <url-pattern>/rest/*</url-pattern>
+  </filter-mapping>
+  
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/index.jsp</url-pattern>
