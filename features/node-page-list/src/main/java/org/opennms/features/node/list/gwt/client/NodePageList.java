@@ -14,7 +14,7 @@ public class NodePageList implements EntryPoint {
    */
   public void onModuleLoad() {  
       PageableNodeList nodeList = new PageableNodeList();
-      RootPanel.get().add(nodeList);
+      RootPanel.get("testGrid").add(nodeList);
       
   }
 
