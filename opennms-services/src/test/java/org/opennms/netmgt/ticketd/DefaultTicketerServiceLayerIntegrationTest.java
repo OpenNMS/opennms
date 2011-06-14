@@ -39,7 +39,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.api.integration.ticketing.Plugin;
@@ -51,6 +50,7 @@ import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.test.DaoTestConfigBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -61,6 +61,9 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ * NOTE: This class relies on the system property "opennms.ticketer.plugin" being set to
+ * {@link TestTicketerPlugin}. Currently, this is done inside {@link DaoTestConfigBean}
+ * which is invoked by the OpenNMSConfigurationExecutionListener.
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
@@ -92,11 +95,6 @@ public class DefaultTicketerServiceLayerIntegrationTest {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 	
-	@BeforeClass
-	public static void setUpConfiguration() {
-		System.setProperty("opennms.ticketer.plugin", TestTicketerPlugin.class.getName());
-	}
-
 	@Before
 	public void setUp() {
 		m_databasePopulator.populateDatabase();

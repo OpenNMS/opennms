@@ -76,7 +76,7 @@ public class DnsProvisioningAdapterTest {
         OnmsNode n = m_nodeDao.findByForeignId("dns", "1");
         m_adapter.addNode(n.getId());
         m_adapter.processPendingOperationForNode(m_adapterOperation);
-        Thread.sleep(3);
+        Thread.sleep(3000);
     }
     
     @Test
@@ -91,6 +91,6 @@ public class DnsProvisioningAdapterTest {
         OnmsNode n = m_nodeDao.findByForeignId("dns", "1");
         m_adapter.deleteNode(n.getId());
         m_adapter.processPendingOperationForNode(m_adapterOperation);
-        Thread.sleep(3);
+        Thread.sleep(3000);
     }
 }

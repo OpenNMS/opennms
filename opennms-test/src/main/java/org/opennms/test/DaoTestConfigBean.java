@@ -79,7 +79,7 @@ public class DaoTestConfigBean implements InitializingBean {
         if (System.getProperty("org.opennms.netmgt.icmp.pingerClass") == null) {
             System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
         }
-        
+
         // Load opennms.properties into the system properties
         Properties opennmsProperties = new Properties();
         try {
@@ -93,6 +93,7 @@ public class DaoTestConfigBean implements InitializingBean {
         }
         // Do any necessary substitutions that are normally handled by maven
         Properties substitutions = new Properties();
+        substitutions.setProperty("install.share.dir", "target/test/share");
         substitutions.setProperty("install.webapplogs.dir", "target/test/logs/webapp");
         for (Map.Entry<Object, Object> entry : opennmsProperties.entrySet()) {
             //System.err.println((String)entry.getKey() + " -> " + PropertiesUtils.substitute((String)entry.getValue(), substitutions));
@@ -106,7 +107,12 @@ public class DaoTestConfigBean implements InitializingBean {
         } else {
             ConfigurationTestUtils.setAbsoluteHomeDirectory(ConfigurationTestUtils.getDaemonEtcDirectory().getParentFile().getAbsolutePath());
         }
-        
+
+        // Turn off dumb SNMP4J logging which triggers our "no logging higher than INFO" checks
+        System.setProperty("snmp4j.LogFactory", "org.snmp4j.log.NoLogger");
+        // Set opennms.ticketer.plugin to a value for unit testing
+        System.setProperty("opennms.ticketer.plugin", "org.opennms.netmgt.ticketd.DefaultTicketerServiceLayerIntegrationTest.TestTicketerPlugin");
+
         ConfigurationTestUtils.setRrdBinary(m_rrdBinary);
         ConfigurationTestUtils.setRelativeRrdBaseDirectory(m_relativeRrdBaseDirectory);
         ConfigurationTestUtils.setRelativeImporterDirectory(m_relativeImporterDirectory);
