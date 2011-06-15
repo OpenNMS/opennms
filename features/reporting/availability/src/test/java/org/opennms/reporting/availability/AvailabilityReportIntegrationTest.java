@@ -47,26 +47,19 @@ import javax.annotation.Resource;
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.CategoryFactory;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-   AvailabilityReportConfigurationExecutionListener.class,
-   TemporaryDatabaseExecutionListener.class,
-   DependencyInjectionTestExecutionListener.class
-})
-
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -74,8 +67,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
         "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
         "classpath:/META-INF/opennms/applicationContext-availabilityDatabasePopulator.xml"
 })
-@JUnitTemporaryDatabase(populate=true)
-
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class AvailabilityReportIntegrationTest {
     
     @Resource
@@ -144,10 +137,8 @@ public class AvailabilityReportIntegrationTest {
     }
 
     
-    // @Test
-    // Don't run this test (which has less coverage than the next)
-    // Until I figure out why we're holding onto the previous test's dataSource.
-    //
+    @Test
+    @Ignore("Don't run this test (which has less coverage than the next) until I figure out why we're holding onto the previous test's dataSource.")
     public void testBuiltClassicReport() {
         
         try {

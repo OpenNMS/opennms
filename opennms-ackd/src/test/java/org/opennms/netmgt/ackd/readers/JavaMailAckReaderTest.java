@@ -79,41 +79,33 @@ import org.opennms.netmgt.config.javamail.UserAuth;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.acknowledgments.AckService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
-    TemporaryDatabaseExecutionListener.class,
-    DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class
-})
+/**
+ * Integration test of for the Javamail Acknowledgement Reader Implementation.
+ */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-ackd.xml" })
-
-/**
- * Integration test of for the Javamail Acknowledgement Reader Implementation.
- */
-public class JavaMailAckReaderTest {
+        "classpath:/META-INF/opennms/applicationContext-ackd.xml" 
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class JavaMailAckReaderTest implements InitializingBean {
 
     @Autowired
     private Ackd m_daemon;
@@ -128,8 +120,7 @@ public class JavaMailAckReaderTest {
     private AckService m_ackService;
 
     
-    @Test
-    public void verifyWiring() {
+    public void afterPropertiesSet() {
         Assert.assertNotNull(m_ackService);
         Assert.assertNotNull(m_daemon);
         Assert.assertNotNull(m_jmDao);
