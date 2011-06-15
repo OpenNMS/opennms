@@ -539,7 +539,14 @@ public class ThresholdController extends AbstractController implements Initializ
         } else {
             baseDef.setDsLabel(dsLabel);
         }
-       
+
+        String description=request.getParameter("description");
+        if(description==null || "".equals(description)) {
+            baseDef.setDescription(null);
+        } else {
+            baseDef.setDescription(description);
+        }
+
         String triggeredUEI=request.getParameter("triggeredUEI");
         if(triggeredUEI==null || "".equals(triggeredUEI)) {
             baseDef.setTriggeredUEI(null); //Must set null in correct circumstances - empty string isn't quite the same thing
