@@ -83,6 +83,14 @@
        </element>
     </sequence>
 
+    <attribute name="description" type="string" use="optional">
+      <annotation>
+        <documentation>
+          An optional description for the threshold, to help identify what is their purpose.
+        </documentation>
+      </annotation>
+    </attribute>
+
     <attribute name="type" type="string" use="required">
       <annotation>
         <documentation>
