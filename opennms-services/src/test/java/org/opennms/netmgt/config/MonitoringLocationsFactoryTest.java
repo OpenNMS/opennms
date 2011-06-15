@@ -56,6 +56,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
@@ -69,6 +70,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @TestExecutionListeners({
     OpenNMSConfigurationExecutionListener.class
 })
+@JUnitConfigurationEnvironment
 public class MonitoringLocationsFactoryTest {
 
     private MonitoringLocationsFactory m_locationFactory;
