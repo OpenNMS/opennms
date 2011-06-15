@@ -50,6 +50,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -76,6 +77,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:META-INF/opennms/smallEventConfDao.xml"
 })
 @JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class TrapdTest implements InitializingBean {
     @Resource(name="snmpTrapPort")
     Integer m_snmpTrapPort;
