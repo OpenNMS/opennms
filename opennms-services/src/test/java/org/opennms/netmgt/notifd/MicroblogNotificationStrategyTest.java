@@ -45,12 +45,13 @@ import org.opennms.test.DaoTestConfigBean;
 import org.springframework.core.io.Resource;
 
 /**
+ * TODO: Make this unit test work
  * 
  * @author <a href="mailto:jeffg@opennms.org>Jeff Gehlbach</a>
  * @author <a href="http://www.opennms.org/>OpenNMS</a>
  *
  */
-@JUnitTemporaryDatabase(populate=true)
+@JUnitTemporaryDatabase
 public class MicroblogNotificationStrategyTest {
 
     protected DefaultMicroblogConfigurationDao m_dao;

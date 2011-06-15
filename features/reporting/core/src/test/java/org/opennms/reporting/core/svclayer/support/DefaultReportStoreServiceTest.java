@@ -59,7 +59,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @ContextConfiguration(locations={
         "classpath:org/opennms/reporting/core/svclayer/support/DefaultReportStoreServiceTest.xml"
 })
-
 public class DefaultReportStoreServiceTest {
 
     @Autowired

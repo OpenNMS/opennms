@@ -54,8 +54,8 @@ import org.springframework.util.StringUtils;
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-@TestExecutionListeners({})
 @RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({})
 public class JniRrdStrategyTest {
     
     private JniRrdStrategy m_strategy;

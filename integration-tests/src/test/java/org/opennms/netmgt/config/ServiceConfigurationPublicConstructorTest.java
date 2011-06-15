@@ -39,6 +39,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.service.Service;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.test.PublicConstructorTest;
 import org.springframework.test.context.TestExecutionListeners;
@@ -53,8 +54,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
-	OpenNMSConfigurationExecutionListener.class
+    OpenNMSConfigurationExecutionListener.class
 })
+@JUnitConfigurationEnvironment
 public class ServiceConfigurationPublicConstructorTest extends PublicConstructorTest {
 	@Override
 	protected List<Class<? extends Object>> getClasses() throws MarshalException, ValidationException, IOException, ClassNotFoundException {

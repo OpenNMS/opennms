@@ -53,6 +53,8 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -96,6 +98,8 @@ import org.springframework.transaction.PlatformTransactionManager;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
 public class HttpCollectorTest {
 

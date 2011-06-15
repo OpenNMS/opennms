@@ -29,22 +29,21 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.reporting.availability;
+package org.opennms.netmgt.dao.db;
 
-import org.opennms.test.AvailabilityReportTestConfigBean;
-import org.springframework.test.context.TestContext;
-import org.springframework.test.context.support.AbstractTestExecutionListener;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * AvailabilityReportConfigurationExecutionListener 
+ * This annotation triggers the usage of the opennms-base-assembly files as
+ * configuration for the unit tests via the {@link OpenNMSConfigurationExecutionListener}.
  *
- * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @author brozow
  */
-public class AvailabilityReportConfigurationExecutionListener extends AbstractTestExecutionListener {
-
-    public void prepareTestInstance(TestContext testContext) throws Exception {
-        AvailabilityReportTestConfigBean bean = new AvailabilityReportTestConfigBean();
-        bean.afterPropertiesSet();
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD,ElementType.TYPE})
+public @interface JUnitConfigurationEnvironment {
+    String[] systemProperties() default {};
 }

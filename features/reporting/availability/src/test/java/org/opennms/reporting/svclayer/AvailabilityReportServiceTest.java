@@ -55,9 +55,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @ContextConfiguration(locations={
         "classpath:org/opennms/reporting/availability/svclayer/AvailabilityReportServiceTest.xml"
 })
-
-// FIXME: This test fails as AvailabilityCalculator is not an interface (
-
 public class AvailabilityReportServiceTest {
     
     @Autowired

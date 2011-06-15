@@ -50,6 +50,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.test.mock.MockLogAppender;
@@ -59,25 +60,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.JobDetailBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.webflow.test.MockRequestContext;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    DependencyInjectionTestExecutionListener.class
-})
-@ContextConfiguration(locations={
-        "classpath:org/opennms/web/svclayer/schedulerServiceTest.xml"
-})
 
 /**
  * Unit tests for DefaultSchedulerService
  * 
  * @author <a href="mailto:jonathand@opennms.org">Jonathan Sartin</a>
  */
-
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:org/opennms/web/svclayer/schedulerServiceTest.xml"
+})
 public class DefaultSchedulerServiceTest {
     
     @Autowired 

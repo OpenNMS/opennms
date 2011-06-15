@@ -27,6 +27,16 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>mock-snmp-agent</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+	  <groupId>org.opennms.core.test-api</groupId>
+	  <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-jetty</artifactId>
       <scope>test</scope>
     </dependency>

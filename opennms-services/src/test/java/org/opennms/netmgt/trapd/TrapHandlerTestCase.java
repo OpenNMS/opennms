@@ -58,6 +58,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -75,15 +77,15 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:META-INF/opennms/mockEventIpcManager.xml",
         "classpath:META-INF/opennms/applicationContext-daemon.xml",
         "classpath:META-INF/opennms/applicationContext-trapDaemon.xml",
         "classpath:org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"}
 )
+@JUnitConfigurationEnvironment
 public class TrapHandlerTestCase implements InitializingBean {
 
     @Autowired
