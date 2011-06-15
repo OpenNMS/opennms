@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
@@ -63,6 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/daoWebRepositoryTestContext.xml"
 })
 @JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class DaoWebAlarmRepositoryTest {
     
     @Autowired
