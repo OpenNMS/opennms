@@ -44,34 +44,7 @@
         	<parameter-assignment matching-group="2" parameter-name="count" />
         	<parameter-assignment matching-group="3" parameter-name="replacementItem" />
         </ueiMatch>
-        <ueiMatch>
-        	<process-match expression="beerd" />
-        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
-        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/processOnly</uei>
-        </ueiMatch>
-        <ueiMatch>
-        	<facility>local0</facility>
-        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
-        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/facilityOnly</uei>
-        </ueiMatch>
-        <ueiMatch>
-        	<facility>local1</facility>
-        	<severity>Warning</severity>
-        	<process-match expression="maltd" />
-        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
-        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverityProcess</uei>
-        </ueiMatch>
-        <ueiMatch>
-        	<facility>local1</facility>
-        	<severity>Warning</severity>
-        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
-        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverity</uei>
-        </ueiMatch>
-        <ueiMatch>
-        	<severity>Critical</severity>
-        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
-        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/severityOnly</uei>
-        </ueiMatch>
+        
     </ueiList>
 
     <hideMessage>

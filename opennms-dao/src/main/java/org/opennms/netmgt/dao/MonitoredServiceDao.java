@@ -76,6 +76,18 @@ public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integ
 
     /**
      * <p>get</p>
+     * 
+     * @deprecated Use {@link #get(Integer, InetAddress, String)} instead
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     */
+    OnmsMonitoredService get(Integer nodeId, String ipAddress, String svcName);
+
+    /**
+     * <p>get</p>
      *
      * @param nodeId a {@link java.lang.Integer} object.
      * @param ipAddress a {@link java.lang.String} object.

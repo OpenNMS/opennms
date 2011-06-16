@@ -41,7 +41,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -90,7 +89,7 @@ public class DaoWebOutageRepositoryTest {
     public void setUp(){
         m_dbPopulator.populateDatabase();
         
-        OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.2.1"), "ICMP");
+        OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(2, "192.168.2.1", "ICMP");
         OnmsEvent event = m_dbPopulator.getEventDao().get(1);
         
         OnmsOutage unresolved2 = new OnmsOutage(new Date(), event, svc2);

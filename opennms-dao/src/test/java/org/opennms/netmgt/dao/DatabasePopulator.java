@@ -42,6 +42,7 @@ import java.util.Date;
 import junit.framework.Assert;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.DataLinkInterface;
@@ -105,7 +106,7 @@ public class DatabasePopulator {
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
-    private LocationMonitorDao m_locationMonitorDao;
+    private LocationMonitorDaoHibernate m_locationMonitorDao;
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -518,11 +519,11 @@ public class DatabasePopulator {
         m_node1 = node1;
     }
 
-    public LocationMonitorDao getLocationMonitorDao() {
+    public LocationMonitorDaoHibernate getLocationMonitorDao() {
         return m_locationMonitorDao;
     }
 
-    public void setLocationMonitorDao(final LocationMonitorDao locationMonitorDao) {
+    public void setLocationMonitorDao(final LocationMonitorDaoHibernate locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
     }
 
