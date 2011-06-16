@@ -102,10 +102,12 @@
     </table>
     <table class="normal">
          <tr>
+                <th class="standardheader">Description</th>
                 <th class="standardheader">Triggered UEI</th>
                 <th class="standardheader">Re-armed UEI</th>
         </tr>
     	<tr>
+			<td class="standard"><input type="text" name="description" size="60" value="${threshold.description}"/></td>
 			<td class="standard"><input type="text" name="triggeredUEI" size="60" value="${threshold.triggeredUEI}"/></td>
 		    <td class="standard"><input type="text" name="rearmedUEI" size="60" value="${threshold.rearmedUEI}"/></td>
     	</tr>
@@ -147,6 +149,7 @@
 </form>
 <h3>Help</h3>
 <p>
+<b>Description</b>: An optional description for the threshold, to help identify what is their purpose.<br/>
 <b>Type</b>:<br/>
 &nbsp;&nbsp;<b>high</b>: Triggers when the value of the data source exceeds the "value", and is re-armed when it drops below the "re-arm" value.<br/>
 &nbsp;&nbsp;<b>low</b>: Triggers when the value of the data source drops below the "value", and is re-armed when it exceeds the "re-arm" value.<br/>

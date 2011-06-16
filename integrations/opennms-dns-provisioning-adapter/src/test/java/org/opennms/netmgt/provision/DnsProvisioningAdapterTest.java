@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.JUnitDNSServerExecutionListener;
 import org.opennms.core.test.annotations.DNSEntry;
 import org.opennms.core.test.annotations.DNSZone;
 import org.opennms.core.test.annotations.JUnitDNSServer;
@@ -18,9 +19,13 @@ import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOpera
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    JUnitDNSServerExecutionListener.class
+})
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -41,7 +46,8 @@ public class DnsProvisioningAdapterTest {
     @Autowired
     private NodeDao m_nodeDao;
 
-    private AdapterOperation m_adapterOperation;
+    private AdapterOperation m_addOperation;
+    private AdapterOperation m_deleteOperation;
     
     @Before
     @Transactional
@@ -52,21 +58,34 @@ public class DnsProvisioningAdapterTest {
         m_nodeDao.save(nb.getCurrentNode());
         m_nodeDao.flush();
 
-        m_adapterOperation = m_adapter.new AdapterOperation(
+        // Call afterPropertiesSet() again so that the adapter is 
+        // aware of the node that we just added.
+        m_adapter.afterPropertiesSet();
+
+        m_addOperation = m_adapter.new AdapterOperation(
             m_nodeDao.findByForeignId("dns", "1").getId(),
             AdapterOperationType.ADD,
             new SimpleQueuedProvisioningAdapter.AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS)
         );
         
+        m_deleteOperation = m_adapter.new AdapterOperation(
+            m_nodeDao.findByForeignId("dns", "1").getId(),
+            AdapterOperationType.DELETE,
+            new SimpleQueuedProvisioningAdapter.AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS)
+        );
     }
 
     @Test
     @Transactional
+    @JUnitDNSServer(port=9153, zones={
+            @DNSZone(name="example.com", entries={
+                    @DNSEntry(hostname="test", address="192.168.0.1")
+            })
+    })
     public void testAdd() throws Exception {
         OnmsNode n = m_nodeDao.findByForeignId("dns", "1");
         m_adapter.addNode(n.getId());
-        m_adapter.processPendingOperationForNode(m_adapterOperation);
-        Thread.sleep(3000);
+        m_adapter.processPendingOperationForNode(m_addOperation);
     }
     
     @Test
@@ -79,7 +98,6 @@ public class DnsProvisioningAdapterTest {
     public void testDelete() throws Exception {
         OnmsNode n = m_nodeDao.findByForeignId("dns", "1");
         m_adapter.deleteNode(n.getId());
-        m_adapter.processPendingOperationForNode(m_adapterOperation);
-        Thread.sleep(3000);
+        m_adapter.processPendingOperationForNode(m_deleteOperation);
     }
 }
