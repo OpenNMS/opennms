@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 /**
  * LogMessage
  *
- * @author pdgrenon
+ * @author brozow
  */
 public class BaseLogMessage implements LogMessage {
     
@@ -152,14 +152,6 @@ public class BaseLogMessage implements LogMessage {
 
 	public boolean isPersistMessage() {
 		return is(MsgType.BEGIN_PERSIST)  || is (MsgType.END_PERSIST);
-	}
-	
-	public boolean isPersistBeginMessage(){
-	    return is(MsgType.BEGIN_PERSIST);
-	}
-	
-	public boolean isPersistEndMessage() {
-	    return is(MsgType.END_PERSIST);
 	}
 
 }

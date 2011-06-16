@@ -27,40 +27,7 @@
 		<descr>This is only a test</descr>
 		<logmsg dest="logndisplay">&lt;p&gt;Syslogd test event: regexParameterAssignmentTest/userSpecifiedOnly&lt;/p&gt;</logmsg>
 		<severity xmlns="">Warning</severity>
-	</event>
-	<event>
-		<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/processOnly</uei>
-		<event-label>Syslogd test event: nonMessageMatch/processOnly</event-label>
-		<descr>This is only a test</descr>
-		<logmsg dest="logndisplay">&lt;p&gt;Syslogd test event: nonMessageMatch/processOnly&lt;/p&gt;</logmsg>
-		<severity xmlns="">Warning</severity>
-	</event>
-	<event>
-		<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/facilityOnly</uei>
-		<event-label>Syslogd test event: nonMessageMatch/facilityOnly</event-label>
-		<descr>This is only a test</descr>
-		<logmsg dest="logndisplay">&lt;p&gt;Syslogd test event: nonMessageMatch/facilityOnly&lt;/p&gt;</logmsg>
-		<severity xmlns="">Warning</severity>
-	</event>
-	<event>
-		<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverity</uei>
-		<event-label>Syslogd test event: nonMessageMatch/facilitySeverity</event-label>
-		<descr>This is only a test</descr>
-		<logmsg dest="logndisplay">&lt;p&gt;Syslogd test event: nonMessageMatch/facilitySeverity&lt;/p&gt;</logmsg>
-		<severity xmlns="">Warning</severity>
-	</event>
-	<event>
-		<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverityProcess</uei>
-		<event-label>Syslogd test event: nonMessageMatch/facilitySeverityProcess</event-label>
-		<descr>This is only a test</descr>
-		<logmsg dest="logndisplay">&lt;p&gt;Syslogd test event: nonMessageMatch/facilitySeverityProcess&lt;/p&gt;</logmsg>
-		<severity xmlns="">Warning</severity>
-	</event>
-	<event>
-		<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/severityOnly</uei>
-		<event-label>Syslogd test event: nonMessageMatch/severityOnly</event-label>
-		<descr>This is only a test</descr>
-		<logmsg dest="logndisplay">&lt;p&gt;Syslogd test event: nonMessageMatch/severityOnly&lt;/p&gt;</logmsg>
-		<severity xmlns="">Major</severity>
-	</event>
+	</event>    
+	    
+    
 </events>
