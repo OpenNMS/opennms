@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.JUnitDNSServerExecutionListener;
 import org.opennms.core.test.annotations.DNSEntry;
 import org.opennms.core.test.annotations.DNSZone;
 import org.opennms.core.test.annotations.JUnitDNSServer;
@@ -28,6 +29,7 @@ import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
@@ -36,6 +38,9 @@ import org.xbill.DNS.Type;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    JUnitDNSServerExecutionListener.class
+})
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitDNSServer(port=9153, zones={
             @DNSZone(name="example.com", entries={
