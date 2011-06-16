@@ -3,7 +3,6 @@ package org.opennms.features.node.list.gwt.client;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
@@ -12,7 +11,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -32,10 +30,7 @@ public class PageableNodeList extends Composite implements ProvidesResize {
             if(response.getStatusCode() == 200) {
                 NodeRestResponseMapper.createIpInterfaceData(response.getText());
             }else {
-                JsArray<PhysicalInterface> physIface = NodeRestResponseMapper.createSnmpInterfaceData(NodeRestClientService.IP_INTERFACES_TEST_RESPONSE);
-                PhysicalInterface iface = physIface.get(0);
-                String ipAddress = iface.getIpAddress();
-                Window.alert("ipAddress: " + ipAddress);
+                updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(NodeRestClientService.SNMP_INTERFACES_TEST_RESPONSE));
             }
         }
 
@@ -55,10 +50,7 @@ public class PageableNodeList extends Composite implements ProvidesResize {
                 NodeRestResponseMapper.createSnmpInterfaceData(response.getText());
             } else {
                 String jsonStr = NodeRestClientService.IP_INTERFACES_TEST_RESPONSE;
-                List<IpInterface> ipIfaces = NodeRestResponseMapper.createIpInterfaceData(jsonStr);
-                IpInterface ipIface = ipIfaces.get(0);
-                String hostName = ipIface.getIpHostName();
-                String blah = hostName;
+                updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(jsonStr));
             }
         }
 
@@ -129,13 +121,23 @@ public class PageableNodeList extends Composite implements ProvidesResize {
         }
         
         m_nodeService.getAllIpInterfacesForNode(nodeId, new IpInterfacesRequestCallback());
-        //m_nodeService.getAllSnmpInterfacesForNode(nodeId, new SnmpInterfacesRequestCallback());
+        m_nodeService.getAllSnmpInterfacesForNode(nodeId, new SnmpInterfacesRequestCallback());
         
     }
     
     public native void getNodeId()/*-{
         this.@org.opennms.features.node.list.gwt.client.PageableNodeList::setNodeId(I)($wnd.nodeId == undefined? -1 : $wnd.nodeId);
     }-*/;
+    
+    public void updateIpInterfaceList(List<IpInterface> ipInterfaces) {
+        m_ipInterfaceTable.setRowCount(ipInterfaces.size());
+        m_ipInterfaceTable.setRowData(ipInterfaces);
+    }
+    
+    public void updatePhysicalInterfaceList(List<PhysicalInterface> physicalInterfaces) {
+        m_physicalInterfaceTable.setRowCount(physicalInterfaces.size());
+        m_physicalInterfaceTable.setRowData(physicalInterfaces);
+    }
 
     private void initializeListBoxes() {
         m_ipSearchList.addItem("IP Address", "ip");
