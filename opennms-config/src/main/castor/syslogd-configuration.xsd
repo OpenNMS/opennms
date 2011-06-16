@@ -130,9 +130,79 @@
         </annotation>
         <complexType>
             <sequence>
+                <element minOccurs="0" maxOccurs="unbounded" name="facility">
+                    <annotation>
+                        <documentation>The name of a syslog facility. If present, the facility of
+                                       an incoming message must match one of the facilities named
+                                       by an instance of this tag within the ueiMatch.
+                        </documentation>
+                    </annotation>
+                    <simpleType>
+                        <restriction base="string">
+                            <pattern value="kern(el)?|user|mail|daemon|auth|syslog|lpr|news|uucp|cron|authpriv|ftp|ntp|audit|alert|clock|local[01234567]"/>
+                        </restriction>
+                    </simpleType>
+                </element>
+                <element minOccurs="0" maxOccurs="unbounded" name="severity">
+                    <annotation>
+                        <documentation>The name of a syslog severity. If present, the severity of
+                                       an incoming message must match one of the severities named
+                                       by an instance of this tag within the ueiMatch.
+                        </documentation>
+                    </annotation>
+                    <simpleType>
+                        <restriction base="string">
+                            <pattern value="[Ee]mergency|[Aa]lert|[Cc]ritical|[Ee]rror|[Ww]arning|[Nn]otice|[Ii]nfo|[Dd]ebug"/>
+                        </restriction>
+                    </simpleType>
+                </element>
+                <element minOccurs="0" maxOccurs="1" name="process-match">
+                    <annotation>
+                        <documentation>String against which to match the process name; interpreted
+                                       as a regular expression.  If no process name is present in
+                                       the incoming message, any process-match elements will be
+                                       considered non-matches.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <attribute name="expression" type="string" use="required">
+                            <annotation>
+                                <documentation>The regular expression</documentation>
+                            </annotation>
+                        </attribute>
+                    </complexType>
+                </element>
+                <element minOccurs="0" maxOccurs="1" name="hostname-match">
+                    <annotation>
+                        <documentation>String against which to match the hostname; interpreted
+                                       as a regular expression.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <attribute name="expression" type="string" use="required">
+                            <annotation>
+                                <documentation>The regular expression</documentation>
+                            </annotation>
+                        </attribute>
+                    </complexType>
+                </element>
+                <element minOccurs="0" maxOccurs="1" name="hostaddr-match">
+                    <annotation>
+                        <documentation>String against which to match the host IP address; interpreted
+                                       as a regular expression.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <attribute name="expression" type="string" use="required">
+                            <annotation>
+                                <documentation>The regular expression</documentation>
+                            </annotation>
+                        </attribute>
+                    </complexType>
+                </element>
                 <element maxOccurs="1" minOccurs="1" name="match">
                     <annotation>
-                        <documentation>String against which to match the message; interpreted
+                        <documentation>String against which to match the message body; interpreted
                                        as a substring or a regular expression according to the
                                        value of the "type" attribute
                         </documentation>
@@ -146,7 +216,7 @@
                             </annotation>
                             <simpleType>
                                 <restriction base="string">
-                                    <pattern value="(substr|regex)"/>
+                                    <pattern value="(substr|regexp?)"/>
                                 </restriction>
                             </simpleType>
                         </attribute>
