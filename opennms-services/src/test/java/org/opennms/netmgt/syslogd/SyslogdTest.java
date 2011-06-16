@@ -14,6 +14,7 @@
 //
 // 2008 Feb 10: Eliminate warnings, use ConfigurationTestUtils. - dj@opennms.org
 // 2007 Aug 24: Fix failing tests and warnings. - dj@opennms.org
+// 2011 Jun 16: Add tests for process, severity, facility matching. - jeffg@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
 // reserved.
@@ -136,7 +137,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         getEventIpcManager().addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
-        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
         DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
         SyslogdConfig config = SyslogdConfigFactory.getInstance();
         Thread worker = new Thread(new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()), SyslogConnection.class.getSimpleName());
@@ -171,7 +172,7 @@ public class SyslogdTest extends OpenNMSTestCase {
 
         SyslogClient s = null;
         try {
-            s = new SyslogClient(null, 0, SyslogClient.LOG_DEBUG);
+            s = new SyslogClient(null, 0, SyslogClient.LOG_DAEMON);
             s.syslog(SyslogClient.LOG_ERR, "Hello.");
         } catch (UnknownHostException e) {
             //Failures are for weenies
@@ -181,17 +182,178 @@ public class SyslogdTest extends OpenNMSTestCase {
     public void XXXtestMyPatternsSyslogNG() {
         SyslogClient s = null;
         try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
             s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 host.domain.com A SyslogNG style message");
         } catch (UnknownHostException e) {
             //Failures are for weenies
         }
     }
 
+    public void testRegexSeverityMatch() throws Exception {
+        startSyslogdGracefully();
+        MockLogAppender.setupLogging(true, "TRACE");
+        String localhost = InetAddressUtils.str(myLocalHost());
+        final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for dinner anymore";
+        final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/severityOnly";
+        final String testMsg = "beer - Not just for dinner anymore";
+    
+        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+        expectedEventBldr.setInterface(addr(localhost));
+        expectedEventBldr.setLogDest("logndisplay");
+        expectedEventBldr.setLogMessage(testMsg);
+        
+        EventAnticipator ea = new EventAnticipator();
+        getEventIpcManager().addEventListener(ea);
+        ea.anticipateEvent(expectedEventBldr.getEvent());
+        
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
+            s.syslog(SyslogClient.LOG_CRIT, testPDU);
+        } catch (UnknownHostException uhe) {
+            //Failures are for weenies
+        }
+    
+        assertEquals(0, ea.waitForAnticipated(1000).size());
+        Thread.sleep(2000);
+        assertEquals(0, ea.unanticipatedEvents().size());
+    }
+
+    public void testRegexFacilitySeverityProcessMatch() throws Exception {
+        startSyslogdGracefully();
+        MockLogAppender.setupLogging(true, "TRACE");
+        String localhost = InetAddressUtils.str(myLocalHost());
+        final String testPDU = "2007-01-01 127.0.0.1 maltd: beer - Not just for lunch anymore";
+        final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverityProcess";
+        final String testMsg = "beer - Not just for lunch anymore";
+    
+        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+        expectedEventBldr.setInterface(addr(localhost));
+        expectedEventBldr.setLogDest("logndisplay");
+        expectedEventBldr.setLogMessage(testMsg);
+        
+        expectedEventBldr.addParam("process", "maltd");
+        expectedEventBldr.addParam("service", "local1");
+        expectedEventBldr.addParam("severity", "Warning");
+    
+        EventAnticipator ea = new EventAnticipator();
+        getEventIpcManager().addEventListener(ea);
+        ea.anticipateEvent(expectedEventBldr.getEvent());
+        
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient("maltd", 10, SyslogClient.LOG_LOCAL1);
+            s.syslog(SyslogClient.LOG_WARNING, testPDU);
+        } catch (UnknownHostException uhe) {
+            //Failures are for weenies
+        }
+    
+        assertEquals(0, ea.waitForAnticipated(1000).size());
+        Thread.sleep(2000);
+        assertEquals(0, ea.unanticipatedEvents().size());
+    }
+    
+    public void testRegexFacilitySeverityMatch() throws Exception {
+        startSyslogdGracefully();
+        MockLogAppender.setupLogging(true, "TRACE");
+        String localhost = InetAddressUtils.str(myLocalHost());
+        final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for lunch anymore";
+        final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverity";
+        final String testMsg = "beer - Not just for lunch anymore";
+    
+        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+        expectedEventBldr.setInterface(addr(localhost));
+        expectedEventBldr.setLogDest("logndisplay");
+        expectedEventBldr.setLogMessage(testMsg);
+        
+        expectedEventBldr.addParam("service", "local1");
+        expectedEventBldr.addParam("severity", "Warning");
+    
+        EventAnticipator ea = new EventAnticipator();
+        getEventIpcManager().addEventListener(ea);
+        ea.anticipateEvent(expectedEventBldr.getEvent());
+        
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_LOCAL1);
+            s.syslog(SyslogClient.LOG_WARNING, testPDU);
+        } catch (UnknownHostException uhe) {
+            //Failures are for weenies
+        }
+    
+        assertEquals(0, ea.waitForAnticipated(1000).size());
+        Thread.sleep(2000);
+        assertEquals(0, ea.unanticipatedEvents().size());
+    }
+    
+    public void testRegexFacilityMatch() throws Exception {
+        startSyslogdGracefully();
+        MockLogAppender.setupLogging(true, "TRACE");
+        String localhost = InetAddressUtils.str(myLocalHost());
+        final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for lunch anymore";
+        final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilityOnly";
+        final String testMsg = "beer - Not just for lunch anymore";
+    
+        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+        expectedEventBldr.setInterface(addr(localhost));
+        expectedEventBldr.setLogDest("logndisplay");
+        expectedEventBldr.setLogMessage(testMsg);
+        
+        expectedEventBldr.addParam("service", "local0");
+    
+        EventAnticipator ea = new EventAnticipator();
+        getEventIpcManager().addEventListener(ea);
+        ea.anticipateEvent(expectedEventBldr.getEvent());
+        
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_LOCAL0);
+            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
+        } catch (UnknownHostException uhe) {
+            //Failures are for weenies
+        }
+    
+        assertEquals(0, ea.waitForAnticipated(1000).size());
+        Thread.sleep(2000);
+        assertEquals(0, ea.unanticipatedEvents().size());
+    }
+    
+    public void testRegexProcessMatch() throws Exception {
+        startSyslogdGracefully();
+        MockLogAppender.setupLogging(true, "TRACE");
+        String localhost = InetAddressUtils.str(myLocalHost());
+        final String testPDU = "2007-01-01 127.0.0.1 beerd: beer - Not just for breakfast anymore";
+        final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/processOnly";
+        final String testMsg = "beer - Not just for breakfast anymore";
+    
+        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+        expectedEventBldr.setInterface(addr(localhost));
+        expectedEventBldr.setLogDest("logndisplay");
+        expectedEventBldr.setLogMessage(testMsg);
+        
+        expectedEventBldr.addParam("process", "beerd");
+    
+        EventAnticipator ea = new EventAnticipator();
+        getEventIpcManager().addEventListener(ea);
+        ea.anticipateEvent(expectedEventBldr.getEvent());
+        
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient("beerd", 10, SyslogClient.LOG_DAEMON);
+            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
+        } catch (UnknownHostException uhe) {
+            //Failures are for weenies
+        }
+    
+        assertEquals(0, ea.waitForAnticipated(1000).size());
+        Thread.sleep(2000);
+        assertEquals(0, ea.unanticipatedEvents().size());
+    }
+
     public void testIPPatternsSyslogNG() {
         SyslogClient s = null;
         try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
             s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 127.0.0.1 A SyslogNG style message");
         } catch (UnknownHostException e) {
             //Failures are for weenies
@@ -201,7 +363,7 @@ public class SyslogdTest extends OpenNMSTestCase {
     public void testResolvePatternsSyslogNG() {
         SyslogClient s = null;
         try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
             s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 www.opennms.org A SyslogNG style message");
         } catch (UnknownHostException e) {
             //Failures are for weenies
@@ -253,7 +415,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         getEventIpcManager().addEventListener(ea);
         
         SyslogClient sc = null;
-        sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
         sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
         
         Thread.sleep(3000);
@@ -268,7 +430,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         getEventIpcManager().addEventListener(ea);
         
         SyslogClient sc = null;
-        sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
         sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
         
         Thread.sleep(3000);
@@ -316,7 +478,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         
         SyslogClient s = null;
         try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
             s.syslog(SyslogClient.LOG_DEBUG, testPDU);
         } catch (UnknownHostException uhe) {
             //Failures are for weenies

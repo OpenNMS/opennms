@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc. All rights
+// OpenNMS(R) is Copyright (C) 2002-2011 The OpenNMS Group, Inc. All rights
 // reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included
 // code and modified
@@ -15,9 +15,8 @@
 //
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2009 Mar 23: Add support for discarding messages. - jeffg@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
-// reserved.
+// 2011 Jun 16: Add support for matching on process name, facility,
+//              severity. - jeffg@opennms.org
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -64,7 +63,10 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HideMessage;
+import org.opennms.netmgt.config.syslogd.HostaddrMatch;
+import org.opennms.netmgt.config.syslogd.HostnameMatch;
 import org.opennms.netmgt.config.syslogd.ParameterAssignment;
+import org.opennms.netmgt.config.syslogd.ProcessMatch;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -76,6 +78,7 @@ import org.opennms.netmgt.xml.event.Log;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  */
 
@@ -274,11 +277,17 @@ final class ConvertToEvent {
             LogUtils.warnf(ConvertToEvent.class, "No ueiList configured.");
         } else {
             for (final UeiMatch uei : ueiMatch) {
-                if (uei.getMatch().getType().equals("substr")) {
+                final boolean otherStuffMatches = matchFacility(uei.getFacilityCollection(), facilityTxt) &&
+                                                  matchSeverity(uei.getSeverityCollection(), priorityTxt) &&
+                                                  matchProcess(uei.getProcessMatch(), message.getProcessName()) && 
+                                                  matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
+                                                  matchHostAddr(uei.getHostaddrMatch(), message.getHostAddress());
+                
+                if (otherStuffMatches && uei.getMatch().getType().equals("substr")) {
                     if (matchSubstring(discardUei, bldr, fullText, uei)) {
-                	    break;
-                	}
-                } else if (uei.getMatch().getType().equals("regex")) {
+                        break;
+                    }
+                } else if (otherStuffMatches && (uei.getMatch().getType().startsWith("regex"))) {
                     if (matchRegex(message, uei, bldr, discardUei)) {
                         break;
                     }
@@ -339,6 +348,72 @@ final class ConvertToEvent {
 
         e.m_event = bldr.getEvent();
         return e;
+    }
+
+    private static boolean matchFind(final String expression, final String input, final String context) {
+        final Pattern pat = getPattern(expression);
+        if (pat == null) {
+            LogUtils.debugf(ConvertToEvent.class, "Unable to get pattern for expression '%s' in %s context", expression, context);
+            return false;
+        }
+        final Matcher mat = pat.matcher(input);
+        if (mat != null && mat.find()) return true;
+        return false;
+    }
+    
+    private static boolean matchHostAddr(final HostaddrMatch hostaddrMatch, final String hostAddress) {
+        if (hostaddrMatch == null) return true;
+        if (hostAddress == null) return false;
+        
+        final String expression = hostaddrMatch.getExpression();
+        
+        if (matchFind(expression, hostAddress, "hostaddr-match")) {
+            LogUtils.tracef(ConvertToEvent.class, "Successful regex hostaddr-match for input '%s' against expression '%s'", hostAddress, expression);
+            return true;
+        }
+        return false;
+    }
+    
+    private static boolean matchHostname(final HostnameMatch hostnameMatch, final String hostName) {
+        if (hostnameMatch == null) return true;
+        if (hostName == null) return false;
+        
+        final String expression = hostnameMatch.getExpression();
+        
+        if (matchFind(expression, hostName, "hostname-match")) {
+            LogUtils.tracef(ConvertToEvent.class, "Successful regex hostname-match for input '%s' against expression '%s'", hostName, expression);
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean matchProcess(final ProcessMatch processMatch, final String processName) {
+        if (processMatch == null) return true;
+        if (processName == null) return false;
+
+        final String expression = processMatch.getExpression();
+
+        if (matchFind(expression, processName, "process-match")) {
+            LogUtils.tracef("Successful regex process-match for input '%s' against expression '%s'", processName, expression);
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean matchSeverity(List<String> severities, String priorityTxt) {
+        if (severities.size() == 0) return true;
+        for (String severity : severities) {
+            if (severity.toLowerCase().equals(priorityTxt.toLowerCase())) return true;
+        }
+        return false;
+    }
+
+    private static boolean matchFacility(List<String> facilities, String facilityTxt) {
+        if (facilities.size() == 0) return true;
+        for (String facility : facilities) {
+            if (facility.toLowerCase().equals(facilityTxt.toLowerCase())) return true;
+        }
+        return false;
     }
 
     private static Pattern getPattern(final String expression) {
