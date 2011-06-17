@@ -56,6 +56,11 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>mock-snmp-agent</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.opennms</groupId>
