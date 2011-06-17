@@ -30,7 +30,7 @@ public class PageableNodeList extends Composite implements ProvidesResize {
             if(response.getStatusCode() == 200) {
                 NodeRestResponseMapper.createIpInterfaceData(response.getText());
             }else {
-                updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(NodeRestClientService.SNMP_INTERFACES_TEST_RESPONSE));
+                updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(DefaultNodeService.SNMP_INTERFACES_TEST_RESPONSE));
             }
         }
 
@@ -49,7 +49,7 @@ public class PageableNodeList extends Composite implements ProvidesResize {
             if(response.getStatusCode() == 200) {
                 NodeRestResponseMapper.createSnmpInterfaceData(response.getText());
             } else {
-                String jsonStr = NodeRestClientService.IP_INTERFACES_TEST_RESPONSE;
+                String jsonStr = DefaultNodeService.IP_INTERFACES_TEST_RESPONSE;
                 updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(jsonStr));
             }
         }
@@ -98,12 +98,15 @@ public class PageableNodeList extends Composite implements ProvidesResize {
     @UiField
     TextBox m_physTextBox;
     
-    NodeRestClientService m_nodeService = new NodeRestClientService();
+    NodeService m_nodeService = new DefaultNodeService();
+
+    private int m_nodeId;
     
+
     public PageableNodeList() {
         initWidget(uiBinder.createAndBindUi(this));
         
-        getNodeId();
+        getNodeIdFromPage();
         
         initializeTabBar();
         initializeTables();
@@ -112,20 +115,29 @@ public class PageableNodeList extends Composite implements ProvidesResize {
     
     
     public int extractNodeIdFromLocation() {
-        return Integer.valueOf(Location.getParameter("node"));
+        if(Location.getParameter("node") != null) {
+            return Integer.valueOf(Location.getParameter("node"));
+        }else {
+            return -1;
+        }
+        
     }
     
     public void setNodeId(int nodeId) {
         if(nodeId == -1) {
             nodeId = extractNodeIdFromLocation();
         }
-        
+        m_nodeId = nodeId;
         m_nodeService.getAllIpInterfacesForNode(nodeId, new IpInterfacesRequestCallback());
         m_nodeService.getAllSnmpInterfacesForNode(nodeId, new SnmpInterfacesRequestCallback());
         
     }
     
-    public native void getNodeId()/*-{
+    public int getNodeId() {
+        return m_nodeId;
+    }
+    
+    public native void getNodeIdFromPage()/*-{
         this.@org.opennms.features.node.list.gwt.client.PageableNodeList::setNodeId(I)($wnd.nodeId == undefined? -1 : $wnd.nodeId);
     }-*/;
     
@@ -140,16 +152,16 @@ public class PageableNodeList extends Composite implements ProvidesResize {
     }
 
     private void initializeListBoxes() {
-        m_ipSearchList.addItem("IP Address", "ip");
-        m_ipSearchList.addItem("IP Host Name", "host");
+        m_ipSearchList.addItem("IP Address", "ipAddress");
+        m_ipSearchList.addItem("IP Host Name", "ipHostName");
         
-        m_physSearchList.addItem("index", "index");
+        m_physSearchList.addItem("index", "ifIndex");
         m_physSearchList.addItem("SNMP ifDescr", "ifDescr");
         m_physSearchList.addItem("SNMP ifName","ifName");
         m_physSearchList.addItem("SNMP ifAlias","ifAlias");
         m_physSearchList.addItem("SNMP ifSpeed","ifSpeed");
-        m_physSearchList.addItem("IP Address","ip");
-        m_physSearchList.addItem("SNMP ifPhysAddr","ifPhysAddr");
+        m_physSearchList.addItem("IP Address","ipAddress");
+        m_physSearchList.addItem("SNMP ifPhysAddr","physAddr");
     }
 
     private void initializeTables() {
@@ -171,12 +183,16 @@ public class PageableNodeList extends Composite implements ProvidesResize {
     
     @UiHandler("m_ipSearchBtn")
     public void handleIpSearchBtnClick(ClickEvent event) {
-        
+        String parameter = m_ipSearchList.getValue(m_ipSearchList.getSelectedIndex());
+        String value = m_ipTextBox.getText();
+        m_nodeService.findIpInterfacesMatching(m_nodeId, parameter, value, new IpInterfacesRequestCallback());
     }
     
     @UiHandler("m_physSearchBtn")
     public void handlePhysSearchClick(ClickEvent event) {
-        
+        String parameter = m_physSearchList.getValue(m_physSearchList.getSelectedIndex());
+        String value = m_physTextBox.getText();
+        m_nodeService.findSnmpInterfacesMatching(getNodeId(), parameter, value, new SnmpInterfacesRequestCallback());
     }
     
     

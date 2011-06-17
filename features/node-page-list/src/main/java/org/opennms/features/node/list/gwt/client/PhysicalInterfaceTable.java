@@ -1,26 +1,71 @@
 package org.opennms.features.node.list.gwt.client;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.cellview.client.CellTable;
-import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.view.client.CellPreviewEvent;
+import com.google.gwt.view.client.SelectionChangeEvent;
+import com.google.gwt.view.client.SingleSelectionModel;
 
 public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
-
+    
+    SimpleEventBus m_eventBus;
+    
     public PhysicalInterfaceTable() {
         super();
+        m_eventBus = new SimpleEventBus();
         initialize();
     }
+    
+    //TODO:finish handler
+    public void addSelectEventHandler() {}
 
     private void initialize() {
-        TextColumn<PhysicalInterface> indexColumn = new TextColumn<PhysicalInterface>(){
+        addColumns();
+        
+        final SingleSelectionModel<PhysicalInterface> selectionModel = new SingleSelectionModel<PhysicalInterface>();
+        setSelectionModel(selectionModel);
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            
+            @Override
+            public void onSelectionChange(SelectionChangeEvent event) {
+                GWT.log("got a selection model change");
+                
+            }
+        });
+        
+        addCellPreviewHandler(new CellPreviewEvent.Handler<PhysicalInterface>(){
 
             @Override
-            public String getValue(PhysicalInterface physIface) {
-                return physIface.getIndex();
+            public void onCellPreview(CellPreviewEvent<PhysicalInterface> event) {
+                Event evt = Event.as(event.getNativeEvent());
+                
+                switch(evt.getTypeInt()) {
+                    case Event.ONDBLCLICK:
+                        PhysicalInterface selected = selectionModel.getSelectedObject();
+                        //TODO: fire event to top level
+                        break;
+                }
             }
+            
+        });
+        
+    }
+
+    private void addColumns() {
+        DblClickTextColumn<PhysicalInterface> indexColumn = new DblClickTextColumn<PhysicalInterface>() {
+
+            @Override
+            public String getValue(PhysicalInterface physInterface) {
+                return physInterface.getIndex();
+            }
+            
         };
+        
         addColumn(indexColumn, "index");
         
-        TextColumn<PhysicalInterface> snmpIfDescrColumn = new TextColumn<PhysicalInterface>() {
+        DblClickTextColumn<PhysicalInterface> snmpIfDescrColumn = new DblClickTextColumn<PhysicalInterface>() {
 
             @Override
             public String getValue(PhysicalInterface physIface) {
@@ -29,7 +74,7 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
         };
         addColumn(snmpIfDescrColumn, "SNMP ifDescr");
         
-        TextColumn<PhysicalInterface> snmpIfName = new TextColumn<PhysicalInterface>() {
+        DblClickTextColumn<PhysicalInterface> snmpIfName = new DblClickTextColumn<PhysicalInterface>() {
 
             @Override
             public String getValue(PhysicalInterface physIface) {
@@ -38,7 +83,7 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
         };
         addColumn(snmpIfName, "SNMP ifName");
         
-        TextColumn<PhysicalInterface> snmpIfAliasColumn = new TextColumn<PhysicalInterface>() {
+        DblClickTextColumn<PhysicalInterface> snmpIfAliasColumn = new DblClickTextColumn<PhysicalInterface>() {
 
             @Override
             public String getValue(PhysicalInterface physIface) {
@@ -47,7 +92,7 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
         };
         addColumn(snmpIfAliasColumn, "SNMP ifAlias");
         
-        TextColumn<PhysicalInterface> snmpIfSpeedColumn = new TextColumn<PhysicalInterface>() {
+        DblClickTextColumn<PhysicalInterface> snmpIfSpeedColumn = new DblClickTextColumn<PhysicalInterface>() {
 
             @Override
             public String getValue(PhysicalInterface physIface) {
@@ -57,7 +102,7 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
         };
         addColumn(snmpIfSpeedColumn, "SNMP ifSpeed");
         
-        TextColumn<PhysicalInterface> ipAddresColumn = new TextColumn<PhysicalInterface>() {
+        DblClickTextColumn<PhysicalInterface> ipAddresColumn = new DblClickTextColumn<PhysicalInterface>() {
 
             @Override
             public String getValue(PhysicalInterface physIface) {
@@ -67,4 +112,6 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
         };
         addColumn(ipAddresColumn, "IP Address");
     }
+    
+    
 }

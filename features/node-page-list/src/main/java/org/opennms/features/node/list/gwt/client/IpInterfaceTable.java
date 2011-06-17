@@ -1,9 +1,13 @@
 package org.opennms.features.node.list.gwt.client;
 
 import com.google.gwt.user.cellview.client.CellTable;
-import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.view.client.CellPreviewEvent;
+import com.google.gwt.view.client.SelectionChangeEvent;
+import com.google.gwt.view.client.SingleSelectionModel;
 
 public class IpInterfaceTable extends CellTable<IpInterface> {
+
 
     public IpInterfaceTable() {
         super();
@@ -11,7 +15,7 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
     }
 
     private void initialize() {
-        TextColumn<IpInterface> ipAddressColumn = new TextColumn<IpInterface>() {
+        DblClickTextColumn<IpInterface> ipAddressColumn = new DblClickTextColumn<IpInterface>() {
 
             @Override
             public String getValue(IpInterface ipIface) {
@@ -20,7 +24,7 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
         };
         addColumn(ipAddressColumn, "IP Address");
         
-        TextColumn<IpInterface> ipHostNameColumn = new TextColumn<IpInterface>() {
+        DblClickTextColumn<IpInterface> ipHostNameColumn = new DblClickTextColumn<IpInterface>() {
 
             @Override
             public String getValue(IpInterface ipIface) {
@@ -30,7 +34,7 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
         };
         addColumn(ipHostNameColumn, "IP Host Name");
         
-        TextColumn<IpInterface> managedColumn = new TextColumn<IpInterface>() {
+        DblClickTextColumn<IpInterface> managedColumn = new DblClickTextColumn<IpInterface>() {
 
             @Override
             public String getValue(IpInterface ipIface) {
@@ -38,5 +42,34 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
             }
         };
         addColumn(managedColumn, "Managed");
+        
+        final SingleSelectionModel<IpInterface> selectionModel = new SingleSelectionModel<IpInterface>();
+        setSelectionModel(selectionModel);
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            
+            @Override
+            public void onSelectionChange(SelectionChangeEvent event) {
+                IpInterface selected = selectionModel.getSelectedObject();
+                if(selected != null) {
+                }
+            }
+        });
+        
+        addCellPreviewHandler(new CellPreviewEvent.Handler<IpInterface>(){
+
+            @Override
+            public void onCellPreview(CellPreviewEvent<IpInterface> event) {
+                Event evt = Event.as(event.getNativeEvent());
+                
+                switch(evt.getTypeInt()) {
+                    case Event.ONDBLCLICK:
+                        IpInterface selected = selectionModel.getSelectedObject();
+                        //TODO: fire event to top level
+                        break;
+                }
+            }
+            
+        });
+        
     }
 }

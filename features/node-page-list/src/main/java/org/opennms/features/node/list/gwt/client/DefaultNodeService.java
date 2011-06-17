@@ -1,12 +1,11 @@
 package org.opennms.features.node.list.gwt.client;
 
-import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.URL;
 
-public class NodeRestClientService {
+public class DefaultNodeService implements NodeService {
     
     private static String BASE_URL = "rest/nodes/";
     
@@ -109,21 +108,37 @@ public class NodeRestClientService {
     	"}";
     
     public void getAllIpInterfacesForNode(int nodeId, RequestCallback callback) {
-        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(BASE_URL + nodeId + "/ipinterfaces"));
-        builder.setHeader("accept", "application/json");
-        try {
-            Request request = builder.sendRequest(null, callback);
-        } catch (RequestException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        String url = BASE_URL + nodeId + "/ipinterfaces";
+        sendRequest(callback, url);
     }
+
+    
     
     public void getAllSnmpInterfacesForNode(int nodeId, RequestCallback callback) {
-        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(BASE_URL + nodeId + "/snmpinterfaces"));
+        String url = BASE_URL + nodeId + "/snmpinterfaces";
+        sendRequest(callback, url);
+    }
+
+    public void findIpInterfacesMatching(int nodeId, String parameter, String value, RequestCallback callback) {
+        String url = BASE_URL + nodeId + "/ipinterfaces?" + parameter + "=" + value + "&comparator=contains";
+        sendRequest(callback, url);
+        
+    }
+
+    public void findSnmpInterfacesMatching(int nodeId, String parameter, String value, RequestCallback callback) {
+        String url = BASE_URL + nodeId + "/snmpinterfaces?" + parameter + "=" + value;
+        if(!parameter.equals("ifIndex") && !parameter.equals("ifSpeed")) {
+            url += "&comparator=contains";
+        }
+        sendRequest(callback, url);
+        
+    }
+    
+    private void sendRequest(RequestCallback callback, String url) {
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
         builder.setHeader("accept", "application/json");
         try {
-            Request request = builder.sendRequest(null, callback);
+            builder.sendRequest(null, callback);
         } catch (RequestException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
