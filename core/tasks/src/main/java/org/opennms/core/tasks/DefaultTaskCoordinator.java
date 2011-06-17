@@ -82,6 +82,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
                     }
                 } catch (InterruptedException e) {
                     log().warn("runnable actor interrupted", e);
+                    Thread.currentThread().interrupt();
                 } catch (ExecutionException e) {
                     log().warn("runnable actor execution failed", e);
                 } catch (Throwable e) {
