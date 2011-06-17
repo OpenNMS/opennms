@@ -280,6 +280,7 @@ public class NodeScan implements RunInBatch {
                     debugf(NodeScan.this, "Finished scanning node %d/%s/%s", getNodeId(), getForeignSource(), getForeignId());
                 } catch (final InterruptedException e) {
                     warnf(NodeScan.this, e, "The node scan for node %d/%s/%s was interrupted", getNodeId(), getForeignSource(), getForeignId());
+                    Thread.currentThread().interrupt();
                 } catch (final ExecutionException e) {
                     warnf(NodeScan.this, e, "An error occurred while scanning node %d/%s/%s", getNodeId(), getForeignSource(), getForeignId());
                 }
@@ -465,7 +466,8 @@ public class NodeScan implements RunInBatch {
         
                     }
                 } catch (final InterruptedException e) {
-                    abort("Aborting node scan : Scan thread failed while waiting for ipAddrTable");
+                	abort("Aborting node scan : Scan thread failed while waiting for ipAddrTable");
+                    Thread.currentThread().interrupt();
                 }
         
             }
@@ -522,6 +524,7 @@ public class NodeScan implements RunInBatch {
                 }
             } catch (final InterruptedException e) {
                 abort("Aborting node scan : Scan thread interrupted while waiting for interfaces table");
+                Thread.currentThread().interrupt();
             }
         }
 

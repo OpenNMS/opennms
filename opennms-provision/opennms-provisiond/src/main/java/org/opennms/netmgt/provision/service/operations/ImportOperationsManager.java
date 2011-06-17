@@ -240,8 +240,9 @@ public class ImportOperationsManager {
             while (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
                 // loop util the await returns false
             }
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             log().error(msg, e);
+            Thread.currentThread().interrupt();
         }
     }
     

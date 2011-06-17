@@ -145,8 +145,9 @@ final class NodeInfoScan implements RunInBatch {
                 setNode(node);
             }
         
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             abort("Aborting node scan : Scan thread interrupted!");
+            Thread.currentThread().interrupt();
         }
     }
 

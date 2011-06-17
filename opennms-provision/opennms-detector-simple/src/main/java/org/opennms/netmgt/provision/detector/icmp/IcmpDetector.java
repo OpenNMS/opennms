@@ -85,8 +85,9 @@ public class IcmpDetector extends AbstractDetector {
             
             LogUtils.infof(this, "isServiceDetected: ICMP based service for address: %s is detected: %s.", address, found);
 
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LogUtils.infof(this, "isServiceDetected: ICMP based service for address: %s is detected: %s. Received an InterruptedException.", address, false);
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             LogUtils.infof(this, "isServiceDetected: ICMP based service for address: %s is detected: %s. Received an Exception %s.", address, false, e);
         }
