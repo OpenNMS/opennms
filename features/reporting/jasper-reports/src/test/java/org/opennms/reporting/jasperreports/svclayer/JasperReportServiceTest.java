@@ -57,6 +57,7 @@ import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.netmgt.dao.JasperReportConfigDao;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -70,7 +71,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners( { DependencyInjectionTestExecutionListener.class })
 @ContextConfiguration(locations = { "classpath:org/opennms/reporting/jasperreports/svclayer/JasperReportServiceTest.xml" })
-public class JasperReportServiceTest {
+public class JasperReportServiceTest implements InitializingBean {
 
 	@Autowired
 	JasperReportConfigDao m_configDao;
@@ -85,8 +86,8 @@ public class JasperReportServiceTest {
 
 	}
 
-	@Test
-	public void testWiring() {
+	@Override
+	public void afterPropertiesSet() {
 		Assert.assertNotNull(m_configDao);
 		Assert.assertNotNull(m_reportService);
 	}

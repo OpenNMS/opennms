@@ -56,6 +56,7 @@ import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.test.mock.MockLogAppender;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.JobDetailBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -71,7 +72,7 @@ import org.springframework.webflow.test.MockRequestContext;
 @ContextConfiguration(locations={
         "classpath:org/opennms/web/svclayer/schedulerServiceTest.xml"
 })
-public class DefaultSchedulerServiceTest {
+public class DefaultSchedulerServiceTest implements InitializingBean {
     
     @Autowired 
     private DefaultSchedulerService m_schedulerService;
@@ -105,9 +106,9 @@ public class DefaultSchedulerServiceTest {
         m_scheduler = (Scheduler) m_schedulerFactory.getScheduler();
         
     }
-    
-    @Test
-    public void testWiring() {
+
+    @Override
+    public void afterPropertiesSet() {
         Assert.assertNotNull(m_schedulerService);
         Assert.assertNotNull(m_schedulerFactory);
         Assert.assertNotNull(m_jobDetail);

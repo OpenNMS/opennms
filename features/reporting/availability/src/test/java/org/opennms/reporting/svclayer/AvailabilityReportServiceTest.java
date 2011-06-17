@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.OnmsReportConfigDao;
 import org.opennms.reporting.availability.AvailabilityCalculator;
 import org.opennms.reporting.core.svclayer.ParameterConversionService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,7 +56,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @ContextConfiguration(locations={
         "classpath:org/opennms/reporting/availability/svclayer/AvailabilityReportServiceTest.xml"
 })
-public class AvailabilityReportServiceTest {
+public class AvailabilityReportServiceTest implements InitializingBean {
     
     @Autowired
     @Qualifier("mockClassicCalculator")
@@ -68,12 +69,20 @@ public class AvailabilityReportServiceTest {
     @Autowired
     ParameterConversionService m_parameterConversionService;
     
-    @Test
-    public void testWiring() {
+    @Override
+    public void afterPropertiesSet() {
         Assert.assertNotNull(m_classicCalculator);
         Assert.assertNotNull(m_calendarCalculator);
         Assert.assertNotNull(m_configDao);
         Assert.assertNotNull(m_parameterConversionService);
+    }
+    
+    /**
+     * TODO: Write a test
+     */
+    @Test
+    public void testMe() {
+        // Write some tests
     }
 
 }

@@ -94,7 +94,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(populate=true)
+@JUnitTemporaryDatabase
 @Transactional
 public class AckdTest implements InitializingBean {
 

@@ -45,6 +45,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
@@ -205,7 +206,7 @@ public final class DbIfServiceEntry {
      * @throws java.sql.SQLException
      *             Thrown if an error occurs with the connection
      */
-    private void insert(Connection c) throws SQLException {
+    private void insert(Connection c, boolean noRollback) throws SQLException {
         if (m_fromDb)
             throw new IllegalStateException("The record already exists in the database");
 
@@ -262,6 +263,19 @@ public final class DbIfServiceEntry {
         final DBUtils d = new DBUtils(getClass());
         
         try {
+            // Delete any conflicting services marked as deleted
+            // before inserting this one
+            String delCmd = "DELETE FROM ifServices WHERE status = 'D' "
+                + "AND nodeid = ? AND ipAddr = ? AND serviceID = ?";
+
+            delStmt = c.prepareStatement(delCmd);
+            d.watch(delStmt);
+            delStmt.setLong(1, m_nodeId);
+            delStmt.setString(2, InetAddressUtils.str(m_ipAddr));
+            delStmt.setInt(3, m_serviceId);
+
+            delStmt.executeUpdate();
+
             stmt = c.prepareStatement(names.toString());
             d.watch(stmt);
             names = null;
@@ -299,29 +313,31 @@ public final class DbIfServiceEntry {
             try {
                 rc = stmt.executeUpdate();
             } catch (SQLException e) {
-                log().warn("ifServices DB insert got exception; will retry after "
-                         + "deletion of any existing records for this ifService "
-                         + "that are marked for deletion.",
-                         e);
+                if (noRollback) {
+                    throw e;
+                } else {
+                    log().warn("ifServices DB insert got exception; will retry after "
+                            + "deletion of any existing records for this ifService "
+                            + "that are marked for deletion.",
+                            e);
 
-                /*
-                 * Maybe there's already an entry for this (service, node, IP address)
-                 * in the table, but it's marked for deletion. Delete it and try
-                 * the insertion again.
-                 */
-                c.rollback();
-                String delCmd = "DELETE FROM ifServices WHERE status = 'D' "
-                             + "AND nodeid = ? AND ipAddr = ? AND serviceID = ?";
+                    /*
+                     * Maybe there's already an entry for this (service, node, IP address)
+                     * in the table, but it's marked for deletion. Delete it and try
+                     * the insertion again.
+                     */
+                    c.rollback();
 
-                delStmt = c.prepareStatement(delCmd);
-                d.watch(delStmt);
-                delStmt.setLong(1, m_nodeId);
-                delStmt.setString(2, InetAddressUtils.str(m_ipAddr));
-                delStmt.setInt(3, m_serviceId);
+                    delStmt = c.prepareStatement(delCmd);
+                    d.watch(delStmt);
+                    delStmt.setLong(1, m_nodeId);
+                    delStmt.setString(2, InetAddressUtils.str(m_ipAddr));
+                    delStmt.setInt(3, m_serviceId);
 
-                rc = delStmt.executeUpdate();
+                    delStmt.executeUpdate();
 
-                rc = stmt.executeUpdate();
+                    rc = stmt.executeUpdate();
+                }
             }
             log().debug("insert(): SQL update result = " + rc);
         } finally {
@@ -934,11 +950,15 @@ public final class DbIfServiceEntry {
      *            The database connection used to write the record.
      */
     void store(Connection db) throws SQLException {
+        store(db, false);
+    }
+
+    void store(Connection db, boolean noRollback) throws SQLException {
         if (m_changed != 0 || m_fromDb == false) {
             if (m_fromDb) {
                 update(db);
             } else {
-                insert(db);
+                insert(db, noRollback);
             }
         }
     }

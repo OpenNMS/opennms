@@ -125,7 +125,7 @@ public class TemporaryDatabaseExecutionListener extends
 
 		final String dbName = useExisting ? jtd.useExistingDatabase() : getDatabaseName(testContext);
 		m_database = ((jtd.tempDbClass()).getConstructor(String.class, Boolean.TYPE).newInstance(dbName, useExisting));
-		m_database.setPopulateSchema(jtd.populate() && !useExisting);
+		m_database.setPopulateSchema(jtd.createSchema() && !useExisting);
 		try {
 			m_database.create();
 		} catch (final Throwable e) {
