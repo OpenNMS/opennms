@@ -587,7 +587,6 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return m_ignorePersist;
     }
 
-	@Override
 	public Date getCollectionTimestamp() {
 		return m_timestamp;
 	}

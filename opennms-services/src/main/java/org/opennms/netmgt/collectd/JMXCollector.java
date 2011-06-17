@@ -895,7 +895,6 @@ public abstract class JMXCollector implements ServiceCollector {
 			return false;
 		}        
 		
-		@Override
 		public Date getCollectionTimestamp() {
 			return m_timestamp;
 		}

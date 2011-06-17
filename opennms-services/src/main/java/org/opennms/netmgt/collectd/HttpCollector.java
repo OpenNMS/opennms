@@ -225,7 +225,6 @@ public class HttpCollector implements ServiceCollector {
 			return false;
 		}       
 
-		@Override
 		public Date getCollectionTimestamp() {
 			return m_timestamp;
 		}

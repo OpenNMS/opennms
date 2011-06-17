@@ -1771,22 +1771,18 @@ public class ThresholdingVisitorTest {
     private CollectionSet createAnonymousCollectionSet(long timestamp) {
     	final Date internalTimestamp = new Date(timestamp);
     	return new CollectionSet() {
-			@Override
 			public void visit(CollectionSetVisitor visitor) {
 				//Nothing to do
 			}
 			
-			@Override
 			public boolean ignorePersist() {
 				return true;
 			}
 			
-			@Override
 			public int getStatus() {
 				return ServiceCollector.COLLECTION_SUCCEEDED;
 			}
 			
-			@Override
 			public Date getCollectionTimestamp() {
 				return internalTimestamp;
 			}
