@@ -24,7 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/migratorTest.xml"
 })
-@JUnitTemporaryDatabase(populate=false)
+@JUnitTemporaryDatabase(createSchema=false)
 public class MigratorTest {
 
     @Autowired
