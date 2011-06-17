@@ -565,7 +565,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 service.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
                 service.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
                 service.setNotify(DbIfServiceEntry.NOTIFY_ON);
-                service.store(dbConn);
+                service.store(dbConn, true);
 
                 // Create a nodeGainedService event to eventd.
                 DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId);
