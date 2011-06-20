@@ -162,6 +162,9 @@
     <c:if test="${command.maclike != null}">
       <c:param name="maclike" value="${command.maclike}"/>
     </c:if>
+    <c:if test="${command.foreignSource != null}">
+      <c:param name="foreignSource" value="${command.foreignSource}"/>
+    </c:if>
     <c:if test="${command.category1 != null}">
       <c:forEach var="category" items="${command.category1}">
         <c:param name="category1" value="${category}"/>
