@@ -51,7 +51,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.InetAddressUtils;
@@ -81,7 +80,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class NodeDaoTest  {
+public class NodeDaoTest {
     
     @Autowired
     DistPollerDao m_distPollerDao;
@@ -98,10 +97,12 @@ public class NodeDaoTest  {
     @Autowired
     TransactionTemplate m_transTemplate;
     
+    /*
     @Before
     public void setUp() {
         m_populator.populateDatabase();
     }
+    */
     
     public OnmsNode getNode1() {
         return m_populator.getNode1();
@@ -122,6 +123,7 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testSave() {
+        m_populator.populateDatabase();
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
@@ -133,6 +135,7 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testSaveWithPathElement() {
+        m_populator.populateDatabase();
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
@@ -146,6 +149,7 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testSaveWithNullPathElement() {
+        m_populator.populateDatabase();
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
@@ -154,6 +158,7 @@ public class NodeDaoTest  {
         getNodeDao().save(node);
         
         OnmsNode myNode = getNodeDao().get(node.getId());
+        assertNotNull(myNode);
         myNode.setPathElement(null);
         getNodeDao().save(myNode);
         
@@ -163,6 +168,7 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testCreate() throws InterruptedException {
+        m_populator.populateDatabase();
         OnmsDistPoller distPoller = getDistPoller();
         
         OnmsNode node = new OnmsNode(distPoller);
@@ -197,8 +203,9 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testQuery() throws Exception {
+        m_populator.populateDatabase();
         
-        OnmsNode n = getNodeDao().get(1);
+        OnmsNode n = getNodeDao().get(getNode1().getId());
         validateNode(n);
         
     }
@@ -206,17 +213,18 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testDeleteOnOrphanIpInterface() {
+        m_populator.populateDatabase();
         
-        int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
+        int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
         
-        OnmsNode n = getNodeDao().get(1);
+        OnmsNode n = getNodeDao().get(getNode1().getId());
         Iterator<OnmsIpInterface> it = n.getIpInterfaces().iterator();
         it.next();
         it.remove();
         getNodeDao().saveOrUpdate(n);
         getNodeDao().flush();
         
-        int postCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
+        int postCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
         
         assertEquals(preCount-1, postCount);
         
@@ -226,9 +234,10 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testDeleteNode() {
+        m_populator.populateDatabase();
         int preCount = getJdbcTemplate().queryForInt("select count(*) from node");
 
-        OnmsNode n = getNodeDao().get(1);
+        OnmsNode n = getNodeDao().get(getNode1().getId());
         getNodeDao().delete(n);
         getNodeDao().flush();
         
@@ -240,8 +249,9 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testQueryWithHierarchy() throws Exception {
+        m_populator.populateDatabase();
         
-        OnmsNode n = getNodeDao().getHierarchy(1);
+        OnmsNode n = getNodeDao().getHierarchy(getNode1().getId());
         validateNode(n);
     }
     
@@ -259,8 +269,9 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testQueryWithHierarchyCloseTransaction() throws Exception {
+        m_populator.populateDatabase();
 
-        OnmsNode n = getNodeHierarchy(1);
+        OnmsNode n = getNodeHierarchy(getNode1().getId());
         
         validateNode(n);
 
@@ -282,6 +293,7 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testGetForeignIdToNodeIdMap() {
+        m_populator.populateDatabase();
         Map<String, Integer> arMap = getNodeDao().getForeignIdToNodeIdMap("imported:");
         assertTrue("Expected to find foriegnId 1", arMap.containsKey("1"));
         OnmsNode node1 = getNodeDao().get(arMap.get("1"));
@@ -293,12 +305,13 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testUpdateNodeScanStamp() {
+        m_populator.populateDatabase();
         
         Date timestamp = new Date(27);
         
-        getNodeDao().updateNodeScanStamp(1, timestamp);
+        getNodeDao().updateNodeScanStamp(getNode1().getId(), timestamp);
         
-        OnmsNode n = getNodeDao().get(1);
+        OnmsNode n = getNodeDao().get(getNode1().getId());
         
         assertEquals(timestamp, n.getLastCapsdPoll());
         
@@ -308,6 +321,7 @@ public class NodeDaoTest  {
     @Test
     @Transactional
     public void testFindByForeignSourceAndIpAddress() {
+        m_populator.populateDatabase();
         assertEquals(0, getNodeDao().findByForeignSourceAndIpAddress("NoSuchForeignSource", "192.168.1.1").size());
         assertEquals(0, getNodeDao().findByForeignSourceAndIpAddress("imported:", "192.167.7.7").size());
         assertEquals(1, getNodeDao().findByForeignSourceAndIpAddress("imported:", "192.168.1.1").size());
@@ -320,6 +334,12 @@ public class NodeDaoTest  {
     
     @Test
     public void testDeleteObsoleteInterfaces() {
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
+                m_populator.populateDatabase();
+                return null;
+            }
+        });
         
         final Date timestamp = new Date(1234);
 
@@ -354,14 +374,14 @@ public class NodeDaoTest  {
     }
 
     private void validateScan() {
-        OnmsNode after = getNodeDao().get(1);
+        OnmsNode after = getNodeDao().get(getNode1().getId());
         
         assertEquals(1, after.getIpInterfaces().size());
         assertEquals(1, after.getSnmpInterfaces().size());
     }
 
     private void simulateScan(Date timestamp) {
-        OnmsNode n = getNodeDao().get(1);
+        OnmsNode n = getNodeDao().get(getNode1().getId());
         
         assertEquals(4, n.getIpInterfaces().size());
         assertEquals(4, n.getSnmpInterfaces().size());
@@ -377,13 +397,10 @@ public class NodeDaoTest  {
         getNodeDao().saveOrUpdate(n);
         
         getNodeDao().flush();
-
-        
-
     }
 
     private void deleteObsoleteInterfaces(Date timestamp) {
-        getNodeDao().deleteObsoleteInterfaces(1, timestamp);
+        getNodeDao().deleteObsoleteInterfaces(getNode1().getId(), timestamp);
     }
     
     private void validateNode(OnmsNode n) throws Exception {
@@ -399,7 +416,7 @@ public class NodeDaoTest  {
         assertNodeEquals(getNode1(), n);
     }
     
-    private class PropertyComparator implements Comparator<Object> {
+    private static class PropertyComparator implements Comparator<Object> {
     	
     	String m_propertyName;
     	
@@ -421,7 +438,7 @@ public class NodeDaoTest  {
     	
     }
     
-    private void assertNodeEquals(OnmsNode expected, OnmsNode actual) throws Exception {
+    private static void assertNodeEquals(OnmsNode expected, OnmsNode actual) throws Exception {
     	assertEquals("Unexpected nodeId", expected.getId(), actual.getId());
     	String[] properties = { "id", "label", "labelSource", "assetRecord.assetNumber", "distPoller.name", "sysContact", "sysName", "sysObjectId" };
     	assertPropertiesEqual(properties, expected, actual);
@@ -430,11 +447,11 @@ public class NodeDaoTest  {
     	
     }
     
-    private interface AssertEquals<T> {
+    private static interface AssertEquals<T> {
     	public void assertEqual(T expected, T actual) throws Exception;
     }
     
-    private <T> void assertSetsEqual(Set<T> expectedSet, Set<T> actualSet, String orderProperty, AssertEquals<T> comparer) throws Exception {
+    private static <T> void assertSetsEqual(Set<T> expectedSet, Set<T> actualSet, String orderProperty, AssertEquals<T> comparer) throws Exception {
     	SortedSet<T> expectedSorted = new TreeSet<T>(new PropertyComparator(orderProperty));
     	expectedSorted.addAll(expectedSet);
     	SortedSet<T> actualSorted = new TreeSet<T>(new PropertyComparator(orderProperty));
@@ -454,7 +471,7 @@ public class NodeDaoTest  {
     		fail("Unexpected item "+actual.next()+" in the actual list");
     }
 
-    private void assertInterfaceSetsEqual(Set<OnmsIpInterface> expectedSet, Set<OnmsIpInterface> actualSet) throws Exception {
+    private static void assertInterfaceSetsEqual(Set<OnmsIpInterface> expectedSet, Set<OnmsIpInterface> actualSet) throws Exception {
     	assertSetsEqual(expectedSet, actualSet, "ipAddress" , new AssertEquals<OnmsIpInterface>() {
 
 			public void assertEqual(OnmsIpInterface expected, OnmsIpInterface actual) throws Exception {
@@ -464,13 +481,13 @@ public class NodeDaoTest  {
     	});
 	}
 
-	private void assertInterfaceEquals(OnmsIpInterface expected, OnmsIpInterface actual) throws Exception {
+	private static void assertInterfaceEquals(OnmsIpInterface expected, OnmsIpInterface actual) throws Exception {
 		String[] properties = { "ipAddress", "ifIndex",  "ipHostName", "isManaged", "node.id" };
     	assertPropertiesEqual(properties, expected, actual);
     	assertServicesEquals(expected.getMonitoredServices(), actual.getMonitoredServices());
 	}
 	
-	private void assertServicesEquals(Set<OnmsMonitoredService> expectedSet, Set<OnmsMonitoredService> actualSet) throws Exception {
+	private static void assertServicesEquals(Set<OnmsMonitoredService> expectedSet, Set<OnmsMonitoredService> actualSet) throws Exception {
     	assertSetsEqual(expectedSet, actualSet, "serviceId" , new AssertEquals<OnmsMonitoredService>() {
 
 			public void assertEqual(OnmsMonitoredService expected, OnmsMonitoredService actual) throws Exception {
@@ -480,18 +497,18 @@ public class NodeDaoTest  {
     	});
 	}
 
-	protected void assertServiceEquals(OnmsMonitoredService expected, OnmsMonitoredService actual) {
+	protected static void assertServiceEquals(OnmsMonitoredService expected, OnmsMonitoredService actual) {
 		assertEquals(expected.getServiceName(), actual.getServiceName());
 	}
 
-	private void assertPropertiesEqual(String[] properties, Object expected, Object actual) throws Exception {
+	private static void assertPropertiesEqual(String[] properties, Object expected, Object actual) throws Exception {
     	for (String property : properties) {
 			assertPropertyEquals(property, expected, actual);
 		}
 		
 	}
 
-	private void assertPropertyEquals(String name, Object expected, Object actual) throws Exception {
+	private static void assertPropertyEquals(String name, Object expected, Object actual) throws Exception {
 		Object expectedValue = BeanUtils.getProperty(expected, name);
 		Object actualValue = BeanUtils.getProperty(actual, name);
 		assertEquals("Unexpected value for property "+name+" on object "+expected, expectedValue, actualValue);
@@ -500,6 +517,7 @@ public class NodeDaoTest  {
     @Test
     @Transactional
 	public void testQuery2() {
+        m_populator.populateDatabase();
         OnmsNode n = getNodeDao().get(6);
         assertNotNull(n);
         assertEquals(3, n.getIpInterfaces().size());
