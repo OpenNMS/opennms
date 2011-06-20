@@ -62,6 +62,8 @@ import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -96,7 +98,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean {
+public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -125,6 +127,12 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean {
 
     private MockSnmpAgent m_agent;
 
+    private TemporaryDatabase m_database;
+
+    public void setTemporaryDatabase(TemporaryDatabase database) {
+        m_database = database;
+    }
+
     @Override
     public void afterPropertiesSet() {
         assertNotNull(m_mockEventIpcManager);
@@ -137,6 +145,15 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+
+        /*
+        DatabaseSchemaConfigFactory.init();
+        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+        jdbcFilterDao.setDataSource(m_database);
+        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+        jdbcFilterDao.afterPropertiesSet();
+        FilterDaoFactory.setInstance(jdbcFilterDao);
+        */
 
         RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
 

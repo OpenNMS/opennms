@@ -63,6 +63,8 @@ import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -85,7 +87,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class NotificationManagerTest {
+public class NotificationManagerTest implements TemporaryDatabaseAware<TemporaryDatabase> {
 	@Autowired
 	private DataSource m_dataSource;
 
@@ -107,13 +109,29 @@ public class NotificationManagerTest {
     private NotificationManagerImpl m_notificationManager;
     private NotifdConfigManager m_configManager;
 
+    private TemporaryDatabase m_database;
+
+    public void setTemporaryDatabase(TemporaryDatabase database) {
+        m_database = database;
+    }
+
     @Before
     public void setUp() throws Exception {
-    	// Make sure we get a new FilterDaoFactory every time because our
+        // Make sure we get a new FilterDaoFactory every time because our
         // DataSource changes every test.
-    	FilterDaoFactory.setInstance(null);
-    	FilterDaoFactory.getInstance();
-    	
+        FilterDaoFactory.setInstance(null);
+        FilterDaoFactory.getInstance();
+
+        /*
+        // Initialize Filter DAO
+        DatabaseSchemaConfigFactory.init();
+        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+        jdbcFilterDao.setDataSource(m_database);
+        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+        jdbcFilterDao.afterPropertiesSet();
+        FilterDaoFactory.setInstance(jdbcFilterDao);
+        */
+
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
         
@@ -406,7 +424,7 @@ public class NotificationManagerTest {
         assertEquals(description, matches, m_notificationManager.nodeInterfaceServiceValid(notif, builder.getEvent()));
     }
     
-    public class NotificationManagerImpl extends NotificationManager {
+    public static class NotificationManagerImpl extends NotificationManager {
         protected NotificationManagerImpl(NotifdConfigManager configManager, DataSource dcf) {
             super(configManager, dcf);
         }
