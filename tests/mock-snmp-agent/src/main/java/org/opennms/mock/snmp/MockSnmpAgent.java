@@ -362,7 +362,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
         for (final TransportMapping transportMapping : transportMappings) {
             try {
-                transportMapping.close();
+                if (transportMapping != null) transportMapping.close();
             } catch (final Throwable t) {
                 LogUtils.debugf(this, t, "an error occurred while closing the transport mapping");
             }
