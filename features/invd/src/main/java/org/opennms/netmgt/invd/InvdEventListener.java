@@ -132,7 +132,7 @@ public class InvdEventListener implements EventListener {
 
         ThreadCategory log = log();
 
-        int nodeId = (int) event.getNodeid();
+        int nodeId = event.getNodeid().intValue();
         String ipAddr = event.getInterface();
         String svcName = event.getService();
 
@@ -193,7 +193,7 @@ public class InvdEventListener implements EventListener {
 
         getInventoryConfigDao().rebuildPackageIpListMap();
 
-        getInventoryScheduler().scheduleInterface((int) event.getNodeid(), event.getInterface(),
+        getInventoryScheduler().scheduleInterface( event.getNodeid().intValue(), event.getInterface(),
                           event.getService(), false);
     }
     

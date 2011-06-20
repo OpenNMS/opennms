@@ -5,7 +5,7 @@ import java.io.InputStream;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.config.invd.wmi.WmiInventory;
-import org.opennms.netmgt.dao.JAXBDataAccessFailureException;
+import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.FileSystemResource;
@@ -33,7 +33,7 @@ public class WmiInvScanConfigDaoJaxbTest extends TestCase {
         dao.setConfigResource(resource);
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new JAXBDataAccessFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
+        ta.anticipate(new MarshallingResourceFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
         
         try {
             dao.afterPropertiesSet();

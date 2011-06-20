@@ -1,5 +1,6 @@
 package org.opennms.netmgt.config.invd;
 
+import java.net.InetAddress;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +9,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
+import static org.opennms.core.utils.InetAddressUtils.*;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 
@@ -49,7 +49,7 @@ public class InvdPackage implements Serializable, Comparable<InvdPackage> {
 	private List<String> m_outageCalendars = new ArrayList<String>();
 	
 	@XmlTransient
-	private List<String> m_ipList;
+	private List<InetAddress> m_ipList;
 
 	@XmlTransient
 	public String getName() {
@@ -159,11 +159,11 @@ public class InvdPackage implements Serializable, Comparable<InvdPackage> {
 	}
 	
 	@XmlTransient
-	public List<String> getIpList() {
+	public List<InetAddress> getIpList() {
 		return m_ipList;
 	}
 
-	public void setIpList(List<String> ipList) {
+	public void setIpList(List<InetAddress> ipList) {
 		m_ipList = ipList;
 	}
 
@@ -184,7 +184,7 @@ public class InvdPackage implements Serializable, Comparable<InvdPackage> {
 			log().debug("createPackageIpMap: package is " + getName()
 					+ ". filer rules are  " + filterRules);
 		try {
-            List<String> ipList = FilterDaoFactory.getInstance().getIPList(filterRules);
+            List<InetAddress> ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules);
 			if (ipList.size() > 0) {
 				setIpList(ipList);
 			}
@@ -194,44 +194,34 @@ public class InvdPackage implements Serializable, Comparable<InvdPackage> {
 		}
 	}
 	
-	boolean hasSpecific(long addr) {
+	boolean hasSpecific(byte[] addr) {
 		boolean has_specific = false;
 		for(String espec : getSpecifics()) {
-			long speca = IPSorter.convertToLong(espec);
+			byte[] speca = toIpAddrBytes(espec);
 			if(speca == addr)
 				has_specific = true;
 		}
 		return has_specific;
 	}
 	
-	public boolean hasIncludeRange(long addr) {
+	public boolean hasIncludeRange(byte[] addr) {
 		boolean has_range_include = getIncludeRanges().size() == 0 && getSpecifics().size() == 0;
 
-		for(InvdIncludeRange rng : getIncludeRanges()) {		
-			long start = IPSorter.convertToLong(rng.getBegin());
-			if (addr > start) {
-				long end = IPSorter.convertToLong(rng.getEnd());
-				if (addr <= end) {
-					has_range_include = true;
-				}
-			} else if (addr == start) {
+		for(InvdIncludeRange rng : getIncludeRanges()) {
+			if(isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
 				has_range_include = true;
+                break;
 			}
 		}
 		return has_range_include;
 	}
 	
-	boolean hasExcludeRange(long addr, boolean has_specific) {
+	boolean hasExcludeRange(byte[] addr, boolean has_specific) {
 		boolean has_range_exclude = false;
 		for(InvdIncludeRange rng : getExcludeRanges()) {
-			long start = IPSorter.convertToLong(rng.getBegin());
-			if (addr > start) {
-				long end = IPSorter.convertToLong(rng.getEnd());
-				if (addr <= end) {
-					has_range_exclude = true;
-				}
-			} else if (addr == start) {
+			if(isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
 				has_range_exclude = true;
+				break;
 			}
 		}
 		return has_range_exclude;
@@ -262,7 +252,7 @@ public class InvdPackage implements Serializable, Comparable<InvdPackage> {
 		// that it is in the include range and is not excluded
 		//
 
-		long addr = IPSorter.convertToLong(iface);
+		byte[] addr = toIpAddrBytes(iface);
 
 		boolean has_range_include = hasIncludeRange(addr);
 		boolean has_specific = hasSpecific(addr);
@@ -306,12 +296,15 @@ public class InvdPackage implements Serializable, Comparable<InvdPackage> {
 	}
 	
 	boolean interfaceInFilter(String iface) {
+		if (iface == null) return false;
+		final InetAddress ifaceAddress = addr(iface);
+		
 		boolean filterPassed = false;
-
+		
 		// get list of IPs in this package
-		List<String> ipList = getIpList();
+		List<InetAddress> ipList = getIpList();
 		if (ipList != null && ipList.size() > 0) {
-			filterPassed = ipList.contains(iface);
+			filterPassed = ipList.contains(ifaceAddress);
 		} else {
 			log().debug("interfaceInFilter: ipList contains no data");
 		}

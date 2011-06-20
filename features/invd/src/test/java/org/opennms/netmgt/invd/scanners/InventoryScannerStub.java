@@ -54,6 +54,10 @@ public class InventoryScannerStub implements InventoryScanner {
             public List<InventoryResource> getInventoryResources() {
                 return new ArrayList<InventoryResource>();
             }
+			
+			public void setInventoryResources(List<InventoryResource> resources) {
+                return;
+            }
         };
 		return collectionSetResult;
 	}

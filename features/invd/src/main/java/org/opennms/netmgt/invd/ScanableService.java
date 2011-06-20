@@ -211,7 +211,7 @@ public class ScanableService implements ReadyRunnable {
     private void sendEvent(String uei, String reason) {
         EventBuilder builder = new EventBuilder(uei, "OpenNMS.Invd");
         builder.setNodeid(m_nodeId);
-        builder.setInterface(getHostAddress());
+        builder.setInterface(m_agent.getAddress());
         builder.setService(m_spec.getServiceName());
         try {
             builder.setHost(InetAddress.getLocalHost().getHostAddress());

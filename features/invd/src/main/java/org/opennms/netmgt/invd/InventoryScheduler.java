@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.invd;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -414,7 +416,8 @@ public class InventoryScheduler {
             }
 
             // Is the interface in the package?
-            if (!wpkg.interfaceInPackage(iface.getIpAddress())) {
+			final String ipAddress = str(iface.getIpAddress());
+            if (!wpkg.interfaceInPackage(ipAddress)) {
                 if (log().isDebugEnabled()) {
                     StringBuffer sb = new StringBuffer();
                     sb.append("getSpecificationsForInterface: address/service: ");
@@ -456,7 +459,7 @@ public class InventoryScheduler {
      */
     private boolean alreadyScheduled(OnmsIpInterface iface,
             ScannerSpecification spec) {
-        String ipAddress = iface.getIpAddress();
+        String ipAddress = str(iface.getIpAddress());
         String svcName = spec.getServiceName();
         String pkgName = spec.getPackageName();
         StringBuffer sb;

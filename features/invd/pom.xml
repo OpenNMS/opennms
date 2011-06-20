@@ -32,6 +32,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -95,11 +96,12 @@
       <artifactId>opennms-wmi</artifactId>
       <scope>compile</scope>
     </dependency>
-        <dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>hibernate-dependencies</artifactId>
+	  <type>pom</type>
     </dependency>
-        <dependency>
+    <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence-api</artifactId>
     </dependency>

@@ -32,12 +32,12 @@
 package org.opennms.netmgt.invd;
 
 import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 
 import java.net.InetAddress;
 
-public class ScanningClient extends IPv4NetworkInterface {
+public class ScanningClient extends InetNetworkInterface {
 	private static final long serialVersionUID = -1976925187647808430L;
 	private int m_nodeId = -1;
     private InetAddress m_inetAddress = null;
@@ -45,8 +45,11 @@ public class ScanningClient extends IPv4NetworkInterface {
     private Integer m_ifaceId;
     private IpInterfaceDao m_ifaceDao;
 
-    public Object getAddress() {
-        return getInetAddress();
+    public InetAddress getAddress() {
+        if (m_inetAddress == null) {
+            m_inetAddress = getIpInterface().getIpAddress();
+        }
+        return m_inetAddress;
     }
 
     public ScanningClient(Integer ifaceId, IpInterfaceDao ifaceDao) {
@@ -58,7 +61,7 @@ public class ScanningClient extends IPv4NetworkInterface {
     }
 
     public String getHostAddress() {
-        return getInetAddress().getHostAddress();
+        return getAddress().getHostAddress();
     }
 
     public int getNodeId() {
@@ -74,13 +77,6 @@ public class ScanningClient extends IPv4NetworkInterface {
 
     public String toString() {
         return "Agent[nodeid = "+getNodeId()+" ipaddr= "+getHostAddress()+']';
-    }
-
-    public InetAddress getInetAddress() {
-        if (m_inetAddress == null) {
-            m_inetAddress = getIpInterface().getInetAddress();
-        }
-        return m_inetAddress;
     }
 
     OnmsIpInterface getIpInterface() {
