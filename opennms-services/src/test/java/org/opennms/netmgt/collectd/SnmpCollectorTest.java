@@ -73,6 +73,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
@@ -95,7 +96,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class SnmpCollectorTest implements MockSnmpAgentAware {
+public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -124,15 +125,19 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
 
     private MockSnmpAgent m_agent;
 
-    @Before
-    public void setUp() throws Exception {
-        MockLogAppender.setupLogging();
+    @Override
+    public void afterPropertiesSet() {
         assertNotNull(m_mockEventIpcManager);
         assertNotNull(m_transactionManager);
         assertNotNull(m_nodeDao);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_serviceTypeDao);
-        
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+
         RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
 
         m_testHostName = InetAddressUtils.str(InetAddress.getLocalHost());
@@ -481,9 +486,5 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
 
     public void setMockSnmpAgent(MockSnmpAgent agent) {
         m_agent = agent;
-    }
-
-    public void setTestContext(TestContext context) {
-        m_context = context;
     }
 }
