@@ -50,7 +50,11 @@ public class ICMPPacket {
         Redirect(5),
         EchoRequest(8),
         TimeExceeded(11),
-        Traceroute(30);
+        Traceroute(30),
+        
+        // this is used to represent a type code that we have not handled
+        Other(-1);
+
         
         private int m_code;
         private Type(int code) {
@@ -67,7 +71,7 @@ public class ICMPPacket {
                     return p;
                 }
             }
-            throw new IllegalArgumentException(String.format("Unabled to find Type with code %d", code));
+            return Other;
         }
         
     }
