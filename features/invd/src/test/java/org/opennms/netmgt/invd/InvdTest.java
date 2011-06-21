@@ -32,6 +32,8 @@
 
 package org.opennms.netmgt.invd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import junit.framework.TestCase;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockLogAppender;
@@ -64,6 +66,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.invd.exceptions.InventoryException;
 
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Map;
 import java.util.ArrayList;
@@ -134,15 +137,14 @@ transactionTemplate - real
         m_scanner = m_easyMockUtils.createMock(InventoryScanner.class);
         m_scheduler = new MockScheduler();
 
-		// todo fix
-        //m_filterDao = EasyMock.createMock(FilterDao.class);
-        //List<String> allIps = new ArrayList<String>();
-        //allIps.add("192.168.1.1");
-        //allIps.add("192.168.1.2");
-        //allIps.add("192.168.1.3");
-        //allIps.add("192.168.1.4");
-        //allIps.add("192.168.1.5");
-        //expect(m_filterDao.getIPList("IPADDR IPLIKE *.*.*.*")).andReturn(allIps).atLeastOnce();
+        m_filterDao = EasyMock.createMock(FilterDao.class);
+        List<InetAddress> allIps = new ArrayList<InetAddress>();
+        allIps.add(addr("192.168.1.1"));
+        allIps.add(addr("192.168.1.2"));
+        allIps.add(addr("192.168.1.3"));
+        allIps.add(addr("192.168.1.4"));
+        allIps.add(addr("192.168.1.5"));
+        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(allIps).atLeastOnce();
         //expect(m_filterDao.getIPList("IPADDR IPLIKE 1.1.1.1")).andReturn(new ArrayList<String>(0)).atLeastOnce();
         EasyMock.replay(m_filterDao);
         FilterDaoFactory.setInstance(m_filterDao);
@@ -338,9 +340,12 @@ transactionTemplate - real
     }
 
     private void setupInterface(OnmsIpInterface iface) {
-        // TODO fix this
+    	ArrayList<OnmsIpInterface> ifaces = new ArrayList<OnmsIpInterface>();
+    	ifaces.add(iface);
+
+    	// TODO fix this
 		//expect(m_ipIfDao.findByServiceType("FAKE")).andReturn(Collections.singleton(iface));
-		expect(m_ipIfDao.findByServiceType("FAKE")).andReturn(new ArrayList<OnmsIpInterface>(0));
+		expect(m_ipIfDao.findByServiceType("FAKE")).andReturn(ifaces);
         expect(m_ipIfDao.load(iface.getId())).andReturn(iface).atLeastOnce();
     }
 
