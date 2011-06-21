@@ -87,7 +87,6 @@ public class AuthorizationTest implements InitializingBean {
     }
 
     @Before
-    @Transactional
     public void setUp() throws Exception {
         m_populator.populateDatabase();
     }

@@ -95,10 +95,10 @@ public class MonitoredServiceDaoTest {
     @Test
     @Transactional
     public void testGetByCompositeId() {
-    	OnmsMonitoredService monSvc = m_monitoredServiceDao.get(1, addr("192.168.1.1"), "SNMP");
+    	OnmsMonitoredService monSvc = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), "SNMP");
     	assertNotNull(monSvc);
     	
-    	OnmsMonitoredService monSvc2 = m_monitoredServiceDao.get(1, addr("192.168.1.1"), monSvc.getIfIndex(), monSvc.getServiceId());
+    	OnmsMonitoredService monSvc2 = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), monSvc.getIfIndex(), monSvc.getServiceId());
     	assertNotNull(monSvc2);
     	
     }

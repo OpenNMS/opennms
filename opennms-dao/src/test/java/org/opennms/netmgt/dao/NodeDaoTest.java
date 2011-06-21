@@ -333,6 +333,7 @@ public class NodeDaoTest {
     
     
     @Test
+    @JUnitTemporaryDatabase
     public void testDeleteObsoleteInterfaces() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus status) {
@@ -518,7 +519,7 @@ public class NodeDaoTest {
     @Transactional
 	public void testQuery2() {
         m_populator.populateDatabase();
-        OnmsNode n = getNodeDao().get(6);
+        OnmsNode n = getNodeDao().get(m_populator.getNode6().getId());
         assertNotNull(n);
         assertEquals(3, n.getIpInterfaces().size());
         assertNotNull(n.getAssetRecord());

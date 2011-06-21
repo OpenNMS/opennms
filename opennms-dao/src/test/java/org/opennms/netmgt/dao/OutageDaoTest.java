@@ -179,6 +179,7 @@ public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<T
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testGetMatchingOutages() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus status) {
@@ -208,6 +209,7 @@ public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<T
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testGetMatchingOutagesWithEmptyServiceList() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus status) {
@@ -236,6 +238,7 @@ public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<T
     }
 
     @Test
+    @Transactional
     public void testDuplicateOutages() {
         for (final OnmsNode node : m_nodeDao.findAll()) {
             m_nodeDao.delete(node);
@@ -264,6 +267,7 @@ public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<T
     }
 
     @Test
+    @Transactional
     public void testLimitDuplicateOutages() {
         for (final OnmsNode node : m_nodeDao.findAll()) {
             m_nodeDao.delete(node);

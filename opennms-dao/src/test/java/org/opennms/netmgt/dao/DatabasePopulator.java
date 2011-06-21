@@ -113,6 +113,11 @@ public class DatabasePopulator {
     private TransactionTemplate m_transTemplate;
     
     private OnmsNode m_node1;
+    private OnmsNode m_node2;
+    private OnmsNode m_node3;
+    private OnmsNode m_node4;
+    private OnmsNode m_node5;
+    private OnmsNode m_node6;
     
     private static boolean POPULATE_DATABASE_IN_SEPARATE_TRANSACTION = true;
 
@@ -202,9 +207,10 @@ public class DatabasePopulator {
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getServiceType("ICMP"));
         builder.addAtInterface(node1, "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
-        final OnmsNode node2 = builder.getCurrentNode();
+        OnmsNode node2 = builder.getCurrentNode();
         getNodeDao().save(node2);
         getNodeDao().flush();
+        setNode2(node2);
         
         builder.addNode("node3").setForeignSource("imported:").setForeignId("3");
         builder.addCategory(ops);
@@ -216,8 +222,10 @@ public class DatabasePopulator {
         builder.addService(getServiceType("HTTP"));
         builder.addInterface("192.168.3.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getServiceType("ICMP"));
-        getNodeDao().save(builder.getCurrentNode());
+        OnmsNode node3 = builder.getCurrentNode();
+        getNodeDao().save(node3);
         getNodeDao().flush();
+        setNode3(node3);
         
         builder.addNode("node4").setForeignSource("imported:").setForeignId("4");
         builder.addCategory(ac);
@@ -229,8 +237,10 @@ public class DatabasePopulator {
         builder.addService(getServiceType("HTTP"));
         builder.addInterface("192.168.4.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getServiceType("ICMP"));
-        getNodeDao().save(builder.getCurrentNode());
+        OnmsNode node4 = builder.getCurrentNode();
+        getNodeDao().save(node4);
         getNodeDao().flush();
+        setNode4(node4);
         
         //This node purposely doesn't have a foreignId style assetNumber
         builder.addNode("alternate-node1").getAssetRecord().setAssetNumber("5");
@@ -244,8 +254,10 @@ public class DatabasePopulator {
         builder.addService(getServiceType("HTTP"));
         builder.addInterface("10.1.1.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getServiceType("ICMP"));
-        getNodeDao().save(builder.getCurrentNode());
+        OnmsNode node5 = builder.getCurrentNode();
+        getNodeDao().save(node5);
         getNodeDao().flush();
+        setNode5(node5);
         
         //This node purposely doesn't have a assetNumber and is used by a test to check the category
         builder.addNode("alternate-node2").getAssetRecord().setDisplayCategory("category1");
@@ -258,8 +270,10 @@ public class DatabasePopulator {
         builder.addService(getServiceType("HTTP"));
         builder.addInterface("10.1.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getServiceType("ICMP"));
-        getNodeDao().save(builder.getCurrentNode());
+        OnmsNode node6 = builder.getCurrentNode();
+        getNodeDao().save(node6);
         getNodeDao().flush();
+        setNode6(node6);
         
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(distPoller);
@@ -523,8 +537,48 @@ public class DatabasePopulator {
         return m_node1;
     }
     
+    public OnmsNode getNode2() {
+        return m_node2;
+    }
+    
+    public OnmsNode getNode3() {
+        return m_node3;
+    }
+    
+    public OnmsNode getNode4() {
+        return m_node4;
+    }
+    
+    public OnmsNode getNode5() {
+        return m_node5;
+    }
+    
+    public OnmsNode getNode6() {
+        return m_node6;
+    }
+    
     private void setNode1(final OnmsNode node1) {
         m_node1 = node1;
+    }
+
+    private void setNode2(final OnmsNode node2) {
+        m_node2 = node2;
+    }
+
+    private void setNode3(final OnmsNode node3) {
+        m_node3 = node3;
+    }
+
+    private void setNode4(final OnmsNode node4) {
+        m_node4 = node4;
+    }
+
+    private void setNode5(final OnmsNode node5) {
+        m_node5 = node5;
+    }
+
+    private void setNode6(final OnmsNode node6) {
+        m_node6 = node6;
     }
 
     public LocationMonitorDao getLocationMonitorDao() {

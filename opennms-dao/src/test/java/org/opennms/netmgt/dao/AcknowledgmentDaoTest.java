@@ -55,6 +55,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Tests for Acknowledgment DAO
@@ -93,8 +94,9 @@ public class AcknowledgmentDaoTest {
 	public void setUp() {
 		m_databasePopulator.populateDatabase();
 	}
-
+	
 	@Test
+	@Transactional
     public void testSaveUnspecified() {
         OnmsAcknowledgment ack = new OnmsAcknowledgment();
         ack.setAckTime(new Date());
@@ -119,6 +121,7 @@ public class AcknowledgmentDaoTest {
 	}
 
 	@Test
+    @Transactional
     public void testSaveWithAlarm() {
         OnmsEvent event = new OnmsEvent();
         event.setEventLog("Y");

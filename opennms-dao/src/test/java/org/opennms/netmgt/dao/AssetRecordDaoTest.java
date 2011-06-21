@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -81,6 +82,7 @@ public class AssetRecordDaoTest {
 	}
 
 	@Test
+	@Transactional
     public void testCreateAndGets() {
         OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
         onmsNode.setLabel("myNode");
@@ -100,6 +102,7 @@ public class AssetRecordDaoTest {
     }
 
     @Test
+    @Transactional
 	public void testAddUserName() {
         OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
         onmsNode.setLabel("myNode");
@@ -124,6 +127,7 @@ public class AssetRecordDaoTest {
     }
     
 	@Test
+    @Transactional
     public void testAddAutoenable() {
         OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
         onmsNode.setLabel("myNode");
@@ -146,6 +150,4 @@ public class AssetRecordDaoTest {
         assertEquals(assetRecord.getConnection(), assetRecordFromDb.getConnection());
 
     }
-    
-
 }

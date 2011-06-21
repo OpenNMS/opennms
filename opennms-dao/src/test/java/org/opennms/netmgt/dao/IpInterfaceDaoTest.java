@@ -166,9 +166,10 @@ public class IpInterfaceDaoTest {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
         
-        assertEquals("node ID for 192.168.1.1", Integer.valueOf(1), interfaceNodes.get(InetAddressUtils.addr("192.168.1.1")));
-        assertEquals("node ID for 192.168.1.2", Integer.valueOf(1), interfaceNodes.get(InetAddressUtils.addr("192.168.1.2")));
-        assertEquals("node ID for 192.168.2.1", Integer.valueOf(2), interfaceNodes.get(InetAddressUtils.addr("192.168.2.1")));
+        assertEquals("node ID for 192.168.1.1", m_databasePopulator.getNode1().getId(), interfaceNodes.get(InetAddressUtils.addr("192.168.1.1")));
+        assertEquals("node ID for 192.168.1.2", m_databasePopulator.getNode1().getId(), interfaceNodes.get(InetAddressUtils.addr("192.168.1.2")));
+        // This hack assumes that the database ID of node 2 is node1.getId() + 1  :)
+        assertEquals("node ID for 192.168.2.1", Integer.valueOf(m_databasePopulator.getNode1().getId() + 1), interfaceNodes.get(InetAddressUtils.addr("192.168.2.1")));
         assertFalse("node ID for *BOGUS*IP* should not have been found", interfaceNodes.containsKey("*BOGUS*IP*"));
     }
     

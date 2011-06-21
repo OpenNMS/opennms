@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -64,6 +65,7 @@ public class DistPollerDaoTest {
 	private DistPollerDao m_distPollerDao;
 	
 	@Test
+	@Transactional
 	public void testCreate() {
         OnmsDistPoller distPoller = new OnmsDistPoller("otherpoller", "192.168.7.7");   
         distPoller.setLastEventPull(new Date(1000000));
@@ -72,6 +74,7 @@ public class DistPollerDaoTest {
     }
     
 	@Test
+    @Transactional
     public void testGet() {
         assertNull(getDistPollerDao().get("otherpoller"));
         
