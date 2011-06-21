@@ -1,82 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node_availability" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="45"/>
-	<property name="ireport.y" value="72"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="97"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
-	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
-	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Table_Detail" hAlign="Left" vAlign="Middle" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+	<style name="Warning/Critical">
 		<conditionalStyle>
-			<conditionExpression><![CDATA[$F{avail_percent} < $P{DS_AVAILABILITY_CRITICAL}]]></conditionExpression>
+			<conditionExpression><![CDATA[$F{avail_percent} < $P{AVAILABILITY_CRITICAL}]]></conditionExpression>
 			<style mode="Opaque" backcolor="#FF3333"/>
 		</conditionalStyle>
 		<conditionalStyle>
-			<conditionExpression><![CDATA[$F{avail_percent} < $P{DS_AVAILABILITY_WARNING}]]></conditionExpression>
-			<style mode="Opaque" backcolor="#FFCC66"/>
-		</conditionalStyle>
-	</style>
-	<style name="Table_Grid" mode="Transparent" forecolor="#FFFFFF" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
-		<pen lineWidth="0.0" lineColor="#FFFFFF"/>
-		<box>
-			<bottomPen lineWidth="1.0"/>
-		</box>
-		<conditionalStyle>
-			<conditionExpression><![CDATA[new Boolean($V{style_helper_COUNT}%new Integer("5") == new Integer("0"))]]></conditionExpression>
-			<style mode="Opaque" forecolor="#999999">
-				<pen lineWidth="1.0" lineColor="#666666"/>
-				<box>
-					<bottomPen lineWidth="1.0"/>
-				</box>
-			</style>
-		</conditionalStyle>
-	</style>
-	<style name="Page_Footer" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Table_Header" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Table_Header_BG" mode="Opaque" backcolor="#CCFFCC"/>
-	<style name="Table_Surveillance_Cat" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Table_Surveillance_Cat_BG" mode="Opaque" backcolor="#DFDFDF"/>
-	<style name="Table_Surveillance_Cat_Footer_BG" mode="Transparent" backcolor="#FFFFFF">
-		<pen lineWidth="1.0" lineStyle="Double"/>
-	</style>
-	<style name="Table_Surveillance_Cat_Footer" hAlign="Center" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
-		<box>
-			<bottomPen lineWidth="0.0" lineStyle="Double" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="Table_Surveillance_Cat_Footer_Line" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
-		<box>
-			<bottomPen lineWidth="2.0" lineStyle="Double" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table">
-		<box>
-			<pen lineWidth="1.0" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="Warning/Critical">
-		<conditionalStyle>
-			<conditionExpression><![CDATA[$F{avail_percent} < $P{AVAILABILITY_CRITICAL} && $F{avail_percent} > $P{AVAILABILITY_WARNING}]]></conditionExpression>
+			<conditionExpression><![CDATA[$F{avail_percent} < $P{AVAILABILITY_WARNING}]]></conditionExpression>
 			<style mode="Opaque" backcolor="#FF9900"/>
-		</conditionalStyle>
-		<conditionalStyle>
-			<conditionExpression><![CDATA[$F{avail_percent} < $P{AVAILABILITY_CRITICAL}]]></conditionExpression>
-			<style backcolor="#FF3333"/>
 		</conditionalStyle>
 	</style>
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
@@ -109,6 +44,9 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{START_TIME})]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
 	interface_outages.nodeid,
@@ -127,15 +65,15 @@ FROM
 	(SELECT
 		outage_scope.nodeid,
 		outage_scope.ifindex,
-		EXTRACT (epoch from ('$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) - '$P!{START_TIME}'::TIMESTAMP) AS avail_total,
+		EXTRACT (epoch from ('$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) - '$P!{START_TIME_STRING}'::TIMESTAMP) AS avail_total,
 		outage_scope.outage_end - outage_scope.outage_start as duration,
 		CAST('1' AS INTEGER) as outage_counter
 	FROM
 		(SELECT
 			outages.nodeid,
 			outages.ifindex,
-			greatest('$P!{START_TIME}'::TIMESTAMP, outages.iflostservice) as outage_start,
-			case when outages.ifregainedservice is null then  '$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL else least('$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL, outages.ifregainedservice) end as outage_end
+			greatest('$P!{START_TIME_STRING}'::TIMESTAMP, outages.iflostservice) as outage_start,
+			case when outages.ifregainedservice is null then  '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL else least('$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL, outages.ifregainedservice) end as outage_end
 		FROM
 			(SELECT
 				d.nodeid,
@@ -161,7 +99,7 @@ FROM
 				d.nodeid,
 				d.ifindex) AS outages
 		WHERE
-			(outages.iflostservice, outages.ifregainedservice) OVERLAPS ('$P!{START_TIME}'::TIMESTAMP, '$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL))
+			(outages.iflostservice, outages.ifregainedservice) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL))
 		AS outage_scope)
 	AS interface_outages
 JOIN
@@ -197,49 +135,46 @@ GROUP BY
 		<groupExpression><![CDATA[$F{nodeid}]]></groupExpression>
 		<groupHeader>
 			<band height="31">
-				<rectangle>
-					<reportElement x="0" y="10" width="555" height="20" forecolor="#99FF99" backcolor="#99FF99"/>
-				</rectangle>
 				<staticText>
-					<reportElement style="Table_Header" x="0" y="10" width="60" height="20"/>
+					<reportElement style="Table-Header" x="0" y="10" width="60" height="20"/>
 					<textElement verticalAlignment="Middle"/>
 					<text><![CDATA[node label:]]></text>
 				</staticText>
 				<textField>
-					<reportElement style="Table_Header" x="60" y="10" width="225" height="20"/>
+					<reportElement style="Table-Header" x="60" y="10" width="240" height="20"/>
 					<textElement verticalAlignment="Middle"/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="285" y="10" width="50" height="20"/>
+					<reportElement style="Table-Header" x="300" y="10" width="55" height="20"/>
 					<textElement textAlignment="Center" verticalAlignment="Top">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Outage Count]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="340" y="10" width="50" height="20"/>
+					<reportElement style="Table-Header" x="355" y="10" width="50" height="20"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[MTTR (hours)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="395" y="10" width="50" height="20"/>
+					<reportElement style="Table-Header" x="405" y="10" width="50" height="20"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Outage Hours]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="450" y="10" width="50" height="20"/>
+					<reportElement style="Table-Header" x="455" y="10" width="50" height="20"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Outage Percent]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="505" y="10" width="50" height="20"/>
+					<reportElement style="Table-Header" x="505" y="10" width="50" height="20"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
@@ -257,7 +192,7 @@ GROUP BY
 	<pageHeader>
 		<band height="104" splitType="Stretch">
 			<staticText>
-				<reportElement style="Title" x="0" y="49" width="391" height="34"/>
+				<reportElement style="Title" x="0" y="49" width="555" height="34"/>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
@@ -274,7 +209,7 @@ GROUP BY
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement style="Sub-sub-header" x="0" y="83" width="355" height="20"/>
+				<reportElement style="Sub-sub-header" x="0" y="83" width="555" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
 			</textField>
@@ -283,46 +218,46 @@ GROUP BY
 	<detail>
 		<band height="23" splitType="Stretch">
 			<rectangle>
-				<reportElement style="Warning/Critical" x="0" y="0" width="555" height="20"/>
+				<reportElement style="Warning/Critical" x="26" y="0" width="529" height="20" backcolor="#FFFFFF"/>
 				<graphicElement>
 					<pen lineWidth="0.0"/>
 				</graphicElement>
 			</rectangle>
-			<staticText>
-				<reportElement x="26" y="0" width="47" height="20"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[interface:]]></text>
-			</staticText>
 			<textField>
-				<reportElement x="73" y="0" width="212" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="76" y="0" width="225" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{snmpifname}.equals( "" ) ? $F{snmpifdescr} : $F{snmpifname}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="285" y="0" width="50" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="300" y="0" width="55" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Long"><![CDATA[$F{outages_count}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement x="340" y="0" width="50" height="20"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></textFieldExpression>
-			</textField>
-			<textField pattern="###0.00">
-				<reportElement x="395" y="0" width="50" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="405" y="0" width="50" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{outages_seconds}/new Double("3600")]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement x="450" y="0" width="50" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="455" y="0" width="50" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{outages_percent}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement x="505" y="0" width="50" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="505" y="0" width="50" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{avail_percent}]]></textFieldExpression>
 			</textField>
+			<textField pattern="###0.00">
+				<reportElement style="Warning/Critical" mode="Opaque" x="355" y="0" width="50" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Warning/Critical" mode="Opaque" x="26" y="0" width="50" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[ interface:]]></text>
+			</staticText>
 		</band>
 	</detail>
 	<columnFooter>

@@ -38,6 +38,7 @@ package org.opennms.netmgt.syslogd;
 import static org.junit.Assert.assertEquals;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
@@ -149,7 +150,7 @@ public class SyslogdLoadTest {
         MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
     }
 
-    private void loadSyslogConfiguration(final String configuration) throws MarshalException, ValidationException {
+    private void loadSyslogConfiguration(final String configuration) throws IOException, MarshalException, ValidationException {
         InputStream stream = null;
         try {
             stream = ConfigurationTestUtils.getInputStreamForResource(this, configuration);
