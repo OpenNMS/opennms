@@ -171,7 +171,7 @@ public class OnmsMapElementDaoHibernateTest {
     public void testFind() {
 		m_databasePopulator.populateDatabase();
 
-        int id = 62;
+        int id = 133;
         OnmsMap map = m_onmsMapDao.findMapById(id);
         if (map == null) {
             List<OnmsMap> maps = m_onmsMapDao.findAll();
@@ -186,7 +186,7 @@ public class OnmsMapElementDaoHibernateTest {
         }
         assertNotNull(map);
         OnmsMapElement mapElement = m_onmsMapElementDao.findElement(1, OnmsMapElement.NODE_TYPE, map);
-        assertEquals(62, mapElement.getMap().getId());
+        assertEquals(133, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -200,7 +200,7 @@ public class OnmsMapElementDaoHibernateTest {
     public void testFindMapElementsByMapId() {
 		m_databasePopulator.populateDatabase();
 
-        int id = 62;
+        int id = 200;
         OnmsMap map = m_onmsMapDao.findMapById(id);
         if (map == null) {
             List<OnmsMap> maps = m_onmsMapDao.findAll();
@@ -217,7 +217,7 @@ public class OnmsMapElementDaoHibernateTest {
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByMapId(map);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(62, mapElement.getMap().getId());
+        assertEquals(200, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -234,7 +234,7 @@ public class OnmsMapElementDaoHibernateTest {
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByElementIdAndType(1, OnmsMapElement.NODE_TYPE);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(62, mapElement.getMap().getId());
+        assertEquals(267, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -296,7 +296,7 @@ public class OnmsMapElementDaoHibernateTest {
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByType(OnmsMapElement.NODE_TYPE);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(62, mapElement.getMap().getId());
+        assertEquals(669, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());

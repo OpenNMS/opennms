@@ -55,6 +55,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.mock.snmp.MockSnmpAgentAware;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -64,6 +65,8 @@ import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
+import org.opennms.netmgt.dao.support.JdbcFilterDao;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -96,8 +99,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
-@Transactional
+@JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
 public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
 
     @Autowired
@@ -146,14 +148,13 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        /*
+        // Initialize the JdbcFilterDao so that it will connect to the correct database
         DatabaseSchemaConfigFactory.init();
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         jdbcFilterDao.setDataSource(m_database);
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
-        */
 
         RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
 
@@ -265,6 +266,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
     }
 
     @Test
+    @Transactional
     @JUnitCollector(
             datacollectionConfig = "/org/opennms/netmgt/config/datacollection-persistTest-config.xml", 
             datacollectionType = "snmp",
@@ -322,6 +324,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
     }
 
     @Test
+    @Transactional
     @JUnitCollector(
             datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
             datacollectionType = "snmp",
@@ -355,6 +358,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
     }
 
     @Test
+    @Transactional
     @JUnitCollector(
             datacollectionConfig="/org/opennms/netmgt/config/datacollection-brocade-config.xml", 
             datacollectionType="snmp",
@@ -426,6 +430,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
     }
 
     @Test
+    @Transactional
     @JUnitCollector(
             datacollectionConfig = "/org/opennms/netmgt/config/datacollection-brocade-no-ifaces-config.xml", 
             datacollectionType = "snmp",
@@ -503,5 +508,9 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
 
     public void setMockSnmpAgent(MockSnmpAgent agent) {
         m_agent = agent;
+    }
+
+    public void setTestContext(TestContext context) {
+        m_context = context;
     }
 }

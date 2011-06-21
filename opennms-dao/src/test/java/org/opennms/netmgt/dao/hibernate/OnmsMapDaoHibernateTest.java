@@ -183,7 +183,7 @@ public class OnmsMapDaoHibernateTest {
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
         // before the creation of this object then this ID may change and this test will fail.
         //
-        int id = 62;
+        int id = 68;
         OnmsMap map = m_onmsMapDao.findMapById(id);
         if (map == null) {
             List<OnmsMap> maps = m_onmsMapDao.findAll();
@@ -304,7 +304,7 @@ public class OnmsMapDaoHibernateTest {
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
         // before the creation of this object then this ID may change and this test will fail.
         //
-        int id = 62;
+        int id = 671;
         OnmsMap map = m_onmsMapDao.findMapById(id);
         if (map == null) {
             List<OnmsMap> maps = m_onmsMapDao.findAll();
