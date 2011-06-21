@@ -125,7 +125,6 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     }
 
     @Before
-    @Transactional
     public void setUp() throws Exception {
         OnmsServiceType t = new OnmsServiceType("ICMP");
         m_serviceTypeDao.save(t);
@@ -146,11 +145,13 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     }
 
     @Test
+    @Transactional
     public void testInstantiate() {
         new JdbcFilterDao();
     }
 
     @Test
+    @Transactional
     public void testAfterPropertiesSetValid() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(m_database);
@@ -162,6 +163,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     }
 
     @Test
+    @Transactional
     public void testAfterPropertiesSetNoNodeDao() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(m_database);
@@ -174,6 +176,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     }
 
     @Test
+    @Transactional
     public void testAfterPropertiesSetNoDataSource() throws Exception {
         ThrowableAnticipator ta = new ThrowableAnticipator();
 
@@ -192,22 +195,24 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     }
 
     @Test
+    @JUnitTemporaryDatabase // Not sure exactly why this test requires a fresh database but it fails without it :/
     public void testWithManyCatIncAndServiceIdentifiersInRules() throws Exception {
 
         // node1 has all the categories and an 192.168.1.1
 
-        String rule = "(catincIMP_mid) & (catincDEV_AC) & (catincOPS_Online) & (nodeId == 1) & (ipAddr == '192.168.1.1') & (serviceName == 'ICMP')" ;
+        String rule = String.format("(catincIMP_mid) & (catincDEV_AC) & (catincOPS_Online) & (nodeId == '%s') & (ipAddr == '192.168.1.1') & (serviceName == 'ICMP')", m_populator.getNode1().getId().toString()) ;
 
-        assertTrue(m_dao.isRuleMatching(rule));
+        assertTrue("Rule match failed: " + rule, m_dao.isRuleMatching(rule));
 
         // node2 doesn't have all the categories but does have 192.168.2.1
 
-        String rule2 = "(catincIMP_mid) & (catincDEV_AC) & (catincOPS_Online) & (nodeId == 2) & (ipAddr == '192.168.2.1') & (serviceName == 'ICMP')" ;
+        String rule2 = String.format("(catincIMP_mid) & (catincDEV_AC) & (catincOPS_Online) & (nodeId == '%s') & (ipAddr == '192.168.2.1') & (serviceName == 'ICMP')", m_populator.getNode2().getId().toString());
 
-        assertFalse(m_dao.isRuleMatching(rule2));
+        assertFalse("Rule match succeeded unexpectedly: " + rule, m_dao.isRuleMatching(rule2));
     }
 
     @Test
+    @Transactional
     public void testAfterPropertiesSetNoSchemaFactory() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
 
@@ -248,7 +253,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     }
 
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testGetActiveIPListWithDeletedNode() throws Exception {
         m_transTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus status) {
@@ -300,6 +305,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     }
 
     @Test
+    @JUnitTemporaryDatabase // Not sure exactly why this test requires a fresh database but it fails without it :/
     public void testWalkNodes() throws Exception {
         m_dao.setNodeDao(m_nodeDao);
 
