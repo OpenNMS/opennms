@@ -8,6 +8,10 @@ public interface LogMessage {
 
 	public abstract boolean isPersistMessage();
 
+	public abstract boolean isPersistBeginMessage();
+	
+	public abstract boolean isPersistEndMessage();
+
 	public abstract boolean isBeginMessage();
 
 	public abstract boolean isErrorMessage();

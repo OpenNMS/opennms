@@ -172,6 +172,13 @@ abstract public class InetAddressUtils {
     public static InetAddress resolveHostname(final String hostname, final boolean preferInet6Address, final boolean throwException) throws UnknownHostException {
         InetAddress retval = null;
         //System.out.println(String.format("%s (%s)", hostname, preferInet6Address ? "6" : "4"));
+
+        // Do a special case for localhost since the DNS server will generally not
+        // return valid A and AAAA records for "localhost".
+        if ("localhost".equals(hostname)) {
+            return preferInet6Address ? InetAddress.getByName("::1") : InetAddress.getByName("127.0.0.1");
+        }
+
         try {
             // 2011-05-22 - Matt is seeing some platform-specific inconsistencies when using
             // InetAddress.getAllByName(). It seems to miss some addresses occasionally on Mac.
@@ -179,6 +186,30 @@ abstract public class InetAddressUtils {
             //
             // InetAddress[] addresses = InetAddress.getAllByName(hostname);
             //
+            List<InetAddress> v4Addresses = new ArrayList<InetAddress>();
+            try {
+                Record[] aRecs = new Lookup(hostname, Type.A).run();
+                if (aRecs != null) {
+                    for (Record aRec : aRecs) {
+                        if (aRec instanceof ARecord) {
+                            InetAddress addr = ((ARecord)aRec).getAddress();
+                            if (addr instanceof Inet4Address) {
+                                v4Addresses.add(addr);
+                            } else {
+                                // Should never happen
+                                throw new UnknownHostException("Non-IPv4 address found via A record DNS lookup of host: " + hostname + ": " + addr.toString());
+                            }
+                        }
+                    }
+                } else {
+                    //throw new UnknownHostException("No IPv4 addresses found via A record DNS lookup of host: " + hostname);
+                }
+            } catch (TextParseException e) {
+                UnknownHostException ex = new UnknownHostException("Could not perform A record lookup for host: " + hostname);
+                ex.initCause(e);
+                throw ex;
+            }
+
             List<InetAddress> v6Addresses = new ArrayList<InetAddress>();
             try {
                 Record[] quadARecs = new Lookup(hostname, Type.AAAA).run();
@@ -193,32 +224,10 @@ abstract public class InetAddressUtils {
                         }
                     }
                 } else {
-                    //throw new UnknownHostException("No IPv6 addresses found via AAAA record DNS lookup of host: " + hostname);
+                    // throw new UnknownHostException("No IPv6 addresses found via AAAA record DNS lookup of host: " + hostname);
                 }
             } catch (TextParseException e) {
                 UnknownHostException ex = new UnknownHostException("Could not perform AAAA record lookup for host: " + hostname);
-                ex.initCause(e);
-                throw ex;
-            }
-
-            List<InetAddress> v4Addresses = new ArrayList<InetAddress>();
-            try {
-                Record[] aRecs = new Lookup(hostname, Type.A).run();
-                if (aRecs != null) {
-                    for (Record aRec : aRecs) {
-                        InetAddress addr = ((ARecord)aRec).getAddress();
-                        if (addr instanceof Inet4Address) {
-                            v4Addresses.add(addr);
-                        } else {
-                            // Should never happen
-                            throw new UnknownHostException("Non-IPv4 address found via A record DNS lookup of host: " + hostname + ": " + addr.toString());
-                        }
-                    }
-                } else {
-                    // throw new UnknownHostException("No IPv4 addresses found via A record DNS lookup of host: " + hostname);
-                }
-            } catch (TextParseException e) {
-                UnknownHostException ex = new UnknownHostException("Could not perform A record lookup for host: " + hostname);
                 ex.initCause(e);
                 throw ex;
             }

@@ -4,30 +4,23 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import javax.xml.ws.WebServiceException;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
-    DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class
-})
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/restServiceTest.xml"
 })
-
+@JUnitConfigurationEnvironment
 public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase {
     
     @Test
@@ -41,6 +34,22 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
 
         sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 204);
+    }
+
+    @Test
+    public void testDuplicateNodes() throws Exception {
+        String req =
+            "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +
+                "<node node-label=\"a\" foreign-id=\"a\" />" +
+                "<node node-label=\"b\" foreign-id=\"c\" />" +
+                "<node node-label=\"c\" foreign-id=\"c\" />" +
+            "</model-import>";
+
+        try {
+        	sendPost("/requisitions", req);
+        } catch (final WebServiceException e) {
+        	assertTrue("exception should say 'c' has duplicates", e.getMessage().contains("Duplicate nodes found on foreign source test: c (2 found)"));
+        }
     }
 
     @Test
@@ -231,6 +240,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     }
 
     @Test
+    @Ignore // Ignore this test while XML validation is disabled
     public void testBadRequisition() throws Exception {
         String req =
             "<model-import date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +

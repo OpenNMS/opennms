@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.9.9-SNAPSHOT</version>
+    <version>1.11.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -83,7 +83,7 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.isoc-ipv6-gui</artifactId>
-      <version>1.9.9-SNAPSHOT</version>
+      <version>1.11.0-SNAPSHOT</version>
       <type>war</type>
       <scope>runtime</scope>
     </dependency>

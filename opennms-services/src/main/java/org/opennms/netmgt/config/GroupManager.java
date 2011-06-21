@@ -92,19 +92,6 @@ public abstract class GroupManager {
     /**
      * <p>parseXml</p>
      *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    protected synchronized void parseXml(Reader reader) throws MarshalException, ValidationException {
-        Groupinfo groupinfo = CastorUtils.unmarshal(Groupinfo.class, reader);
-        initializeGroupsAndRoles(groupinfo);
-    }
-
-    /**
-     * <p>parseXml</p>
-     *
      * @param stream a {@link java.io.InputStream} object.
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.

@@ -38,74 +38,69 @@
 
 package org.opennms.web.svclayer.support;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
-import org.opennms.test.WebAppTestConfigBean;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-    
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:META-INF/opennms/applicationContext-dao.xml",
+        "classpath:META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class DefaultSurveillanceServiceIntegrationTest implements InitializingBean {
+
+    @Autowired
     private SurveillanceService m_surveillanceService;
+    @Autowired
     private DatabasePopulator m_databasePopulator; 
-    
-    @Override
-    protected void setUpConfiguration() {
-        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
-        webAppTestConfig.setRelativeHomeDirectory("src/test/opennms-home");
-        webAppTestConfig.afterPropertiesSet();
+
+    public void afterPropertiesSet() throws Exception {
+        assertNotNull(m_surveillanceService);
+        assertNotNull(m_databasePopulator);
     }
 
-    /**
-     * This parm gets autowired from the application context by TDSCT (the base class for this test)
-     * pretty cool Spring Framework trickery
-     * @param svc
-     */
-    public void setSurveillanceService(SurveillanceService svc) {
-        m_surveillanceService = svc;
-    }
-    
-    public void setDatabasePopulator(DatabasePopulator databasePopulator){
-        m_databasePopulator = databasePopulator;
+    @Before
+    public void setUp() {
+        m_databasePopulator.populateDatabase();
     }
 
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "META-INF/opennms/applicationContext-dao.xml",
-                "META-INF/opennms/applicationContext-databasePopulator.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath*:/META-INF/opennms/component-service.xml",
-                "org/opennms/web/svclayer/applicationContext-svclayer.xml",
-                "META-INF/opennms/applicationContext-reportingCore.xml",
-                "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
-        };
-    }
-    
+    @Test
+    @Transactional
     public void testCreateSurveillanceServiceTableUsingViewName() {
-       assertNotNull(m_databasePopulator);
-       m_databasePopulator.populateDatabase();
-       
-       setDefaultRollback(false);
-       endTransaction();
-       startNewTransaction();
-              
         String viewName = "default";
         SimpleWebTable table = m_surveillanceService.createSurveillanceTable(viewName, new ProgressMonitor() {
 
-			public void beginNextPhase(String string) {
-			    System.err.println("PHASE: " + string);
-			}
+            public void beginNextPhase(String string) {
+                System.err.println("PHASE: " + string);
+            }
 
-			public void setPhaseCount(int i) {
-								
-			}
-        	
+            public void setPhaseCount(int i) {
+
+            }
+
         });
-        
-        
+
         assertEquals("default", table.getTitle());
     }
-
 }

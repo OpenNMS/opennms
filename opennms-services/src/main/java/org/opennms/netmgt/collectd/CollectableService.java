@@ -150,7 +150,7 @@ final class CollectableService implements ReadyRunnable {
         m_params=new ServiceParameters(roProps);
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
         
-        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  roProps, m_spec.getInterval());
+        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  roProps);
 
     }
     
@@ -216,6 +216,8 @@ final class CollectableService implements ReadyRunnable {
 	 */
 	public void refreshPackage(CollectorConfigDao collectorConfigDao) {
 		m_spec.refresh(collectorConfigDao);
+		if (m_thresholdVisitor != null)
+		    m_thresholdVisitor.reloadScheduledOutages();
 	}
 
     /** {@inheritDoc} */
@@ -393,7 +395,11 @@ final class CollectableService implements ReadyRunnable {
                          * The first person who actually needs to configure that sort of thing on the fly can code it up.
                          */
                         if (m_thresholdVisitor != null) {
-                            result.visit(m_thresholdVisitor);
+                            if (m_thresholdVisitor.isNodeInOutage()) {
+                                log().info("run: the threshold processing will be skipped because the node " + m_nodeId + " is on a scheduled outage.");
+                            } else {
+                                result.visit(m_thresholdVisitor);
+                            }
                         }
                        
                         if (result.getStatus() == ServiceCollector.COLLECTION_SUCCEEDED) {

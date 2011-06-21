@@ -239,11 +239,13 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         try {
             DnsRecord record = m_nodeDnsRecordMap.get(Integer.valueOf(op.getNodeId()));
 
-            Update update = new Update(Name.fromString(record.getZone()));
-            update.delete(Name.fromString(record.getHostname()), Type.A);
-            m_resolver.send(update);
+            if (record != null) {
+                Update update = new Update(Name.fromString(record.getZone()));
+                update.delete(Name.fromString(record.getHostname()), Type.A);
+                m_resolver.send(update);
 
-            m_nodeDnsRecordMap.remove(Integer.valueOf(op.getNodeId()));
+                m_nodeDnsRecordMap.remove(Integer.valueOf(op.getNodeId()));
+            }
         } catch (Throwable e) {
             log().error("deleteNode: Error handling node deleted event.", e);
             sendAndThrow(op.getNodeId(), e);
@@ -251,7 +253,14 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     }
     
     private void sendAndThrow(int nodeId, Throwable e) {
-        Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
+        String message = e.getLocalizedMessage() == null ? "" : ": " + e.getLocalizedMessage();
+        Event event = buildEvent(
+                EventConstants.PROVISIONING_ADAPTER_FAILED,
+                nodeId
+            ).addParam(
+                "reason", 
+                MESSAGE_PREFIX + e.getClass().getName() + message
+            ).getEvent();
         m_eventForwarder.sendNow(event);
         throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);
     }

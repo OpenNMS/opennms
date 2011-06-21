@@ -40,10 +40,10 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 
 public class MockMonitoredService implements MonitoredService {
-    int m_nodeId;
-    String m_nodeLabel;
-    String m_ipAddr;
-    String m_svcName;
+    private final int m_nodeId;
+    private String m_nodeLabel;
+    private final String m_ipAddr;
+    private final String m_svcName;
     private InetAddress m_inetAddr;
 
     public MockMonitoredService(int nodeId, String nodeLabel, InetAddress inetAddress, String svcName) throws UnknownHostException {
@@ -68,6 +68,10 @@ public class MockMonitoredService implements MonitoredService {
 
     public String getNodeLabel() {
         return m_nodeLabel;
+    }
+
+    public void setNodeLabel(String nodeLabel) {
+        m_nodeLabel = nodeLabel;
     }
 
     public NetworkInterface<InetAddress> getNetInterface() {

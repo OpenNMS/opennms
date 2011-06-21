@@ -30,6 +30,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,9 +45,11 @@ import java.util.regex.PatternSyntaxException;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAttribute;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
@@ -71,11 +74,7 @@ public abstract class ThresholdingSet {
     boolean m_hasThresholds = false;
     
     List<ThresholdGroup> m_thresholdGroups;
-
-    /*
-     * Holds collection interval step. Counter attributes values must be returned as rates.
-     */
-    long m_interval;
+    List<String> m_scheduledOutages;
 
     /**
      * <p>Constructor for ThresholdingSet.</p>
@@ -86,12 +85,12 @@ public abstract class ThresholdingSet {
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
      * @param interval a long.
      */
-    public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval) {
+    public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {
         m_nodeId = nodeId;
         m_hostAddress = hostAddress;
         m_serviceName = serviceName;
         m_repository = repository;      
-        m_interval = interval / 1000; // Store interval in seconds
+        m_scheduledOutages = new ArrayList<String>();
         initThresholdsDao();
         initialize();
     }
@@ -117,6 +116,7 @@ public abstract class ThresholdingSet {
             }
         }
         m_hasThresholds = !m_thresholdGroups.isEmpty();
+        updateScheduledOutages();
     }
 
     /**
@@ -128,6 +128,7 @@ public abstract class ThresholdingSet {
         initThresholdsDao();
         mergeThresholdGroups();
         m_hasThresholds = !m_thresholdGroups.isEmpty();
+        updateScheduledOutages();
         ThresholdingEventProxyFactory.getFactory().getProxy().sendAllEvents();
     }
 
@@ -224,6 +225,22 @@ public abstract class ThresholdingSet {
         }
         log().debug("hasThresholds: " + resourceTypeName + "@" + attributeName + "? " + ok);
         return ok;
+    }
+
+    public boolean isNodeInOutage() {
+        PollOutagesConfigFactory outageFactory = PollOutagesConfigFactory.getInstance();
+        boolean outageFound = false;
+        for (String outageName : m_scheduledOutages) {
+            if (outageFactory.isCurTimeInOutage(outageName)) {
+                log().debug("isNodeInOutage[node=" + m_nodeId + "]: current time is on outage using '" + outageName + "'; checking the node with IP " + m_hostAddress);
+                if (outageFactory.isNodeIdInOutage(m_nodeId, outageName) || outageFactory.isInterfaceInOutage(m_hostAddress, outageName)) {
+                    log().debug("isNodeInOutage[node=" + m_nodeId + "]: configured outage '" + outageName + "' applies, interface " + m_hostAddress + " will be ignored for threshold processing");
+                    outageFound = true;
+                    break;
+                }
+            }
+        }
+        return outageFound;
     }
 
     /*
@@ -415,6 +432,26 @@ public abstract class ThresholdingSet {
         }
         
         return groupNameList;
+    }
+
+    protected void updateScheduledOutages() {
+        m_scheduledOutages.clear();
+        for (org.opennms.netmgt.config.threshd.Package pkg : m_configManager.getConfiguration().getPackage()) {
+            for (String outageCal : pkg.getOutageCalendarCollection()) {
+                log().info("updateScheduledOutages[node=" + m_nodeId + "]: checking scheduled outage '" + outageCal + "'");
+                try {
+                    Outage outage = PollOutagesConfigFactory.getInstance().getOutage(outageCal);
+                    if (outage == null) {
+                        log().info("updateScheduledOutages[node=" + m_nodeId + "]: scheduled outage '" + outageCal + "' is not defined.");
+                    } else {
+                        log().debug("updateScheduledOutages[node=" + m_nodeId + "]: outage calendar '" + outage.getName() + "' found on package '" + pkg.getName() + "'");
+                        m_scheduledOutages.add(outageCal);
+                    }
+                } catch (Exception e) {
+                    log().info("updateScheduledOutages[node=" + m_nodeId + "]: scheduled outage '" + outageCal + "' does not exist.");                    
+                }
+            }
+        }
     }
 
     private Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {

@@ -95,9 +95,9 @@ public class ResponseTimeResourceType implements OnmsResourceType {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     public List<OnmsResource> getResourcesForDomain(final String domain) {
-        return Collections.EMPTY_LIST;
+        List<OnmsResource> empty = Collections.emptyList();
+        return empty;
     }
     
     /** {@inheritDoc} */

@@ -35,7 +35,6 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringWriter;
 
 import org.exolab.castor.xml.MarshalException;
@@ -53,19 +52,6 @@ import org.opennms.netmgt.config.charts.ChartConfiguration;
 public abstract class ChartConfigManager {
     
     static ChartConfiguration m_configuration = null;
-    
-    /**
-     * <p>parseXml</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    public synchronized static void parseXml(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_configuration = CastorUtils.unmarshal(ChartConfiguration.class, reader);
-    }
     
     /**
      * <p>parseXml</p>

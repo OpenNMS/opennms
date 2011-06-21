@@ -10,23 +10,19 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-	OpenNMSConfigurationExecutionListener.class,
-	TransactionalTestExecutionListener.class
-})
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
+@JUnitConfigurationEnvironment
 public class RadiusAuthMonitorTest {
 
 	@Before
@@ -40,7 +36,7 @@ public class RadiusAuthMonitorTest {
 		final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
 
 		final ServiceMonitor monitor = new RadiusAuthMonitor();
-		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "192.168.211.11", "RADIUS", false);
+		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("192.168.211.11"), "RADIUS");
 
         m.put("user", "testing");
         m.put("password", "password");

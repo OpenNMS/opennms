@@ -31,9 +31,10 @@
 //
 package org.opennms.netmgt.notifd.mock;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -55,11 +56,14 @@ public class MockGroupManager extends GroupManager {
         parseXML();
     }
 
-    @SuppressWarnings("deprecation")
     private void parseXML() throws MarshalException, ValidationException {
-        Reader reader = new StringReader(m_xmlString);
-        parseXml(reader);
-        updateNeeded = false;
+        try {
+            InputStream reader = new ByteArrayInputStream(m_xmlString.getBytes("UTF-8"));
+            parseXml(reader);
+            updateNeeded = false;
+        } catch (UnsupportedEncodingException e) {
+            // Can't happen with UTF-8
+        }
     }
 
     /* (non-Javadoc)

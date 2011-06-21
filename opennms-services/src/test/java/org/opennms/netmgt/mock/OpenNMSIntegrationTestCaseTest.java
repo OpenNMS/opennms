@@ -34,25 +34,35 @@
  */
 package org.opennms.netmgt.mock;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.springframework.test.context.ContextConfiguration;
 
 
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class OpenNMSIntegrationTestCaseTest extends OpenNMSIntegrationTestCase {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:META-INF/opennms/applicationContext-daemon.xml" 
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class OpenNMSIntegrationTestCaseTest {
     
-    
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { 
-                "classpath:META-INF/opennms/applicationContext-dao.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath:META-INF/opennms/applicationContext-daemon.xml" 
-        };
-    }
 
+    @Test
     public void testHomeDirCreated() {
 
         String homePath = System.getProperty("opennms.home");
@@ -62,6 +72,7 @@ public class OpenNMSIntegrationTestCaseTest extends OpenNMSIntegrationTestCase {
         
     }
     
+    @Test
     public void testEtcDirExists() {
         
         String homePath = System.getProperty("opennms.home");
@@ -72,7 +83,4 @@ public class OpenNMSIntegrationTestCaseTest extends OpenNMSIntegrationTestCase {
         
         assertTrue(etcDir.exists());
     }
-
-
-
 }

@@ -46,6 +46,9 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  * registers it as the default datasource inside {@link DataSourceFactory} by
  * using {@link DataSourceFactory#setInstance(DataSource)}.
  * 
+ * To change the settings for the temporary database, use the 
+ * {@link JUnitTemporaryDatabase} annotation on the test class or method.
+ * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class TemporaryDatabaseExecutionListener extends
@@ -56,6 +59,9 @@ public class TemporaryDatabaseExecutionListener extends
 	public void afterTestMethod(final TestContext testContext) throws Exception {
 		try {
 			System.err.printf("TemporaryDatabaseExecutionListener.afterTestMethod(%s)\n", testContext);
+
+			final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
+			if (jtd == null) return;
 
 			final DataSource dataSource = DataSourceFactory.getInstance();
 			final TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
@@ -109,14 +115,17 @@ public class TemporaryDatabaseExecutionListener extends
 	public void prepareTestInstance(final TestContext testContext) throws Exception {
 		System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)\n", testContext);
 		final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
+
+		if (jtd == null) return;
+
 		boolean useExisting = false;
-		if (jtd != null && jtd.useExistingDatabase() != null) {
+		if (jtd.useExistingDatabase() != null) {
 			useExisting = !jtd.useExistingDatabase().equals("");
 		}
 
 		final String dbName = useExisting ? jtd.useExistingDatabase() : getDatabaseName(testContext);
-		m_database = (jtd == null ? new TemporaryDatabase(dbName, useExisting) : (jtd.tempDbClass()).getConstructor(String.class, Boolean.TYPE).newInstance(dbName, useExisting));
-		m_database.setPopulateSchema(jtd == null ? true : (jtd.populate() && !useExisting));
+		m_database = ((jtd.tempDbClass()).getConstructor(String.class, Boolean.TYPE).newInstance(dbName, useExisting));
+		m_database.setPopulateSchema(jtd.createSchema() && !useExisting);
 		try {
 			m_database.create();
 		} catch (final Throwable e) {

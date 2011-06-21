@@ -72,9 +72,8 @@ public class CastorUtilsTest extends TestCase {
         MockLogAppender.assertNoWarningsOrGreater();
     }
     
-    @SuppressWarnings("deprecation")
     public void testUnmarshalReader() throws MarshalException, ValidationException, FileNotFoundException, IOException {
-        CastorUtils.unmarshal(Userinfo.class, ConfigurationTestUtils.getReaderForConfigFile("users.xml"));
+        CastorUtils.unmarshal(Userinfo.class, ConfigurationTestUtils.getInputStreamForConfigFile("users.xml"));
     }
 
     public void testUnmarshalResource() throws MarshalException, ValidationException, FileNotFoundException, IOException {
@@ -118,9 +117,8 @@ public class CastorUtilsTest extends TestCase {
         MockLogAppender.assertNotGreaterOrEqual(Level.DEBUG);
     }
     
-    @SuppressWarnings("deprecation")
     public void testUnmarshalReaderQuietly() throws MarshalException, ValidationException, FileNotFoundException, IOException {
-        CastorUtils.unmarshal(Userinfo.class, ConfigurationTestUtils.getReaderForConfigFile("users.xml"));
+        CastorUtils.unmarshal(Userinfo.class, ConfigurationTestUtils.getInputStreamForConfigFile("users.xml"));
         
         /*
          * Ensure that nothing was logged.

@@ -73,6 +73,7 @@
   <table class="normal">
     <tr>
         <th class="standardheader">Type</th>
+        <th class="standardheader">Description</th>
         <th class="standardheader">Datasource</th>
         <th class="standardheader">Datasource type</th>
         <th class="standardheader">Datasource label</th>
@@ -87,6 +88,7 @@
     <c:forEach items="${group.threshold}" varStatus="thresholdIndex" var="threshold">
         <tr>
 			<td class="standard">${threshold.type}</td>
+			<td class="standard">${threshold.description}</td>
 			<td class="standard">${threshold.dsName}</td>
 			<td class="standard">${threshold.dsType}</td>
 			<td class="standard">${threshold.dsLabel}</td>
@@ -106,6 +108,7 @@
   <table class="normal">
     <tr>
         <th class="standardheader">Type</th>
+        <th class="standardheader">Description</th>
         <th class="standardheader">Expression</th>
         <th class="standardheader">Datasource type</th>
         <th class="standardheader">Datasource label</th>
@@ -120,6 +123,7 @@
       <c:forEach items="${group.expression}" varStatus="expressionIndex" var="expression">
         <tr>
 			<td class="standard">${expression.type}</td>
+			<td class="standard">${expression.description}</td>
 			<td class="standard">${expression.expression}</td>
 			<td class="standard">${expression.dsType}</td>
 			<td class="standard">${expression.dsLabel}</td>

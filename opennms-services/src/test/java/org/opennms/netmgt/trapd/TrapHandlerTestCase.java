@@ -48,6 +48,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -56,6 +58,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -69,19 +73,20 @@ import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:META-INF/opennms/mockEventIpcManager.xml",
         "classpath:META-INF/opennms/applicationContext-daemon.xml",
         "classpath:META-INF/opennms/applicationContext-trapDaemon.xml",
         "classpath:org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"}
 )
-public class TrapHandlerTestCase {
+@JUnitConfigurationEnvironment
+public class TrapHandlerTestCase implements InitializingBean {
 
     @Autowired
     private Trapd m_trapd = null;
@@ -99,7 +104,8 @@ public class TrapHandlerTestCase {
 
     private InetAddress m_localhost = null;
 
-    private int m_snmpTrapPort = 10000;
+    @Resource(name="snmpTrapPort")
+    private Integer m_snmpTrapPort;
 
     private boolean m_doStop = false;
 
@@ -112,14 +118,16 @@ public class TrapHandlerTestCase {
         MockLogAppender.setupLogging();
     }
     
-    @Before
-    public void setUp() throws Exception {
-        
-        
+    @Override
+    public void afterPropertiesSet() throws Exception {
         assertNotNull(m_eventMgr);
         assertNotNull(m_trapd);
         assertNotNull(m_trapdIpMgr);
+        assertNotNull(m_snmpTrapPort);
+    }
 
+    @Before
+    public void setUp() throws Exception {
         m_anticipator = new EventAnticipator();
         m_eventMgr.setEventAnticipator(m_anticipator);
 

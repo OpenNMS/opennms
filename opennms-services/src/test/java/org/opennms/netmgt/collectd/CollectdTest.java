@@ -50,6 +50,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -331,16 +332,15 @@ public class CollectdTest extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
-    @SuppressWarnings("unchecked")
     public void testOneMatchingSpec() throws CollectionException {
         String svcName = "SNMP";
         OnmsIpInterface iface = getInterface();
 
         setupCollector(svcName);
         
-        m_collector.initialize(isA(CollectionAgent.class), isA(Map.class));
+        m_collector.initialize(isA(CollectionAgent.class), isAMap(String.class, Object.class));
         CollectionSet collectionSetResult=new CollectionSet() {
-
+        	private Date m_timestamp = new Date();
             public int getStatus() {
                 return ServiceCollector.COLLECTION_SUCCEEDED;
             }
@@ -352,6 +352,10 @@ public class CollectdTest extends TestCase {
 
 			public boolean ignorePersist() {
 				return false;
+			}
+			
+			public Date getCollectionTimestamp() {
+				return m_timestamp;
 			}
         };      
         expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isAMap(String.class, Object.class))).andReturn(collectionSetResult);
@@ -411,7 +415,6 @@ public class CollectdTest extends TestCase {
         expect(m_ipIfDao.load(iface.getId())).andReturn(iface).atLeastOnce();
     }
 
-    @SuppressWarnings("unchecked")
     private void setupCollector(String svcName) {
         Collector collector = new Collector();
         collector.setService(svcName);
@@ -422,7 +425,8 @@ public class CollectdTest extends TestCase {
         EasyMockUtils m_mockUtils = new EasyMockUtils();
         m_collectd.setNodeDao(m_mockUtils.createMock(NodeDao.class));
         // Setup expectation
-        m_collector.initialize(Collections.EMPTY_MAP);
+        Map<String,String> empty = Collections.emptyMap();
+        m_collector.initialize(empty);
 
         
         expect(m_collectorConfigDao.getCollectors()).andReturn(Collections.singleton(collector));

@@ -132,9 +132,9 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     public List<OnmsResource> getResourcesForDomain(String domain) {
-        return Collections.EMPTY_LIST;
+        List<OnmsResource> empty = Collections.emptyList();
+        return empty;
     }
 
     /** {@inheritDoc} */

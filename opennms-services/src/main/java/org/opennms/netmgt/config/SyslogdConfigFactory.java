@@ -51,9 +51,12 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
+import org.opennms.netmgt.config.syslogd.SyslogdConfigurationGroup;
 import org.opennms.netmgt.config.syslogd.UeiList;
+import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -99,9 +102,9 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @throws org.exolab.castor.xml.ValidationException
      *                             Thrown if the contents do not match the required schema.
      */
-    private SyslogdConfigFactory(String configFile) throws IOException,
-            MarshalException, ValidationException {
+    private SyslogdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile));
+        parseIncludedFiles();
     }
 
     /**
@@ -111,8 +114,9 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public SyslogdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
+    public SyslogdConfigFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, rdr);
+        parseIncludedFiles();
     }
 
     /**
@@ -122,8 +126,9 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public SyslogdConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+    public SyslogdConfigFactory(InputStream stream) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, stream);
+        parseIncludedFiles();
     }
 
     /**
@@ -287,4 +292,32 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         return m_config.getConfiguration().getDiscardUei();
     }
 
+    /**
+     * Parse import-file tags and add all uei-matchs and hide-messages.
+     * 
+     * @throws IOException
+     * @throws MarshalException
+     * @throws ValidationException
+     */
+    private void parseIncludedFiles() throws IOException, MarshalException, ValidationException {
+        File configDir = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME).getParentFile();
+        for (String fileName : m_config.getImportFileCollection()) {
+            File configFile = new File(configDir, fileName);
+            SyslogdConfigurationGroup includeCfg = CastorUtils.unmarshal(SyslogdConfigurationGroup.class, new FileSystemResource(configFile));
+            if (includeCfg.getUeiList() != null) {
+                for (UeiMatch ueiMatch : includeCfg.getUeiList().getUeiMatchCollection())  {
+                    if (m_config.getUeiList() == null)
+                        m_config.setUeiList(new UeiList());
+                    m_config.getUeiList().addUeiMatch(ueiMatch);
+                }
+            }
+            if (includeCfg.getHideMessage() != null) {
+                for (HideMatch hideMatch : includeCfg.getHideMessage().getHideMatchCollection()) {
+                    if (m_config.getHideMessage() == null)
+                        m_config.setHideMessage(new HideMessage());
+                    m_config.getHideMessage().addHideMatch(hideMatch);
+                }
+            }
+        }
+    }
 }

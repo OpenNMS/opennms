@@ -37,6 +37,10 @@
 
 package org.opennms.web.svclayer.support;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,12 +49,16 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.OutageDao;
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
@@ -59,70 +67,51 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.test.WebAppTestConfigBean;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.SiteStatusViewService;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-    
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:META-INF/opennms/applicationContext-dao.xml",
+        "classpath:META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class DefaultSiteStatusServiceIntegrationTest implements InitializingBean {
+
+    @Autowired
     private SiteStatusViewService m_aggregateService;
+    @Autowired
     private DatabasePopulator m_databasePopulator;
     
+    @Autowired
     private OutageDao m_outageDao;
+    @Autowired
     private EventDao m_eventDao;
+    @Autowired
     private NodeDao m_nodeDao;
+    @Autowired
     private CategoryDao m_categoryDao;
     
-    @Override
-    protected void setUpConfiguration() {
-        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
-        webAppTestConfig.setRelativeHomeDirectory("src/test/opennms-home");
-        webAppTestConfig.afterPropertiesSet();
+    public void afterPropertiesSet() throws Exception {
+        assertNotNull(m_aggregateService);
+        assertNotNull(m_databasePopulator);
+        assertNotNull(m_nodeDao);
+        assertNotNull(m_categoryDao);
+        assertNotNull(m_outageDao);
+        assertNotNull(m_eventDao);
     }
 
-    /**
-     * This parm gets autowired from the application context by TDSCT (the base class for this test)
-     * pretty cool Spring Framework trickery
-     * @param svc
-     */
-    public void setAggregateStatusService(SiteStatusViewService svc) {
-        m_aggregateService = svc;
-    }
-    
-    public void setDatabasePopulator(DatabasePopulator databasePopulator){
-       m_databasePopulator = databasePopulator;
-    }
-    
-    public void setOutageDao(OutageDao outageDao){
-        m_outageDao = outageDao;
-    }
-    
-    public void setEventDao(EventDao eventDao){
-        m_eventDao = eventDao;
-    }
-    
-    public void setNodeDao(NodeDao nodeDao){
-        m_nodeDao = nodeDao;
-    }
-    
-    public void setCategoryDao(CategoryDao categoryDao) {
-        m_categoryDao = categoryDao;
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "META-INF/opennms/applicationContext-dao.xml",
-                "META-INF/opennms/applicationContext-databasePopulator.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath*:/META-INF/opennms/component-service.xml",
-                "org/opennms/web/svclayer/applicationContext-svclayer.xml",
-                "META-INF/opennms/applicationContext-reportingCore.xml",
-                "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
-                
-        };
-    }
-    
+    @Test
     public void testCreateAggregateStatusView() {
         assertNotNull(m_databasePopulator);
         m_databasePopulator.populateDatabase();
@@ -133,6 +122,7 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
         assertFalse(view.getStatusDefinitions().isEmpty());
     }
     
+    @Test
     public void testCreateAggregateStatusUsingNodeId() {
         assertNotNull(m_databasePopulator);
         m_databasePopulator.populateDatabase();
@@ -180,6 +170,8 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
         m_outageDao.flush();
     }
 
+    @Test
+    @Transactional
     public void testCreateAggregateStatusUsingBuilding() {
         assertNotNull(m_databasePopulator);
         m_databasePopulator.populateDatabase();

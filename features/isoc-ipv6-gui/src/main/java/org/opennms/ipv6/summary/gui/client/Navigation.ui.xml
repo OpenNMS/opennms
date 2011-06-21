@@ -1,0 +1,53 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style >
+		.navBlock{
+	       font-family: "Lucida Grande", Verdana, sans-serif;
+	       font-size: 70%;
+		}
+		
+		.opennmsLink{
+            font-family: "Lucida Grande", Verdana, sans-serif;
+            font-size:70%;
+            cursor: pointer;
+            color: #366903;
+            text-decoration: none;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+        <div class="{style.navBlock}" style="margin: 0px 0px 10px 0px;">
+<!--            <p><b>Select Location Type</b></p>-->
+	        <div>
+		       <g:RadioButton ui:field="m_allLocations" name="locations">All Locations</g:RadioButton>
+	        </div>
+	        <div>
+		       <g:RadioButton ui:field="m_singleLocation" name="locations">Single Location</g:RadioButton>
+	        </div>
+	        <div>
+	            <g:ListBox ui:field="m_locationList" visible="false"></g:ListBox>
+	        </div>
+        </div>
+        <div class="{style.navBlock}" style="margin: 0px 0px 10px 0px;">
+<!--            <p><b>Select Participant</b></p>-->
+	        <div>
+	            <g:RadioButton ui:field="m_allHosts" name="hosts">All Participants</g:RadioButton>
+	        </div>
+	        <div>
+	            <g:RadioButton ui:field="m_singleHost" name="hosts">Single Participant</g:RadioButton>
+	        </div>
+	        <div>
+	            <g:ListBox ui:field="m_hostList" visible="false"></g:ListBox>
+	        </div>
+        </div>
+        <div style="line-height:5px;">
+	        <div class="{style.opennmsLink}" style="margin: 0px 0px 20px 0px">
+	            <p>Overall availability for World IPv6 day from 100+ locations around the world</p>
+	            <g:Anchor ui:field="m_link">Details at OpenNMS, <b>click here.</b> (enable popups to view)</g:Anchor>
+	        </div>
+	        <div class="{style.opennmsLink}"  style="">
+	            <g:Anchor href="http://www.choopa.com/">OpenNMS Hosting Sponsored by Choopa</g:Anchor>
+	        </div>
+        </div>
+	</g:HTMLPanel>
+</ui:UiBinder> 

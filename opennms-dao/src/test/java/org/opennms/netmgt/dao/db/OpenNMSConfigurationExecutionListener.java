@@ -31,8 +31,11 @@
  */
 package org.opennms.netmgt.dao.db;
 
+import java.lang.reflect.Method;
+
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 /**
@@ -42,9 +45,35 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  */
 public class OpenNMSConfigurationExecutionListener extends AbstractTestExecutionListener {
 
-    public void prepareTestInstance(TestContext testContext) throws Exception {
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.afterPropertiesSet();
+    private JUnitConfigurationEnvironment findAnnotation(final TestContext testContext) {
+        JUnitConfigurationEnvironment anno = null;
+        final Method testMethod = testContext.getTestMethod();
+        if (testMethod != null) {
+            anno = testMethod.getAnnotation(JUnitConfigurationEnvironment.class);
+        }
+        if (anno == null) {
+            final Class<?> testClass = testContext.getTestClass();
+            anno = testClass.getAnnotation(JUnitConfigurationEnvironment.class);
+        }
+        return anno;
     }
 
+    public void prepareTestInstance(TestContext testContext) throws Exception {
+        final JUnitConfigurationEnvironment anno = findAnnotation(testContext);
+        if (anno != null) {
+            DaoTestConfigBean bean = new DaoTestConfigBean();
+            bean.afterPropertiesSet();
+            // Set any additional system properties that are specified in the unit test annotation
+            for (String prop : anno.systemProperties()) {
+                int equals = prop.indexOf("=");
+                if (equals > 0) {
+                    String key = prop.substring(0, equals);
+                    String value = prop.substring(equals + 1);
+                    System.setProperty(key, value);
+                } else {
+                    throw new IllegalArgumentException("Invalid system property value: " + prop);
+                }
+            }
+        }
+    }
 }

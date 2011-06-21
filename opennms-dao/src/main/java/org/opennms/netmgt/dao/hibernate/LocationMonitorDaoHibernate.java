@@ -473,6 +473,42 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                 applicationName, startDate, endDate, startDate);
         
     }
+    
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesBetweenForApplications(final Date startDate, final Date endDate, final Collection<String> applicationNames) {
+        return getHibernateTemplate().execute(new HibernateCallback<List<OnmsLocationSpecificStatus>>() {
+
+            @SuppressWarnings("unchecked")
+            public List<OnmsLocationSpecificStatus> doInHibernate(Session session) throws HibernateException, SQLException {
+                
+                return (List<OnmsLocationSpecificStatus>)session.createQuery(
+                        "select distinct status from OnmsLocationSpecificStatus as status " +
+                        "left join fetch status.monitoredService as m " +
+                        "left join fetch m.serviceType " +
+                        "left join fetch m.applications as a " +
+                        "left join fetch status.locationMonitor as lm " +
+                        "where " +
+                        "a.name in (:applicationNames) " +
+                        "and " +
+                        "( status.pollResult.timestamp between :startDate and :endDate" +
+                        "  or" +
+                        "  status.id in " +
+                        "   (" +
+                        "       select max(s.id) from OnmsLocationSpecificStatus as s " +
+                        "       where s.pollResult.timestamp < :startDate " +
+                        "       group by s.locationMonitor, s.monitoredService " +
+                        "   )" +
+                        ") order by status.pollResult.timestamp")
+                .setParameterList("applicationNames", applicationNames)
+                .setParameter("startDate", startDate)
+                .setParameter("endDate", endDate)
+                .list();
+                
+
+            }
+
+        });
+        
+    }
 
 
     /** {@inheritDoc} */

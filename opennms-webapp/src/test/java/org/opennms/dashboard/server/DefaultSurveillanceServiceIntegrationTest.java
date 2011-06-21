@@ -34,75 +34,68 @@
  */
 package org.opennms.dashboard.server;
 
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.dashboard.client.NodeRtc;
 import org.opennms.dashboard.client.SurveillanceService;
 import org.opennms.dashboard.client.SurveillanceSet;
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
-import org.opennms.test.WebAppTestConfigBean;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath*:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/org/opennms/dashboard/applicationContext-svclayer-dashboard-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class DefaultSurveillanceServiceIntegrationTest {
+    @Autowired
     private SurveillanceService m_gwtSurveillanceService;
 
-    @Override
-    protected void setUpConfiguration() {
-        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
-        webAppTestConfig.afterPropertiesSet();
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
-                "classpath*:/META-INF/opennms/applicationContext-reportingCore.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath*:/META-INF/opennms/component-service.xml",
-                "classpath:/org/opennms/dashboard/applicationContext-svclayer-dashboard-test.xml",
-                "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
-        };
-    }
-    
-    @Override
-    protected void onSetUpInTransactionIfEnabled() throws Exception {
-        super.onSetUpInTransactionIfEnabled();
-        
+    @Before
+    public void setUp() throws Exception {
         /*
          * Since the SecurityContext is stored in a ThreadLocal we need to
          * be sure to clear it before every test.
          */
         SecurityContextHolder.clearContext();
     }
-    
+
+    @Test
     public void testGetRtcForSet() {
         populateSecurityContext();
 
         NodeRtc[] rtcs = m_gwtSurveillanceService.getRtcForSet(SurveillanceSet.DEFAULT);
-        
+
         assertNotNull("rtcs should not be null", rtcs);
     }
-    
-    private UserDetails populateSecurityContext() {
+
+    private static UserDetails populateSecurityContext() {
         UserDetails details = new User("user", "password", true, true, true, true, new GrantedAuthority[0]);
         Authentication auth = new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
         return details;
-    }
-
-    public SurveillanceService getGwtSurveillanceService() {
-        return m_gwtSurveillanceService;
-    }
-
-    public void setGwtSurveillanceService(SurveillanceService gwtSurveillanceService) {
-        m_gwtSurveillanceService = gwtSurveillanceService;
     }
 }

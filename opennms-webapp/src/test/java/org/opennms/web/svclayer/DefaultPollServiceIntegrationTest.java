@@ -36,55 +36,48 @@
 package org.opennms.web.svclayer;
 
 import static org.easymock.EasyMock.createMock;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.DemandPoll;
-import org.opennms.test.WebAppTestConfigBean;
 import org.opennms.web.services.PollerService;
 import org.opennms.web.svclayer.support.DefaultDemandPollService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
-public class DefaultPollServiceIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath*:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class DefaultPollServiceIntegrationTest {
 
-	private DemandPollService m_demandPollService;
-        
-	
-	@Override
-    protected void setUpConfiguration() {
-        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
-        webAppTestConfig.afterPropertiesSet();
+    @Autowired
+    private DemandPollService m_demandPollService;
+
+    /**
+     * this is a feature that has not been written yet
+     */
+    @Test
+    @Ignore
+    public void testPollMonitoredService() {
+        PollerService api = createMock(PollerService.class);
+        ((DefaultDemandPollService)m_demandPollService).setPollerAPI(api);
+
+        DemandPoll poll = m_demandPollService.pollMonitoredService(1, "192.168.2.100", 1, 1);
+        assertNotNull("DemandPoll should not be null", poll);
+        assertTrue("Polled service addr doesn't match...", poll.getId() >= 1);
     }
-
-    @Override
-	protected String[] getConfigLocations() {
-		return new String[] {
-				"META-INF/opennms/applicationContext-dao.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath*:/META-INF/opennms/component-service.xml",
-				"org/opennms/web/svclayer/applicationContext-svclayer.xml",
-				 "classpath*:/META-INF/opennms/applicationContext-reportingCore.xml",
-				 "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
-		};
-	}
-
-	public DemandPollService getDemandPollService() {
-		return m_demandPollService;
-	}
-
-	public void setDemandPollService(DemandPollService pollService) {
-		m_demandPollService = pollService;
-	}
-
-	public void testBogus() {
-	    // Empty test to keep JUnit from complaining about no tests
-	}
-    
-    // FIXME this is a feature that has not been written yet
-	public void FIXMEtestPollMonitoredService() {
-		PollerService api = createMock(PollerService.class);
-		((DefaultDemandPollService)m_demandPollService).setPollerAPI(api);
-		
-		DemandPoll poll = m_demandPollService.pollMonitoredService(1, "192.168.2.100", 1, 1);
-		assertNotNull("DemandPoll should not be null", poll);
-		assertTrue("Polled service addr doesn't match...", poll.getId() >= 1);
-	}
 }

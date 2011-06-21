@@ -46,6 +46,7 @@ import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -59,8 +60,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @ContextConfiguration(locations={
         "classpath:org/opennms/reporting/core/svclayer/support/DefaultReportStoreServiceTest.xml"
 })
-
-public class DefaultReportStoreServiceTest {
+public class DefaultReportStoreServiceTest implements InitializingBean {
 
     @Autowired
     ReportStoreService m_reportStoreService;
@@ -74,8 +74,7 @@ public class DefaultReportStoreServiceTest {
     @Autowired
     DatabaseReportConfigDao m_databaseReportConfigDao;
     
-    @Test
-    public void testWiring() {
+    public void afterPropertiesSet() {
         Assert.assertNotNull(m_reportStoreService);
         Assert.assertNotNull(m_reportCatalogDao);
         Assert.assertNotNull(m_reportServiceLocator);

@@ -11,6 +11,8 @@
       <includes>
         <include>*.sh</include>
       </includes>
+      <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/classes</directory>
@@ -19,6 +21,8 @@
         <include>*.init</include>
         <include>*.sysconfig</include>
       </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
   <dependencySets>
@@ -28,6 +32,8 @@
       <includes>
         <include>org.opennms.assemblies:org.opennms.assemblies.remote-poller-onejar:jar:signed-jar-with-dependencies:${project.version}</include>
       </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
   </dependencySets>
 </assembly>

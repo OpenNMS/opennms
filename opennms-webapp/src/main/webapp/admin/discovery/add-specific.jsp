@@ -60,22 +60,16 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
   <title>Add Specific | Admin | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.api.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <script type='text/javascript' src='js/ipv6/ipv6.js'></script>
+  <script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>
+  <script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>
+  <script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>
 </head>
 
 <body>
 <script type="text/javascript">
-function checkIpAddr(ip){
-	var ipArr = ip.split(".");
-	if(ipArr.length!=4)
-		return false;
-	if(isNaN(ipArr[0]) || ipArr[0]=="" || isNaN(ipArr[1]) || ipArr[1]=="" || isNaN(ipArr[2]) || ipArr[2]=="" || isNaN(ipArr[3]) || ipArr[3]=="" || 
-		ipArr[0]<0 || ipArr[0]>255 || ipArr[1]<0 || ipArr[1]>255 || ipArr[2]<0 || ipArr[2]>255 || ipArr[3]<0 || ipArr[3]>255)
-		return false;
-	return true;
-}
-
 function addSpecific(){
-	if(!checkIpAddr(document.getElementById("ipaddress").value)){
+	if(!isValidIPAddress(document.getElementById("ipaddress").value)){
 		alert("IP address not valid.");
 		document.getElementById("ipaddress").focus();
 		return;

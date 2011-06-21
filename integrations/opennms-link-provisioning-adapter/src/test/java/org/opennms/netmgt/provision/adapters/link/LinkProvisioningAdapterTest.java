@@ -48,16 +48,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 /**
  * Test the user stories/use cases associated with the Link Adapter.
@@ -65,12 +62,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
-    TemporaryDatabaseExecutionListener.class,
-    DependencyInjectionTestExecutionListener.class
-})
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -79,7 +71,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:testConfigContext.xml"
 })
-@JUnitTemporaryDatabase()
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class LinkProvisioningAdapterTest {
     
     public static final String END_POINT_1 = "nc-ral0001-to-ral0002-dwave";

@@ -8,14 +8,18 @@ public class ServiceCollector {
 	
 	private String m_serviceID;
 	private int m_collectionCount = 0;
-    private int m_errorCount = 0;
-    private int m_betweenCount = 0;
+	private int m_errorCount = 0;
+	private int m_betweenCount = 0;
+	private int m_persistCount = 0;
 	private long m_totalTime = 0;
-    private long m_errorTime = 0;
-    private long m_totalBetweenTime = 0;
+	private long m_errorTime = 0;
+	private long m_totalBetweenTime = 0;
+	private long m_totalPersistTime;
 	private long m_lastBegin = 0;
 	private long m_lastErrorBegin = 0;
 	private long m_lastEnd = 0;
+	private long m_lastPersistBegin = 0;
+	private long m_lastPersistEnd = 0;
 
 	public ServiceCollector(String serviceID) {
 		m_serviceID = serviceID;
@@ -29,6 +33,9 @@ public class ServiceCollector {
 	public final Pattern m_pattern = Pattern.compile(m_regex);	
 	
 	public void addMessage(LogMessage msg) {
+	    if (!m_serviceID.equals(msg.getServiceID())) {
+	        throw new IllegalArgumentException("ServiceID of log message does not match serviceID of ServiceCollector: " + m_serviceID);
+	    }
 		if (msg.isCollectorBeginMessage()) {
 			m_lastBegin = msg.getDate().getTime();
 			// measure the time between collections
@@ -55,6 +62,19 @@ public class ServiceCollector {
 			}
 			m_lastErrorBegin = 0;
 		}
+		if (msg.isPersistBeginMessage()) {
+		    m_lastPersistBegin = msg.getDate().getTime();
+		    m_lastPersistEnd = 0;
+		}
+		if (msg.isPersistEndMessage()) {
+		    long end  = msg.getDate().getTime();
+		    m_lastPersistEnd = msg.getDate().getTime();
+		    if(m_lastPersistBegin > 0) {
+		       m_totalPersistTime += end - m_lastPersistBegin;
+		       m_persistCount++;
+		    }
+		    m_lastPersistBegin = 0;
+		}
 	}
 	
 	public String getParsedServiceID() {
@@ -72,6 +92,9 @@ public class ServiceCollector {
 	
 	public int getErrorCollectionCount() {
 	    return m_errorCount;
+	}
+	public int getPersistCount() {
+	    return m_persistCount;
 	}
 
 	public long getTotalCollectionTime() {
@@ -95,7 +118,12 @@ public class ServiceCollector {
 	public Duration getSuccessfulCollectionDuration() {
 		return new Duration(getSuccessfulCollectionTime());
 	}
-	
+	public long getTotalPersistTime() {
+	    return m_totalPersistTime;
+	}
+	public Duration getTotalPersistDuration() {
+	    return new Duration(getTotalPersistTime());
+	}
 	public int getSuccessfulCollectionCount() {
 	    return m_collectionCount - m_errorCount;
 	}
@@ -125,7 +153,15 @@ public class ServiceCollector {
 	public Duration getAverageCollectionDuration() {
 		return new Duration(getAverageCollectionTime());
 	}
-
+	
+	public long getAveragePersistTime() {
+	        int count = getPersistCount();
+	        if(count == 0) return 0;
+	        return getTotalPersistTime()/count;
+	}
+	public Duration getAveragePersistDuration() {
+	    return new Duration(getAveragePersistTime());
+	}
 	public long getAverageErrorCollectionTime() {
 	    int count = getErrorCollectionCount();
 	    if (count == 0) return 0;
@@ -165,6 +201,8 @@ public class ServiceCollector {
 	public int hashCode() {
 		return getServiceID().hashCode();
 	}
+
+   
 
 
 }

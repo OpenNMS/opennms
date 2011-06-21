@@ -41,6 +41,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -352,6 +353,7 @@ public abstract class JMXCollector implements ServiceCollector {
         }
         
         JMXCollectionSet collectionSet=new JMXCollectionSet(agent,collDir);
+        collectionSet.setCollectionTimestamp(new Date());
         JMXCollectionResource collectionResource=collectionSet.getResource();
         
         ConnectionWrapper connection = null;
@@ -861,6 +863,7 @@ public abstract class JMXCollector implements ServiceCollector {
     
     class JMXCollectionSet implements CollectionSet {
         private int m_status;
+        private Date m_timestamp;
         private JMXCollectionResource m_collectionResource;
         
         JMXCollectionSet(CollectionAgent agent, String resourceName) {
@@ -889,7 +892,15 @@ public abstract class JMXCollector implements ServiceCollector {
 		public boolean ignorePersist() {
 			return false;
 		}        
-    
+		
+		@Override
+		public Date getCollectionTimestamp() {
+			return m_timestamp;
+		}
+        public void setCollectionTimestamp(Date timestamp) {
+        	this.m_timestamp = timestamp;
+		}
+
     }
     
     /** {@inheritDoc} */

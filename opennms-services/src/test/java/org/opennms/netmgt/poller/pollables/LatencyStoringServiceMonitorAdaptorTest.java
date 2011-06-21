@@ -61,6 +61,7 @@ import org.junit.Test;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
@@ -94,6 +95,9 @@ public class LatencyStoringServiceMonitorAdaptorTest {
 
         RrdTestUtils.initializeNullStrategy();
         RrdUtils.setStrategy(m_rrdStrategy);
+
+        System.setProperty("opennms.home", "src/test/resources");
+        PollOutagesConfigFactory.init();
     }
 
     @After

@@ -50,35 +50,29 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.test.mock.MockLogAppender;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.JobDetailBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.webflow.test.MockRequestContext;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    DependencyInjectionTestExecutionListener.class
-})
-@ContextConfiguration(locations={
-        "classpath:org/opennms/web/svclayer/schedulerServiceTest.xml"
-})
 
 /**
  * Unit tests for DefaultSchedulerService
  * 
  * @author <a href="mailto:jonathand@opennms.org">Jonathan Sartin</a>
  */
-
-public class DefaultSchedulerServiceTest {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:org/opennms/web/svclayer/schedulerServiceTest.xml"
+})
+public class DefaultSchedulerServiceTest implements InitializingBean {
     
     @Autowired 
     private DefaultSchedulerService m_schedulerService;
@@ -112,9 +106,9 @@ public class DefaultSchedulerServiceTest {
         m_scheduler = (Scheduler) m_schedulerFactory.getScheduler();
         
     }
-    
-    @Test
-    public void testWiring() {
+
+    @Override
+    public void afterPropertiesSet() {
         Assert.assertNotNull(m_schedulerService);
         Assert.assertNotNull(m_schedulerFactory);
         Assert.assertNotNull(m_jobDetail);

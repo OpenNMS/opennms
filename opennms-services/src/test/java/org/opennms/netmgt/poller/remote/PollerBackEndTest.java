@@ -47,6 +47,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import junit.framework.TestCase;
 
@@ -66,13 +68,13 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -430,11 +432,17 @@ public class PollerBackEndTest extends TestCase {
         assertEquals(m_startTime, config.getConfigurationTimestamp());
         assertNotNull(config.getPolledServices());
         assertEquals(2, config.getPolledServices().length);
+
+        Map<String,PolledService> services = new TreeMap<String,PolledService>();
+        for (final PolledService ps : config.getPolledServices()) {
+        	services.put(ps.getSvcName(), ps);
+        }
+
         //Because the config is sorted DNS will change from index 1 to index 0;
-        assertEquals(m_dnsService.getServiceName(), config.getPolledServices()[0].getSvcName());
-        assertEquals(m_httpService.getServiceName(), config.getPolledServices()[1].getSvcName());
-        assertEquals(5678, config.getPolledServices()[0].getPollModel().getPollInterval());
-        assertTrue(config.getPolledServices()[0].getMonitorConfiguration().containsKey("hostname"));
+        assertTrue(services.keySet().contains(m_dnsService.getServiceName()));
+        assertTrue(services.keySet().contains(m_httpService.getServiceName()));
+        assertEquals(5678, services.get("DNS").getPollModel().getPollInterval());
+        assertTrue(services.get("DNS").getMonitorConfiguration().containsKey("hostname"));
     }
 
     public void testGetPollerConfigurationForDeletedMonitor() {

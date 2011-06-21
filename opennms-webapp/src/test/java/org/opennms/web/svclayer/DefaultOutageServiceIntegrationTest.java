@@ -37,101 +37,96 @@
 
 package org.opennms.web.svclayer;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 import java.util.Date;
 
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.OutageDao;
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.test.WebAppTestConfigBean;
 import org.opennms.web.svclayer.outage.OutageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-public class DefaultOutageServiceIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-	private static final int RANGE_LIMIT = 5;
-    
-	private OutageService m_outageService;
-    private OutageDao m_outageDao;
-    private DatabasePopulator m_databasePopulator;
-        
-	public void setOutageService(OutageService outageService) {
-		m_outageService = outageService;
-	}
-	
-	@Override
-    protected void setUpConfiguration() {
-        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
-        webAppTestConfig.afterPropertiesSet();
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class DefaultOutageServiceIntegrationTest {
+    private static final int RANGE_LIMIT = 5;
+
+    @Autowired
+    OutageService m_outageService;
+
+    @Autowired
+    OutageDao m_outageDao;
+
+    @Autowired
+    DatabasePopulator m_databasePopulator;
+
+    @Before
+    public void setUp() throws Exception {
+        m_databasePopulator.populateDatabase();
     }
 
-    @Override
-	protected String[] getConfigLocations() {
-		return new String[] {
-				"META-INF/opennms/applicationContext-dao.xml",
-				"classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
-				"org/opennms/web/svclayer/applicationContext-svclayer.xml",
-				"classpath*:/META-INF/opennms/component-dao.xml",
-				"classpath*:/META-INF/opennms/component-service.xml",
-                "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-                "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml",
-
-		};
-	}
-    
-    @Override
-    public void onSetUpInTransactionIfEnabled() throws Exception {
-        super.onSetUpInTransactionIfEnabled();
-        getDatabasePopulator().populateDatabase();
+    @Test
+    public void testGetRangeOutages() {
+        Collection<OnmsOutage> outages = m_outageService.getOutagesByRange(1,RANGE_LIMIT,"iflostservice","asc", new OnmsCriteria(OnmsOutage.class));
+        assertFalse("Collection should not be emtpy", outages.isEmpty());
+        //assertEquals("Collection should be of size " + RANGE_LIMIT, RANGE_LIMIT, outages.size());
     }
 
-	public void testGetRangeOutages() {
-		Collection<OnmsOutage> outages = m_outageService.getOutagesByRange(1,RANGE_LIMIT,"iflostservice","asc", new OnmsCriteria(OnmsOutage.class));
-		assertFalse("Collection should not be emtpy", outages.isEmpty());
-		//assertEquals("Collection should be of size " + RANGE_LIMIT, RANGE_LIMIT, outages.size());
-	}
-	
-	// More tests should be defined for these
-	
-	public void FIXMEtestGetSupressedOutages() {
-		Collection<OnmsOutage> outages = m_outageService.getSuppressedOutages();
-		assertTrue("Collection should be emtpy ", outages.isEmpty());
-		
-	}
-	
-	public void testLoadOneOutage() {
-	    OnmsOutage outage = m_outageService.load(1);
-	    assertTrue("We loaded one outage ",outage.getId().equals(1));
-	}
-	
-	public void FIXMEtestNoOfSuppressedOutages(){
-		Integer outages = m_outageService.getSuppressedOutageCount();
-		assertTrue("We should find suppressed messages ", outages == 0);
-	}
+    // More tests should be defined for these
 
-	public void testSuppression() {
-		Date time = new Date();
-		//Load Outage manipulate and save it.
-		OnmsOutage myOutage = m_outageService.load(new Integer(1));
-		assertTrue("Loaded the outage ", myOutage.getId().equals(new Integer(1)));
-		myOutage.setSuppressTime(time);
-		m_outageService.update(myOutage);
-		m_outageService.load(new Integer(1));
-	}
+    @Test
+    @Ignore
+    public void testGetSupressedOutages() {
+        Collection<OnmsOutage> outages = m_outageService.getSuppressedOutages();
+        assertTrue("Collection should be emtpy ", outages.isEmpty());
 
-    public OutageDao getOutageDao() {
-        return m_outageDao;
     }
 
-    public void setOutageDao(OutageDao outageDao) {
-        m_outageDao = outageDao;
+    @Test
+    public void testLoadOneOutage() {
+        OnmsOutage outage = m_outageService.load(1);
+        assertTrue("We loaded one outage ",outage.getId().equals(1));
     }
 
-    public DatabasePopulator getDatabasePopulator() {
-        return m_databasePopulator;
+    @Test
+    @Ignore
+    public void testNoOfSuppressedOutages(){
+        Integer outages = m_outageService.getSuppressedOutageCount();
+        assertTrue("We should find suppressed messages ", outages == 0);
     }
 
-    public void setDatabasePopulator(DatabasePopulator databasePopulator) {
-        m_databasePopulator = databasePopulator;
+    @Test
+    @Transactional
+    public void testSuppression() {
+        Date time = new Date();
+        //Load Outage manipulate and save it.
+        OnmsOutage myOutage = m_outageService.load(new Integer(1));
+        assertTrue("Loaded the outage ", myOutage.getId().equals(new Integer(1)));
+        myOutage.setSuppressTime(time);
+        m_outageService.update(myOutage);
+        m_outageService.load(new Integer(1));
     }
 }

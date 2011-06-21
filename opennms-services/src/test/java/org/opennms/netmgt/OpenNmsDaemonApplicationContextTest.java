@@ -37,41 +37,42 @@
  */
 package org.opennms.netmgt;
 
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.test.DaoTestConfigBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
+ * TODO: Kinda a trivial test, remove it at some point?
+ * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class OpenNmsDaemonApplicationContextTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:META-INF/opennms/applicationContext-daemon.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class OpenNmsDaemonApplicationContextTest implements InitializingBean {
+    @Autowired
     private EventIpcManager m_eventIpcManager;
-    
-    
-    @Override
-    protected void setUpConfiguration() {
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.afterPropertiesSet();
-    }
 
     @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:META-INF/opennms/applicationContext-dao.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath:META-INF/opennms/applicationContext-daemon.xml"
-        };
+    public void afterPropertiesSet() throws Exception {
+        assertNotNull(m_eventIpcManager);
     }
-    
+
+    @Test
     public void testEventIpcManagerNonNull() throws Exception {
-        assertNotNull("eventIpcManager bean", m_eventIpcManager);
-    }
-
-    public EventIpcManager getEventIpcManager() {
-        return m_eventIpcManager;
-    }
-
-    public void setEventIpcManager(EventIpcManager eventIpcManager) {
-        m_eventIpcManager = eventIpcManager;
+        // Just testing @Autowired EventIpcManager
     }
 }

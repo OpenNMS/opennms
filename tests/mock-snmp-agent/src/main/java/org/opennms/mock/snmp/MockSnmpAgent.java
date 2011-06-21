@@ -39,7 +39,9 @@
 package org.opennms.mock.snmp;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.BindException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -117,10 +119,23 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     private boolean m_stopped;
     private List<ManagedObject> m_moList;
     private MockSnmpMOLoader m_moLoader;
+    private static File BOOT_COUNT_FILE;
 
     // initialize Log4J logging
     static {
         LogFactory.setLogFactory(new Log4jLogFactory());
+        File bootCountFile;
+        try {
+            bootCountFile = File.createTempFile("mockSnmpAgent", "boot");
+            bootCountFile.createNewFile();
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(bootCountFile));
+            out.writeInt(0);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            bootCountFile = new File("/dev/null");
+        }
+        BOOT_COUNT_FILE = bootCountFile;
     }
 
     /*
@@ -145,9 +160,10 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      * @param confFile a {@link java.io.File} object.
      * @param moFile a {@link org.springframework.core.io.Resource} object.
      * @param bindAddress a {@link java.lang.String} object.
+     * @throws IOException 
      */
-    public MockSnmpAgent(File bootFile, File confFile, Resource moFile, String bindAddress) {
-        super(bootFile, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
+    public MockSnmpAgent(File confFile, Resource moFile, String bindAddress) {
+        super(BOOT_COUNT_FILE, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
         m_moLoader = new PropertiesBackedManagedObject();
         m_address = bindAddress;
         m_moFile = moFile;
@@ -171,7 +187,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             throw new RuntimeException("Got IOException while checking for existence of mock object file: " + e, e);
         }
         
-        MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), new File("/dev/null"), moFile, bindAddress);
+        MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), moFile, bindAddress);
         Thread thread = new Thread(agent, agent.getClass().getSimpleName());
         thread.start();
 
@@ -346,7 +362,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
         for (final TransportMapping transportMapping : transportMappings) {
             try {
-                transportMapping.close();
+                if (transportMapping != null) transportMapping.close();
             } catch (final Throwable t) {
                 LogUtils.debugf(this, t, "an error occurred while closing the transport mapping");
             }

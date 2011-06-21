@@ -37,11 +37,17 @@
 //
 package org.opennms.netmgt.importer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.modelimport.Asset;
@@ -54,48 +60,55 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.importer.specification.ImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.test.DaoTestConfigBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Unit test for ModelImport application.
  */
-public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath:/modelImporterTest.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class ModelImporterTest implements InitializingBean {
+    @Autowired
     private DatabasePopulator m_populator;
+    @Autowired
     private ServiceTypeDao m_serviceTypeDao;
+    @Autowired
     private CategoryDao m_categoryDao;
-
+    @Autowired
     private ModelImporter m_importer;
+    @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
     
-    @Override
-    protected void setUpConfiguration() {
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.afterPropertiesSet();
+    public void afterPropertiesSet() throws Exception {
+        assertNotNull(m_populator);
+        assertNotNull(m_categoryDao);
+        assertNotNull(m_serviceTypeDao);
+        assertNotNull(m_importer);
+        assertNotNull(m_snmpInterfaceDao);
     }
 
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-                "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-                "classpath:/modelImporterTest.xml"
-        };
-    }
-
-    @Override
+    @Before
     public void onSetUpInTransactionIfEnabled() throws Exception {
-        super.onSetUpInTransactionIfEnabled();
-        
         initSnmpPeerFactory();
     }
 
@@ -245,6 +258,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         
     }
     
+    @Test
     public void testVisit() throws Exception {
 
         SpecFile specFile = new SpecFile();
@@ -254,6 +268,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         verifyCounts(visitor);
     }
     
+    @Test
     public void testFindQuery() throws Exception {
         ModelImporter mi = m_importer;        
         String specFile = "/tec_dump.xml.smalltest";
@@ -263,6 +278,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         }
     }
     
+    @Test
     public void testPopulate() throws Exception {
         createAndFlushServiceTypes();
         createAndFlushCategories();
@@ -305,7 +321,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
 
             assertEquals(2, mi.getIpInterfaceDao().countAll());
 
-            assertEquals(6, getSnmpInterfaceDao().countAll());
+            assertEquals(6, m_snmpInterfaceDao.countAll());
 
         } finally {
             agent.shutDownAndWait();
@@ -321,6 +337,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
      * 
      * @throws ModelImportException
      */
+    @Test
     public void testImportUtf8() throws Exception {
         createAndFlushServiceTypes();
         createAndFlushCategories();
@@ -341,6 +358,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
      * 
      * @throws ModelImportException
      */
+    @Test
     public void testDelete() throws Exception {
         createAndFlushServiceTypes();
         createAndFlushCategories();
@@ -369,77 +387,24 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
     }
 
     private void createAndFlushServiceTypes() {
-        getServiceTypeDao().save(new OnmsServiceType("ICMP"));
-        getServiceTypeDao().save(new OnmsServiceType("SNMP"));
-        getServiceTypeDao().save(new OnmsServiceType("HTTP"));
-        getServiceTypeDao().flush();
-
-        setComplete();
-        endTransaction();
-        startNewTransaction();
+        m_serviceTypeDao.save(new OnmsServiceType("ICMP"));
+        m_serviceTypeDao.save(new OnmsServiceType("SNMP"));
+        m_serviceTypeDao.save(new OnmsServiceType("HTTP"));
+        m_serviceTypeDao.flush();
     }
     
     private void createAndFlushCategories() {
-        getCategoryDao().save(new OnmsCategory("AC"));
-        getCategoryDao().save(new OnmsCategory("AP"));
-        getCategoryDao().save(new OnmsCategory("UK"));
-        getCategoryDao().save(new OnmsCategory("BE"));
-        getCategoryDao().save(new OnmsCategory("high"));
-        getCategoryDao().save(new OnmsCategory("low"));
-        getCategoryDao().save(new OnmsCategory("Park Plaza"));
-        getCategoryDao().save(new OnmsCategory("Golden Tulip"));
-        getCategoryDao().save(new OnmsCategory("Hilton"));
-        getCategoryDao().save(new OnmsCategory("Scandic"));
-        getCategoryDao().save(new OnmsCategory("Best Western"));
-        getCategoryDao().flush();
-
-        setComplete();
-        endTransaction();
-        startNewTransaction();
+        m_categoryDao.save(new OnmsCategory("AC"));
+        m_categoryDao.save(new OnmsCategory("AP"));
+        m_categoryDao.save(new OnmsCategory("UK"));
+        m_categoryDao.save(new OnmsCategory("BE"));
+        m_categoryDao.save(new OnmsCategory("high"));
+        m_categoryDao.save(new OnmsCategory("low"));
+        m_categoryDao.save(new OnmsCategory("Park Plaza"));
+        m_categoryDao.save(new OnmsCategory("Golden Tulip"));
+        m_categoryDao.save(new OnmsCategory("Hilton"));
+        m_categoryDao.save(new OnmsCategory("Scandic"));
+        m_categoryDao.save(new OnmsCategory("Best Western"));
+        m_categoryDao.flush();
     }
-
-    public ModelImporter getImporter() {
-        return m_importer;
-    }
-
-
-    public void setImporter(ModelImporter importer) {
-        m_importer = importer;
-    }
-
-    public DatabasePopulator getPopulator() {
-        return m_populator;
-    }
-
-    public void setPopulator(DatabasePopulator populator) {
-        m_populator = populator;
-    }
-
-    public CategoryDao getCategoryDao() {
-        return m_categoryDao;
-    }
-
-    public void setCategoryDao(CategoryDao categoryDao) {
-        m_categoryDao = categoryDao;
-    }
-
-    public ServiceTypeDao getServiceTypeDao() {
-        return m_serviceTypeDao;
-    }
-
-    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
-        m_serviceTypeDao = serviceTypeDao;
-    }
-    
-    public SnmpInterfaceDao getSnmpInterfaceDao() {
-        return m_snmpInterfaceDao; 
-    }
-    
-    
-    
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
-    }
-    
-
 }

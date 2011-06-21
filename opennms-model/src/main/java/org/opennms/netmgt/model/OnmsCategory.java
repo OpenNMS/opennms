@@ -212,6 +212,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
             .append("id", getId())
             .append("name", getName())
             .append("description", getDescription())
+            .append("authorizedGroups", getAuthorizedGroups())
             .toString();
     }
 

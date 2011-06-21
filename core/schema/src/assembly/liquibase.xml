@@ -11,6 +11,8 @@
       <includes>
         <include>**/*.xml</include>
       </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
 </assembly>

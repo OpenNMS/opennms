@@ -37,43 +37,34 @@
 //
 package org.opennms.netmgt.correlation;
 
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.DaoTestConfigBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class CorrelatorIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:META-INF/opennms/applicationContext-correlator.xml",
+        "classpath*:META-INF/opennms/correlation-engine.xml"
+})
+@JUnitConfigurationEnvironment
+public class CorrelatorIntegrationTest {
 
+    @Autowired
     private MockEventIpcManager m_eventIpcMgr;
-    
-    
 
-    @Override
-    protected void setUpConfiguration() {
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.setRelativeHomeDirectory("src/test/opennms-home");
-        bean.afterPropertiesSet();
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-//                "classpath:META-INF/opennms/applicationContext-dao.xml",
-                "classpath:META-INF/opennms/applicationContext-daemon.xml",
-                "classpath:META-INF/opennms/mockEventIpcManager.xml",
-                "classpath:META-INF/opennms/applicationContext-correlator.xml",
-                "classpath*:META-INF/opennms/correlation-engine.xml" };
-    }
-
-    public void setEventIpcManager(MockEventIpcManager eventIpcMgr) {
-        m_eventIpcMgr = eventIpcMgr;
-    }
-
+    @Test
     public void testIt() throws Exception {
 
         anticipateEvent(createEvent("testDownReceived", "TestEngine"));
@@ -88,6 +79,7 @@ public class CorrelatorIntegrationTest extends AbstractTransactionalTemporaryDat
 
     }
 
+    @Test
     public void testTimer() throws Exception {
 
         anticipateEvent(createEvent("timerExpired", "TestEngine"));
@@ -98,23 +90,25 @@ public class CorrelatorIntegrationTest extends AbstractTransactionalTemporaryDat
 
         verifyAnticipated();
     }
-    
+
+    @Test
     public void testTimerCancel() throws Exception {
 
         m_eventIpcMgr.broadcastNow(createEvent("timed", "Test"));
-        
+
         Thread.sleep(500);
-        
+
         m_eventIpcMgr.broadcastNow(createEvent("cancelTimer", "Test"));
 
         Thread.sleep(1500);
 
         verifyAnticipated();
-        
+
     }
-    
+
+    @Test
     public void testListEngineLoaded() throws Exception {
-        
+
         anticipateEvent(createEvent("listLoaded", "TestEngine"));
 
         m_eventIpcMgr.broadcastNow(createEvent("isListLoaded", "Test"));
@@ -127,7 +121,7 @@ public class CorrelatorIntegrationTest extends AbstractTransactionalTemporaryDat
         m_eventIpcMgr.getEventAnticipator().verifyAnticipated(0, 0, 0, 0, 0);
     }
 
-    public Event createEvent(String uei, String source) {
+    private static Event createEvent(String uei, String source) {
         EventBuilder bldr = new EventBuilder(uei, source);
         return bldr.getEvent();
     }

@@ -291,11 +291,6 @@ public class DatabasePopulator {
                 getOutageDao().save(unresolved);
                 getOutageDao().flush();
                 
-                final OnmsCategory category = new OnmsCategory();
-                category.setName("some category");
-                getCategoryDao().save(category);
-                getCategoryDao().flush();
-                
                 final OnmsAlarm alarm = new OnmsAlarm();
                 alarm.setDistPoller(getDistPollerDao().load("localhost"));
                 alarm.setUei(event.getEventUei());
@@ -354,14 +349,13 @@ public class DatabasePopulator {
     }
 
     private OnmsCategory getCategory(final String categoryName) {
-    	final OnmsCategory cat = getCategoryDao().findByName(categoryName);
+        OnmsCategory cat = getCategoryDao().findByName(categoryName);
         if (cat == null) {
-        	final OnmsCategory newCat = new OnmsCategory(categoryName);
-            newCat.getAuthorizedGroups().add(categoryName+"Group");
-            getCategoryDao().save(newCat);
-            getCategoryDao().flush();
-            return newCat;
+            cat = new OnmsCategory(categoryName);
         }
+        cat.getAuthorizedGroups().add(categoryName+"Group");
+        getCategoryDao().save(cat);
+        getCategoryDao().flush();
         return cat;
     }
 

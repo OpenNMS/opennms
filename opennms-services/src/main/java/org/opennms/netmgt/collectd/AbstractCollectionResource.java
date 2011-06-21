@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.RrdRepository;
  * @version $Id: $
  */
 public abstract class AbstractCollectionResource implements CollectionResource {
+
     private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
@@ -144,5 +145,6 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     public String getLabel() {
         return null;
     }
+    
 
 }
