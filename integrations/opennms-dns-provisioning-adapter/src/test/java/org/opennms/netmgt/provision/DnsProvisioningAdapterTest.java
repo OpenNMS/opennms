@@ -50,7 +50,6 @@ public class DnsProvisioningAdapterTest {
     private AdapterOperation m_deleteOperation;
     
     @Before
-    @Transactional
     public void setUp() throws Exception {
         NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("test.example.com").setForeignSource("dns").setForeignId("1");
