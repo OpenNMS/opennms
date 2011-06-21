@@ -35,6 +35,7 @@ public class InventoryDatabasePopulator {
 	
     private OnmsNode m_node1;
     private OnmsInventoryAsset m_invAsset1;
+    OnmsInventoryCategory m_inventoryCategory1;
     
     public void populateDatabase() {
         OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
@@ -242,4 +243,14 @@ public class InventoryDatabasePopulator {
 	public void setInvAsset1(OnmsInventoryAsset invAsset1) {
 		m_invAsset1 = invAsset1;
 	}
+
+	public OnmsInventoryCategory getInventoryCategory1() {
+		return m_inventoryCategory1;
+	}
+
+	public void setInventoryCategory1(OnmsInventoryCategory inventoryCategory1) {
+		this.m_inventoryCategory1 = inventoryCategory1;
+	}
+	
+	
 }

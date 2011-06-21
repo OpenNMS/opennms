@@ -106,7 +106,7 @@ public class InventoryAssetDaoHibernateTest {
         Collection<OnmsInventoryAsset> assets = getDbPopulator().getInventoryAssetDao().findByName("Network Card");
         Assert.assertEquals("number of assets found", 1, assets.size());
         
-        // TODO
+        // TODO finish actual object check.
         //OnmsInventoryAsset invAsset = getInventoryAssetDao().findByAssetId(invAsset.getId());
         //assertNotSame(invAsset, invAsset2);
         //assertEquals(invAsset.getAssetId(), invAsset2.getAssetId());
@@ -135,6 +135,18 @@ public class InventoryAssetDaoHibernateTest {
 		Collection<OnmsInventoryAsset> assets = getDbPopulator().getInventoryAssetDao().findByNameAndNode(invAsset1.getAssetName(), invAsset1.getOwnerNode());
 		Assert.assertEquals("Total collection size should be 1.", 1, assets.size());
 		OnmsInventoryAsset invAsset2 = (OnmsInventoryAsset)assets.toArray()[0];
+		
+		Assert.assertEquals(invAsset1.getAssetId(), invAsset2.getAssetId());
+        Assert.assertEquals(invAsset1.getAssetName(), invAsset2.getAssetName());
+        Assert.assertEquals(invAsset1.getCategory().getId(), invAsset2.getCategory().getId());
+        Assert.assertEquals(invAsset1.getOwnerNode().getNodeId(), invAsset2.getOwnerNode().getNodeId());
+	}
+	
+	@Test
+	public void testFindByNameNodeAndCategory() {
+		OnmsInventoryAsset invAsset1 = getDbPopulator().getInvAsset1();
+		
+		OnmsInventoryAsset invAsset2 = getDbPopulator().getInventoryAssetDao().findByNameNodeAndCategory(invAsset1.getAssetName(), invAsset1.getOwnerNode(), invAsset1.getCategory());
 		
 		Assert.assertEquals(invAsset1.getAssetId(), invAsset2.getAssetId());
         Assert.assertEquals(invAsset1.getAssetName(), invAsset2.getAssetName());

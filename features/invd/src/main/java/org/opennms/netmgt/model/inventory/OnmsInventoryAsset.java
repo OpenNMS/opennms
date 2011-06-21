@@ -97,7 +97,7 @@ public class OnmsInventoryAsset {
     @OneToMany(mappedBy="inventoryAsset", fetch=FetchType.EAGER)
     @org.hibernate.annotations.Cascade( {
         org.hibernate.annotations.CascadeType.ALL,
-        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+        org.hibernate.annotations.CascadeType.DELETE })
     private Set<OnmsInventoryAssetProperty> properties = new LinkedHashSet<OnmsInventoryAssetProperty>();
 
     /**

@@ -53,8 +53,6 @@ public class InventoryResourcePersister {
 		
 		// Update an existing asset.
 		if(asset != null) {
-			
-			
 			// Change the source if applicable.
 			if(!asset.getAssetSource().equalsIgnoreCase(res.getResourceSource())) {
 				asset.setAssetSource(res.getResourceSource());
@@ -74,10 +72,10 @@ public class InventoryResourcePersister {
 					ownerNode, 
 					new Date(), 
 					true);
+			assetModified = true;
 		}
 		
-		// Update the last modified date.
-		asset.setDateUpdated(new Date());
+		
 		
 		// Cycle through the resource properties and persist them.
 		List<String> propsUpdated = persistResourceProps(res, asset);
@@ -88,11 +86,14 @@ public class InventoryResourcePersister {
 		}
 		
 		if(assetModified) {
+			// Update the last modified date.
+			asset.setDateUpdated(new Date());
+			
 			// Here's where we would emit an asset changed event.
 		}
-		
+
 		// Save the asset.
-		getInvAssetDao().save(asset);
+		getInvAssetDao().saveOrUpdate(asset);
 	}
 	
 	private List<String> persistResourceProps(InventoryResource res, OnmsInventoryAsset asset) {
