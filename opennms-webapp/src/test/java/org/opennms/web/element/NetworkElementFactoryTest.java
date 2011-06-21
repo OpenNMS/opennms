@@ -92,6 +92,7 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @Transactional
     public void testGetNodeLabel() throws SQLException {
         String nodeLabel = NetworkElementFactory.getInstance(m_appContext).getNodeLabel(1);
         
@@ -99,6 +100,7 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetIpPrimaryAddress() throws SQLException {
         m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES (12, now(), 'A', 'nodeLabel')");
         m_jdbcTemplate.update("INSERT INTO ipinterface (nodeid, ipaddr, iplastcapsdpoll, issnmpprimary) VALUES (12, '172.168.1.1', now(), 'P')");
@@ -109,6 +111,7 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetNodesWithIpLikeOneInterface() throws Exception {
         m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (12, now(), 'A')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
@@ -122,6 +125,7 @@ public class NetworkElementFactoryTest  {
     
     // bug introduced in revision 2932
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetNodesWithIpLikeTwoInterfaces() throws Exception {
         m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (12, now(), 'A')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
@@ -135,10 +139,11 @@ public class NetworkElementFactoryTest  {
     }
 
     @Test
+    @Transactional
     public void testGetInterfacesWithIpAddress() throws Exception {
         Interface[] interfaces = NetworkElementFactory.getInstance(m_appContext).getInterfacesWithIpAddress("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5");
         assertEquals("interface count", 1, interfaces.length);
-        assertEquals("node ID", 1, interfaces[0].getNodeId());
+        assertEquals("node ID", m_dbPopulator.getNode1().getId().intValue(), interfaces[0].getNodeId());
         assertEquals("ifIndex", 4, interfaces[0].getIfIndex());
 
         interfaces = NetworkElementFactory.getInstance(m_appContext).getInterfacesWithIpAddress("fe80:0000:0000:0000:aaaa:bbbb:cccc:0001%5");
@@ -151,35 +156,37 @@ public class NetworkElementFactoryTest  {
     @Test
     @Transactional
     public void testGetActiveInterfacesOnNode() {
-    	Interface[] intfs = NetworkElementFactory.getInstance(m_appContext).getActiveInterfacesOnNode(1);
+    	Interface[] intfs = NetworkElementFactory.getInstance(m_appContext).getActiveInterfacesOnNode(m_dbPopulator.getNode1().getId());
     	assertEquals("active interfaces", 4, intfs.length);
     	
     }
     
     @Test
+    @Transactional
     public void testNodeHasIfAliases() throws InterruptedException {
-        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
+        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
         assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = '' WHERE snmpifalias = 'Initial ifAlias value'"));
-        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
+        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
         assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = 'New ifAlias value' WHERE snmpifalias = ''"));
-        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
+        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
         assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = NULL WHERE snmpifalias = 'New ifAlias value'"));
-        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
+        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
     }
     
     @Test
+    @Transactional
     public void testGetDataLinksOnInterface() {
-        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(1, 1);
+        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(m_dbPopulator.getNode1().getId(), 1);
         assertEquals(4, dlis.length);
         
-        DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(1, 9);
+        DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(m_dbPopulator.getNode1().getId(), 9);
         assertEquals(0, dlis2.length);
     }
     
     @Test
     @Transactional
     public void testGetAtInterfaces() throws Exception {
-        AtInterface atif = NetworkElementFactory.getInstance(m_appContext).getAtInterface(2, "192.168.2.1");
+        AtInterface atif = NetworkElementFactory.getInstance(m_appContext).getAtInterface(m_dbPopulator.getNode2().getId(), "192.168.2.1");
         assertEquals("AA:BB:CC:DD:EE:FF", atif.get_physaddr());
         
         List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("AA:BB:CC:DD:EE:FF");
@@ -187,8 +194,9 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @Transactional
     public void testGetDataLinksOnNode() throws SQLException {
-        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(1);
+        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(m_dbPopulator.getNode1().getId());
         assertEquals(5, dlis.length);
         
         DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(100);
@@ -196,6 +204,7 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetServicesOnInterface() {
         m_jdbcTemplate.update("UPDATE ifservices SET status='A' WHERE id=2;");
         Service[] svc = NetworkElementFactory.getInstance(m_appContext).getServicesOnInterface(1, "192.168.1.1");

@@ -303,9 +303,18 @@ public class DnsRequisitionUrlConnection extends URLConnection {
                 Pattern p = Pattern.compile(expression);
                 Matcher m = p.matcher(rec.getName().toString());
 
-                log().debug("matchingRecord: attempting to match record: ["+rec.getName().toString()+"] with expression: ["+expression+"]");
+                // Try matching on host name only for backwards compatibility
+                log().debug("matchingRecord: attempting to match hostname: ["+rec.getName().toString()+"] with expression: ["+expression+"]");
                 if (m.matches()) {
                     matches = true;
+                } else {
+                    // include the IP address and try again
+                    log().debug("matchingRecord: attempting to match record: ["+rec.getName().toString()
+                                +" "+rec.rdataToString()+"] with expression: ["+expression+"]");
+                    m = p.matcher(rec.getName().toString() + " " + rec.rdataToString());
+                    if (m.matches()) {
+                        matches = true;
+                    }
                 }
                 
                 log().debug("matchingRecord: record matches expression: "+matches);

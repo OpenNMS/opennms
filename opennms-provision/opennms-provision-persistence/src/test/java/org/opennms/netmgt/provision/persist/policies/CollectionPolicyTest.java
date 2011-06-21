@@ -97,11 +97,11 @@ public class CollectionPolicyTest {
         policy.setCategory(TEST_CATEGORY);
         policy.setLabel("~n.*2");
         
-        OnmsNode node1 = m_nodeDao.get(1);
+        OnmsNode node1 = m_nodeDao.get(m_populator.getNode1().getId());
         assertNotNull(node1);
         assertEquals("node1", node1.getLabel());
         
-        OnmsNode node2 = m_nodeDao.get(2);
+        OnmsNode node2 = m_nodeDao.get(m_populator.getNode2().getId());
         assertNotNull(node2);
         assertEquals("node2", node2.getLabel());
         
@@ -112,12 +112,6 @@ public class CollectionPolicyTest {
         node2 = policy.apply(node2);
         assertNotNull(node1);
         assertTrue(node2.hasCategory(TEST_CATEGORY));
-        
-        
-        
-        
-        
-        
     }
 
     private static void matchPolicy(List<OnmsSnmpInterface> interfaces, MatchingSnmpInterfacePolicy p, InetAddress matchingIp) {

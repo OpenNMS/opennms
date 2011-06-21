@@ -48,6 +48,7 @@ import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.AcknowledgedByFilter;
 import org.opennms.web.notification.filter.NotificationCriteria;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DaoWebNotificationRepositoryTest {
+public class DaoWebNotificationRepositoryTest implements InitializingBean {
 
     @Autowired
     DatabasePopulator m_dbPopulator;
@@ -74,12 +75,13 @@ public class DaoWebNotificationRepositoryTest {
         m_dbPopulator.populateDatabase();
     }
     
-    @Test
-    public void testNotNullDaoWebRepo(){
+    public void afterPropertiesSet() {
+        assertNotNull(m_dbPopulator);
         assertNotNull(m_daoNotificationRepo);
     }
     
     @Test
+    @Transactional
     public void testNotificationCount(){
         List<Filter> filterList = new ArrayList<Filter>();
         Filter[] filters = filterList.toArray(new Filter[0]);
@@ -89,6 +91,7 @@ public class DaoWebNotificationRepositoryTest {
     }
 
     @Test
+    @Transactional
     public void testGetMatchingNotifications() {
         List<Filter> filterList = new ArrayList<Filter>();
         int limit = 10;
@@ -102,6 +105,7 @@ public class DaoWebNotificationRepositoryTest {
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetNotification(){
         Notification notice = m_daoNotificationRepo.getNotification(1);
         assertNotNull(notice);

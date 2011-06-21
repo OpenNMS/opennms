@@ -115,6 +115,7 @@ public class DaoWebEventRepositoryTest {
     }
 
     @Test
+    @Transactional
     public void testCountMatchingEvents(){ 
         EventCriteria criteria = new EventCriteria();
         int event = m_daoEventRepo.countMatchingEvents(criteria);
@@ -123,6 +124,7 @@ public class DaoWebEventRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void testCountMatchingEventsBySeverity(){
         EventCriteria criteria = new EventCriteria();
         int[] matchingEvents = m_daoEventRepo.countMatchingEventsBySeverity(criteria);
@@ -140,6 +142,7 @@ public class DaoWebEventRepositoryTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetEvent(){
 
         Event event = m_daoEventRepo.getEvent(1);
@@ -151,7 +154,7 @@ public class DaoWebEventRepositoryTest {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testAcknowledgeUnacknowledgeMatchingAlarms(){
         m_daoEventRepo.acknowledgeMatchingEvents("TestUser", new Date(), new EventCriteria(new EventIdFilter(1)));
         
