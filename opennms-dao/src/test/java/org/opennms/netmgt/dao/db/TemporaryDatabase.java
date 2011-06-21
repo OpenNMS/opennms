@@ -64,6 +64,8 @@ public class TemporaryDatabase implements DataSource {
 
     private static final int MAX_DATABASE_DROP_ATTEMPTS = 10;
 
+    private static final Object TEMPLATE1_MUTEX = new Object();
+
     private final String m_testDatabase;
 
     private final String m_driver;
@@ -264,7 +266,11 @@ public class TemporaryDatabase implements DataSource {
                 m_adminUser, m_adminPassword));
 
         if (!m_useExisting) {
-            createTestDatabase();
+            // Synchronize around a static mutex to prevent multiple connections
+            // to the template1 database
+            synchronized(TEMPLATE1_MUTEX) {
+                createTestDatabase();
+            }
         }
 
         // Test connecting to test database.
