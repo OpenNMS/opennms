@@ -51,6 +51,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.InetAddressUtils;
@@ -97,12 +98,10 @@ public class NodeDaoTest {
     @Autowired
     TransactionTemplate m_transTemplate;
     
-    /*
     @Before
     public void setUp() {
         m_populator.populateDatabase();
     }
-    */
     
     public OnmsNode getNode1() {
         return m_populator.getNode1();
@@ -123,7 +122,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testSave() {
-        m_populator.populateDatabase();
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
@@ -135,7 +133,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testSaveWithPathElement() {
-        m_populator.populateDatabase();
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
@@ -149,7 +146,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testSaveWithNullPathElement() {
-        m_populator.populateDatabase();
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
@@ -168,7 +164,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testCreate() throws InterruptedException {
-        m_populator.populateDatabase();
         OnmsDistPoller distPoller = getDistPoller();
         
         OnmsNode node = new OnmsNode(distPoller);
@@ -203,7 +198,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testQuery() throws Exception {
-        m_populator.populateDatabase();
         
         OnmsNode n = getNodeDao().get(getNode1().getId());
         validateNode(n);
@@ -213,7 +207,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testDeleteOnOrphanIpInterface() {
-        m_populator.populateDatabase();
         
         int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
         
@@ -234,7 +227,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testDeleteNode() {
-        m_populator.populateDatabase();
         int preCount = getJdbcTemplate().queryForInt("select count(*) from node");
 
         OnmsNode n = getNodeDao().get(getNode1().getId());
@@ -249,7 +241,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testQueryWithHierarchy() throws Exception {
-        m_populator.populateDatabase();
         
         OnmsNode n = getNodeDao().getHierarchy(getNode1().getId());
         validateNode(n);
@@ -269,7 +260,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testQueryWithHierarchyCloseTransaction() throws Exception {
-        m_populator.populateDatabase();
 
         OnmsNode n = getNodeHierarchy(getNode1().getId());
         
@@ -293,7 +283,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testGetForeignIdToNodeIdMap() {
-        m_populator.populateDatabase();
         Map<String, Integer> arMap = getNodeDao().getForeignIdToNodeIdMap("imported:");
         assertTrue("Expected to find foriegnId 1", arMap.containsKey("1"));
         OnmsNode node1 = getNodeDao().get(arMap.get("1"));
@@ -305,7 +294,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testUpdateNodeScanStamp() {
-        m_populator.populateDatabase();
         
         Date timestamp = new Date(27);
         
@@ -321,7 +309,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
     public void testFindByForeignSourceAndIpAddress() {
-        m_populator.populateDatabase();
         assertEquals(0, getNodeDao().findByForeignSourceAndIpAddress("NoSuchForeignSource", "192.168.1.1").size());
         assertEquals(0, getNodeDao().findByForeignSourceAndIpAddress("imported:", "192.167.7.7").size());
         assertEquals(1, getNodeDao().findByForeignSourceAndIpAddress("imported:", "192.168.1.1").size());
@@ -333,15 +320,9 @@ public class NodeDaoTest {
     
     
     @Test
-    @JUnitTemporaryDatabase
+    @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testDeleteObsoleteInterfaces() {
-        m_transTemplate.execute(new TransactionCallback<Object>() {
-            public Object doInTransaction(TransactionStatus status) {
-                m_populator.populateDatabase();
-                return null;
-            }
-        });
-        
+
         final Date timestamp = new Date(1234);
 
         m_transTemplate.execute(new TransactionCallback<Object>() {
@@ -518,7 +499,6 @@ public class NodeDaoTest {
     @Test
     @Transactional
 	public void testQuery2() {
-        m_populator.populateDatabase();
         OnmsNode n = getNodeDao().get(m_populator.getNode6().getId());
         assertNotNull(n);
         assertEquals(3, n.getIpInterfaces().size());
