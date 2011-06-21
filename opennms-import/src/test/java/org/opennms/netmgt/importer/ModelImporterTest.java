@@ -279,6 +279,7 @@ public class ModelImporterTest implements InitializingBean {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testPopulate() throws Exception {
         createAndFlushServiceTypes();
         createAndFlushCategories();
@@ -302,7 +303,9 @@ public class ModelImporterTest implements InitializingBean {
         //Verify service count
         assertEquals(3, mi.getServiceTypeDao().countAll());
     }
-    
+
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testAddSnmpInterfaces() throws Exception {
         
         ClassPathResource agentConfig = new ClassPathResource("/snmpTestData1.properties");
@@ -338,6 +341,7 @@ public class ModelImporterTest implements InitializingBean {
      * @throws ModelImportException
      */
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testImportUtf8() throws Exception {
         createAndFlushServiceTypes();
         createAndFlushCategories();
@@ -359,6 +363,7 @@ public class ModelImporterTest implements InitializingBean {
      * @throws ModelImportException
      */
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testDelete() throws Exception {
         createAndFlushServiceTypes();
         createAndFlushCategories();
@@ -370,7 +375,8 @@ public class ModelImporterTest implements InitializingBean {
         
         assertEquals(10, mi.getNodeDao().countAll());
     }
-    private void verifyCounts(CountingVisitor visitor) {
+
+    private static void verifyCounts(CountingVisitor visitor) {
         System.err.println(visitor);
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());

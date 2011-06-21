@@ -55,10 +55,12 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.outage.Outage;
 import org.opennms.web.outage.WebOutageRepository;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -70,7 +72,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class WebOutageRepositoryFilterTest {
+public class WebOutageRepositoryFilterTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;
@@ -99,7 +101,8 @@ public class WebOutageRepositoryFilterTest {
     @Before
     public void setUp(){
         m_dbPopulator.populateDatabase();
-        OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.2.1"), "ICMP");
+        OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(m_dbPopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "ICMP");
+        // This requires every test method to have a new database instance :/
         OnmsEvent event = m_dbPopulator.getEventDao().get(1);
         
         OnmsOutage unresolved2 = new OnmsOutage(new Date(), event, svc2);
@@ -107,13 +110,15 @@ public class WebOutageRepositoryFilterTest {
         m_dbPopulator.getOutageDao().flush();
     }
     
-    @Test
-    public void testAutoWirred(){
+    public void afterPropertiesSet() {
+        assertNotNull(m_appContext);
+        assertNotNull(m_dbPopulator);
         assertNotNull(m_daoOutageRepo);
         assertNotNull(m_jdbcOutageRepo);
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testOutageIdFilter(){
         OutageIdFilter filter = new OutageIdFilter(1);
         OutageCriteria criteria = new OutageCriteria(filter);
@@ -126,6 +131,7 @@ public class WebOutageRepositoryFilterTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testLostServiceDateBeforeFilter(){
         LostServiceDateBeforeFilter filter = new LostServiceDateBeforeFilter(new Date());
         OutageCriteria criteria = new OutageCriteria(filter);
@@ -138,6 +144,7 @@ public class WebOutageRepositoryFilterTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testLostServiceDateAfterFilter(){
         LostServiceDateAfterFilter filter = new LostServiceDateAfterFilter(yesterday());
         OutageCriteria criteria = new OutageCriteria(filter);
@@ -150,6 +157,7 @@ public class WebOutageRepositoryFilterTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testRegainedServiceDateBeforeFilter(){
         RegainedServiceDateBeforeFilter filter = new RegainedServiceDateBeforeFilter(new Date());
         OutageCriteria criteria = new OutageCriteria(filter);
@@ -162,6 +170,7 @@ public class WebOutageRepositoryFilterTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testRegainedServiceDateAfterFilter(){
         RegainedServiceDateAfterFilter filter = new RegainedServiceDateAfterFilter(yesterday());
         OutageCriteria criteria = new OutageCriteria(filter);
@@ -173,13 +182,14 @@ public class WebOutageRepositoryFilterTest {
         assertEquals(1, outages.length);
     }
     
-    private Date yesterday() {
+    private static Date yesterday() {
         Calendar cal = new GregorianCalendar();
         cal.add( Calendar.DATE, -1 );
         return cal.getTime();
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testRecentOutagesFilter(){
         RecentOutagesFilter filter = new RecentOutagesFilter();
         OutageCriteria criteria = new OutageCriteria(filter);
@@ -191,6 +201,7 @@ public class WebOutageRepositoryFilterTest {
         assertEquals(3, outages.length);
     }
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testNegativeInterfaceFilter(){
         NegativeInterfaceFilter filter = new NegativeInterfaceFilter("192.168.2.1");
         OutageCriteria criteria = new OutageCriteria(filter);
@@ -202,8 +213,9 @@ public class WebOutageRepositoryFilterTest {
         assertEquals(2, outages.length);
     }
     
-    @Ignore
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
+    @Ignore
     public void testNegativeNodeFilter(){
 //        NegativeNodeFilter filter = new NegativeNodeFilter(2);
 //        OutageCriteria criteria = new OutageCriteria(filter);
@@ -225,6 +237,7 @@ public class WebOutageRepositoryFilterTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNegativeServiceFilter(){
         NegativeServiceFilter filter = new NegativeServiceFilter(2);
         OutageCriteria criteria = new OutageCriteria(filter);
@@ -236,8 +249,9 @@ public class WebOutageRepositoryFilterTest {
         assertEquals(1, outages.length);
     }
     
-    @Ignore
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
+    @Ignore
     public void testNodeFilter(){
 //        NodeFilter filter = new NodeFilter(1, m_appContext);
 //        OutageCriteria criteria = new OutageCriteria(filter);
@@ -259,6 +273,7 @@ public class WebOutageRepositoryFilterTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testInterfaceFilter(){
         InterfaceFilter filter = new InterfaceFilter("192.168.1.1");
         OutageCriteria criteria = new OutageCriteria(filter);
@@ -280,6 +295,7 @@ public class WebOutageRepositoryFilterTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testServiceFilter(){
         ServiceFilter filter = new ServiceFilter(2);
         OutageCriteria criteria = new OutageCriteria(filter);

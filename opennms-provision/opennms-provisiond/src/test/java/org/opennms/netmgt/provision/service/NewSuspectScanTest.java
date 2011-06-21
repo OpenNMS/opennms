@@ -176,6 +176,7 @@ public class NewSuspectScanTest {
 
     @Test(timeout=300000)
     @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
     public void testScanNewSuspect() throws Exception {
         
@@ -219,7 +220,7 @@ public class NewSuspectScanTest {
     }
     
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testScanNewSuspectNoSnmp() throws Exception {
 
         //Verify empty database

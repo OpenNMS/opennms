@@ -329,6 +329,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
      * Simple test running a trigger.
      */
     @Test
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public final void testRunTrigger() throws InterruptedException {
         Trigger trigger = VacuumdConfigFactory.getInstance().getTrigger("selectAll");
         String triggerSql = trigger.getStatement().getContent();
@@ -347,6 +348,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
      * @throws InterruptedException 
      */
     @Test
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on records created in @Before so we need a fresh database
     public final void testRunAutomation() throws SQLException, InterruptedException {
         final int major = OnmsSeverity.MAJOR.getId();
         
@@ -435,6 +437,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
      * @throws InterruptedException 
      */
     @Test
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on records created in @Before so we need a fresh database
     public final void testSendEventWithParms() throws InterruptedException {
         // create node down events with severity 6
         bringNodeDownCreatingEventWithReason(1, "Testing node1");

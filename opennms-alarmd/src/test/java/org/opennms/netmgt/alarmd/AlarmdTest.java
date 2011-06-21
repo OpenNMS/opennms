@@ -125,6 +125,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     @Test
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on specific IDs so we need a fresh database
     public void testPersistAlarm() throws Exception {
         MockNode node = m_mockNetwork.getNode(1);
 

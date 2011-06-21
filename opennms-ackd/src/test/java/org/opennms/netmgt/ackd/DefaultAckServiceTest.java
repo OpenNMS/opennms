@@ -67,6 +67,7 @@ import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,7 +88,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class DefaultAckServiceTest {
+public class DefaultAckServiceTest implements InitializingBean {
 
     @Autowired
     AckService m_ackService;
@@ -114,7 +115,7 @@ public class DefaultAckServiceTest {
         m_populator.populateDatabase();
     }
     
-    @Test public void verifyWiring() {
+    public void afterPropertiesSet() {
         Assert.assertNotNull(m_ackService);
         Assert.assertNotNull(m_ackDao);
         Assert.assertNotNull(m_notifDao);
@@ -126,7 +127,7 @@ public class DefaultAckServiceTest {
     @Test(expected=IllegalStateException.class)
     public void notificationWithMissingAlarm() {
         
-        OnmsNode dbNode = m_nodeDao.get(Integer.valueOf(1));
+        OnmsNode dbNode = m_nodeDao.get(m_populator.getNode1().getId());
         OnmsEvent event = getEvent(dbNode);
         
         OnmsAlarm alarm = new OnmsAlarm();
@@ -161,9 +162,9 @@ public class DefaultAckServiceTest {
     }
  
     @Test 
-    public void proccessAck() {
+    public void processAck() {
         
-        OnmsNode dbNode = m_nodeDao.get(Integer.valueOf(1));
+        OnmsNode dbNode = m_nodeDao.get(m_populator.getNode1().getId());
         OnmsEvent event = getEvent(dbNode);
         OnmsNotification notif = getNotification(event);
         // OnmsUserNotification un = getUserNotification(notif);

@@ -87,6 +87,7 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 	}
 
 	@Test
+	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
 	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testAddNode() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
@@ -111,8 +112,9 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 	}
 
 	@Test
-	@Transactional
+	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
 	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
+	@Transactional
 	public void testAddNodeDirectly() throws InterruptedException {
 		OnmsNode node = m_nodeDao.get(NODE_ID);
 		assertNotNull(node);
@@ -127,6 +129,7 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 	}
 
 	@Test
+	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
 	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testAddSameOperationTwice() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(2);
@@ -153,6 +156,7 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 	}
 
 	@Test
+	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
 	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testUpdateNode() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(2);
@@ -179,6 +183,7 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 	}
 
 	@Test
+	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
 	public void testNodeConfigChanged() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
@@ -190,6 +195,7 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 	}
 
 	@Test
+	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
 	public void testDeleteNode() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);

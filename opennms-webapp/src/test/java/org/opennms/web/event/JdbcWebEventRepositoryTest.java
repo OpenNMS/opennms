@@ -22,6 +22,7 @@ import org.opennms.web.event.filter.SeverityFilter;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -46,6 +47,7 @@ public class JdbcWebEventRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void testCountMatchingEvents(){ 
         EventCriteria criteria = new EventCriteria();
         int event = m_eventRepo.countMatchingEvents(criteria);
@@ -54,6 +56,7 @@ public class JdbcWebEventRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void testCountMatchingEventsBySeverity(){
         EventCriteria criteria = new EventCriteria();
         int[] matchingEvents = m_eventRepo.countMatchingEventsBySeverity(criteria);
@@ -70,12 +73,14 @@ public class JdbcWebEventRepositoryTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetEvent(){
         Event event = m_eventRepo.getEvent(1);
         assertNotNull(event);
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testAcknowledgeUnacknowledgeMatchingAlarms(){
         m_eventRepo.acknowledgeMatchingEvents("TestUser", new Date(), new EventCriteria(new EventIdFilter(1)));
         
@@ -89,6 +94,7 @@ public class JdbcWebEventRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void testAcknowledgeUnacknowledgeAllAlarms(){
         m_eventRepo.acknowledgeAll("TestUser", new Date());
         
@@ -102,6 +108,7 @@ public class JdbcWebEventRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void testCountMatchingBySeverity(){
         
         int[] matchingEventCount = m_eventRepo.countMatchingEventsBySeverity(new EventCriteria(new SeverityFilter(3)));
@@ -109,6 +116,7 @@ public class JdbcWebEventRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void testFilterBySeverity() {
         NegativeSeverityFilter filter = new NegativeSeverityFilter(OnmsSeverity.NORMAL.getId());
         
@@ -123,6 +131,7 @@ public class JdbcWebEventRepositoryTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testDoubleFilterTest(){
         m_eventRepo.acknowledgeAll("TestUser", new Date());
         

@@ -21,8 +21,10 @@ import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -41,7 +43,7 @@ import org.springframework.test.context.ContextConfiguration;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
-public class RancidProvisioningAdapterIntegrationTest {
+public class RancidProvisioningAdapterIntegrationTest implements InitializingBean {
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -56,7 +58,14 @@ public class RancidProvisioningAdapterIntegrationTest {
     private RancidProvisioningAdapter m_adapter; 
     
     private static final int NODE_ID = 1;
-    
+
+    public void afterPropertiesSet() {
+        assertNotNull("Autowiring failed, node dao is null", m_nodeDao);
+        assertNotNull("Autowiring failed, IPC manager is null", m_mockEventIpcManager);
+        assertNotNull("Autowiring failed, DB populator is null", m_populator);
+        assertNotNull("Autowiring failed, adapter is null", m_adapter);
+    }
+
     @Before
     public void setUp() throws Exception {
         Properties props = new Properties();
@@ -65,11 +74,6 @@ public class RancidProvisioningAdapterIntegrationTest {
         props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
         MockLogAppender.setupLogging(props);
         
-        assertNotNull("Autowiring failed, node dao is null", m_nodeDao);
-        assertNotNull("Autowiring failed, IPC manager is null", m_mockEventIpcManager);
-        assertNotNull("Autowiring failed, DB populator is null", m_populator);
-        assertNotNull("Autowiring failed, adapter is null", m_adapter);
-
         m_populator.populateDatabase();
     }
     
@@ -78,6 +82,7 @@ public class RancidProvisioningAdapterIntegrationTest {
      * for simulated RANCID REST operations.
      */
     @Test
+    @Transactional
     @JUnitHttpServer(port=7081,basicAuth=true)
     public void testAddNode() {
         List<OnmsNode> nodes = m_nodeDao.findAll();
@@ -92,6 +97,7 @@ public class RancidProvisioningAdapterIntegrationTest {
      * for simulated RANCID REST operations.
      */
     @Test
+    @Transactional
     @JUnitHttpServer(port=7081,basicAuth=true)
     @Ignore
     public void testAddSameOperationTwice() throws InterruptedException {
@@ -112,16 +118,19 @@ public class RancidProvisioningAdapterIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void testUpdateNode() {
         // TODO: Add some tests
     }
 
     @Test
+    @Transactional
     public void testDeleteNode() {
         // TODO: Add some tests
     }
 
     @Test
+    @Transactional
     public void testNodeConfigChanged() {
         // TODO: Add some tests
     }

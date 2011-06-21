@@ -63,6 +63,7 @@ public class SnmpAssetProvisioningAdapterTest {
 	}
 
 	@Test
+	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
 	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testAdd() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
@@ -80,6 +81,7 @@ public class SnmpAssetProvisioningAdapterTest {
 	}
 
 	@Test
+	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
 	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testDelete() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);

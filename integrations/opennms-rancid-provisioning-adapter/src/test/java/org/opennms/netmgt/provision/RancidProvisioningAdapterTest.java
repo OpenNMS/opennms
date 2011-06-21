@@ -18,6 +18,7 @@ import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOpera
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -65,6 +66,7 @@ public class RancidProvisioningAdapterTest {
      * for simulated RANCID REST operations.
      */
     @Test
+    @Transactional
     @JUnitHttpServer(port=7081,basicAuth=true)
     @Ignore
     public void testAdd() throws Exception {
@@ -80,6 +82,7 @@ public class RancidProvisioningAdapterTest {
      * TODO: This test seems to pass even though it fails to connect with a mock RANCID server
      */
     @Test
+    @Transactional
     @JUnitHttpServer(port=7081,basicAuth=true)
     public void testDelete() throws Exception {
         OnmsNode n = m_nodeDao.findByForeignId("rancid", "1");
