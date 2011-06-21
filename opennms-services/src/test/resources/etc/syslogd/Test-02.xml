@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<syslogd-configuration-group>
+    <ueiList>
+        <ueiMatch>
+        	<facility>local0</facility>
+        	<process-match expression="agalue-2004" />
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/agalue</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<facility>local1</facility>
+        	<process-match expression="agalue-2005" />
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/agalue</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<facility>local2</facility>
+        	<process-match expression="agalue-2006" />
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/agalue</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<facility>local3</facility>
+        	<process-match expression="agalue-2007" />
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/agalue</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<facility>local4</facility>
+        	<process-match expression="agalue-2008" />
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/agalue</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<facility>local5</facility>
+        	<process-match expression="agalue-2009" />
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/agalue</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<facility>local6</facility>
+        	<process-match expression="agalue-2010" />
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/agalue</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<facility>local7</facility>
+        	<process-match expression="agalue-2011" />
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/agalue</uei>
+        </ueiMatch>
+    </ueiList>
+
+    <hideMessage>
+        <hideMatch>
+            <match type="regex" expression="bad01.*"/>
+        </hideMatch>
+        <hideMatch>
+            <match type="regex" expression="bad02.*"/>
+        </hideMatch>
+    </hideMessage>
+</syslogd-configuration-group>

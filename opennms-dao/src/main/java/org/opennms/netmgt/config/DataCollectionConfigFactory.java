@@ -90,7 +90,6 @@ public final class DataCollectionConfigFactory {
             DefaultDataCollectionConfigDao dataCollectionDao = new DefaultDataCollectionConfigDao();
             dataCollectionDao.setConfigResource(new FileSystemResource(cfgFile));
             dataCollectionDao.afterPropertiesSet();
-            DataCollectionConfigFactory.setInstance(dataCollectionDao);
             m_singleton = dataCollectionDao;
         }
     }
