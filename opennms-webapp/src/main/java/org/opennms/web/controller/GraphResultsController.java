@@ -42,6 +42,9 @@ import java.util.Calendar;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jrobin.core.RrdException;
+import org.jrobin.core.timespec.TimeParser;
+import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.graph.GraphResults;
@@ -84,8 +87,8 @@ public class GraphResultsController extends AbstractController implements Initia
         String[] reports = request.getParameterValues("reports");
         
         // see if the start and end time were explicitly set as params
-        final String start = request.getParameter("start");
-        final String end = request.getParameter("end");
+        String start = request.getParameter("start");
+        String end = request.getParameter("end");
 
         String relativeTime = request.getParameter("relativetime");
         
@@ -99,8 +102,8 @@ public class GraphResultsController extends AbstractController implements Initia
         final String endYear = request.getParameter("endYear");
         final String endHour = request.getParameter("endHour");
         
-        long startLong;
-        long endLong;
+        long startLong = 0;
+        long endLong = 0;
 
         if (start != null || end != null) {
             String[] ourRequiredParameters = new String[] {
@@ -117,10 +120,52 @@ public class GraphResultsController extends AbstractController implements Initia
                 throw new MissingParameterException("end",
                                                     ourRequiredParameters);
             }
+            //The following is very similar to RrdGraphController.parseTimes, but modified for the local context a bit
+            // There's merging possibilities, but I don't know how (common parent class seems wrong; service bean for a single
+            // method isn't much better.  Ideas?
             
-            // XXX could use some error checking
-            startLong = WebSecurityUtils.safeParseLong(start);
-            endLong = WebSecurityUtils.safeParseLong(end);
+    		//Try a simple 'long' parsing.  If either fails, do a full parse.  If one is a straight 'long' but the other isn't
+    		// that's fine, the TimeParser code will handle it fine (as long as we convert milliseconds to seconds)
+            // Indeed, we *have* to use TimeParse for both to ensure any relative references (using "start" or "end") work correctly. 
+    		// NB: can't do a "safe" parsing using the WebSecurityUtils; if we did, it would filter out all the possible rrdfetch 
+    		// format text and always work :)
+    		
+        	boolean startIsInteger = false;
+        	boolean endIsInteger = false;
+        	
+        	//If either of start/end *is* a long, convert from the incoming milliseconds to seconds that
+        	// is expected for epoch times by TimeParser
+        	try {
+        		startLong = Long.valueOf(start);
+        		startIsInteger = true;
+        		start = ""+(startLong/1000);
+        	} catch (NumberFormatException e) {
+        	}
+        	
+        	try {
+        		endLong = Long.valueOf(end);
+        		endIsInteger = true;
+        		end = "" +(endLong/1000);
+        	} catch (NumberFormatException e) {
+        	}
+        	
+        	if(!endIsInteger || !startIsInteger) {        	
+        		//One or both of start/end aren't integers, so we need to do full parsing using TimeParser
+        		TimeParser startParser = new TimeParser(start);
+        		TimeParser endParser = new TimeParser(end);
+	            try {
+	
+	            	TimeSpec specStart = startParser.parse();
+	            	TimeSpec specEnd = endParser.parse();
+	            	long results[] = TimeSpec.getTimestamps(specStart, specEnd);
+	            	//Multiply by 1000.  TimeSpec returns timestamps in Seconds, not Milliseconds.  
+	            	startLong = results[0]*1000;
+	            	endLong = results[1]*1000;
+	            } catch (RrdException e1) {
+	    			throw new IllegalArgumentException("Could not parse start '"+ start+"' and end '"+end+"' as valid time specifications", e1);
+	    		}
+        	}
+
         } else if (startMonth != null || startDate != null 
                    || startYear != null || startHour != null
                    || endMonth != null || endDate != null || endYear != null

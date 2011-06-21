@@ -156,7 +156,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     public InputStream getPrefabGraph(String resourceId, String report, long start, long end) {
         Assert.notNull(resourceId, "resourceId argument cannot be null");
         Assert.notNull(report, "report argument cannot be null");
-        Assert.isTrue(end > start, "end time must be after start time");
+        Assert.isTrue(end > start, "end time " + end + " must be after start time" + start);
 
         PrefabGraphType t = m_graphDao.findPrefabGraphTypeByName("performance");
         if (t == null) {
