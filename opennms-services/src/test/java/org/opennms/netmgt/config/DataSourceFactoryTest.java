@@ -28,36 +28,46 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
+
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.mock.EventAnticipator;
-import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.netmgt.mock.OutageAnticipator;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-public class DataSourceFactoryTest extends OpenNMSTestCase {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
+@Transactional
+public class DataSourceFactoryTest {
 
     private DataSource m_testDb = new DataSourceFactory();
-    private EventAnticipator m_anticipator;
-    private OutageAnticipator m_outageAnticipator;
-    private MockEventIpcManager m_eventMgr;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-
-        m_eventMgr = new MockEventIpcManager();
-        m_eventMgr.setEventWriter(m_db);
-        m_eventMgr.setEventAnticipator(m_anticipator);
-        m_eventMgr.addEventListener(m_outageAnticipator);
-        m_eventMgr.setSynchronous(true);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
     }
 
+    @Test
     public void testSecondDatabase() throws Exception {
         DataSourceFactory.getInstance();
 

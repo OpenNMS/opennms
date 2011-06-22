@@ -36,22 +36,28 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.filter.FilterParseException;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.xml.sax.SAXException;
 
-public class DataSenderTest extends OpenNMSTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+public class DataSenderTest {
     /*
      * This doesn't work unless we have a receiver on the other end.... more of an integration test
      */
-    public void XXXtestSendData() throws MarshalException, ValidationException, IOException, FilterParseException, SAXException, SQLException, RTCException {
+    @Test
+    @Ignore
+    public void testSendData() throws MarshalException, ValidationException, IOException, FilterParseException, SAXException, SQLException, RTCException {
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/rtc-configuration.xml");
         RTCConfigFactory.setInstance(new RTCConfigFactory(stream));
         stream.close();
