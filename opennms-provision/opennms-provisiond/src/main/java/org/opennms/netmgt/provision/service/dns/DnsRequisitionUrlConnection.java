@@ -71,6 +71,8 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     private static final String EXPRESSION_ARG = "expression";
     
     private static final String SERVICES_ARG = "services";
+    
+    private static final String FID_HASH_SRC_ARG = "foreignidhashsource";
 
     private static final String QUERY_ARG_SEPARATOR = "&";
 
@@ -97,6 +99,10 @@ public class DnsRequisitionUrlConnection extends URLConnection {
 
     private String m_foreignSource;
     
+    private String m_foreignIdHashSource;
+    
+    private String[] m_services;
+    
     private static Map<String, String> m_args;
     
     
@@ -117,6 +123,8 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         m_port = url.getPort() == -1 ? 53 : url.getPort();
         m_zone = parseZone(url);
         m_foreignSource = parseForeignSource(url);
+        m_foreignIdHashSource = getForeignIdHashSource();
+        m_services = getServices();
         
         if (m_zone == null) {
             throw new IllegalArgumentException("Specified Zone is null");
@@ -127,6 +135,32 @@ public class DnsRequisitionUrlConnection extends URLConnection {
 
         m_key = null;
         
+    }
+   
+    /**
+     * Determine services to be provisioned from URL
+     * 
+     * @return a String[] of opennms service names
+     */
+    private String[] getServices() {
+        // TODO validate services against service table of database
+        String[] services = "ICMP,SNMP".split(",");
+        if (getArgs() != null && getArgs().get(SERVICES_ARG) != null) {
+            services = getArgs().get(SERVICES_ARG).split(",");
+        }
+        return services;
+    }
+
+    /**
+     * Determine source for computing hash for foreignId from URL
+     * 
+     * @return a String of "ipAddress" or "nodeLabel"
+     */
+    private String getForeignIdHashSource() {
+        if (getArgs() != null && getArgs().get(FID_HASH_SRC_ARG) != null && "ipAddress".equalsIgnoreCase(getArgs().get(FID_HASH_SRC_ARG).trim())) {
+            return "ipAddress";
+        }
+        return "nodeLabel";
     }
 
     
@@ -239,7 +273,13 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         
         n.setBuilding(getForeignSource());
         
-        n.setForeignId(computeHashCode(nodeLabel));
+        if("ipAddress".equals(m_foreignIdHashSource)) {
+            log().debug("Setting foreign ID from hash of IP Address" + addr);
+            n.setForeignId(computeHashCode(addr));
+        } else {
+            log().debug("Setting foreign ID from hash of node label" + nodeLabel);
+            n.setForeignId(computeHashCode(nodeLabel));
+        }
         n.setNodeLabel(nodeLabel);
         
         RequisitionInterface i = new RequisitionInterface();
@@ -249,20 +289,12 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         i.setManaged(Boolean.TRUE);
         i.setStatus(Integer.valueOf(1));
         
-        // TODO validate services against service table of database
-        
-        if (getArgs() != null && getArgs().get(SERVICES_ARG) != null) {
-            String[] services = getArgs().get(SERVICES_ARG).split(",");
-            for (String service : services) {
-                service = service.trim();
-                i.insertMonitoredService(new RequisitionMonitoredService(service));
-                log().debug("Adding provisioned service " + service);
+        for (String service : m_services) {
+            service = service.trim();
+            i.insertMonitoredService(new RequisitionMonitoredService(service));
+            log().debug("Adding provisioned service " + service);
             }
-        } else {
-            i.insertMonitoredService(new RequisitionMonitoredService("ICMP"));
-            i.insertMonitoredService(new RequisitionMonitoredService("SNMP"));
-            log().debug("Adding default provisioned services ICMP and SNMP");
-        }
+        
         n.putInterface(i);
         
         return n;
@@ -326,11 +358,11 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     /**
      * Created this in the case that we decide to every do something different with the hashing
      * to have a lesser likely hood of duplicate foreign ids
-     * @param nodeLabel
+     * @param hashSource
      * @return
      */
-    private String computeHashCode(String nodeLabel) {
-        String hash = String.valueOf(nodeLabel.hashCode());
+    private String computeHashCode(String hashSource) {
+        String hash = String.valueOf(hashSource.hashCode());
         return hash;
     }
 

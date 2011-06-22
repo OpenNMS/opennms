@@ -135,7 +135,7 @@ public class CastorProcessMojo extends AbstractMojo {
 			final String before = MD5.asHex(MD5.getHash(source));
 			final String after = MD5.asHex(MD5.getHash(tempFile));
 	
-			if (before != after) {
+		if (!before.equals(after)) {
 				FileUtils.copyFile(tempFile, source);
 			} else {
 				getLog().debug("Skipping " + source + ": file is unchanged.");

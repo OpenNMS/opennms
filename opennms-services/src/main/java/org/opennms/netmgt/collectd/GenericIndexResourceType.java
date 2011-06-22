@@ -53,7 +53,7 @@ import org.springframework.util.Assert;
  */
 public class GenericIndexResourceType extends ResourceType {
     private String m_name;
-//  private String m_persistenceSelectorStrategy;
+    private PersistenceSelectorStrategy m_persistenceSelectorStrategy;
     private StorageStrategy m_storageStrategy;
 
     private Map<SnmpInstId, GenericIndexResource> m_resourceMap = new HashMap<SnmpInstId, GenericIndexResource>();
@@ -74,10 +74,26 @@ public class GenericIndexResourceType extends ResourceType {
         instantiatePersistenceSelectorStrategy(resourceType.getPersistenceSelectorStrategy().getClazz());
         instantiateStorageStrategy(resourceType.getStorageStrategy().getClazz());
         m_storageStrategy.setParameters(resourceType.getStorageStrategy().getParameterCollection());
+        m_persistenceSelectorStrategy.setParameters(resourceType.getPersistenceSelectorStrategy().getParameterCollection());
     }
 
     private void instantiatePersistenceSelectorStrategy(String className) {
-        // TODO write me
+        Class<?> cinst;
+        try {
+            cinst = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new ObjectRetrievalFailureException(PersistenceSelectorStrategy.class,
+                    className, "Could not load class", e);
+        }
+        try {
+            m_persistenceSelectorStrategy = (PersistenceSelectorStrategy) cinst.newInstance();
+        } catch (InstantiationException e) {
+            throw new ObjectRetrievalFailureException(PersistenceSelectorStrategy.class,
+                    className, "Could not instantiate", e);
+        } catch (IllegalAccessException e) {
+            throw new ObjectRetrievalFailureException(PersistenceSelectorStrategy.class,
+                    className, "Could not instantiate", e);
+        }
     }
 
     private void instantiateStorageStrategy(String className) {
@@ -148,6 +164,10 @@ public class GenericIndexResourceType extends ResourceType {
      */
     public StorageStrategy getStorageStrategy() {
         return m_storageStrategy;
+    }
+
+    public PersistenceSelectorStrategy getPersistenceSelectorStrategy() {
+        return m_persistenceSelectorStrategy;
     }
 
 }
