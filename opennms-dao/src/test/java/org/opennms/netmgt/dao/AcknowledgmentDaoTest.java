@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -48,6 +47,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -63,7 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(dirtiesContext=false)
 public class AcknowledgmentDaoTest {
 	@Autowired
     private AcknowledgmentDao m_acknowledgmentDao;
@@ -83,11 +83,23 @@ public class AcknowledgmentDaoTest {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 	
-	@Before
-	public void setUp() {
-		m_databasePopulator.populateDatabase();
-	}
-	
+    private static boolean m_populated = false;
+    private static DatabasePopulator m_lastPopulator;
+    
+    @BeforeTransaction
+    public void setUp() {
+        try {
+            if (!m_populated) {
+                m_databasePopulator.populateDatabase();
+                m_lastPopulator = m_databasePopulator;
+            }
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+        } finally {
+            m_populated = true;
+        }
+    }
+
 	@Test
 	@Transactional
     public void testSaveUnspecified() {

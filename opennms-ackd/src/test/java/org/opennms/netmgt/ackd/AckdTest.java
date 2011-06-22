@@ -68,6 +68,7 @@ import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -87,7 +88,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(dirtiesContext=false)
 @Transactional
 public class AckdTest implements InitializingBean {
 
@@ -124,6 +125,20 @@ public class AckdTest implements InitializingBean {
     @Autowired
     private JavaMailConfigurationDao m_jmConfigDao;
 
+    private static boolean m_populated = false;
+    
+    @BeforeTransaction
+    public void populateDatabase() {
+        try {
+            if (!m_populated) {
+                m_populator.populateDatabase();
+            }
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+        } finally {
+            m_populated = true;
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -132,8 +147,6 @@ public class AckdTest implements InitializingBean {
         props.setProperty("log4j.logger.org.springframework", "INFO");
         props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
         MockLogAppender.setupLogging(props);
-        
-        m_populator.populateDatabase();
     }
     
     public void afterPropertiesSet() {

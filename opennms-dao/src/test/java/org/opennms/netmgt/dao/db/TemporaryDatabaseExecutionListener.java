@@ -68,7 +68,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
 	@Override
 	public void afterTestMethod(final TestContext testContext) throws Exception {
-		System.err.printf("TemporaryDatabaseExecutionListener.afterTestMethod(%s)\n", testContext);
+		System.err.println(String.format("TemporaryDatabaseExecutionListener.afterTestMethod(%s)\n", testContext));
 
 		final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
 		if (jtd == null) return;
@@ -93,12 +93,17 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 			// will reject database operations because they think that the database rows already
 			// exist even if they were rolled back after a previous test execution.
 			//
-			//final DataSource dataSource = DataSourceFactory.getInstance();
-			//final TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
-			//if (tempDb != m_databases.peek()) {
+			if (jtd.dirtiesContext()) {
 				testContext.markApplicationContextDirty();
 				testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
-			//}
+			} else {
+				final DataSource dataSource = DataSourceFactory.getInstance();
+				final TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
+				if (tempDb != m_databases.peek()) {
+					testContext.markApplicationContextDirty();
+					testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
+				}
+			}
 		}
 	}
 
@@ -128,7 +133,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 	@Override
 	@SuppressWarnings("unchecked")
 	public void beforeTestMethod(final TestContext testContext) throws Exception {
-		System.err.printf("TemporaryDatabaseExecutionListener.beforeTestMethod(%s)\n", testContext);
+		System.err.println(String.format("TemporaryDatabaseExecutionListener.beforeTestMethod(%s)", testContext));
 
 		// FIXME: Is there a better way to inject the instance into the test class?
 		if (testContext.getTestInstance() instanceof TemporaryDatabaseAware) {
@@ -192,7 +197,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
 	@Override
 	public void prepareTestInstance(final TestContext testContext) throws Exception {
-		System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)\n", testContext);
+		System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)", testContext));
 		final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
 
 		if (jtd == null) return;
@@ -200,7 +205,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 		m_database = m_databases.remove();
 		final LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(m_database);
 		DataSourceFactory.setInstance(proxy);
-		System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s\n", testContext, m_database.toString());
+		System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s", testContext, m_database.toString()));
 	}
 
 	private static class CreateNewDatabaseCallable implements Callable<TemporaryDatabase> {

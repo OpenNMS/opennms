@@ -42,6 +42,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -52,7 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(dirtiesContext=false)
 public class AssetRecordDaoTest {
     
 	@Autowired
@@ -67,10 +68,22 @@ public class AssetRecordDaoTest {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 	
-	@Before
-	public void setUp() {
-		m_databasePopulator.populateDatabase();
-	}
+    private static boolean m_populated = false;
+    private static DatabasePopulator m_lastPopulator;
+    
+    @BeforeTransaction
+    public void setUp() {
+        try {
+            if (!m_populated) {
+                m_databasePopulator.populateDatabase();
+                m_lastPopulator = m_databasePopulator;
+            }
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+        } finally {
+            m_populated = true;
+        }
+    }
 
 	@Test
 	@Transactional
