@@ -1,5 +1,6 @@
 <%@page language="java" contentType="text/html" session="true"
-	import="java.util.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.common.*,org.opennms.netmgt.config.poller.*,org.opennms.web.element.*,org.opennms.netmgt.EventConstants,org.opennms.netmgt.xml.event.Event,org.opennms.web.Util,java.net.*,java.io.*,org.opennms.netmgt.utils.*"%>
+	import="java.util.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.common.*,org.opennms.netmgt.config.poller.*,org.opennms.web.element.*,org.opennms.netmgt.EventConstants,org.opennms.netmgt.xml.event.Event,org.opennms.web.Util,java.net.*,java.io.*,org.opennms.netmgt.utils.*,
+	        org.opennms.netmgt.config.common.Time"%>
 
 <%!public void sendOutagesChangedEvent() throws ServletException {
 		Event event = new Event();

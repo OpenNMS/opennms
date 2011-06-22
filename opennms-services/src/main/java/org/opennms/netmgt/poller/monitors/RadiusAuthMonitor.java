@@ -211,7 +211,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
                     accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.USER_PASSWORD,password.getBytes()));
                 }
                 // Authenticate takes 0 retries. Tracker will handle retries.
-                RadiusPacket accessResponse = rc.authenticate(accessRequest, null, DEFAULT_RETRY);
+                RadiusPacket accessResponse = rc.authenticate(accessRequest, DEFAULT_RETRY);
                 
                 if ( accessResponse.getPacketType() == RadiusPacket.ACCESS_ACCEPT ){
                     double responseTime = tracker.elapsedTimeInMillis();

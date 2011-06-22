@@ -15,7 +15,8 @@
         java.net.*,
         java.io.*,
         java.text.NumberFormat,
-        java.text.SimpleDateFormat
+        java.text.SimpleDateFormat,
+        org.opennms.netmgt.config.common.Time
         "
 %>
 <%!//A singleton instance of a "Match-any" interface, which can be used for generic tests/removals etc.
