@@ -99,6 +99,7 @@ public class DaoWebOutageRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void testCountMatchingOutages(){
         int count = m_daoOutageRepo.countMatchingOutages(new OutageCriteria());
         assertEquals(3, count);
@@ -108,6 +109,7 @@ public class DaoWebOutageRepositoryTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetMatchingOutages(){
         Outage[] outage = m_daoOutageRepo.getMatchingOutages(new OutageCriteria());
         assertEquals(3, outage.length);
@@ -125,19 +127,21 @@ public class DaoWebOutageRepositoryTest {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetOutage(){
         Outage outage = m_daoOutageRepo.getOutage(1);
         assertNotNull(outage);
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testGetOutageSummaries() {
         OutageSummary[] summaries = m_daoOutageRepo.getMatchingOutageSummaries(new OutageCriteria());
         assertEquals("there should be 2 outage summary in the default (current) outage criteria match", 2, summaries.length);
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testCountMatchingSummaries(){
         
         int count = m_daoOutageRepo.countMatchingOutageSummaries(new OutageCriteria());

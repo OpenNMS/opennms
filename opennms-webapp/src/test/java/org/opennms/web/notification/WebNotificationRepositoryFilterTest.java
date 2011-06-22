@@ -110,12 +110,14 @@ public class WebNotificationRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testInterfaceFilter(){
         InterfaceFilter filter = new InterfaceFilter("192.168.1.1");
         assert1Result(filter);
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNodeFilter(){
         
         NodeFilter filter = new NodeFilter(1);
@@ -124,7 +126,7 @@ public class WebNotificationRepositoryFilterTest {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNotificationIdFilter(){
         NotificationIdFilter filter = new NotificationIdFilter(1);
         
@@ -132,7 +134,7 @@ public class WebNotificationRepositoryFilterTest {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNotificationIdListFilter(){
         int[] ids = {1};
         NotificationIdListFilter filter = new NotificationIdListFilter(ids);
@@ -150,7 +152,7 @@ public class WebNotificationRepositoryFilterTest {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testServiceFilter(){
         Notification[] notifs = m_daoNotificationRepo.getMatchingNotifications(new NotificationCriteria());
         System.out.println(notifs[0].getServiceId());

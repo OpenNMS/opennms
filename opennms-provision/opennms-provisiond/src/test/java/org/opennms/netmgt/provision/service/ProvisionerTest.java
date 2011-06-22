@@ -1,40 +1,27 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2008 Feb 10: Use default configs. - dj@opennms.org
-// 2007 Aug 25: Use AbstractTransactionalTemporaryDatabaseSpringContextTests
-//              and new Spring context files. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ *     along with OpenNMS(R).  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information contact: 
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
@@ -103,6 +90,7 @@ import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
@@ -131,7 +119,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class ProvisionerTest implements MockSnmpAgentAware {
+public class ProvisionerTest implements MockSnmpAgentAware, InitializingBean {
     
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -176,7 +164,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     private SnmpPeerFactory m_snmpPeerFactory;
     
     @Autowired
-    private DatabasePopulator m_dbPopulator;
+    private DatabasePopulator m_populator;
     
     private EventAnticipator m_eventAnticipator;
 
@@ -189,7 +177,25 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     public void setMockSnmpAgent(MockSnmpAgent agent) {
         m_agent = agent;
     }
-    
+
+    public void afterPropertiesSet() {
+        assertNotNull(m_mockEventIpcManager);
+        assertNotNull(m_provisioner);
+        assertNotNull(m_serviceTypeDao);
+        assertNotNull(m_monitoredServiceDao);
+        assertNotNull(m_ipInterfaceDao);
+        assertNotNull(m_snmpInterfaceDao);
+        assertNotNull(m_nodeDao);
+        assertNotNull(m_distPollerDao);
+        assertNotNull(m_assetRecordDao);
+        assertNotNull(m_resourceLoader);
+        assertNotNull(m_provisionService);
+        assertNotNull(m_pausibleExecutor);
+        assertNotNull(m_importSchedule);
+        assertNotNull(m_snmpPeerFactory);
+        assertNotNull(m_populator);
+    }
+
     @Before
     public void dwVerifyDnsUrlHandlerFactory() throws MalformedURLException {
         new URL("dns://david:rocks@localhost:53/opennms");
@@ -238,7 +244,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
 
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testVisit() throws Exception {
 
         Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/NewFile2.xml"));
@@ -254,6 +260,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
      * @throws MalformedURLException
      */
     @Test(timeout=300000)
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @Ignore
     public void dwImportDnsResourceRequisition() throws ForeignSourceRepositoryException, MalformedURLException {
         Requisition r = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost/localhost"));
@@ -263,7 +270,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
 
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testSendEventsOnImport() throws Exception {
         
         MockNetwork network = new MockNetwork();
@@ -283,7 +290,6 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
     }
 
-    @Transactional
     private void importFromResource(String path) throws Exception {
         m_provisioner.importModelFromResource(m_resourceLoader.getResource(path));
     }
@@ -303,6 +309,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     
     
     @Test(timeout=300000)
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @Transactional
     public void testNonSnmpImportAndScan() throws Exception {
                 
@@ -322,7 +329,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     
     
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testFindQuery() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
@@ -332,7 +339,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testBigImport() throws Exception {
         File file = new File("/tmp/tec_dump.xml.large");
         if (file.exists()) {
@@ -346,7 +353,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @JUnitSnmpAgent(resource="classpath:snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
         
@@ -373,8 +380,9 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     // fail if we take more than five minutes
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
+    @Transactional
     public void testPopulateWithSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan2.xml");
 
@@ -433,8 +441,9 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
     // fail if we take more than five minutes
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
+    @Transactional
     public void testPopulateWithoutSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan_no_snmp_svc.xml");
 
@@ -490,9 +499,9 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
     // fail if we take more than five minutes
     @Test(timeout=300000)
-    @Transactional
-    @Ignore("disable to get a working snapshot")
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @JUnitSnmpAgent(resource="classpath:snmpwalk-demo.properties")
+    @Ignore("disable to get a working snapshot")
     public void testPopulateWithIpv6SnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scanv6.xml");
 
@@ -542,8 +551,9 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
     // fail if we take more than five minutes
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @JUnitSnmpAgent(resource="classpath:snmpwalk-v6only.properties")
+    @Transactional
     public void testPopulateWithIpv6OnlySnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scanv6only.xml");
 
@@ -593,8 +603,9 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
     // fail if we take more than five minutes
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
+    @Transactional
     public void testImportAddrThenChangeAddr() throws Exception {
         
         importFromResource("classpath:/requisition_then_scan2.xml");
@@ -651,6 +662,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDeleteService() throws Exception {
         
         // This test assumes that discovery is disabled
@@ -694,6 +706,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDeleteInterface() throws Exception {
         
         // This test assumes that discovery is disabled
@@ -739,6 +752,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDeleteNode() throws Exception {
 
         // This test assumes that discovery is disabled
@@ -805,7 +819,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     
     
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testPopulate() throws Exception {
         
         importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -870,6 +884,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
      * @throws ModelImportException
      */
     @Test(timeout=300000)
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @Transactional
     public void testImportUtf8() throws Exception {
 
@@ -890,7 +905,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
      * @throws ModelImportException
      */
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDelete() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
         assertEquals(10, getNodeDao().countAll());
@@ -906,7 +921,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
      * @throws Exception
      */
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testAssets() throws Exception {
         importFromResource("classpath:/tec_dump.xml");
         assertEquals(1, getNodeDao().countAll());
@@ -918,7 +933,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     
     //Scheduler tests
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
        //importFromResource("classpath:/tec_dump.xml.smalltest");
        
@@ -933,7 +948,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionServiceGetScheduleForNodesUponDelete() throws Exception {
        importFromResource("classpath:/tec_dump.xml.smalltest");
        
@@ -950,7 +965,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionerAddNodeToSchedule() throws Exception{
         
         
@@ -974,7 +989,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionerRescanWorking() throws Exception{
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
@@ -983,33 +998,33 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
 
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionerRescanWorkingWithDiscoveredNodesDiscoveryDisabled() throws Exception{
         System.setProperty("org.opennms.provisiond.enableDiscovery", "false");
         // populator creates 4 provisioned nodes and 2 discovered nodes
-        m_dbPopulator.populateDatabase();
+        m_populator.populateDatabase();
 
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
         m_provisioner.scheduleRescanForExistingNodes();
-        assertEquals(14, m_provisioner.getScheduleLength());
+        assertEquals(10, m_provisioner.getScheduleLength());
     }
 
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionerRescanWorkingWithDiscoveredNodesDiscoveryEnabled() throws Exception{
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         // populator creates 4 provisioned nodes and 2 discovered nodes
-        m_dbPopulator.populateDatabase();
+        m_populator.populateDatabase();
 
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
         m_provisioner.scheduleRescanForExistingNodes();
-        assertEquals(16, m_provisioner.getScheduleLength());
+        assertEquals(12, m_provisioner.getScheduleLength());
     }
 
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionerRemoveNodeInSchedule() throws Exception{
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
@@ -1025,7 +1040,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionServiceScanIntervalCalcWorks() {
         long now = System.currentTimeMillis();
         
@@ -1040,7 +1055,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionerNodeRescanSchedule() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
@@ -1054,7 +1069,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     @Test(timeout=300000)
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionerUpdateScheduleAfterImport() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
@@ -1079,6 +1094,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     @Test(timeout=300000)
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @Transactional
     public void testSaveCategoriesOnUpdateNodeAttributes() throws Exception {
         
@@ -1117,33 +1133,33 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
     }
     
-    private Event nodeDeleted(int nodeid) {
+    private static Event nodeDeleted(int nodeid) {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
         return bldr.getEvent();        
     }
     
-    private Event deleteNode(int nodeid) {
+    private static Event deleteNode(int nodeid) {
         EventBuilder bldr = new EventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
         return bldr.getEvent();        
     }
     
-    private Event interfaceDeleted(int nodeid, String ipaddr) {
+    private static Event interfaceDeleted(int nodeid, String ipaddr) {
         EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
         bldr.setInterface(addr(ipaddr));
         return bldr.getEvent();
     }
     
-    private Event deleteInterface(int nodeid, String ipaddr) {
+    private static Event deleteInterface(int nodeid, String ipaddr) {
         EventBuilder bldr = new EventBuilder(EventConstants.DELETE_INTERFACE_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
         bldr.setInterface(addr(ipaddr));
         return bldr.getEvent();
     }
     
-    private Event serviceDeleted(int nodeid, String ipaddr, String svc) {
+    private static Event serviceDeleted(int nodeid, String ipaddr, String svc) {
         EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
         bldr.setInterface(addr(ipaddr));
@@ -1151,7 +1167,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         return bldr.getEvent();
     }
     
-    private Event deleteService(int nodeid, String ipaddr, String svc) {
+    private static Event deleteService(int nodeid, String ipaddr, String svc) {
         EventBuilder bldr = new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
         bldr.setInterface(addr(ipaddr));
@@ -1174,7 +1190,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         return node;
     }
     
-    private void verifyCounts2(CountingVisitor visitor) {
+    private static void verifyCounts2(CountingVisitor visitor) {
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());
         assertEquals(0, visitor.getNodeCategoryCount());
@@ -1189,7 +1205,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         assertEquals(visitor.getServiceCategoryCount(), visitor.getServiceCategoryCompletedCount());
     }
     
-    private void verifyCounts(CountingVisitor visitor) {
+    private static void verifyCounts(CountingVisitor visitor) {
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());
         assertEquals(3, visitor.getNodeCategoryCount());
@@ -1352,8 +1368,5 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         public void completeAsset(OnmsAssetRequisition assetReq) {
             m_assetCompleted++;
         }
-        
     }
-    
-
 }

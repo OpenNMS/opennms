@@ -51,6 +51,7 @@ import org.opennms.web.notification.filter.AcknowledgedByFilter;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -80,6 +81,7 @@ public class JdbcWebNotificationRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void testNotificationCount(){
         List<Filter> filterList = new ArrayList<Filter>();
         Filter[] filters = filterList.toArray(new Filter[0]);
@@ -89,6 +91,7 @@ public class JdbcWebNotificationRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void testGetMatchingNotifications() {
         List<Filter> filterList = new ArrayList<Filter>();
         int limit = 10;
@@ -102,12 +105,14 @@ public class JdbcWebNotificationRepositoryTest {
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetNotification(){
         Notification notice = m_notificationRepo.getNotification(1);
         assertNotNull(notice);
     }
     
     @Test
+    @Transactional
     public void testAcknowledgeNotification(){
         m_notificationRepo.acknowledgeMatchingNotification("TestUser", new Date(), new NotificationCriteria());
         

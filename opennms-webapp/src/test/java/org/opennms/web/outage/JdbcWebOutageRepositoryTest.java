@@ -17,6 +17,7 @@ import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageIdFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -46,6 +47,7 @@ public class JdbcWebOutageRepositoryTest{
     }
    
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testCountMatchingOutages(){
         OutageCriteria criteria = new OutageCriteria(new OutageIdFilter(1));
         int outages = m_outageRepo.countMatchingOutages(criteria);
@@ -54,6 +56,7 @@ public class JdbcWebOutageRepositoryTest{
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetOutage(){
         Outage[] outages = m_outageRepo.getMatchingOutages(new OutageCriteria(new OutageIdFilter(1)));
         assertNotNull(outages);
@@ -64,6 +67,7 @@ public class JdbcWebOutageRepositoryTest{
     }
     
     @Test
+    @Transactional
     public void testGetOutages() {
         Outage[] outages = m_outageRepo.getMatchingOutages(new OutageCriteria());
         assertNotNull(outages);
@@ -74,6 +78,7 @@ public class JdbcWebOutageRepositoryTest{
     }
     
     @Test
+    @Transactional
     public void testGetOutageSummaries() {
         OutageSummary[] summaries = m_outageRepo.getMatchingOutageSummaries(new OutageCriteria());
         assertEquals("there should be 1 outage summary in the default (current) outage criteria match", 1, summaries.length);

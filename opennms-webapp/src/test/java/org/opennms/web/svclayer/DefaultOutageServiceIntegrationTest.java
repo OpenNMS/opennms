@@ -89,6 +89,7 @@ public class DefaultOutageServiceIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void testGetRangeOutages() {
         Collection<OnmsOutage> outages = m_outageService.getOutagesByRange(1,RANGE_LIMIT,"iflostservice","asc", new OnmsCriteria(OnmsOutage.class));
         assertFalse("Collection should not be emtpy", outages.isEmpty());
@@ -98,6 +99,7 @@ public class DefaultOutageServiceIntegrationTest {
     // More tests should be defined for these
 
     @Test
+    @Transactional
     @Ignore
     public void testGetSupressedOutages() {
         Collection<OnmsOutage> outages = m_outageService.getSuppressedOutages();
@@ -106,12 +108,14 @@ public class DefaultOutageServiceIntegrationTest {
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testLoadOneOutage() {
         OnmsOutage outage = m_outageService.load(1);
         assertTrue("We loaded one outage ",outage.getId().equals(1));
     }
 
     @Test
+    @Transactional
     @Ignore
     public void testNoOfSuppressedOutages(){
         Integer outages = m_outageService.getSuppressedOutageCount();
@@ -120,6 +124,7 @@ public class DefaultOutageServiceIntegrationTest {
 
     @Test
     @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testSuppression() {
         Date time = new Date();
         //Load Outage manipulate and save it.

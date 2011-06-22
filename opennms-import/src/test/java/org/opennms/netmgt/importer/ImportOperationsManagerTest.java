@@ -81,6 +81,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -169,6 +170,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetOperations() {
         Map<String, Integer> assetNumberMap = getAssetNumberMap("imported:");
         ImportOperationsManager opsMgr = new ImportOperationsManager(assetNumberMap, getModelImporter());
@@ -184,6 +186,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testSaveThenUpdate() throws Exception {
 
 
@@ -226,6 +229,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testChangeIpAddr() throws Exception {
         testImportFromSpecFile(new ClassPathResource("/tec_dump.xml"), 1, 1);
 
@@ -240,6 +244,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testImportToOperationsMgr() throws Exception {
         testDoubleImport(new ClassPathResource("/tec_dump.xml"));
 
