@@ -37,9 +37,9 @@ import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.AliasedResource;
-import org.opennms.netmgt.collectd.CollectionAttribute;
-import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.collectd.IfInfo;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -74,7 +74,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     /**
      * <p>hasThresholds</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
      * @return a boolean.
      */
     public boolean hasThresholds(CollectionAttribute attribute) {

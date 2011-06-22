@@ -29,33 +29,43 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.collectd;
-
-import java.io.File;
-
-import org.opennms.netmgt.model.RrdRepository;
+package org.opennms.netmgt.config.collector;
 
 /**
- * <p>ResourceIdentifier interface.</p>
+ * <p>AttributeDefinition interface.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public interface ResourceIdentifier {
-    
+public interface AttributeDefinition {
+
     /**
-     * <p>getOwnerName</p>
+     * <p>getType</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getOwnerName();
+    public abstract String getType();
+
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public abstract String getName();
     
     /**
-     * <p>getResourceDir</p>
+     * <p>equals</p>
      *
-     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @return a {@link java.io.File} object.
+     * @param o a {@link java.lang.Object} object.
+     * @return a boolean.
      */
-    public File getResourceDir(RrdRepository repository);
+    public abstract boolean equals(Object o);
+    
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
+    public abstract int hashCode();
 
 }

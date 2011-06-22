@@ -26,6 +26,7 @@ package org.opennms.netmgt.config;
 
 import java.util.List;
 
+import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.datacollection.Parameter;
 
 /**
@@ -63,7 +64,7 @@ public interface StorageStrategy {
      * @param resourceIndex a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getResourceNameFromIndex(String resourceParent, String resourceIndex);
+    public String getResourceNameFromIndex(CollectionResource resource);
     
     /*
      * Add to a strategy the possibility to get additional information using SNMP when is necessary.

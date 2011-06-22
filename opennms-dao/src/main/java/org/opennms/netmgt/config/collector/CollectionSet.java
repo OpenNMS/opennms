@@ -33,9 +33,10 @@
  *
  */
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.collector;
 
 import java.util.Date;
+
 
 /**
  * <p>CollectionSet interface.</p>
@@ -56,7 +57,7 @@ public interface CollectionSet {
      * Provide a way to visit all the values in the CollectionSet, for any appropriate purposes (persisting, thresholding, or others)
      * The expectation is that calling this method will ultimately call visitResource, visitGroup and visitAttribute (as appropriate)
      *
-     * @param visitor a {@link org.opennms.netmgt.collectd.CollectionSetVisitor} object.
+     * @param visitor a {@link org.opennms.netmgt.config.collector.CollectionSetVisitor} object.
      */
     public void visit(CollectionSetVisitor visitor);
     

@@ -64,6 +64,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 public class XmpCollectionSet implements CollectionSet {
 
     /* class variables and methods *********************** */

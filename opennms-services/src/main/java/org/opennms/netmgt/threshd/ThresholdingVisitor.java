@@ -42,9 +42,9 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
-import org.opennms.netmgt.collectd.CollectionAttribute;
-import org.opennms.netmgt.collectd.CollectionResource;
-import org.opennms.netmgt.collectd.CollectionSet;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 

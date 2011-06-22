@@ -32,6 +32,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+
 /**
  * <p>Abstract AttributeVisitor class.</p>
  *

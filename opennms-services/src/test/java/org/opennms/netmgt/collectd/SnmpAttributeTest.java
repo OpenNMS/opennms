@@ -49,6 +49,8 @@ import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;

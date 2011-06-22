@@ -56,11 +56,13 @@ public class FrameRelayStorageStrategyTest {
         Assert.assertEquals("2", strategy.getInterfaceName(parentResource, "2"));
 
         // Test Resource Name
-        String resourceName = strategy.getResourceNameFromIndex(parentResource, "1.100");
+        MockCollectionResource resource = new MockCollectionResource(parentResource, "1.100", "frCircuitIfIndex");
+        String resourceName = strategy.getResourceNameFromIndex(resource);
         Assert.assertEquals("Se0_0.100", resourceName);
 
         // Test Resource Name (invalid source interface index)
-        Assert.assertEquals("2.100", strategy.getResourceNameFromIndex(parentResource, "2.100"));
+        resource.setInstance("2.100");
+        Assert.assertEquals("2.100", strategy.getResourceNameFromIndex(resource));
 
         // Test RelativePath
         Assert.assertEquals("1/frCircuitIfIndex/Se0_0.100", strategy.getRelativePathForAttribute(parentResource, resourceName, null));

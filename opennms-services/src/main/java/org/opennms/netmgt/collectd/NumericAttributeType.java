@@ -38,6 +38,9 @@ package org.opennms.netmgt.collectd;
 
 
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.Persister;
 
 /**
  * <p>NumericAttributeType class.</p>
@@ -74,7 +77,7 @@ public class NumericAttributeType extends SnmpAttributeType {
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
      * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
-     * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     * @param groupType a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      */
     public NumericAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         super(resourceType, collectionName, mibObj, groupType);

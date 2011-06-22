@@ -30,7 +30,7 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.collector;
 
 /**
  * <p>CollectionSetVisitor interface.</p>
@@ -50,7 +50,7 @@ public interface CollectionSetVisitor {
     /**
      * <p>visitResource</p>
      *
-     * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
     void visitResource(CollectionResource resource);
 
@@ -85,7 +85,7 @@ public interface CollectionSetVisitor {
     /**
      * <p>completeResource</p>
      *
-     * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
     void completeResource(CollectionResource resource);
 

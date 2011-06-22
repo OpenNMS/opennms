@@ -3,7 +3,7 @@
 //
 // OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
+// code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,47 +25,48 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
+// OpenNMS Licensing       <license@opennms.org>
+//     http://www.opennms.org/
+//     http://www.opennms.com/
 //
-package org.opennms.netmgt.collectd;
+
+package org.opennms.netmgt.config.collector;
+
+import java.io.Serializable;
+import java.util.Comparator;
 
 /**
- * <p>AttributeDefinition interface.</p>
+ * <p>ByNameComparator class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public interface AttributeDefinition {
+public final class ByNameComparator implements Comparator<AttributeDefinition>, Serializable {
+
+    private static final long serialVersionUID = -2596801053643459622L;
 
     /**
-     * <p>getType</p>
+     * <p>compare</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @param type0 a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
+     * @param type1 a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
+     * @return a int.
      */
-    public abstract String getType();
-
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public abstract String getName();
+    public int compare(final AttributeDefinition type0, final AttributeDefinition type1) {
+        return type0.getName().compareTo(type1.getName());
+    }
     
-    /**
-     * <p>equals</p>
-     *
-     * @param o a {@link java.lang.Object} object.
-     * @return a boolean.
-     */
-    public abstract boolean equals(Object o);
+    /** {@inheritDoc} */
+    public boolean equals(final Object o) {
+        return o instanceof ByNameComparator;
+    }
     
     /**
      * <p>hashCode</p>
      *
      * @return a int.
      */
-    public abstract int hashCode();
-
+    public int hashCode() {
+        return 0;
+    }
 }

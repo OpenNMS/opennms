@@ -32,10 +32,10 @@
 package org.opennms.netmgt.collectd.wmi;
 
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.collectd.CollectionAttribute;
-import org.opennms.netmgt.collectd.CollectionAttributeType;
-import org.opennms.netmgt.collectd.CollectionResource;
-import org.opennms.netmgt.collectd.ServiceParameters;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
  * <p>WmiCollectionAttribute class.</p>
@@ -53,7 +53,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
          * <p>Constructor for WmiCollectionAttribute.</p>
          *
          * @param resource a {@link org.opennms.netmgt.collectd.wmi.WmiCollectionResource} object.
-         * @param attribType a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
+         * @param attribType a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
          * @param alias a {@link java.lang.String} object.
          * @param value a {@link java.lang.String} object.
          */
@@ -67,7 +67,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
         /**
          * <p>getAttributeType</p>
          *
-         * @return a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
+         * @return a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
          */
         public CollectionAttributeType getAttributeType() {
             return m_attribType;
@@ -94,7 +94,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
         /**
          * <p>getResource</p>
          *
-         * @return a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+         * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
          */
         public CollectionResource getResource() {
             return m_resource;

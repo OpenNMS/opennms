@@ -24,26 +24,25 @@
  *******************************************************************************/
 package org.opennms.netmgt.dao.support;
 
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.config.collector.CollectionResource;
 
 /**
  * <p>HostFileSystemStorageStrategy class.</p>
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
+@Deprecated
 public class HostFileSystemStorageStrategy extends IndexStorageStrategy {
 
     /** Constant <code>HR_STORAGE_DESC=".1.3.6.1.2.1.25.2.3.1.3"</code> */
-    public static String HR_STORAGE_DESC = ".1.3.6.1.2.1.25.2.3.1.3";
+    public static String HR_STORAGE_DESC = "hrStorageDescr";
 
     /** {@inheritDoc} */
     @Override
-    public String getResourceNameFromIndex(String resourceParent, String resourceIndex) {
-        SnmpObjId oid = SnmpObjId.get(HR_STORAGE_DESC + "." + resourceIndex);
-        SnmpValue snmpValue = SnmpUtils.get(m_storageStrategyService.getAgentConfig(), oid);
-        String value = (snmpValue != null ? snmpValue.toString() : resourceIndex);
+    public String getResourceNameFromIndex(CollectionResource resource) {
+        StringAttributeVisitor visitor = new StringAttributeVisitor(HR_STORAGE_DESC);
+        resource.visit(visitor);
+        String value = (visitor.getValue() != null ? visitor.getValue() : resource.getInstance());
         /*
          * Use special translation for root (base) filesystem
          */

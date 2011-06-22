@@ -49,6 +49,7 @@ import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.RrdRepository;
@@ -268,7 +269,7 @@ public class CollectionSpecification {
      * <p>collect</p>
      *
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
-     * @return a {@link org.opennms.netmgt.collectd.CollectionSet} object.
+     * @return a {@link org.opennms.netmgt.config.collector.CollectionSet} object.
      * @throws org.opennms.netmgt.collectd.CollectionException if any.
      */
     public CollectionSet collect(CollectionAgent agent) throws CollectionException {

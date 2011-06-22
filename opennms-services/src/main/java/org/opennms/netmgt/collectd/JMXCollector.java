@@ -65,6 +65,14 @@ import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.Attrib;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
@@ -858,6 +866,10 @@ public abstract class JMXCollector implements ServiceCollector {
         
         public String getInstance() {
             return null; //For node type resources, use the default instance
+        }
+
+        public String getParent() {
+            return Integer.toString(m_nodeId);
         }
     }
     

@@ -36,6 +36,12 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
  * <p>Abstract AbstractCollectionAttribute class.</p>
@@ -56,7 +62,7 @@ public abstract class AbstractCollectionAttribute implements  CollectionAttribut
     /**
      * <p>getAttributeType</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
+     * @return a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
      */
     public abstract CollectionAttributeType getAttributeType();
 
@@ -77,7 +83,7 @@ public abstract class AbstractCollectionAttribute implements  CollectionAttribut
     /**
      * <p>getResource</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
     public abstract CollectionResource getResource();
 

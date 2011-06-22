@@ -32,9 +32,9 @@
 package org.opennms.netmgt.collectd.wmi;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.ServiceParameters;
-import org.opennms.netmgt.collectd.CollectionAttributeType;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
+import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
  * <p>Abstract WmiCollectionResource class.</p>
@@ -43,6 +43,9 @@ import org.opennms.netmgt.collectd.AbstractCollectionResource;
  * @version $Id: $
  */
 public abstract class WmiCollectionResource extends AbstractCollectionResource {
+    
+    protected int m_nodeId;
+
     /**
      * <p>Constructor for WmiCollectionResource.</p>
      *
@@ -50,6 +53,7 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      */
     public WmiCollectionResource(CollectionAgent agent) {
         super(agent);
+        m_nodeId = agent.getNodeId();
     }
 
     /**
@@ -79,7 +83,7 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
     /**
      * <p>setAttributeValue</p>
      *
-     * @param type a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
+     * @param type a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
      * @param value a {@link java.lang.String} object.
      */
     public void setAttributeValue(final CollectionAttributeType type, final String value) {
@@ -100,5 +104,9 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getInstance();   
+    public abstract String getInstance();
+    
+    public String getParent() {
+        return Integer.toString(m_nodeId);
+    }
 }

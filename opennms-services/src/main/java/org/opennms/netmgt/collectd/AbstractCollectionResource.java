@@ -41,6 +41,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.collector.AttributeGroup;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**
@@ -99,8 +105,8 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     /**
      * Finds, or creates, and returns the AttributeGroup for the given group Type
      *
-     * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
-     * @return a {@link org.opennms.netmgt.collectd.AttributeGroup} object.
+     * @param groupType a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
+     * @return a {@link org.opennms.netmgt.config.collector.AttributeGroup} object.
      */
     protected AttributeGroup getGroup(AttributeGroupType groupType) {
         AttributeGroup group = m_attributeGroups.get(groupType);

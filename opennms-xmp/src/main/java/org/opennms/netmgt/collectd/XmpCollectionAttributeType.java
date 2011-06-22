@@ -61,6 +61,10 @@ package org.opennms.netmgt.collectd;
 import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpVar;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.config.collector.Persister;
 
 
 class XmpCollectionAttributeType implements CollectionAttributeType 
@@ -88,7 +92,7 @@ class XmpCollectionAttributeType implements CollectionAttributeType
     /**
      * <p>Getter for the field <code>groupType</code>.</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      */
     public AttributeGroupType getGroupType() { return groupType; }
 

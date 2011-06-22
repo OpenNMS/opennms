@@ -34,6 +34,7 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 
 import org.opennms.netmgt.config.StorageStrategy;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
@@ -115,7 +116,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
         return ((GenericIndexResourceType)getResourceType()).getStorageStrategy();
     }
 
-    private String getParent() {
+    public String getParent() {
         return String.valueOf(getCollectionAgent().getNodeId());
     }
 
@@ -130,7 +131,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
      */
     public String getLabel() {
         if (m_resourceLabel == null) {
-            m_resourceLabel = getStrategy().getResourceNameFromIndex(getParent(), getInstance());
+            m_resourceLabel = getStrategy().getResourceNameFromIndex(this);
         }
         return m_resourceLabel;
     }

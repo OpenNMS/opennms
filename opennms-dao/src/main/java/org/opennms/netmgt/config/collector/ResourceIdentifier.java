@@ -3,7 +3,7 @@
 //
 // OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,33 +25,37 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
 //
+package org.opennms.netmgt.config.collector;
 
-package org.opennms.netmgt.collectd;
+import java.io.File;
+
+import org.opennms.netmgt.model.RrdRepository;
 
 /**
- * <p>Persister interface.</p>
+ * <p>ResourceIdentifier interface.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public interface Persister {
-
+public interface ResourceIdentifier {
+    
     /**
-     * <p>persistNumericAttribute</p>
+     * <p>getOwnerName</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @return a {@link java.lang.String} object.
      */
-    public abstract void persistNumericAttribute(CollectionAttribute attribute);
-
+    public String getOwnerName();
+    
     /**
-     * <p>persistStringAttribute</p>
+     * <p>getResourceDir</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @return a {@link java.io.File} object.
      */
-    public abstract void persistStringAttribute(CollectionAttribute attribute);
+    public File getResourceDir(RrdRepository repository);
 
 }

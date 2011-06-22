@@ -31,10 +31,10 @@
 //
 package org.opennms.netmgt.collectd.wmi;
 
-import org.opennms.netmgt.collectd.CollectionAttributeType;
-import org.opennms.netmgt.collectd.AttributeGroupType;
-import org.opennms.netmgt.collectd.CollectionAttribute;
-import org.opennms.netmgt.collectd.Persister;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.wmi.Attrib;
 
 /**
@@ -51,7 +51,7 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
          * <p>Constructor for WmiCollectionAttributeType.</p>
          *
          * @param attribute a {@link org.opennms.netmgt.config.wmi.Attrib} object.
-         * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+         * @param groupType a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
          */
         public WmiCollectionAttributeType(final Attrib attribute, final AttributeGroupType groupType) {
             m_groupType = groupType;
@@ -61,7 +61,7 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
         /**
          * <p>getGroupType</p>
          *
-         * @return a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+         * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
          */
         public AttributeGroupType getGroupType() {
             return m_groupType;

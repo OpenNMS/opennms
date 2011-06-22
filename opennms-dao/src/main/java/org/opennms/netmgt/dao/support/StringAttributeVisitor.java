@@ -29,27 +29,43 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.collectd;
 
-import java.util.List;
+package org.opennms.netmgt.dao.support;
 
+import org.opennms.netmgt.config.collector.AttributeGroup;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.datacollection.Parameter;
+import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 
 /**
- * PersistAllSelectorStrategy (default implementation of the PersistenceSelectorStrategy interface).
+ * StringAttributeVisitor
  * 
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
-public class PersistAllSelectorStrategy implements PersistenceSelectorStrategy {
+public class StringAttributeVisitor implements CollectionSetVisitor {
 
-    @Override
-    public boolean shouldPersist(CollectionResource resource) {
-        return true;
+    private String attributeName;
+    private String attributeValue;
+
+    public StringAttributeVisitor(String attributeName) {
+        this.attributeName = attributeName;
     }
 
-    @Override
-    public void setParameters(List<Parameter> parameterCollection) {
+    public String getValue() {
+        return attributeValue;
     }
 
+    public void visitAttribute(CollectionAttribute attribute) {
+        if (attribute.getType().toLowerCase().startsWith("string") && attributeName.equals(attribute.getName()))
+            attributeValue = attribute.getStringValue();
+    }
+
+    public void visitCollectionSet(CollectionSet set) {}
+    public void visitResource(CollectionResource resource) {}
+    public void visitGroup(AttributeGroup group) {}
+    public void completeAttribute(CollectionAttribute attribute) {}
+    public void completeGroup(AttributeGroup group) {}
+    public void completeResource(CollectionResource resource) {}
+    public void completeCollectionSet(CollectionSet set) {}
 }

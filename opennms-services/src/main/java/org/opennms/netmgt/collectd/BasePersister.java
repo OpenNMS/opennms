@@ -45,6 +45,12 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.collector.AttributeDefinition;
+import org.opennms.netmgt.config.collector.AttributeGroup;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdException;
@@ -73,7 +79,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>Constructor for BasePersister.</p>
      *
-     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
      */
     public BasePersister(ServiceParameters params, RrdRepository repository) {
@@ -122,9 +128,9 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>createBuilder</p>
      *
-     * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      * @param name a {@link java.lang.String} object.
-     * @param attributeType a {@link org.opennms.netmgt.collectd.AttributeDefinition} object.
+     * @param attributeType a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
      */
     protected void createBuilder(CollectionResource resource, String name, AttributeDefinition attributeType) {
         createBuilder(resource, name, Collections.singleton(attributeType));
@@ -133,7 +139,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>createBuilder</p>
      *
-     * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      * @param name a {@link java.lang.String} object.
      * @param attributeTypes a {@link java.util.Set} object.
      */
@@ -225,7 +231,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>pushShouldPersist</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
      */
     protected void pushShouldPersist(CollectionAttribute attribute) {
         pushShouldPersist(attribute.shouldPersist(m_params));
@@ -234,7 +240,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>pushShouldPersist</p>
      *
-     * @param group a {@link org.opennms.netmgt.collectd.AttributeGroup} object.
+     * @param group a {@link org.opennms.netmgt.config.collector.AttributeGroup} object.
      */
     protected void pushShouldPersist(AttributeGroup group) {
         pushShouldPersist(group.shouldPersist(m_params));
@@ -247,7 +253,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>pushShouldPersist</p>
      *
-     * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
     protected void pushShouldPersist(CollectionResource resource) {
         push(resource.shouldPersist(m_params));
@@ -263,7 +269,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>storeAttribute</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
      */
     protected void storeAttribute(CollectionAttribute attribute) {
         if (shouldPersist()) {

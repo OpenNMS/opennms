@@ -30,43 +30,29 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.collector;
 
-import java.io.Serializable;
-import java.util.Comparator;
 
 /**
- * <p>ByNameComparator class.</p>
+ * <p>Persister interface.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public final class ByNameComparator implements Comparator<AttributeDefinition>, Serializable {
-
-    private static final long serialVersionUID = -2596801053643459622L;
+public interface Persister {
 
     /**
-     * <p>compare</p>
+     * <p>persistNumericAttribute</p>
      *
-     * @param type0 a {@link org.opennms.netmgt.collectd.AttributeDefinition} object.
-     * @param type1 a {@link org.opennms.netmgt.collectd.AttributeDefinition} object.
-     * @return a int.
+     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
      */
-    public int compare(final AttributeDefinition type0, final AttributeDefinition type1) {
-        return type0.getName().compareTo(type1.getName());
-    }
-    
-    /** {@inheritDoc} */
-    public boolean equals(final Object o) {
-        return o instanceof ByNameComparator;
-    }
-    
+    public abstract void persistNumericAttribute(CollectionAttribute attribute);
+
     /**
-     * <p>hashCode</p>
+     * <p>persistStringAttribute</p>
      *
-     * @return a int.
+     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
      */
-    public int hashCode() {
-        return 0;
-    }
+    public abstract void persistStringAttribute(CollectionAttribute attribute);
+
 }

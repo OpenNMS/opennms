@@ -36,6 +36,9 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.opennms.netmgt.config.collector.AttributeGroup;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.utils.NodeLabel;
 
@@ -199,6 +202,10 @@ public class AliasedResource extends SnmpCollectionResource {
         return null; //For node and interface type resources, use the default instance
     }
 
+    public String getParent() {
+        return null; //For node and interface type resources, use the default parent
+    }
+
     /**
      * <p>getLabel</p>
      *
@@ -207,4 +214,5 @@ public class AliasedResource extends SnmpCollectionResource {
     public String getLabel() {
         return getDomain() + '/' + getAliasDir();
     }
+
 }

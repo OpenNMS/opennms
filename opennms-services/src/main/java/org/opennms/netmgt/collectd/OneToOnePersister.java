@@ -35,6 +35,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 
 
@@ -49,7 +51,7 @@ public class OneToOnePersister extends BasePersister {
     /**
      * <p>Constructor for OneToOnePersister.</p>
      *
-     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
      */
     public OneToOnePersister(ServiceParameters params,  RrdRepository repository) {

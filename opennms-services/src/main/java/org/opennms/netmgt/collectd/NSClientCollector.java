@@ -29,6 +29,14 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NSClientDataCollectionConfigFactory;
 import org.opennms.netmgt.config.NSClientPeerFactory;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.config.nsclient.Attrib;
 import org.opennms.netmgt.config.nsclient.NsclientCollection;
 import org.opennms.netmgt.config.nsclient.Wpm;
@@ -164,6 +172,9 @@ public class NSClientCollector implements ServiceCollector {
             return null; //For node type resources, use the default instance
         }
 
+        public String getParent() {
+            return Integer.toString(m_agent.getNodeId());
+        }
     }
     
     class NSClientCollectionSet implements CollectionSet {

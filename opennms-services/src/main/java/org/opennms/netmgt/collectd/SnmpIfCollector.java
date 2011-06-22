@@ -49,6 +49,7 @@ import java.util.TreeMap;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -189,7 +190,7 @@ public class SnmpIfCollector extends AggregateTracker {
     /**
      * <p>getCollectionSet</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionSet} object.
+     * @return a {@link org.opennms.netmgt.config.collector.CollectionSet} object.
      */
     public CollectionSet getCollectionSet() {
         return m_collectionSet;
