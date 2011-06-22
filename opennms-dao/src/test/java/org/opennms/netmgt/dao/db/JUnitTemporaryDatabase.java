@@ -45,4 +45,5 @@ public @interface JUnitTemporaryDatabase {
     String useExistingDatabase() default "";
     Class<? extends TemporaryDatabase> tempDbClass() default TemporaryDatabase.class;
     boolean reuseDatabase() default true;
+    boolean dirtiesContext() default true;
 }

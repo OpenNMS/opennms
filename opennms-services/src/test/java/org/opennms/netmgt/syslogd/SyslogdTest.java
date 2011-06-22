@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.InputStream;
@@ -41,45 +43,60 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.config.syslogd.UeiMatch;
+import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-public class SyslogdTest extends OpenNMSTestCase {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
+@Transactional
+public class SyslogdTest {
+    
+    String m_localhost = "127.0.0.1";
 
     private Syslogd m_syslogd;
 
-    protected void setUp() throws Exception {
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.setRelativeHomeDirectory("src/test/resources");
-        daoTestConfig.afterPropertiesSet();
+    @Autowired
+    private MockEventIpcManager m_eventIpcManager;
 
-        super.setUp();
-
-        MockUtil.println("------------ Begin Test " + getName() + " --------------------------");
+    @Before
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        MockNetwork network = new MockNetwork();
-        MockDatabase db = new MockDatabase();
-        db.populate(network);
-        DataSourceFactory.setInstance(db);
-        
         InputStream stream = null;
         try {
             stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-configuration.xml");
-            new SyslogdConfigFactory(stream);
+            SyslogdConfigFactory.setInstance(new SyslogdConfigFactory(stream));
         } finally {
             if (stream != null) {
                 IOUtils.closeQuietly(stream);
@@ -88,17 +105,26 @@ public class SyslogdTest extends OpenNMSTestCase {
 
         m_syslogd = new Syslogd();
         m_syslogd.init();
+
+        // Verify that the test syslogd-configuration.xml file was loaded
+        boolean foundBeer = false;
+        boolean foundMalt = false;
+        assertEquals(10514, SyslogdConfigFactory.getInstance().getSyslogPort());
+        for (UeiMatch match : SyslogdConfigFactory.getInstance().getUeiList().getUeiMatch()) {
+            if (match.getProcessMatch() != null) {
+                if (!foundBeer && "beerd".equals(match.getProcessMatch().getExpression())) {
+                    foundBeer = true;
+                } else if (!foundMalt && "maltd".equals(match.getProcessMatch().getExpression())) {
+                    foundMalt = true;
+                }
+            }
+        }
+        assertTrue(foundBeer);
+        assertTrue(foundMalt);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        MockUtil.println("------------ End Test " + getName() + " --------------------------");
-        super.tearDown();
-    }
-
-    @Override
-    public void runTest() throws Throwable {
-        super.runTest();
+    @After
+    public void tearDown() throws Exception {
         MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
     }
 
@@ -122,7 +148,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         expectedEventBldr.setLogMessage(expectedLogMsg);
     
         EventAnticipator ea = new EventAnticipator();
-        getEventIpcManager().addEventListener(ea);
+        m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
         SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
@@ -154,6 +180,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         return receivedEvents;
     }
 
+    @Test
     public void testMessaging() {
         // More of an integrations test
         // relies on you reading some of the logging....
@@ -167,7 +194,9 @@ public class SyslogdTest extends OpenNMSTestCase {
         }
     }
 
-    public void XXXtestMyPatternsSyslogNG() {
+    @Test
+    @Ignore
+    public void testMyPatternsSyslogNG() {
         SyslogClient s = null;
         try {
             s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
@@ -177,10 +206,11 @@ public class SyslogdTest extends OpenNMSTestCase {
         }
     }
 
+    @Test
     public void testRegexSeverityMatch() throws Exception {
         startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
-        String localhost = InetAddressUtils.str(myLocalHost());
+        String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for dinner anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/severityOnly";
         final String testMsg = "beer - Not just for dinner anymore";
@@ -191,7 +221,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         expectedEventBldr.setLogMessage(testMsg);
         
         EventAnticipator ea = new EventAnticipator();
-        getEventIpcManager().addEventListener(ea);
+        m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
         SyslogClient s = null;
@@ -207,10 +237,11 @@ public class SyslogdTest extends OpenNMSTestCase {
         assertEquals(0, ea.unanticipatedEvents().size());
     }
 
+    @Test
     public void testRegexFacilitySeverityProcessMatch() throws Exception {
         startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
-        String localhost = InetAddressUtils.str(myLocalHost());
+        String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 maltd: beer - Not just for lunch anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverityProcess";
         final String testMsg = "beer - Not just for lunch anymore";
@@ -225,7 +256,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         expectedEventBldr.addParam("severity", "Warning");
     
         EventAnticipator ea = new EventAnticipator();
-        getEventIpcManager().addEventListener(ea);
+        m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
         SyslogClient s = null;
@@ -241,10 +272,11 @@ public class SyslogdTest extends OpenNMSTestCase {
         assertEquals(0, ea.unanticipatedEvents().size());
     }
     
+    @Test
     public void testRegexFacilitySeverityMatch() throws Exception {
         startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
-        String localhost = InetAddressUtils.str(myLocalHost());
+        String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for lunch anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverity";
         final String testMsg = "beer - Not just for lunch anymore";
@@ -258,7 +290,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         expectedEventBldr.addParam("severity", "Warning");
     
         EventAnticipator ea = new EventAnticipator();
-        getEventIpcManager().addEventListener(ea);
+        m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
         SyslogClient s = null;
@@ -274,10 +306,11 @@ public class SyslogdTest extends OpenNMSTestCase {
         assertEquals(0, ea.unanticipatedEvents().size());
     }
     
+    @Test
     public void testRegexFacilityMatch() throws Exception {
         startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
-        String localhost = InetAddressUtils.str(myLocalHost());
+        String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for lunch anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilityOnly";
         final String testMsg = "beer - Not just for lunch anymore";
@@ -290,7 +323,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         expectedEventBldr.addParam("service", "local0");
     
         EventAnticipator ea = new EventAnticipator();
-        getEventIpcManager().addEventListener(ea);
+        m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
         SyslogClient s = null;
@@ -306,10 +339,11 @@ public class SyslogdTest extends OpenNMSTestCase {
         assertEquals(0, ea.unanticipatedEvents().size());
     }
     
+    @Test
     public void testRegexProcessMatch() throws Exception {
         startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
-        String localhost = InetAddressUtils.str(myLocalHost());
+        String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beerd: beer - Not just for breakfast anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/processOnly";
         final String testMsg = "beer - Not just for breakfast anymore";
@@ -322,7 +356,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         expectedEventBldr.addParam("process", "beerd");
     
         EventAnticipator ea = new EventAnticipator();
-        getEventIpcManager().addEventListener(ea);
+        m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
         SyslogClient s = null;
@@ -338,6 +372,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         assertEquals(0, ea.unanticipatedEvents().size());
     }
 
+    @Test
     public void testIPPatternsSyslogNG() {
         SyslogClient s = null;
         try {
@@ -348,6 +383,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         }
     }
 
+    @Test
     public void testResolvePatternsSyslogNG() {
         SyslogClient s = null;
         try {
@@ -370,37 +406,42 @@ public class SyslogdTest extends OpenNMSTestCase {
         }
     }
     
+    @Test
     public void testSubstrUEIRewrite() throws Exception {
         doMessageTest("2007-01-01 localhost A CRISCO message",
-                      InetAddressUtils.str(myLocalHost()), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
+                      m_localhost, "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
                       "A CRISCO message");
     }
 
+    @Test
 	public void testRegexUEIRewrite() throws Exception {
 //        MockLogAppender.setupLogging(true, "TRACE");
         doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for bar",
-                      InetAddressUtils.str(myLocalHost()), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
+                      m_localhost, "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
                       "100 out of 666 tests failed for bar");
     }
     
+    @Test
     public void testSubstrTESTTestThatRemovesATESTString() throws Exception {
         doMessageTest("2007-01-01 localhost A CRISCO message that is also a TESTHIDING message -- hide me!",
-                      InetAddressUtils.str(myLocalHost()), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
+                      m_localhost, "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
                       ConvertToEvent.HIDDEN_MESSAGE);
     }
     
+    @Test
     public void testRegexTESTTestThatRemovesADoubleSecretString() throws Exception {
         doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for doubleSecret",
-                      InetAddressUtils.str(myLocalHost()), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
+                      m_localhost, "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
                       ConvertToEvent.HIDDEN_MESSAGE);
     }
     
+    @Test
     public void testSubstrDiscard() throws Exception {
         startSyslogdGracefully();
         final String testPDU = "2007-01-01 127.0.0.1 A JUNK message";
         
         EventAnticipator ea = new EventAnticipator();
-        getEventIpcManager().addEventListener(ea);
+        m_eventIpcManager.addEventListener(ea);
         
         SyslogClient sc = null;
         sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
@@ -410,12 +451,13 @@ public class SyslogdTest extends OpenNMSTestCase {
         assertEquals(0, ea.unanticipatedEvents().size());
     }
 
+    @Test
     public void testRegexDiscard() throws Exception {
         startSyslogdGracefully();
         final String testPDU = "2007-01-01 127.0.0.1 A TrAsH message";
         
         EventAnticipator ea = new EventAnticipator();
-        getEventIpcManager().addEventListener(ea);
+        m_eventIpcManager.addEventListener(ea);
         
         SyslogClient sc = null;
         sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
@@ -425,6 +467,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         assertEquals(0, ea.unanticipatedEvents().size());
     }
     
+    @Test
     public void testRegexUEIWithBothKindsOfParameterAssignments() throws Exception {
         final String testPDU = "2007-01-01 127.0.0.1 coffee: Secretly replaced rangerrick's coffee with 42 wombats";
         final String expectedUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/bothKinds";
@@ -439,13 +482,14 @@ public class SyslogdTest extends OpenNMSTestCase {
         expectedParms.put("group3", testGroups[2]);
         expectedParms.put("replacementItem", testGroups[2]);
         
-        doMessageTest(testPDU, InetAddressUtils.str(myLocalHost()), expectedUEI, expectedLogMsg, expectedParms);
+        doMessageTest(testPDU, m_localhost, expectedUEI, expectedLogMsg, expectedParms);
     }
 
+    @Test
     public void testRegexUEIWithOnlyUserSpecifiedParameterAssignments() throws InterruptedException {
         startSyslogdGracefully();
         
-        String localhost = InetAddressUtils.str(myLocalHost());
+        String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 tea: Secretly replaced cmiskell's tea with 666 ferrets";
         final String testUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/userSpecifiedOnly";
         final String testMsg = "Secretly replaced cmiskell's tea with 666 ferrets";
@@ -461,7 +505,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         expectedEventBldr.addParam("replacementItem", testGroups[2]);
     
         EventAnticipator ea = new EventAnticipator();
-        getEventIpcManager().addEventListener(ea);
+        m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
         SyslogClient s = null;

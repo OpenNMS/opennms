@@ -44,7 +44,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.InetAddressUtils;
@@ -60,6 +59,7 @@ import org.opennms.netmgt.model.PathElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -73,7 +73,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(dirtiesContext=false)
 public class NodeDaoTest {
     
     @Autowired
@@ -91,13 +91,25 @@ public class NodeDaoTest {
     @Autowired
     TransactionTemplate m_transTemplate;
     
-    @Before
-    public void setUp() {
-        m_populator.populateDatabase();
-    }
+    private static boolean m_populated = false;
+    private static DatabasePopulator m_lastPopulator;
     
+    @BeforeTransaction
+    public void setUp() {
+        try {
+            if (!m_populated) {
+                m_populator.populateDatabase();
+                m_lastPopulator = m_populator;
+            }
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+        } finally {
+            m_populated = true;
+        }
+    }
+
     public OnmsNode getNode1() {
-        return m_populator.getNode1();
+        return m_lastPopulator.getNode1();
     }
     
     public JdbcTemplate getJdbcTemplate() {
@@ -315,6 +327,7 @@ public class NodeDaoTest {
     @Test
     @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testDeleteObsoleteInterfaces() {
+        m_populator.populateDatabase();
 
         final Date timestamp = new Date(1234);
 
@@ -344,7 +357,6 @@ public class NodeDaoTest {
             }
             
         });
-        
         
     }
 
@@ -492,7 +504,9 @@ public class NodeDaoTest {
     @Test
     @Transactional
 	public void testQuery2() {
-        OnmsNode n = getNodeDao().get(m_populator.getNode6().getId());
+        assertNotNull(m_lastPopulator);
+        assertNotNull(m_lastPopulator.getNode6());
+        OnmsNode n = getNodeDao().get(m_lastPopulator.getNode6().getId());
         assertNotNull(n);
         assertEquals(3, n.getIpInterfaces().size());
         assertNotNull(n.getAssetRecord());

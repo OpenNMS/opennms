@@ -31,7 +31,6 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -55,13 +54,6 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class SyslogdConfigFactory implements SyslogdConfig {
     /**
@@ -90,18 +82,6 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      */
     private SyslogdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile));
-        parseIncludedFiles();
-    }
-
-    /**
-     * <p>Constructor for SyslogdConfigFactory.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public SyslogdConfigFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, rdr);
         parseIncludedFiles();
     }
 
