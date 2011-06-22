@@ -1,13 +1,15 @@
 /*******************************************************************************
- * This file is part of the OpenNMS(R) Application.
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,23 +17,23 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- *     along with OpenNMS(R).  If not, see <http://www.gnu.org/licenses/>.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
- * For more information contact: 
+ * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
 
+
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.CitrixDetector;
 import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector;
 import org.opennms.netmgt.provision.detector.simple.FtpDetector;
@@ -44,9 +46,9 @@ import org.opennms.netmgt.provision.detector.simple.Pop3Detector;
 import org.opennms.netmgt.provision.detector.simple.SmtpDetector;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.test.mock.MockLogAppender;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -57,78 +59,53 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class DetectorWiringTest implements ApplicationContextAware {
+public class DetectorWiringTest implements InitializingBean {
     
-    protected ApplicationContext m_applicationContext;
-    
+    @Autowired
+    @Qualifier(value="org.opennms.netmgt.provision.detector.simple.HttpDetector")
+    private HttpDetector m_httpDetector;
+    @Autowired 
+    private Pop3Detector m_pop3Detector;
+    @Autowired 
+    private CitrixDetector m_citrixDetector;
+    @Autowired 
+    private DominoIIOPDetector m_dominoIIOPDetector;
+    @Autowired 
+    private FtpDetector m_ftpDetector;
+    @Autowired 
+    private HttpsDetector m_httpsDetector;
+    @Autowired 
+    private ImapDetector m_imapDetector;
+    @Autowired 
+    private LdapDetector m_ldapDetector;
+    @Autowired 
+    private NrpeDetector m_nrpeDetector;
+    @Autowired 
+    private SmtpDetector m_smtpDetector;
+    @Autowired 
+    private TcpDetector m_tcpDetector;
+
+    public void afterPropertiesSet() {
+        assertNotNull(m_httpDetector);
+        assertNotNull(m_pop3Detector);
+        assertNotNull(m_citrixDetector);
+        assertNotNull(m_dominoIIOPDetector);
+        assertNotNull(m_ftpDetector);
+        assertNotNull(m_httpsDetector);
+        assertNotNull(m_imapDetector);
+        assertNotNull(m_ldapDetector);
+        assertNotNull(m_nrpeDetector);
+        assertNotNull(m_smtpDetector);
+        assertNotNull(m_tcpDetector);
+    }
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
     }
 
-    private void testWiredDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-    }
-    
     @Test
-    public void testHttpDetectorWiring() {
-        testWiredDetector(HttpDetector.class);
+    public void testSomething() {
+        // All checks are in the InitializingBean method
     }
-    
-    @Test
-    public void testPop3DetectorWiring() {
-        testWiredDetector(Pop3Detector.class);
-    }
-    
-    @Test
-    public void testCitrixDetectorWiring() {
-        testWiredDetector(CitrixDetector.class);
-    }
-    
-    @Test
-    public void testDominoIIOPDetectorWiring() {
-        testWiredDetector(DominoIIOPDetector.class);
-    }
-    
-    @Test
-    public void testFtpDetectorWiring() {
-        testWiredDetector(FtpDetector.class);
-    }
-    
-    @Test
-    public void testHttpsDetectorWiring() {
-        testWiredDetector(HttpsDetector.class);
-    }
-    
-    @Test 
-    public void testImapDetectorWiring() {
-        testWiredDetector(ImapDetector.class);
-    }
-    
-    @Test
-    public void testLdapDetectorWiring() {
-        testWiredDetector(LdapDetector.class);
-    }
-    
-    @Test
-    public void testNrpeDetectorWiring() {
-        testWiredDetector(NrpeDetector.class);
-    }
-    
-    @Test 
-    public void testSmtpDetectorWiring() {
-        testWiredDetector(SmtpDetector.class);
-    }
-    
-    @Test
-    public void testTcpDetectorWiring() {
-        testWiredDetector(TcpDetector.class);
-    }
-
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
-    }
-
 }

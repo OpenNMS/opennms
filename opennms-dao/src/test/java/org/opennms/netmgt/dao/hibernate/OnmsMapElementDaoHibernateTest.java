@@ -1,13 +1,15 @@
 /*******************************************************************************
- * This file is part of the OpenNMS(R) Application.
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,13 +17,15 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- *     along with OpenNMS(R).  If not, see <http://www.gnu.org/licenses/>.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
- * For more information contact: 
+ * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.netmgt.dao.hibernate;
 
 import static org.junit.Assert.assertEquals;
@@ -45,6 +49,7 @@ import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -55,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(dirtiesContext=false)
 public class OnmsMapElementDaoHibernateTest {
 	@Autowired
 	private OnmsMapElementDao m_onmsMapElementDao;
@@ -66,6 +71,23 @@ public class OnmsMapElementDaoHibernateTest {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 	
+    private static boolean m_populated = false;
+    private static DatabasePopulator m_lastPopulator;
+    
+    @BeforeTransaction
+    public void setUp() {
+        try {
+            if (!m_populated) {
+                m_databasePopulator.populateDatabase();
+                m_lastPopulator = m_databasePopulator;
+            }
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+        } finally {
+            m_populated = true;
+        }
+    }
+
 	@Test
 	@Transactional
     public void testSaveOnmsMapElement() {
@@ -131,8 +153,6 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testFindById() {
-		m_databasePopulator.populateDatabase();
-
         // Note: This ID is based upon the creation order in DatabasePopulator - if you change
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
         // before the creation of the map element object then this ID may change and this test
@@ -162,9 +182,7 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testFind() {
-		m_databasePopulator.populateDatabase();
-
-        int id = 133;
+        int id = 62;
         OnmsMap map = m_onmsMapDao.findMapById(id);
         if (map == null) {
             List<OnmsMap> maps = m_onmsMapDao.findAll();
@@ -179,7 +197,7 @@ public class OnmsMapElementDaoHibernateTest {
         }
         assertNotNull(map);
         OnmsMapElement mapElement = m_onmsMapElementDao.findElement(1, OnmsMapElement.NODE_TYPE, map);
-        assertEquals(133, mapElement.getMap().getId());
+        assertEquals(62, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -191,9 +209,7 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testFindMapElementsByMapId() {
-		m_databasePopulator.populateDatabase();
-
-        int id = 200;
+        int id = 62;
         OnmsMap map = m_onmsMapDao.findMapById(id);
         if (map == null) {
             List<OnmsMap> maps = m_onmsMapDao.findAll();
@@ -210,7 +226,7 @@ public class OnmsMapElementDaoHibernateTest {
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByMapId(map);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(200, mapElement.getMap().getId());
+        assertEquals(62, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -222,12 +238,10 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testFindElementsByElementIdAndType1() {
-		m_databasePopulator.populateDatabase();
-
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByElementIdAndType(1, OnmsMapElement.NODE_TYPE);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(267, mapElement.getMap().getId());
+        assertEquals(62, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -239,8 +253,6 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testFindElementsByElementIdAndType2() {
-		m_databasePopulator.populateDatabase();
-
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByElementIdAndType(2, OnmsMapElement.NODE_TYPE);
         assertEquals(0,elems.size());
     }
@@ -248,8 +260,6 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testFindElementsByElementIdAndType3() {
-		m_databasePopulator.populateDatabase();
-
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByElementIdAndType(1, OnmsMapElement.MAP_TYPE);
         assertEquals(0,elems.size());
     }
@@ -257,8 +267,6 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testFindElementsByElementIdAndType4() {
-		m_databasePopulator.populateDatabase();
-
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByElementIdAndType(2, OnmsMapElement.MAP_TYPE);
         assertEquals(0,elems.size());
     }
@@ -266,8 +274,6 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testFindElementsByElementIdAndType5() {
-		m_databasePopulator.populateDatabase();
-
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByElementIdAndType(1, OnmsMapElement.NODE_HIDE_TYPE);
         assertEquals(0,elems.size());
     }
@@ -275,8 +281,6 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testFindElementsByElementIdAndType6() {
-		m_databasePopulator.populateDatabase();
-
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByElementIdAndType(2, OnmsMapElement.NODE_HIDE_TYPE);
         assertEquals(0,elems.size());
     }
@@ -284,12 +288,10 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testFindElementsByType1() {
-		m_databasePopulator.populateDatabase();
-
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByType(OnmsMapElement.NODE_TYPE);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(669, mapElement.getMap().getId());
+        assertEquals(62, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -301,8 +303,6 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testFindElementsByType2() {
-		m_databasePopulator.populateDatabase();
-
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByType(OnmsMapElement.MAP_TYPE);
         assertEquals(0,elems.size());
     }
@@ -310,8 +310,6 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testDeleteElement() {
-		m_databasePopulator.populateDatabase();
-
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByType(OnmsMapElement.NODE_TYPE);
         assertEquals(1,elems.size());
         OnmsMapElement element = elems.iterator().next();
@@ -322,8 +320,6 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testDeleteElementsByElementIdAndType() {
-		m_databasePopulator.populateDatabase();
-
         m_onmsMapElementDao.deleteElementsByElementIdAndType(1, OnmsMapElement.NODE_TYPE);
         assertNull(m_onmsMapElementDao.findElementById(59));
     }
@@ -331,8 +327,6 @@ public class OnmsMapElementDaoHibernateTest {
 	@Test
 	@Transactional
     public void testDeleteElementsByMapType() {
-		m_databasePopulator.populateDatabase();
-
         m_onmsMapElementDao.deleteElementsByMapType(OnmsMap.USER_GENERATED_MAP);
         m_onmsMapElementDao.deleteElementsByMapType(OnmsMap.AUTOMATICALLY_GENERATED_MAP);
         assertEquals(0,m_onmsMapElementDao.findAll().size());
