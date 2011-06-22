@@ -79,7 +79,7 @@ public class RadiusDetectorClient implements Client<RadiusPacket, RadiusPacket> 
 
     /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        m_radiusClient = new RadiusClient(address.getCanonicalHostName(), getAuthPort() ,getAcctPort(), getSecret(), timeout);
+        m_radiusClient = new RadiusClient(address.getCanonicalHostName(), getAuthPort() ,getAcctPort(), getSecret(), convertToSeconds(timeout));
     }
 
     /**
@@ -157,5 +157,9 @@ public class RadiusDetectorClient implements Client<RadiusPacket, RadiusPacket> 
     public String getSecret() {
         return m_secret;
     }
+    
+    private int convertToSeconds(int connectionTimeout) {
+		return connectionTimeout/1000  > 0 ? connectionTimeout/1000 : 1;
+	}
 
 }

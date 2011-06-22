@@ -182,7 +182,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
 
         RadiusClient rc = null;
         try {
-            rc = new RadiusClient(ipv4Addr.getCanonicalHostName(), authport ,acctport, secret, tracker.getConnectionTimeout());
+            rc = new RadiusClient(ipv4Addr.getCanonicalHostName(), authport ,acctport, secret, convertToSeconds(tracker.getConnectionTimeout()));
         } catch(RadiusException rex) {
         	return logDown(Level.ERROR, "Radius Exception: " + rex.getMessage());
         } catch(InvalidParameterException ivpex) {
@@ -210,7 +210,8 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
                 }else{
                     accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.USER_PASSWORD,password.getBytes()));
                 }
-                RadiusPacket accessResponse = rc.authenticate(accessRequest);
+                // Authenticate takes 0 retries. Tracker will handle retries.
+                RadiusPacket accessResponse = rc.authenticate(accessRequest, null, DEFAULT_RETRY);
                 
                 if ( accessResponse.getPacketType() == RadiusPacket.ACCESS_ACCEPT ){
                     double responseTime = tracker.elapsedTimeInMillis();
@@ -230,7 +231,12 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
         return status;
     }
 
-    /**
+    private int convertToSeconds(int connectionTimeout) {
+		return connectionTimeout/1000  > 0 ? connectionTimeout/1000 : 1;
+	}
+
+
+	/**
      * Encrypt password using chap challenge
      *
      * @param plainText
