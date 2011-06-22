@@ -56,7 +56,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-invDatabasePopulator.xml"
 })
-@JUnitTemporaryDatabase(populate=true)
+@JUnitTemporaryDatabase()
 public class InventoryCategoryDaoHibernateTest {
 	@Autowired
     InventoryDatabasePopulator m_dbPopulator;

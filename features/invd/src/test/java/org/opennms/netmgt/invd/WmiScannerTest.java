@@ -75,9 +75,9 @@ import java.util.HashMap;
 })
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml"/*,
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"*/
 })
 public class WmiScannerTest {
     @Autowired
@@ -153,7 +153,7 @@ public class WmiScannerTest {
      *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, java.util.Map)}.
      */
     @Test
-    @JUnitScanner(scannerConfig="/org/opennms/netmgt/config/wmi-inventory-config.xml", scannerType="wmi")
+    @JUnitScanner(scannerConfig="/wmi-invscan-config.xml", scannerType="wmi")
     public final void testScan() throws Exception {
         //m_scannerSpecification.initialize(m_collectionAgent);
 

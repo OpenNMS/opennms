@@ -62,7 +62,7 @@ import junit.framework.Assert;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-invDatabasePopulator.xml"
 })
-@JUnitTemporaryDatabase(populate=true)
+@JUnitTemporaryDatabase()
 public class InventoryAssetDaoHibernateTest {
 	@Autowired
     InventoryDatabasePopulator m_dbPopulator;
