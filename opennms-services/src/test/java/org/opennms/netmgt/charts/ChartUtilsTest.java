@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.charts;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -36,17 +41,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
 
+import junit.framework.TestCase;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.jfree.chart.JFreeChart;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ChartConfigFactory;
 import org.opennms.netmgt.config.charts.BarChart;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
 
-
-
-public class ChartUtilsTest extends OpenNMSTestCase {
+public class ChartUtilsTest extends TestCase {
     
     private static final String CHART_CONFIG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
             "<tns:chart-configuration xmlns:tns=\"http://xmlns.opennms.org/xsd/config/charts\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://xmlns.opennms.org/xsd/config/charts ../src/services/org/opennms/netmgt/config/chart-configuration.xsd \">\n" + 
@@ -120,13 +124,11 @@ public class ChartUtilsTest extends OpenNMSTestCase {
 //    private ChartConfiguration m_config;
 
     protected void setUp() throws Exception {
-        super.setUp();
         System.setProperty("java.awt.headless", "true");
         initalizeChartFactory();
     }
 
     protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     public void testGetBarChartConfig() throws MarshalException, ValidationException, FileNotFoundException, IOException {

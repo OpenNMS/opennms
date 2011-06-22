@@ -41,6 +41,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
@@ -311,6 +312,25 @@ public abstract class MockEventUtil {
     }
     
     /**
+     * <p>createNodeDownEventBuilder</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param node a {@link org.opennms.netmgt.mock.MockNode} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
+     */
+    public static EventBuilder createNodeDownEventBuilder(String source, OnmsNode node) {
+        EventBuilder event = createNodeEventBuilder(source, EventConstants.NODE_DOWN_EVENT_UEI, node);
+        event.setSeverity(OnmsSeverity.MAJOR.getLabel());
+        // <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false" />
+        AlarmData alarmData = new AlarmData();
+        alarmData.setReductionKey("%uei%:%dpname%:%nodeid%");
+        alarmData.setAlarmType(1);
+        alarmData.setAutoClean(false);
+        event.setAlarmData(alarmData);
+        return event;
+    }
+    
+    /**
      * <p>createNodeDownEventWithReason</p>
      *
      * @param source a {@link java.lang.String} object.
@@ -394,6 +414,18 @@ public abstract class MockEventUtil {
      */
     public static EventBuilder createNodeEventBuilder(String source, String uei, MockNode node) {
         return createEventBuilder(source, uei, node.getNodeId(), null, null, null);
+    }
+    
+    /**
+     * <p>createNodeEventBuilder</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param uei a {@link java.lang.String} object.
+     * @param node a {@link org.opennms.netmgt.mock.MockNode} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
+     */
+    public static EventBuilder createNodeEventBuilder(String source, String uei, OnmsNode node) {
+        return createEventBuilder(source, uei, node.getId(), null, null, null);
     }
     
     /**
