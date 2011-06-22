@@ -89,7 +89,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
-public class HttpCollectorTest {
+public class HttpCollectorTest implements TestContextAware {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;

@@ -92,7 +92,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class SnmpCollectorMinMaxValTest implements MockSnmpAgentAware {
+public class SnmpCollectorMinMaxValTest implements MockSnmpAgentAware, TestContextAware {
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
 
