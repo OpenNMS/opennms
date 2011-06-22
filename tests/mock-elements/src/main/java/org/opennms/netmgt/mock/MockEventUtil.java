@@ -26,6 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+
 package org.opennms.netmgt.mock;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;

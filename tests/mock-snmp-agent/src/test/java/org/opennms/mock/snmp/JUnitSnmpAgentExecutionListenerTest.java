@@ -27,6 +27,7 @@
  *******************************************************************************/
 
 
+
 package org.opennms.mock.snmp;
 
 import static org.junit.Assert.assertEquals;

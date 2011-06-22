@@ -1,63 +1,31 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights
- * reserved.  OpenNMS(R) is a derivative work, containing both original code,
- * included code and modified code that was published under the GNU General
- * Public License.  Copyrights for modified and included code are below.
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications:
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 2 of the License,
+ * or (at your option) any later version.
  *
- * 2008 Jul 31: Bug #1995: Deal with null ifEntry values. - dj@opennms.org
- * 2007 May 06: Moved database synchronization code out of
- *              CapsdConfigManager. - dj@opennms.org
- * 2005 Mar 25: Fixed bug 1178 regarding designation of secondary SNMP
- *              interfaces, as well as a few other minor bugs discovered
- *              in testing the bug fix.
- * 2004 Dec 27: Updated code to determine primary SNMP interface to select
- *              an interface from collectd-configuration.xml first, and if
- *              none found, then from all interfaces on the node. In either
- *              case, a loopback interface is preferred if available.
- * 2004 Apr 01: Fixed case where sysObjectId is null for suspect device
- * 2004 Feb 12: Rebuild collectd package agaist IP List map when determining
- *              primary interface.
- * 2003 Nov 11: Merged changes from Rackspace project
- * 2003 Sep 09: Modifications to allow OpenNMS to handle duplicate IP
- *              addresses.
- * 2003 Mar 18: Fixed null pointer exceptions from some poorly written SNMP
- *              agents.
- * 2003 Jan 31: Cleaned up some unused imports.
- * 2002 Oct 03: Added the ability to discover non 127.*.*.* loopback
- *              interfaces and to use that for the primary SNMP interface,
- *              if possible.
- * 2002 Aug 01: Modified the code to label nodes based first on DNS, then SMB,
- *              SNMP and finally IP Address. If available, the SNMP primary
- *              interface will be used.
- *
- * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
- * reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *      OpenNMS Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.capsd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;

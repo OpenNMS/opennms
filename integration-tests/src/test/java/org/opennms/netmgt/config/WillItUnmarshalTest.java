@@ -26,6 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertNotNull;

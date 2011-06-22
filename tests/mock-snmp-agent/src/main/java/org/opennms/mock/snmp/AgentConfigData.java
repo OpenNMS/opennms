@@ -26,6 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+
 package org.opennms.mock.snmp;
 
 import java.net.InetAddress;

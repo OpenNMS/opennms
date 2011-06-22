@@ -26,6 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+
 package org.opennms.netmgt.config;
 
 import java.io.IOException;

@@ -1,79 +1,30 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2008 Mar 04: Reuse a few less local variables, expose updateSpeed
-//              for a unit test, Java 5 loops, and some other formatting
-//              cleanup. - dj@opennms.org
-// 2008 Mar 03: Create log() method and use it everywhere instead of
-//              a local variable in each method.  Also move most of the
-//              IfTableEntry/IfSnmpCollector to DbSnmpInterfaceEntry
-//              conversion within updateSnmpInfoForNonIpInterface to
-//              individual methods for each piece of data. - dj@opennms.org
-// 2007 May 06: Moved database synchronization code out of
-//              CapsdConfigManager. - dj@opennms.org
-// 2006 Sep 05: Format code. - dj@opennms.org
-// 2006 Sep 05: Applied patch from Bug 1573.
-// 2005 Mar 25: Fixed bug 1178 regarding designation of secondary SNMP
-//              interfaces, as well as a few other minor bugs discovered
-//              in testing the bug fix.
-// 2005 Jan 03: Changed the way a primary SNMP interface is determined
-//              such that most or all nodes with SNMP will have a
-//              primary SNMP interface.
-//              Changed behaviour when SNMP interfaces on a node disagree
-//              with the database. Check to see if all SNMP interfaces on
-//              the node  agree with each other.
-//              Added snmpConflictsWithDb event.
-//              Changed SQL_DB_RETRIEVE_OTHER_NODES to omit interfaces
-//              marked as deleted
-// 2004 Jan 08: Re-enabled rescan for nodes without SNMP, skipping SNMP
-//              code that would not be relevant.
-//              Fixed problem when IP interface list from SNMP collection
-//              doesn't agree with database.
-//              Fixed problem when testing for possible reparenting by
-//              removing ip addresses 0.0.0.0 and 127.*.*.* from
-//              consideration.
-//              Added code to update polling status on forced rescan.
-// 2003 Oct 15: Heavy re-write of reparenting code to fix duplicate IP address issues.
-// 2003 Jul 03: Removed code that was reseting parent ID on rescans (for maps).
-// 2003 Mar 18: Handle null pointer exceptions due to poorly written SNMP agents.
-// 2003 Jan 31: Cleaned up some unused imports.
-// 2002 Oct 03: Added the ability to discover loopback interfaces.
-// 2002 Sep 20: Added the snmpStorageFlag "select" option.
-// 2002 Aug 01: Changed nodelabel behavior.
-// 2002 Jul 08: Fixed null pointer exception in rescans.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-// Tab Size = 8
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 2 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 package org.opennms.netmgt.capsd;
 
