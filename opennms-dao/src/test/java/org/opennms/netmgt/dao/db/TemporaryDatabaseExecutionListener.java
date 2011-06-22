@@ -68,7 +68,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
 	@Override
 	public void afterTestMethod(final TestContext testContext) throws Exception {
-		System.err.println(String.format("TemporaryDatabaseExecutionListener.afterTestMethod(%s)\n", testContext));
+		System.err.println(String.format("TemporaryDatabaseExecutionListener.afterTestMethod(%s)", testContext));
 
 		final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
 		if (jtd == null) return;

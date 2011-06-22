@@ -92,7 +92,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
 public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
     private static final long TEAR_DOWN_WAIT_MILLIS = 1000;
 

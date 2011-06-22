@@ -73,7 +73,7 @@ import org.springframework.util.StringUtils;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
 public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
 
     private MockNetwork m_mockNetwork = new MockNetwork();
