@@ -98,7 +98,7 @@ public class DaoWebAlarmRepositoryTest {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testCountMatchingAlarms(){
         int alarms = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)));
         assertEquals(1, alarms);
@@ -126,7 +126,7 @@ public class DaoWebAlarmRepositoryTest {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetMatchingAlarms(){
         Alarm[] alarms = m_alarmRepo.getMatchingAlarms(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL), new AlarmIdFilter(1)));
         assertNotNull(alarms);
@@ -138,7 +138,7 @@ public class DaoWebAlarmRepositoryTest {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetUnacknowledgedAlarms() {
         AlarmCriteria acked = new AlarmCriteria(AcknowledgeType.ACKNOWLEDGED, new Filter[0]);
         AlarmCriteria unacked = new AlarmCriteria(AcknowledgeType.UNACKNOWLEDGED, new Filter[0]);
@@ -170,7 +170,7 @@ public class DaoWebAlarmRepositoryTest {
 }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testAcknowledgeUnacknowledge() {
         
         String user = "TestUser";
@@ -225,7 +225,7 @@ public class DaoWebAlarmRepositoryTest {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testEscalateAlarms() {
         int[] alarmIds = {1};
         m_alarmRepo.escalateAlarms(alarmIds, "TestUser", new Date());
@@ -238,7 +238,7 @@ public class DaoWebAlarmRepositoryTest {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testClearAlarms(){
         Alarm alarm = m_alarmRepo.getAlarm(1);
         

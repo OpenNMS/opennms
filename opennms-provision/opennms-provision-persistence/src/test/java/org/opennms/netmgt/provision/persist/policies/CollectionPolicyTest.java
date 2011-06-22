@@ -1,3 +1,27 @@
+/*******************************************************************************
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ *     along with OpenNMS(R).  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information contact: 
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 package org.opennms.netmgt.provision.persist.policies;
 
 import static org.junit.Assert.assertEquals;
@@ -97,11 +121,11 @@ public class CollectionPolicyTest {
         policy.setCategory(TEST_CATEGORY);
         policy.setLabel("~n.*2");
         
-        OnmsNode node1 = m_nodeDao.get(1);
+        OnmsNode node1 = m_nodeDao.get(m_populator.getNode1().getId());
         assertNotNull(node1);
         assertEquals("node1", node1.getLabel());
         
-        OnmsNode node2 = m_nodeDao.get(2);
+        OnmsNode node2 = m_nodeDao.get(m_populator.getNode2().getId());
         assertNotNull(node2);
         assertEquals("node2", node2.getLabel());
         
@@ -112,12 +136,6 @@ public class CollectionPolicyTest {
         node2 = policy.apply(node2);
         assertNotNull(node1);
         assertTrue(node2.hasCategory(TEST_CATEGORY));
-        
-        
-        
-        
-        
-        
     }
 
     private static void matchPolicy(List<OnmsSnmpInterface> interfaces, MatchingSnmpInterfacePolicy p, InetAddress matchingIp) {

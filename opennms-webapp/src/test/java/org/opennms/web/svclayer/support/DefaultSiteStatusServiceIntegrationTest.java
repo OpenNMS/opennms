@@ -112,8 +112,8 @@ public class DefaultSiteStatusServiceIntegrationTest implements InitializingBean
     }
 
     @Test
+    @Transactional
     public void testCreateAggregateStatusView() {
-        assertNotNull(m_databasePopulator);
         m_databasePopulator.populateDatabase();
         
         AggregateStatusView view = m_aggregateService.createAggregateStatusView(null);
@@ -123,11 +123,11 @@ public class DefaultSiteStatusServiceIntegrationTest implements InitializingBean
     }
     
     @Test
+    @Transactional
     public void testCreateAggregateStatusUsingNodeId() {
-        assertNotNull(m_databasePopulator);
         m_databasePopulator.populateDatabase();
         
-        Collection<AggregateStatus> aggrStati = m_aggregateService.createAggregateStatusesUsingNodeId(1, "default");
+        Collection<AggregateStatus> aggrStati = m_aggregateService.createAggregateStatusesUsingNodeId(m_databasePopulator.getNode1().getId(), "default");
         assertNotNull(aggrStati);
     }
     
@@ -173,7 +173,6 @@ public class DefaultSiteStatusServiceIntegrationTest implements InitializingBean
     @Test
     @Transactional
     public void testCreateAggregateStatusUsingBuilding() {
-        assertNotNull(m_databasePopulator);
         m_databasePopulator.populateDatabase();
         
         createOutageForNodeInCategory("Routers");

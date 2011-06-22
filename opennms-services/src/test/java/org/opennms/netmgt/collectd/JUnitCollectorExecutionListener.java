@@ -9,6 +9,7 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
@@ -40,11 +41,12 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             return;
         }
 
-        // FIXME: Is there a better way to inject the TestContext into the test class?  Seems that spring doesn't give direct access...
-        Method m = ReflectionUtils.findMethod(testContext.getTestClass(), "setTestContext", new Class[]{TestContext.class});
-        if (m != null && testContext.getTestInstance() != null) {
-            System.err.println("invoking setTestContext on " + testContext.getTestInstance());
-            m.invoke(testContext.getTestInstance(), testContext);
+        // FIXME: Is there a better way to inject the instance into the test class?
+        if (testContext.getTestInstance() instanceof TestContextAware) {
+            System.err.println("injecting TestContext into TestContextAware test: "
+                            + testContext.getTestInstance().getClass().getSimpleName() + "."
+                            + testContext.getTestMethod().getName());
+            ((TestContextAware) testContext.getTestInstance()).setTestContext(testContext);
         }
         
         RrdTestUtils.initialize();
