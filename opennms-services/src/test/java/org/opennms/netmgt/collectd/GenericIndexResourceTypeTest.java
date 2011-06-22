@@ -35,11 +35,12 @@
  */
 package org.opennms.netmgt.collectd;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.test.ThrowableAnticipator;
-
-import junit.framework.TestCase;
 
 /**
  * Tests for GenericIndexResourceType.
@@ -47,7 +48,9 @@ import junit.framework.TestCase;
  * @author <a href="dj@opennms.org">DJ Gregor</a>
  * @see GenericIndexResourceType
  */
-public class GenericIndexResourceTypeTest extends TestCase {
+public class GenericIndexResourceTypeTest {
+
+    @Test
     public void testNullResourceType() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("resourceType argument must not be null"));
@@ -59,13 +62,16 @@ public class GenericIndexResourceTypeTest extends TestCase {
         ta.verifyAnticipated();
     }
 
+    @Test
     public void testInstantiate() {
         instantiate();
     }
-    
+
+    @Test
     public void testGetStorageStrategy() {
         GenericIndexResourceType g = instantiate();
-        assertNotNull("storageStrategy should not be null", g.getStorageStrategy());
+        Assert.assertNotNull("storageStrategy should not be null", g.getStorageStrategy());
+        Assert.assertNotNull("persistenceSelectorStrategy should not be null", g.getPersistenceSelectorStrategy());
     }
 
     private GenericIndexResourceType instantiate() {

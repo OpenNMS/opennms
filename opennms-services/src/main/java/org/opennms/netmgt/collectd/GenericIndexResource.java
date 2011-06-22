@@ -90,7 +90,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
     /** {@inheritDoc} */
     @Override
     public boolean shouldPersist(ServiceParameters params) {
-        return true;// XXX should be based on the persistanceSelectorStrategy
+        return ((GenericIndexResourceType)getResourceType()).getPersistenceSelectorStrategy().shouldPersist(this);
     }
 
     /**
