@@ -77,6 +77,10 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     private static final String SERVICES_ARG = "services";
     
     private static final String FID_HASH_SRC_ARG = "foreignidhashsource";
+    
+    private static final String[] HASH_IP_KEYWORDS = { "ip", "addr" };
+    
+    private static final String[] HASH_LABEL_KEYWORDS = { "name", "label" };
 
     private static final String QUERY_ARG_SEPARATOR = "&";
 
@@ -103,7 +107,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
 
     private String m_foreignSource;
     
-    private String m_foreignIdHashSource;
+    private int m_foreignIdHashSource;
     
     private String[] m_services;
     
@@ -160,11 +164,24 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      * 
      * @return a String of "ipAddress" or "nodeLabel"
      */
-    private String getForeignIdHashSource() {
-        if (getArgs() != null && getArgs().get(FID_HASH_SRC_ARG) != null && "ipAddress".equalsIgnoreCase(getArgs().get(FID_HASH_SRC_ARG).trim())) {
-            return "ipAddress";
+    private int getForeignIdHashSource() {
+        int result = 0;
+        if (getArgs() != null && getArgs().get(FID_HASH_SRC_ARG) != null) {
+            String hashSourceArg = getArgs().get(FID_HASH_SRC_ARG).toLowerCase();
+            for (String keyword : HASH_IP_KEYWORDS) {
+                if (hashSourceArg.contains(keyword)) {
+                    result = 2;
+                    break;
+                }
+            }
+            for (String keyword : HASH_LABEL_KEYWORDS) {
+                if (hashSourceArg.contains(keyword)) {
+                    result++;
+                    break;
+                }
+            }
         }
-        return "nodeLabel";
+        return result;
     }
 
     
@@ -277,12 +294,23 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         
         n.setBuilding(getForeignSource());
         
-        if("ipAddress".equals(m_foreignIdHashSource)) {
-            log().debug("Setting foreign ID from hash of IP Address" + addr);
-            n.setForeignId(computeHashCode(addr));
-        } else {
-            log().debug("Setting foreign ID from hash of node label" + nodeLabel);
-            n.setForeignId(computeHashCode(nodeLabel));
+        switch(m_foreignIdHashSource) {
+            case 1:
+                n.setForeignId(computeHashCode(nodeLabel));
+                log().debug("Generating foreignId from hash of nodelabel " + nodeLabel);
+                break;
+            case 2:
+                n.setForeignId(computeHashCode(addr));
+                log().debug("Generating foreignId from hash of ipAddress " + addr);
+                break;
+            case 3:
+                n.setForeignId(computeHashCode(nodeLabel+addr));
+                log().debug("Generating foreignId from hash of nodelabel+ipAddress " + nodeLabel + addr);
+                break;
+            default:
+                n.setForeignId(computeHashCode(nodeLabel));
+                log().debug("Default case: Generating foreignId from hash of nodelabel " + nodeLabel);
+                break;
         }
         n.setNodeLabel(nodeLabel);
         
