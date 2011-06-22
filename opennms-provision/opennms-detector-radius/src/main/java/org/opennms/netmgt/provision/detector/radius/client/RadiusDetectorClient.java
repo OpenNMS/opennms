@@ -67,10 +67,15 @@ public class RadiusDetectorClient implements Client<AttributeList, RadiusPacket>
     
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
-    	m_radiusClient = new RadiusClient(address, getSecret(), getAuthPort(), getAcctPort(), timeout);
+    	m_radiusClient = new RadiusClient(address, getSecret(), getAuthPort(), getAcctPort(), convertTimeout(timeout));
     }
 
-    public void close() {
+    private int convertTimeout(int timeout) {
+		
+		return timeout/1000 > 0 ? timeout/1000 : 1;
+	}
+
+	public void close() {
     	m_radiusClient.close();
     }
 

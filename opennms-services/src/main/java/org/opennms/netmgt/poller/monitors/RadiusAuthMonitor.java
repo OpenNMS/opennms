@@ -178,7 +178,8 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
         InetAddress addr = iface.getAddress();
 
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
-        final RadiusClient rc = new RadiusClient(addr, secret, authport, acctport, ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT));
+        int timeout = convertTimeoutToSeconds(ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT));
+		final RadiusClient rc = new RadiusClient(addr, secret, authport, acctport, timeout);
 
         for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
 	    	final AttributeList attributes = new AttributeList();
@@ -208,7 +209,8 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
 
 	    	RadiusPacket reply;
 			try {
-				reply = rc.authenticate(accessRequest, auth, ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY));
+				// Set authenticate retries to default of 0, timeout tracker handles retries.
+				reply = rc.authenticate(accessRequest, auth, DEFAULT_RETRY);
 				if (reply instanceof AccessAccept) {
                     double responseTime = tracker.elapsedTimeInMillis();
                     status = PollStatus.available(responseTime);
@@ -226,5 +228,9 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
         }
         return status;
     }
+
+	private int convertTimeoutToSeconds(int timeout) {
+		return timeout/1000 > 0 ? timeout/1000 : 1;
+	}
 
 } 
