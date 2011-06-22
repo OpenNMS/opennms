@@ -11,7 +11,7 @@ public class PhysicalInterface extends JavaScriptObject {
         return this["@id"];
     }-*/;
     
-    public final native String getIndex() /*-{
+    public final native String getIfIndex() /*-{
         return this["@ifIndex"];
     }-*/;
 

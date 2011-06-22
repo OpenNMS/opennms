@@ -307,6 +307,17 @@
       <groupId>struts</groupId>
       <artifactId>struts</artifactId>
     </dependency>
+    <!-- GWT components -->
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.node-page-list</artifactId>
+        <version>${project.version}</version>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>

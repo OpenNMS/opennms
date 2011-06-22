@@ -1,5 +1,8 @@
 package org.opennms.features.node.list.gwt.client;
 
+import org.opennms.features.node.list.gwt.client.events.PhysicalInterfaceSelectionEvent;
+import org.opennms.features.node.list.gwt.client.events.PhysicalInterfaceSelectionHandler;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.cellview.client.CellTable;
@@ -10,16 +13,18 @@ import com.google.gwt.view.client.SingleSelectionModel;
 
 public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
     
-    SimpleEventBus m_eventBus;
+    SimpleEventBus m_eventBus = new SimpleEventBus();
     
+
     public PhysicalInterfaceTable() {
-        super();
-        m_eventBus = new SimpleEventBus();
+        super(15, (CellTable.Resources) GWT.create(OnmsTableResources.class));
         initialize();
     }
     
     //TODO:finish handler
-    public void addSelectEventHandler() {}
+    public void addSelectEventHandler(PhysicalInterfaceSelectionHandler handler) {
+        getEventBus().addHandler(PhysicalInterfaceSelectionEvent.TYPE, handler);
+    }
 
     private void initialize() {
         addColumns();
@@ -44,7 +49,7 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
                 switch(evt.getTypeInt()) {
                     case Event.ONDBLCLICK:
                         PhysicalInterface selected = selectionModel.getSelectedObject();
-                        //TODO: fire event to top level
+                        getEventBus().fireEvent(new PhysicalInterfaceSelectionEvent(selected.getIfIndex()));
                         break;
                 }
             }
@@ -58,7 +63,7 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
 
             @Override
             public String getValue(PhysicalInterface physInterface) {
-                return physInterface.getIndex();
+                return physInterface.getIfIndex();
             }
             
         };
@@ -113,5 +118,13 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
         addColumn(ipAddresColumn, "IP Address");
     }
     
+    
+    public SimpleEventBus getEventBus() {
+        return m_eventBus;
+    }
+
+    public void setEventBus(SimpleEventBus eventBus) {
+        m_eventBus = eventBus;
+    }
     
 }

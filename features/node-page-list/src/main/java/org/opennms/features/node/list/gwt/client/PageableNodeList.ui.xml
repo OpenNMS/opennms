@@ -2,10 +2,12 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:opennms="urn:import:org.opennms.features.node.list.gwt.client">
-	<ui:style>
-		
+	<ui:style >
+		.tabLayoutStyle{
+			
+		}
 	</ui:style>
-	<g:TabLayoutPanel barUnit='EM' barHeight='3' ui:field="m_tabLayoutPanel">
+	<g:TabLayoutPanel barUnit='EM' barHeight='3' ui:field="m_tabLayoutPanel" >
         <g:tab>
             <g:header size='7'>IP Interfaces</g:header>
             <g:LayoutPanel>

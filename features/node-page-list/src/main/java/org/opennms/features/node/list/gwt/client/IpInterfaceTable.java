@@ -1,5 +1,10 @@
 package org.opennms.features.node.list.gwt.client;
 
+import org.opennms.features.node.list.gwt.client.events.IpInterfaceSelectionEvent;
+import org.opennms.features.node.list.gwt.client.events.IpInterfaceSelectionHandler;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.view.client.CellPreviewEvent;
@@ -8,9 +13,10 @@ import com.google.gwt.view.client.SingleSelectionModel;
 
 public class IpInterfaceTable extends CellTable<IpInterface> {
 
+    private SimpleEventBus m_eventBus = new SimpleEventBus();
 
     public IpInterfaceTable() {
-        super();
+        super(15, (CellTable.Resources) GWT.create(OnmsTableResources.class));
         initialize();
     }
 
@@ -64,12 +70,24 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
                 switch(evt.getTypeInt()) {
                     case Event.ONDBLCLICK:
                         IpInterface selected = selectionModel.getSelectedObject();
-                        //TODO: fire event to top level
+                        getEventBus().fireEvent(new IpInterfaceSelectionEvent(selected.getId()));
                         break;
                 }
             }
             
         });
         
+    }
+
+    public void setEventBus(SimpleEventBus eventBus) {
+        m_eventBus = eventBus;
+    }
+
+    public SimpleEventBus getEventBus() {
+        return m_eventBus;
+    }
+
+    public void addSelectEventHandler(IpInterfaceSelectionHandler handler) {
+        getEventBus().addHandler(IpInterfaceSelectionEvent.TYPE, handler);
     }
 }

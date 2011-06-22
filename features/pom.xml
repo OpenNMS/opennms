@@ -26,6 +26,7 @@
     <module>system-report</module>
     <module>isoc-ipv6-gui</module>
     <module>node-page-list</module>
+    <module>opennms-gwt-theme</module>
   </modules>
 
   <profiles>

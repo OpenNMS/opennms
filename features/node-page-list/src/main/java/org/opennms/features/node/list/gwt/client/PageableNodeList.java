@@ -2,7 +2,15 @@ package org.opennms.features.node.list.gwt.client;
 
 import java.util.List;
 
+import org.opennms.features.node.list.gwt.client.events.IpInterfaceSelectionEvent;
+import org.opennms.features.node.list.gwt.client.events.IpInterfaceSelectionHandler;
+import org.opennms.features.node.list.gwt.client.events.PhysicalInterfaceSelectionEvent;
+import org.opennms.features.node.list.gwt.client.events.PhysicalInterfaceSelectionHandler;
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
@@ -11,6 +19,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.cellview.client.SimplePager.Resources;
+import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -21,14 +31,14 @@ import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PageableNodeList extends Composite implements ProvidesResize {
+public class PageableNodeList extends Composite implements ProvidesResize, PhysicalInterfaceSelectionHandler, IpInterfaceSelectionHandler {
     
     public class SnmpInterfacesRequestCallback implements RequestCallback {
 
         @Override
         public void onResponseReceived(Request request, Response response) {
             if(response.getStatusCode() == 200) {
-                NodeRestResponseMapper.createIpInterfaceData(response.getText());
+                updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(response.getText()));
             }else {
                 updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(DefaultNodeService.SNMP_INTERFACES_TEST_RESPONSE));
             }
@@ -47,7 +57,7 @@ public class PageableNodeList extends Composite implements ProvidesResize {
         @Override
         public void onResponseReceived(Request request, Response response) {
             if(response.getStatusCode() == 200) {
-                NodeRestResponseMapper.createSnmpInterfaceData(response.getText());
+                updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(response.getText()));
             } else {
                 String jsonStr = DefaultNodeService.IP_INTERFACES_TEST_RESPONSE;
                 updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(jsonStr));
@@ -165,20 +175,32 @@ public class PageableNodeList extends Composite implements ProvidesResize {
     }
 
     private void initializeTables() {
+        m_ipInterfaceTable.setWidth("100%");
         m_ipInterfaceTable.setPageSize(15);
-        SimplePager ipSimplePager = new SimplePager();
+        m_ipInterfaceTable.addSelectEventHandler(this);
+        
+        SimplePager ipSimplePager = new SimplePager(TextLocation.CENTER, (Resources) GWT.create(OnmsSimplePagerResources.class), true, 1000, false);
+        ipSimplePager.setWidth("100%");
         ipSimplePager.setDisplay(m_ipInterfaceTable);
         ipSimplePager.startLoading();
         m_ipTableDiv.add(ipSimplePager);
         
-        SimplePager physicalSimplePager = new SimplePager();
+        
+        m_physicalInterfaceTable.setWidth("100%");
+        m_physicalInterfaceTable.addSelectEventHandler(this);
+        
+        SimplePager physicalSimplePager = new SimplePager(TextLocation.CENTER, (Resources) GWT.create(OnmsSimplePagerResources.class), true, 1000, false);
+        physicalSimplePager.setWidth("100%");
         physicalSimplePager.setDisplay(m_physicalInterfaceTable);
         physicalSimplePager.startLoading();
         m_physTableDiv.add(physicalSimplePager);
     }
 
     private void initializeTabBar() {
-        m_tabLayoutPanel.setSize("550px", "520px");
+        m_tabLayoutPanel.setSize("100%", "520px");
+        Node node = m_tabLayoutPanel.getElement().getChild(1);
+        Element element = Element.as(node);
+        element.getStyle().setHeight(100, Unit.EM);
     }
     
     @UiHandler("m_ipSearchBtn")
@@ -198,6 +220,18 @@ public class PageableNodeList extends Composite implements ProvidesResize {
     
     public void onResize() {
         m_tabLayoutPanel.onResize();
+    }
+
+
+    @Override
+    public void onPhysicalInterfaceSelected(PhysicalInterfaceSelectionEvent event) {
+        Location.assign("element/snmpinterface.jsp?node=" + getNodeId() + "&ifindex=" + event.getIfIndex());
+    }
+
+
+    @Override
+    public void onIpInterfaceSelection(IpInterfaceSelectionEvent event) {
+        Location.assign("element/interface.jsp?ipinterfaceid=" + event.getIpInterfaceId());
     }
 
 
