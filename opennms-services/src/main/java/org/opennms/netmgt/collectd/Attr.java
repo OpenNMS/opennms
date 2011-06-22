@@ -26,12 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * Created on Mar 1, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package org.opennms.netmgt.collectd;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;

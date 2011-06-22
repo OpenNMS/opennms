@@ -26,12 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * Created on 9-dic-2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package org.opennms.web.map.db;
 
 import java.sql.Timestamp;

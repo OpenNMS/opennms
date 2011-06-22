@@ -26,12 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * Created on 10-gen-2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package org.opennms.web.map.view;
 
 import java.util.List;
@@ -48,9 +42,6 @@ import org.opennms.web.map.db.DbMap;
  *
  * @author micmas
  *
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- * @version $Id: $
  * @since 1.8.1
  */
 final public class VMap extends DbMap {
