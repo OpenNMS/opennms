@@ -28,61 +28,127 @@
 
 package org.opennms.netmgt.eventd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.mock.MockEventUtil;
-import org.opennms.netmgt.mock.MockInterface;
-import org.opennms.netmgt.mock.MockNode;
-import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
-import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
 
-public class EventdTest extends OpenNMSTestCase {
+/**
+ * Crank up a real eventd instance, send it some events, and verify that the records 
+ * are created in the database correctly.
+ */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
+        "classpath:META-INF/opennms/smallEventConfDao.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase> {
 
-    @Override
-    protected void setUp() throws Exception {
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.setRelativeHomeDirectory("src/test/resources");
-        daoTestConfig.afterPropertiesSet();
+    @Autowired
+    private JdbcTemplate m_jdbcTemplate;
 
-        super.setUp();
+    @Autowired
+    @Qualifier(value="eventIpcManagerImpl")
+    private EventIpcManager m_eventdIpcMgr;
+
+    @Autowired
+    private Eventd m_eventd;
+
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
+
+    private TemporaryDatabase m_database;
+
+    public void setTemporaryDatabase(TemporaryDatabase database) {
+        m_database = database;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        m_eventd.stop();
+    @Before
+    public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+        m_databasePopulator.populateDatabase();
+        m_eventd.onStart();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        m_eventd.onStop();
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
+    @Test
+    @JUnitTemporaryDatabase
     public void testPersistEvent() throws Exception {
+        assertEquals(0, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.NODE_DOWN_EVENT_UEI)));
 
-        assertEquals(0, m_db.countRows("select * from events"));
-
-        MockNode node = m_network.getNode(1);
+        OnmsNode node = m_databasePopulator.getNode1();
+        assertNotNull(node);
         sendNodeDownEvent(null, node);
-        sleep(1000);
-        assertEquals(1, m_db.countRows("select * from events"));
+        Thread.sleep(1000);
 
+        assertEquals(1, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.NODE_DOWN_EVENT_UEI)));
+
+        node = m_databasePopulator.getNode2();
+        assertNotNull(node);
+        sendNodeDownEvent(null, node);
+        Thread.sleep(1000);
+
+        assertEquals(2, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.NODE_DOWN_EVENT_UEI)));
     }
 
     /**
      * Test that eventd's service ID lookup works properly.
      */
+    @Test
+    @JUnitTemporaryDatabase
     public void testPersistEventWithService() throws Exception {
 
-        assertEquals(0, m_db.countRows("select * from events"));
+        assertEquals(0, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)));
+        assertEquals("service ID for ICMP", 1, m_jdbcTemplate.queryForInt("select serviceid from service where servicename = 'ICMP'"));
 
-        MockNode node = m_network.getNode(1);
-        MockInterface intf = node.getInterface("192.168.1.1");
-        MockService svc = intf.getService("ICMP");
+        OnmsNode node = m_databasePopulator.getNode1();
+        assertNotNull(node);
+        OnmsIpInterface intf = node.getIpInterfaceByIpAddress("192.168.1.1");
+        assertNotNull(intf);
+        OnmsMonitoredService svc = intf.getMonitoredServiceByServiceType("ICMP");
+        assertNotNull(svc);
+        assertEquals(1, svc.getNodeId().intValue());
+        assertEquals("192.168.1.1", str(svc.getIpAddress()));
+        assertEquals(1, svc.getServiceId().intValue());
         sendServiceDownEvent(null, svc);
 
-        sleep(1000);
-        assertEquals("event count", 1, m_db.countRows("select * from events"));
-        assertNotSame("service ID for event", 0, new JdbcTemplate(m_db.getDataSource()).queryForInt("select serviceID from events"));
+        Thread.sleep(1000);
+        assertEquals(1, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)));
+        assertEquals("service ID for event", 1, m_jdbcTemplate.queryForInt(String.format("select serviceID from events where eventuei = '%s'", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)));
     }
 
 
@@ -90,7 +156,7 @@ public class EventdTest extends OpenNMSTestCase {
      * @param reductionKey
      * @param node
      */
-    private void sendNodeDownEvent(String reductionKey, MockNode node) {
+    private void sendNodeDownEvent(String reductionKey, OnmsNode node) {
         EventBuilder e = MockEventUtil.createNodeDownEventBuilder("Test", node);
 
         if (reductionKey != null) {
@@ -104,15 +170,15 @@ public class EventdTest extends OpenNMSTestCase {
 
         e.setLogDest("logndisplay");
         e.setLogMessage("testing");
-        
+
         m_eventdIpcMgr.sendNow(e.getEvent());
     }
 
     /**
      * @param reductionKey
      */
-    private void sendServiceDownEvent(String reductionKey, MockService svc) {
-        EventBuilder e = MockEventUtil.createServiceUnresponsiveEventBuilder("Test", svc, "Not responding");
+    private void sendServiceDownEvent(String reductionKey, OnmsMonitoredService svc) {
+        EventBuilder e = MockEventUtil.createEventBuilder("Test", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, svc.getNodeId(), str(svc.getIpAddress()), svc.getServiceName(), "Not responding");
 
         if (reductionKey != null) {
             AlarmData data = new AlarmData();
@@ -125,9 +191,7 @@ public class EventdTest extends OpenNMSTestCase {
 
         e.setLogDest("logndisplay");
         e.setLogMessage("testing");
-        
+
         m_eventdIpcMgr.sendNow(e.getEvent());
     }
-
-
 }
