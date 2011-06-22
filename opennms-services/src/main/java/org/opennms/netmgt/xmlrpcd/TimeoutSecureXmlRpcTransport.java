@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 /* package org.apache.xmlrpc; */
 package org.opennms.netmgt.xmlrpcd;
 

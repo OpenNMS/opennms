@@ -1,13 +1,15 @@
 /*******************************************************************************
- * This file is part of the OpenNMS(R) Application.
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,18 +17,27 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- *     along with OpenNMS(R).  If not, see <http://www.gnu.org/licenses/>.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
- * For more information contact: 
+ * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.netmgt.dao.db;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
@@ -130,30 +141,51 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
 	@Override
 	public void beforeTestClass(final TestContext testContext) {
-		JUnitTemporaryDatabase classJtd = testContext.getTestClass().getAnnotation(JUnitTemporaryDatabase.class);
-		TemporaryDatabase classDs = (classJtd == null ? null : createNewDatabase(classJtd));
+		// Fire up a thread pool for each CPU to create test databases
+		ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		
+		List<Future<TemporaryDatabase>> futures = new ArrayList<Future<TemporaryDatabase>>();
+		final JUnitTemporaryDatabase classJtd = testContext.getTestClass().getAnnotation(JUnitTemporaryDatabase.class);
+		Future<TemporaryDatabase> classDs = null;
+		if (classJtd == null) {
+			classDs = null;
+		} else {
+			classDs = pool.submit(new CreateNewDatabaseCallable(classJtd));
+		}
 		if (classJtd != null && classJtd.reuseDatabase() == false) {
-		    m_createNewDatabases = true;
+			m_createNewDatabases = true;
 		}
 		for (Method method : testContext.getTestClass().getMethods()) {
 			if (method != null) {
-				JUnitTemporaryDatabase methodJtd = method.getAnnotation(JUnitTemporaryDatabase.class);
+				final JUnitTemporaryDatabase methodJtd = method.getAnnotation(JUnitTemporaryDatabase.class);
 				boolean methodHasTest = method.getAnnotation(Test.class) != null;
 				if (methodHasTest) {
 					// If there is a method-specific annotation, use it to create the temporary database
 					if (methodJtd != null) {
 						// Create a new database based on the method-specific annotation
-						m_databases.add(createNewDatabase(methodJtd));
+						futures.add(pool.submit(new CreateNewDatabaseCallable(methodJtd)));
 					} else if (classJtd != null) {
 						if (m_createNewDatabases) {
 							// Create a new database based on the test class' annotation
-							m_databases.add(createNewDatabase(classJtd));
+							futures.add(pool.submit(new CreateNewDatabaseCallable(classJtd)));
 						} else {
 							// Reuse the database based on the test class' annotation
-							m_databases.add(classDs);
+							futures.add(classDs);
 						}
 					}
 				}
+			}
+		}
+
+		for (Future<TemporaryDatabase> db : futures) {
+			try {
+				m_databases.add(db.get());
+			} catch (InterruptedException e) {
+				System.err.printf("TemporaryDatabaseExecutionListener: error while creating database: %s\n", e.getMessage());
+				e.printStackTrace(System.err);
+			} catch (ExecutionException e) {
+				System.err.printf("TemporaryDatabaseExecutionListener: error while creating database: %s\n", e.getMessage());
+				e.printStackTrace(System.err);
 			}
 		}
 	}
@@ -169,6 +201,21 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 		final LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(m_database);
 		DataSourceFactory.setInstance(proxy);
 		System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s\n", testContext, m_database.toString());
+	}
+
+	private static class CreateNewDatabaseCallable implements Callable<TemporaryDatabase> {
+		
+		private final JUnitTemporaryDatabase m_jtd;
+		
+		public CreateNewDatabaseCallable(JUnitTemporaryDatabase jtd) {
+			m_jtd = jtd;
+		}
+		
+		@Override
+		public TemporaryDatabase call() throws Exception {
+			return createNewDatabase(m_jtd);
+		}
+		
 	}
 
 	private static TemporaryDatabase createNewDatabase(JUnitTemporaryDatabase jtd) {
@@ -193,6 +240,6 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
 	private static String getDatabaseName(Object hashMe) {
 		// Append the current object's hashcode to make this value truly unique
-		return String.format("opennms_test_%s_%s", System.currentTimeMillis(), Math.abs(hashMe.hashCode()));
+		return String.format("opennms_test_%s_%s", System.nanoTime(), Math.abs(hashMe.hashCode()));
 	}
 }

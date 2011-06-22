@@ -1,39 +1,31 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications:
- * 
- * 2007 May 14: Patch for bug 1850 from Alejandro Galue. - dj@opennms.org
- * 2006 Aug 15: Created this file. - dj@opennms.org
- * 
- * Copyright (C) 2006 The OpenNMS Group.  All rights reserved.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
@@ -53,7 +45,7 @@ import org.springframework.util.Assert;
  */
 public class GenericIndexResourceType extends ResourceType {
     private String m_name;
-//  private String m_persistenceSelectorStrategy;
+    private PersistenceSelectorStrategy m_persistenceSelectorStrategy;
     private StorageStrategy m_storageStrategy;
 
     private Map<SnmpInstId, GenericIndexResource> m_resourceMap = new HashMap<SnmpInstId, GenericIndexResource>();
@@ -74,10 +66,26 @@ public class GenericIndexResourceType extends ResourceType {
         instantiatePersistenceSelectorStrategy(resourceType.getPersistenceSelectorStrategy().getClazz());
         instantiateStorageStrategy(resourceType.getStorageStrategy().getClazz());
         m_storageStrategy.setParameters(resourceType.getStorageStrategy().getParameterCollection());
+        m_persistenceSelectorStrategy.setParameters(resourceType.getPersistenceSelectorStrategy().getParameterCollection());
     }
 
     private void instantiatePersistenceSelectorStrategy(String className) {
-        // TODO write me
+        Class<?> cinst;
+        try {
+            cinst = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new ObjectRetrievalFailureException(PersistenceSelectorStrategy.class,
+                    className, "Could not load class", e);
+        }
+        try {
+            m_persistenceSelectorStrategy = (PersistenceSelectorStrategy) cinst.newInstance();
+        } catch (InstantiationException e) {
+            throw new ObjectRetrievalFailureException(PersistenceSelectorStrategy.class,
+                    className, "Could not instantiate", e);
+        } catch (IllegalAccessException e) {
+            throw new ObjectRetrievalFailureException(PersistenceSelectorStrategy.class,
+                    className, "Could not instantiate", e);
+        }
     }
 
     private void instantiateStorageStrategy(String className) {
@@ -148,6 +156,10 @@ public class GenericIndexResourceType extends ResourceType {
      */
     public StorageStrategy getStorageStrategy() {
         return m_storageStrategy;
+    }
+
+    public PersistenceSelectorStrategy getPersistenceSelectorStrategy() {
+        return m_persistenceSelectorStrategy;
     }
 
 }
