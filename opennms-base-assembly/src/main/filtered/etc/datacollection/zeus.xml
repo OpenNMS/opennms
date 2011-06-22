@@ -173,7 +173,7 @@
         <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.12" instance="poolName" alias="poolSessionMigrated" type="Counter" />
       </group>
 
-      <systemDef name="Net-SNMP (UCD)">
+      <systemDef name="Zeus - Net-SNMP (UCD)">
         <sysoidMask>.1.3.6.1.4.1.2021.250.</sysoidMask>
         <collect>
           <includeGroup>zxtm</includeGroup>
@@ -182,7 +182,7 @@
         </collect>
       </systemDef>
 
-      <systemDef name="Net-SNMP">
+      <systemDef name="Zeus - Net-SNMP">
         <sysoidMask>.1.3.6.1.4.1.8072.3.</sysoidMask>
         <collect>
           <includeGroup>zxtm</includeGroup>
@@ -191,7 +191,7 @@
         </collect>
       </systemDef>
 
-      <systemDef name="Net-SNMP 5.5 with sysObjectID bug on i386">
+      <systemDef name="Zeus - Net-SNMP 5.5 with sysObjectID bug on i386">
         <sysoid>.1.3</sysoid>
         <collect>
           <includeGroup>zxtm</includeGroup>
@@ -200,7 +200,7 @@
         </collect>
       </systemDef>
 
-      <systemDef name="Net-SNMP 5.5 with sysObjectID bug on x86_64">
+      <systemDef name="Zeus - Net-SNMP 5.5 with sysObjectID bug on x86_64">
         <sysoid>.0.1</sysoid>
         <collect>
           <includeGroup>zxtm</includeGroup>
