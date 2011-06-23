@@ -1,40 +1,31 @@
 <%--
-
-//
-//This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
-//
-// Modifications:
-//
-// 2009 Oct 01: fix minor logic issue. - ayres@opennms.org
-// 2009 Aug 27: Created
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc.:
-// 51 Franklin Street
-// 5th Floor
-// Boston, MA 02110-1301
-// USA
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 --%>
 
@@ -82,9 +73,6 @@
 
     String eventUrl2 = "event/list.htm?filter=node%3D" + nodeId + "&filter=ifindex%3D" + ifIndex;
     
-    SnmpInterfacePollerConfigFactory.init();
-    SnmpInterfacePollerConfig snmpPollerCfgFactory = SnmpInterfacePollerConfigFactory.getInstance();
-    snmpPollerCfgFactory.rebuildPackageIpListMap();
 %>
 
 <%
@@ -225,13 +213,6 @@ function doDelete() {
 	              <th>Snmp Polling Status</th>
 	              <td><%=ElementUtil.getSnmpInterfaceStatusString(intf_db)%></td>
 	            </tr>  
-              <% if(request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
-                <tr>
-	                <th>Snmp Polling Package</th>
-    	            <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 
-        	        snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId))%></td>
-                </tr>
-	           <% } %>
                 <tr> 
 	          	  <th>Last Snmp Poll</th>
         	          <td><%=(intf_db.getSnmpLastSnmpPoll() == null) ? "&nbsp;" : intf_db.getSnmpLastSnmpPoll()%></td>

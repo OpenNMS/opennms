@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<datacollection-group name="Bluecoat">
+
+      <group name="sgProxy" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.1.1"      instance="0" alias="Admin"               type="string" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.1.2"      instance="0" alias="Software"            type="string" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.1.3"      instance="0" alias="Version"             type="string" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.1.4"      instance="0" alias="SerialNumber"        type="string" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.1.1"    instance="0" alias="CpuUpTime"           type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.1.2"    instance="0" alias="CpuBusyTime"         type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.1.3"    instance="0" alias="CpuIdleTime"         type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.1.4"    instance="0" alias="CpuUpTimeSLstAccess" type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.1.5"    instance="0" alias="CpuBusyTmSLstAccess" type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.1.6"    instance="0" alias="CpuIdleTmSLstAccess" type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.1.7"    instance="0" alias="CpuBusyPerCent"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.1.8"    instance="0" alias="CpuIdlePerCent"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.2.1"    instance="0" alias="Storage"             type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.2.2"    instance="0" alias="NumObjects"          type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.3.1"    instance="0" alias="MemAvailable"        type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.3.2"    instance="0" alias="MemCacheUsage"       type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.3.3"    instance="0" alias="MemSysUsage"         type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.2.3.4"    instance="0" alias="MemoryPressure"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.1.1"  instance="0" alias="ClientRequests"      type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.1.2"  instance="0" alias="ClientHits"          type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.1.3"  instance="0" alias="ClientPartialHits"   type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.1.4"  instance="0" alias="ClientMisses"        type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.1.5"  instance="0" alias="ClientErrors"        type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.1.6"  instance="0" alias="ClientRequestRate"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.1.7"  instance="0" alias="ClientHitRate"       type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.1.8"  instance="0" alias="ClientByteHitRate"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.1.9"  instance="0" alias="ClientInBytes"       type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.1.10" instance="0" alias="ClientOutBytes"      type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.2.1"  instance="0" alias="ServerRequests"      type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.2.2"  instance="0" alias="ServerErrors"        type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.2.3"  instance="0" alias="ServerInBytes"       type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.2.4"  instance="0" alias="ServerOutBytes"      type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.3.1"  instance="0" alias="ClientConnections"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.3.2"  instance="0" alias="ClientConnectionsAc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.3.3"  instance="0" alias="ClientConnectionsId" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.3.4"  instance="0" alias="ServerConnections"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.3.5"  instance="0" alias="ServerConnectionsAc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.1.3.6"  instance="0" alias="ServerConnectionsId" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.1.1"  instance="0" alias="ServiceTimeAll"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.1.2"  instance="0" alias="ServiceTimeHit"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.1.3"  instance="0" alias="ServiceTimePartlHit" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.1.4"  instance="0" alias="ServiceTimeMiss"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.1.5"  instance="0" alias="TotalFetchTimeAll"   type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.1.6"  instance="0" alias="TotalFetchTimeHit"   type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.1.7"  instance="0" alias="TotFetchTimePrtlHit" type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.1.8"  instance="0" alias="TotalFetchTimeMiss"  type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.2.1"  instance="0" alias="FirstByteAll"        type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.2.2"  instance="0" alias="FirstByteHit"        type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.2.3"  instance="0" alias="FirstBytePartialHit" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.2.4"  instance="0" alias="FirstByteMiss"       type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.3.1"  instance="0" alias="ByteRateAll"         type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.3.2"  instance="0" alias="ByteRateHit"         type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.3.3"  instance="0" alias="ByteRatePartialHit"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.3.4"  instance="0" alias="ByteRateMiss"        type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.4.1"  instance="0" alias="ResponseSizeAll"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.4.2"  instance="0" alias="ResponseSizeHit"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.4.3"  instance="0" alias="ResponseSizePartHit" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.3417.2.11.3.2.4.4"  instance="0" alias="ResponseSizeMiss"    type="Gauge32" />
+      </group>
+
+       <systemDef name="Blue Coat ProxySG">
+         <sysoidMask>.1.3.6.1.4.1.3417.</sysoidMask>
+         <collect>
+           <includeGroup>sgProxy</includeGroup>
+         </collect>
+       </systemDef>
+
+</datacollection-group>

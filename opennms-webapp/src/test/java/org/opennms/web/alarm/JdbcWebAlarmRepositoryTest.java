@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.web.alarm;
 
 import static org.junit.Assert.assertEquals;
@@ -18,8 +46,10 @@ import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -29,7 +59,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class JdbcWebAlarmRepositoryTest{
+public class JdbcWebAlarmRepositoryTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;
@@ -37,9 +67,13 @@ public class JdbcWebAlarmRepositoryTest{
     @Autowired
     WebAlarmRepository m_alarmRepo;
     
+    public void afterPropertiesSet() {
+        assertNotNull(m_dbPopulator);
+        assertNotNull(m_alarmRepo);
+    }
+    
     @Before
     public void setUp(){
-        assertNotNull(m_alarmRepo);
         m_dbPopulator.populateDatabase();
     }
     
@@ -49,15 +83,17 @@ public class JdbcWebAlarmRepositoryTest{
     }
    
     @Test
+    @Transactional
     public void testCountMatchingAlarms(){
         AlarmCriteria criteria = new AlarmCriteria(new AlarmIdFilter(1));
-        int alamrs = m_alarmRepo.countMatchingAlarms(criteria);
+        int alarms = m_alarmRepo.countMatchingAlarms(criteria);
         
-        assertEquals(1, alamrs);
+        assertEquals(1, alarms);
     }
     
     
     @Test
+    @Transactional
     public void testCountMatchingAlarmsBySeverity(){
         AlarmCriteria criteria = new AlarmCriteria();
         int [] matchingAlarms = m_alarmRepo.countMatchingAlarmsBySeverity(criteria);
@@ -75,6 +111,7 @@ public class JdbcWebAlarmRepositoryTest{
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetAlarm(){
         Alarm[] alarms = m_alarmRepo.getMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)));
         assertNotNull(alarms);
@@ -85,6 +122,7 @@ public class JdbcWebAlarmRepositoryTest{
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testAcknowledgeUnacknowledgeMatchingAlarms(){
         String user = "TestUser";
         m_alarmRepo.acknowledgeMatchingAlarms(user, new Date(), new AlarmCriteria(new AlarmIdFilter(1)));
@@ -102,6 +140,7 @@ public class JdbcWebAlarmRepositoryTest{
     }
     
     @Test
+    @Transactional
     public void testAcknowledgeUnacknowledgeAllAlarms(){
         String user = "TestUser";
         m_alarmRepo.acknowledgeAll(user, new Date());
@@ -116,12 +155,14 @@ public class JdbcWebAlarmRepositoryTest{
     }
     
     @Test
+    @Transactional
     public void testCountMatchingBySeverity(){
         int[] matchingAlarmCount = m_alarmRepo.countMatchingAlarmsBySeverity(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL)));
         assertEquals(8, matchingAlarmCount.length);
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testEscalateAlarms(){
         int[] alarmIds = {1};
         m_alarmRepo.escalateAlarms(alarmIds, "TestUser", new Date());
@@ -134,6 +175,7 @@ public class JdbcWebAlarmRepositoryTest{
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testClearAlarms(){
         Alarm alarm = m_alarmRepo.getAlarm(1);
         

@@ -1,40 +1,32 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2006 Aug 15: Change log message to be more intuitive, IMHO. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.collector;
 
 import java.net.InetAddress;
 import java.util.Map;
@@ -85,40 +77,40 @@ public class ServiceParameters {
         + "ifAliasComment: " + getIfAliasComment();
     }
 
-    String getDomain() {
+    public String getDomain() {
         return ParameterMap.getKeyedString(getParameters(), "domain",
         		"default");
     }
 
-    String getStoreByNodeID() {
+    public String getStoreByNodeID() {
         return ParameterMap.getKeyedString(getParameters(),
         		"storeByNodeID", "normal");
     }
 
-    String getStoreByIfAlias() {
+    public String getStoreByIfAlias() {
         return ParameterMap.getKeyedString(getParameters(),
         		"storeByIfAlias", "false");
     }
 
-    String getStorFlagOverride() {
+    public String getStorFlagOverride() {
         return ParameterMap.getKeyedString(getParameters(),
         		"storFlagOverride", "false");
     }
 
-    String getIfAliasComment() {
+    public String getIfAliasComment() {
         return ParameterMap.getKeyedString(getParameters(),
         		"ifAliasComment", null);
     }
 
-    boolean aliasesEnabled() {
+    public boolean aliasesEnabled() {
         return getStoreByIfAlias().equals("true");
     }
 
-    boolean overrideStorageFlag() {
+    public boolean overrideStorageFlag() {
         return !getStorFlagOverride().equals("false");
     }
 
-    void logIfAliasConfig() {
+    public void logIfAliasConfig() {
     	log().info(this.toString());
     }
 
@@ -126,7 +118,7 @@ public class ServiceParameters {
         return ThreadCategory.getInstance(getClass());
     }
     
-    boolean forceStoreByAlias(String alias) {
+    public boolean forceStoreByAlias(String alias) {
     	if(alias == null || alias.equals("")) {
     		return false;
     	}
@@ -142,7 +134,7 @@ public class ServiceParameters {
         return overrideStorageFlag();
     }
 
-    String getCollectionName() {
+    public String getCollectionName() {
         //icky hard coded old names; we need to handle some old cases where configs might be not yet updated, but they should
         // still work
         if(getParameters().containsKey("collection")) {
@@ -165,19 +157,19 @@ public class ServiceParameters {
      * Parameters corresponding to attributes from snmp-config
      */
 
-    int getSnmpPort(int current) {
+    public int getSnmpPort(int current) {
         return ParameterMap.getKeyedInteger(getParameters(), "port", current);
     }
 
-    int getSnmpRetries(int current) {
+    public int getSnmpRetries(int current) {
         return ParameterMap.getKeyedInteger(getParameters(), "retry", current);
     }
 
-    int getSnmpTimeout(int current) {
+    public int getSnmpTimeout(int current) {
         return ParameterMap.getKeyedInteger(getParameters(), "timeout", current);
     }
 
-    String getSnmpReadCommunity(String current) {
+    public String getSnmpReadCommunity(String current) {
         String readCommunity = ParameterMap.getKeyedString(getParameters(), "read-community", null);
         if (readCommunity == null) {
             // incase someone is using an ancient config file
@@ -186,11 +178,11 @@ public class ServiceParameters {
         return readCommunity;
     }
 
-    String getSnmpWriteCommunity(String current) {
+    public String getSnmpWriteCommunity(String current) {
         return ParameterMap.getKeyedString(getParameters(), "write-community", current);
     }
 
-    InetAddress getSnmpProxyFor(InetAddress current) {
+    public InetAddress getSnmpProxyFor(InetAddress current) {
         String address = ParameterMap.getKeyedString(getParameters(), "proxy-host", null);
         InetAddress addr = null;
         if (address != null) {
@@ -202,7 +194,7 @@ public class ServiceParameters {
         return addr == null? current : addr;
     }
 
-    int getSnmpVersion(int current) {
+    public int getSnmpVersion(int current) {
         String version = ParameterMap.getKeyedString(getParameters(), "version", null);
         if (version != null) {
             if (version.equals("v1")) {
@@ -216,11 +208,11 @@ public class ServiceParameters {
         return current;
     }
 
-    int getSnmpMaxVarsPerPdu(int current) {
+    public int getSnmpMaxVarsPerPdu(int current) {
         return ParameterMap.getKeyedInteger(getParameters(), "max-vars-per-pdu", current);
     }
 
-    int getSnmpMaxRepetitions(int current) {
+    public int getSnmpMaxRepetitions(int current) {
         int maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "max-repetitions", -1);
         if (maxRepetitions == -1) {
             // incase someone is using an ancient config file
@@ -229,27 +221,27 @@ public class ServiceParameters {
         return maxRepetitions;
     }
 
-    int getSnmpMaxRequestSize(int current) {
+    public int getSnmpMaxRequestSize(int current) {
         return ParameterMap.getKeyedInteger(getParameters(), "max-request-size", current);
     }
 
-    String getSnmpSecurityName(String current) {
+    public String getSnmpSecurityName(String current) {
         return ParameterMap.getKeyedString(getParameters(), "security-name", current);
     }
 
-    String getSnmpAuthPassPhrase(String current) {
+    public String getSnmpAuthPassPhrase(String current) {
         return ParameterMap.getKeyedString(getParameters(), "auth-passphrase", current);
     }
 
-    String getSnmpAuthProtocol(String current) {
+    public String getSnmpAuthProtocol(String current) {
         return ParameterMap.getKeyedString(getParameters(), "auth-protocol", current);
     }
 
-    String getSnmpPrivPassPhrase(String current) {
+    public String getSnmpPrivPassPhrase(String current) {
         return ParameterMap.getKeyedString(getParameters(), "privacy-passphrase", current);
     }
 
-    String getSnmpPrivProtocol(String current) {
+    public String getSnmpPrivProtocol(String current) {
         return ParameterMap.getKeyedString(getParameters(), "privacy-protocol", current);
     }
 

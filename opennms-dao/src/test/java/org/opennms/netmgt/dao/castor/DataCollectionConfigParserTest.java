@@ -1,34 +1,31 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.dao.castor;
 
 import java.io.File;
@@ -53,9 +50,9 @@ import org.springframework.core.io.Resource;
  */
 public class DataCollectionConfigParserTest {
 
-    private static final int resourceTypesCount = 69;
-    private static final int systemDefCount = 126;
-    private static final int groupsCount = 183;
+    private static final int resourceTypesCount = 88;
+    private static final int systemDefCount = 141;
+    private static final int groupsCount = 204;
 
     @Before
     public void setUp() {
@@ -98,7 +95,7 @@ public class DataCollectionConfigParserTest {
 
         // Validate default datacollection content
         SnmpCollection collection = config.getSnmpCollection(0);
-        Assert.assertEquals(42, collection.getIncludeCollectionCount());
+        Assert.assertEquals(49, collection.getIncludeCollectionCount());
         Assert.assertEquals(0, collection.getResourceTypeCount()); 
         Assert.assertNull(collection.getSystems());
         Assert.assertNull(collection.getGroups());
@@ -109,7 +106,7 @@ public class DataCollectionConfigParserTest {
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
         Assert.assertEquals(systemDefCount, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(144, collection.getGroups().getGroupCount()); // Unused groups will be ignored
+        Assert.assertEquals(162, collection.getGroups().getGroupCount()); // Unused groups will be ignored
     }
 
     @Test
@@ -130,7 +127,7 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(15, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(17, collection.getSystems().getSystemDefCount());
         Assert.assertEquals(61, collection.getGroups().getGroupCount());
     }
 
@@ -152,7 +149,7 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(69, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(70, collection.getSystems().getSystemDefCount());
         Assert.assertEquals(26, collection.getGroups().getGroupCount());
     }
 
@@ -174,7 +171,7 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(39, collection.getSystems().getSystemDefCount()); // 30 systemDef to exclude
+        Assert.assertEquals(40, collection.getSystems().getSystemDefCount()); // 48 systemDef to exclude
         Assert.assertEquals(25, collection.getGroups().getGroupCount()); //  1 group to exclude (used only on Cisco PIX or Cisco AS)
     }
 

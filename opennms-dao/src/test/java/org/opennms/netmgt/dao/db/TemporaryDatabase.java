@@ -1,40 +1,31 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
+ * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications:
- * 
- * 2008 May 10: Make unit tests using this class work again. - dj@opennms.org
- * 
- * Created: June 27, 2007
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.dao.db;
 
 import java.io.ByteArrayOutputStream;
@@ -76,6 +67,8 @@ public class TemporaryDatabase implements DataSource {
     public static final String DEFAULT_ADMIN_PASSWORD = "";
 
     private static final int MAX_DATABASE_DROP_ATTEMPTS = 10;
+
+    private static final Object TEMPLATE1_MUTEX = new Object();
 
     private final String m_testDatabase;
 
@@ -277,7 +270,11 @@ public class TemporaryDatabase implements DataSource {
                 m_adminUser, m_adminPassword));
 
         if (!m_useExisting) {
-            createTestDatabase();
+            // Synchronize around a static mutex to prevent multiple connections
+            // to the template1 database
+            synchronized(TEMPLATE1_MUTEX) {
+                createTestDatabase();
+            }
         }
 
         // Test connecting to test database.

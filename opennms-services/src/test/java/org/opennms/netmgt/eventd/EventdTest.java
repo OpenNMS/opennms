@@ -1,100 +1,154 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2008 Jan 27: Move alarm-specific tests to JdbcAlarmWriterTest. - dj@opennms.org
-// 2008 Jan 26: Don't call methods directly on Eventd to send events
-//              (they are moving, anyway)--use EventIpcManager.
-// 2008 Jan 26: Add some @Override annotations, kill main method. - dj@opennms.org
-// 2008 Jan 23: Add test for mapping from servicename to serviceId and
-//              persistence of events.serviceID. - dj@opennms.org
-// 2008 Jan 08: Make tests happy with EventConfigurationManager to
-//              EventConfDao rework. - dj@opennms.org
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//    
-// For more information contact: 
-//   OpenNMS Licensing       <license@opennms.org>
-//   http://www.opennms.org/
-//   http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.eventd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.mock.MockEventUtil;
-import org.opennms.netmgt.mock.MockInterface;
-import org.opennms.netmgt.mock.MockNode;
-import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
-import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
 
-public class EventdTest extends OpenNMSTestCase {
+/**
+ * Crank up a real eventd instance, send it some events, and verify that the records 
+ * are created in the database correctly.
+ */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
+        "classpath:META-INF/opennms/smallEventConfDao.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase> {
 
-    @Override
-    protected void setUp() throws Exception {
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.setRelativeHomeDirectory("src/test/resources");
-        daoTestConfig.afterPropertiesSet();
+    @Autowired
+    private JdbcTemplate m_jdbcTemplate;
 
-        super.setUp();
+    @Autowired
+    @Qualifier(value="eventIpcManagerImpl")
+    private EventIpcManager m_eventdIpcMgr;
+
+    @Autowired
+    private Eventd m_eventd;
+
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
+
+    private TemporaryDatabase m_database;
+
+    public void setTemporaryDatabase(TemporaryDatabase database) {
+        m_database = database;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        m_eventd.stop();
+    @Before
+    public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+        m_databasePopulator.populateDatabase();
+        m_eventd.onStart();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        m_eventd.onStop();
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
+    @Test
+    @JUnitTemporaryDatabase
     public void testPersistEvent() throws Exception {
+        assertEquals(0, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.NODE_DOWN_EVENT_UEI)));
 
-        assertEquals(0, m_db.countRows("select * from events"));
-
-        MockNode node = m_network.getNode(1);
+        OnmsNode node = m_databasePopulator.getNode1();
+        assertNotNull(node);
         sendNodeDownEvent(null, node);
-        sleep(1000);
-        assertEquals(1, m_db.countRows("select * from events"));
+        Thread.sleep(1000);
 
+        assertEquals(1, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.NODE_DOWN_EVENT_UEI)));
+
+        node = m_databasePopulator.getNode2();
+        assertNotNull(node);
+        sendNodeDownEvent(null, node);
+        Thread.sleep(1000);
+
+        assertEquals(2, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.NODE_DOWN_EVENT_UEI)));
     }
 
     /**
      * Test that eventd's service ID lookup works properly.
      */
+    @Test
+    @JUnitTemporaryDatabase
     public void testPersistEventWithService() throws Exception {
 
-        assertEquals(0, m_db.countRows("select * from events"));
+        assertEquals(0, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)));
+        assertEquals("service ID for ICMP", 1, m_jdbcTemplate.queryForInt("select serviceid from service where servicename = 'ICMP'"));
 
-        MockNode node = m_network.getNode(1);
-        MockInterface intf = node.getInterface("192.168.1.1");
-        MockService svc = intf.getService("ICMP");
+        OnmsNode node = m_databasePopulator.getNode1();
+        assertNotNull(node);
+        OnmsIpInterface intf = node.getIpInterfaceByIpAddress("192.168.1.1");
+        assertNotNull(intf);
+        OnmsMonitoredService svc = intf.getMonitoredServiceByServiceType("ICMP");
+        assertNotNull(svc);
+        assertEquals(1, svc.getNodeId().intValue());
+        assertEquals("192.168.1.1", str(svc.getIpAddress()));
+        assertEquals(1, svc.getServiceId().intValue());
         sendServiceDownEvent(null, svc);
 
-        sleep(1000);
-        assertEquals("event count", 1, m_db.countRows("select * from events"));
-        assertNotSame("service ID for event", 0, new JdbcTemplate(m_db.getDataSource()).queryForInt("select serviceID from events"));
+        Thread.sleep(1000);
+        assertEquals(1, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)));
+        assertEquals("service ID for event", 1, m_jdbcTemplate.queryForInt(String.format("select serviceID from events where eventuei = '%s'", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)));
     }
 
 
@@ -102,7 +156,7 @@ public class EventdTest extends OpenNMSTestCase {
      * @param reductionKey
      * @param node
      */
-    private void sendNodeDownEvent(String reductionKey, MockNode node) {
+    private void sendNodeDownEvent(String reductionKey, OnmsNode node) {
         EventBuilder e = MockEventUtil.createNodeDownEventBuilder("Test", node);
 
         if (reductionKey != null) {
@@ -116,15 +170,15 @@ public class EventdTest extends OpenNMSTestCase {
 
         e.setLogDest("logndisplay");
         e.setLogMessage("testing");
-        
+
         m_eventdIpcMgr.sendNow(e.getEvent());
     }
 
     /**
      * @param reductionKey
      */
-    private void sendServiceDownEvent(String reductionKey, MockService svc) {
-        EventBuilder e = MockEventUtil.createServiceUnresponsiveEventBuilder("Test", svc, "Not responding");
+    private void sendServiceDownEvent(String reductionKey, OnmsMonitoredService svc) {
+        EventBuilder e = MockEventUtil.createEventBuilder("Test", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, svc.getNodeId(), str(svc.getIpAddress()), svc.getServiceName(), "Not responding");
 
         if (reductionKey != null) {
             AlarmData data = new AlarmData();
@@ -137,9 +191,7 @@ public class EventdTest extends OpenNMSTestCase {
 
         e.setLogDest("logndisplay");
         e.setLogMessage("testing");
-        
+
         m_eventdIpcMgr.sendNow(e.getEvent());
     }
-
-
 }

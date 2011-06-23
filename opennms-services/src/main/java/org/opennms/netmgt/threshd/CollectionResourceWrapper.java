@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
@@ -8,9 +36,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AliasedResource;
-import org.opennms.netmgt.collectd.CollectionAttribute;
-import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.collectd.IfInfo;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
@@ -84,7 +112,7 @@ public class CollectionResourceWrapper {
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      * @param attributes a {@link java.util.Map} object.
      */
     public CollectionResourceWrapper(Date collectionTimestamp, int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {

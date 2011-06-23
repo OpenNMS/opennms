@@ -1,53 +1,31 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2008 Mar 10: Make it easy to set this class as the delegate for an
-//              EventIpcManagerProxy object when afterPropertiesSet() is called. - dj@opennms.org
-// 2008 Feb 02: Refactor out common code and pull code closer to the objects
-//              it manipulates.  Fix bug where the same event could be sent
-//              to the same listener multiple times. - dj@opennms.org
-// 2008 Jan 27: Dependency inject (now-threadsafe) EventHandler. - dj@opennms.org
-// 2008 Jan 26: Some code and comment formatting. - dj@opennms.org
-// 2008 Jan 26: Dependency injection for DataSource and EventdServiceManager. - dj@opennms.org
-// 2008 Jan 08: Dependency inject EventExpander, pass EventExpander to 
-//              EventHandler, and create log() method. - dj@opennms.org
-// 2008 Jan 07: Indent and format code a bit, implement log(). - dj@opennms.org
-// 2007 Aug 25: Save and restore the log4j logging prefix when we
-//              call onEvent(Event). - dj@opennms.org
-// 2006 May 29: Throw IllegalStateException in init() if m_eventdConfigMgr is null - dj@gregor.com
-// 2003 Jan 31: Cleaned up some unused imports.
-// 2002 Oct 24: Changed all references to HashTable to HashMap
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.eventd;
 
 import java.util.ArrayList;

@@ -1,37 +1,31 @@
 
-//This file is part of the OpenNMS(R) Application.
-
-//OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-//OpenNMS(R) is a derivative work, containing both original code, included code and modified
-//code that was published under the GNU General Public License. Copyrights for modified 
-//and included code are below.
-
-//OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-
-//Modifications:
-//2006 Aug 15: Javadocs, generic index resource type support, use generics for collections
-
-//Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-
-//This program is free software; you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation; either version 2 of the License, or
-//(at your option) any later version.
-
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-
-//You should have received a copy of the GNU General Public License
-//along with this program; if not, write to the Free Software
-//Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
-//For more information contact:
-//OpenNMS Licensing       <license@opennms.org>
-//http://www.opennms.org/
-//http://www.opennms.com/
-
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 package org.opennms.netmgt.collectd;
 
@@ -48,6 +42,9 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
  * Represents SNMP collection data for a single collection period.
@@ -75,7 +72,7 @@ public class OnmsSnmpCollection {
      * <p>Constructor for OnmsSnmpCollection.</p>
      *
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
-     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      */
     public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params) {
         this(agent, params, null);
@@ -85,7 +82,7 @@ public class OnmsSnmpCollection {
      * <p>Constructor for OnmsSnmpCollection.</p>
      *
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
-     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @param config a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
      */
     public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params, DataCollectionConfig config) {
@@ -101,7 +98,7 @@ public class OnmsSnmpCollection {
     /**
      * <p>getServiceParameters</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @return a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      */
     public ServiceParameters getServiceParameters() {
         return m_params;

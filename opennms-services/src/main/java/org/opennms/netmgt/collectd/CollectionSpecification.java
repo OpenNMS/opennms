@@ -1,42 +1,31 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modfications:
-//
-// 2008 Aug 29: collect() can now throw a CollectionException which will
-//              signal a connection failure and the resulting
-//              details are logged and included in data collection
-//              failure events. - dj@opennms.org
-// 2008 Feb 09: Indent, format code and comments, remove Outage collection. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
@@ -49,6 +38,7 @@ import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.RrdRepository;
@@ -268,7 +258,7 @@ public class CollectionSpecification {
      * <p>collect</p>
      *
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
-     * @return a {@link org.opennms.netmgt.collectd.CollectionSet} object.
+     * @return a {@link org.opennms.netmgt.config.collector.CollectionSet} object.
      * @throws org.opennms.netmgt.collectd.CollectionException if any.
      */
     public CollectionSet collect(CollectionAgent agent) throws CollectionException {
