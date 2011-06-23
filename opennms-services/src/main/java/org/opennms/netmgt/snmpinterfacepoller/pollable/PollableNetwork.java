@@ -87,11 +87,8 @@ public class PollableNetwork {
      * @param interval a long.
      * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
      */
-    public void schedule(PollableSnmpInterface node, String criteria, long interval, org.opennms.netmgt.scheduler.Scheduler scheduler) {
+    public void schedule(PollableSnmpInterface node, long interval, org.opennms.netmgt.scheduler.Scheduler scheduler) {
 
-        getContext().updatePollStatus(node.getParent().getNodeid(), criteria, "P");
-
-        node.setSnmpinterfaces(getContext().get(node.getParent().getNodeid(), criteria));
         
 
         PollableSnmpInterfaceConfig nodeconfig = new PollableSnmpInterfaceConfig(scheduler,interval);
@@ -112,7 +109,6 @@ public class PollableNetwork {
      * <p>deleteAll</p>
      */
     public void deleteAll() {
-        getContext().updatePollStatus("N");
         for (PollableInterface pi: m_members.values()) {
             pi.delete();
         }
@@ -128,7 +124,6 @@ public class PollableNetwork {
     public void delete(String ipaddress) {
         PollableInterface pi = getInterface(ipaddress);
         if (pi != null) {
-            getContext().updatePollStatus(pi.getNodeid(), "N");
             m_members.remove(ipaddress);
             m_node.remove(new Integer(pi.getNodeid()));
             pi.delete();
@@ -152,7 +147,6 @@ public class PollableNetwork {
     public void refresh(int nodeid) {
         String ipaddress = getIp(nodeid);
         if (ipaddress != null ) {
-            getContext().updatePollStatus(nodeid, "N");
             getInterface(ipaddress).refresh();
         }
     }

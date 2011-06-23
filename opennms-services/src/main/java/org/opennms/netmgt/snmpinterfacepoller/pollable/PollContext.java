@@ -36,14 +36,13 @@ package org.opennms.netmgt.snmpinterfacepoller.pollable;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a PollContext
  *
- * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
@@ -93,31 +92,19 @@ public interface PollContext {
     public List<OnmsSnmpInterface> get(int nodeId, String criteria);
 
     /**
-     * Update the pollstatus using the specified criteria for
-     * OnmsSnmpInterfaces having nodeid nodeId
+     * <p>getPollableNodesByIp</p>
      *
-     * @param nodeId a int.
-     * @param criteria a {@link java.lang.String} object.
-     * @param status a {@link java.lang.String} object.
+     * @param ipaddr the ip address of the node.
+     * @return The List of OnmsIpInterfaces to be polled
      */
-    public void updatePollStatus(int nodeId, String criteria, String status);
-    
-    /**
-     * Update the pollstatus for
-     * OnmsSnmpInterfaces having nodeid nodeId
-     *
-     * @param nodeId a int.
-     * @param status a {@link java.lang.String} object.
-     */
-    public void updatePollStatus(int nodeId,String status);
+    public List<OnmsIpInterface> getPollableNodesByIp(String ipaddr);
 
     /**
-     * Update the pollstatus for
-     * OnmsSnmpInterfaces
+     * <p>getPollableNodes</p>
      *
-     * @param status a {@link java.lang.String} object.
+     * @return The List of OnmsIpInterfaces to be polled
      */
-    public void updatePollStatus(String status);
+    public List<OnmsIpInterface> getPollableNodes();
 
     /**
      * Update the OnmsSnmpInterface

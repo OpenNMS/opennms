@@ -82,9 +82,6 @@
 
     String eventUrl2 = "event/list.htm?filter=node%3D" + nodeId + "&filter=ifindex%3D" + ifIndex;
     
-    SnmpInterfacePollerConfigFactory.init();
-    SnmpInterfacePollerConfig snmpPollerCfgFactory = SnmpInterfacePollerConfigFactory.getInstance();
-    snmpPollerCfgFactory.rebuildPackageIpListMap();
 %>
 
 <%
@@ -225,13 +222,6 @@ function doDelete() {
 	              <th>Snmp Polling Status</th>
 	              <td><%=ElementUtil.getSnmpInterfaceStatusString(intf_db)%></td>
 	            </tr>  
-              <% if(request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
-                <tr>
-	                <th>Snmp Polling Package</th>
-    	            <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 
-        	        snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId))%></td>
-                </tr>
-	           <% } %>
                 <tr> 
 	          	  <th>Last Snmp Poll</th>
         	          <td><%=(intf_db.getSnmpLastSnmpPoll() == null) ? "&nbsp;" : intf_db.getSnmpLastSnmpPoll()%></td>

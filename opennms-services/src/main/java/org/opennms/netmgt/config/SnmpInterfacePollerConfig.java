@@ -15,6 +15,12 @@ import org.exolab.castor.xml.ValidationException;
  * @version $Id: $
  */
 public interface SnmpInterfacePollerConfig {
+	/**
+	 * 
+	 * @return the Default interval
+	 * 
+	 */
+	public long getInterval();
     /**
      * <p>getThreads</p>
      *

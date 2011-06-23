@@ -44,6 +44,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -524,7 +525,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
 
     /** {@inheritDoc} */
     public synchronized Set<String> getInterfaceOnPackage(String pkgName) {
-        return m_pkgIntMap.get(pkgName).keySet();
+    	if (m_pkgIntMap.containsKey(pkgName))
+        	return m_pkgIntMap.get(pkgName).keySet();
+    	return new HashSet<String>();
     }
 
     /** {@inheritDoc} */
@@ -610,6 +613,15 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      */
     public int getThreads() {
         return getConfiguration().getThreads();
+    }
+
+    /**
+     * <p>getThreads</p>
+     *
+     * @return a long.
+     */
+    public long getInterval() {
+        return getConfiguration().getInterval();
     }
 
     /**

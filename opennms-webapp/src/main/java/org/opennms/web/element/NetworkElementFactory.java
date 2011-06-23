@@ -2489,6 +2489,21 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             }
             intf.m_snmpIfAlias = snmpIface.getIfAlias();
             
+            Object element = snmpIface.getPoll();
+            if (element != null) {
+                intf.m_isSnmpPoll = ((String) element).charAt(0);
+            }
+
+            java.util.Date capsdPoll = snmpIface.getLastCapsdPoll();
+            if (capsdPoll != null) {
+                intf.m_snmpLastCapsdPoll = Util.formatDateToUIString(new Date((capsdPoll).getTime()));
+            }
+
+            java.util.Date snmpPoll = snmpIface.getLastSnmpPoll();
+            if (snmpPoll != null) {
+                intf.m_snmpLastSnmpPoll = Util.formatDateToUIString(new Date((snmpPoll).getTime()));
+            }
+
             return intf;
     }
     

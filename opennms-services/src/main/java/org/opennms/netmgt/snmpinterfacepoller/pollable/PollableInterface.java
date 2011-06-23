@@ -171,7 +171,6 @@ public class PollableInterface {
      */
     protected void refresh() {
         for ( PollableSnmpInterface pi: getSnmpinterfacepollableNodes().values()){
-            getContext().updatePollStatus(getNodeid(), pi.getCriteria(), "P");
             pi.setSnmpinterfaces(getContext().get(getNodeid(), pi.getCriteria()));
         }
     }
