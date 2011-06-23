@@ -32,6 +32,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import org.opennms.netmgt.dao.InventoryCategoryDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.inventory.OnmsInventoryCategory;
 import org.hibernate.Session;
 import org.hibernate.HibernateException;
@@ -67,6 +68,11 @@ public class InventoryCategoryDaoHibernate extends AbstractDaoHibernate<OnmsInve
 
     public OnmsInventoryCategory findByName(String name) {
         return findUnique("from OnmsInventoryCategory as category where category.categoryName = ?", name);
+    }
+    
+    public Collection<OnmsInventoryCategory> findCategoriesUsedByNode(OnmsNode node) {
+    	return find("select category from OnmsInventoryCategory as category,OnmsInventoryAsset as asset " +
+    			    "where category.id = asset.category and asset.ownerNode = ?", node);
     }
 
 }

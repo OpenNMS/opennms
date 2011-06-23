@@ -35,9 +35,11 @@ import org.opennms.netmgt.model.inventory.OnmsInventoryAsset;
 import org.opennms.netmgt.model.inventory.OnmsInventoryAssetProperty;
 
 import java.util.Collection;
+import java.util.Date;
 
 public interface InventoryAssetPropertyDao extends OnmsDao<OnmsInventoryAssetProperty, Integer> {
     public abstract Collection<OnmsInventoryAssetProperty> findAll(final Integer offset, final Integer limit);
     public abstract OnmsInventoryAssetProperty findByPropertyId(int id);
     public abstract Collection<OnmsInventoryAssetProperty> findByAsset(OnmsInventoryAsset asset);
+    public abstract Collection<OnmsInventoryAssetProperty> findByAssetEffectiveDate(OnmsInventoryAsset asset, Date effdt);
 }

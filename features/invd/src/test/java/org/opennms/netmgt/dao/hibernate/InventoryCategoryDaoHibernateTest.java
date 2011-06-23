@@ -31,13 +31,17 @@
 //
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Collection;
+
 import junit.framework.Assert;
+import static junit.framework.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.inventory.OnmsInventoryCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -97,6 +101,14 @@ public class InventoryCategoryDaoHibernateTest {
         Assert.assertEquals("Network Equipment", invCat.getCategoryName());
     }
     
+	@Test
+	public void testfindCategoriesUsedByNode() {
+		OnmsNode node = getDbPopulator().getNode1();
+		
+		Collection<OnmsInventoryCategory> categories = getDbPopulator().getInventoryCategoryDao().findCategoriesUsedByNode(node);
+		assertEquals("There should be 1 category used by default node",1,categories.size());
+	}
+	
 	public InventoryDatabasePopulator getDbPopulator() {
 		return m_dbPopulator;
 	}

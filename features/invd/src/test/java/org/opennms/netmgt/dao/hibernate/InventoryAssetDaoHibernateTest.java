@@ -48,7 +48,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-
+import static junit.framework.Assert.assertEquals;
 import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -152,6 +152,20 @@ public class InventoryAssetDaoHibernateTest {
         Assert.assertEquals(invAsset1.getAssetName(), invAsset2.getAssetName());
         Assert.assertEquals(invAsset1.getCategory().getId(), invAsset2.getCategory().getId());
         Assert.assertEquals(invAsset1.getOwnerNode().getNodeId(), invAsset2.getOwnerNode().getNodeId());
+	}
+	
+	@Test
+	public void testFindByNodeAndCategory() {
+		OnmsInventoryAsset invAsset1 = getDbPopulator().getInvAsset1();
+		
+		Collection<OnmsInventoryAsset> assets = getDbPopulator().getInventoryAssetDao().findByCategoryAndNode(invAsset1.getCategory(), invAsset1.getOwnerNode());
+		
+		assertEquals("number of assets for node 1 in a specific category", 1, assets.size());
+		
+		/*Assert.assertEquals(invAsset1.getAssetId(), invAsset2.getAssetId());
+        Assert.assertEquals(invAsset1.getAssetName(), invAsset2.getAssetName());
+        Assert.assertEquals(invAsset1.getCategory().getId(), invAsset2.getCategory().getId());
+        Assert.assertEquals(invAsset1.getOwnerNode().getNodeId(), invAsset2.getOwnerNode().getNodeId());*/
 	}
 	
 	@Test

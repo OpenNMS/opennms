@@ -72,12 +72,12 @@ public class OnmsInventoryAssetProperty {
     private String assetValue;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "dateAdded")
-    private Date dateAdded;
+    @Column(name = "effdt")
+    private Date effectiveDate;
     
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "dateUpdated")
-    private Date dateUpdated;
+    @Column(name = "scandt")
+    private Date scanDate;
 
     @Column(name = "eff_status")
     private Boolean effStatus;
@@ -85,14 +85,23 @@ public class OnmsInventoryAssetProperty {
     public OnmsInventoryAssetProperty() {
         // do nothing.
     }
+    
+    public OnmsInventoryAssetProperty(OnmsInventoryAssetProperty assetProp) {
+    	this.assetKey = assetProp.assetKey;
+    	this.assetValue = assetProp.assetValue;
+    	this.inventoryAsset = assetProp.inventoryAsset;
+    	this.effectiveDate = assetProp.effectiveDate;
+    	this.effStatus = assetProp.effStatus;
+    	this.scanDate = assetProp.scanDate;
+    }
 
     public OnmsInventoryAssetProperty(String assetKey,
                                       String assetValue) {
         this.inventoryAsset = null;
         this.assetKey = assetKey;
         this.assetValue = assetValue;
-        this.dateAdded = new Date();
-        this.dateUpdated = new Date();
+        this.effectiveDate = new Date();
+        this.scanDate = new Date();
         this.effStatus = true;
     }
 
@@ -102,60 +111,60 @@ public class OnmsInventoryAssetProperty {
         this.inventoryAsset = inventoryAsset;
         this.assetKey = assetKey;
         this.assetValue = assetValue;
-        this.dateAdded = new Date();
-        this.dateUpdated = new Date();
+        this.effectiveDate = new Date();
+        this.scanDate = new Date();
         this.effStatus = true;
     }
 
     public OnmsInventoryAssetProperty(OnmsInventoryAsset inventoryAsset,
                                       String assetKey,
                                       String assetValue,
-                                      Date dateAdded) {
+                                      Date effdt) {
         this.inventoryAsset = inventoryAsset;
         this.assetKey = assetKey;
         this.assetValue = assetValue;
-        this.dateAdded = dateAdded;
-        this.dateUpdated = dateAdded;
+        this.effectiveDate = effdt;
+        this.scanDate = effdt;
         this.effStatus = true;
     }
     
     public OnmsInventoryAssetProperty(OnmsInventoryAsset inventoryAsset,
             String assetKey,
             String assetValue,
-            Date dateAdded,
+            Date effdt,
             Date dateUpdated) {
     	this.inventoryAsset = inventoryAsset;
     	this.assetKey = assetKey;
     	this.assetValue = assetValue;
-    	this.dateAdded = dateAdded;
-    	this.dateUpdated = dateUpdated;
+    	this.effectiveDate = effdt;
+    	this.scanDate = dateUpdated;
     	this.effStatus = true;
     }
 
     public OnmsInventoryAssetProperty(OnmsInventoryAsset inventoryAsset,
                                       String assetKey,
                                       String assetValue,
-                                      Date dateAdded,
+                                      Date effdt,
                                       Boolean effStatus) {
         this.inventoryAsset = inventoryAsset;
         this.assetKey = assetKey;
         this.assetValue = assetValue;
-        this.dateAdded = dateAdded;
-        this.dateUpdated = dateAdded;
+        this.effectiveDate = effdt;
+        this.scanDate = effdt;
         this.effStatus = effStatus;
     }
     
     public OnmsInventoryAssetProperty(OnmsInventoryAsset inventoryAsset,
             String assetKey,
             String assetValue,
-            Date dateAdded,
+            Date effdt,
             Date dateUpdated,
             Boolean effStatus) {
     	this.inventoryAsset = inventoryAsset;
 		this.assetKey = assetKey;
 		this.assetValue = assetValue;
-		this.dateAdded = dateAdded;
-		this.dateUpdated = dateUpdated;
+		this.effectiveDate = effdt;
+		this.scanDate = dateUpdated;
 		this.effStatus = effStatus;
     }
     
@@ -197,20 +206,20 @@ public class OnmsInventoryAssetProperty {
         this.assetValue = assetValue;
     }
 
-    public Date getDateAdded() {
-        return dateAdded;
+    public Date getEffectiveDate() {
+        return effectiveDate;
     }
 
-    public void setDateAdded(Date dateAdded) {
-        this.dateAdded = dateAdded;
+    public void setEffectiveDate(Date effdt) {
+        this.effectiveDate = effdt;
     }
 
-    public Date getDateUpdated() {
-		return dateUpdated;
+    public Date getScanDate() {
+		return scanDate;
 	}
 
-	public void setDateUpdated(Date dateUpdated) {
-		this.dateUpdated = dateUpdated;
+	public void setScanDate(Date scandt) {
+		this.scanDate = scandt;
 	}
 
 	public Boolean getEffStatus() {

@@ -37,6 +37,7 @@ public class InventoryResourcePersister {
 	
 	private void persistResource(InventoryResource res) {
 		Boolean assetModified = false;
+		List<String> propsUpdated = null;
 		OnmsNode ownerNode = getNodeDao().get(res.getOwnerNodeId());
 		OnmsInventoryCategory cat = getInvCategoryDao().findByName(res.getResourceCategory());
 		
@@ -53,16 +54,41 @@ public class InventoryResourcePersister {
 		
 		// Update an existing asset.
 		if(asset != null) {
+			OnmsInventoryAsset updatedAsset = new OnmsInventoryAsset(asset);
+			
 			// Change the source if applicable.
 			if(!asset.getAssetSource().equalsIgnoreCase(res.getResourceSource())) {
-				asset.setAssetSource(res.getResourceSource());
+				updatedAsset.setAssetSource(res.getResourceSource());
 				assetModified = true;
 			}
 			
 			// Revive cleaned up assets if re-found.
 			if(asset.getEffStatus() == false) {
-				asset.setEffStatus(true);
+				updatedAsset.setEffStatus(true);
 				assetModified = true;
+			}
+			
+			// Cycle through the resource properties and persist them.
+			propsUpdated = persistResourceProps(res, updatedAsset);
+			if(propsUpdated.size()>0) {
+				assetModified = true;
+			}
+			
+			// Next we check to see if the asset was modified. If the asset was modified
+			// we will flag the asset (asset) to be inactive and then insert the new
+			// asset (updatedAsset).
+			if(assetModified) {
+				// disable the current version of the asset.
+				asset.setEffStatus(false);
+					
+				for(OnmsInventoryAssetProperty assetProp : asset.getProperties()) {	
+					assetProp.setEffStatus(false);
+				}
+				// Save the asset.
+				getInvAssetDao().save(updatedAsset);
+			} else {
+				// If we're just validating that the asset is the same, just update the scan date.
+				asset.setScanDate(new Date());
 			}
 		// Create a new asset.
 		} else {
@@ -72,23 +98,12 @@ public class InventoryResourcePersister {
 					ownerNode, 
 					new Date(), 
 					true);
-			assetModified = true;
-		}
-		
-		
-		
-		// Cycle through the resource properties and persist them.
-		List<String> propsUpdated = persistResourceProps(res, asset);
-		
-		// Check and see if any properties were updated.
-		if(propsUpdated.size() > 0) {
-			assetModified = true;
+			
+			// Cycle through the resource properties and persist them.
+			propsUpdated = persistResourceProps(res, asset);
 		}
 		
 		if(assetModified) {
-			// Update the last modified date.
-			asset.setDateUpdated(new Date());
-			
 			// Here's where we would emit an asset changed event.
 		}
 

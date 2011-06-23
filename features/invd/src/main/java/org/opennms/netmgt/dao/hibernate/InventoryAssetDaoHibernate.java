@@ -39,7 +39,10 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.hibernate.Session;
 import org.hibernate.HibernateException;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.sql.SQLException;
 
 public class InventoryAssetDaoHibernate extends AbstractDaoHibernate<OnmsInventoryAsset, Integer>
@@ -53,8 +56,29 @@ public class InventoryAssetDaoHibernate extends AbstractDaoHibernate<OnmsInvento
         return findUnique("from OnmsInventoryAsset as asset where asset.id = ?", id);
     }
 
+    private String getEffectiveDatedCriteria(Date effdt) {
+    	String effdtStr;
+    	if(effdt == null) {
+    		effdtStr = "now()";
+    	} else {
+    		Format formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    		String fmtEffDt = formatter.format(effdt);
+    		effdtStr = "to_timestamp('" + fmtEffDt + "','MM-DD-YYYY HH24:MI:SS')";
+    	}
+    	
+    	return	"select asset from OnmsInventoryAsset asset " +
+    			"where asset.effectiveDate = (select max(asset2.effectiveDate) "+
+    			"					  from OnmsInventoryAsset asset2 " +
+    			"                     where asset2.id = asset.id " +
+    			"                     and asset2.effectiveDate <= "+effdtStr + ") ";
+    }
+    
     public Collection<OnmsInventoryAsset> findByName(String name) {
-        return find("from OnmsInventoryAsset as asset where asset.assetName = ?", name);
+        return findByNameEffectiveDate(name, null);
+    }
+    
+    public Collection<OnmsInventoryAsset> findByNameEffectiveDate(String name, Date effdt) {
+        return find(getEffectiveDatedCriteria(effdt) + " and asset.assetName = ?", name);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -69,26 +93,36 @@ public class InventoryAssetDaoHibernate extends AbstractDaoHibernate<OnmsInvento
             }
         });
     }
-
-//	public OnmsInventoryAsset findByNameAndNodeId(String name, int id) {
-//		return findUnique(
-//				"from OnmsInventoryAsset as asset where asset.ownerNode = ? and asset.assetName = ?", 
-//				id, name);
-//	}
-	
-	public Collection<OnmsInventoryAsset> findByNameAndNode(String name, OnmsNode owner) {
+    
+    public Collection<OnmsInventoryAsset> findByNameAndNode(String name, OnmsNode owner) {
+    	return findByNameAndNodeEffectiveDate(name, owner, null);
+    
+    }
+    
+    public Collection<OnmsInventoryAsset> findByNameAndNodeEffectiveDate(String name, OnmsNode owner, Date effdt) {
 		return find(
-				"from OnmsInventoryAsset as asset where asset.ownerNode = ? and asset.assetName = ?", 
+				getEffectiveDatedCriteria(effdt) + " and asset.ownerNode = ? and asset.assetName = ?", 
 				owner, name);
 	}
+    
+    public OnmsInventoryAsset findByNameNodeAndCategory(String name, OnmsNode owner, OnmsInventoryCategory cat) {
+    	return findByNameNodeAndCategoryEffectiveDate(name, owner, cat, null);
+    }
 
-	public OnmsInventoryAsset findByNameNodeAndCategory(String name, OnmsNode owner, OnmsInventoryCategory cat) {
+	public OnmsInventoryAsset findByNameNodeAndCategoryEffectiveDate(String name, OnmsNode owner, OnmsInventoryCategory cat, Date effdt) {
 		return findUnique(
-				"from OnmsInventoryAsset as asset where asset.category = ? and asset.ownerNode = ? and asset.assetName = ?", 
+				getEffectiveDatedCriteria(effdt) + " and asset.category = ? and asset.ownerNode = ? and asset.assetName = ?", 
 				cat, owner, name);
 	}
-	
-	
+	public Collection<OnmsInventoryAsset> findByCategoryAndNode(OnmsInventoryCategory category, OnmsNode owner) {
+		return findByCategoryAndNodeEffectiveDate(category, owner, null);
+		
+	}
+	public Collection<OnmsInventoryAsset> findByCategoryAndNodeEffectiveDate(OnmsInventoryCategory category, OnmsNode owner, Date effdt) {
+		return find(
+				getEffectiveDatedCriteria(effdt) + " and asset.ownerNode = ? and asset.category = ?", 
+				owner, category);
+	}
 	
 	
 }

@@ -2370,8 +2370,8 @@ CREATE TABLE inventoryasset (
     assetName   varchar(64),
     assetSource varchar(64),
     ownerNode   integer not null,
-    dateAdded   timestamp with time zone not null,
-    dateUpdated timestamp with time zone not null,
+    effdt       timestamp with time zone not null,
+    scandt      timestamp with time zone not null,
     eff_status  boolean default TRUE not null,
 
 
@@ -2383,8 +2383,8 @@ CREATE TABLE inventoryassetproperty (
     inventoryAsset  integer,
     assetKey        varchar(64) not null,
     assetValue      varchar(64) not null,
-    dateAdded       timestamp with time zone not null,
-    dateUpdated     timestamp with time zone not null,
+    effdt           timestamp with time zone not null,
+    scandt          timestamp with time zone not null,
     eff_status      boolean default TRUE not null,
 
     constraint pk_inventoryassetproperty_id primary key (id)
