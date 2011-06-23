@@ -1,34 +1,31 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS Licensing       <license@opennms.org>
+ *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- */
+ *******************************************************************************/
+
 package org.opennms.web.event.filter;
 
 import static org.junit.Assert.assertEquals;
@@ -120,14 +117,14 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testEventIdFilter(){
         EventIdFilter filter = new EventIdFilter(1);
         assert1Result(filter);
     }
     
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testEventIdListFilter(){
         int[] ids = {1};
         EventIdListFilter filter = new EventIdListFilter(ids);
@@ -136,6 +133,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testAcknowledgeByFilter(){
         AcknowledgedByFilter filter = new AcknowledgedByFilter("TestUser");
         EventCriteria criteria = new EventCriteria(filter);
@@ -161,6 +159,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testAfterDateFilter(){
         AfterDateFilter filter = new AfterDateFilter(yesterday());
         
@@ -172,6 +171,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testAlarmIdFilter(){
         AlarmIdFilter filter = new AlarmIdFilter(1);
         
@@ -183,6 +183,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testBeforeDateFilter(){
         BeforeDateFilter filter = new BeforeDateFilter(new Date());
         
@@ -194,6 +195,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testDescriptionSubstringFilterTest(){
         DescriptionSubstringFilter filter = new DescriptionSubstringFilter("test event");
         
@@ -207,6 +209,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testExactUEIFilter(){
         ExactUEIFilter filter = new ExactUEIFilter("uei.opennms.org/test2");
         
@@ -220,6 +223,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testIfIndexFilter(){
         IfIndexFilter filter = new IfIndexFilter(11);
         
@@ -237,6 +241,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testInterfaceFilter(){
         InterfaceFilter filter = new InterfaceFilter("192.168.1.1");
         
@@ -251,6 +256,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testIpAddrLikeFilter(){
         IPAddrLikeFilter filter = new IPAddrLikeFilter("192.168.*.*");
         
@@ -269,6 +275,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testLogMessageMatchesAny(){
         LogMessageMatchesAnyFilter filter = new LogMessageMatchesAnyFilter("This is a");
         
@@ -282,6 +289,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testLogMessageSubstringFilter(){
         LogMessageSubstringFilter filter = new LogMessageSubstringFilter("is a test");
         
@@ -293,6 +301,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testNegativeAcknowledgedByFilter(){
         NegativeAcknowledgedByFilter filter = new NegativeAcknowledgedByFilter("TestUser");
         
@@ -314,6 +323,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testNegativeExactUeiFilter(){
         NegativeExactUEIFilter filter = new NegativeExactUEIFilter("uei.opennms.org/test2");
         
@@ -333,6 +343,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testNegativeInterfaceFilter(){
         NegativeInterfaceFilter filter = new NegativeInterfaceFilter("192.168.1.1");
         
@@ -352,8 +363,9 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testNegativeNodeFilter(){
-        NegativeNodeFilter filter = new NegativeNodeFilter(2, m_appContext);
+        NegativeNodeFilter filter = new NegativeNodeFilter(m_dbPopulator.getNode2().getId(), m_appContext);
         
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(2, events.length);
@@ -361,7 +373,7 @@ public class WebEventRepositoryFilterTest {
         events = getMatchingJdbcEvents(filter);
         assertEquals(2, events.length);
         
-        filter = new NegativeNodeFilter(1, m_appContext);
+        filter = new NegativeNodeFilter(m_dbPopulator.getNode1().getId(), m_appContext);
         
         events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
@@ -373,6 +385,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testNegativePartialUeiFilter(){
         NegativePartialUEIFilter filter = new NegativePartialUEIFilter("uei.opennms.org");
         
@@ -392,6 +405,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNegativeServiceFilter(){
         NegativeServiceFilter filter = new NegativeServiceFilter(1, m_appContext);
         
@@ -411,6 +425,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testNegativeSeverityFilter(){
         NegativeSeverityFilter filter = new NegativeSeverityFilter(OnmsSeverity.CRITICAL.getId());
         
@@ -431,6 +446,7 @@ public class WebEventRepositoryFilterTest {
     
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNodeFilter(){
         NodeFilter filter = new NodeFilter(1, m_appContext);
         
@@ -452,6 +468,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testNodeNameLikeFilter(){
         NodeNameLikeFilter filter = new NodeNameLikeFilter("node1");
         
@@ -472,6 +489,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testPartialUeiFilter(){
         PartialUEIFilter filter = new PartialUEIFilter("uei.opennms.org/t");
         
@@ -491,6 +509,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testServiceFilter(){
         ServiceFilter filter = new ServiceFilter(2, m_appContext);
         
@@ -510,6 +529,7 @@ public class WebEventRepositoryFilterTest {
     }
     
     @Test
+    @Transactional
     public void testSeverityFilter(){
         SeverityFilter filter = new SeverityFilter(OnmsSeverity.CLEARED.getId());
         
@@ -528,7 +548,7 @@ public class WebEventRepositoryFilterTest {
         assertEquals(0, events.length);
     }
     
-    private EventCriteria getCriteria(Filter... filters){
+    private static EventCriteria getCriteria(Filter... filters){
         return new EventCriteria(filters);
     }
     
@@ -550,7 +570,7 @@ public class WebEventRepositoryFilterTest {
         assertEquals(1, events.length);
     }
     
-    private Date yesterday() {
+    private static Date yesterday() {
         Calendar cal = new GregorianCalendar();
         cal.add( Calendar.DATE, -1 );
         return cal.getTime();

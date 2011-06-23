@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package org.opennms.netmgt.xmlrpcd;
 
 import java.net.URL;

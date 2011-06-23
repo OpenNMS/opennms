@@ -1,38 +1,31 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications:
- * 
- * Created: September 10, 2009
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.provision.service.dns;
 
 import java.io.ByteArrayInputStream;
@@ -82,6 +75,12 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     private static final String EXPRESSION_ARG = "expression";
     
     private static final String SERVICES_ARG = "services";
+    
+    private static final String FID_HASH_SRC_ARG = "foreignidhashsource";
+    
+    private static final String[] HASH_IP_KEYWORDS = { "ip", "addr" };
+    
+    private static final String[] HASH_LABEL_KEYWORDS = { "name", "label" };
 
     private static final String QUERY_ARG_SEPARATOR = "&";
 
@@ -108,6 +107,10 @@ public class DnsRequisitionUrlConnection extends URLConnection {
 
     private String m_foreignSource;
     
+    private int m_foreignIdHashSource;
+    
+    private String[] m_services;
+    
     private static Map<String, String> m_args;
     
     
@@ -128,6 +131,8 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         m_port = url.getPort() == -1 ? 53 : url.getPort();
         m_zone = parseZone(url);
         m_foreignSource = parseForeignSource(url);
+        m_foreignIdHashSource = getForeignIdHashSource();
+        m_services = getServices();
         
         if (m_zone == null) {
             throw new IllegalArgumentException("Specified Zone is null");
@@ -138,6 +143,45 @@ public class DnsRequisitionUrlConnection extends URLConnection {
 
         m_key = null;
         
+    }
+   
+    /**
+     * Determine services to be provisioned from URL
+     * 
+     * @return a String[] of opennms service names
+     */
+    private String[] getServices() {
+        // TODO validate services against service table of database
+        String[] services = "ICMP,SNMP".split(",");
+        if (getArgs() != null && getArgs().get(SERVICES_ARG) != null) {
+            services = getArgs().get(SERVICES_ARG).split(",");
+        }
+        return services;
+    }
+
+    /**
+     * Determine source for computing hash for foreignId from URL
+     * 
+     * @return a String of "ipAddress" or "nodeLabel"
+     */
+    private int getForeignIdHashSource() {
+        int result = 0;
+        if (getArgs() != null && getArgs().get(FID_HASH_SRC_ARG) != null) {
+            String hashSourceArg = getArgs().get(FID_HASH_SRC_ARG).toLowerCase();
+            for (String keyword : HASH_IP_KEYWORDS) {
+                if (hashSourceArg.contains(keyword)) {
+                    result = 2;
+                    break;
+                }
+            }
+            for (String keyword : HASH_LABEL_KEYWORDS) {
+                if (hashSourceArg.contains(keyword)) {
+                    result++;
+                    break;
+                }
+            }
+        }
+        return result;
     }
 
     
@@ -250,7 +294,24 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         
         n.setBuilding(getForeignSource());
         
-        n.setForeignId(computeHashCode(nodeLabel));
+        switch(m_foreignIdHashSource) {
+            case 1:
+                n.setForeignId(computeHashCode(nodeLabel));
+                log().debug("Generating foreignId from hash of nodelabel " + nodeLabel);
+                break;
+            case 2:
+                n.setForeignId(computeHashCode(addr));
+                log().debug("Generating foreignId from hash of ipAddress " + addr);
+                break;
+            case 3:
+                n.setForeignId(computeHashCode(nodeLabel+addr));
+                log().debug("Generating foreignId from hash of nodelabel+ipAddress " + nodeLabel + addr);
+                break;
+            default:
+                n.setForeignId(computeHashCode(nodeLabel));
+                log().debug("Default case: Generating foreignId from hash of nodelabel " + nodeLabel);
+                break;
+        }
         n.setNodeLabel(nodeLabel);
         
         RequisitionInterface i = new RequisitionInterface();
@@ -260,20 +321,12 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         i.setManaged(Boolean.TRUE);
         i.setStatus(Integer.valueOf(1));
         
-        // TODO validate services against service table of database
-        
-        if (getArgs() != null && getArgs().get(SERVICES_ARG) != null) {
-            String[] services = getArgs().get(SERVICES_ARG).split(",");
-            for (String service : services) {
-                service = service.trim();
-                i.insertMonitoredService(new RequisitionMonitoredService(service));
-                log().debug("Adding provisioned service " + service);
+        for (String service : m_services) {
+            service = service.trim();
+            i.insertMonitoredService(new RequisitionMonitoredService(service));
+            log().debug("Adding provisioned service " + service);
             }
-        } else {
-            i.insertMonitoredService(new RequisitionMonitoredService("ICMP"));
-            i.insertMonitoredService(new RequisitionMonitoredService("SNMP"));
-            log().debug("Adding default provisioned services ICMP and SNMP");
-        }
+        
         n.putInterface(i);
         
         return n;
@@ -303,9 +356,18 @@ public class DnsRequisitionUrlConnection extends URLConnection {
                 Pattern p = Pattern.compile(expression);
                 Matcher m = p.matcher(rec.getName().toString());
 
-                log().debug("matchingRecord: attempting to match record: ["+rec.getName().toString()+"] with expression: ["+expression+"]");
+                // Try matching on host name only for backwards compatibility
+                log().debug("matchingRecord: attempting to match hostname: ["+rec.getName().toString()+"] with expression: ["+expression+"]");
                 if (m.matches()) {
                     matches = true;
+                } else {
+                    // include the IP address and try again
+                    log().debug("matchingRecord: attempting to match record: ["+rec.getName().toString()
+                                +" "+rec.rdataToString()+"] with expression: ["+expression+"]");
+                    m = p.matcher(rec.getName().toString() + " " + rec.rdataToString());
+                    if (m.matches()) {
+                        matches = true;
+                    }
                 }
                 
                 log().debug("matchingRecord: record matches expression: "+matches);
@@ -328,11 +390,11 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     /**
      * Created this in the case that we decide to every do something different with the hashing
      * to have a lesser likely hood of duplicate foreign ids
-     * @param nodeLabel
+     * @param hashSource
      * @return
      */
-    private String computeHashCode(String nodeLabel) {
-        String hash = String.valueOf(nodeLabel.hashCode());
+    private String computeHashCode(String hashSource) {
+        String hash = String.valueOf(hashSource.hashCode());
         return hash;
     }
 
