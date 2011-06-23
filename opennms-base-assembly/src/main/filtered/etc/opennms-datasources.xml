@@ -15,7 +15,7 @@
 		  - Uses Tomcat DBCP (http://people.apache.org/~fhanik/jdbc-pool/jdbc-pool.html)  A
           highly concurrent pooling API.  Recommended, but still experimental.
   -->
-  <connection-pool factory="org.opennms.netmgt.config.TomcatJdbcPoolConnectionFactory"
+  <connection-pool factory="org.opennms.netmgt.config.C3P0ConnectionFactory"
     idleTimeout="600"
     loginTimeout="3"
     minPool="10"
