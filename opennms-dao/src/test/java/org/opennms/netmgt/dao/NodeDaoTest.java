@@ -1,38 +1,31 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2007 Apr 05: Remove a comment from when we switched to AbstractTransactionalDaoTestCase. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
@@ -51,7 +44,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.InetAddressUtils;
@@ -67,6 +59,7 @@ import org.opennms.netmgt.model.PathElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -80,8 +73,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
-public class NodeDaoTest  {
+@JUnitTemporaryDatabase(dirtiesContext=false)
+public class NodeDaoTest {
     
     @Autowired
     DistPollerDao m_distPollerDao;
@@ -98,13 +91,25 @@ public class NodeDaoTest  {
     @Autowired
     TransactionTemplate m_transTemplate;
     
-    @Before
-    public void setUp() {
-        m_populator.populateDatabase();
-    }
+    private static boolean m_populated = false;
+    private static DatabasePopulator m_lastPopulator;
     
+    @BeforeTransaction
+    public void setUp() {
+        try {
+            if (!m_populated) {
+                m_populator.populateDatabase();
+                m_lastPopulator = m_populator;
+            }
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+        } finally {
+            m_populated = true;
+        }
+    }
+
     public OnmsNode getNode1() {
-        return m_populator.getNode1();
+        return m_lastPopulator.getNode1();
     }
     
     public JdbcTemplate getJdbcTemplate() {
@@ -154,6 +159,7 @@ public class NodeDaoTest  {
         getNodeDao().save(node);
         
         OnmsNode myNode = getNodeDao().get(node.getId());
+        assertNotNull(myNode);
         myNode.setPathElement(null);
         getNodeDao().save(myNode);
         
@@ -198,7 +204,7 @@ public class NodeDaoTest  {
     @Transactional
     public void testQuery() throws Exception {
         
-        OnmsNode n = getNodeDao().get(1);
+        OnmsNode n = getNodeDao().get(getNode1().getId());
         validateNode(n);
         
     }
@@ -207,16 +213,16 @@ public class NodeDaoTest  {
     @Transactional
     public void testDeleteOnOrphanIpInterface() {
         
-        int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
+        int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
         
-        OnmsNode n = getNodeDao().get(1);
+        OnmsNode n = getNodeDao().get(getNode1().getId());
         Iterator<OnmsIpInterface> it = n.getIpInterfaces().iterator();
         it.next();
         it.remove();
         getNodeDao().saveOrUpdate(n);
         getNodeDao().flush();
         
-        int postCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
+        int postCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
         
         assertEquals(preCount-1, postCount);
         
@@ -228,7 +234,7 @@ public class NodeDaoTest  {
     public void testDeleteNode() {
         int preCount = getJdbcTemplate().queryForInt("select count(*) from node");
 
-        OnmsNode n = getNodeDao().get(1);
+        OnmsNode n = getNodeDao().get(getNode1().getId());
         getNodeDao().delete(n);
         getNodeDao().flush();
         
@@ -241,7 +247,7 @@ public class NodeDaoTest  {
     @Transactional
     public void testQueryWithHierarchy() throws Exception {
         
-        OnmsNode n = getNodeDao().getHierarchy(1);
+        OnmsNode n = getNodeDao().getHierarchy(getNode1().getId());
         validateNode(n);
     }
     
@@ -260,7 +266,7 @@ public class NodeDaoTest  {
     @Transactional
     public void testQueryWithHierarchyCloseTransaction() throws Exception {
 
-        OnmsNode n = getNodeHierarchy(1);
+        OnmsNode n = getNodeHierarchy(getNode1().getId());
         
         validateNode(n);
 
@@ -296,9 +302,9 @@ public class NodeDaoTest  {
         
         Date timestamp = new Date(27);
         
-        getNodeDao().updateNodeScanStamp(1, timestamp);
+        getNodeDao().updateNodeScanStamp(getNode1().getId(), timestamp);
         
-        OnmsNode n = getNodeDao().get(1);
+        OnmsNode n = getNodeDao().get(getNode1().getId());
         
         assertEquals(timestamp, n.getLastCapsdPoll());
         
@@ -319,8 +325,10 @@ public class NodeDaoTest  {
     
     
     @Test
+    @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testDeleteObsoleteInterfaces() {
-        
+        m_populator.populateDatabase();
+
         final Date timestamp = new Date(1234);
 
         m_transTemplate.execute(new TransactionCallback<Object>() {
@@ -350,18 +358,17 @@ public class NodeDaoTest  {
             
         });
         
-        
     }
 
     private void validateScan() {
-        OnmsNode after = getNodeDao().get(1);
+        OnmsNode after = getNodeDao().get(getNode1().getId());
         
         assertEquals(1, after.getIpInterfaces().size());
         assertEquals(1, after.getSnmpInterfaces().size());
     }
 
     private void simulateScan(Date timestamp) {
-        OnmsNode n = getNodeDao().get(1);
+        OnmsNode n = getNodeDao().get(getNode1().getId());
         
         assertEquals(4, n.getIpInterfaces().size());
         assertEquals(4, n.getSnmpInterfaces().size());
@@ -377,13 +384,10 @@ public class NodeDaoTest  {
         getNodeDao().saveOrUpdate(n);
         
         getNodeDao().flush();
-
-        
-
     }
 
     private void deleteObsoleteInterfaces(Date timestamp) {
-        getNodeDao().deleteObsoleteInterfaces(1, timestamp);
+        getNodeDao().deleteObsoleteInterfaces(getNode1().getId(), timestamp);
     }
     
     private void validateNode(OnmsNode n) throws Exception {
@@ -399,7 +403,7 @@ public class NodeDaoTest  {
         assertNodeEquals(getNode1(), n);
     }
     
-    private class PropertyComparator implements Comparator<Object> {
+    private static class PropertyComparator implements Comparator<Object> {
     	
     	String m_propertyName;
     	
@@ -421,7 +425,7 @@ public class NodeDaoTest  {
     	
     }
     
-    private void assertNodeEquals(OnmsNode expected, OnmsNode actual) throws Exception {
+    private static void assertNodeEquals(OnmsNode expected, OnmsNode actual) throws Exception {
     	assertEquals("Unexpected nodeId", expected.getId(), actual.getId());
     	String[] properties = { "id", "label", "labelSource", "assetRecord.assetNumber", "distPoller.name", "sysContact", "sysName", "sysObjectId" };
     	assertPropertiesEqual(properties, expected, actual);
@@ -430,11 +434,11 @@ public class NodeDaoTest  {
     	
     }
     
-    private interface AssertEquals<T> {
+    private static interface AssertEquals<T> {
     	public void assertEqual(T expected, T actual) throws Exception;
     }
     
-    private <T> void assertSetsEqual(Set<T> expectedSet, Set<T> actualSet, String orderProperty, AssertEquals<T> comparer) throws Exception {
+    private static <T> void assertSetsEqual(Set<T> expectedSet, Set<T> actualSet, String orderProperty, AssertEquals<T> comparer) throws Exception {
     	SortedSet<T> expectedSorted = new TreeSet<T>(new PropertyComparator(orderProperty));
     	expectedSorted.addAll(expectedSet);
     	SortedSet<T> actualSorted = new TreeSet<T>(new PropertyComparator(orderProperty));
@@ -454,7 +458,7 @@ public class NodeDaoTest  {
     		fail("Unexpected item "+actual.next()+" in the actual list");
     }
 
-    private void assertInterfaceSetsEqual(Set<OnmsIpInterface> expectedSet, Set<OnmsIpInterface> actualSet) throws Exception {
+    private static void assertInterfaceSetsEqual(Set<OnmsIpInterface> expectedSet, Set<OnmsIpInterface> actualSet) throws Exception {
     	assertSetsEqual(expectedSet, actualSet, "ipAddress" , new AssertEquals<OnmsIpInterface>() {
 
 			public void assertEqual(OnmsIpInterface expected, OnmsIpInterface actual) throws Exception {
@@ -464,13 +468,13 @@ public class NodeDaoTest  {
     	});
 	}
 
-	private void assertInterfaceEquals(OnmsIpInterface expected, OnmsIpInterface actual) throws Exception {
+	private static void assertInterfaceEquals(OnmsIpInterface expected, OnmsIpInterface actual) throws Exception {
 		String[] properties = { "ipAddress", "ifIndex",  "ipHostName", "isManaged", "node.id" };
     	assertPropertiesEqual(properties, expected, actual);
     	assertServicesEquals(expected.getMonitoredServices(), actual.getMonitoredServices());
 	}
 	
-	private void assertServicesEquals(Set<OnmsMonitoredService> expectedSet, Set<OnmsMonitoredService> actualSet) throws Exception {
+	private static void assertServicesEquals(Set<OnmsMonitoredService> expectedSet, Set<OnmsMonitoredService> actualSet) throws Exception {
     	assertSetsEqual(expectedSet, actualSet, "serviceId" , new AssertEquals<OnmsMonitoredService>() {
 
 			public void assertEqual(OnmsMonitoredService expected, OnmsMonitoredService actual) throws Exception {
@@ -480,18 +484,18 @@ public class NodeDaoTest  {
     	});
 	}
 
-	protected void assertServiceEquals(OnmsMonitoredService expected, OnmsMonitoredService actual) {
+	protected static void assertServiceEquals(OnmsMonitoredService expected, OnmsMonitoredService actual) {
 		assertEquals(expected.getServiceName(), actual.getServiceName());
 	}
 
-	private void assertPropertiesEqual(String[] properties, Object expected, Object actual) throws Exception {
+	private static void assertPropertiesEqual(String[] properties, Object expected, Object actual) throws Exception {
     	for (String property : properties) {
 			assertPropertyEquals(property, expected, actual);
 		}
 		
 	}
 
-	private void assertPropertyEquals(String name, Object expected, Object actual) throws Exception {
+	private static void assertPropertyEquals(String name, Object expected, Object actual) throws Exception {
 		Object expectedValue = BeanUtils.getProperty(expected, name);
 		Object actualValue = BeanUtils.getProperty(actual, name);
 		assertEquals("Unexpected value for property "+name+" on object "+expected, expectedValue, actualValue);
@@ -500,7 +504,9 @@ public class NodeDaoTest  {
     @Test
     @Transactional
 	public void testQuery2() {
-        OnmsNode n = getNodeDao().get(6);
+        assertNotNull(m_lastPopulator);
+        assertNotNull(m_lastPopulator.getNode6());
+        OnmsNode n = getNodeDao().get(m_lastPopulator.getNode6().getId());
         assertNotNull(n);
         assertEquals(3, n.getIpInterfaces().size());
         assertNotNull(n.getAssetRecord());

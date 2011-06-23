@@ -1,37 +1,31 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2007-2008 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
+ * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications:
- * 
- * Created: January 14, 2007
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.web.element;
 
 import static org.junit.Assert.assertEquals;
@@ -92,6 +86,7 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @Transactional
     public void testGetNodeLabel() throws SQLException {
         String nodeLabel = NetworkElementFactory.getInstance(m_appContext).getNodeLabel(1);
         
@@ -99,6 +94,7 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetIpPrimaryAddress() throws SQLException {
         m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES (12, now(), 'A', 'nodeLabel')");
         m_jdbcTemplate.update("INSERT INTO ipinterface (nodeid, ipaddr, iplastcapsdpoll, issnmpprimary) VALUES (12, '172.168.1.1', now(), 'P')");
@@ -109,6 +105,7 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetNodesWithIpLikeOneInterface() throws Exception {
         m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (12, now(), 'A')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
@@ -122,6 +119,7 @@ public class NetworkElementFactoryTest  {
     
     // bug introduced in revision 2932
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetNodesWithIpLikeTwoInterfaces() throws Exception {
         m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (12, now(), 'A')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
@@ -135,10 +133,11 @@ public class NetworkElementFactoryTest  {
     }
 
     @Test
+    @Transactional
     public void testGetInterfacesWithIpAddress() throws Exception {
         Interface[] interfaces = NetworkElementFactory.getInstance(m_appContext).getInterfacesWithIpAddress("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5");
         assertEquals("interface count", 1, interfaces.length);
-        assertEquals("node ID", 1, interfaces[0].getNodeId());
+        assertEquals("node ID", m_dbPopulator.getNode1().getId().intValue(), interfaces[0].getNodeId());
         assertEquals("ifIndex", 4, interfaces[0].getIfIndex());
 
         interfaces = NetworkElementFactory.getInstance(m_appContext).getInterfacesWithIpAddress("fe80:0000:0000:0000:aaaa:bbbb:cccc:0001%5");
@@ -151,35 +150,37 @@ public class NetworkElementFactoryTest  {
     @Test
     @Transactional
     public void testGetActiveInterfacesOnNode() {
-    	Interface[] intfs = NetworkElementFactory.getInstance(m_appContext).getActiveInterfacesOnNode(1);
+    	Interface[] intfs = NetworkElementFactory.getInstance(m_appContext).getActiveInterfacesOnNode(m_dbPopulator.getNode1().getId());
     	assertEquals("active interfaces", 4, intfs.length);
     	
     }
     
     @Test
+    @Transactional
     public void testNodeHasIfAliases() throws InterruptedException {
-        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
+        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
         assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = '' WHERE snmpifalias = 'Initial ifAlias value'"));
-        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
+        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
         assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = 'New ifAlias value' WHERE snmpifalias = ''"));
-        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
+        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
         assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = NULL WHERE snmpifalias = 'New ifAlias value'"));
-        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
+        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
     }
     
     @Test
+    @Transactional
     public void testGetDataLinksOnInterface() {
-        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(1, 1);
+        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(m_dbPopulator.getNode1().getId(), 1);
         assertEquals(4, dlis.length);
         
-        DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(1, 9);
+        DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(m_dbPopulator.getNode1().getId(), 9);
         assertEquals(0, dlis2.length);
     }
     
     @Test
     @Transactional
     public void testGetAtInterfaces() throws Exception {
-        AtInterface atif = NetworkElementFactory.getInstance(m_appContext).getAtInterface(2, "192.168.2.1");
+        AtInterface atif = NetworkElementFactory.getInstance(m_appContext).getAtInterface(m_dbPopulator.getNode2().getId(), "192.168.2.1");
         assertEquals("AA:BB:CC:DD:EE:FF", atif.get_physaddr());
         
         List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("AA:BB:CC:DD:EE:FF");
@@ -187,8 +188,9 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @Transactional
     public void testGetDataLinksOnNode() throws SQLException {
-        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(1);
+        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(m_dbPopulator.getNode1().getId());
         assertEquals(5, dlis.length);
         
         DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(100);
@@ -196,6 +198,7 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetServicesOnInterface() {
         m_jdbcTemplate.update("UPDATE ifservices SET status='A' WHERE id=2;");
         Service[] svc = NetworkElementFactory.getInstance(m_appContext).getServicesOnInterface(1, "192.168.1.1");
