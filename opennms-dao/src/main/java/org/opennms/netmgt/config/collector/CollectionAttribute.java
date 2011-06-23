@@ -27,7 +27,7 @@
  *******************************************************************************/
 
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.collector;
 
 /**
  * <p>CollectionAttribute interface.</p>
@@ -39,7 +39,7 @@ public interface CollectionAttribute {
     /**
      * <p>getResource</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
     public CollectionResource getResource();
     
@@ -76,7 +76,7 @@ public interface CollectionAttribute {
     /**
      * Determines whether the attribute should be persisted.
      *
-     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @return a boolean.
      */
     public boolean shouldPersist(ServiceParameters params);
@@ -91,7 +91,7 @@ public interface CollectionAttribute {
     /**
      * Visit this attribute
      *
-     * @param visitor a {@link org.opennms.netmgt.collectd.CollectionSetVisitor} object.
+     * @param visitor a {@link org.opennms.netmgt.config.collector.CollectionSetVisitor} object.
      */
     public void visit(CollectionSetVisitor visitor);
     

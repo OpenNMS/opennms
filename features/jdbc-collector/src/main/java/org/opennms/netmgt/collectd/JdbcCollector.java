@@ -53,6 +53,8 @@ import org.opennms.netmgt.collectd.jdbc.JdbcCollectionSet;
 import org.opennms.netmgt.collectd.jdbc.JdbcMultiInstanceCollectionResource;
 import org.opennms.netmgt.collectd.jdbc.JdbcSingleInstanceCollectionResource;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.jdbc.JdbcColumn;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollection;
 import org.opennms.netmgt.config.jdbc.JdbcQuery;

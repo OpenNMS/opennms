@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import org.opennms.netmgt.config.collector.CollectionResource;
+
 /**
  * <p>Abstract ResourceVisitor class.</p>
  *

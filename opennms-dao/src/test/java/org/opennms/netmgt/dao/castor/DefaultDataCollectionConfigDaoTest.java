@@ -103,10 +103,10 @@ public class DefaultDataCollectionConfigDaoTest {
 
     private void executeTests(DefaultDataCollectionConfigDao dao) {
         // Expected Values
-        int netsnmpObjectsCount = 70;
+        int netsnmpObjectsCount = 197; //  bluecat.xml, netsnmp.xml, zeus.xml
         int ciscoObjectsCount = 44;
-        int resourceTypesCount = 69;
-        int systemDefCount = 126;
+        int resourceTypesCount = 88;
+        int systemDefCount = 141;
 
         // Execute Tests
         executeRepositoryTest(dao);

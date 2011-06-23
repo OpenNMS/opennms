@@ -33,10 +33,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionResource;
-import org.opennms.netmgt.collectd.CollectionSet;
-import org.opennms.netmgt.collectd.CollectionSetVisitor;
 import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 
 public class JdbcCollectionSet implements CollectionSet {
     private int m_status;

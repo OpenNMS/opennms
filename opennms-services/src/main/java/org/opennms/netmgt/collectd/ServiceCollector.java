@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Map;
 
+import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 
@@ -91,7 +92,7 @@ public interface ServiceCollector {
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      * @param eproxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
      * @param parameters a {@link java.util.Map} object.
-     * @return a {@link org.opennms.netmgt.collectd.CollectionSet} object.
+     * @return a {@link org.opennms.netmgt.config.collector.CollectionSet} object.
      * @throws org.opennms.netmgt.collectd.CollectionException if any.
      */
     CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException;

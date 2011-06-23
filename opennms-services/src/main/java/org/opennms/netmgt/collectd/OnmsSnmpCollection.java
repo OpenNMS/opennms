@@ -42,6 +42,9 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
  * Represents SNMP collection data for a single collection period.
@@ -69,7 +72,7 @@ public class OnmsSnmpCollection {
      * <p>Constructor for OnmsSnmpCollection.</p>
      *
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
-     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      */
     public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params) {
         this(agent, params, null);
@@ -79,7 +82,7 @@ public class OnmsSnmpCollection {
      * <p>Constructor for OnmsSnmpCollection.</p>
      *
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
-     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @param config a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
      */
     public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params, DataCollectionConfig config) {
@@ -95,7 +98,7 @@ public class OnmsSnmpCollection {
     /**
      * <p>getServiceParameters</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @return a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      */
     public ServiceParameters getServiceParameters() {
         return m_params;
