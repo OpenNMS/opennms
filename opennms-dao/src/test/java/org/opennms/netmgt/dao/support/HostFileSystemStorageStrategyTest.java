@@ -33,16 +33,14 @@ import junit.framework.Assert;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.StorageStrategyService;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.springframework.core.io.ClassPathResource;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class HostFileSystemStorageStrategyTest {
-    
+
     @Test
     public void testStrategy() throws Exception {
         // Create Mocks
@@ -51,29 +49,26 @@ public class HostFileSystemStorageStrategyTest {
         agentConfig.setPort(1161);
         EasyMock.expect(service.getAgentConfig()).andReturn(agentConfig).anyTimes();
         EasyMock.replay(service);
-        
-        // Initialize Mock SNMP Agent
-        MockSnmpAgent snmpAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("/mock-snmp-agent.properties"), "127.0.0.1/1161");
 
-        try {
-            // Create Strategy
-            HostFileSystemStorageStrategy strategy = new HostFileSystemStorageStrategy();
-            strategy.setResourceTypeName("hrStorageIndex");
-            strategy.setStorageStrategyService(service);
-            
-            // Test Resource Name - root file system
-            String parentResource = "1";
-            String resourceName = strategy.getResourceNameFromIndex(parentResource, "1");
-            Assert.assertEquals("_root_fs", resourceName);
-    
-            // Test Resource Name - root file system
-            Assert.assertEquals("Volumes-iDisk", strategy.getResourceNameFromIndex(parentResource, "8"));
-    
-            // Test RelativePath
-            Assert.assertEquals("1/hrStorageIndex/_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
-        } finally {
-            snmpAgent.shutDownAndWait();
-        }
+        // Create Strategy
+        HostFileSystemStorageStrategy strategy = new HostFileSystemStorageStrategy();
+        strategy.setResourceTypeName("hrStorageIndex");
+        strategy.setStorageStrategyService(service);
+
+        // Test Resource Name - root file system
+        String parentResource = "1";
+        MockCollectionResource resource = new MockCollectionResource(parentResource, "1", "hrStorageIndex");
+        resource.getAttribtueMap().put("hrStorageDescr", "/");
+        String resourceName = strategy.getResourceNameFromIndex(resource);
+        Assert.assertEquals("_root_fs", resourceName);
+
+        // Test Resource Name - root file system
+        resource.setInstance("8");
+        resource.getAttribtueMap().put("hrStorageDescr", "Volumes-iDisk");
+        Assert.assertEquals("Volumes-iDisk", strategy.getResourceNameFromIndex(resource));
+
+        // Test RelativePath
+        Assert.assertEquals("1/hrStorageIndex/_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
 
         EasyMock.verify(service);
     }

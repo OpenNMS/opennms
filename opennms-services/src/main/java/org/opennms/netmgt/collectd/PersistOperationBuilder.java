@@ -39,6 +39,9 @@ import java.util.TreeMap;
 import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.TimeKeeper;
+import org.opennms.netmgt.config.collector.AttributeDefinition;
+import org.opennms.netmgt.config.collector.ByNameComparator;
+import org.opennms.netmgt.config.collector.ResourceIdentifier;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
@@ -71,7 +74,7 @@ public class PersistOperationBuilder {
      * <p>Constructor for PersistOperationBuilder.</p>
      *
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @param resource a {@link org.opennms.netmgt.collectd.ResourceIdentifier} object.
+     * @param resource a {@link org.opennms.netmgt.config.collector.ResourceIdentifier} object.
      * @param rrdName a {@link java.lang.String} object.
      */
     public PersistOperationBuilder(RrdRepository repository, ResourceIdentifier resource, String rrdName) {
@@ -96,7 +99,7 @@ public class PersistOperationBuilder {
     /**
      * <p>declareAttribute</p>
      *
-     * @param attrType a {@link org.opennms.netmgt.collectd.AttributeDefinition} object.
+     * @param attrType a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
      */
     public void declareAttribute(AttributeDefinition attrType) {
         m_declarations.put(attrType, "U");
@@ -105,7 +108,7 @@ public class PersistOperationBuilder {
     /**
      * <p>setAttributeValue</p>
      *
-     * @param attrType a {@link org.opennms.netmgt.collectd.AttributeDefinition} object.
+     * @param attrType a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
      * @param value a {@link java.lang.String} object.
      */
     public void setAttributeValue(AttributeDefinition attrType, String value) {

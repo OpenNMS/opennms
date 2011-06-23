@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,28 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.netmgt.config.collector;
 
-
-package org.opennms.netmgt.collectd;
+import java.io.Serializable;
+import java.util.Comparator;
 
 /**
- * <p>CollectionAttributeType interface.</p>
+ * <p>ByNameComparator class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public interface CollectionAttributeType extends AttributeDefinition {
+public final class ByNameComparator implements Comparator<AttributeDefinition>, Serializable {
+
+    private static final long serialVersionUID = -2596801053643459622L;
+
     /**
-     * <p>getGroupType</p>
+     * <p>compare</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     * @param type0 a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
+     * @param type1 a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
+     * @return a int.
      */
-    public AttributeGroupType getGroupType();
+    public int compare(final AttributeDefinition type0, final AttributeDefinition type1) {
+        return type0.getName().compareTo(type1.getName());
+    }
+    
+    /** {@inheritDoc} */
+    public boolean equals(final Object o) {
+        return o instanceof ByNameComparator;
+    }
+    
     /**
-     * <p>storeAttribute</p>
+     * <p>hashCode</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
-     * @param persister a {@link org.opennms.netmgt.collectd.Persister} object.
+     * @return a int.
      */
-    public void storeAttribute(CollectionAttribute attribute, Persister persister);
+    public int hashCode() {
+        return 0;
+    }
 }

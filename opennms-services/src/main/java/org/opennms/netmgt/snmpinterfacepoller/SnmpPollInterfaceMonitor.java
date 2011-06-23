@@ -111,7 +111,7 @@ public class SnmpPollInterfaceMonitor {
                         miface.setOperstatus(result.toInt());
                     }
                 } else {
-                    log().error("Snmp Value is null for oid: " + oids[i]);
+                    log().info("Snmp Value is null for oid: " + oids[i]);
                 }
                 i++;
             }

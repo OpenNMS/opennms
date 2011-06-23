@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 
 
@@ -134,6 +135,10 @@ public final class NodeInfo extends SnmpCollectionResource {
      */
     public String getLabel() {
         return null;
+    }
+
+    public String getParent() {
+        return Integer.toString(m_nodeId);
     }
 
 } // end class

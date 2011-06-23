@@ -31,6 +31,9 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.config.collector.AttributeGroup;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 
@@ -45,7 +48,7 @@ public class GroupPersister extends BasePersister {
     /**
      * <p>Constructor for GroupPersister.</p>
      *
-     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
      */
     public GroupPersister(ServiceParameters params, RrdRepository repository) {

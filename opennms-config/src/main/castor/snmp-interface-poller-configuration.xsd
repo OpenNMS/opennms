@@ -35,6 +35,13 @@
         </element>
       </sequence>
 
+      <attribute name="interval" type="long" use="optional" default="300000">
+        <annotation>
+          <documentation>Default Interval at which the interfaces are to be
+          polled</documentation>
+        </annotation>
+      </attribute>
+
       <attribute name="threads" type="int" use="required">
         <annotation>
           <documentation>The maximum number of threads used for

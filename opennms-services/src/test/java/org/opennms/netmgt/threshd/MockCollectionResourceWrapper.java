@@ -31,9 +31,9 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.util.Date;
 
-import org.opennms.netmgt.collectd.CollectionResource;
-import org.opennms.netmgt.collectd.CollectionSetVisitor;
-import org.opennms.netmgt.collectd.ServiceParameters;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 
 public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
@@ -64,6 +64,9 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
                 return null;
             }
             public File getResourceDir(RrdRepository repository) {
+                return null;
+            }
+            public String getParent() {
                 return null;
             }
         }, null);

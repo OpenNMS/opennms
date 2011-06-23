@@ -29,6 +29,10 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
@@ -46,7 +50,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     /**
      * <p>Constructor for SnmpAttribute.</p>
      *
-     * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      * @param type a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
      * @param val a {@link org.opennms.netmgt.snmp.SnmpValue} object.
      */
@@ -105,7 +109,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     /**
      * <p>getResource</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
     public CollectionResource getResource() {
         return m_resource;

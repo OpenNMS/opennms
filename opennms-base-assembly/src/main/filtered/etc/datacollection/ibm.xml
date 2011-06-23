@@ -6,7 +6,7 @@
                   resourceLabel="${aixVgName} (ID ${aixVgIdentifier})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2.6.191.2.1.2.1.1" />
+        <parameter key="sibling-column-name" value="aixVgName" />
 		<parameter key="replace-all" value="s/\\+s//" />
       </storageStrategy>
     </resourceType>
@@ -15,7 +15,7 @@
                   resourceLabel="${aixPvName} (VG ${aixPvNameVG})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2.6.191.2.3.1.1.1" />
+        <parameter key="sibling-column-name" value="aixPvName" />
 		<parameter key="replace-all" value="s/\\s+//" />
       </storageStrategy>
     </resourceType>
@@ -24,7 +24,7 @@
                   resourceLabel="${aixPageName} (VG ${aixPvNameVG}, PV ${aixPageNamePV})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2.6.191.2.4.2.1.1" />
+        <parameter key="sibling-column-name" value="aixPageName" />
 		<parameter key="replace-all" value="s/\\s+//" />
       </storageStrategy>
     </resourceType>
@@ -33,7 +33,7 @@
                   resourceLabel="${aixPrtQueName} (${aixPrtQueDevice})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2.6.191.3.1.1.1.1" />
+        <parameter key="sibling-column-name" value="aixPrtQueName" />
 		<parameter key="replace-all" value="s/\\s+//" />
       </storageStrategy>
     </resourceType>
@@ -42,7 +42,7 @@
                   resourceLabel="${aixFsName} (${aixFsMountPoint})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2.6.191.6.2.1.3" />
+        <parameter key="sibling-column-name" value="aixFsMountPoint" />
 		<parameter key="replace-first" value="s/^-$/_root_fs/" />
 		<parameter key="replace-all" value="s/^-//" />
 		<parameter key="replace-all" value="s/\\s//" />

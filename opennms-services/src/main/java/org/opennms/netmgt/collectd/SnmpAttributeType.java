@@ -34,6 +34,11 @@ import java.util.List;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.collector.AttributeDefinition;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -64,7 +69,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
      * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
-     * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     * @param groupType a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      */
     protected SnmpAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         m_resourceType = resourceType;
@@ -118,7 +123,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
      * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
-     * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     * @param groupType a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
      */
     public static SnmpAttributeType create(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
@@ -144,7 +149,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
     /**
      * <p>getGroupType</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      */
     public AttributeGroupType getGroupType() {
         return m_groupType;        
