@@ -73,7 +73,7 @@
         <configuration>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <connectors>
-            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+            <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
               <port>${web.port}</port>
               <maxIdleTime>60000</maxIdleTime>
             </connector>
