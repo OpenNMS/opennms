@@ -292,7 +292,7 @@ public class OpenNMSTestCase extends TestCase {
         return super.toString() + " - " + getSnmpImplementation() + " " + myVersion();
     }
     
-    private String getSnmpImplementation() {
+    private static String getSnmpImplementation() {
         return SnmpUtils.getStrategy().getClass().getSimpleName();
     }
 
