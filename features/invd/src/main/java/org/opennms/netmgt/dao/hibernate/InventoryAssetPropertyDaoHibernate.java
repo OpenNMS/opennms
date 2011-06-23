@@ -38,7 +38,10 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.hibernate.Session;
 import org.hibernate.HibernateException;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.sql.SQLException;
 
 public class InventoryAssetPropertyDaoHibernate extends AbstractDaoHibernate<OnmsInventoryAssetProperty, Integer>
@@ -66,7 +69,28 @@ public class InventoryAssetPropertyDaoHibernate extends AbstractDaoHibernate<Onm
         return findUnique("from OnmsInventoryAssetProperty as prop where prop.id = ?", id);
     }
 
+    private String getEffectiveDatedCriteria(Date effdt) {
+    	String effdtStr;
+    	if(effdt == null) {
+    		effdtStr = "now()";
+    	} else {
+    		Format formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    		String fmtEffDt = formatter.format(effdt);
+    		effdtStr = "to_timestamp('" + fmtEffDt + "','MM-DD-YYYY HH24:MI:SS')";
+    	}
+    	
+    	return	"select assetProp from OnmsInventoryAssetProperty assetProp " +
+    			"where assetProp.effectiveDate = (select max(assetProp2.effectiveDate) "+
+    			"					  from OnmsInventoryAssetProperty assetProp2 " +
+    			"                     where assetProp2.id = assetProp.id " +
+    			"                     and assetProp2.effectiveDate <= "+effdtStr + ") ";
+    }
+    
     public Collection<OnmsInventoryAssetProperty> findByAsset(OnmsInventoryAsset asset) {
-        return find("from OnmsInventoryAssetProperty as prop where prop.inventoryAsset = ?", asset);
+        return findByAssetEffectiveDate(asset, null);
+    }
+    
+    public Collection<OnmsInventoryAssetProperty> findByAssetEffectiveDate(OnmsInventoryAsset asset, Date effdt) {
+        return find(getEffectiveDatedCriteria(effdt) + " and prop.inventoryAsset = ?", asset);
     }
 }

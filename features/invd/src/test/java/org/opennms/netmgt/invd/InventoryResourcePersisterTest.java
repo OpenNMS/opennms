@@ -101,7 +101,7 @@ public class InventoryResourcePersisterTest {
             		}
             		
             		@Override
-            		public String getResourceSource() { return "Invd"; }
+            		public String getResourceSource() { return "User-defined"; }
             		
             		@Override
             		public boolean rescanNeeded() { return false; }

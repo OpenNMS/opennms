@@ -83,12 +83,12 @@ public class OnmsInventoryAsset {
     private OnmsNode ownerNode;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "dateAdded")
-    private Date dateAdded;
+    @Column(name = "effdt")
+    private Date effectiveDate;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "dateUpdated")
-    private Date dateUpdated;
+    @Column(name = "scandt")
+    private Date scanDate;
     
     @Column(name = "eff_status")
     private Boolean effStatus;
@@ -123,8 +123,8 @@ public class OnmsInventoryAsset {
         this.assetName = assetName;
         this.category = category;
         this.ownerNode = ownerNode;
-        this.dateAdded = new Date();
-        this.dateUpdated = new Date();
+        this.effectiveDate = new Date();
+        this.scanDate = new Date();
         this.assetSource = "Invd";
         this.effStatus = true;
     }
@@ -139,19 +139,20 @@ public class OnmsInventoryAsset {
      * @param assetName The name of this asset.
      * @param assetSource The source of this asset, e.g "Invd" or "User"
      * @param ownerNode The node this asset belongs to.
-     * @param dateAdded The date that this asset was added or changed.
+     * @param effdt The date that this asset was added or changed.
      */     
     public OnmsInventoryAsset(OnmsInventoryCategory category,
                               String assetName,
                               String assetSource,
                               OnmsNode ownerNode,
-                              Date dateAdded) {
+                              Date effdt) {
         this.category = category;
         this.assetName = assetName;
         this.assetSource = assetSource;
         this.ownerNode = ownerNode;
-        this.dateAdded = dateAdded;
+        this.effectiveDate = effdt;
         this.effStatus = true;
+        this.scanDate = new Date();
 
     }
 
@@ -165,25 +166,37 @@ public class OnmsInventoryAsset {
      * @param assetName The name of this asset.
      * @param assetSource The source of this asset, e.g "Invd" or "User"
      * @param ownerNode The node this asset belongs to.
-     * @param dateAdded The date that this asset was added or changed.
+     * @param effdt The date that this asset was added or changed.
      * @param effStatus Whether this asset is effective (active) or not.
      */
     public OnmsInventoryAsset(OnmsInventoryCategory category,
                               String assetName,
                               String assetSource,
                               OnmsNode ownerNode,
-                              Date dateAdded,
+                              Date effdt,
                               Boolean effStatus) {
         this.category = category;
         this.assetName = assetName;
         this.assetSource = assetSource;
         this.ownerNode = ownerNode;
-        this.dateAdded = dateAdded;
+        this.effectiveDate = effdt;
         this.effStatus = effStatus;
+        this.scanDate = new Date();
 
     }
     
-    public int getId() {
+    public OnmsInventoryAsset(OnmsInventoryAsset asset) {
+		this.id = asset.id;
+		this.assetName = asset.assetName;
+		this.assetSource = asset.assetSource;
+		this.category = asset.category;
+		this.effectiveDate = asset.effectiveDate;
+		this.scanDate = asset.scanDate;
+		this.ownerNode = asset.ownerNode;
+		this.properties = new LinkedHashSet<OnmsInventoryAssetProperty>(asset.properties);
+	}
+
+	public int getId() {
         return id;
     }
 
@@ -221,12 +234,12 @@ public class OnmsInventoryAsset {
         this.ownerNode = ownerNode;
     }
 
-    public Date getDateAdded() {
-        return dateAdded;
+    public Date getEffectiveDate() {
+        return effectiveDate;
     }
 
-    public void setDateAdded(Date dateAdded) {
-        this.dateAdded = dateAdded;
+    public void setEffectiveDate(Date effdt) {
+        this.effectiveDate = effdt;
     }
 
     public Set<OnmsInventoryAssetProperty> getProperties() {
@@ -261,12 +274,12 @@ public class OnmsInventoryAsset {
         this.effStatus = effStatus;
     }
 
-	public Date getDateUpdated() {
-		return dateUpdated;
+	public Date getScanDate() {
+		return scanDate;
 	}
 
-	public void setDateUpdated(Date dateUpdated) {
-		this.dateUpdated = dateUpdated;
+	public void setScanDate(Date scandt) {
+		this.scanDate = scandt;
 	}
 	
 	public OnmsInventoryAssetProperty getPropertyByName(String name) {
