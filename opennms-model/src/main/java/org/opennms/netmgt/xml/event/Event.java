@@ -1442,7 +1442,7 @@ public class Event implements Serializable {
 	 * @param ifIndex
 	 *            the value of field 'ifIndex'.
 	 */
-	public void setIfIndex(final int ifIndex) {
+	public void setIfIndex(final Integer ifIndex) {
 		this._ifIndex = ifIndex;
 	}
 

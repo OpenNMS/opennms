@@ -18,7 +18,7 @@
       <property name="localHostName" ref="localHostName" />
       <property name="name" value="OpenNMS.SnmpPoller.DefaultPollContext" />
       <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
-      <property name="dataSource" ref="dataSource" />
+      <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     </bean> 
     
     <bean name="pollableNetwork" class="org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork">
@@ -29,7 +29,6 @@
     <bean name="daemon" class="org.opennms.netmgt.snmpinterfacepoller.SnmpPoller" destroy-method="stop">
       <property name="pollerConfig" ref="snmpinterfacepollerConfig" />
       <property name="network" ref="pollableNetwork" />
-      <property name="dataSource" ref="dataSource" />
     </bean>
     
     <bean id="init-snmpinterfacepollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
