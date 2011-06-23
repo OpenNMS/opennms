@@ -282,6 +282,31 @@ public class OnmsInventoryAsset {
 		this.scanDate = scandt;
 	}
 	
+	public void copyForEffectiveDating(OnmsInventoryAsset asset) {
+		// We're creating a new effective dated entry. Default the effective status and date.
+		this.effStatus = true;
+		this.effectiveDate = new Date();
+		this.scanDate = new Date();
+		
+		this.assetName = asset.getAssetName();
+		this.assetSource = asset.getAssetSource();
+		this.category = asset.getCategory();
+		this.ownerNode = asset.getOwnerNode();
+
+		for(OnmsInventoryAssetProperty prop : asset.getProperties()) {
+			OnmsInventoryAssetProperty updProp = new OnmsInventoryAssetProperty();
+			updProp.copyForEffectiveDating(prop);
+			updProp.setInventoryAsset(this);
+			
+			// Default the effective status and date.
+			updProp.setEffStatus(true);
+			updProp.setEffectiveDate(new Date());
+			updProp.setScanDate(new Date());
+			
+			this.addProperty(updProp);
+		}
+	}
+	
 	public OnmsInventoryAssetProperty getPropertyByName(String name) {
 		for(OnmsInventoryAssetProperty prop : getProperties()) {
 			if(prop.getAssetKey().equalsIgnoreCase(name))

@@ -54,7 +54,8 @@ public class InventoryResourcePersister {
 		
 		// Update an existing asset.
 		if(asset != null) {
-			OnmsInventoryAsset updatedAsset = new OnmsInventoryAsset(asset);
+			OnmsInventoryAsset updatedAsset = new OnmsInventoryAsset();
+			updatedAsset.copyForEffectiveDating(asset);
 			
 			// Change the source if applicable.
 			if(!asset.getAssetSource().equalsIgnoreCase(res.getResourceSource())) {

@@ -229,4 +229,13 @@ public class OnmsInventoryAssetProperty {
     public void setEffStatus(Boolean effStatus) {
         this.effStatus = effStatus;
     }
+    
+    public void copyForEffectiveDating(OnmsInventoryAssetProperty assetProp) {
+    	this.assetKey = assetProp.getAssetKey();
+    	this.assetValue = assetProp.getAssetValue();
+    	this.inventoryAsset = assetProp.getInventoryAsset();
+    	this.effectiveDate = assetProp.getEffectiveDate();
+    	this.effStatus = assetProp.getEffStatus();
+    	this.scanDate = assetProp.getScanDate();
+    }
 }

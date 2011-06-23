@@ -40,17 +40,19 @@ import java.util.Date;
 
 public interface InventoryAssetDao extends OnmsDao<OnmsInventoryAsset, Integer> {
     public abstract OnmsInventoryAsset findByAssetId(int id);
+    
+    public abstract Collection<OnmsInventoryAsset> findAllEffectiveDate(Date effdt, Boolean effStatus);
     public abstract Collection<OnmsInventoryAsset> findAll(final Integer offset, final Integer limit);
     
     public abstract Collection<OnmsInventoryAsset> findByName(String name);
-    public abstract Collection<OnmsInventoryAsset> findByNameEffectiveDate(String name, Date effdt);
+    public abstract Collection<OnmsInventoryAsset> findByNameEffectiveDate(String name, Date effdt, Boolean effStatus);
     
-    public abstract Collection<OnmsInventoryAsset> findByNameAndNodeEffectiveDate(String name, OnmsNode owner, Date effdt);
+    public abstract Collection<OnmsInventoryAsset> findByNameAndNodeEffectiveDate(String name, OnmsNode owner, Date effdt, Boolean effStatus);
     public abstract Collection<OnmsInventoryAsset> findByNameAndNode(String name, OnmsNode owner);
     
     public abstract OnmsInventoryAsset findByNameNodeAndCategory(String name, OnmsNode owner, OnmsInventoryCategory cat);
-    public abstract OnmsInventoryAsset findByNameNodeAndCategoryEffectiveDate(String name, OnmsNode owner, OnmsInventoryCategory cat, Date effdt);
+    public abstract OnmsInventoryAsset findByNameNodeAndCategoryEffectiveDate(String name, OnmsNode owner, OnmsInventoryCategory cat, Date effdt, Boolean effStatus);
     public abstract Collection<OnmsInventoryAsset> findByCategoryAndNode(OnmsInventoryCategory category, OnmsNode owner);
-    public abstract Collection<OnmsInventoryAsset> findByCategoryAndNodeEffectiveDate(OnmsInventoryCategory category, OnmsNode owner, Date effdt);
+    public abstract Collection<OnmsInventoryAsset> findByCategoryAndNodeEffectiveDate(OnmsInventoryCategory category, OnmsNode owner, Date effdt, Boolean effStatus);
 }
 

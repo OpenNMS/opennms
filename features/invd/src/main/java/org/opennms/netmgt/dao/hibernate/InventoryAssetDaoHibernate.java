@@ -56,8 +56,9 @@ public class InventoryAssetDaoHibernate extends AbstractDaoHibernate<OnmsInvento
         return findUnique("from OnmsInventoryAsset as asset where asset.id = ?", id);
     }
 
-    private String getEffectiveDatedCriteria(Date effdt) {
+    private String getEffectiveDatedCriteria(Date effdt, Boolean effStatus) {
     	String effdtStr;
+    	String effstStr = "";
     	if(effdt == null) {
     		effdtStr = "now()";
     	} else {
@@ -65,20 +66,28 @@ public class InventoryAssetDaoHibernate extends AbstractDaoHibernate<OnmsInvento
     		String fmtEffDt = formatter.format(effdt);
     		effdtStr = "to_timestamp('" + fmtEffDt + "','MM-DD-YYYY HH24:MI:SS')";
     	}
+    	if(effStatus) {
+    		effstStr = "and asset.effStatus = true ";
+    	}
     	
     	return	"select asset from OnmsInventoryAsset asset " +
     			"where asset.effectiveDate = (select max(asset2.effectiveDate) "+
     			"					  from OnmsInventoryAsset asset2 " +
     			"                     where asset2.id = asset.id " +
-    			"                     and asset2.effectiveDate <= "+effdtStr + ") ";
+    			"                     and asset2.effectiveDate <= "+effdtStr + ") " +
+    			effstStr;
+    }
+    
+    public Collection<OnmsInventoryAsset> findAllEffectiveDate(Date effdt, Boolean effStatus) {
+    	return find(getEffectiveDatedCriteria(effdt,effStatus));
     }
     
     public Collection<OnmsInventoryAsset> findByName(String name) {
-        return findByNameEffectiveDate(name, null);
+        return findByNameEffectiveDate(name, null, true);
     }
     
-    public Collection<OnmsInventoryAsset> findByNameEffectiveDate(String name, Date effdt) {
-        return find(getEffectiveDatedCriteria(effdt) + " and asset.assetName = ?", name);
+    public Collection<OnmsInventoryAsset> findByNameEffectiveDate(String name, Date effdt, Boolean effStatus) {
+        return find(getEffectiveDatedCriteria(effdt,effStatus) + " and asset.assetName = ?", name);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -95,32 +104,32 @@ public class InventoryAssetDaoHibernate extends AbstractDaoHibernate<OnmsInvento
     }
     
     public Collection<OnmsInventoryAsset> findByNameAndNode(String name, OnmsNode owner) {
-    	return findByNameAndNodeEffectiveDate(name, owner, null);
+    	return findByNameAndNodeEffectiveDate(name, owner, null, true);
     
     }
     
-    public Collection<OnmsInventoryAsset> findByNameAndNodeEffectiveDate(String name, OnmsNode owner, Date effdt) {
+    public Collection<OnmsInventoryAsset> findByNameAndNodeEffectiveDate(String name, OnmsNode owner, Date effdt, Boolean effStatus) {
 		return find(
-				getEffectiveDatedCriteria(effdt) + " and asset.ownerNode = ? and asset.assetName = ?", 
+				getEffectiveDatedCriteria(effdt,effStatus) + " and asset.ownerNode = ? and asset.assetName = ?", 
 				owner, name);
 	}
     
     public OnmsInventoryAsset findByNameNodeAndCategory(String name, OnmsNode owner, OnmsInventoryCategory cat) {
-    	return findByNameNodeAndCategoryEffectiveDate(name, owner, cat, null);
+    	return findByNameNodeAndCategoryEffectiveDate(name, owner, cat, null, true);
     }
 
-	public OnmsInventoryAsset findByNameNodeAndCategoryEffectiveDate(String name, OnmsNode owner, OnmsInventoryCategory cat, Date effdt) {
+	public OnmsInventoryAsset findByNameNodeAndCategoryEffectiveDate(String name, OnmsNode owner, OnmsInventoryCategory cat, Date effdt, Boolean effStatus) {
 		return findUnique(
-				getEffectiveDatedCriteria(effdt) + " and asset.category = ? and asset.ownerNode = ? and asset.assetName = ?", 
+				getEffectiveDatedCriteria(effdt,effStatus) + " and asset.category = ? and asset.ownerNode = ? and asset.assetName = ?", 
 				cat, owner, name);
 	}
 	public Collection<OnmsInventoryAsset> findByCategoryAndNode(OnmsInventoryCategory category, OnmsNode owner) {
-		return findByCategoryAndNodeEffectiveDate(category, owner, null);
+		return findByCategoryAndNodeEffectiveDate(category, owner, null, true);
 		
 	}
-	public Collection<OnmsInventoryAsset> findByCategoryAndNodeEffectiveDate(OnmsInventoryCategory category, OnmsNode owner, Date effdt) {
+	public Collection<OnmsInventoryAsset> findByCategoryAndNodeEffectiveDate(OnmsInventoryCategory category, OnmsNode owner, Date effdt, Boolean effStatus) {
 		return find(
-				getEffectiveDatedCriteria(effdt) + " and asset.ownerNode = ? and asset.category = ?", 
+				getEffectiveDatedCriteria(effdt,effStatus) + " and asset.ownerNode = ? and asset.category = ?", 
 				owner, category);
 	}
 	

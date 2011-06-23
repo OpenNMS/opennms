@@ -170,7 +170,7 @@ public class InventoryResourcePersisterTest {
         
         m_persister.persist(scanResultSet);
         
-        assertEquals("total asset count ", 1, m_invAssetDao.countAll());
+        assertEquals("total active assets ", 1, m_invAssetDao.findAllEffectiveDate(null,true).size());
         OnmsInventoryAsset asset2 = m_invAssetDao.findByNameNodeAndCategory(asset.getAssetName(), asset.getOwnerNode(), asset.getCategory());
 		assertTrue("asset property value for manufacturer changed", !asset2.getPropertyByName("manufacturer").equals(asset.getPropertyByName("manufacturer")));
 	}
