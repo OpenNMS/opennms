@@ -45,6 +45,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.provision.service.dns.DnsUrlFactory;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -62,7 +63,6 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
@@ -70,7 +70,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class ProvisionServiceTest {
+public class ProvisionServiceTest implements InitializingBean {
     
     @Autowired
     ProvisionService m_provService;
@@ -202,8 +202,7 @@ public class ProvisionServiceTest {
         MockLogAppender.setupLogging();
     }
 
-    @Before
-    public void verifyWiring() {
+    public void afterPropertiesSet() {
         Assert.assertNotNull(m_provService);
     }
 
