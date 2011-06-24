@@ -21,6 +21,7 @@
     <property name="mappings">
       <map>
         <entry key="/surveillanceService.gwt" value-ref="gwtSurveillanceService"/>
+        <entry key="/asset/assetService.gwt" value-ref="gwtAssetService"/>
       </map>
     </property>
     <!--  property name="unwrappingGWTExceptions" value="true" / -->
@@ -30,7 +31,7 @@
   <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
   	<property name="order" value="1" />
   </bean>
-  
+
   <bean name="gwtSurveillanceService" class="org.opennms.dashboard.server.DefaultSurveillanceService">
     <property name="nodeDao" ref="nodeDao" />
     <property name="resourceDao" ref="resourceDao" />
@@ -44,5 +45,10 @@
     <property name="rtcService" ref="rtcService" />
     <property name="outageDao" ref="outageDao" />
   </bean>
-  
+
+  <bean name="gwtAssetService" class="org.opennms.gwt.web.ui.asset.server.AssetServiceImpl">
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="assetRecordDao" ref="assetRecordDao" />
+  </bean>
+
 </beans>

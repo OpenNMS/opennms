@@ -192,7 +192,7 @@ public class OnmsAssetRecord implements Serializable {
     private String m_supportPhone;
 
     /** identifier field */
-    private String m_maintContractNumber;
+    private String m_maintcontract;
 
     /** identifier field */
     private String m_maintContractExpiration;
@@ -925,22 +925,22 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# maintContract    : The maintenance contract number for this asset.
+     *--# maintcontract    : The maintenance contract number for this asset.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="maintContract", length=64)
-    public String getMaintContractNumber() {
-        return m_maintContractNumber;
+    @Column(name="maintcontract", length=64)
+    public String getMaintcontract() {
+        return m_maintcontract;
     }
 
     /**
-     * <p>setMaintContractNumber</p>
+     * <p>setMaintContract</p>
      *
      * @param maintcontract a {@link java.lang.String} object.
      */
-    public void setMaintContractNumber(String maintcontract) {
-        m_maintContractNumber = maintcontract;
+    public void setMaintcontract(String maintcontract) {
+        m_maintcontract = maintcontract;
     }
 
     /**
@@ -1528,7 +1528,7 @@ public class OnmsAssetRecord implements Serializable {
             .append("lease", getLease())
             .append("leaseexpires", getLeaseExpires())
             .append("supportphone", getSupportPhone())
-            .append("maintcontract", getMaintContractNumber())
+            .append("maintcontract", getMaintcontract())
             .append("maintcontractexpires", getMaintContractExpiration())
             .append("displaycategory", getDisplayCategory())
             .append("notifycategory", getNotifyCategory())
@@ -1549,6 +1549,7 @@ public class OnmsAssetRecord implements Serializable {
             .append("additionalhardware", getAdditionalhardware())
             .append("admin", getAdmin())
             .append("snmpcommunity", getSnmpcommunity())
+            .append("rackunitheight", getRackunitheight())
             .toString();
     }
 

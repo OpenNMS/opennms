@@ -101,6 +101,28 @@
         <mibObj oid=".1.3.6.1.4.1.4874.2.2.40.1.2.1.1.17" instance="ifIndex" alias="juniIgmpPxIfLvRpTx" type="Counter32" />
       </group>
 
+      <group name="ive" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.12532.6"  instance="0" alias="productName"        type="string" />
+        <mibObj oid=".1.3.6.1.4.1.12532.1"  instance="0" alias="logFullPercent"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.12532.2"  instance="0" alias="signedInWebUsers"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.12532.3"  instance="0" alias="signedInMailUsers"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.12532.9"  instance="0" alias="meetingUserCount"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.12532.10" instance="0" alias="iveCpuUtil"         type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.12532.11" instance="0" alias="iveMemoryUtil"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.12532.12" instance="0" alias="iveConcurrentUsers" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.12532.14" instance="0" alias="iveTotalHits"       type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.12532.15" instance="0" alias="iveFileHits"        type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.12532.16" instance="0" alias="iveWebHits"         type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.12532.17" instance="0" alias="iveAppletHits"      type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.12532.18" instance="0" alias="ivetermHits"        type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.12532.19" instance="0" alias="iveSAMHits"         type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.12532.20" instance="0" alias="iveNCHits"          type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.12532.21" instance="0" alias="meetingHits"        type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.12532.22" instance="0" alias="meetingCount"       type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.12532.24" instance="0" alias="iveSwapUtil"        type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.12532.25" instance="0" alias="diskFullPercent"    type="Gauge32" />
+      </group>
+
       <systemDef name="Juniper Routers">
         <sysoidMask>.1.3.6.1.4.1.2636.1.</sysoidMask>
         <collect>
@@ -126,6 +148,13 @@
           <includeGroup>juniper-jrouter</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
           <includeGroup>ietf-bgp4-peer-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Juniper IVE Resources">
+        <sysoidMask>.1.3.6.1.4.1.12532.</sysoidMask>
+        <collect>
+          <includeGroup>ive</includeGroup>
         </collect>
       </systemDef>
 

@@ -30,9 +30,9 @@ package org.opennms.netmgt.poller;
 
 import java.io.File;
 
-import org.opennms.netmgt.collectd.CollectionResource;
-import org.opennms.netmgt.collectd.CollectionSetVisitor;
-import org.opennms.netmgt.collectd.ServiceParameters;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**
@@ -148,6 +148,10 @@ public class LatencyCollectionResource implements CollectionResource {
     @Override
     public String toString() {
         return m_serviceName + "@" + m_ipAddress;
+    }
+
+    public String getParent() {
+        return m_ipAddress;
     }
 
 }

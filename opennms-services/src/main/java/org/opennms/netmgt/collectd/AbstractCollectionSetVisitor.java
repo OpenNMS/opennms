@@ -28,6 +28,12 @@
 
 package org.opennms.netmgt.collectd;
 
+import org.opennms.netmgt.config.collector.AttributeGroup;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+
 /**
  * <p>AbstractCollectionSetVisitor class.</p>
  *

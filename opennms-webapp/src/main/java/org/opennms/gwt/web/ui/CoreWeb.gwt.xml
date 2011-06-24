@@ -3,6 +3,7 @@
 <module rename-to="coreweb">
 	<!-- <inherits name="com.google.gwt.user.User" /> -->
 	<inherits name="org.opennms.gwt.web.ui.reports.ChooseResource"/>
+	<inherits name="org.opennms.gwt.web.ui.asset.Asset"/>
 	<source path="client" />
 	<entry-point class="org.opennms.gwt.web.ui.client.CoreWeb" />
 </module>

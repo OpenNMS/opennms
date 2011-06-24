@@ -99,6 +99,9 @@ final String baseHref = Util.calculateUrlBase( request );
   <meta http-equiv="Content-Style-Type" content="text/css"/>
   <meta http-equiv="Content-Script-Type" content="text/javascript"/>
 
+  <!-- Set GWT property to get browsers locale -->
+  <meta name="gwt:property" content="locale=<%=request.getLocale()%>">
+
   <c:forEach var="meta" items="${paramValues.meta}">
     <c:out value="${meta}" escapeXml="false"/>
   </c:forEach>
@@ -111,6 +114,8 @@ final String baseHref = Util.calculateUrlBase( request );
   <c:choose>
     <c:when test="${param.nostyles != 'true' }">
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/gwt-asset.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/onms-gwt-chrome.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
         <c:choose>
         	<c:when test="${param.enableExtJS == 'true'}">

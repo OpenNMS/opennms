@@ -30,8 +30,8 @@ package org.opennms.netmgt.collectd.jdbc;
 
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionAttributeType;
-import org.opennms.netmgt.collectd.ServiceParameters;
+import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 
 public abstract class JdbcCollectionResource extends AbstractCollectionResource {
     
@@ -60,5 +60,9 @@ public abstract class JdbcCollectionResource extends AbstractCollectionResource 
     public abstract String getResourceTypeName();
 
     public abstract String getInstance();
+    
+    public String getParent() {
+        return Integer.toString(m_agent.getNodeId());
+    }
 
 }

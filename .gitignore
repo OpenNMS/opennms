@@ -1,12 +1,15 @@
 *~
 .*.swp
+.gwt
 .gwt-tmp
 target
 .classpath
 .externalToolBuilders
+.gitignore
 .project
 .settings
 .springBeans
 .DS_Store
 .metadata
+META-INF
 build.properties

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<datacollection-group name="Cyclades">
+
+    <resourceType name="cyPMSerialPortNum" label="Cyclades PM10 Ports">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <group name = "cyPMSerialPortNum" ifType = "all">
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.2.1.1" instance="cyPMSerialPortNum" alias="cyPMSerialPortNum"   type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.2.1.2" instance="cyPMSerialPortNum" alias="cyPMNumberOutlets"   type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.2.1.3" instance="cyPMSerialPortNum" alias="cyPMNumberUnits"     type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.2.1.4" instance="cyPMSerialPortNum" alias="cyPMCurrent"         type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.2.1.5" instance="cyPMSerialPortNum" alias="cyPMVersion"         type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.2.1.6" instance="cyPMSerialPortNum" alias="cyPMTemperature"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.2.1.7" instance="cyPMSerialPortNum" alias="cyPMCommand"         type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.3.1.2" instance="cyPMSerialPortNum" alias="cyPMUnitVersion"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.3.1.3" instance="cyPMSerialPortNum" alias="cyPMUnitOutlets"     type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.3.1.4" instance="cyPMSerialPortNum" alias="cyPMUnitFirstOutlet" type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.3.1.5" instance="cyPMSerialPortNum" alias="cyPMUnitCurrent"     type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.3.1.6" instance="cyPMSerialPortNum" alias="cyPMUnitMaxCurrent"  type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.3.1.7" instance="cyPMSerialPortNum" alias="cyPMUnitTemp"        type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.2925.4.5.3.1.8" instance="cyPMSerialPortNum" alias="cyPMUnitMaxTemp"     type="Integer32" />
+      </group>
+
+       <systemDef name="Cyclades PM10i">
+         <sysoidMask>.1.3.6.1.4.1.2925.</sysoidMask>
+         <collect>
+           <includeGroup>cyPMSerialPortNum</includeGroup>
+        </collect>
+       </systemDef>
+
+</datacollection-group>

@@ -33,15 +33,12 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-
-import javax.sql.DataSource;
 
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -49,7 +46,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext;
-import org.opennms.netmgt.utils.Updater;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -64,9 +60,27 @@ public class DefaultPollContext implements PollContext {
     private volatile String m_name;
     private volatile String m_localHostName;
     private SnmpInterfaceDao m_snmpInterfaceDao;
-    private DataSource m_dataSource;
+    private IpInterfaceDao m_ipInterfaceDao;
 
     private String m_serviceName="SNMP";
+
+    /**
+     * <p>getIpInterfaceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     */
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    /**
+     * <p>setIpInterfaceDao</p>
+     *
+     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     */
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
+    }
 
     /**
      * <p>getSnmpInterfaceDao</p>
@@ -140,24 +154,6 @@ public class DefaultPollContext implements PollContext {
         m_name = name;
     }
 
-    /**
-     * <p>getDataSource</p>
-     *
-     * @return a {@link javax.sql.DataSource} object.
-     */
-    public DataSource getDataSource() {
-        return m_dataSource;
-    }
-
-    /**
-     * <p>setDataSource</p>
-     *
-     * @param dataSource a {@link javax.sql.DataSource} object.
-     */
-    public void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
-    }
-
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#getCriticalServiceName()
      */
@@ -206,10 +202,7 @@ public class DefaultPollContext implements PollContext {
         bldr.setField("ifIndex", snmpinterface.getIfIndex().toString());
 
         bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_IFINDEX, snmpinterface.getIfIndex().toString());
-        // TODO: This doesn't handle cases where there are multiple addresses on the same ifindex
-        final Set<OnmsIpInterface> ipInterfaces = snmpinterface.getIpInterfaces();
-		bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_IP, ipInterfaces.size() > 0 ? InetAddressUtils.str(ipInterfaces.iterator().next().getIpAddress()) : null
-        );
+
         if (snmpinterface.getIfName() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_NAME, snmpinterface.getIfName());
         if (snmpinterface.getIfDescr() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_DESC, snmpinterface.getIfDescr());
         if (snmpinterface.getIfAlias() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_ALIAS, snmpinterface.getIfAlias());
@@ -221,39 +214,32 @@ public class DefaultPollContext implements PollContext {
     /** {@inheritDoc} */
     public List<OnmsSnmpInterface> get(int nodeId, String criteria) {
         final OnmsCriteria onmsCriteria = new OnmsCriteria(OnmsSnmpInterface.class);
-        onmsCriteria.add(Restrictions.sqlRestriction(criteria + " and nodeid = " + nodeId));
+        onmsCriteria.add(Restrictions.sqlRestriction(criteria + " and nodeid = " + nodeId + "and snmppoll = 'P'"));
         return getSnmpInterfaceDao().findMatching(onmsCriteria);
 
     }
-        
+
     /** {@inheritDoc} */
     public void update(OnmsSnmpInterface snmpinterface) {
-        getSnmpInterfaceDao().update(snmpinterface);
+    	OnmsSnmpInterface dbSnmpInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(snmpinterface.getNode().getId(), snmpinterface.getIfIndex());
+    	snmpinterface.setPoll(dbSnmpInterface.getPoll());
+    	dbSnmpInterface.mergeSnmpInterfaceAttributes(snmpinterface);
+    	log().debug("updating SnmpInterface: " + snmpinterface.toString());
+        getSnmpInterfaceDao().update(dbSnmpInterface);
     }
 
-    /** {@inheritDoc} */
-    public void updatePollStatus(int nodeId, String criteria, String status) {
-        String sql = "update snmpinterface set snmppoll = ? where nodeid = ? and " + criteria;
-        
-        Updater updater = new Updater(m_dataSource, sql);
-        updater.execute(status,new Integer(nodeId));  
-    }
-    
-    /** {@inheritDoc} */
-    public void updatePollStatus(int nodeId, String status) {
-        String sql = "update snmpinterface set snmppoll = ? where nodeid = ? ";
-        
-        Updater updater = new Updater(m_dataSource, sql);
-        updater.execute(status,new Integer(nodeId));  
-        
-    }
+	@Override
+	public List<OnmsIpInterface> getPollableNodesByIp(String ipaddr) {
+		final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
+		criteria.add(Restrictions.sqlRestriction(" ipaddr = '" + ipaddr + "' and  issnmpprimary = 'P' and ismanaged='M'"));
+		return getIpInterfaceDao().findMatching(criteria);
+	}
 
-    /** {@inheritDoc} */
-    public void updatePollStatus(String status) {
-        final String sql = "update snmpinterface set snmppoll = ? ";
-        
-        Updater updater = new Updater(m_dataSource, sql);
-        updater.execute(status);  
-    }
+	@Override
+	public List<OnmsIpInterface> getPollableNodes() {
+		final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
+		criteria.add(Restrictions.sqlRestriction("issnmpprimary = 'P' and ismanaged='M'"));
+		return getIpInterfaceDao().findMatching(criteria);
+	}
 
 }

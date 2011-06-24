@@ -28,26 +28,46 @@
 
 package org.opennms.netmgt.notifd;
 
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.utils.Argument;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.springframework.test.context.ContextConfiguration;
 
-public class HttpNotificationStrategyTest extends OpenNMSTestCase {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class HttpNotificationStrategyTest {
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
     }
 
     /*
      * Test method for 'org.opennms.netmgt.notifd.HttpNotificationStrategy.send(List)'
      */
-    public void XXXtestSend() {
+    @Test
+    @Ignore
+    public void testSend() {
         
         try {
         NotificationStrategy ns = new HttpNotificationStrategy();

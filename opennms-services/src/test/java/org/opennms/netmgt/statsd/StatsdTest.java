@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +47,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-statisticsDaemon.xml"
-//        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-//        "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
 })
 @JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class StatsdTest {
     @Autowired
     Statsd m_statsd;

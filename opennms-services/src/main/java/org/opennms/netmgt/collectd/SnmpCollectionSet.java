@@ -37,6 +37,10 @@ import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.collector.AttributeDefinition;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -529,7 +533,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     /**
      * <p>notifyIfNotFound</p>
      *
-     * @param attrType a {@link org.opennms.netmgt.collectd.AttributeDefinition} object.
+     * @param attrType a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
      * @param res a {@link org.opennms.netmgt.snmp.SnmpResult} object.
      */
     public void notifyIfNotFound(AttributeDefinition attrType, SnmpResult res) {
