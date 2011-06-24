@@ -30,6 +30,8 @@
 package org.opennms.gwt.web.ui.asset.client.tools.fieldsets;
 
 import org.opennms.gwt.web.ui.asset.client.tools.validation.StringMaxLengthValidator;
+import org.opennms.gwt.web.ui.asset.shared.ContentElement;
+import org.opennms.gwt.web.ui.asset.shared.FieldSetModel;
 
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -53,6 +55,12 @@ public class FieldSetTextBox extends AbstractFieldSet implements FieldSet, KeyUp
 	public FieldSetTextBox(String name, String value, String helpText, int maxLength) {
 		super(name, helpText);
 		init(value, maxLength);
+	}
+
+	public FieldSetTextBox(String name, String value, String helpText, FieldSetModel fieldSetModel) {
+		super(name, helpText);
+		this.fieldSetModel = fieldSetModel;
+		init(value, -1);
 	}
 
 	@Override

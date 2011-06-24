@@ -31,6 +31,7 @@ package org.opennms.gwt.web.ui.asset.client;
 
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetSuggestBox;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
+import org.opennms.gwt.web.ui.asset.shared.AssetDynaCommand;
 import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -44,6 +45,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("asset")
 public interface AssetService extends RemoteService {
 
+	AssetDynaCommand getAssetDynaByNodeId(int nodeId) throws Exception;
+	
 	/**
 	 * Calling this method will return a {@link AssetCommand} with contains all
 	 * asset data and additional data for GWT asset ui. If no OnmsNode is found

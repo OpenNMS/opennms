@@ -29,8 +29,10 @@
 
 package org.opennms.gwt.web.ui.asset.client;
 
+import org.opennms.gwt.web.ui.asset.client.presenter.AssetDynaPagePresenter;
 import org.opennms.gwt.web.ui.asset.client.presenter.AssetPagePresenter;
 import org.opennms.gwt.web.ui.asset.client.presenter.Presenter;
+import org.opennms.gwt.web.ui.asset.client.view.AssetDynaPageImpl;
 import org.opennms.gwt.web.ui.asset.client.view.AssetNodePageImpl;
 
 import com.google.gwt.event.shared.HandlerManager;
@@ -55,6 +57,11 @@ public class AppController implements Presenter {
 	public void go(HasWidgets container) {
 		if (RootPanel.get("opennms-assetNodePage") != null) {
 			Presenter presenter = new AssetPagePresenter(rpcService, eventBus, new AssetNodePageImpl());
+			presenter.go(container);
+		}
+		
+		if (RootPanel.get("opennms-assetDyna") != null) {
+			Presenter presenter = new AssetDynaPagePresenter(rpcService, eventBus, new AssetDynaPageImpl());
 			presenter.go(container);
 		}
 	}

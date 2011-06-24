@@ -30,6 +30,7 @@
 package org.opennms.gwt.web.ui.asset.client;
 
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
+import org.opennms.gwt.web.ui.asset.shared.AssetDynaCommand;
 import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -59,4 +60,6 @@ public interface AssetServiceAsync {
 	 *      asset)
 	 */
 	void saveOrUpdateAssetByNodeId(int nodeId, AssetCommand asset, AsyncCallback<Boolean> callback);
+
+	void getAssetDynaByNodeId(int nodeId, AsyncCallback<AssetDynaCommand> callback);
 }

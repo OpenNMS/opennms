@@ -29,6 +29,8 @@
 
 package org.opennms.gwt.web.ui.asset.client.tools.fieldsets;
 
+import org.opennms.gwt.web.ui.asset.shared.FieldSetModel;
+
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.FocusHandler;
 
@@ -121,4 +123,8 @@ public interface FieldSet extends FocusHandler, ChangeHandler {
 	 * @param warning
 	 */
 	public abstract void setWarning(String warning);
+	
+	public abstract void setFieldSetModel(FieldSetModel fieldSetModel);
+	
+	public abstract void writeValueBacktToFieldSetModel();
 }

@@ -34,7 +34,11 @@ import java.util.List;
 
 import org.opennms.gwt.web.ui.asset.client.AssetService;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
+import org.opennms.gwt.web.ui.asset.shared.AssetDynaCommand;
 import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
+import org.opennms.gwt.web.ui.asset.shared.FieldSetModel;
+import org.opennms.gwt.web.ui.asset.shared.PageModel;
+import org.opennms.gwt.web.ui.asset.shared.SectionModel;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
@@ -316,5 +320,53 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 	 */
 	public void setNodeDao(NodeDao m_nodeDao) {
 		this.m_nodeDao = m_nodeDao;
+	}
+
+	@Override
+	public AssetDynaCommand getAssetDynaByNodeId(int nodeId) throws Exception {
+		PageModel pm = new PageModel();
+		
+		SectionModel sm1 = new SectionModel("Lokation");
+		FieldSetModel fsm1a = new FieldSetModel("Stadt", "Fulda", "Stadt halt");
+		FieldSetModel fsm2a = new FieldSetModel("Land", "Deutschland", "Land halt");
+		FieldSetModel fsm3a = new FieldSetModel("Fluss", "Main", "Fluss halt");
+		FieldSetModel fsm4a = new FieldSetModel("Punkte", "7", "Punkte halt");
+		pm.add(sm1);
+		sm1.add(fsm1a);
+		sm1.add(fsm2a);
+
+		SectionModel smA = new SectionModel("Eingenistet");
+		FieldSetModel fsm1A = new FieldSetModel("Begrüßung", "Hallo", "Stadt halt");
+		FieldSetModel fsm2A = new FieldSetModel("Name", "Indigo", "Land halt");
+		FieldSetModel fsm3A = new FieldSetModel("Formel", "alles Gute", "Fluss halt");
+		smA.add(fsm1A);
+		smA.add(fsm2A);
+		smA.add(fsm3A);
+		
+		sm1.add(smA);
+		sm1.add(fsm3a);
+		sm1.add(fsm4a);
+		
+		SectionModel sm2 = new SectionModel("Spiel");
+		FieldSetModel fsm1b = new FieldSetModel("Sching", "Schere", "A");
+		FieldSetModel fsm2b = new FieldSetModel("Schang", "Stein", "B");
+		FieldSetModel fsm3b = new FieldSetModel("Schong", "Papier", "C");
+		pm.add(sm2);
+		sm2.add(fsm1b);
+		sm2.add(fsm2b);
+		sm2.add(fsm3b);
+		
+		SectionModel sm3 = new SectionModel("Shooter");
+		FieldSetModel fsm1c = new FieldSetModel("Quake", "Best", "ID Make My Day again");
+		FieldSetModel fsm2c = new FieldSetModel("Unreal", "FOO", "Don't do that");
+		FieldSetModel fsm3c = new FieldSetModel("Doom", "Like Car-Race", "ID Make My Day");
+		pm.add(sm3);
+		sm3.add(fsm1c);
+		sm3.add(fsm2c);
+		sm3.add(fsm3c);
+		
+		AssetDynaCommand assetDyna = new AssetDynaCommand();
+		assetDyna.setPageModel(pm);
+		return assetDyna;
 	}
 }

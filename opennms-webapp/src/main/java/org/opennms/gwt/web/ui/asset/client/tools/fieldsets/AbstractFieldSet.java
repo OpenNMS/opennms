@@ -32,6 +32,7 @@ package org.opennms.gwt.web.ui.asset.client.tools.fieldsets;
 import java.util.ArrayList;
 
 import org.opennms.gwt.web.ui.asset.client.tools.validation.Validator;
+import org.opennms.gwt.web.ui.asset.shared.FieldSetModel;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -73,6 +74,7 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 	protected ArrayList<Validator> errorValidators = new ArrayList<Validator>();
 	protected ArrayList<Validator> warningValidators = new ArrayList<Validator>();
 	protected Object inititalValue;
+	protected FieldSetModel fieldSetModel;
 
 	public AbstractFieldSet(String name, final String helpText) {
 
@@ -308,5 +310,12 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 		} else {
 			clearWarnings();
 		}
+	}
+	public void setFieldSetModel(FieldSetModel fieldSetModel) {
+		this.fieldSetModel = fieldSetModel;
+	}
+	
+	public void writeValueBacktToFieldSetModel() {
+		this.fieldSetModel.setValue(this.getValue());
 	}
 }

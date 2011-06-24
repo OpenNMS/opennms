@@ -50,6 +50,10 @@ public class AssetPage implements EntryPoint {
 		if (RootPanel.get("opennms-assetNodePage") != null) {
 			appViewer.go(RootPanel.get("opennms-assetNodePage"));
 		}
+		
+		if (RootPanel.get("opennms-assetDyna") != null) {
+			appViewer.go(RootPanel.get("opennms-assetDyna"));
+		}
 	}
 
 	private AssetServiceAsync getAssetService() {
