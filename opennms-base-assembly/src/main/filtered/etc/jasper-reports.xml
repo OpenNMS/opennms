@@ -29,7 +29,7 @@
         <report id="Total-Bytes-Transferred-By-Interface_ThisMonth" template="TotalBytesTransferredByInterface_ThisMonth.jrxml" engine="jdbc" />
         <report id="Average-Peak-Traffic-Rates" template="AveragePeakTrafficRates.jrxml" engine="jdbc" />
         <report id="Average-Peak-Traffic-Rates_ThisMonth" template="AveragePeakTrafficRates_ThisMonth.jrxml" engine="jdbc" />
-        <report id="Average-Peak-Traffic-Rates_LastMonth" template="AveragePeakTrafficRates_LastMonth.jrxml" engine="jdbc" />
+        <report id="Average-Peak-Traffic-Rates_LastMonth" template="AveragePeakTrafficRates_ThisMonth.jrxml" engine="jdbc" />
         <report id="Interface-Availability-Report" template="InterfaceAvailabilityReport.jrxml" engine="jdbc" />
         <report id="Snmp-Interface-Oper-Availability" template="SnmpInterfaceOperAvailabilityReport.jrxml" engine="jdbc" />
 	<report id="Event-Analysis" template="EventAnalysis.jrxml" engine="jdbc" />

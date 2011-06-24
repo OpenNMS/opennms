@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.collectd.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.LatencyCollectionAttribute;
 import org.opennms.netmgt.poller.LatencyCollectionResource;

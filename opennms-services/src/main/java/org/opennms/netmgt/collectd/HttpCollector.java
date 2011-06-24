@@ -80,6 +80,16 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
+import org.opennms.netmgt.config.collector.AttributeDefinition;
+import org.opennms.netmgt.config.collector.AttributeGroup;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.config.httpdatacollection.Attrib;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.Parameter;
@@ -786,6 +796,10 @@ public class HttpCollector implements ServiceCollector {
 
         public String getLabel() {
             return null;
+        }
+
+        public String getParent() {
+            return Integer.toString(m_agent.getNodeId());
         }
     }
 

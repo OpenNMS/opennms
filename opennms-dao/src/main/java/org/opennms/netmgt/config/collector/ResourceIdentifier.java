@@ -26,45 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.netmgt.config.collector;
 
-package org.opennms.netmgt.collectd;
+import java.io.File;
 
-import java.util.Date;
+import org.opennms.netmgt.model.RrdRepository;
 
 /**
- * <p>CollectionSet interface.</p>
+ * <p>ResourceIdentifier interface.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public interface CollectionSet {
+public interface ResourceIdentifier {
     
     /**
-     * <p>getStatus</p>
+     * <p>getOwnerName</p>
      *
-     * @return an int (one of the ServiceCollector.COLLECTION_<FOO> values)
+     * @return a {@link java.lang.String} object.
      */
-    public int getStatus();
+    public String getOwnerName();
     
     /**
-     * Provide a way to visit all the values in the CollectionSet, for any appropriate purposes (persisting, thresholding, or others)
-     * The expectation is that calling this method will ultimately call visitResource, visitGroup and visitAttribute (as appropriate)
+     * <p>getResourceDir</p>
      *
-     * @param visitor a {@link org.opennms.netmgt.collectd.CollectionSetVisitor} object.
+     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @return a {@link java.io.File} object.
      */
-    public void visit(CollectionSetVisitor visitor);
-    
-    /**
-     * <p>ignorePersist</p>
-     *
-     * @return a boolean.
-     */
-    public boolean ignorePersist();
-    
-    /**
-     * Returns the timestamp of when this data collection was taken.
-     * Used by thresholding
-     * @return
-    */
-	public Date getCollectionTimestamp();
+    public File getResourceDir(RrdRepository repository);
+
 }

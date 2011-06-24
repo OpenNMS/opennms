@@ -580,7 +580,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         
         String query = url.getQuery();
         
-        if ((query != null) && (determineExpressionFromUrl(url) == null) && (getArgs().get(SERVICES_ARG) == null)) {
+        if ((query != null) && (determineExpressionFromUrl(url) == null) && (getArgs().get(SERVICES_ARG) == null) && (getArgs().get(FID_HASH_SRC_ARG) == null)) {
             throw new MalformedURLException("The specified DNS URL contains an invalid query string: "+url);
         }
         

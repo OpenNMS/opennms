@@ -59,10 +59,13 @@ public class RrdStresser {
 
     static Date firstUpdateComplete = null;
 
+    //This is the number of updates that will be performed during a run of this tool 
     static final int MAX_UPDATES = Integer.getInteger("stresstest.maxupdates", 1000).intValue();
 
+    //Output interim statistics every 'stresstest.modulus' updates
     static final int MODULUS = Integer.getInteger("stresstest.modulus", 1000).intValue();
 
+    //Unused, but will be used to simulate store-by-group (multiple values per file)
     static final int RRD_DATASOURCE_COUNT = Integer.getInteger("stresstest.datasourcecount", 1).intValue();
 
     static final String RRD_DATASOURCE_NAME = "T";
@@ -93,9 +96,10 @@ public class RrdStresser {
 
     static final boolean QUEUE_CREATES = "true".equals(System.getProperty("stresstest.queuecreates", "true"));
 
+    //Effectively this is the total runtime
     static final int UPDATE_TIME = Integer.getInteger("stresstest.updatetime", 300).intValue();
 
-    static final String EXTENSION = ".rrd";
+    static final String EXTENSION = ".jrb";
 
     static long filesPerZero = FILE_COUNT / ZERO_FILES;
 
@@ -209,12 +213,12 @@ public class RrdStresser {
         updateStart = new Date();
         firstUpdateComplete = new Date();
         for (int i = 0; i < THREAD_COUNT; i++) {
+	    final int threadid = i;
             Runnable r = new Runnable() {
-
                 public void run() {
                     try {
                         RrdStresser test = new RrdStresser();
-                        test.execute(args);
+                        test.execute(args,threadid);
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -275,8 +279,8 @@ public class RrdStresser {
         String dir = file.getParent();
         String[] rraList = { "RRA:AVERAGE:0.5:1:8928", "RRA:AVERAGE:0.5:12:8784", "RRA:MIN:0.5:12:8784", "RRA:MAX:0.5:12:8784", };
         String dsName = file.getName();
-        if (dsName.endsWith(".rrd")) {
-            dsName = dsName.substring(0, dsName.length() - ".rrd".length());
+        if (dsName.endsWith(EXTENSION)) {
+            dsName = dsName.substring(0, dsName.length() - EXTENSION.length());
         }
         RrdDataSource rrdDataSource = new RrdDataSource(dsName, "GAUGE", 600, "U", "U");
 		return rrd.createDefinition("stressTest", dir, dsName, 300, Collections.singletonList(rrdDataSource), Arrays.asList(rraList));
@@ -303,20 +307,24 @@ public class RrdStresser {
 
     }
 
-    public void execute(String[] args) throws Exception {
+    public void execute(String[] args, int threadid) throws Exception {
 
         double millisPerUpdate = ((double) UPDATE_TIME * 1000) / ((double) (MAX_UPDATES));
-
+	System.out.println("Will perform one update every " +millisPerUpdate + "ms");
         while (moreUpdates()) {
+//		System.out.println(threadid+":More updates to do");
             int fileNum = nextFileNum();
             Object rrd = rrdOpenFile(getFileName(fileNum));
 
             for (int i = 0; i < UPDATES_PER_OPEN; i++) {
                 Date now = new Date();
                 long elapsedTime = now.getTime() - updateStart.getTime();
+//		System.out.println(threadid+":It's been "+elapsedTime+"ms since we started, and we've updated "+updateCount +" so far");
                 long expectedTime = (long) (millisPerUpdate * (double) updateCount);
+//		System.out.println(threadid+":And I want it to be "+expectedTime);
                 if (expectedTime > elapsedTime) {
                     try {
+//			System.out.println(threadid+":Sleeping for "+(expectedTime-elapsedTime));
                         Thread.sleep(expectedTime - elapsedTime);
                     } catch (InterruptedException e) {
                     }
@@ -327,10 +335,9 @@ public class RrdStresser {
                     rrdUpdateFile(rrd, line);
                     countUpdate();
                 } catch (Throwable e) {
-                    print("RRD ERROR: " + line + " : " + e.getMessage());
+                    print(threadid+":RRD ERROR: " + line + " : " + e.getMessage());
                 }
             }
-
             rrdCloseFile(rrd);
         }
 

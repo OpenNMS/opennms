@@ -34,6 +34,7 @@ import java.util.Date;
 
 import junit.framework.Assert;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -43,6 +44,7 @@ import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.NotificationDao;
@@ -52,7 +54,6 @@ import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.UserNotificationDao;
-import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -103,7 +104,7 @@ public class AvailabilityDatabasePopulator {
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
-    private LocationMonitorDaoHibernate m_locationMonitorDao;
+    private LocationMonitorDao m_locationMonitorDao;
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -214,13 +215,13 @@ public class AvailabilityDatabasePopulator {
 //      + "(2,2,'192.168.100.2',1,'2005-05-01 10:00:00','2005-05-02 10:00:00');");
         try {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            OnmsMonitoredService node1If1Svc1 = getMonitoredServiceDao().get(1, "192.168.100.1", "ICMP");
-            OnmsMonitoredService node2If1Svc1 = getMonitoredServiceDao().get(2, "192.168.100.2", "ICMP");
+            OnmsMonitoredService node1If1Svc1 = getMonitoredServiceDao().get(1, InetAddressUtils.addr("192.168.100.1"), "ICMP");
+            OnmsMonitoredService node2If1Svc1 = getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.100.2"), "ICMP");
             @SuppressWarnings("unused")
-            OnmsMonitoredService node2If1Svc2 = getMonitoredServiceDao().get(2, "192.168.100.2", "SNMP");
-            OnmsMonitoredService node2If2Svc1 = getMonitoredServiceDao().get(2, "192.168.100.3", "ICMP");
+            OnmsMonitoredService node2If1Svc2 = getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.100.2"), "SNMP");
+            OnmsMonitoredService node2If2Svc1 = getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.100.3"), "ICMP");
             @SuppressWarnings("unused")
-            OnmsMonitoredService node2If2Svc2 = getMonitoredServiceDao().get(2, "192.168.100.3", "HTTP");
+            OnmsMonitoredService node2If2Svc2 = getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.100.3"), "HTTP");
             OnmsOutage outage1 = new OnmsOutage(df.parse("2005-05-01 09:00:00"), df.parse("2005-05-01 09:30:00"), event, event, node1If1Svc1, null, null);
             getOutageDao().save(outage1);
             getOutageDao().flush();
@@ -434,11 +435,11 @@ public class AvailabilityDatabasePopulator {
         m_node1 = node1;
     }
 
-    public LocationMonitorDaoHibernate getLocationMonitorDao() {
+    public LocationMonitorDao getLocationMonitorDao() {
         return m_locationMonitorDao;
     }
 
-    public void setLocationMonitorDao(LocationMonitorDaoHibernate locationMonitorDao) {
+    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
     }
 

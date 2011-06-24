@@ -34,19 +34,18 @@ import java.util.List;
 import org.opennms.core.utils.ReplaceAllOperation;
 import org.opennms.core.utils.ReplaceFirstOperation;
 import org.opennms.core.utils.StringReplaceOperation;
+import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.datacollection.Parameter;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  * <p>SiblingColumnStorageStrategy class.</p>
  *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
-    private static final String PARAM_SIBLING_COLUMN_OID = "sibling-column-oid";
-    private String m_siblingColumnOid;
+    private static final String PARAM_SIBLING_COLUMN_NAME = "sibling-column-name";
+    private String m_siblingColumnName;
 
     private static final String PARAM_REPLACE_FIRST = "replace-first";
     private static final String PARAM_REPLACE_ALL = "replace-all";
@@ -62,10 +61,10 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
     
     /** {@inheritDoc} */
     @Override
-    public String getResourceNameFromIndex(String resourceParent, String resourceIndex) {
-        SnmpObjId oid = SnmpObjId.get(m_siblingColumnOid + "." + resourceIndex);
-        SnmpValue snmpValue = SnmpUtils.get(m_storageStrategyService.getAgentConfig(), oid);
-        String value = (snmpValue != null ? snmpValue.toString() : resourceIndex);
+    public String getResourceNameFromIndex(CollectionResource resource) {
+        StringAttributeVisitor visitor = new StringAttributeVisitor(m_siblingColumnName);
+        resource.visit(visitor);
+        String value = (visitor.getValue() != null ? visitor.getValue() : resource.getInstance());
         
         // First remove all non-US-ASCII characters and turn all forward slashes into dashes 
         String name = value.replaceAll("[^\\x00-\\x7F]", "").replaceAll("/", "-");
@@ -76,38 +75,33 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
             name = op.replace(name);
         }
 
-        log().debug("Inbound instance name was '" + resourceIndex + "', outbound was '" + ("".equals(name) ? resourceIndex : name) + "'");
-        return ("".equals(name) ? resourceIndex : name);
+        log().debug("Inbound instance name was '" + resource.getInstance() + "', outbound was '" + ("".equals(name) ? resource.getInstance() : name) + "'");
+        return ("".equals(name) ? resource.getInstance() : name);
     }
     
     /** {@inheritDoc} */
     @Override
     public void setParameters(List<Parameter> parameterCollection) {
         if (parameterCollection == null) {
-            log().fatal("Got a null parameter list, but need one containing a '" + PARAM_SIBLING_COLUMN_OID + "' parameter.");
-            throw new RuntimeException("Got a null parameter list, but need one containing a '" + PARAM_SIBLING_COLUMN_OID + "' parameter.");
+            log().fatal("Got a null parameter list, but need one containing a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.");
+            throw new RuntimeException("Got a null parameter list, but need one containing a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.");
         }
         
         for (Parameter param : parameterCollection) {
-            if (PARAM_SIBLING_COLUMN_OID.equals(param.getKey())) {
-                m_siblingColumnOid = param.getValue();
+            if (PARAM_SIBLING_COLUMN_NAME.equals(param.getKey())) {
+                m_siblingColumnName = param.getValue();
             } else if (PARAM_REPLACE_FIRST.equals(param.getKey())) {
                 m_replaceOps.add(new ReplaceFirstOperation(param.getValue()));
             } else if (PARAM_REPLACE_ALL.equals(param.getKey())) {
                 m_replaceOps.add(new ReplaceAllOperation(param.getValue()));
             } else {
-                log().warn("Encountered unsupported parameter key=\"" + param.getKey() + "\". Can accept: " + PARAM_SIBLING_COLUMN_OID + ", " + PARAM_REPLACE_FIRST + ", " + PARAM_REPLACE_ALL);
+                log().warn("Encountered unsupported parameter key=\"" + param.getKey() + "\". Can accept: " + PARAM_SIBLING_COLUMN_NAME + ", " + PARAM_REPLACE_FIRST + ", " + PARAM_REPLACE_ALL);
             }
         }
         
-        if (m_siblingColumnOid == null) {
-            log().error("The provided parameter list must contain a '" + PARAM_SIBLING_COLUMN_OID + "' parameter.");
-            throw new RuntimeException("The provided parameter list must contain a '" + PARAM_SIBLING_COLUMN_OID + "' parameter.");
-        }
-        
-        if (! m_siblingColumnOid.matches("^\\.[0-9.]+$")) {
-            log().error("The value '" + m_siblingColumnOid + "' provided for parameter '" + PARAM_SIBLING_COLUMN_OID + "' is not a valid SNMP object identifier.");
-            throw new RuntimeException("The value '" + m_siblingColumnOid + "' provided for parameter '" + PARAM_SIBLING_COLUMN_OID + "' is not a valid SNMP object identifier.");
+        if (m_siblingColumnName == null) {
+            log().error("The provided parameter list must contain a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.");
+            throw new RuntimeException("The provided parameter list must contain a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.");
         }
     }
 }

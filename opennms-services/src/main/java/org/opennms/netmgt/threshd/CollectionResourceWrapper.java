@@ -36,9 +36,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AliasedResource;
-import org.opennms.netmgt.collectd.CollectionAttribute;
-import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.collectd.IfInfo;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
@@ -112,7 +112,7 @@ public class CollectionResourceWrapper {
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      * @param attributes a {@link java.util.Map} object.
      */
     public CollectionResourceWrapper(Date collectionTimestamp, int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
