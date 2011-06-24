@@ -112,10 +112,17 @@
                 action-name="clearClosedTicketAlarms" />
     <automation name="cleanUpRpStatusChanges" interval="600000" active="true" 
                 action-name="cleanUpRpStatusChanges" />
+    
+    <!-- Enable these automation for monitoring maintenance contracts -->
+    <!--
+    <automation name="maintenanceCheck" interval="84600000" active="true" 
+                trigger-name="selectExpirationMaintenance" 
+                action-name="maintenanceExpirationWarning"
+                action-event="maintenanceExpirationWarning" />
+    -->
   </automations>
   
   <triggers>
-  
     <!-- Find Alarms that have a closed ticket state that haven't been cleared, yet -->
     <trigger name="selectClosedTicketStateForProblemAlarms" operator="&gt;=" row-count="1" >
       <statement>
@@ -237,10 +244,41 @@
          WHERE alarmType=2
       </statement>
     </trigger>
+    
+    <!-- Find assets that have maintenance-contract that will expire in less then 30 days -->
+    <!-- 
+    <trigger name="selectExpirationMaintenance" operator="&gt;=" row-count="1" >
+        <statement>
+        SELECT 
+          a.id, 
+          a.nodeid, 
+          a.maintcontract, 
+          CAST(a.maintcontractexpires as date),
+          '30' AS timeframe
+        FROM 
+          public.assets a
+        JOIN
+          node
+        ON
+          (a.nodeid = node.nodeid)
+        WHERE 
+          a.maintcontract IS NOT NULL  AND 
+          a.maintcontractexpires IS NOT NULL  AND 
+          a.maintcontractexpires != '' AND 
+          a.maintcontractexpires != 'n.v.' AND 
+          a.maintcontract != 'n.v.' AND 
+          a.maintcontract != '' AND 
+          CAST(a.maintcontractexpires as date) &lt; (current_date + integer '30') AND
+          CAST(a.maintcontractexpires as date) &gt; current_date AND
+          node.nodetype = 'A'
+        ORDER BY
+          CAST(a.maintcontractexpires as date) ASC;
+        </statement>
+    </trigger>
+    -->
   </triggers>
     
   <actions>
-
     <action name="acknowledgeAlarm" >
       <statement>
         UPDATE alarms
@@ -379,7 +417,14 @@
            AND statustime &lt; now() - interval '24 hours'
       </statement>
     </action>
-
+    
+    <!-- Monitoring maintenance contracts -->
+    <!--
+    <action name="maintenanceExpirationWarning" >
+      <statement>
+      </statement>
+    </action>
+    -->
   </actions>
 
   <!--  Deprecating this element... see the new <action-events> element -->    
@@ -391,7 +436,6 @@
 
   <!-- Note: action events that have tokens require the for-each-result attribute to be set to true -->
   <action-events>
-  
     <action-event name="createTicket" for-each-result="true" >
       <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/create" />
       <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
@@ -423,6 +467,18 @@
       <assignment type="parameter" name="alarmId" value="${_alarmid}" />
       <assignment type="parameter" name="alarmEventUei" value="${_eventUei}" />
     </action-event>
+    
+    <!-- Monitoring maintenance conracts -->
+    <!--
+    <action-event name="maintenanceExpirationWarning" for-each-result="true" >
+      <assignment type="field" name="uei" value="uei.opennms.org/asset/maintenance/expirationWarning" />
+      <assignment type="field" name="nodeid" value="${nodeid}" />
+      <assignment type="parameter" name="nodeId" value="${nodeid}" />
+      <assignment type="parameter" name="maintcontractexpires" value="${maintcontractexpires}" />
+      <assignment type="parameter" name="maintcontract" value="${maintcontract}" />
+      <assignment type="parameter" name="timeframe" value="${timeframe}" />
+    </action-event>
+    -->
   </action-events>
   
 </VacuumdConfiguration>

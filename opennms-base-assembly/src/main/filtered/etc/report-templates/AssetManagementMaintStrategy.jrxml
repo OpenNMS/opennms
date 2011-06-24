@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="assetMgmtStrategic" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<subDataset name="summaryNodeAge">
+		<parameter name="DS_DATE_FORMAT" class="java.lang.String" isForPrompting="false">
+			<parameterDescription><![CDATA[]]></parameterDescription>
+			<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT
+	age,
+	CASE
+		WHEN
+			contractleft is NULL
+		THEN
+			'no contract'
+		WHEN
+			contractleft < 0
+		THEN
+			'contract expired'
+		WHEN
+			contractleft > 0
+		THEN
+			'with contract'
+	END AS contractstatus,
+	sum(tally)
+FROM
+	(SELECT
+		((EXTRACT(days from (now() - to_date(dateinstalled, '$P!{DS_DATE_FORMAT}'))))/365)::INTEGER AS age,
+		CASE
+			WHEN
+				maintcontractexpires = ''
+			THEN
+				NULL
+			ELSE
+				EXTRACT(epoch from (to_date(maintcontractexpires,'$P!{DS_DATE_FORMAT}') - now()))
+		END AS contractleft,
+		count(*) AS tally
+	FROM
+		assets
+	WHERE
+		assets.maintcontractexpires != 'n.v.' AND
+		assets.dateinstalled != 'n.v.' AND
+		assets.dateinstalled != ''
+	GROUP BY
+		age,
+		contractleft
+	ORDER BY
+		age
+	) AS nodeAge
+GROUP BY
+	age,
+	contractstatus
+ORDER BY
+	age,
+	contractstatus]]>
+		</queryString>
+		<field name="age" class="java.lang.Integer"/>
+		<field name="contractstatus" class="java.lang.String"/>
+		<field name="sum" class="java.math.BigDecimal"/>
+	</subDataset>
+	<subDataset name="maintContractExpiresPerMonth">
+		<parameter name="DS_DATE_FORMAT" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT
+	to_char(dates, 'YYYY-MM') AS yearmonth,
+	*
+FROM
+	(SELECT
+		mytimequery.mytime::DATE
+		AS dates
+	FROM
+		(SELECT
+			(now() + myintervalquery.myinterval::INTERVAL)::DATE AS mytime
+		 FROM
+			(SELECT
+				(s.t ||' month')::INTERVAL AS myinterval
+			FROM
+				generate_series(0,11) AS s(t)
+			)
+			AS myintervalquery
+
+		)
+		AS mytimequery
+	) AS generatedMonth
+LEFT JOIN
+	assets
+ON
+	(to_char((to_date(assets.maintcontractexpires,'$P!{DS_DATE_FORMAT}')),'YYYY-MM') =
+	to_char(generatedMonth.dates, 'YYYY-MM') AND assets.maintcontractexpires != 'n.v.')
+ORDER BY
+	yearmonth]]>
+		</queryString>
+		<field name="yearmonth" class="java.lang.String"/>
+		<field name="dates" class="java.sql.Date"/>
+		<field name="id" class="java.lang.Integer"/>
+		<field name="nodeid" class="java.lang.Integer"/>
+		<field name="category" class="java.lang.String"/>
+		<field name="manufacturer" class="java.lang.String"/>
+		<field name="vendor" class="java.lang.String"/>
+		<field name="modelnumber" class="java.lang.String"/>
+		<field name="serialnumber" class="java.lang.String"/>
+		<field name="description" class="java.lang.String"/>
+		<field name="circuitid" class="java.lang.String"/>
+		<field name="assetnumber" class="java.lang.String"/>
+		<field name="operatingsystem" class="java.lang.String"/>
+		<field name="rack" class="java.lang.String"/>
+		<field name="slot" class="java.lang.String"/>
+		<field name="port" class="java.lang.String"/>
+		<field name="region" class="java.lang.String"/>
+		<field name="division" class="java.lang.String"/>
+		<field name="department" class="java.lang.String"/>
+		<field name="address1" class="java.lang.String"/>
+		<field name="address2" class="java.lang.String"/>
+		<field name="city" class="java.lang.String"/>
+		<field name="state" class="java.lang.String"/>
+		<field name="zip" class="java.lang.String"/>
+		<field name="building" class="java.lang.String"/>
+		<field name="floor" class="java.lang.String"/>
+		<field name="room" class="java.lang.String"/>
+		<field name="vendorphone" class="java.lang.String"/>
+		<field name="vendorfax" class="java.lang.String"/>
+		<field name="vendorassetnumber" class="java.lang.String"/>
+		<field name="userlastmodified" class="java.lang.String"/>
+		<field name="lastmodifieddate" class="java.sql.Timestamp"/>
+		<field name="dateinstalled" class="java.lang.String"/>
+		<field name="lease" class="java.lang.String"/>
+		<field name="leaseexpires" class="java.lang.String"/>
+		<field name="supportphone" class="java.lang.String"/>
+		<field name="maintcontract" class="java.lang.String"/>
+		<field name="maintcontractexpires" class="java.lang.String"/>
+		<field name="displaycategory" class="java.lang.String"/>
+		<field name="notifycategory" class="java.lang.String"/>
+		<field name="pollercategory" class="java.lang.String"/>
+		<field name="thresholdcategory" class="java.lang.String"/>
+		<field name="comment" class="java.lang.String"/>
+		<field name="managedobjectinstance" class="java.lang.String"/>
+		<field name="managedobjecttype" class="java.lang.String"/>
+		<field name="username" class="java.lang.String"/>
+		<field name="password" class="java.lang.String"/>
+		<field name="enable" class="java.lang.String"/>
+		<field name="autoenable" class="java.lang.String"/>
+		<field name="connection" class="java.lang.String"/>
+		<field name="cpu" class="java.lang.String"/>
+		<field name="ram" class="java.lang.String"/>
+		<field name="storagectrl" class="java.lang.String"/>
+		<field name="hdd1" class="java.lang.String"/>
+		<field name="hdd2" class="java.lang.String"/>
+		<field name="hdd3" class="java.lang.String"/>
+		<field name="hdd4" class="java.lang.String"/>
+		<field name="hdd5" class="java.lang.String"/>
+		<field name="hdd6" class="java.lang.String"/>
+		<field name="numpowersupplies" class="java.lang.String"/>
+		<field name="inputpower" class="java.lang.String"/>
+		<field name="additionalhardware" class="java.lang.String"/>
+		<field name="admin" class="java.lang.String"/>
+		<field name="snmpcommunity" class="java.lang.String"/>
+		<field name="rackunitheight" class="java.lang.String"/>
+		<group name="yearmonth">
+			<groupExpression><![CDATA[$F{yearmonth}]]></groupExpression>
+		</group>
+	</subDataset>
+	<subDataset name="maintcontractSummary">
+		<parameter name="DS_DATE_FORMAT" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT
+	CASE
+		WHEN
+			maintcontract = '' OR maintcontract is null OR maintcontract = ' '
+			THEN
+				'no contract'
+		WHEN
+			maintcontract = 'n.v.'
+			THEN
+				'no contract'
+		WHEN
+			EXTRACT(epoch from (to_date(maintcontractexpires,'$P!{DS_DATE_FORMAT}') - now())) > 0
+			THEN 'in contract'
+		WHEN
+			EXTRACT(epoch from (to_date(maintcontractexpires,'$P!{DS_DATE_FORMAT}') - now())) < 0
+			THEN 'expired'
+		ELSE
+			'UNKNOWN'
+	END AS contractstatus,
+	count(*) AS tally
+FROM
+	(SELECT
+		maintcontract,
+		maintcontractexpires
+	FROM
+		assets
+	JOIN
+		node
+	ON
+		(assets.nodeid = node.nodeid)
+	WHERE
+		node.nodetype = 'A'
+	ORDER BY
+		maintcontract
+	) AS maintenancecontracts
+GROUP BY
+	contractstatus
+ORDER BY
+	contractstatus]]>
+		</queryString>
+		<field name="contractstatus" class="java.lang.String"/>
+		<field name="tally" class="java.lang.Long"/>
+	</subDataset>
+	<parameter name="DATE_FORMAT" class="java.lang.String">
+		<parameterDescription><![CDATA[Your date format in maintenance contracts. Default is "YYYY-MM-DD"]]></parameterDescription>
+		<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_LOGO" class="java.lang.String">
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select now()]]>
+	</queryString>
+	<field name="now" class="java.sql.Timestamp"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="52" splitType="Stretch">
+			<staticText>
+				<reportElement style="Header" x="0" y="0" width="391" height="49"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Strategy report - Maintenance contracts]]></text>
+			</staticText>
+			<image>
+				<reportElement x="391" y="0" width="164" height="49"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="728" splitType="Stretch">
+			<stackedBarChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="245" width="555" height="215"/>
+					<chartTitle>
+						<font size="12" isBold="true"/>
+						<titleExpression><![CDATA["Age and maintenance contracts"]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle>
+						<font isItalic="true"/>
+						<subtitleExpression><![CDATA["Age and contracts since date installed"]]></subtitleExpression>
+					</chartSubtitle>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="summaryNodeAge">
+							<datasetParameter name="DS_DATE_FORMAT">
+								<datasetParameterExpression><![CDATA[$P{DATE_FORMAT}]]></datasetParameterExpression>
+							</datasetParameter>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{contractstatus}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{age}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{sum}]]></valueExpression>
+						<itemHyperlink>
+							<hyperlinkTooltipExpression><![CDATA[$F{sum}.toString()]]></hyperlinkTooltipExpression>
+						</itemHyperlink>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot isShowLabels="true" isShowTickLabels="true" isShowTickMarks="true">
+					<plot>
+						<seriesColor seriesOrder="0" color="#A5A5A5"/>
+						<seriesColor seriesOrder="1" color="#4F7B23"/>
+						<seriesColor seriesOrder="2" color="#FF3300"/>
+					</plot>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF">
+						<font size="8"/>
+					</itemLabel>
+					<categoryAxisLabelExpression><![CDATA["Age in years"]]></categoryAxisLabelExpression>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" verticalTickLabels="true">
+							<labelFont>
+								<font size="10"/>
+							</labelFont>
+							<tickLabelFont>
+								<font size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisLabelExpression><![CDATA["Nodes"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font size="10"/>
+							</labelFont>
+							<tickLabelFont>
+								<font size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</valueAxisFormat>
+				</barPlot>
+			</stackedBarChart>
+			<stackedBarChart>
+				<chart isShowLegend="false">
+					<reportElement x="0" y="513" width="555" height="215"/>
+					<chartTitle>
+						<font size="12" isBold="true"/>
+						<titleExpression><![CDATA["12 month forecast"]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle>
+						<font isItalic="true"/>
+						<subtitleExpression><![CDATA["Maintenance contracts expire in next 12 month starting from " + $F{now}.toLocaleString()]]></subtitleExpression>
+					</chartSubtitle>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="maintContractExpiresPerMonth">
+							<datasetParameter name="DS_DATE_FORMAT">
+								<datasetParameterExpression><![CDATA[$P{DATE_FORMAT}]]></datasetParameterExpression>
+							</datasetParameter>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA["Maintenance contracts"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{yearmonth}]]></categoryExpression>
+						<valueExpression><![CDATA[$V{yearmonth_COUNT}]]></valueExpression>
+						<itemHyperlink>
+							<hyperlinkTooltipExpression><![CDATA[$V{yearmonth_COUNT}.toString()]]></hyperlinkTooltipExpression>
+						</itemHyperlink>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot isShowLabels="true" isShowTickLabels="true" isShowTickMarks="true">
+					<plot labelRotation="45.0">
+						<seriesColor seriesOrder="0" color="#FF3300"/>
+					</plot>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF">
+						<font size="8"/>
+					</itemLabel>
+					<categoryAxisLabelExpression><![CDATA["Year-Month"]]></categoryAxisLabelExpression>
+					<categoryAxisFormat labelRotation="45.0">
+						<axisFormat verticalTickLabels="true">
+							<labelFont>
+								<font size="10"/>
+							</labelFont>
+							<tickLabelFont>
+								<font size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisLabelExpression><![CDATA["Maintenance contracts"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat verticalTickLabels="false">
+							<labelFont>
+								<font size="10"/>
+							</labelFont>
+							<tickLabelFont>
+								<font size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</valueAxisFormat>
+				</barPlot>
+			</stackedBarChart>
+			<pie3DChart>
+				<chart isShowLegend="true">
+					<reportElement x="0" y="47" width="269" height="165"/>
+					<chartTitle>
+						<font size="12" isBold="true"/>
+						<titleExpression><![CDATA["Maintenance contracts"]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle>
+						<font size="8" isItalic="true"/>
+						<subtitleExpression><![CDATA["Total over all nodes"]]></subtitleExpression>
+					</chartSubtitle>
+					<chartLegend position="Bottom">
+						<font size="8"/>
+					</chartLegend>
+				</chart>
+				<pieDataset maxCount="3" minPercentage="3.0">
+					<dataset>
+						<datasetRun subDataset="maintcontractSummary">
+							<datasetParameter name="DS_DATE_FORMAT">
+								<datasetParameterExpression><![CDATA[$P{DATE_FORMAT}]]></datasetParameterExpression>
+							</datasetParameter>
+						</datasetRun>
+					</dataset>
+					<keyExpression><![CDATA[$F{contractstatus}]]></keyExpression>
+					<valueExpression><![CDATA[$F{tally}]]></valueExpression>
+					<labelExpression><![CDATA[$F{contractstatus}]]></labelExpression>
+					<sectionHyperlink>
+						<hyperlinkTooltipExpression><![CDATA[$F{tally}.toString()]]></hyperlinkTooltipExpression>
+					</sectionHyperlink>
+				</pieDataset>
+				<pie3DPlot isCircular="false" labelFormat="{0} ({1})" legendLabelFormat="{0} ({2})">
+					<plot backgroundAlpha="1.0">
+						<seriesColor seriesOrder="0" color="#FF3300"/>
+						<seriesColor seriesOrder="1" color="#4F7B23"/>
+						<seriesColor seriesOrder="2" color="#A5A5A5"/>
+					</plot>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF">
+						<font size="8"/>
+					</itemLabel>
+				</pie3DPlot>
+			</pie3DChart>
+			<rectangle radius="5">
+				<reportElement x="291" y="47" width="264" height="165" backcolor="#DFDFDF"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement style="Body" x="296" y="52" width="254" height="155"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[This report shows an overview about maintenance contracts. The Maintenance contracts" shows contracts over all active nodes and if they have a running contract, expired or no contract. With age and maintenance contract you can see how old are your devices and have this devices a maintenance contract. Additionally you can see how many devices in a age class have contracts, expired or no contracts. The last diagramm give you an forecast how many maintenance contracts will be expire in the next 12 month.]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="-1" width="555" height="1"/>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="4" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="3" width="555" height="1"/>
+			</line>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

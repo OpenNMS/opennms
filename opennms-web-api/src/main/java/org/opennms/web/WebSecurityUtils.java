@@ -28,8 +28,14 @@
 
 package org.opennms.web;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.opennms.core.utils.LogUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 
 /**
  * <p>WebSecurityUtils class.</p>
@@ -166,4 +172,36 @@ public class WebSecurityUtils {
         return ILLEGAL_IN_COLUMN_NAME_PATTERN.matcher(dirty).replaceAll("");
     }
 
+    /**
+     * <p>sanitizeBeanStringProperties</p>
+     * This is a simple method is used to sanitize all bean string properties. 
+     * 
+     * @param bean a {@link java.lang.Object} object.
+     * @return a {@link java.lang.Object} object.
+     */
+    public static Object sanitizeBeanStringProperties(Object bean) {
+    	BeanWrapper beanWrapper = new BeanWrapperImpl(bean.getClass());
+    	
+    	// get all bean property descriptors
+    	PropertyDescriptor[] descriptions = beanWrapper.getPropertyDescriptors();
+    	
+    	// Iterate over all properties
+    	for (PropertyDescriptor description : descriptions) {
+    		
+    		// If we have a property with type of java.lang.String, then sanitize string and write back
+    		if (description.getReadMethod().getReturnType().equals(java.lang.String.class)) {
+    			try {
+    				LogUtils.debugf(WebSecurityUtils.class, "Try to sanitize string %s in %s", description.getName(), bean.getClass());
+    				description.getWriteMethod().invoke(bean, WebSecurityUtils.sanitizeString((String)description.getReadMethod().invoke(bean)));
+    			}catch (IllegalArgumentException e) {
+					LogUtils.errorf(WebSecurityUtils.class, "Illegal argument by sanitize object %s on property %s. Error %s", description.getName(), bean.getClass(), e.getMessage());
+				} catch (IllegalAccessException e) {
+					LogUtils.errorf(WebSecurityUtils.class, "Illegal access by sanitize object %s on property %s. Error %s", description.getName(), bean.getClass(), e.getMessage());
+				} catch (InvocationTargetException e) {
+					LogUtils.errorf(WebSecurityUtils.class, "Invocation target exception by sanitize object %s on property %s. Error %s", description.getName(), bean.getClass(), e.getMessage());
+				}
+    		}
+    	}
+    	return bean;
+    }
 }
