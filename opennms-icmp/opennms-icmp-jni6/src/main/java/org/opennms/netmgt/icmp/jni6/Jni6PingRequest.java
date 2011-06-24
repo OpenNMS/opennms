@@ -57,7 +57,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
 
     private static long s_nextTid = 1;
 
-    public static final long getNextTID() {
+    public static synchronized final long getNextTID() {
         return s_nextTid++;
     }
 
