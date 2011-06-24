@@ -21,6 +21,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.Resources;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -40,13 +41,14 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
             if(response.getStatusCode() == 200) {
                 updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(response.getText()));
             }else {
-                updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(DefaultNodeService.SNMP_INTERFACES_TEST_RESPONSE));
+                //updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(DefaultNodeService.SNMP_INTERFACES_TEST_RESPONSE));
+                showErrorDialogBox("Error attempting to get SnmpInterfaces");
             }
         }
 
         @Override
         public void onError(Request request, Throwable exception) {
-            //TODO: Fail with an error
+            showErrorDialogBox("Error attempting to get SnmpInterfaces");
         }
 
     }
@@ -59,14 +61,13 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
             if(response.getStatusCode() == 200) {
                 updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(response.getText()));
             } else {
-                String jsonStr = DefaultNodeService.IP_INTERFACES_TEST_RESPONSE;
-                updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(jsonStr));
+                showErrorDialogBox("Error attempting to get IpInterfaces");
             }
         }
 
         @Override
         public void onError(Request request, Throwable exception) {
-            //TODO: Fail graciously with error
+            showErrorDialogBox("Error attempting to get IpInterfaces");
         }
 
     }
@@ -74,6 +75,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     private static PageableNodeListUiBinder uiBinder = GWT.create(PageableNodeListUiBinder.class);
     
     interface PageableNodeListUiBinder extends UiBinder<Widget, PageableNodeList> {}
+    
+    public static final String COOKIE = "hideNodePageErrorDialog";
     
     @UiField
     TabLayoutPanel m_tabLayoutPanel;
@@ -108,6 +111,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     @UiField
     TextBox m_physTextBox;
     
+    ErrorDialogBox m_errorDialog;
+    
     NodeService m_nodeService = new DefaultNodeService();
 
     private int m_nodeId;
@@ -124,6 +129,21 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     }
     
     
+    public void showErrorDialogBox(String errorMsg) {
+        if(m_errorDialog == null) {
+            m_errorDialog = new ErrorDialogBox();
+        }
+        
+        if(!Boolean.parseBoolean(Cookies.getCookie(COOKIE))) {
+            m_errorDialog.setPopupPosition(getAbsoluteLeft(), getAbsoluteTop());
+            m_errorDialog.setWidth("" + (getOffsetWidth()-12) + "px");
+            m_errorDialog.setErrorMessageAndShow(errorMsg);
+            
+        }
+        
+    }
+
+
     public int extractNodeIdFromLocation() {
         if(Location.getParameter("node") != null) {
             return Integer.valueOf(Location.getParameter("node"));
@@ -233,6 +253,6 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     public void onIpInterfaceSelection(IpInterfaceSelectionEvent event) {
         Location.assign("element/interface.jsp?ipinterfaceid=" + event.getIpInterfaceId());
     }
-
+    
 
 }

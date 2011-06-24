@@ -1109,6 +1109,11 @@ td.datePickerMonth {
 }
 
 .gwt-TabLayoutPanel {
+	border-style: solid;
+	border-color: #D0D0D0;
+	border-width: 1px;
+	background-color: white;
+	
 }
 .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabs {
 	

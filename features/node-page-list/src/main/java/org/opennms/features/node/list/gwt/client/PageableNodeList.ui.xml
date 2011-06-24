@@ -7,7 +7,7 @@
 			
 		}
 	</ui:style>
-	<g:TabLayoutPanel barUnit='EM' barHeight='3' ui:field="m_tabLayoutPanel" >
+	<g:TabLayoutPanel barUnit='EM' barHeight='2' ui:field="m_tabLayoutPanel" >
         <g:tab>
             <g:header size='7'>IP Interfaces</g:header>
             <g:LayoutPanel>

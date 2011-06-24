@@ -15,17 +15,15 @@ public class NodeInterfaceList implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {  
-      PageableNodeList nodeList = new PageableNodeList();
+      
       NodeList<Element> nodes = RootPanel.getBodyElement().getElementsByTagName("opennms:interfacelist");
       if(nodes.getLength() > 0) {
           for(int i = 0; i < nodes.getLength(); i++) {
+              PageableNodeList nodeList = new PageableNodeList();
               Element elem = nodes.getItem(i);
               RootPanel.get(elem.getId()).add(nodeList);
           }
       }
-      
-      
-      //RootPanel.get("testGrid").add(nodeList);
       
   }
 
