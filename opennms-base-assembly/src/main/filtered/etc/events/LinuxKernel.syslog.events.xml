@@ -1,0 +1,30 @@
+<events>
+
+        <!-- Begin syslog event definitions for Linux kernel -->
+        <event>
+                <uei>uei.opennms.org/vendor/linux/syslog/kernel/oomKilledProcess</uei>
+                <event-label>Linux-defined event: OOM killer killed process</event-label>
+                <descr>
+                        &lt;p&gt;The Linux kernel has killed a process because the system is out of memory &lt;br&gt;
+                        Killed process name: %parm[killedProcName]%&lt;br&gt;
+                        Killed process PID: %parm[killedProcID]%&lt;br&gt;
+                        Message: %parm[oomMessage]%&lt;br&gt;
+                        Killed process total VM: %parm[killedProcTotalVM]%&lt;br&gt;
+                        Killed process anon RSS: %parm[killedProcAnonRSS]%&lt;br&gt;
+                        Killed process file RSS: %parm[killedProcFileRSS]%&lt;br&gt;
+                        Host: %nodelabel%&lt;br&gt;
+                        Interface: %interface% &lt;br&gt;
+                        Message: %parm[syslogmessage]% &lt;br&gt;
+                        Process: %parm[process]% &lt;br&gt;
+                        PID: %parm[processid]%
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        &lt;p&gt;Linux OOM killer killed process %parm[killedProcName]% (PID %parm[killedProcID]%) &lt;/p&gt;
+                </logmsg>
+                <severity>Major</severity>
+                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[killedProcName]%" alarm-type="3" auto-clean="false" />
+        </event>
+        <!-- End syslog event definitions for Linux kernel -->
+
+</events>

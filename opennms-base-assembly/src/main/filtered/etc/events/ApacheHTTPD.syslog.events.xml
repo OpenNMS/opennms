@@ -1,0 +1,43 @@
+<events>
+
+    <!-- Begin syslog event definitions for Apache HTTPD -->
+    <event>
+        <uei>uei.opennms.org/vendor/apache/syslog/httpd/documentRootDoesNotExist</uei>
+        <event-label>Apache HTTPD-defined event: documentRootDoesNotExist</event-label>
+        <descr>
+            &lt;p&gt;The Apache HTTP daemon reports that a specified DocumentRoot does not exist.&lt;br&gt;
+            DocumentRoot: %parm[documentRoot]%&lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;Apache HTTPD DocumentRoot %parm[documentRoot]% does not exist &lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[documentRoot]%" alarm-type="3" auto-clean="false" />
+    </event>
+    <event>
+        <uei>uei.opennms.org/vendor/apache/syslog/httpd/unknownMessage</uei>
+        <event-label>Apache HTTPD-defined event: unknown message</event-label>
+        <descr>
+            &lt;p&gt;The Apache HTTP daemon at %interface% generated a Syslog Message.&lt;br&gt;
+            Node ID: %nodeid%&lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;An unknown Apache HTTPD syslog message has been received &lt;/p&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+        </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <!-- End syslog event definitions for Apache HTTPD -->
+</events>

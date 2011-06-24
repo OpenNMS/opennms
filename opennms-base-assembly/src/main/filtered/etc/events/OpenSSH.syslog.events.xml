@@ -1,0 +1,108 @@
+<events>
+    <!-- Begin syslog event definitions for OpenSSH  -->
+    <event>
+        <uei>uei.opennms.org/vendor/openssh/syslog/sshd/invalidUser</uei>
+        <event-label>OpenSSH-defined event: Invalid user</event-label>
+        <descr>
+            &lt;p&gt;The OpenSSH sshd daemon reports an authentication failure for an invalid user &lt;br&gt;
+            User name: %parm[user]%&lt;br&gt;
+            Authentication method: %parm[authMethod]%&lt;br&gt;
+            Remote host: %parm[remoteHost]%&lt;br&gt;
+            Remote port: %parm[remotePort]%&lt;br&gt;
+            SSH protocol version: %parm[protocolVersion]%&lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;Invalid user %parm[user]% from host %parm[remoteHost]% failed OpenSSH %parm[authMethod]% authentication &lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%" alarm-type="3" auto-clean="false" />
+    </event>
+    <event>
+        <uei>uei.opennms.org/vendor/openssh/syslog/sshd/passwordFailure</uei>
+        <event-label>OpenSSH-defined event: Password failure</event-label>
+        <descr>
+            &lt;p&gt;The OpenSSH sshd daemon reports an authentication failure for a valid user &lt;br&gt;
+            User name: %parm[user]%&lt;br&gt;
+            Authentication method: %parm[authMethod]%&lt;br&gt;
+            Remote host: %parm[remoteHost]%&lt;br&gt;
+            Remote port: %parm[remotePort]%&lt;br&gt;
+            SSH protocol version: %parm[protocolVersion]%&lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;User %parm[user]% from host %parm[remoteHost]% failed OpenSSH %parm[authMethod]% authentication &lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%" alarm-type="3" auto-clean="false" />
+    </event>
+    <event>
+        <uei>uei.opennms.org/vendor/openssh/syslog/sshd/bindFailure</uei>
+        <event-label>OpenSSH-defined event: Socket bind failure</event-label>
+        <descr>
+            &lt;p&gt;The OpenSSH sshd daemon failed to bind to a requested address and port &lt;br&gt;
+            Bind address: %parm[bindAddress]% &lt;br&gt;
+            Bind port: %parm[bindPort]% &lt;br&gt;
+            Error message: %parm[errorMessage]% &lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;OpenSSH sshd failed to bind to port %parm[bindPort]% of address %parm[bindAddress]% &lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[bindAddress]%:%parm[bindPort]%" alarm-type="3" auto-clean="false" />
+    </event>
+    <event>
+        <uei>uei.opennms.org/vendor/openssh/syslog/sshd/totalBindFailure</uei>
+        <event-label>OpenSSH-defined event: Total socket bind failure</event-label>
+        <descr>
+            &lt;p&gt;The OpenSSH sshd daemon failed to bind to any requested addresses &lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;OpenSSH sshd failed to bind any address on host %nodelabel%  &lt;/p&gt;
+        </logmsg>
+        <severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
+    </event>
+    <event>
+        <uei>uei.opennms.org/vendor/openssh/syslog/sshd/unknownMessage</uei>
+        <event-label>OpenSSH-defined event: unknown message</event-label>
+        <descr>
+        &lt;p&gt;The OpenSSH sshd daemon at %interface% generated a Syslog Message.&lt;br&gt;
+        Node ID: %nodeid%&lt;br&gt;
+        Host: %nodelabel%&lt;br&gt;
+        Interface: %interface% &lt;br&gt;
+        Message: %parm[syslogmessage]% &lt;br&gt;
+        Process: %parm[process]% &lt;br&gt;
+        PID: %parm[processid]%
+        &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+        &lt;p&gt;An unknown OpenSSH syslog message has been received &lt;/p&gt;
+        Message: %parm[syslogmessage]% &lt;br&gt;
+        </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <!-- End syslog event definitions for OpenSSH  -->
+</events>
