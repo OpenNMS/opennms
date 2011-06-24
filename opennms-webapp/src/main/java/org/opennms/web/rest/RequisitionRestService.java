@@ -48,6 +48,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -226,6 +227,14 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public Requisition getRequisition(@PathParam("foreignSource") String foreignSource) {
         return getActiveRequisition(foreignSource);
+    }
+
+    @GET
+    @Path("{foreignSource}/exists")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String requisitionExists(@PathParam("foreignSource") String foreignSource) {
+        Boolean exists = getActiveRequisition(foreignSource) != null;
+        return exists.toString();
     }
 
     /**
@@ -595,7 +604,7 @@ public class RequisitionRestService extends OnmsRestService {
     @PUT
     @Path("{foreignSource}/import")
     @Transactional
-    public Response importRequisition(@PathParam("foreignSource") String foreignSource) {
+    public Response importRequisition(@PathParam("foreignSource") String foreignSource, @QueryParam("suppressOutput") Boolean suppressOutput) {
         log().debug("importing requisition for foreign source " + foreignSource);
 
         Requisition req = getActiveRequisition(foreignSource);
@@ -609,7 +618,7 @@ public class RequisitionRestService extends OnmsRestService {
             throw new DataAccessResourceFailureException("Unable to send event to import group "+foreignSource, e);
         }
         
-        return Response.ok(req).build();
+        return suppressOutput == null || suppressOutput == false ? Response.ok(req).build() : Response.ok().build();
     }
     
     /**
