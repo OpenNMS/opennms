@@ -212,4 +212,8 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress);
 
     SurveillanceStatus findSurveillanceStatusByCategoryLists(Collection<OnmsCategory> rowCategories, Collection<OnmsCategory> columnCategories);
+    
+    Integer getNextNodeId (Integer nodeId);
+    
+    Integer getPreviousNodeId (Integer nodeId);
 }

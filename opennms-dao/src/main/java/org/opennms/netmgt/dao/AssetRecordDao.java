@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.netmgt.model.OnmsAssetRecord;
 
 /**
@@ -35,6 +38,9 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
  */
 public interface AssetRecordDao extends OnmsDao<OnmsAssetRecord, Integer> {
     
-
-
+    public OnmsAssetRecord findByNodeId(Integer id);
+    
+    public Map<String, Integer> findImportedAssetNumbersToNodeIds(String foreignSource);
+    
+    public List<OnmsAssetRecord> getDistinctProperties();
 }

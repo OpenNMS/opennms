@@ -1,0 +1,10 @@
+<events>
+    <event>
+        <uei>uei.opennms.org/asset/maintenance/expirationWarning</uei>
+        <event-label>Maintenance contract will expire in less then %parm[#4]% days</event-label>
+        <descr>&lt;p&gt;Maintenance contract of %nodelabel% will expire in less then %parm[#4]% days.&lt;/p&gt;</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Maintenance contract %parm[#3]% of %nodelabel% will expire at %parm[#2]%.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" />
+    </event>
+</events>
