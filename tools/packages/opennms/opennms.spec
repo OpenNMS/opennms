@@ -84,6 +84,7 @@ webapp package.
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
 Requires:	jicmp
+Requires:	jicmp6
 Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
 
@@ -527,7 +528,7 @@ for dir in /etc /etc/rc.d; do
 	fi
 done
 
-for LIBNAME in jicmp jrrd; do
+for LIBNAME in jicmp jicmp6 jrrd; do
 	if [ `grep "opennms.library.${LIBNAME}" "$RPM_INSTALL_PREFIX0/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
 		LIBRARY_PATH=`rpm -ql "${LIBNAME}" 2>/dev/null | grep "/lib${LIBNAME}.so\$" | head -n 1`
 		if [ -n "$LIBRARY_PATH" ]; then
