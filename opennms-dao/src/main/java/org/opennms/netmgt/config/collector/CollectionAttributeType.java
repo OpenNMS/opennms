@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,28 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+
+package org.opennms.netmgt.config.collector;
 
 /**
- * <p>Persister interface.</p>
+ * <p>CollectionAttributeType interface.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public interface Persister {
-
+public interface CollectionAttributeType extends AttributeDefinition {
     /**
-     * <p>persistNumericAttribute</p>
+     * <p>getGroupType</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      */
-    public abstract void persistNumericAttribute(CollectionAttribute attribute);
-
+    public AttributeGroupType getGroupType();
     /**
-     * <p>persistStringAttribute</p>
+     * <p>storeAttribute</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
+     * @param persister a {@link org.opennms.netmgt.config.collector.Persister} object.
      */
-    public abstract void persistStringAttribute(CollectionAttribute attribute);
-
+    public void storeAttribute(CollectionAttribute attribute, Persister persister);
 }

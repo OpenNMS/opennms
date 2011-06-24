@@ -30,6 +30,8 @@ package org.opennms.netmgt.dao.support;
 
 import java.util.StringTokenizer;
 
+import org.opennms.netmgt.config.collector.CollectionResource;
+
 /**
  * This class use the new implementation of SnmpStorageStrategy extending the new
  * IndexStorageStrategy from opennms-services
@@ -40,10 +42,10 @@ public class FrameRelayStorageStrategy extends IndexStorageStrategy {
 
     /** {@inheritDoc} */
     @Override
-    public String getResourceNameFromIndex(String resourceParent, String resourceIndex) {
-        StringTokenizer indexes = new StringTokenizer(resourceIndex, ".");
+    public String getResourceNameFromIndex(CollectionResource resource) {
+        StringTokenizer indexes = new StringTokenizer(resource.getInstance(), ".");
         String ifIndex = indexes.nextToken();
-        String ifName = getInterfaceName(resourceParent, ifIndex);
+        String ifName = getInterfaceName(resource.getParent(), ifIndex);
         String dlci = indexes.nextToken();
         return ifName + "." + dlci;
     }

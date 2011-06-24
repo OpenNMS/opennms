@@ -55,6 +55,10 @@ package org.opennms.netmgt.collectd;
 
 import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpVar;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 public class XmpCollectionAttribute extends AbstractCollectionAttribute 
 implements CollectionAttribute 
 {
@@ -91,14 +95,14 @@ implements CollectionAttribute
     /**
      * <p>getAttributeType</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
+     * @return a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
      */
     public CollectionAttributeType getAttributeType() { return attribType; }
 
     /**
      * <p>setAttributeType</p>
      *
-     * @param attribType a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
+     * @param attribType a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
      */
     public void setAttributeType(CollectionAttributeType attribType)
     {
@@ -118,7 +122,7 @@ implements CollectionAttribute
     /**
      * <p>Getter for the field <code>resource</code>.</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
     public CollectionResource getResource() { return resource; }
 

@@ -27,7 +27,7 @@
  *******************************************************************************/
 
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.collector;
 
 /**
  * <p>CollectionResource interface.</p>
@@ -77,6 +77,12 @@ public interface CollectionResource extends ResourceIdentifier {
      */
     public String getResourceTypeName();
     
+    /**
+     * Returns the name of the parent resource.
+     * 
+     * @return a {@link java.lang.String} object.
+     */
+    public String getParent();
     
     /**
      * Returns the name of the instance this CollectionResource represents.  For node level resources, this will be null

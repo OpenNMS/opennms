@@ -31,6 +31,12 @@ package org.opennms.netmgt.collectd;
 import java.util.Collection;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.collector.AttributeGroup;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
  * <p>AliasedGroup class.</p>
@@ -45,8 +51,8 @@ public class AliasedGroup extends AttributeGroup {
 	/**
 	 * <p>Constructor for AliasedGroup.</p>
 	 *
-	 * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
-	 * @param group a {@link org.opennms.netmgt.collectd.AttributeGroup} object.
+	 * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+	 * @param group a {@link org.opennms.netmgt.config.collector.AttributeGroup} object.
 	 */
 	public AliasedGroup(CollectionResource resource, AttributeGroup group) {
 		super(resource, group.getGroupType());
@@ -79,7 +85,7 @@ public class AliasedGroup extends AttributeGroup {
 	/**
 	 * <p>getGroupType</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+	 * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
 	 */
 	public AttributeGroupType getGroupType() {
 		return m_group.getGroupType();

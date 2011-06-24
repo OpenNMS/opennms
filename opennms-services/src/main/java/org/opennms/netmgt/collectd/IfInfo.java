@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 
 
@@ -264,5 +265,9 @@ public final class IfInfo extends SnmpCollectionResource {
      */
     public String getInstance() {
         return Integer.toString(getIndex()); //For interfaces, use ifIndex as it's unique within a node (by definition)
+    }
+
+    public String getParent() {
+        return Integer.toString(getNodeId());
     }
 } // end class

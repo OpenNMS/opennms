@@ -36,17 +36,15 @@ import junit.framework.Assert;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.StorageStrategyService;
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.springframework.core.io.ClassPathResource;
 
 /**
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  */
 public class SiblingColumnStorageStrategyTest {
-    
+
     @Test
     public void testStrategy() throws Exception {
         // Create Mocks
@@ -55,43 +53,40 @@ public class SiblingColumnStorageStrategyTest {
         agentConfig.setPort(1161);
         EasyMock.expect(service.getAgentConfig()).andReturn(agentConfig).anyTimes();
         EasyMock.replay(service);
-        
-        // Initialize Mock SNMP Agent
-        MockSnmpAgent snmpAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("/mock-snmp-agent.properties"), "127.0.0.1/1161");
 
-        try {
-            // Create Strategy and set for hrStorageTable
-            SiblingColumnStorageStrategy strategy = new SiblingColumnStorageStrategy();
-            strategy.setResourceTypeName("hrStorageIndex");
-            strategy.setStorageStrategyService(service);
-            
-            // Create parameters for the strategy -- hrStorageTable
-            List<Parameter> params = new ArrayList<Parameter>();
-            params.add(createParameter("sibling-column-oid", ".1.3.6.1.2.1.25.2.3.1.3"));
-            params.add(createParameter("replace-first", "s/^-$/_root_fs/"));
-            params.add(createParameter("replace-first", "s/^-//"));
-            params.add(createParameter("replace-all", "s/\\s//"));
-            params.add(createParameter("replace-all", "s/:\\\\.*//"));
-            
-            // Set the list of parameters into the strategy -- hrStorageTable
-            strategy.setParameters(params);
-            
-            // Test Resource Name - root file system (hrStorageTable)
-            String parentResource = "1";
-            String resourceName = strategy.getResourceNameFromIndex(parentResource, "1");
-            Assert.assertEquals("_root_fs", resourceName);
-    
-            // Test Resource Name - /Volumes/iDisk file system (hrStorageTable)
-            Assert.assertEquals("Volumes-iDisk", strategy.getResourceNameFromIndex(parentResource, "8"));
-    
-            // Test RelativePath - hrStorageTable
-            Assert.assertEquals("1/hrStorageIndex/_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
-        } finally {
-            snmpAgent.shutDownAndWait();
-        }
+        // Create Strategy and set for hrStorageTable
+        SiblingColumnStorageStrategy strategy = new SiblingColumnStorageStrategy();
+        strategy.setResourceTypeName("hrStorageIndex");
+        strategy.setStorageStrategyService(service);
+
+        // Create parameters for the strategy -- hrStorageTable
+        List<Parameter> params = new ArrayList<Parameter>();
+        params.add(createParameter("sibling-column-name", "hrStorageDescr"));
+        params.add(createParameter("replace-first", "s/^-$/_root_fs/"));
+        params.add(createParameter("replace-first", "s/^-//"));
+        params.add(createParameter("replace-all", "s/\\s//"));
+        params.add(createParameter("replace-all", "s/:\\\\.*//"));
+
+        // Set the list of parameters into the strategy -- hrStorageTable
+        strategy.setParameters(params);
+
+        // Test Resource Name - root file system (hrStorageTable)
+        String parentResource = "1";
+        MockCollectionResource resource = new MockCollectionResource(parentResource, "1", "hrStorageIndex");
+        resource.getAttribtueMap().put("hrStorageDescr", "/");
+        String resourceName = strategy.getResourceNameFromIndex(resource);
+        Assert.assertEquals("_root_fs", resourceName);
+
+        // Test Resource Name - /Volumes/iDisk file system (hrStorageTable)
+        resource.setInstance("8");
+        resource.getAttribtueMap().put("hrStorageDescr", "Volumes-iDisk");
+        Assert.assertEquals("Volumes-iDisk", strategy.getResourceNameFromIndex(resource));
+
+        // Test RelativePath - hrStorageTable
+        Assert.assertEquals("1/hrStorageIndex/_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
         EasyMock.verify(service);
     }
-    
+
     private Parameter createParameter(String key, String value) {
         Parameter p = new Parameter();
         p.setKey(key);

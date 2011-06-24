@@ -70,7 +70,6 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml"
 })
 @JUnitConfigurationEnvironment

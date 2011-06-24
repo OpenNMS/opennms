@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.collector;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -50,7 +50,7 @@ public class AttributeGroup {
     /**
      * <p>Constructor for AttributeGroup.</p>
      *
-     * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
      */
     public AttributeGroup(CollectionResource resource, AttributeGroupType groupType) {
@@ -70,7 +70,7 @@ public class AttributeGroup {
     /**
      * <p>getResource</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
     public CollectionResource getResource() {
         return m_resource;
@@ -88,7 +88,7 @@ public class AttributeGroup {
     /**
      * <p>addAttribute</p>
      *
-     * @param attr a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @param attr a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
      */
     public void addAttribute(CollectionAttribute attr) {
         m_attributes.add(attr);
@@ -97,7 +97,7 @@ public class AttributeGroup {
     /**
      * <p>visit</p>
      *
-     * @param visitor a {@link org.opennms.netmgt.collectd.CollectionSetVisitor} object.
+     * @param visitor a {@link org.opennms.netmgt.config.collector.CollectionSetVisitor} object.
      */
     public void visit(CollectionSetVisitor visitor) {
         if (log().isDebugEnabled()) {
@@ -115,7 +115,7 @@ public class AttributeGroup {
     /**
      * <p>shouldPersist</p>
      *
-     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @return a boolean.
      */
     public boolean shouldPersist(ServiceParameters params) {

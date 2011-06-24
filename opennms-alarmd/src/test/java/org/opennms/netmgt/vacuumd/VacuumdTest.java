@@ -88,8 +88,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-alarmd.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+        "classpath:/META-INF/opennms/applicationContext-alarmd.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)

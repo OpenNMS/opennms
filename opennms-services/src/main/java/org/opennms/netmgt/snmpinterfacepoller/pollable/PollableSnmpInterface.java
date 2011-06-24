@@ -150,8 +150,11 @@ public class PollableSnmpInterface implements ReadyRunnable {
      * @param snmpinterfaces a {@link java.util.List} object.
      */
     public void setSnmpinterfaces(List<OnmsSnmpInterface> snmpinterfaces) {
-        for (OnmsSnmpInterface value: snmpinterfaces) {
-            m_snmpinterfaces.put(value.getIfIndex(), value);            
+    	m_snmpinterfaces.clear();
+        for (OnmsSnmpInterface iface: snmpinterfaces) {
+    		if (iface.getIfAdminStatus().equals(SnmpMinimalPollInterface.IF_UP) && iface.getIfOperStatus().equals(SnmpMinimalPollInterface.IF_DOWN)) 
+    			sendOperDownEvent(iface);
+            m_snmpinterfaces.put(iface.getIfIndex(), iface);            
         }
     }
 
@@ -277,7 +280,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
             log().info("not polling: " + getParent().getIpaddress());
         } // End if polling
     } //end Run method
-    
+        
     private void doPoll(SnmpPollInterfaceMonitor pollMonitor, List<SnmpMinimalPollInterface> mifaces) {
         
         log().info("doPoll: input interfaces number: " + mifaces.size());
@@ -336,7 +339,6 @@ public class PollableSnmpInterface implements ReadyRunnable {
 
                     iface.setIfAdminStatus(new Integer(miface.getAdminstatus()));
                     iface.setIfOperStatus(new Integer(miface.getOperstatus()));
-                    iface.setPoll("P");
                     iface.setLastSnmpPoll(now);
                                     
                     
@@ -344,11 +346,11 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     try {
                         update(iface);
                     } catch (Throwable e) {
-                        log().warn("Error updating Interface" + iface.getIfName()+" " + e.getLocalizedMessage());
+                        log().warn("Failing updating Interface" + iface.getIfName()+" " + e.getLocalizedMessage());
                         refresh = true;
                     }
                 } else {
-                    log().warn("run: " + getContext().getServiceName() + " not available, doing nothing.....");
+                    log().debug("No "+ getContext().getServiceName() + " data available for interface.");
                 } //End if status OK
             } //end while on interface
             

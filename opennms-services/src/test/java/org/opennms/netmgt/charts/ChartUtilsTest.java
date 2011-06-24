@@ -41,16 +41,29 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
 
-import junit.framework.TestCase;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.jfree.chart.JFreeChart;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ChartConfigFactory;
 import org.opennms.netmgt.config.charts.BarChart;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.springframework.test.context.ContextConfiguration;
 
-public class ChartUtilsTest extends TestCase {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(dirtiesContext=false)
+public class ChartUtilsTest {
     
     private static final String CHART_CONFIG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
             "<tns:chart-configuration xmlns:tns=\"http://xmlns.opennms.org/xsd/config/charts\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://xmlns.opennms.org/xsd/config/charts ../src/services/org/opennms/netmgt/config/chart-configuration.xsd \">\n" + 
@@ -123,20 +136,24 @@ public class ChartUtilsTest extends TestCase {
             "";
 //    private ChartConfiguration m_config;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         System.setProperty("java.awt.headless", "true");
         initalizeChartFactory();
     }
 
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
     }
 
+    @Test
     public void testGetBarChartConfig() throws MarshalException, ValidationException, FileNotFoundException, IOException {
         
         assertNotNull(ChartUtils.getBarChartConfigByName("sample-bar-chart"));
         assertTrue(ChartUtils.getBarChartConfigByName("sample-bar-chart").getClass() == BarChart.class);
     }
     
+    @Test
     public void testGetBarChart() throws MarshalException, ValidationException, IOException, SQLException {
         JFreeChart barChart = ChartUtils.getBarChart("sample-bar-chart");
         assertNotNull(barChart);
@@ -144,6 +161,7 @@ public class ChartUtilsTest extends TestCase {
         assertEquals(2, barChart.getSubtitleCount());
     }
 
+    @Test
     public void testGetChartWithInvalidChartName() throws MarshalException, ValidationException, IOException, SQLException {
         
         JFreeChart chart = null;
@@ -155,18 +173,20 @@ public class ChartUtilsTest extends TestCase {
         assertNull(chart);
     }
 
+    @Test
     public void testGetChartAsFileOutputStream() throws FileNotFoundException, IOException, SQLException, ValidationException, MarshalException {
         OutputStream stream = new FileOutputStream("//tmp//sample-bar-chart.png");
         ChartUtils.getBarChart("sample-bar-chart", stream);
         stream.close();
     }
     
+    @Test
     public void testGetChartAsBufferedImage() throws MarshalException, ValidationException, IOException, SQLException {
         BufferedImage bi = ChartUtils.getChartAsBufferedImage("sample-bar-chart");
         assertEquals(300, bi.getHeight());
     }
 
-    private void initalizeChartFactory() throws MarshalException, ValidationException, IOException {
+    private static void initalizeChartFactory() throws MarshalException, ValidationException, IOException {
         ChartConfigFactory.setInstance(new ChartConfigFactory());
         ByteArrayInputStream rdr = new ByteArrayInputStream(CHART_CONFIG.getBytes("UTF-8"));
         ChartConfigFactory.parseXml(rdr);

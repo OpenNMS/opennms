@@ -579,17 +579,17 @@ public class NodeScan implements RunInBatch {
                     new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), this, getAgentConfigFactory(), getProvisionService(), getNodeId()),
                     new RunInBatch() {
                         public void run(final BatchTask phase) {
+                            detectPhysicalInterfaces(phase);
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(final BatchTask phase) {
                             detectIpAddressTable(phase);
                         }
                     },
                     new RunInBatch() {
                         public void run(final BatchTask phase) {
                             detectIpInterfaceTable(phase);
-                        }
-                    },
-                    new RunInBatch() {
-                        public void run(final BatchTask phase) {
-                            detectPhysicalInterfaces(phase);
                         }
                     },
                     new RunInBatch() {

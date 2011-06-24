@@ -50,9 +50,9 @@ import org.springframework.core.io.Resource;
  */
 public class DataCollectionConfigParserTest {
 
-    private static final int resourceTypesCount = 69;
-    private static final int systemDefCount = 126;
-    private static final int groupsCount = 183;
+    private static final int resourceTypesCount = 88;
+    private static final int systemDefCount = 141;
+    private static final int groupsCount = 204;
 
     @Before
     public void setUp() {
@@ -95,7 +95,7 @@ public class DataCollectionConfigParserTest {
 
         // Validate default datacollection content
         SnmpCollection collection = config.getSnmpCollection(0);
-        Assert.assertEquals(42, collection.getIncludeCollectionCount());
+        Assert.assertEquals(49, collection.getIncludeCollectionCount());
         Assert.assertEquals(0, collection.getResourceTypeCount()); 
         Assert.assertNull(collection.getSystems());
         Assert.assertNull(collection.getGroups());
@@ -106,7 +106,7 @@ public class DataCollectionConfigParserTest {
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
         Assert.assertEquals(systemDefCount, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(144, collection.getGroups().getGroupCount()); // Unused groups will be ignored
+        Assert.assertEquals(162, collection.getGroups().getGroupCount()); // Unused groups will be ignored
     }
 
     @Test
@@ -127,7 +127,7 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(15, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(17, collection.getSystems().getSystemDefCount());
         Assert.assertEquals(61, collection.getGroups().getGroupCount());
     }
 
@@ -149,7 +149,7 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(69, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(70, collection.getSystems().getSystemDefCount());
         Assert.assertEquals(26, collection.getGroups().getGroupCount());
     }
 
@@ -171,7 +171,7 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(39, collection.getSystems().getSystemDefCount()); // 30 systemDef to exclude
+        Assert.assertEquals(40, collection.getSystems().getSystemDefCount()); // 48 systemDef to exclude
         Assert.assertEquals(25, collection.getGroups().getGroupCount()); //  1 group to exclude (used only on Cisco PIX or Cisco AS)
     }
 

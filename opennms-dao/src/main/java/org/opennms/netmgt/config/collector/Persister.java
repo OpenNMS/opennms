@@ -26,33 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.collector;
 
-import java.io.File;
-
-import org.opennms.netmgt.model.RrdRepository;
 
 /**
- * <p>ResourceIdentifier interface.</p>
+ * <p>Persister interface.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public interface ResourceIdentifier {
-    
+public interface Persister {
+
     /**
-     * <p>getOwnerName</p>
+     * <p>persistNumericAttribute</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
      */
-    public String getOwnerName();
-    
+    public abstract void persistNumericAttribute(CollectionAttribute attribute);
+
     /**
-     * <p>getResourceDir</p>
+     * <p>persistStringAttribute</p>
      *
-     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @return a {@link java.io.File} object.
+     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
      */
-    public File getResourceDir(RrdRepository repository);
+    public abstract void persistStringAttribute(CollectionAttribute attribute);
 
 }

@@ -4,7 +4,13 @@
     <resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)"
                   resourceLabel="${hrStorageDescr}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+          <parameter key="sibling-column-name" value="hrStorageDescr" />
+          <parameter key="replace-first" value="s/^-$/_root_fs/" />
+          <parameter key="replace-all" value="s/^-//" />
+          <parameter key="replace-all" value="s/\\s//" />
+          <parameter key="replace-all" value="s/:\\\\.*//" />
+      </storageStrategy>
     </resourceType>
 
     <resourceType name="hrStorageNonUnique" label="Storage (MIB-2 Host Resources, non-unique descriptions)"
