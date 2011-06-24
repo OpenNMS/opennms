@@ -11,6 +11,7 @@
   <modules>
     <module>opennms-icmp-api</module>
     <module>opennms-icmp-jni</module>
+    <module>opennms-icmp-jni6</module>
     <module>opennms-icmp-jna</module>
   </modules>
 </project>
