@@ -88,29 +88,29 @@ public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPop
 	 * @return a {@link java.util.Set} object.
 	 */
 	@Override
-	protected Set<GrantedAuthority> getAdditionalRoles(DirContextOperations user, String username) {
-		String userDn = user.getNameInNamespace();
-		Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+	protected Set<GrantedAuthority> getAdditionalRoles(final DirContextOperations user, final String username) {
+		final String userDn = user.getNameInNamespace();
+		final Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 
-		if (getGroupSearchBase() == null) {
+		if (super.getGroupSearchBase() == null) {
 			return authorities;
 		}
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("Searching for roles for user '" + username + "', DN = " + "'" + userDn + "', with filter "
-					+ groupSearchFilter + " in search base '" + getGroupSearchBase() + "'");
+					+ this.groupSearchFilter + " in search base '" + super.getGroupSearchBase() + "'");
 		}
 
 		@SuppressWarnings("unchecked")
-		Set<String> userRoles = ldapTemplate.searchForSingleAttributeValues(
-				getGroupSearchBase(), 
-				groupSearchFilter,
+		final Set<String> userRoles = ldapTemplate.searchForSingleAttributeValues(
+				super.getGroupSearchBase(), 
+				this.groupSearchFilter,
 				new String[]{userDn, username}, 
-				groupRoleAttribute
+				this.groupRoleAttribute
 		);
 
 		for(String group : userRoles) {
-			List<String> rolesForGroup = groupToRoleMap.get(group);
+			final List<String> rolesForGroup = this.groupToRoleMap.get(group);
 			logger.debug("Checking " + group + " for an associated role");
 			if (rolesForGroup != null) {
 				for(String role : rolesForGroup) {
@@ -124,13 +124,13 @@ public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPop
 	}
 
 	@Override
-	public void setGroupRoleAttribute(String groupRoleAttribute) {
+	public void setGroupRoleAttribute(final String groupRoleAttribute) {
 		super.setGroupRoleAttribute(groupRoleAttribute);
 		this.groupRoleAttribute = groupRoleAttribute;
 	}
 
 	@Override
-	public void setGroupSearchFilter(String groupSearchFilter) {
+	public void setGroupSearchFilter(final String groupSearchFilter) {
 		super.setGroupSearchFilter(groupSearchFilter);
 		this.groupSearchFilter = groupSearchFilter;
 	}
@@ -156,7 +156,14 @@ public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPop
 	 * </code>
 	 * </pre>
 	 */
-	public void setGroupToRoleMap(Map<String, List<String>> groupToRoleMap) {
+	public void setGroupToRoleMap(final Map<String, List<String>> groupToRoleMap) {
 		this.groupToRoleMap = groupToRoleMap;
+	}
+
+	@Override
+	public void setSearchSubtree(boolean searchSubtree) {
+		super.setSearchSubtree(searchSubtree);
+		int searchScope = searchSubtree ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE;
+		this.searchControls.setSearchScope(searchScope);
 	}
 }
