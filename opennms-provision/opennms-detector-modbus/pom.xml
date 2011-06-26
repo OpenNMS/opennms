@@ -1,0 +1,57 @@
+<?xml version="1.0"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>opennms-provision</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>1.11.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms</groupId>
+  <artifactId>opennms-detector-modbus</artifactId>
+  <name>OpenNMS Modbus Detector</name>
+  <url>http://www.opennms.org</url>
+  <dependencies>
+   	<dependency>
+  		<groupId>org.opennms</groupId>
+  		<artifactId>opennms-provision-api</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+  		<groupId>org.opennms.dependencies</groupId>
+  		<artifactId>spring-test-dependencies</artifactId>
+    	<scope>test</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+                <groupId>com.serotonin.modbus4j</groupId>
+                <artifactId>modbus4j</artifactId>
+		<version>1.1</version>
+      		<type>jar</type>
+    </dependency>
+    <dependency>
+                <groupId>com.serotonin.seroUtils</groupId>
+                <artifactId>seroUtils</artifactId>
+                <version>1.1</version>
+                <type>jar</type>
+    </dependency>
+  	<dependency>
+  		<groupId>org.opennms</groupId>
+  		<artifactId>opennms-detector-lineoriented</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
