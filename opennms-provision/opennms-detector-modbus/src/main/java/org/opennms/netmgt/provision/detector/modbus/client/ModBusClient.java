@@ -44,7 +44,8 @@ public class ModBusClient implements
 			byte[] answer = rep.getData();
 			// the byte array contains two values; one value (functionCode, array[0]) needs to be set to any value
 			//TODO: add test if array[0] has any value (is there a generic variable test in Java?)
-			if (true) {
+			// now I'm just testing for a value in the acceptable interval:
+			if (answer[0] > -129 && answer[0] < 257) {
 				modbusSupport = true;
 			}
 		} catch (Exception ex) {
