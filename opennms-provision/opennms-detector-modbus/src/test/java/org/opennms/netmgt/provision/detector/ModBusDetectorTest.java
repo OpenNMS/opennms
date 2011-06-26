@@ -20,6 +20,9 @@ public class ModBusDetectorTest implements ApplicationContextAware {
 	ModBusDetector m_detector;
 	private ApplicationContext m_applicationContext;
 
+	// to really test functionality, this test needs to pull up a modbus server which returns the
+	// expected value (and a false value)
+	
 	@Test
 	public void testDetector() {
 		m_detector = getDetector(ModBusDetector.class);

@@ -24,6 +24,7 @@
     <module>opennms-detector-jdbc</module>
     <module>opennms-detector-ssh</module>
     <module>opennms-detector-generic</module>
+    <module>opennms-detector-modbus</module>
   </modules>
   <dependencyManagement>
     <dependencies>
