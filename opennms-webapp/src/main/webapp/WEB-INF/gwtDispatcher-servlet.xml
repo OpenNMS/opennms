@@ -22,6 +22,7 @@
       <map>
         <entry key="/surveillanceService.gwt" value-ref="gwtSurveillanceService"/>
         <entry key="/asset/assetService.gwt" value-ref="gwtAssetService"/>
+        <entry key="/inventory/assetService.gwt" value-ref="gwtAssetService"/>
       </map>
     </property>
     <!--  property name="unwrappingGWTExceptions" value="true" / -->

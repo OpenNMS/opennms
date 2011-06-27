@@ -59,7 +59,7 @@ public class AssetPage implements EntryPoint {
 	private AssetServiceAsync getAssetService() {
 		if (m_assetServiceAsync == null) {
 			String serviceEntryPoint = GWT.getHostPageBaseURL() + "assetService.gwt";
-
+			
 			// define the service you want to call
 			final AssetServiceAsync svc = (AssetServiceAsync) GWT.create(AssetService.class);
 			ServiceDefTarget endpoint = (ServiceDefTarget) svc;
