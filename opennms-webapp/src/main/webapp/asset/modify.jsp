@@ -48,6 +48,6 @@
 	
 </jsp:include>
 
-<div id="opennms-assetDyna"></div>
+<div id="opennms-assetNodePage"></div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
