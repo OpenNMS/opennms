@@ -34,6 +34,7 @@ import java.net.UnknownHostException;
 
 import junit.framework.TestSuite;
 
+import org.opennms.core.test.snmp.SnmpTestSuiteUtils;
 import org.opennms.netmgt.snmp.snmp4j.MockSnmpAgentTestCase;
 import org.springframework.core.io.ClassPathResource;
 
@@ -90,7 +91,8 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
             m_error = true;
         }
         
-        public boolean hasError() {
+        @SuppressWarnings("unused")
+		public boolean hasError() {
             return m_error;
         }
         public int getReceivedTrapCount() {

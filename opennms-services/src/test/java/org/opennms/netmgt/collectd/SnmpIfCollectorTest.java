@@ -35,9 +35,9 @@ import junit.framework.TestSuite;
 
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.core.test.snmp.SnmpTestSuiteUtils;
 import org.opennms.netmgt.model.OnmsEntity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
 
 
 public class SnmpIfCollectorTest extends SnmpCollectorTestCase {

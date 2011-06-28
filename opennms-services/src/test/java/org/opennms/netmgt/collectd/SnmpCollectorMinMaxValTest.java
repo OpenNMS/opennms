@@ -41,8 +41,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -51,12 +52,11 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
 import org.opennms.test.mock.MockLogAppender;
@@ -181,7 +181,7 @@ public class SnmpCollectorMinMaxValTest implements MockSnmpAgentAware, TestConte
                     "1/fw0/ifInOctets"
             }
     )
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties", useMockSnmpStrategy=false)
     public void testPersist() throws Exception {
         File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
 

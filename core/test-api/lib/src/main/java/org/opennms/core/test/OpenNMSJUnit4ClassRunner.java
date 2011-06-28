@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.db;
+package org.opennms.core.test;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,13 +34,9 @@ import java.util.List;
 import java.util.TreeSet;
 
 import org.junit.runners.model.InitializationError;
-import org.opennms.core.test.JUnitHttpServerExecutionListener;
-import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.core.utils.LogUtils;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /**
  * This runner will automagically register all of the boilerplate 
@@ -49,14 +45,16 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
  * @author seth
  */
 public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
-    private static final TestExecutionListener[] STANDARD_LISTENERS = new TestExecutionListener[] { 
-        new OpenNMSConfigurationExecutionListener(),
-        new TemporaryDatabaseExecutionListener(),
-        new JUnitSnmpAgentExecutionListener(),
-        new JUnitHttpServerExecutionListener(),
-        new DependencyInjectionTestExecutionListener(),
-        new DirtiesContextTestExecutionListener(),
-        new TransactionalTestExecutionListener()
+    private static final String[] STANDARD_LISTENER_CLASS_NAMES = new String[] {
+        "org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener",
+        "org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener",
+        "org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener",
+        "org.opennms.core.test.JUnitHttpServerExecutionListener",
+        "org.opennms.core.test.JUnitDNSServerExecutionListener",
+        "org.opennms.netmgt.collectd.JUnitCollectorExecutionListener",
+        "org.springframework.test.context.support.DependencyInjectionTestExecutionListener",
+        "org.springframework.test.context.support.DirtiesContextTestExecutionListener",
+        "org.springframework.test.context.transaction.TransactionalTestExecutionListener"
     };
 
     private static class ClassNameComparator implements Comparator<TestExecutionListener> {
@@ -80,12 +78,19 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
         oldListeners.clear();
 
         // Register the standard set of execution listeners
-        getTestContextManager().registerTestExecutionListeners(STANDARD_LISTENERS);
+        for (final String className : STANDARD_LISTENER_CLASS_NAMES) {
+            try {
+                final TestExecutionListener listener = (TestExecutionListener)Class.forName(className).newInstance();
+                getTestContextManager().registerTestExecutionListeners(listener);
+            } catch (final Throwable t) {
+                LogUtils.infof(this, "Failed while attempting to load default unit test listener class %s: %s", className, t.getLocalizedMessage());
+            }
+        }
 
         // Add any additional listeners that may have been specified manually in the test
-        Comparator<TestExecutionListener> comparator = new ClassNameComparator();
-        TreeSet<TestExecutionListener> standardListeners = new TreeSet<TestExecutionListener>(comparator);
-        for (TestExecutionListener listener : listeners) {
+        final Comparator<TestExecutionListener> comparator = new ClassNameComparator();
+        final TreeSet<TestExecutionListener> standardListeners = new TreeSet<TestExecutionListener>(comparator);
+        for (final TestExecutionListener listener : listeners) {
             if (!standardListeners.contains(listener)) {
                 getTestContextManager().registerTestExecutionListeners(listener);
             }

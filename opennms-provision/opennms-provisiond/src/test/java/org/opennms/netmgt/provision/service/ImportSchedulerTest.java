@@ -42,7 +42,7 @@ import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.test.mock.MockLogAppender;
 import org.quartz.Job;
 import org.quartz.JobDetail;

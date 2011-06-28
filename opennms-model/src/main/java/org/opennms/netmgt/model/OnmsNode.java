@@ -815,18 +815,18 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      */
     public String toString() {
         ToStringCreator retval = new ToStringCreator(this);
-        retval.append("id", getId());
-        retval.append("label", getLabel());
+        retval.append("id", m_id);
+        retval.append("label", m_label);
         retval.append("parent.id", getParent() == null ? "null" : getParent().getId());
-        retval.append("createTime", getCreateTime());
-        retval.append("distPoller", getDistPoller());
-        retval.append("sysObjectId", getSysObjectId());
-        retval.append("sysName", getSysName());
-        retval.append("sysDescription", getSysDescription());
-        retval.append("sysLocation", getSysLocation());
-        retval.append("sysContact", getSysContact());
-        retval.append("type", getType());
-        retval.append("operatingSystem", getOperatingSystem());
+        retval.append("createTime", m_createTime);
+        // retval.append("distPoller", m_distPoller);
+        retval.append("sysObjectId", m_sysObjectId);
+        retval.append("sysName", m_sysName);
+        retval.append("sysDescription", m_sysDescription);
+        retval.append("sysLocation", m_sysLocation);
+        retval.append("sysContact", m_sysContact);
+        retval.append("type", m_type);
+        retval.append("operatingSystem", m_operatingSystem);
         return retval.toString();
     }
 

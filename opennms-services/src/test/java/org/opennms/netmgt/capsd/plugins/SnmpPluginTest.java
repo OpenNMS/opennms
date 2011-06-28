@@ -38,10 +38,10 @@ import junit.framework.TestSuite;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.test.snmp.SnmpTestSuiteUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
 import org.springframework.core.io.ByteArrayResource;
 
 public class SnmpPluginTest extends OpenNMSTestCase {

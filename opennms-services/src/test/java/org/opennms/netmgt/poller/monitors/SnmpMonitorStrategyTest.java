@@ -36,18 +36,18 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.mock.snmp.MockSnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.Counter32SnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.Counter64SnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.Gauge32SnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.Integer32SnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.IpAddressSnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.OidSnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.StringSnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.TimeticksSnmpValue;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.Counter32SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.Counter64SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.Gauge32SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.Integer32SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.IpAddressSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.OidSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.StringSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.TimeticksSnmpValue;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -79,7 +79,7 @@ public class SnmpMonitorStrategyTest {
 
     @Test
     public void testMeetsCriteriaWithSnmpNull() {
-        SnmpValue result = TestSnmpValue.NULL_VALUE;
+        SnmpValue result = MockSnmpValue.NULL_VALUE;
         testSyntaxEquals(result, "", "1");
     }
 

@@ -26,19 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp.mock;
+package org.opennms.mock.snmp;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
-public class TestSnmpValue implements SnmpValue {
+public class MockSnmpValue implements SnmpValue {
     
-    public static class NetworkAddressSnmpValue extends TestSnmpValue {
+    public static class NetworkAddressSnmpValue extends MockSnmpValue {
 
-        public NetworkAddressSnmpValue(String value) {
+        public NetworkAddressSnmpValue(final String value) {
             super(SnmpValue.SNMP_OCTET_STRING, value);
         }
 
@@ -48,14 +49,88 @@ public class TestSnmpValue implements SnmpValue {
 
     }
 
-    public static class HexStringSnmpValue extends TestSnmpValue {
+    public static class HexStringSnmpValue extends MockSnmpValue {
+    	private final boolean m_isRaw;
 
-        public HexStringSnmpValue(String value) {
+    	public HexStringSnmpValue(final byte[] bytes) {
+    		super(SnmpValue.SNMP_OCTET_STRING, new String(bytes));
+    		m_isRaw = true;
+    	}
+
+        public HexStringSnmpValue(final String value) {
             super(SnmpValue.SNMP_OCTET_STRING, value);
+            m_isRaw = false;
+        }
+
+        public byte[] getBytes() {
+        	if (m_isRaw) {
+        		return toString().getBytes();
+        	} else {
+        		final String value = toString();
+        		final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        		if (value.contains(" ") || value.contains(":")) {
+        			for (final String entry : value.split("[\\ \\:]")) {
+        				os.write(Integer.parseInt(entry, 16));
+        			}
+        		}
+        		return os.toByteArray();
+//        		return toString().replaceAll("[\\:\\s]+, ", "").getBytes();
+        	}
+        }
+        
+        public String toString() {
+        	final byte[] data = super.toString().getBytes();
+
+        	final byte[] results = new byte[data.length];
+            for (int i = 0; i < data.length; i++) {
+                results[i] = Character.isISOControl((char)data[i]) ? (byte)'.' : data[i];
+            }
+            return new String(results);
+            /*
+            if (m_isRaw) {
+                //
+                // format the string for hex
+                //
+
+                StringBuffer b = new StringBuffer();
+                // b.append("SNMP Octet String [length = " + m_data.length + ", fmt
+                // = HEX] = [");
+                for (int i = 0; i < data.length; ++i) {
+                    int x = (int) data[i] & 0xff;
+                    if (x < 16)
+                        b.append('0');
+                    b.append(Integer.toString(x, 16).toUpperCase());
+
+                    if (i < data.length - 1)
+                        b.append(' ');
+                }
+                // b.append(']');
+                return b.toString();
+            } else {
+                //
+                // raw output
+                //
+                // rs = "SNMP Octet String [length = " + m_data.length + ", fmt =
+                // RAW] = [" + new String(m_data) + "]";
+                byte[] results = new byte[data.length];
+                for (int i = 0; i < data.length; i++) {
+                    results[i] = Character.isISOControl((char)data[i]) ? (byte)'.' : data[i];
+                }
+                return new String(results);
+            }
+            */
         }
 
         public String toHexString() {
-            return toString();
+        	final byte[] data = super.toString().getBytes();
+            final StringBuffer b = new StringBuffer();
+            for (int i = 0; i < data.length; ++i) {
+                final int x = (int) data[i] & 0xff;
+                if (x < 16)
+                    b.append('0');
+                b.append(Integer.toString(x, 16).toLowerCase());
+            }
+            return b.toString();
         }
         
         public boolean isDisplayable() {
@@ -64,7 +139,7 @@ public class TestSnmpValue implements SnmpValue {
 
     }
 
-    public static class IpAddressSnmpValue extends TestSnmpValue {
+    public static class IpAddressSnmpValue extends MockSnmpValue {
 
         public IpAddressSnmpValue(String value) {
             super(SnmpValue.SNMP_IPADDRESS, value);
@@ -88,7 +163,7 @@ public class TestSnmpValue implements SnmpValue {
 
     }
 
-    public static class NumberSnmpValue extends TestSnmpValue {
+    public static class NumberSnmpValue extends MockSnmpValue {
 
         public NumberSnmpValue(int type, String value) {
             super(type, value);
@@ -213,6 +288,12 @@ public class TestSnmpValue implements SnmpValue {
         }
         
         public String toString() {
+        	return String.valueOf(toLong());
+        }
+        
+        public String toDisplayString() {
+        	return toString();
+        	/*
             long millis = toLong()*10L;
             
             StringBuilder buf = new StringBuilder();
@@ -231,13 +312,14 @@ public class TestSnmpValue implements SnmpValue {
             }
             
             return buf.toString();
+            */
         }
 
     }
 
 
 
-    public static class StringSnmpValue extends TestSnmpValue {
+    public static class StringSnmpValue extends MockSnmpValue {
         public StringSnmpValue(String value) {
             super(SnmpValue.SNMP_OCTET_STRING, value);
         }
@@ -272,7 +354,7 @@ public class TestSnmpValue implements SnmpValue {
         }
     }
 
-    public static class OidSnmpValue extends TestSnmpValue {
+    public static class OidSnmpValue extends MockSnmpValue {
 
         public OidSnmpValue(String value) {
             super(SnmpValue.SNMP_OBJECT_IDENTIFIER, value);
@@ -291,16 +373,16 @@ public class TestSnmpValue implements SnmpValue {
 
     private int m_type;
     private String m_value;
-    public static final SnmpValue NULL_VALUE = new TestSnmpValue(SnmpValue.SNMP_NULL, null) {
+    public static final SnmpValue NULL_VALUE = new MockSnmpValue(SnmpValue.SNMP_NULL, null) {
         public boolean isNull() {
             return true;
         }
     };
-    public static final SnmpValue NO_SUCH_INSTANCE = new TestSnmpValue(SnmpValue.SNMP_NO_SUCH_INSTANCE, "noSuchInstance");
-    public static final SnmpValue NO_SUCH_OBJECT = new TestSnmpValue(SnmpValue.SNMP_NO_SUCH_OBJECT, "noSuchObject");
-    public static final SnmpValue END_OF_MIB = new TestSnmpValue(SnmpValue.SNMP_END_OF_MIB, "endOfMibView");
-    
-    public TestSnmpValue(int type, String value) {
+    public static final SnmpValue NO_SUCH_INSTANCE = new MockSnmpValue(SnmpValue.SNMP_NO_SUCH_INSTANCE, "noSuchInstance");
+    public static final SnmpValue NO_SUCH_OBJECT = new MockSnmpValue(SnmpValue.SNMP_NO_SUCH_OBJECT, "noSuchObject");
+    public static final SnmpValue END_OF_MIB = new MockSnmpValue(SnmpValue.SNMP_END_OF_MIB, "endOfMibView");
+
+    public MockSnmpValue(int type, String value) {
         m_type = type;
         m_value = value;
     }
@@ -320,8 +402,8 @@ public class TestSnmpValue implements SnmpValue {
     public String getValue() { return m_value; }
 
     public boolean equals(Object obj) {
-        if (obj instanceof TestSnmpValue ) {
-            TestSnmpValue val = (TestSnmpValue)obj;
+        if (obj instanceof MockSnmpValue ) {
+            MockSnmpValue val = (MockSnmpValue)obj;
             return (m_value == null ? val.m_value == null : m_value.equals(val.m_value));
         }
         return false;
@@ -368,6 +450,8 @@ public class TestSnmpValue implements SnmpValue {
             return new HexStringSnmpValue(mibVal.substring("Hex-STRING:".length()).trim());
         else if (mibVal.startsWith("Network Address:"))
             return new NetworkAddressSnmpValue(mibVal.substring("Network Address:".length()).trim());
+        else if (mibVal.startsWith("BITS:"))
+            return new HexStringSnmpValue(mibVal.substring("BITS:".length()).trim());
         else if (mibVal.equals("\"\""))
             return NULL_VALUE;
 
@@ -395,7 +479,7 @@ public class TestSnmpValue implements SnmpValue {
     }
 
     public SnmpObjId toSnmpObjId() {
-        throw new IllegalArgumentException("Unable to convert "+this+" to an SnmpObjId");
+        throw new IllegalArgumentException("Unable to convert "+this+" to an SNMP object ID");
     }
 
     public byte[] getBytes() {

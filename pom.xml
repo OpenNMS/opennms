@@ -926,16 +926,25 @@
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.dns</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.http</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.snmp</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.xml</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
@@ -1062,6 +1071,12 @@
         <groupId>org.opennms</groupId>
         <artifactId>drools-correlation-engine</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-mock-simpleserver</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1223,6 +1238,7 @@
         <artifactId>opennms-dao</artifactId>
         <type>test-jar</type>
         <version>${project.version}</version>
+        <scope>test</scope>
         <exclusions>
           <exclusion>
             <groupId>cglib</groupId>
@@ -1399,6 +1415,7 @@
         <artifactId>opennms-provision-persistence</artifactId>
         <version>${project.version}</version>
         <type>test-jar</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1429,6 +1446,7 @@
         <groupId>org.opennms.tests</groupId>
         <artifactId>org.opennms.tests.mock-elements</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1480,6 +1498,7 @@
         <artifactId>opennms-services</artifactId>
         <version>${project.version}</version>
         <type>test-jar</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1512,14 +1531,16 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-          <artifactId>spring-test-dependencies</artifactId>
+        <artifactId>spring-test-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-test</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1625,6 +1646,7 @@
         <artifactId>snmp-test-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -1831,6 +1853,7 @@
         <groupId>org.dbunit</groupId>
         <artifactId>dbunit</artifactId>
         <version>2.2</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.google.collections</groupId>
@@ -1973,6 +1996,7 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.8.2</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.jwebunit</groupId>
@@ -2102,6 +2126,7 @@
         <groupId>xmlunit</groupId>
         <artifactId>xmlunit</artifactId>
         <version>1.2</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
