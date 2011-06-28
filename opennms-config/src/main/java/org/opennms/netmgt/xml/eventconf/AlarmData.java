@@ -308,7 +308,7 @@ public class AlarmData implements java.io.Serializable {
      * @param alarmType the value of field 'alarmType'.
      */
     public void setAlarmType(
-            final int alarmType) {
+            final Integer alarmType) {
         this.m_alarmType = alarmType;
     }
 
@@ -318,7 +318,7 @@ public class AlarmData implements java.io.Serializable {
      * @param autoClean the value of field 'autoClean'.
      */
     public void setAutoClean(
-            final boolean autoClean) {
+            final Boolean autoClean) {
         this.m_autoClean = autoClean;
     }
 
@@ -359,7 +359,7 @@ public class AlarmData implements java.io.Serializable {
      * 'x733ProbableCause'.
      */
     public void setX733ProbableCause(
-            final int x733ProbableCause) {
+            final Integer x733ProbableCause) {
         this.m_x733ProbableCause = x733ProbableCause;
     }
 
