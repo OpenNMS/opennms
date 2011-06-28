@@ -33,37 +33,28 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {"classpath:/META-INF/opennms/detectors.xml",
 "classpath:/META-INF/opennms/test/snmpConfigFactoryContext.xml"})
-public class HostResourceSWRunDetectorTest implements ApplicationContextAware {
+public class HostResourceSWRunDetectorTest {
     
     private static final int TEST_PORT = 1691;
-
     private static final String TEST_IP_ADDRESS = "127.0.0.1";
-
 
     @Autowired
     private HostResourceSWRunDetector m_detector;
-    
-    private MockSnmpAgent m_snmpAgent;
     
     @Before
     public void setUp() throws InterruptedException{
@@ -72,34 +63,23 @@ public class HostResourceSWRunDetectorTest implements ApplicationContextAware {
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
         m_detector.setPort(TEST_PORT);
-        
-        if(m_snmpAgent == null) {
-            m_snmpAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/provision/detector/snmpTestData1.properties"), String.format("%s/%s", TEST_IP_ADDRESS, TEST_PORT));
-        }
-    }
-    
-    @After
-    public void tearDown() throws InterruptedException {
-        m_snmpAgent.shutDownAndWait();
     }
     
     @Test
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testDetectorFail() throws UnknownHostException{
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
     
     @Test
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setServiceToDetect("WindowServer");
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
-    
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        // TODO Auto-generated method stub
-        
-    }
 
     @Test
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testLackOfCaseSensitivity() throws UnknownHostException{
         m_detector.setServiceToDetect("Omnitek XR.exe");
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));

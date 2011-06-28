@@ -33,6 +33,7 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.opennms.mock.snmp.MockSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
@@ -79,13 +80,13 @@ public class TestAgentTest extends TestCase {
     }
     
     private Object getValueFor(SnmpObjId oid) {
-        return new TestSnmpValue(SnmpValue.SNMP_OCTET_STRING, oid+"-value");
+        return new MockSnmpValue(SnmpValue.SNMP_OCTET_STRING, oid+"-value");
     }
     
     public void testConstantObjects() {
-        assertEquals("noSuchObject", TestSnmpValue.NO_SUCH_OBJECT.toString());
-        assertEquals("noSuchInstance", TestSnmpValue.NO_SUCH_INSTANCE.toString());
-        assertEquals("endOfMibView", TestSnmpValue.END_OF_MIB.toString());
+        assertEquals("noSuchObject", MockSnmpValue.NO_SUCH_OBJECT.toString());
+        assertEquals("noSuchInstance", MockSnmpValue.NO_SUCH_INSTANCE.toString());
+        assertEquals("endOfMibView", MockSnmpValue.END_OF_MIB.toString());
     }
     
     public void testEmptyAgent() {
@@ -426,7 +427,7 @@ public class TestAgentTest extends TestCase {
             return nextOid;
         } catch (AgentEndOfMibException e) {
             assertEquals(reqObjId, respVarBind.getObjId());
-            assertEquals(TestSnmpValue.END_OF_MIB, respVarBind.getValue());
+            assertEquals(MockSnmpValue.END_OF_MIB, respVarBind.getValue());
             return reqObjId;
         }
     }
@@ -587,9 +588,9 @@ public class TestAgentTest extends TestCase {
         try {
             return m_agent.getValueFor(objId);
         } catch (AgentNoSuchInstanceException e) {
-            return TestSnmpValue.NO_SUCH_INSTANCE;
+            return MockSnmpValue.NO_SUCH_INSTANCE;
         } catch (AgentNoSuchObjectException e) {
-            return TestSnmpValue.NO_SUCH_OBJECT;
+            return MockSnmpValue.NO_SUCH_OBJECT;
         }
     }
 

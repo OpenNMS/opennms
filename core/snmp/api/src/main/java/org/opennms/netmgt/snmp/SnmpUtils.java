@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 public class SnmpUtils {
@@ -57,6 +58,7 @@ public class SnmpUtils {
     }
 
     public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker... trackers) {
+        LogUtils.debugf(SnmpUtils.class, "strategy = %s", getStrategyClassName());
         return getStrategy().createWalker(agentConfig, name, createTooBigTracker(agentConfig, trackers));
     }
 
