@@ -89,6 +89,7 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
         // Add any additional listeners that may have been specified manually in the test
         final Comparator<TestExecutionListener> comparator = new ClassNameComparator();
         final TreeSet<TestExecutionListener> standardListeners = new TreeSet<TestExecutionListener>(comparator);
+        standardListeners.addAll(getTestContextManager().getTestExecutionListeners());
         for (final TestExecutionListener listener : listeners) {
             if (!standardListeners.contains(listener)) {
                 getTestContextManager().registerTestExecutionListeners(listener);
