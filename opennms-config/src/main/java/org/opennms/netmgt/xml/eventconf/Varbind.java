@@ -173,7 +173,7 @@ public class Varbind implements java.io.Serializable {
      * 
      * @return the value of field 'Vbnumber'.
      */
-    public int getVbnumber(
+    public Integer getVbnumber(
     ) {
         return this.m_vbnumber;
     }
@@ -364,7 +364,7 @@ public class Varbind implements java.io.Serializable {
      * @param vbnumber the value of field 'vbnumber'.
      */
     public void setVbnumber(
-            final int vbnumber) {
+            final Integer vbnumber) {
         this.m_vbnumber = vbnumber;
     }
 
