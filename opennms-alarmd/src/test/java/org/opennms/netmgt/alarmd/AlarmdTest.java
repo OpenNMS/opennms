@@ -36,16 +36,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.concurrent.BarrierSignaler;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -160,7 +160,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
 
         final long millis = System.currentTimeMillis()+2500;
 
-        final BarrierSignaler signal = new BarrierSignaler(numberOfAlarmsToReduce);
+        final CountDownLatch signal = new CountDownLatch(numberOfAlarmsToReduce);
 
         for (int i=1; i<= numberOfAlarmsToReduce; i++) {
             MockUtil.println("Creating Runnable: "+i+" of "+numberOfAlarmsToReduce+" events to reduce.");
@@ -179,7 +179,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
                     } catch (Throwable t) {
                         t.printStackTrace();
                     } finally {
-                        signal.signal();
+                        signal.countDown();
                     }
                 }
             }
@@ -189,7 +189,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
             p.start();
         }
 
-        signal.waitFor();
+        signal.await();
 
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
