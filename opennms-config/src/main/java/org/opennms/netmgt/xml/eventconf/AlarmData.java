@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -38,37 +39,37 @@ public class AlarmData implements java.io.Serializable {
      * Field reductionKey.
      */
 	@XmlAttribute(name="reduction-key")
-    private String reductionKey;
+    private String m_reductionKey;
 
     /**
      * Field _alarmType.
      */
 	@XmlAttribute(name="alarm-type")
-    private Integer alarmType;
+    private Integer m_alarmType;
 
     /**
      * Field _clearKey.
      */
     @XmlAttribute(name="clear-key")
-    private String clearKey;
+    private String m_clearKey;
 
     /**
      * Field _autoClean.
      */
     @XmlAttribute(name="auto-clean")
-    private Boolean autoClean;
+    private Boolean m_autoClean;
 
     /**
      * Field _x733AlarmType.
      */
     @XmlAttribute(name="x733-alarm-type")
-    private String x733AlarmType;
+    private String m_x733AlarmType;
 
     /**
      * Field _x733ProbableCause.
      */
     @XmlAttribute(name="x733-probable-cause")
-    private Integer x733ProbableCause;
+    private Integer m_x733ProbableCause;
 
 
       //----------------/
@@ -88,14 +89,14 @@ public class AlarmData implements java.io.Serializable {
      */
     public void deleteAlarmType(
     ) {
-        alarmType = null;
+        m_alarmType = null;
     }
 
     /**
      */
     public void deleteX733ProbableCause(
     ) {
-        x733ProbableCause= null;
+        m_x733ProbableCause= null;
     }
 
     /**
@@ -113,32 +114,32 @@ public class AlarmData implements java.io.Serializable {
         if (obj instanceof AlarmData) {
         
             AlarmData temp = (AlarmData)obj;
-            if (this.reductionKey != null) {
-                if (temp.reductionKey == null) return false;
-                else if (!(this.reductionKey.equals(temp.reductionKey))) 
+            if (this.m_reductionKey != null) {
+                if (temp.m_reductionKey == null) return false;
+                else if (!(this.m_reductionKey.equals(temp.m_reductionKey))) 
                     return false;
             }
-            else if (temp.reductionKey != null)
+            else if (temp.m_reductionKey != null)
                 return false;
-            if (this.alarmType != temp.alarmType)
+            if (this.m_alarmType != temp.m_alarmType)
                 return false;
-            if (this.clearKey != null) {
-                if (temp.clearKey == null) return false;
-                else if (!(this.clearKey.equals(temp.clearKey))) 
+            if (this.m_clearKey != null) {
+                if (temp.m_clearKey == null) return false;
+                else if (!(this.m_clearKey.equals(temp.m_clearKey))) 
                     return false;
             }
-            else if (temp.clearKey != null)
+            else if (temp.m_clearKey != null)
                 return false;
-            if (this.autoClean != temp.autoClean)
+            if (this.m_autoClean != temp.m_autoClean)
                 return false;
-            if (this.x733AlarmType != null) {
-                if (temp.x733AlarmType == null) return false;
-                else if (!(this.x733AlarmType.equals(temp.x733AlarmType))) 
+            if (this.m_x733AlarmType != null) {
+                if (temp.m_x733AlarmType == null) return false;
+                else if (!(this.m_x733AlarmType.equals(temp.m_x733AlarmType))) 
                     return false;
             }
-            else if (temp.x733AlarmType != null)
+            else if (temp.m_x733AlarmType != null)
                 return false;
-            if (this.x733ProbableCause != temp.x733ProbableCause)
+            if (this.m_x733ProbableCause != temp.m_x733ProbableCause)
                 return false;
             return true;
         }
@@ -152,7 +153,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public int getAlarmType(
     ) {
-        return this.alarmType;
+        return this.m_alarmType;
     }
 
     /**
@@ -162,7 +163,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public boolean getAutoClean(
     ) {
-        return this.autoClean;
+        return this.m_autoClean;
     }
 
     /**
@@ -172,7 +173,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public String getClearKey(
     ) {
-        return this.clearKey;
+        return this.m_clearKey;
     }
 
     /**
@@ -182,7 +183,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public String getReductionKey(
     ) {
-        return this.reductionKey;
+        return this.m_reductionKey;
     }
 
     /**
@@ -192,7 +193,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public String getX733AlarmType(
     ) {
-        return this.x733AlarmType;
+        return this.m_x733AlarmType;
     }
 
     /**
@@ -202,7 +203,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public int getX733ProbableCause(
     ) {
-        return this.x733ProbableCause;
+        return this.m_x733ProbableCause;
     }
 
     /**
@@ -212,7 +213,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public boolean hasAlarmType(
     ) {
-        return alarmType != null;
+        return m_alarmType != null;
     }
 
     /**
@@ -222,12 +223,12 @@ public class AlarmData implements java.io.Serializable {
      */
     public boolean hasX733ProbableCause(
     ) {
-        return x733ProbableCause != null;
+        return m_x733ProbableCause != null;
     }
 
     public boolean hasAutoClean(
     ) {
-        return autoClean != null;
+        return m_autoClean != null;
     }
 
     /**
@@ -240,27 +241,8 @@ public class AlarmData implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        if (reductionKey != null) {
-           result = 37 * result + reductionKey.hashCode();
-        }
-        if (alarmType != null) {
-        	result = 37 * result + alarmType;
-        }
-        if (clearKey != null) {
-           result = 37 * result + clearKey.hashCode();
-        }
-        if (autoClean != null) {
-        	result = 37 * result + (autoClean?0:1);
-        }
-        if (x733AlarmType != null) {
-           result = 37 * result + x733AlarmType.hashCode();
-        }
-        if (x733ProbableCause != null) {
-        	result = 37 * result + x733ProbableCause;
-        }
-        return result;
+        return new HashCodeBuilder(17,37).append(getAlarmType()).append(getAutoClean()).append(getX733ProbableCause()).
+        	append(getClearKey()).append(getReductionKey()).append(getX733AlarmType()).toHashCode();
     }
 
     /**
@@ -270,7 +252,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public boolean isAutoClean(
     ) {
-        return this.autoClean;
+        return this.m_autoClean;
     }
 
     /**
@@ -327,7 +309,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public void setAlarmType(
             final int alarmType) {
-        this.alarmType = alarmType;
+        this.m_alarmType = alarmType;
     }
 
     /**
@@ -337,7 +319,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public void setAutoClean(
             final boolean autoClean) {
-        this.autoClean = autoClean;
+        this.m_autoClean = autoClean;
     }
 
     /**
@@ -347,7 +329,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public void setClearKey(
             final String clearKey) {
-        this.clearKey = clearKey;
+        this.m_clearKey = clearKey;
     }
 
     /**
@@ -357,7 +339,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public void setReductionKey(
             final String reductionKey) {
-        this.reductionKey = reductionKey;
+        this.m_reductionKey = reductionKey;
     }
 
     /**
@@ -367,7 +349,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public void setX733AlarmType(
             final String x733AlarmType) {
-        this.x733AlarmType = x733AlarmType;
+        this.m_x733AlarmType = x733AlarmType;
     }
 
     /**
@@ -378,7 +360,7 @@ public class AlarmData implements java.io.Serializable {
      */
     public void setX733ProbableCause(
             final int x733ProbableCause) {
-        this.x733ProbableCause = x733ProbableCause;
+        this.m_x733ProbableCause = x733ProbableCause;
     }
 
     /**
@@ -412,7 +394,7 @@ public class AlarmData implements java.io.Serializable {
     }
 
 	public void deleteAutoClean() {
-		autoClean = null;
+		m_autoClean = null;
 	}
 
 

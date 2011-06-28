@@ -91,7 +91,6 @@ public class VarbindDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -139,7 +138,6 @@ public class VarbindDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -193,7 +191,6 @@ public class VarbindDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }

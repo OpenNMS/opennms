@@ -92,7 +92,6 @@ public class EventsDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return new org.opennms.netmgt.xml.eventconf.Global();
             }
@@ -139,7 +138,6 @@ public class EventsDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return new org.opennms.netmgt.xml.eventconf.Event();
             }
@@ -189,7 +187,6 @@ public class EventsDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }

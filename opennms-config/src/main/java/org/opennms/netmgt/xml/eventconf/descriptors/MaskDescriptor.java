@@ -100,7 +100,6 @@ public class MaskDescriptor extends org.exolab.castor.xml.util.XMLClassDescripto
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return new org.opennms.netmgt.xml.eventconf.Maskelement();
             }
@@ -149,7 +148,6 @@ public class MaskDescriptor extends org.exolab.castor.xml.util.XMLClassDescripto
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return new org.opennms.netmgt.xml.eventconf.Varbind();
             }

@@ -11,6 +11,13 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -31,6 +38,8 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name="logmsg")
+@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("serial")
 public class Logmsg implements java.io.Serializable {
 
@@ -42,22 +51,20 @@ public class Logmsg implements java.io.Serializable {
     /**
      * internal content storage
      */
-    private java.lang.String _content = "";
+	@XmlValue
+    private String m_content = "";
 
     /**
      * Field _notify.
      */
-    private boolean _notify = true;
-
-    /**
-     * keeps track of state for field: _notify
-     */
-    private boolean _has_notify;
+	@XmlAttribute(name="notify", required=false)
+    private Boolean m_notify;
 
     /**
      * Field _dest.
      */
-    private java.lang.String _dest = "logndisplay";
+	@XmlAttribute(name="dest", required=false)
+    private String m_dest;
 
 
       //----------------/
@@ -66,8 +73,6 @@ public class Logmsg implements java.io.Serializable {
 
     public Logmsg() {
         super();
-        setContent("");
-        setDest("logndisplay");
     }
 
 
@@ -79,7 +84,7 @@ public class Logmsg implements java.io.Serializable {
      */
     public void deleteNotify(
     ) {
-        this._has_notify= false;
+        m_notify = null;
     }
 
     /**
@@ -97,23 +102,21 @@ public class Logmsg implements java.io.Serializable {
         if (obj instanceof Logmsg) {
         
             Logmsg temp = (Logmsg)obj;
-            if (this._content != null) {
-                if (temp._content == null) return false;
-                else if (!(this._content.equals(temp._content))) 
+            if (this.m_content != null) {
+                if (temp.m_content == null) return false;
+                else if (!(this.m_content.equals(temp.m_content))) 
                     return false;
             }
-            else if (temp._content != null)
+            else if (temp.m_content != null)
                 return false;
-            if (this._notify != temp._notify)
+            if (this.m_notify != temp.m_notify)
                 return false;
-            if (this._has_notify != temp._has_notify)
-                return false;
-            if (this._dest != null) {
-                if (temp._dest == null) return false;
-                else if (!(this._dest.equals(temp._dest))) 
+            if (this.m_dest != null) {
+                if (temp.m_dest == null) return false;
+                else if (!(this.m_dest.equals(temp.m_dest))) 
                     return false;
             }
-            else if (temp._dest != null)
+            else if (temp.m_dest != null)
                 return false;
             return true;
         }
@@ -126,9 +129,9 @@ public class Logmsg implements java.io.Serializable {
      * 
      * @return the value of field 'Content'.
      */
-    public java.lang.String getContent(
+    public String getContent(
     ) {
-        return this._content;
+        return m_content;
     }
 
     /**
@@ -136,9 +139,9 @@ public class Logmsg implements java.io.Serializable {
      * 
      * @return the value of field 'Dest'.
      */
-    public java.lang.String getDest(
+    public String getDest(
     ) {
-        return this._dest;
+        return m_dest;
     }
 
     /**
@@ -146,9 +149,9 @@ public class Logmsg implements java.io.Serializable {
      * 
      * @return the value of field 'Notify'.
      */
-    public boolean getNotify(
+    public Boolean getNotify(
     ) {
-        return this._notify;
+        return m_notify;
     }
 
     /**
@@ -158,7 +161,7 @@ public class Logmsg implements java.io.Serializable {
      */
     public boolean hasNotify(
     ) {
-        return this._has_notify;
+        return m_notify != null;
     }
 
     /**
@@ -171,18 +174,7 @@ public class Logmsg implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_content != null) {
-           result = 37 * result + _content.hashCode();
-        }
-        result = 37 * result + (_notify?0:1);
-        if (_dest != null) {
-           result = 37 * result + _dest.hashCode();
-        }
-        
-        return result;
+    	return new HashCodeBuilder(17,37).append(getContent()).append(getNotify()).append(getDest()).toHashCode();
     }
 
     /**
@@ -192,7 +184,7 @@ public class Logmsg implements java.io.Serializable {
      */
     public boolean isNotify(
     ) {
-        return this._notify;
+        return this.m_notify;
     }
 
     /**
@@ -249,8 +241,8 @@ public class Logmsg implements java.io.Serializable {
      * @param content the value of field 'content'.
      */
     public void setContent(
-            final java.lang.String content) {
-        this._content = content;
+            final String content) {
+        this.m_content = content;
     }
 
     /**
@@ -259,8 +251,8 @@ public class Logmsg implements java.io.Serializable {
      * @param dest the value of field 'dest'.
      */
     public void setDest(
-            final java.lang.String dest) {
-        this._dest = dest;
+            final String dest) {
+        this.m_dest = dest;
     }
 
     /**
@@ -270,8 +262,7 @@ public class Logmsg implements java.io.Serializable {
      */
     public void setNotify(
             final boolean notify) {
-        this._notify = notify;
-        this._has_notify = true;
+        this.m_notify = notify;
     }
 
     /**

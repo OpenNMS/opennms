@@ -11,6 +11,12 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -19,6 +25,8 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name="global")
+@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("serial")
 public class Global implements java.io.Serializable {
 
@@ -30,7 +38,8 @@ public class Global implements java.io.Serializable {
     /**
      * Security settings for this configuration
      */
-    private org.opennms.netmgt.xml.eventconf.Security _security;
+	@XmlElement(name="security", required=true)
+    private Security m_security;
 
 
       //----------------/
@@ -61,12 +70,12 @@ public class Global implements java.io.Serializable {
         if (obj instanceof Global) {
         
             Global temp = (Global)obj;
-            if (this._security != null) {
-                if (temp._security == null) return false;
-                else if (!(this._security.equals(temp._security))) 
+            if (this.m_security != null) {
+                if (temp.m_security == null) return false;
+                else if (!(this.m_security.equals(temp.m_security))) 
                     return false;
             }
-            else if (temp._security != null)
+            else if (temp.m_security != null)
                 return false;
             return true;
         }
@@ -82,7 +91,7 @@ public class Global implements java.io.Serializable {
      */
     public org.opennms.netmgt.xml.eventconf.Security getSecurity(
     ) {
-        return this._security;
+        return this.m_security;
     }
 
     /**
@@ -95,14 +104,7 @@ public class Global implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_security != null) {
-           result = 37 * result + _security.hashCode();
-        }
-        
-        return result;
+    	return new HashCodeBuilder(17,37).append(getSecurity()).toHashCode();
     }
 
     /**
@@ -161,7 +163,7 @@ public class Global implements java.io.Serializable {
      */
     public void setSecurity(
             final org.opennms.netmgt.xml.eventconf.Security security) {
-        this._security = security;
+        this.m_security = security;
     }
 
     /**

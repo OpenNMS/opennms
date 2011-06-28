@@ -101,7 +101,6 @@ public class SecurityDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
