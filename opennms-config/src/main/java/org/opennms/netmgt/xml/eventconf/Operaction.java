@@ -47,13 +47,13 @@ public class Operaction implements java.io.Serializable {
     /**
      * Field _state.
      */
-	@XmlAttribute
+	@XmlAttribute(name="state")
     private String m_state;
 
     /**
      * Field _menutext.
      */
-	@XmlAttribute
+	@XmlAttribute(name="menutext")
     private String m_menutext;
 
 

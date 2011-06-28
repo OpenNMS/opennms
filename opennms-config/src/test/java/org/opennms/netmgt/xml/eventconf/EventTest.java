@@ -120,7 +120,7 @@ public class EventTest extends XmlTest<Event> {
 				"</event>",
 				"target/classes/xsds/eventconf.xsd" }, 
 				{event1,
-					"<event>" +
+					"<event xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">" +
 					"  <mask>\n" + 
 					"    <maskelement>\n" + 
 					"      <mename>id</mename>\n" + 
