@@ -4,6 +4,6 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.CellTable.Style;
 
 public interface OnmsTableResources extends CellTable.Resources {
-    @Source({CellTable.Style.DEFAULT_CSS, "customCellTableStyles.css"})
+    @Source({"customCellTableStyles.css"})
     Style cellTableStyle();
 }

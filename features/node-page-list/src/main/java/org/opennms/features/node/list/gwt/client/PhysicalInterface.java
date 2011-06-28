@@ -34,5 +34,13 @@ public class PhysicalInterface extends JavaScriptObject {
     public final native String getIpAddress() /*-{
         return this.ipAddress;
     }-*/;
+    
+    public final native int getIfAdminStatus()/*-{
+        return parseInt(this.ifAdminStatus);
+    }-*/;
+    
+    public final native int getIfOperStatus() /*-{
+        return parseInt(this.ifOperStatus);
+    }-*/;
 
 }

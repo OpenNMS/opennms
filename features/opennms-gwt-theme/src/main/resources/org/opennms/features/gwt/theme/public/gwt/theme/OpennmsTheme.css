@@ -14,7 +14,6 @@
 
 body, table td, select {
   font-family: "Lucida Grande", Verdana, sans-serif;
-  font-size: small;
 }
 pre {
   font-family: "courier new", courier;
@@ -1116,7 +1115,7 @@ td.datePickerMonth {
 	
 }
 .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabs {
-	
+	font-size: 70%;
 }
 .gwt-TabLayoutPanel .gwt-TabLayoutPanelContent {
   border-color: #bcbcbc;
@@ -1154,3 +1153,29 @@ td.datePickerMonth {
   background: white url(images/splitPanelThumb.png) center center no-repeat;
   cursor: row-resize;
 }
+
+/* OpenNMS Centric GWT Classes */
+.onms-ipinterface-status-unknown{
+	background: #B2DFFF;
+	border-bottom-color: #B2DFFF;
+	border-right-color: #B2DFFF;
+}
+
+.onms-ipinterface-status-indeterminate {
+	background: #F6CECD;
+	border-bottom-color: #F6CECD;
+	border-right-color: #F6CECD;
+}
+
+.onms-ipinterface-status-up {
+	background: #D8E1CD;
+	border-bottom-color: #D8E1CD;
+	border-right-color: #D8E1CD;
+}
+
+.onms-ipinterface-status-down {
+	background: #F5CDCD;
+	border-bottom-color: #F5CDCD;
+	border-right-color: #F5CDCD;
+}
+

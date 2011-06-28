@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.ListDataProvider;
 
 public class PageableNodeList extends Composite implements ProvidesResize, PhysicalInterfaceSelectionHandler, IpInterfaceSelectionHandler {
     
@@ -41,7 +42,6 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
             if(response.getStatusCode() == 200) {
                 updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(response.getText()));
             }else {
-                //updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(DefaultNodeService.SNMP_INTERFACES_TEST_RESPONSE));
                 showErrorDialogBox("Error attempting to get SnmpInterfaces");
             }
         }
@@ -114,6 +114,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     ErrorDialogBox m_errorDialog;
     
     NodeService m_nodeService = new DefaultNodeService();
+    private ListDataProvider<IpInterface> m_ipIfaceDataProvider;
+    private ListDataProvider<PhysicalInterface> m_physicalIfaceDataProvider;
 
     private int m_nodeId;
     
@@ -172,13 +174,11 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     }-*/;
     
     public void updateIpInterfaceList(List<IpInterface> ipInterfaces) {
-        m_ipInterfaceTable.setRowCount(ipInterfaces.size());
-        m_ipInterfaceTable.setRowData(ipInterfaces);
+        m_ipIfaceDataProvider.setList(ipInterfaces);
     }
     
     public void updatePhysicalInterfaceList(List<PhysicalInterface> physicalInterfaces) {
-        m_physicalInterfaceTable.setRowCount(physicalInterfaces.size());
-        m_physicalInterfaceTable.setRowData(physicalInterfaces);
+        m_physicalIfaceDataProvider.setList(physicalInterfaces);
     }
 
     private void initializeListBoxes() {
@@ -196,8 +196,11 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
 
     private void initializeTables() {
         m_ipInterfaceTable.setWidth("100%");
-        m_ipInterfaceTable.setPageSize(15);
+        m_ipInterfaceTable.setPageSize(19);
         m_ipInterfaceTable.addSelectEventHandler(this);
+        
+        m_ipIfaceDataProvider = new ListDataProvider<IpInterface>();
+        m_ipIfaceDataProvider.addDataDisplay(m_ipInterfaceTable);
         
         SimplePager ipSimplePager = new SimplePager(TextLocation.CENTER, (Resources) GWT.create(OnmsSimplePagerResources.class), true, 1000, false);
         ipSimplePager.setWidth("100%");
@@ -208,6 +211,9 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
         
         m_physicalInterfaceTable.setWidth("100%");
         m_physicalInterfaceTable.addSelectEventHandler(this);
+        
+        m_physicalIfaceDataProvider = new ListDataProvider<PhysicalInterface>();
+        m_physicalIfaceDataProvider.addDataDisplay(m_physicalInterfaceTable);
         
         SimplePager physicalSimplePager = new SimplePager(TextLocation.CENTER, (Resources) GWT.create(OnmsSimplePagerResources.class), true, 1000, false);
         physicalSimplePager.setWidth("100%");

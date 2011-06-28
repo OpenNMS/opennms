@@ -10,5 +10,5 @@
 	
 	<source path="client" />
 	<entry-point class="org.opennms.gwt.web.ui.client.CoreWeb" />
-	<entry-point class='org.opennms.features.node.list.gwt.client.NodeInterfaceList'/>
+<!-- 	<entry-point class='org.opennms.features.node.list.gwt.client.NodeInterfaceList'/> -->
 </module>

@@ -6,6 +6,7 @@ import org.opennms.features.node.list.gwt.client.events.IpInterfaceSelectionHand
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -21,6 +22,26 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
     }
 
     private void initialize() {
+        
+        setRowStyles(new RowStyles<IpInterface>() {
+            
+            @Override
+            public String getStyleNames(IpInterface row, int rowIndex) {
+                String bgStyle;
+                if (row.getManaged().equals("U") || row.getManaged().equals("F") || row.getManaged().equals("N")) {
+                    bgStyle = "onms-ipinterface-status-unknown";
+                } else {
+                    bgStyle = "onms-ipinterface-status-up";
+                    if (row.isDown().equals("true")) {
+                        bgStyle = "onms-ipinterface-status-down";
+                    }
+                }
+                
+                return bgStyle;
+            }
+        });
+        
+        
         DblClickTextColumn<IpInterface> ipAddressColumn = new DblClickTextColumn<IpInterface>() {
 
             @Override
@@ -90,4 +111,5 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
     public void addSelectEventHandler(IpInterfaceSelectionHandler handler) {
         getEventBus().addHandler(IpInterfaceSelectionEvent.TYPE, handler);
     }
+    
 }

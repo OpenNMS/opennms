@@ -8,11 +8,11 @@
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->
   <!-- any one of the following lines.                            -->
-<!--     <inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/> -->
+    <inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/>
 
 
   <!-- Specify the app entry point class.                         -->
-<!--   <entry-point class='org.opennms.features.node.list.gwt.client.NodeInterfaceList'/> -->
+  <entry-point class='org.opennms.features.node.list.gwt.client.NodeInterfaceList'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>

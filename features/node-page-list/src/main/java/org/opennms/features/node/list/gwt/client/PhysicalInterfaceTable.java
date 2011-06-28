@@ -6,6 +6,7 @@ import org.opennms.features.node.list.gwt.client.events.PhysicalInterfaceSelecti
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -27,6 +28,24 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
     }
 
     private void initialize() {
+        setRowStyles(new RowStyles<PhysicalInterface>() {
+            
+            @Override
+            public String getStyleNames(PhysicalInterface physicalInterface, int rowIndex) {
+                String bgStyle = null;
+                if(physicalInterface.getIfAdminStatus() != 1){
+                    bgStyle = "onms-ipinterface-status-unknown";
+                }else if(physicalInterface.getIfAdminStatus() == 1 && physicalInterface.getIfOperStatus() == 1){
+                    bgStyle = "onms-ipinterface-status-up";
+                }else if(physicalInterface.getIfAdminStatus() == 1 && physicalInterface.getIfOperStatus() != 1){
+                    bgStyle = "onms-ipinterface-status-down";
+                }
+                
+                return bgStyle;
+            }
+        });
+        
+        
         addColumns();
         
         final SingleSelectionModel<PhysicalInterface> selectionModel = new SingleSelectionModel<PhysicalInterface>();

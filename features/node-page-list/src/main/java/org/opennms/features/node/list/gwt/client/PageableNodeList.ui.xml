@@ -7,11 +7,11 @@
 			
 		}
 	</ui:style>
-	<g:TabLayoutPanel barUnit='EM' barHeight='2' ui:field="m_tabLayoutPanel" >
+	<g:TabLayoutPanel barUnit='EM' barHeight='1.25' ui:field="m_tabLayoutPanel" >
         <g:tab>
-            <g:header size='7'>IP Interfaces</g:header>
+            <g:header size='5'>IP Interfaces</g:header>
             <g:LayoutPanel>
-                <g:layer>
+                <g:layer bottom="48px" top="0px">
                     <opennms:IpInterfaceTable ui:field="m_ipInterfaceTable"/>
                 </g:layer>
                 <g:layer height="21px" bottom="2em" left="25%" right="25%">
@@ -29,7 +29,7 @@
             </g:LayoutPanel>
         </g:tab>
         <g:tab>
-            <g:header size='7' style="font-family: Lucida Grande, Verdana, sans-serif;">Physical Interfaces</g:header>
+            <g:header size='5' style="font-family: Lucida Grande, Verdana, sans-serif;">Physical Interfaces</g:header>
             <g:LayoutPanel>
                 <g:layer>
                     <opennms:PhysicalInterfaceTable ui:field="m_physicalInterfaceTable"/>

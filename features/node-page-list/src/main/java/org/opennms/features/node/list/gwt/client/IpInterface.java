@@ -22,4 +22,12 @@ public class IpInterface extends JavaScriptObject {
     public final native String getManaged() /*-{
         return this["@isManaged"];
     }-*/;
+    
+    public final native String isDown() /*-{
+        return this["@isDown"];
+    }-*/;
+    
+    public final native String getMonitoredServiceCount()/*-{
+        return this["@monitoredServiceCount"];
+    }-*/;
 }

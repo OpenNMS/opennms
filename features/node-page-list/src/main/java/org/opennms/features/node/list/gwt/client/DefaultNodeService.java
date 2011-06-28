@@ -70,42 +70,194 @@ public class DefaultNodeService implements NodeService {
         "}";
     
     public static String IP_INTERFACES_TEST_RESPONSE = "{" +
-    		"\"@totalCount\" : \"1\"," +
-    		"\"@count\" : \"1\"," +
-    		"\"ipInterface\" : {" +
-    		  "\"@snmpPrimary\" : \"P\"," +
-    		  "\"@monitoredServiceCount\" : \"8\"," +
+    		"\"@totalCount\" : \"23\"," +
+    		"\"@count\" : \"23\"," +
+    		"\"ipInterface\" : [ {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"0\"," +
     		  "\"@isManaged\" : \"M\"," +
-    		  "\"@id\" : \"130\"," +
-    		  "\"@ifIndex\" : \"2\"," +
+    		  "\"@id\" : \"42\"," +
+    		  "\"@isDown\" : \"true\"," +
+    		  "\"ipAddress\" : \"128.167.119.25\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"2\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"30\"," +
     		  "\"@isDown\" : \"false\"," +
-    		  "\"ipAddress\" : \"172.20.1.11\"," +
-    		  "\"hostName\" : \"barbrady.internal.opennms.com\"," +
-    		  "\"lastCapsdPoll\" : \"2011-06-15T09:47:43.839-04:00\"," +
-    		  "\"nodeId\" : \"11\"," +
-    		  "\"snmpInterface\" : {" +
-    		    "\"@poll\" : \"false\"," +
-    		    "\"@pollFlag\" : \"N\"," +
-    		    "\"@ifIndex\" : \"2\"," +
-    		    "\"@id\" : \"238\"," +
-    		    "\"@collect\" : \"true\"," +
-    		    "\"@collectFlag\" : \"C\"," +
-    		    "\"ifAdminStatus\" : \"1\"," +
-    		    "\"ifAlias\" : \"\"," +
-    		    "\"ifDescr\" : \"eth0\"," +
-    		    "\"ifName\" : \"eth0\"," +
-    		    "\"ifOperStatus\" : \"1\"," +
-    		    "\"ifSpeed\" : \"10000000\"," +
-    		    "\"ifType\" : \"6\"," +
-    		    "\"ipAddress\" : \"172.20.1.11\"," +
-    		    "\"ipInterfaces\" : \"130\"," +
-    		    "\"lastCapsdPoll\" : \"2010-12-14T11:18:23.385-05:00\"," +
-    		    "\"netMask\" : \"255.255.255.0\"," +
-    		    "\"nodeId\" : \"11\"," +
-    		    "\"physAddr\" : \"00163e13f215\"" +
-    		  "}" +
-    		"}" +
-    	"}";
+    		  "\"ipAddress\" : \"161.221.89.118\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"1\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"31\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"17.172.224.47\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"2\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"35\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"199.239.136.200\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"3\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"37\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"199.59.149.198\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"1\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"33\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"207.46.197.32\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"1\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"32\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"207.46.245.32\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"2\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"29\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"208.87.33.150\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"0\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"44\"," +
+    		  "\"@isDown\" : \"true\"," +
+    		  "\"ipAddress\" : \"212.58.254.252\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"0\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"43\"," +
+    		  "\"@isDown\" : \"true\"," +
+    		  "\"ipAddress\" : \"213.174.202.56\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"0\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"57\"," +
+    		  "\"@isDown\" : \"true\"," +
+    		  "\"ipAddress\" : \"63.236.5.136\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"7\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"28\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"64.13.232.129\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"0\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"58\"," +
+    		  "\"@isDown\" : \"true\"," +
+    		  "\"ipAddress\" : \"64.202.189.170\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"0\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"45\"," +
+    		  "\"@isDown\" : \"true\"," +
+    		  "\"ipAddress\" : \"65.55.175.254\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"3\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"34\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"66.150.160.122\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"0\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"47\"," +
+    		  "\"@isDown\" : \"true\"," +
+    		  "\"ipAddress\" : \"66.54.56.30\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"3\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"36\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"69.147.125.65\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"3\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"39\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"69.63.189.11\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"3\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"40\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"74.125.115.99\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"3\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"38\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"74.125.67.106\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"3\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"27\"," +
+    		  "\"@isDown\" : \"false\"," +
+    		  "\"ipAddress\" : \"74.125.67.18\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"0\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"46\"," +
+    		  "\"@isDown\" : \"true\"," +
+    		  "\"ipAddress\" : \"78.109.84.196\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"}, {" +
+    		  "\"@snmpPrimary\" : \"S\"," +
+    		  "\"@monitoredServiceCount\" : \"0\"," +
+    		  "\"@isManaged\" : \"M\"," +
+    		  "\"@id\" : \"56\"," +
+    		  "\"@isDown\" : \"true\"," +
+    		  "\"ipAddress\" : \"98.129.229.144\"," +
+    		  "\"nodeId\" : \"2\"" +
+    		"} ]" +
+    		"}";
     
     public void getAllIpInterfacesForNode(int nodeId, RequestCallback callback) {
         String url = BASE_URL + nodeId + "/ipinterfaces";

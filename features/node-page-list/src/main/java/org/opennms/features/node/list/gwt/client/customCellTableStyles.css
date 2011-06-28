@@ -1,4 +1,4 @@
-@def selectionBorderWidth 2px;
+@def selectionBorderWidth 1px;
 .cellTableWidget {
   
 }
@@ -49,21 +49,21 @@
 }
 
 .cellTableEvenRow {
-  background: #ffffff;
+/*   background: #ff00ff; */
 }
 
 .cellTableEvenRowCell {
-  border: selectionBorderWidth solid #ffffff;
-  background-color: #ffffff;
+/*   border: selectionBorderWidth solid #ffffff; */
+/*   background-color: #ffffff; */
 }
 
 .cellTableOddRow {
-  background: #f3f7fb;
+/*   background: #f3f7fb; */
 }
 
 .cellTableOddRowCell {
-  border: selectionBorderWidth solid #f3f7fb;
-  background-color: #f3f7fb;
+/*   border: selectionBorderWidth solid #f3f7fb; */
+/*   background-color: #f3f7fb; */
 }
 
 .cellTableHoveredRow {
@@ -71,7 +71,7 @@
 }
 
 .cellTableHoveredRowCell {
-  border: selectionBorderWidth solid #eee;
+/*   border: selectionBorderWidth solid #eee; */
   background-color: #eee;
 }
 
