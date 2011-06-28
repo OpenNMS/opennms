@@ -11,6 +11,13 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -20,6 +27,8 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name="script")
+@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("serial")
 public class Script implements java.io.Serializable {
 
@@ -31,12 +40,14 @@ public class Script implements java.io.Serializable {
     /**
      * internal content storage
      */
-    private java.lang.String _content = "";
+	@XmlValue
+    private String content;
 
     /**
      * Field _language.
      */
-    private java.lang.String _language;
+	@XmlAttribute(name="language", required=true)
+    private String language;
 
 
       //----------------/
@@ -54,33 +65,33 @@ public class Script implements java.io.Serializable {
     //-----------/
 
     /**
-     * Overrides the java.lang.Object.equals method.
+     * Overrides the Object.equals method.
      * 
      * @param obj
      * @return true if the objects are equal.
      */
     @Override()
     public boolean equals(
-            final java.lang.Object obj) {
+            final Object obj) {
         if ( this == obj )
             return true;
         
         if (obj instanceof Script) {
         
             Script temp = (Script)obj;
-            if (this._content != null) {
-                if (temp._content == null) return false;
-                else if (!(this._content.equals(temp._content))) 
+            if (this.content != null) {
+                if (temp.content == null) return false;
+                else if (!(this.content.equals(temp.content))) 
                     return false;
             }
-            else if (temp._content != null)
+            else if (temp.content != null)
                 return false;
-            if (this._language != null) {
-                if (temp._language == null) return false;
-                else if (!(this._language.equals(temp._language))) 
+            if (this.language != null) {
+                if (temp.language == null) return false;
+                else if (!(this.language.equals(temp.language))) 
                     return false;
             }
-            else if (temp._language != null)
+            else if (temp.language != null)
                 return false;
             return true;
         }
@@ -93,9 +104,9 @@ public class Script implements java.io.Serializable {
      * 
      * @return the value of field 'Content'.
      */
-    public java.lang.String getContent(
+    public String getContent(
     ) {
-        return this._content;
+        return this.content;
     }
 
     /**
@@ -103,13 +114,13 @@ public class Script implements java.io.Serializable {
      * 
      * @return the value of field 'Language'.
      */
-    public java.lang.String getLanguage(
+    public String getLanguage(
     ) {
-        return this._language;
+        return this.language;
     }
 
     /**
-     * Overrides the java.lang.Object.hashCode method.
+     * Overrides the Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming
      * Language Guide</b> by Joshua Bloch, Chapter 3
@@ -118,17 +129,7 @@ public class Script implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_content != null) {
-           result = 37 * result + _content.hashCode();
-        }
-        if (_language != null) {
-           result = 37 * result + _language.hashCode();
-        }
-        
-        return result;
+    	return new HashCodeBuilder(17,37).append(getContent()).append(getLanguage()).toHashCode();
     }
 
     /**
@@ -185,8 +186,8 @@ public class Script implements java.io.Serializable {
      * @param content the value of field 'content'.
      */
     public void setContent(
-            final java.lang.String content) {
-        this._content = content;
+            final String content) {
+        this.content = content;
     }
 
     /**
@@ -195,8 +196,8 @@ public class Script implements java.io.Serializable {
      * @param language the value of field 'language'.
      */
     public void setLanguage(
-            final java.lang.String language) {
-        this._language = language;
+            final String language) {
+        this.language = language;
     }
 
     /**

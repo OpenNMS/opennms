@@ -11,6 +11,13 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -19,6 +26,8 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name="varbind")
+@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("serial")
 public class Varbind implements java.io.Serializable {
 
@@ -30,22 +39,20 @@ public class Varbind implements java.io.Serializable {
     /**
      * Field _textualConvention.
      */
-    private java.lang.String _textualConvention;
+	@XmlAttribute(name="textual-convention", required=false)
+    private String textualConvention;
 
     /**
      * The varbind element number
      */
-    private int _vbnumber;
-
-    /**
-     * keeps track of state for field: _vbnumber
-     */
-    private boolean _has_vbnumber;
+	@XmlElement(name="vbnumber", required=true)
+    private Integer vbnumber;
 
     /**
      * The varbind element value
      */
-    private java.util.List<java.lang.String> _vbvalueList;
+	@XmlElement(name="vbvalue", required=true)
+    private java.util.List<String> vbvalueList;
 
 
       //----------------/
@@ -54,7 +61,7 @@ public class Varbind implements java.io.Serializable {
 
     public Varbind() {
         super();
-        this._vbvalueList = new java.util.ArrayList<java.lang.String>();
+        this.vbvalueList = new java.util.ArrayList<String>();
     }
 
 
@@ -66,13 +73,13 @@ public class Varbind implements java.io.Serializable {
      * 
      * 
      * @param vVbvalue
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addVbvalue(
-            final java.lang.String vVbvalue)
-    throws java.lang.IndexOutOfBoundsException {
-        this._vbvalueList.add(vVbvalue);
+            final String vVbvalue)
+    throws IndexOutOfBoundsException {
+        this.vbvalueList.add(vVbvalue);
     }
 
     /**
@@ -80,21 +87,21 @@ public class Varbind implements java.io.Serializable {
      * 
      * @param index
      * @param vVbvalue
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addVbvalue(
             final int index,
-            final java.lang.String vVbvalue)
-    throws java.lang.IndexOutOfBoundsException {
-        this._vbvalueList.add(index, vVbvalue);
+            final String vVbvalue)
+    throws IndexOutOfBoundsException {
+        this.vbvalueList.add(index, vVbvalue);
     }
 
     /**
      */
     public void deleteVbnumber(
     ) {
-        this._has_vbnumber= false;
+        vbnumber = null;
     }
 
     /**
@@ -103,43 +110,41 @@ public class Varbind implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<java.lang.String> enumerateVbvalue(
+    public java.util.Enumeration<String> enumerateVbvalue(
     ) {
-        return java.util.Collections.enumeration(this._vbvalueList);
+        return java.util.Collections.enumeration(this.vbvalueList);
     }
 
     /**
-     * Overrides the java.lang.Object.equals method.
+     * Overrides the Object.equals method.
      * 
      * @param obj
      * @return true if the objects are equal.
      */
     @Override()
     public boolean equals(
-            final java.lang.Object obj) {
+            final Object obj) {
         if ( this == obj )
             return true;
         
         if (obj instanceof Varbind) {
         
             Varbind temp = (Varbind)obj;
-            if (this._textualConvention != null) {
-                if (temp._textualConvention == null) return false;
-                else if (!(this._textualConvention.equals(temp._textualConvention))) 
+            if (this.textualConvention != null) {
+                if (temp.textualConvention == null) return false;
+                else if (!(this.textualConvention.equals(temp.textualConvention))) 
                     return false;
             }
-            else if (temp._textualConvention != null)
+            else if (temp.textualConvention != null)
                 return false;
-            if (this._vbnumber != temp._vbnumber)
+            if (this.vbnumber != temp.vbnumber)
                 return false;
-            if (this._has_vbnumber != temp._has_vbnumber)
-                return false;
-            if (this._vbvalueList != null) {
-                if (temp._vbvalueList == null) return false;
-                else if (!(this._vbvalueList.equals(temp._vbvalueList))) 
+            if (this.vbvalueList != null) {
+                if (temp.vbvalueList == null) return false;
+                else if (!(this.vbvalueList.equals(temp.vbvalueList))) 
                     return false;
             }
-            else if (temp._vbvalueList != null)
+            else if (temp.vbvalueList != null)
                 return false;
             return true;
         }
@@ -151,9 +156,9 @@ public class Varbind implements java.io.Serializable {
      * 
      * @return the value of field 'TextualConvention'.
      */
-    public java.lang.String getTextualConvention(
+    public String getTextualConvention(
     ) {
-        return this._textualConvention;
+        return this.textualConvention;
     }
 
     /**
@@ -164,26 +169,26 @@ public class Varbind implements java.io.Serializable {
      */
     public int getVbnumber(
     ) {
-        return this._vbnumber;
+        return this.vbnumber;
     }
 
     /**
      * Method getVbvalue.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
-     * @return the value of the java.lang.String at the given index
+     * @return the value of the String at the given index
      */
-    public java.lang.String getVbvalue(
+    public String getVbvalue(
             final int index)
-    throws java.lang.IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._vbvalueList.size()) {
-            throw new IndexOutOfBoundsException("getVbvalue: Index value '" + index + "' not in range [0.." + (this._vbvalueList.size() - 1) + "]");
+        if (index < 0 || index >= this.vbvalueList.size()) {
+            throw new IndexOutOfBoundsException("getVbvalue: Index value '" + index + "' not in range [0.." + (this.vbvalueList.size() - 1) + "]");
         }
         
-        return (java.lang.String) _vbvalueList.get(index);
+        return (String) vbvalueList.get(index);
     }
 
     /**
@@ -195,10 +200,10 @@ public class Varbind implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public java.lang.String[] getVbvalue(
+    public String[] getVbvalue(
     ) {
-        java.lang.String[] array = new java.lang.String[0];
-        return (java.lang.String[]) this._vbvalueList.toArray(array);
+        String[] array = new String[0];
+        return (String[]) this.vbvalueList.toArray(array);
     }
 
     /**
@@ -208,9 +213,9 @@ public class Varbind implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<java.lang.String> getVbvalueCollection(
+    public java.util.List<String> getVbvalueCollection(
     ) {
-        return this._vbvalueList;
+        return this.vbvalueList;
     }
 
     /**
@@ -220,7 +225,7 @@ public class Varbind implements java.io.Serializable {
      */
     public int getVbvalueCount(
     ) {
-        return this._vbvalueList.size();
+        return this.vbvalueList.size();
     }
 
     /**
@@ -230,11 +235,11 @@ public class Varbind implements java.io.Serializable {
      */
     public boolean hasVbnumber(
     ) {
-        return this._has_vbnumber;
+        return vbnumber != null;
     }
 
     /**
-     * Overrides the java.lang.Object.hashCode method.
+     * Overrides the Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming
      * Language Guide</b> by Joshua Bloch, Chapter 3
@@ -243,18 +248,7 @@ public class Varbind implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_textualConvention != null) {
-           result = 37 * result + _textualConvention.hashCode();
-        }
-        result = 37 * result + _vbnumber;
-        if (_vbvalueList != null) {
-           result = 37 * result + _vbvalueList.hashCode();
-        }
-        
-        return result;
+    	return new HashCodeBuilder(17,37).append(getTextualConvention()).append(getVbnumber()).append(getVbvalue()).toHashCode();
     }
 
     /**
@@ -278,9 +272,9 @@ public class Varbind implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<java.lang.String> iterateVbvalue(
+    public java.util.Iterator<String> iterateVbvalue(
     ) {
-        return this._vbvalueList.iterator();
+        return this.vbvalueList.iterator();
     }
 
     /**
@@ -319,7 +313,7 @@ public class Varbind implements java.io.Serializable {
      */
     public void removeAllVbvalue(
     ) {
-        this._vbvalueList.clear();
+        this.vbvalueList.clear();
     }
 
     /**
@@ -329,8 +323,8 @@ public class Varbind implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeVbvalue(
-            final java.lang.String vVbvalue) {
-        boolean removed = _vbvalueList.remove(vVbvalue);
+            final String vVbvalue) {
+        boolean removed = vbvalueList.remove(vVbvalue);
         return removed;
     }
 
@@ -340,10 +334,10 @@ public class Varbind implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public java.lang.String removeVbvalueAt(
+    public String removeVbvalueAt(
             final int index) {
-        java.lang.Object obj = this._vbvalueList.remove(index);
-        return (java.lang.String) obj;
+        Object obj = this.vbvalueList.remove(index);
+        return (String) obj;
     }
 
     /**
@@ -353,8 +347,8 @@ public class Varbind implements java.io.Serializable {
      * 'textualConvention'.
      */
     public void setTextualConvention(
-            final java.lang.String textualConvention) {
-        this._textualConvention = textualConvention;
+            final String textualConvention) {
+        this.textualConvention = textualConvention;
     }
 
     /**
@@ -365,8 +359,7 @@ public class Varbind implements java.io.Serializable {
      */
     public void setVbnumber(
             final int vbnumber) {
-        this._vbnumber = vbnumber;
-        this._has_vbnumber = true;
+        this.vbnumber = vbnumber;
     }
 
     /**
@@ -374,19 +367,19 @@ public class Varbind implements java.io.Serializable {
      * 
      * @param index
      * @param vVbvalue
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void setVbvalue(
             final int index,
-            final java.lang.String vVbvalue)
-    throws java.lang.IndexOutOfBoundsException {
+            final String vVbvalue)
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._vbvalueList.size()) {
-            throw new IndexOutOfBoundsException("setVbvalue: Index value '" + index + "' not in range [0.." + (this._vbvalueList.size() - 1) + "]");
+        if (index < 0 || index >= this.vbvalueList.size()) {
+            throw new IndexOutOfBoundsException("setVbvalue: Index value '" + index + "' not in range [0.." + (this.vbvalueList.size() - 1) + "]");
         }
         
-        this._vbvalueList.set(index, vVbvalue);
+        this.vbvalueList.set(index, vVbvalue);
     }
 
     /**
@@ -395,12 +388,12 @@ public class Varbind implements java.io.Serializable {
      * @param vVbvalueArray
      */
     public void setVbvalue(
-            final java.lang.String[] vVbvalueArray) {
+            final String[] vVbvalueArray) {
         //-- copy array
-        _vbvalueList.clear();
+        vbvalueList.clear();
         
         for (int i = 0; i < vVbvalueArray.length; i++) {
-                this._vbvalueList.add(vVbvalueArray[i]);
+                this.vbvalueList.add(vVbvalueArray[i]);
         }
     }
 
@@ -411,11 +404,11 @@ public class Varbind implements java.io.Serializable {
      * @param vVbvalueList the Vector to copy.
      */
     public void setVbvalue(
-            final java.util.List<java.lang.String> vVbvalueList) {
+            final java.util.List<String> vVbvalueList) {
         // copy vector
-        this._vbvalueList.clear();
+        this.vbvalueList.clear();
         
-        this._vbvalueList.addAll(vVbvalueList);
+        this.vbvalueList.addAll(vVbvalueList);
     }
 
     /**
@@ -426,8 +419,8 @@ public class Varbind implements java.io.Serializable {
      * @param vbvalueList the Vector to set.
      */
     public void setVbvalueCollection(
-            final java.util.List<java.lang.String> vbvalueList) {
-        this._vbvalueList = vbvalueList;
+            final java.util.List<String> vbvalueList) {
+        this.vbvalueList = vbvalueList;
     }
 
     /**

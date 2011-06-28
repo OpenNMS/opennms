@@ -16,40 +16,7 @@ public class EventTest extends XmlTest<Event> {
 
 	@Parameters
 	public static Collection<Object[]> data() throws ParseException {
-//		String uei="uei.opennms.org/ietf/mplsTeStdMib/traps/mplsTunnelUp";
-//		String eventlabel = "MPLS-TE-STD-MIB defined trap event: mplsTunnelUp";
-//		String descr = "&lt;p&gt;This notification is generated when a\n" + 
-//		"mplsTunnelOperStatus object for one of the\n" + 
-//		"configured tunnels is about to leave the down state\n" + 
-//		"and transition into some other state (but not into\n" + 
-//		"the notPresent state).  This other state is\n" + 
-//		"indicated by the included value of\n" + 
-//		"mplsTunnelOperStatus.&lt;/p&gt;&lt;table&gt;\n" + 
-//		"        &lt;tr&gt;&lt;td&gt;&lt;b&gt;\n" + 
-//		"\n" + 
-//		"        mplsTunnelAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;\n" + 
-//		"        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;\n" + 
-//		"                up(1)\n" + 
-//		"                down(2)\n" + 
-//		"                testing(3)\n" + 
-//		"        &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;\n" + 
-//		"        &lt;tr&gt;&lt;td&gt;&lt;b&gt;\n" + 
-//		"\n" + 
-//		"        mplsTunnelOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;\n" + 
-//		"        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;\n" + 
-//		"                up(1)\n" + 
-//		"                down(2)\n" + 
-//		"                testing(3)\n" + 
-//		"                unknown(4)\n" + 
-//		"                dormant(5)\n" + 
-//		"                notPresent(6)\n" + 
-//		"                lowerLayerDown(7)\n" + 
-//		"        &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;";
-//		String logmsgContent = "&lt;p&gt;\n" + 
-//		"        mplsTunnelUp trap received\n" + 
-//		"        mplsTunnelAdminStatus=%parm[#1]%\n" + 
-//		"        mplsTunnelOperStatus=%parm[#2]%&lt;/p&gt;";
-//		String severity = "normal";
+		Events events0 = new Events();
 		Event event0 = new Event();
 		event0.setUei("uei");
 		event0.setEventLabel("event-label");
@@ -58,6 +25,7 @@ public class EventTest extends XmlTest<Event> {
 		logmsg0.setContent("log message");
 		event0.setLogmsg(logmsg0);
 		event0.setSeverity("normal");
+		events0.addEvent(event0);
 
 		Event event1 = new Event();
 		event1.setUei("uei");
@@ -91,6 +59,55 @@ public class EventTest extends XmlTest<Event> {
 		snmp0.setIdtext("Test");
 		snmp0.setCommunity("public");
 		event1.setSnmp(snmp0);
+		Correlation correlation0 = new Correlation();
+		correlation0.setState("on");
+		correlation0.setPath("pathOutage");
+		correlation0.setCmin("cmin");
+		correlation0.setCmax("cmax");
+		correlation0.setCtime("ctime");
+		correlation0.addCuei("vCuei");
+		event1.setCorrelation(correlation0);
+		event1.setOperinstruct("operinstruct");
+		Autoaction autoaction0 = new Autoaction();
+		autoaction0.setContent("These are important data");
+		autoaction0.setState("on");
+		event1.addAutoaction(autoaction0);
+		Varbindsdecode varbindsdecode0 = new Varbindsdecode();
+		Decode decode0 = new Decode();
+		decode0.setVarbinddecodedstring("testing");
+		decode0.setVarbindvalue("3");
+		varbindsdecode0.addDecode(decode0);
+		varbindsdecode0.setParmid("parm[#1]");
+		event1.addVarbindsdecode(varbindsdecode0);
+		Operaction operaction0 = new Operaction();
+		operaction0.setMenutext("Test");
+		operaction0.setContent("This is a test");
+		operaction0.setState("on");
+		event1.addOperaction(operaction0);
+		Autoacknowledge autoacknowledge0 = new Autoacknowledge();
+		autoacknowledge0.setContent("These are important data");
+		autoacknowledge0.setState("on");
+		event1.setAutoacknowledge(autoacknowledge0);
+		event1.addLoggroup("loggroup");
+		Tticket tticket0 = new Tticket();
+		tticket0.setContent("This is a test");
+		tticket0.setState("on");
+		event1.setTticket(tticket0);
+		Forward forward0 = new Forward();
+		forward0.setMechanism("snmpudp");
+		forward0.setState("on");
+		event1.addForward(forward0);
+		Script script0 = new Script();
+		script0.setLanguage("erlang");
+		script0.setContent("This is a test");
+		event1.addScript(script0);
+		event1.setMouseovertext("mouseovertext");
+		AlarmData alarmData0 = new AlarmData();
+		alarmData0.setReductionKey("%uei%:%dpname%:%nodeid%");
+		alarmData0.setAlarmType(3);
+		alarmData0.setAutoClean(true);
+		alarmData0.setClearKey("uei.opennms.org/internal/importer/importFailed:%parm[importResource]%");
+		event1.setAlarmData(alarmData0);
 
 		return Arrays.asList(new Object[][] {
 				{event0,
@@ -135,6 +152,26 @@ public class EventTest extends XmlTest<Event> {
 					"  <descr>descr</descr>" +
 					"  <logmsg>log message</logmsg>" +
 					"  <severity>normal</severity>" +
+					"  <correlation state=\"on\" path=\"pathOutage\">" +
+					"    <cuei>vCuei</cuei>" +
+					"    <cmin>cmin</cmin>" +
+					"    <cmax>cmax</cmax>" +
+					"    <ctime>ctime</ctime>" +
+					"  </correlation>" +
+					"  <operinstruct>operinstruct</operinstruct>" +
+					"  <autoaction state=\"on\">These are important data</autoaction>" +
+					"  <varbindsdecode>" +
+					"    <parmid>parm[#1]</parmid>" +
+					"    <decode varbinddecodedstring=\"testing\" varbindvalue=\"3\"/>" +
+					"  </varbindsdecode>" +
+					"  <operaction menutext=\"Test\" state=\"on\">This is a test</operaction>" +
+					"  <autoacknowledge state=\"on\">These are important data</autoacknowledge>" +
+					"  <loggroup>loggroup</loggroup>" +
+					"  <tticket state=\"on\">This is a test</tticket>" +
+					"  <forward state=\"on\" mechanism=\"snmpudp\"/>" +
+					"  <script language=\"erlang\">This is a test</script>" +
+					"  <mouseovertext>mouseovertext</mouseovertext>" +
+					"  <alarm-data reduction-key=\"%uei%:%dpname%:%nodeid%\" alarm-type=\"3\" auto-clean=\"true\" clear-key=\"uei.opennms.org/internal/importer/importFailed:%parm[importResource]%\"/>" +
 					"</event>",
 				"target/classes/xsds/eventconf.xsd" }, 
 		});
