@@ -11,6 +11,8 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -40,7 +42,7 @@ public class Security implements java.io.Serializable {
      *  value in an incoming event
      */
 	@XmlElement(name="doNotOverride", required=true)
-    private java.util.List<String> doNotOverrideList;
+    private List<String> m_doNotOverrideList;
 
 
       //----------------/
@@ -49,7 +51,7 @@ public class Security implements java.io.Serializable {
 
     public Security() {
         super();
-        this.doNotOverrideList = new java.util.ArrayList<String>();
+        this.m_doNotOverrideList = new java.util.ArrayList<String>();
     }
 
 
@@ -67,7 +69,7 @@ public class Security implements java.io.Serializable {
     public void addDoNotOverride(
             final String vDoNotOverride)
     throws IndexOutOfBoundsException {
-        this.doNotOverrideList.add(vDoNotOverride);
+        this.m_doNotOverrideList.add(vDoNotOverride);
     }
 
     /**
@@ -82,7 +84,7 @@ public class Security implements java.io.Serializable {
             final int index,
             final String vDoNotOverride)
     throws IndexOutOfBoundsException {
-        this.doNotOverrideList.add(index, vDoNotOverride);
+        this.m_doNotOverrideList.add(index, vDoNotOverride);
     }
 
     /**
@@ -93,7 +95,7 @@ public class Security implements java.io.Serializable {
      */
     public java.util.Enumeration<String> enumerateDoNotOverride(
     ) {
-        return java.util.Collections.enumeration(this.doNotOverrideList);
+        return java.util.Collections.enumeration(this.m_doNotOverrideList);
     }
 
     /**
@@ -111,12 +113,12 @@ public class Security implements java.io.Serializable {
         if (obj instanceof Security) {
         
             Security temp = (Security)obj;
-            if (this.doNotOverrideList != null) {
-                if (temp.doNotOverrideList == null) return false;
-                else if (!(this.doNotOverrideList.equals(temp.doNotOverrideList))) 
+            if (this.m_doNotOverrideList != null) {
+                if (temp.m_doNotOverrideList == null) return false;
+                else if (!(this.m_doNotOverrideList.equals(temp.m_doNotOverrideList))) 
                     return false;
             }
-            else if (temp.doNotOverrideList != null)
+            else if (temp.m_doNotOverrideList != null)
                 return false;
             return true;
         }
@@ -135,11 +137,11 @@ public class Security implements java.io.Serializable {
             final int index)
     throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this.doNotOverrideList.size()) {
-            throw new IndexOutOfBoundsException("getDoNotOverride: Index value '" + index + "' not in range [0.." + (this.doNotOverrideList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_doNotOverrideList.size()) {
+            throw new IndexOutOfBoundsException("getDoNotOverride: Index value '" + index + "' not in range [0.." + (this.m_doNotOverrideList.size() - 1) + "]");
         }
         
-        return (String) doNotOverrideList.get(index);
+        return (String) m_doNotOverrideList.get(index);
     }
 
     /**
@@ -155,7 +157,7 @@ public class Security implements java.io.Serializable {
     public String[] getDoNotOverride(
     ) {
         String[] array = new String[0];
-        return (String[]) this.doNotOverrideList.toArray(array);
+        return (String[]) this.m_doNotOverrideList.toArray(array);
     }
 
     /**
@@ -167,7 +169,7 @@ public class Security implements java.io.Serializable {
      */
     public java.util.List<String> getDoNotOverrideCollection(
     ) {
-        return this.doNotOverrideList;
+        return this.m_doNotOverrideList;
     }
 
     /**
@@ -177,7 +179,7 @@ public class Security implements java.io.Serializable {
      */
     public int getDoNotOverrideCount(
     ) {
-        return this.doNotOverrideList.size();
+        return this.m_doNotOverrideList.size();
     }
 
     /**
@@ -216,7 +218,7 @@ public class Security implements java.io.Serializable {
      */
     public java.util.Iterator<String> iterateDoNotOverride(
     ) {
-        return this.doNotOverrideList.iterator();
+        return this.m_doNotOverrideList.iterator();
     }
 
     /**
@@ -255,7 +257,7 @@ public class Security implements java.io.Serializable {
      */
     public void removeAllDoNotOverride(
     ) {
-        this.doNotOverrideList.clear();
+        this.m_doNotOverrideList.clear();
     }
 
     /**
@@ -266,7 +268,7 @@ public class Security implements java.io.Serializable {
      */
     public boolean removeDoNotOverride(
             final String vDoNotOverride) {
-        boolean removed = doNotOverrideList.remove(vDoNotOverride);
+        boolean removed = m_doNotOverrideList.remove(vDoNotOverride);
         return removed;
     }
 
@@ -278,7 +280,7 @@ public class Security implements java.io.Serializable {
      */
     public String removeDoNotOverrideAt(
             final int index) {
-        Object obj = this.doNotOverrideList.remove(index);
+        Object obj = this.m_doNotOverrideList.remove(index);
         return (String) obj;
     }
 
@@ -295,11 +297,11 @@ public class Security implements java.io.Serializable {
             final String vDoNotOverride)
     throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this.doNotOverrideList.size()) {
-            throw new IndexOutOfBoundsException("setDoNotOverride: Index value '" + index + "' not in range [0.." + (this.doNotOverrideList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_doNotOverrideList.size()) {
+            throw new IndexOutOfBoundsException("setDoNotOverride: Index value '" + index + "' not in range [0.." + (this.m_doNotOverrideList.size() - 1) + "]");
         }
         
-        this.doNotOverrideList.set(index, vDoNotOverride);
+        this.m_doNotOverrideList.set(index, vDoNotOverride);
     }
 
     /**
@@ -310,10 +312,10 @@ public class Security implements java.io.Serializable {
     public void setDoNotOverride(
             final String[] vDoNotOverrideArray) {
         //-- copy array
-        doNotOverrideList.clear();
+        m_doNotOverrideList.clear();
         
         for (int i = 0; i < vDoNotOverrideArray.length; i++) {
-                this.doNotOverrideList.add(vDoNotOverrideArray[i]);
+                this.m_doNotOverrideList.add(vDoNotOverrideArray[i]);
         }
     }
 
@@ -326,9 +328,9 @@ public class Security implements java.io.Serializable {
     public void setDoNotOverride(
             final java.util.List<String> vDoNotOverrideList) {
         // copy vector
-        this.doNotOverrideList.clear();
+        this.m_doNotOverrideList.clear();
         
-        this.doNotOverrideList.addAll(vDoNotOverrideList);
+        this.m_doNotOverrideList.addAll(vDoNotOverrideList);
     }
 
     /**
@@ -340,7 +342,7 @@ public class Security implements java.io.Serializable {
      */
     public void setDoNotOverrideCollection(
             final java.util.List<String> doNotOverrideList) {
-        this.doNotOverrideList = doNotOverrideList;
+        this.m_doNotOverrideList = doNotOverrideList;
     }
 
     /**

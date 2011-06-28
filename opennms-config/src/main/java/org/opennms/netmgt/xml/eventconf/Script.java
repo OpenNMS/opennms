@@ -41,13 +41,13 @@ public class Script implements java.io.Serializable {
      * internal content storage
      */
 	@XmlValue
-    private String content;
+    private String m_content;
 
     /**
      * Field _language.
      */
 	@XmlAttribute(name="language", required=true)
-    private String language;
+    private String m_language;
 
 
       //----------------/
@@ -79,19 +79,19 @@ public class Script implements java.io.Serializable {
         if (obj instanceof Script) {
         
             Script temp = (Script)obj;
-            if (this.content != null) {
-                if (temp.content == null) return false;
-                else if (!(this.content.equals(temp.content))) 
+            if (this.m_content != null) {
+                if (temp.m_content == null) return false;
+                else if (!(this.m_content.equals(temp.m_content))) 
                     return false;
             }
-            else if (temp.content != null)
+            else if (temp.m_content != null)
                 return false;
-            if (this.language != null) {
-                if (temp.language == null) return false;
-                else if (!(this.language.equals(temp.language))) 
+            if (this.m_language != null) {
+                if (temp.m_language == null) return false;
+                else if (!(this.m_language.equals(temp.m_language))) 
                     return false;
             }
-            else if (temp.language != null)
+            else if (temp.m_language != null)
                 return false;
             return true;
         }
@@ -106,7 +106,7 @@ public class Script implements java.io.Serializable {
      */
     public String getContent(
     ) {
-        return this.content;
+        return this.m_content;
     }
 
     /**
@@ -116,7 +116,7 @@ public class Script implements java.io.Serializable {
      */
     public String getLanguage(
     ) {
-        return this.language;
+        return this.m_language;
     }
 
     /**
@@ -187,7 +187,7 @@ public class Script implements java.io.Serializable {
      */
     public void setContent(
             final String content) {
-        this.content = content;
+        this.m_content = content;
     }
 
     /**
@@ -197,7 +197,7 @@ public class Script implements java.io.Serializable {
      */
     public void setLanguage(
             final String language) {
-        this.language = language;
+        this.m_language = language;
     }
 
     /**

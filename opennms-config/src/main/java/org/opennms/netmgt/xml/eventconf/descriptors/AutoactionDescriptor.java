@@ -86,7 +86,6 @@ public class AutoactionDescriptor extends org.exolab.castor.xml.util.XMLClassDes
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -129,7 +128,6 @@ public class AutoactionDescriptor extends org.exolab.castor.xml.util.XMLClassDes
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }

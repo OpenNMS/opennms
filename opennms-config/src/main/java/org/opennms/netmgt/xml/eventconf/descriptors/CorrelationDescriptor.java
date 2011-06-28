@@ -91,7 +91,6 @@ public class CorrelationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -134,7 +133,6 @@ public class CorrelationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -187,7 +185,6 @@ public class CorrelationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -231,7 +228,6 @@ public class CorrelationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -274,7 +270,6 @@ public class CorrelationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -317,7 +312,6 @@ public class CorrelationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }

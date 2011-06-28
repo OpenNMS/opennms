@@ -42,19 +42,19 @@ public class Operaction implements java.io.Serializable {
      * internal content storage
      */
 	@XmlValue
-    private String content = "";
+    private String m_content = "";
 
     /**
      * Field _state.
      */
 	@XmlAttribute
-    private String state;
+    private String m_state;
 
     /**
      * Field _menutext.
      */
 	@XmlAttribute
-    private String menutext;
+    private String m_menutext;
 
 
       //----------------/
@@ -85,26 +85,26 @@ public class Operaction implements java.io.Serializable {
         if (obj instanceof Operaction) {
         
             Operaction temp = (Operaction)obj;
-            if (this.content != null) {
-                if (temp.content == null) return false;
-                else if (!(this.content.equals(temp.content))) 
+            if (this.m_content != null) {
+                if (temp.m_content == null) return false;
+                else if (!(this.m_content.equals(temp.m_content))) 
                     return false;
             }
-            else if (temp.content != null)
+            else if (temp.m_content != null)
                 return false;
-            if (this.state != null) {
-                if (temp.state == null) return false;
-                else if (!(this.state.equals(temp.state))) 
+            if (this.m_state != null) {
+                if (temp.m_state == null) return false;
+                else if (!(this.m_state.equals(temp.m_state))) 
                     return false;
             }
-            else if (temp.state != null)
+            else if (temp.m_state != null)
                 return false;
-            if (this.menutext != null) {
-                if (temp.menutext == null) return false;
-                else if (!(this.menutext.equals(temp.menutext))) 
+            if (this.m_menutext != null) {
+                if (temp.m_menutext == null) return false;
+                else if (!(this.m_menutext.equals(temp.m_menutext))) 
                     return false;
             }
-            else if (temp.menutext != null)
+            else if (temp.m_menutext != null)
                 return false;
             return true;
         }
@@ -119,7 +119,7 @@ public class Operaction implements java.io.Serializable {
      */
     public String getContent(
     ) {
-        return this.content;
+        return this.m_content;
     }
 
     /**
@@ -129,7 +129,7 @@ public class Operaction implements java.io.Serializable {
      */
     public String getMenutext(
     ) {
-        return this.menutext;
+        return this.m_menutext;
     }
 
     /**
@@ -139,7 +139,7 @@ public class Operaction implements java.io.Serializable {
      */
     public String getState(
     ) {
-        return this.state;
+        return this.m_state;
     }
 
     /**
@@ -210,7 +210,7 @@ public class Operaction implements java.io.Serializable {
      */
     public void setContent(
             final String content) {
-        this.content = content;
+        this.m_content = content;
     }
 
     /**
@@ -220,7 +220,7 @@ public class Operaction implements java.io.Serializable {
      */
     public void setMenutext(
             final String menutext) {
-        this.menutext = menutext;
+        this.m_menutext = menutext;
     }
 
     /**
@@ -230,7 +230,7 @@ public class Operaction implements java.io.Serializable {
      */
     public void setState(
             final String state) {
-        this.state = state;
+        this.m_state = state;
     }
 
     /**

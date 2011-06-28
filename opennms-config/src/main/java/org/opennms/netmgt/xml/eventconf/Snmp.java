@@ -39,37 +39,37 @@ public class Snmp implements java.io.Serializable {
      * The snmp enterprise id
      */
 	@XmlElement(name="id", required=true)
-    private String id;
+    private String m_id;
 
     /**
      * The snmp enterprise id text
      */
 	@XmlElement(name="idtext", required=false)
-    private String idtext;
+    private String m_idtext;
 
     /**
      * The snmp version
      */
 	@XmlElement(name="version", required=true)
-    private String version;
+    private String m_version;
 
     /**
      * The specific trap number
      */
 	@XmlElement(name="specific", required=false)
-    private Integer specific;
+    private Integer m_specific;
 
     /**
      * The generic trap number
      */
 	@XmlElement(name="generic", required=false)
-    private Integer generic;
+    private Integer m_generic;
 
     /**
      * The community name
      */
 	@XmlElement(name="community", required=false)
-    private String community;
+    private String m_community;
 
 
       //----------------/
@@ -89,14 +89,14 @@ public class Snmp implements java.io.Serializable {
      */
     public void deleteGeneric(
     ) {
-        generic = null;
+        m_generic = null;
     }
 
     /**
      */
     public void deleteSpecific(
     ) {
-        specific = null;
+        m_specific = null;
     }
 
     /**
@@ -114,37 +114,37 @@ public class Snmp implements java.io.Serializable {
         if (obj instanceof Snmp) {
         
             Snmp temp = (Snmp)obj;
-            if (this.id != null) {
-                if (temp.id == null) return false;
-                else if (!(this.id.equals(temp.id))) 
+            if (this.m_id != null) {
+                if (temp.m_id == null) return false;
+                else if (!(this.m_id.equals(temp.m_id))) 
                     return false;
             }
-            else if (temp.id != null)
+            else if (temp.m_id != null)
                 return false;
-            if (this.idtext != null) {
-                if (temp.idtext == null) return false;
-                else if (!(this.idtext.equals(temp.idtext))) 
+            if (this.m_idtext != null) {
+                if (temp.m_idtext == null) return false;
+                else if (!(this.m_idtext.equals(temp.m_idtext))) 
                     return false;
             }
-            else if (temp.idtext != null)
+            else if (temp.m_idtext != null)
                 return false;
-            if (this.version != null) {
-                if (temp.version == null) return false;
-                else if (!(this.version.equals(temp.version))) 
+            if (this.m_version != null) {
+                if (temp.m_version == null) return false;
+                else if (!(this.m_version.equals(temp.m_version))) 
                     return false;
             }
-            else if (temp.version != null)
+            else if (temp.m_version != null)
                 return false;
-            if (this.specific != temp.specific)
+            if (this.m_specific != temp.m_specific)
                 return false;
-            if (this.generic != temp.generic)
+            if (this.m_generic != temp.m_generic)
                 return false;
-            if (this.community != null) {
-                if (temp.community == null) return false;
-                else if (!(this.community.equals(temp.community))) 
+            if (this.m_community != null) {
+                if (temp.m_community == null) return false;
+                else if (!(this.m_community.equals(temp.m_community))) 
                     return false;
             }
-            else if (temp.community != null)
+            else if (temp.m_community != null)
                 return false;
             return true;
         }
@@ -160,7 +160,7 @@ public class Snmp implements java.io.Serializable {
      */
     public String getCommunity(
     ) {
-        return this.community;
+        return this.m_community;
     }
 
     /**
@@ -171,7 +171,7 @@ public class Snmp implements java.io.Serializable {
      */
     public Integer getGeneric(
     ) {
-        return this.generic;
+        return this.m_generic;
     }
 
     /**
@@ -182,7 +182,7 @@ public class Snmp implements java.io.Serializable {
      */
     public String getId(
     ) {
-        return this.id;
+        return this.m_id;
     }
 
     /**
@@ -193,7 +193,7 @@ public class Snmp implements java.io.Serializable {
      */
     public String getIdtext(
     ) {
-        return this.idtext;
+        return this.m_idtext;
     }
 
     /**
@@ -204,7 +204,7 @@ public class Snmp implements java.io.Serializable {
      */
     public Integer getSpecific(
     ) {
-        return this.specific;
+        return this.m_specific;
     }
 
     /**
@@ -215,7 +215,7 @@ public class Snmp implements java.io.Serializable {
      */
     public String getVersion(
     ) {
-        return this.version;
+        return this.m_version;
     }
 
     /**
@@ -225,7 +225,7 @@ public class Snmp implements java.io.Serializable {
      */
     public boolean hasGeneric(
     ) {
-        return generic != null;
+        return m_generic != null;
     }
 
     /**
@@ -235,7 +235,7 @@ public class Snmp implements java.io.Serializable {
      */
     public boolean hasSpecific(
     ) {
-        return specific != null;
+        return m_specific != null;
     }
 
     /**
@@ -307,7 +307,7 @@ public class Snmp implements java.io.Serializable {
      */
     public void setCommunity(
             final String community) {
-        this.community = community;
+        this.m_community = community;
     }
 
     /**
@@ -318,7 +318,7 @@ public class Snmp implements java.io.Serializable {
      */
     public void setGeneric(
             final int generic) {
-        this.generic = generic;
+        this.m_generic = generic;
     }
 
     /**
@@ -329,7 +329,7 @@ public class Snmp implements java.io.Serializable {
      */
     public void setId(
             final String id) {
-        this.id = id;
+        this.m_id = id;
     }
 
     /**
@@ -340,7 +340,7 @@ public class Snmp implements java.io.Serializable {
      */
     public void setIdtext(
             final String idtext) {
-        this.idtext = idtext;
+        this.m_idtext = idtext;
     }
 
     /**
@@ -351,7 +351,7 @@ public class Snmp implements java.io.Serializable {
      */
     public void setSpecific(
             final int specific) {
-        this.specific = specific;
+        this.m_specific = specific;
     }
 
     /**
@@ -362,7 +362,7 @@ public class Snmp implements java.io.Serializable {
      */
     public void setVersion(
             final String version) {
-        this.version = version;
+        this.m_version = version;
     }
 
     /**

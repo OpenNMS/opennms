@@ -86,7 +86,6 @@ public class ScriptDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -129,7 +128,6 @@ public class ScriptDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }

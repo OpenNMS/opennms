@@ -11,6 +11,8 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.Reader;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -41,13 +43,13 @@ public class Tticket implements java.io.Serializable {
      * internal content storage
      */
 	@XmlValue
-    private String content;
+    private String m_content;
 
     /**
      * Field _state.
      */
 	@XmlAttribute(name="state", required=false)
-    private String state;
+    private String m_state;
 
 
       //----------------/
@@ -78,19 +80,19 @@ public class Tticket implements java.io.Serializable {
         if (obj instanceof Tticket) {
         
             Tticket temp = (Tticket)obj;
-            if (this.content != null) {
-                if (temp.content == null) return false;
-                else if (!(this.content.equals(temp.content))) 
+            if (this.m_content != null) {
+                if (temp.m_content == null) return false;
+                else if (!(this.m_content.equals(temp.m_content))) 
                     return false;
             }
-            else if (temp.content != null)
+            else if (temp.m_content != null)
                 return false;
-            if (this.state != null) {
-                if (temp.state == null) return false;
-                else if (!(this.state.equals(temp.state))) 
+            if (this.m_state != null) {
+                if (temp.m_state == null) return false;
+                else if (!(this.m_state.equals(temp.m_state))) 
                     return false;
             }
-            else if (temp.state != null)
+            else if (temp.m_state != null)
                 return false;
             return true;
         }
@@ -105,7 +107,7 @@ public class Tticket implements java.io.Serializable {
      */
     public String getContent(
     ) {
-        return this.content;
+        return this.m_content;
     }
 
     /**
@@ -115,7 +117,7 @@ public class Tticket implements java.io.Serializable {
      */
     public String getState(
     ) {
-        return this.state;
+        return this.m_state;
     }
 
     /**
@@ -186,7 +188,7 @@ public class Tticket implements java.io.Serializable {
      */
     public void setContent(
             final String content) {
-        this.content = content;
+        this.m_content = content;
     }
 
     /**
@@ -196,7 +198,7 @@ public class Tticket implements java.io.Serializable {
      */
     public void setState(
             final String state) {
-        this.state = state;
+        this.m_state = state;
     }
 
     /**
@@ -211,7 +213,7 @@ public class Tticket implements java.io.Serializable {
      * org.opennms.netmgt.xml.eventconf.Tticket
      */
     public static org.opennms.netmgt.xml.eventconf.Tticket unmarshal(
-            final java.io.Reader reader)
+            final Reader reader)
     throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
         return (org.opennms.netmgt.xml.eventconf.Tticket) Unmarshaller.unmarshal(org.opennms.netmgt.xml.eventconf.Tticket.class, reader);
     }

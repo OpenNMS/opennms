@@ -45,14 +45,14 @@ public class Varbindsdecode implements java.io.Serializable {
      *  
      */
 	@XmlElement(name="parmid", required=true)
-    private String parmid;
+    private String m_parmid;
 
     /**
      * The value to string decoding map
      *  
      */
 	@XmlElement(name="decode")
-    private List<Decode> decodeList;
+    private List<Decode> m_decodeList;
 
 
       //----------------/
@@ -61,7 +61,7 @@ public class Varbindsdecode implements java.io.Serializable {
 
     public Varbindsdecode() {
         super();
-        this.decodeList = new ArrayList<Decode>();
+        this.m_decodeList = new ArrayList<Decode>();
     }
 
 
@@ -79,7 +79,7 @@ public class Varbindsdecode implements java.io.Serializable {
     public void addDecode(
             final org.opennms.netmgt.xml.eventconf.Decode vDecode)
     throws IndexOutOfBoundsException {
-        this.decodeList.add(vDecode);
+        this.m_decodeList.add(vDecode);
     }
 
     /**
@@ -94,7 +94,7 @@ public class Varbindsdecode implements java.io.Serializable {
             final int index,
             final org.opennms.netmgt.xml.eventconf.Decode vDecode)
     throws IndexOutOfBoundsException {
-        this.decodeList.add(index, vDecode);
+        this.m_decodeList.add(index, vDecode);
     }
 
     /**
@@ -105,7 +105,7 @@ public class Varbindsdecode implements java.io.Serializable {
      */
     public java.util.Enumeration<org.opennms.netmgt.xml.eventconf.Decode> enumerateDecode(
     ) {
-        return java.util.Collections.enumeration(this.decodeList);
+        return java.util.Collections.enumeration(this.m_decodeList);
     }
 
     /**
@@ -123,19 +123,19 @@ public class Varbindsdecode implements java.io.Serializable {
         if (obj instanceof Varbindsdecode) {
         
             Varbindsdecode temp = (Varbindsdecode)obj;
-            if (this.parmid != null) {
-                if (temp.parmid == null) return false;
-                else if (!(this.parmid.equals(temp.parmid))) 
+            if (this.m_parmid != null) {
+                if (temp.m_parmid == null) return false;
+                else if (!(this.m_parmid.equals(temp.m_parmid))) 
                     return false;
             }
-            else if (temp.parmid != null)
+            else if (temp.m_parmid != null)
                 return false;
-            if (this.decodeList != null) {
-                if (temp.decodeList == null) return false;
-                else if (!(this.decodeList.equals(temp.decodeList))) 
+            if (this.m_decodeList != null) {
+                if (temp.m_decodeList == null) return false;
+                else if (!(this.m_decodeList.equals(temp.m_decodeList))) 
                     return false;
             }
-            else if (temp.decodeList != null)
+            else if (temp.m_decodeList != null)
                 return false;
             return true;
         }
@@ -155,11 +155,11 @@ public class Varbindsdecode implements java.io.Serializable {
             final int index)
     throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this.decodeList.size()) {
-            throw new IndexOutOfBoundsException("getDecode: Index value '" + index + "' not in range [0.." + (this.decodeList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_decodeList.size()) {
+            throw new IndexOutOfBoundsException("getDecode: Index value '" + index + "' not in range [0.." + (this.m_decodeList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.xml.eventconf.Decode) decodeList.get(index);
+        return (org.opennms.netmgt.xml.eventconf.Decode) m_decodeList.get(index);
     }
 
     /**
@@ -174,7 +174,7 @@ public class Varbindsdecode implements java.io.Serializable {
     public org.opennms.netmgt.xml.eventconf.Decode[] getDecode(
     ) {
         org.opennms.netmgt.xml.eventconf.Decode[] array = new org.opennms.netmgt.xml.eventconf.Decode[0];
-        return (org.opennms.netmgt.xml.eventconf.Decode[]) this.decodeList.toArray(array);
+        return (org.opennms.netmgt.xml.eventconf.Decode[]) this.m_decodeList.toArray(array);
     }
 
     /**
@@ -186,7 +186,7 @@ public class Varbindsdecode implements java.io.Serializable {
      */
     public java.util.List<org.opennms.netmgt.xml.eventconf.Decode> getDecodeCollection(
     ) {
-        return this.decodeList;
+        return this.m_decodeList;
     }
 
     /**
@@ -196,7 +196,7 @@ public class Varbindsdecode implements java.io.Serializable {
      */
     public int getDecodeCount(
     ) {
-        return this.decodeList.size();
+        return this.m_decodeList.size();
     }
 
     /**
@@ -210,7 +210,7 @@ public class Varbindsdecode implements java.io.Serializable {
      */
     public String getParmid(
     ) {
-        return this.parmid;
+        return this.m_parmid;
     }
 
     /**
@@ -249,7 +249,7 @@ public class Varbindsdecode implements java.io.Serializable {
      */
     public java.util.Iterator<org.opennms.netmgt.xml.eventconf.Decode> iterateDecode(
     ) {
-        return this.decodeList.iterator();
+        return this.m_decodeList.iterator();
     }
 
     /**
@@ -288,7 +288,7 @@ public class Varbindsdecode implements java.io.Serializable {
      */
     public void removeAllDecode(
     ) {
-        this.decodeList.clear();
+        this.m_decodeList.clear();
     }
 
     /**
@@ -299,7 +299,7 @@ public class Varbindsdecode implements java.io.Serializable {
      */
     public boolean removeDecode(
             final org.opennms.netmgt.xml.eventconf.Decode vDecode) {
-        boolean removed = decodeList.remove(vDecode);
+        boolean removed = m_decodeList.remove(vDecode);
         return removed;
     }
 
@@ -311,7 +311,7 @@ public class Varbindsdecode implements java.io.Serializable {
      */
     public org.opennms.netmgt.xml.eventconf.Decode removeDecodeAt(
             final int index) {
-        Object obj = this.decodeList.remove(index);
+        Object obj = this.m_decodeList.remove(index);
         return (org.opennms.netmgt.xml.eventconf.Decode) obj;
     }
 
@@ -328,11 +328,11 @@ public class Varbindsdecode implements java.io.Serializable {
             final org.opennms.netmgt.xml.eventconf.Decode vDecode)
     throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this.decodeList.size()) {
-            throw new IndexOutOfBoundsException("setDecode: Index value '" + index + "' not in range [0.." + (this.decodeList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_decodeList.size()) {
+            throw new IndexOutOfBoundsException("setDecode: Index value '" + index + "' not in range [0.." + (this.m_decodeList.size() - 1) + "]");
         }
         
-        this.decodeList.set(index, vDecode);
+        this.m_decodeList.set(index, vDecode);
     }
 
     /**
@@ -343,10 +343,10 @@ public class Varbindsdecode implements java.io.Serializable {
     public void setDecode(
             final org.opennms.netmgt.xml.eventconf.Decode[] vDecodeArray) {
         //-- copy array
-        decodeList.clear();
+        m_decodeList.clear();
         
         for (int i = 0; i < vDecodeArray.length; i++) {
-                this.decodeList.add(vDecodeArray[i]);
+                this.m_decodeList.add(vDecodeArray[i]);
         }
     }
 
@@ -359,9 +359,9 @@ public class Varbindsdecode implements java.io.Serializable {
     public void setDecode(
             final java.util.List<org.opennms.netmgt.xml.eventconf.Decode> vDecodeList) {
         // copy vector
-        this.decodeList.clear();
+        this.m_decodeList.clear();
         
-        this.decodeList.addAll(vDecodeList);
+        this.m_decodeList.addAll(vDecodeList);
     }
 
     /**
@@ -373,7 +373,7 @@ public class Varbindsdecode implements java.io.Serializable {
      */
     public void setDecodeCollection(
             final java.util.List<org.opennms.netmgt.xml.eventconf.Decode> decodeList) {
-        this.decodeList = decodeList;
+        this.m_decodeList = decodeList;
     }
 
     /**
@@ -387,7 +387,7 @@ public class Varbindsdecode implements java.io.Serializable {
      */
     public void setParmid(
             final String parmid) {
-        this.parmid = parmid;
+        this.m_parmid = parmid;
     }
 
     /**

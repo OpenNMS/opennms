@@ -11,6 +11,12 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -40,19 +46,19 @@ public class Varbind implements java.io.Serializable {
      * Field _textualConvention.
      */
 	@XmlAttribute(name="textual-convention", required=false)
-    private String textualConvention;
+    private String m_textualConvention;
 
     /**
      * The varbind element number
      */
 	@XmlElement(name="vbnumber", required=true)
-    private Integer vbnumber;
+    private Integer m_vbnumber;
 
     /**
      * The varbind element value
      */
 	@XmlElement(name="vbvalue", required=true)
-    private java.util.List<String> vbvalueList;
+    private List<String> vbvalueList;
 
 
       //----------------/
@@ -61,7 +67,7 @@ public class Varbind implements java.io.Serializable {
 
     public Varbind() {
         super();
-        this.vbvalueList = new java.util.ArrayList<String>();
+        this.vbvalueList = new ArrayList<String>();
     }
 
 
@@ -101,7 +107,7 @@ public class Varbind implements java.io.Serializable {
      */
     public void deleteVbnumber(
     ) {
-        vbnumber = null;
+        m_vbnumber = null;
     }
 
     /**
@@ -110,9 +116,9 @@ public class Varbind implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<String> enumerateVbvalue(
+    public Enumeration<String> enumerateVbvalue(
     ) {
-        return java.util.Collections.enumeration(this.vbvalueList);
+        return Collections.enumeration(this.vbvalueList);
     }
 
     /**
@@ -130,14 +136,14 @@ public class Varbind implements java.io.Serializable {
         if (obj instanceof Varbind) {
         
             Varbind temp = (Varbind)obj;
-            if (this.textualConvention != null) {
-                if (temp.textualConvention == null) return false;
-                else if (!(this.textualConvention.equals(temp.textualConvention))) 
+            if (this.m_textualConvention != null) {
+                if (temp.m_textualConvention == null) return false;
+                else if (!(this.m_textualConvention.equals(temp.m_textualConvention))) 
                     return false;
             }
-            else if (temp.textualConvention != null)
+            else if (temp.m_textualConvention != null)
                 return false;
-            if (this.vbnumber != temp.vbnumber)
+            if (this.m_vbnumber != temp.m_vbnumber)
                 return false;
             if (this.vbvalueList != null) {
                 if (temp.vbvalueList == null) return false;
@@ -158,7 +164,7 @@ public class Varbind implements java.io.Serializable {
      */
     public String getTextualConvention(
     ) {
-        return this.textualConvention;
+        return this.m_textualConvention;
     }
 
     /**
@@ -169,7 +175,7 @@ public class Varbind implements java.io.Serializable {
      */
     public int getVbnumber(
     ) {
-        return this.vbnumber;
+        return this.m_vbnumber;
     }
 
     /**
@@ -213,7 +219,7 @@ public class Varbind implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<String> getVbvalueCollection(
+    public List<String> getVbvalueCollection(
     ) {
         return this.vbvalueList;
     }
@@ -235,7 +241,7 @@ public class Varbind implements java.io.Serializable {
      */
     public boolean hasVbnumber(
     ) {
-        return vbnumber != null;
+        return m_vbnumber != null;
     }
 
     /**
@@ -272,7 +278,7 @@ public class Varbind implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<String> iterateVbvalue(
+    public Iterator<String> iterateVbvalue(
     ) {
         return this.vbvalueList.iterator();
     }
@@ -348,7 +354,7 @@ public class Varbind implements java.io.Serializable {
      */
     public void setTextualConvention(
             final String textualConvention) {
-        this.textualConvention = textualConvention;
+        this.m_textualConvention = textualConvention;
     }
 
     /**
@@ -359,7 +365,7 @@ public class Varbind implements java.io.Serializable {
      */
     public void setVbnumber(
             final int vbnumber) {
-        this.vbnumber = vbnumber;
+        this.m_vbnumber = vbnumber;
     }
 
     /**
@@ -404,7 +410,7 @@ public class Varbind implements java.io.Serializable {
      * @param vVbvalueList the Vector to copy.
      */
     public void setVbvalue(
-            final java.util.List<String> vVbvalueList) {
+            final List<String> vVbvalueList) {
         // copy vector
         this.vbvalueList.clear();
         
@@ -419,7 +425,7 @@ public class Varbind implements java.io.Serializable {
      * @param vbvalueList the Vector to set.
      */
     public void setVbvalueCollection(
-            final java.util.List<String> vbvalueList) {
+            final List<String> vbvalueList) {
         this.vbvalueList = vbvalueList;
     }
 
