@@ -464,7 +464,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                     }
                     
                 } catch (final Throwable t) {
-                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP list", pkg.getName());
+                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
                 }
                 
             }

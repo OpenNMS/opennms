@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.config;
 
-import static org.opennms.core.utils.InetAddressUtils.*;
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.isInetAddressInRange;
+import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -302,7 +304,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
                         m_pkgIpMap.put(pkg, ipList);
                     }
                 } catch (final Throwable t) {
-                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List", pkg.getName());
+                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
                 }
     
             }
