@@ -190,6 +190,7 @@ public class NewSuspectScanTest {
     @Test(timeout=300000)
     @Transactional
     @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
+    @Ignore
     public void testScanNewSuspect() throws Exception {
         
         //Verify empty database
