@@ -151,7 +151,7 @@ public class AlarmData implements java.io.Serializable {
      * 
      * @return the value of field 'AlarmType'.
      */
-    public int getAlarmType(
+    public Integer getAlarmType(
     ) {
         return this.m_alarmType;
     }
@@ -161,7 +161,7 @@ public class AlarmData implements java.io.Serializable {
      * 
      * @return the value of field 'AutoClean'.
      */
-    public boolean getAutoClean(
+    public Boolean getAutoClean(
     ) {
         return this.m_autoClean;
     }
@@ -201,7 +201,7 @@ public class AlarmData implements java.io.Serializable {
      * 
      * @return the value of field 'X733ProbableCause'.
      */
-    public int getX733ProbableCause(
+    public Integer getX733ProbableCause(
     ) {
         return this.m_x733ProbableCause;
     }

@@ -218,7 +218,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
                             m_pkgIpMap.put(pkg, ipList);
                         }
                     } catch (final Throwable t) {
-                        LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP list.", pkg.getName());
+                        LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
                     }
         
                 }
