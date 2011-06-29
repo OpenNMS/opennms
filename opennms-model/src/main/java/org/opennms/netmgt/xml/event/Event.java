@@ -1330,7 +1330,7 @@ public class Event implements Serializable {
 	 * @param dbid
 	 *            the value of field 'dbid'.
 	 */
-	public void setDbid(final int dbid) {
+	public void setDbid(final Integer dbid) {
 		this._dbid = dbid;
 	}
 
