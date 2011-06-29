@@ -65,6 +65,9 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis()
 )]]></defaultValueExpression>
 		</parameter>
+		<parameter name="DS_START_TIME_STRING" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{DS_START_TIME})]]></defaultValueExpression>
+		</parameter>
 		<queryString>
 			<![CDATA[SELECT
 	node_outages.categoryname,
@@ -85,9 +88,9 @@ FROM
 		active_nodes.nodelabel,
 		active_nodes.nodesyslocation,
 		active_nodes.nodesysdescription,
-		EXTRACT( epoch from ( '$P!{DS_START_TIME}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval ) - '$P!{DS_START_TIME}'::TIMESTAMP ) ) AS avail_total,
+		EXTRACT( epoch from ( '$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval ) - '$P!{DS_START_TIME_STRING}'::TIMESTAMP ) ) AS avail_total,
 
-		--EXTRACT ( epoch from ('$P!{DS_START_TIME}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval ) ) ) - '$P!{DS_START_TIME}'::TIMESTAMP) AS avail_total,
+		--EXTRACT ( epoch from ('$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval ) ) ) - '$P!{DS_START_TIME_STRING}'::TIMESTAMP) AS avail_total,
 		CASE
 			WHEN
 				outages_scope.ifregainedservice - outages_scope.iflostservice is NULL
@@ -109,12 +112,12 @@ FROM
 	FROM
 		(SELECT
 			outages.nodeid,
-			least(('$P!{DS_START_TIME}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval )), outages.ifregainedservice) as ifregainedservice,
-			greatest('$P!{DS_START_TIME}'::TIMESTAMP,outages.iflostservice) as iflostservice
+			least(('$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval )), outages.ifregainedservice) as ifregainedservice,
+			greatest('$P!{DS_START_TIME_STRING}'::TIMESTAMP,outages.iflostservice) as iflostservice
 		FROM
 			outages, service, events
 		WHERE
-			(iflostservice, ifregainedservice) OVERLAPS ('$P!{DS_START_TIME}'::TIMESTAMP, '$P!{DS_START_TIME}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval )) AND
+			(iflostservice, ifregainedservice) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP, '$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval )) AND
 			outages.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
@@ -249,10 +252,13 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["This Month"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{START_TIME})]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-	'$P!{START_TIME}'::TIMESTAMP AS start,
-	'$P!{START_TIME}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{TIME_RANGE}'::TIMESTAMP ) - 1 || ' days' as interval) AS end]]>
+	'$P!{START_TIME_STRING}'::TIMESTAMP AS start,
+	'$P!{START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{TIME_RANGE}'::TIMESTAMP ) - 1 || ' days' as interval) AS end]]>
 	</queryString>
 	<field name="start" class="java.sql.Timestamp"/>
 	<field name="end" class="java.sql.Timestamp"/>
@@ -576,7 +582,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="31" splitType="Stretch">
+		<band height="32" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="9" width="555" height="1"/>
 				<graphicElement>
@@ -598,21 +604,21 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 				<textElement/>
 				<text><![CDATA[Report begin: ]]></text>
 			</staticText>
-			<textField evaluationTime="Page">
-				<reportElement style="Body" x="67" y="15" width="126" height="14"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{start}]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Page">
-				<reportElement style="Body" x="253" y="15" width="131" height="14"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{end}]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement style="Body" x="193" y="15" width="60" height="14"/>
 				<textElement/>
 				<text><![CDATA[Report end: ]]></text>
 			</staticText>
+			<textField evaluationTime="Page">
+				<reportElement style="Body" x="67" y="15" width="126" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{START_TIME}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Page">
+				<reportElement style="Body" x="253" y="15" width="131" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new Date($P{START_TIME}.getTime() + (86400000 * $P{TIME_RANGE_NUMBER}))]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 	<summary>
