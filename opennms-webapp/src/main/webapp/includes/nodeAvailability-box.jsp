@@ -58,21 +58,7 @@
     
     private double m_normalThreshold;
 	private double m_warningThreshold;
-  
-    private ServiceNameComparator m_serviceComparator = new ServiceNameComparator();
-    
-    public Service[] getServices(Interface intf) throws java.sql.SQLException {
-        Assert.notNull(intf, "intf argument cannot be null");
-        
-        Service[] svcs = NetworkElementFactory.getInstance(getServletContext()).getServicesOnInterface(intf.getNodeId(), intf.getIpAddress());
-        
-        if (svcs != null) {
-            Arrays.sort(svcs, m_serviceComparator); 
-        }
-        
-        return svcs;
-    }
-    
+      
     public void init() throws ServletException {
         try {
             m_model = CategoryModel.getInstance();
@@ -94,19 +80,6 @@
     }
 
     int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-
-    //get the database node info
-    OnmsNode node_db = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
-    if (node_db == null) {
-        //handle this WAY better, very awful
-        throw new ServletException("No such node in database");
-    }
-
-    //get the child interfaces
-    Interface[] intfs = NetworkElementFactory.getInstance(getServletContext()).getActiveInterfacesOnNode( nodeId );
-    if (intfs == null) { 
-        intfs = new Interface[0]; 
-    }
 
     //get the node's overall service level availiability for the last 24 hrs
     double overallRtcValue = m_model.getNodeAvailability(nodeId);
@@ -150,7 +123,7 @@
           <% if( intf.isManaged() ) { %>
             <%-- interface is managed --%>
             <% double intfValue = m_model.getInterfaceAvailability(nodeId, ipAddr); %>                              
-            <% Service[] svcs = getServices(intf); %>
+            <% Service[] svcs = ElementUtil.getServicesOnInterface(nodeId,ipAddr,getServletContext()); %>
 
             <tr class="CellStatus">
               <%

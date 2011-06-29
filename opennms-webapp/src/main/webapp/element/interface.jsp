@@ -85,14 +85,6 @@
 	if (intf_db.getIfIndex() > 0) {
 		ifIndex = intf_db.getIfIndex();
 	}
-    
-    AtInterface atif_db = NetworkElementFactory.getInstance(getServletContext()).getAtInterface(nodeId, ipAddr);
-
-
-    Service[] services = NetworkElementFactory.getInstance(getServletContext()).getServicesOnInterface( nodeId, ipAddr );
-    if( services == null ) {
-        services = new Service[0];
-    }
 
     String telnetIp = null;
     Service telnetService = NetworkElementFactory.getInstance(getServletContext()).getService(nodeId, ipAddr, this.telnetServiceId);
@@ -107,6 +99,7 @@
     if( httpService != null  ) {
         httpIp = ipAddr;
     }
+    
     PollerConfigFactory.init();
     PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
@@ -291,8 +284,21 @@ function doDelete() {
               </tr>              
             </table>
             
+            <% if (ifIndex > 0 ) { %>
+            
+            <!-- Node Link box -->
+            <jsp:include page="/includes/interfaceLink-box.jsp" flush="false">
+                <jsp:param name="node" value="<%=nodeId%>" />
+                <jsp:param name="ifindex" value="<%=ifIndex%>" />
+            </jsp:include>
+            <% } %>
+
             <!-- Availability box -->
-            <jsp:include page="/includes/interfaceAvailability-box.jsp" flush="false" />
+            <jsp:include page="/includes/interfaceAvailability-box.jsp" flush="false">
+                <jsp:param name="node" value="<%=nodeId%>" />
+                <jsp:param name="ipAddr" value="<%=ipAddr%>" />
+                <jsp:param name="interfaceStatus" value="<%=ElementUtil.getInterfaceStatusString(intf_db)%>" />
+            </jsp:include>
 
 </div>
        
@@ -328,7 +334,10 @@ function doDelete() {
               </jsp:include>
             <% } %>
             <!-- Recent outages box -->
-            <jsp:include page="/outage/interfaceOutages-box.htm" flush="false" />         
+            <jsp:include page="/outage/interfaceOutages-box.htm" flush="false">
+                <jsp:param name="node" value="<%=nodeId%>" />
+                <jsp:param name="ipAddr" value="<%=ipAddr%>" />
+            </jsp:include>         
 
 
 </div> <!-- id="contentright" -->

@@ -29,8 +29,6 @@
 package org.opennms.web.element;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -154,27 +152,15 @@ public class NetworkElementFactoryTest  {
     	assertEquals("active interfaces", 4, intfs.length);
     	
     }
-    
-    @Test
-    @Transactional
-    public void testNodeHasIfAliases() throws InterruptedException {
-        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
-        assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = '' WHERE snmpifalias = 'Initial ifAlias value'"));
-        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
-        assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = 'New ifAlias value' WHERE snmpifalias = ''"));
-        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
-        assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = NULL WHERE snmpifalias = 'New ifAlias value'"));
-        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(m_dbPopulator.getNode1().getId()));
-    }
-    
+        
     @Test
     @Transactional
     public void testGetDataLinksOnInterface() {
-        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(m_dbPopulator.getNode1().getId(), 1);
-        assertEquals(4, dlis.length);
+        List<LinkInterface> dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(m_dbPopulator.getNode1().getId(), 1);
+        assertEquals(4, dlis.size());
         
-        DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(m_dbPopulator.getNode1().getId(), 9);
-        assertEquals(0, dlis2.length);
+        List<LinkInterface> dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(m_dbPopulator.getNode1().getId(), 9);
+        assertEquals(0, dlis2.size());
     }
     
     @Test
@@ -190,11 +176,11 @@ public class NetworkElementFactoryTest  {
     @Test
     @Transactional
     public void testGetDataLinksOnNode() throws SQLException {
-        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(m_dbPopulator.getNode1().getId());
-        assertEquals(5, dlis.length);
+    	List<LinkInterface> dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(m_dbPopulator.getNode1().getId());
+        assertEquals(5, dlis.size());
         
-        DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(100);
-        assertEquals(0, dlis2.length);
+        List<LinkInterface> dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(100);
+        assertEquals(0, dlis2.size());
     }
     
     @Test

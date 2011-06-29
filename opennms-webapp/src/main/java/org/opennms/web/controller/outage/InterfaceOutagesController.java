@@ -34,8 +34,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.element.ElementUtil;
-import org.opennms.web.element.Interface;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.Outage;
 import org.opennms.web.outage.WebOutageRepository;
@@ -63,15 +62,18 @@ public class InterfaceOutagesController extends AbstractController implements In
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Interface iface = ElementUtil.getInterfaceByParams(request, getServletContext());
-
+    	String nodeIdString = request.getParameter("node");
+    	String ipAddr = request.getParameter("ipAddr");
+    	
+    	int nodeId = -1;
         Outage[] outages = new Outage[0];
 
-        if (iface.getNodeId() > 0 && iface.getIpAddress() != null) {
+        if (nodeIdString != null && ipAddr != null) {
+        	nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
             List<Filter> filters = new ArrayList<Filter>();
 
-            filters.add(new InterfaceFilter(iface.getIpAddress()));
-            filters.add(new NodeFilter(iface.getNodeId(), getServletContext()));
+            filters.add(new InterfaceFilter(ipAddr));
+            filters.add(new NodeFilter(nodeId, getServletContext()));
             filters.add(new RecentOutagesFilter());
 
             OutageCriteria criteria = new OutageCriteria(filters.toArray(new Filter[0]));
@@ -79,8 +81,8 @@ public class InterfaceOutagesController extends AbstractController implements In
         }
 
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
-        modelAndView.addObject("nodeId", iface.getNodeId());
-        modelAndView.addObject("ipAddr", iface.getIpAddress());
+        modelAndView.addObject("nodeId", nodeId);
+        modelAndView.addObject("ipAddr", ipAddr);
         modelAndView.addObject("outages", outages);
         return modelAndView;
     }

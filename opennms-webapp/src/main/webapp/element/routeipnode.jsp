@@ -73,21 +73,8 @@
 %>
 
 <%
-    String nodeIdString = request.getParameter( "node" );
-
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node" );
-    }
-
-    int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
-
-    //get the database node info
-    OnmsNode node_db = NetworkElementFactory.getInstance(getServletContext()).getNode( nodeId );
-    if( node_db == null ) {
-        //handle this WAY better, very awful
-        throw new ServletException( "No such node in database" );
-    }
-
+    OnmsNode node_db = ElementUtil.getNodeByParams(request, getServletContext());
+	int nodeId = node_db.getId();
     //find the telnet interfaces, if any
     String telnetIp = null;
     Service[] telnetServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, this.telnetServiceId);
@@ -179,7 +166,7 @@
 
 	<div class="TwoColLeft">
             <!-- general info box -->
-						<h3>General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
+		<h3>General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
 
 			<div class="boxWrapper">
 			     <ul class="plain">
