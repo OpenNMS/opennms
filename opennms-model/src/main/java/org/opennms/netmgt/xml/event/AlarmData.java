@@ -236,7 +236,7 @@ public class AlarmData implements Serializable {
      * @param alarmType the value of field 'alarmType'.
      */
     public void setAlarmType(
-            final int alarmType) {
+            final Integer alarmType) {
         this._alarmType = alarmType;
     }
 
@@ -246,7 +246,7 @@ public class AlarmData implements Serializable {
      * @param autoClean the value of field 'autoClean'.
      */
     public void setAutoClean(
-            final boolean autoClean) {
+            final Boolean autoClean) {
         this._autoClean = autoClean;
     }
 
@@ -287,7 +287,7 @@ public class AlarmData implements Serializable {
      * 'x733ProbableCause'.
      */
     public void setX733ProbableCause(
-            final int x733ProbableCause) {
+            final Integer x733ProbableCause) {
         this._x733ProbableCause = x733ProbableCause;
     }
 

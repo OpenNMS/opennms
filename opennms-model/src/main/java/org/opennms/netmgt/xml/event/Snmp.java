@@ -266,7 +266,7 @@ public class Snmp implements Serializable {
      * @param generic the value of field 'generic'.
      */
     public void setGeneric(
-            final int generic) {
+            final Integer generic) {
         this._generic = generic;
     }
 
@@ -299,7 +299,7 @@ public class Snmp implements Serializable {
      * @param specific the value of field 'specific'.
      */
     public void setSpecific(
-            final int specific) {
+            final Integer specific) {
         this._specific = specific;
     }
 
@@ -310,7 +310,7 @@ public class Snmp implements Serializable {
      * @param timeStamp the value of field 'timeStamp'.
      */
     public void setTimeStamp(
-            final long timeStamp) {
+            final Long timeStamp) {
         this._timeStamp = timeStamp;
     }
 
