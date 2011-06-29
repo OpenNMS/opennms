@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AvailabilitySummaryReport" pageWidth="700" pageHeight="842" columnWidth="620" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AvailabilitySummaryReport" pageWidth="700" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="620" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="26"/>
-	<property name="ireport.y" value="192"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="1045"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Sans_Normal" isDefault="true" fontName="SansSerif" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Bold" fontName="SansSerif" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
@@ -123,6 +123,9 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
+	<parameter name="START_TIME_STRING" class="java.lang.String">
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{START_TIME})]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
 	node_outages.categoryname,
@@ -159,8 +162,8 @@ FROM
 		active_nodes.nodelabel,
 		active_nodes.nodesyslocation,
 		active_nodes.nodesysdescription,
-		('$P!{END_TIME}'::TIMESTAMP) - '$P!{START_TIME}'::TIMESTAMP AS avail_time_interval,
-		EXTRACT (epoch from ('$P!{END_TIME}'::TIMESTAMP) - '$P!{START_TIME}'::TIMESTAMP) AS avail_total,
+		('$P!{END_TIME}'::TIMESTAMP) - '$P!{START_TIME_STRING}'::TIMESTAMP AS avail_time_interval,
+		EXTRACT (epoch from ('$P!{END_TIME}'::TIMESTAMP) - '$P!{START_TIME_STRING}'::TIMESTAMP) AS avail_total,
 		CASE
 			WHEN
 				outages_scope.gained_service_timestamp - outages_scope.lost_service_timestamp is NULL
@@ -183,11 +186,11 @@ FROM
 		(SELECT
 			outages.nodeid,
 			least(('$P!{END_TIME}'::TIMESTAMP), outages.ifregainedservice) as gained_service_timestamp,
-			greatest('$P!{START_TIME}'::TIMESTAMP,outages.iflostservice) as lost_service_timestamp
+			greatest('$P!{START_TIME_STRING}'::TIMESTAMP,outages.iflostservice) as lost_service_timestamp
 		FROM
 			outages, service, events
 		WHERE
-			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME}'::TIMESTAMP, '$P!{END_TIME}'::TIMESTAMP) AND
+			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{END_TIME}'::TIMESTAMP) AND
 			outages.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
@@ -445,6 +448,9 @@ ORDER BY
 					<subreportParameter name="DS_SURVEILLANCE_CAT">
 						<subreportParameterExpression><![CDATA[$P{DS_SURVEILLANCE_CATEGORY}]]></subreportParameterExpression>
 					</subreportParameter>
+					<subreportParameter name="TIME_SERIES_START_TIME_STRING">
+						<subreportParameterExpression><![CDATA[$P{START_TIME_STRING}]]></subreportParameterExpression>
+					</subreportParameter>
 					<subreportParameter name="TIME_SERIES_START_TIMESTAMP">
 						<subreportParameterExpression><![CDATA[$P{START_TIME}]]></subreportParameterExpression>
 					</subreportParameter>
@@ -461,14 +467,17 @@ ORDER BY
 					<subreportParameter name="CATEGORY_NAME">
 						<subreportParameterExpression><![CDATA[$F{categoryname}]]></subreportParameterExpression>
 					</subreportParameter>
+					<subreportParameter name="START_TIME_STRING">
+						<subreportParameterExpression><![CDATA[$P{START_TIME_STRING}]]></subreportParameterExpression>
+					</subreportParameter>
 					<subreportParameter name="TIME_RANGE">
 						<subreportParameterExpression><![CDATA[$P{TIME_RANGE}]]></subreportParameterExpression>
 					</subreportParameter>
-					<subreportParameter name="END_TIME">
-						<subreportParameterExpression><![CDATA[$P{END_TIME}]]></subreportParameterExpression>
-					</subreportParameter>
 					<subreportParameter name="START_TIME">
 						<subreportParameterExpression><![CDATA[$P{START_TIME}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="END_TIME">
+						<subreportParameterExpression><![CDATA[$P{END_TIME}]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "Top25PercentDown_subreport.jasper"]]></subreportExpression>

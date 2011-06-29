@@ -19,6 +19,9 @@
 	<parameter name="NODE_LABEL" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["donaldo.local"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{START_TIME})]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
 	node_outages.categoryname,
@@ -52,7 +55,7 @@ FROM
 		active_nodes.nodelabel,
 		active_nodes.nodesyslocation,
 		active_nodes.nodesysdescription,
-		EXTRACT (epoch from ('$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) - '$P!{START_TIME}'::TIMESTAMP) AS avail_total,
+		EXTRACT (epoch from ('$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) - '$P!{START_TIME_STRING}'::TIMESTAMP) AS avail_total,
 		CASE
 			WHEN
 				outages_scope.ifregainedservice - outages_scope.iflostservice is NULL
@@ -79,7 +82,7 @@ FROM
 		FROM
 			outages, service, events
 		WHERE
-			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME}'::TIMESTAMP, '$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) AND
+			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) AND
 			outages.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND

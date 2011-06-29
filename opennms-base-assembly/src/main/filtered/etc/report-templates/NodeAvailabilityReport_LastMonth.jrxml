@@ -63,6 +63,9 @@
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis()
 )]]></defaultValueExpression>
 		</parameter>
+		<parameter name="DS_START_TIME_STRING" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{DS_START_TIME})]]></defaultValueExpression>
+		</parameter>
 		<queryString>
 			<![CDATA[SELECT
 	node_outages.categoryname,
@@ -83,7 +86,7 @@ FROM
 		active_nodes.nodelabel,
 		active_nodes.nodesyslocation,
 		active_nodes.nodesysdescription,
-		EXTRACT (epoch from ('$P!{DS_START_TIME}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL) - '$P!{DS_START_TIME}'::TIMESTAMP) AS avail_total,
+		EXTRACT (epoch from ('$P!{DS_START_TIME_STRING}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL) - '$P!{DS_START_TIME_STRING}'::TIMESTAMP) AS avail_total,
 		CASE
 			WHEN
 				outages_scope.ifregainedservice - outages_scope.iflostservice is NULL
@@ -105,12 +108,12 @@ FROM
 	FROM
 		(SELECT
 			outages.nodeid,
-			least(('$P!{DS_START_TIME}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL), outages.ifregainedservice) as ifregainedservice,
-			greatest('$P!{DS_START_TIME}'::TIMESTAMP,outages.iflostservice) as iflostservice
+			least(('$P!{DS_START_TIME_STRING}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL), outages.ifregainedservice) as ifregainedservice,
+			greatest('$P!{DS_START_TIME_STRING}'::TIMESTAMP,outages.iflostservice) as iflostservice
 		FROM
 			outages, service, events
 		WHERE
-			(iflostservice, ifregainedservice) OVERLAPS ('$P!{DS_START_TIME}'::TIMESTAMP, '$P!{DS_START_TIME}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL) AND
+			(iflostservice, ifregainedservice) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP, '$P!{DS_START_TIME_STRING}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL) AND
 			outages.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
@@ -240,13 +243,16 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["Last Month"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{START_TIME})]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-	'$P!{START_TIME}'::TIMESTAMP AS start,
-	'$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL AS end]]>
+	'$P!{START_TIME_STRING}'::TIMESTAMP AS start,
+	'$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL AS end]]>
 	</queryString>
-	<field name="start" class="java.util.Date"/>
-	<field name="end" class="java.util.Date"/>
+	<field name="start" class="java.sql.Timestamp"/>
+	<field name="end" class="java.sql.Timestamp"/>
 	<variable name="start_1" class="java.lang.Integer" resetType="Page" calculation="Count">
 		<variableExpression><![CDATA[$F{start}]]></variableExpression>
 	</variable>
