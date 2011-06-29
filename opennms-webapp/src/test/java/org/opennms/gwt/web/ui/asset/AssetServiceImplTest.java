@@ -34,22 +34,23 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Date;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.gwt.web.ui.asset.server.AssetServiceImpl;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.web.svclayer.SecurityContextService;
-import org.opennms.web.svclayer.support.SpringSecurityContextService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.Authentication;
@@ -62,12 +63,11 @@ import org.springframework.security.providers.preauth.PreAuthenticatedAuthentica
 import org.springframework.security.userdetails.User;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({ OpenNMSConfigurationExecutionListener.class,
 		TemporaryDatabaseExecutionListener.class,
 		DependencyInjectionTestExecutionListener.class,
@@ -78,7 +78,8 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
 		"classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
 		"classpath*:/META-INF/opennms/component-dao.xml" })
-@JUnitTemporaryDatabase()
+@JUnitTemporaryDatabase
+@JUnitConfigurationEnvironment
 public class AssetServiceImplTest {
 
 	@Autowired
@@ -93,14 +94,14 @@ public class AssetServiceImplTest {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 
-	private SecurityContextService m_securityContextService;
+	// private SecurityContextService m_securityContextService;
 
-	private final GrantedAuthority ROLE_ADMIN = new GrantedAuthorityImpl(
-			"ROLE_ADMIN");
-	private final GrantedAuthority ROLE_PROVISION = new GrantedAuthorityImpl(
-			"ROLE_PROVISION");
-	private final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(
-			"ROLE_USER");
+	private final GrantedAuthority ROLE_ADMIN = new GrantedAuthorityImpl("ROLE_ADMIN");
+	
+	/*
+	private final GrantedAuthority ROLE_PROVISION = new GrantedAuthorityImpl("ROLE_PROVISION");
+	private final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl("ROLE_USER");
+	*/
 
 	private final String USERNAME = "opennms";
 
@@ -108,6 +109,7 @@ public class AssetServiceImplTest {
 	
 	private User validAdmin;
 	
+	/*
 	private User invalidAdmin;
 	
 	private User validProvision;
@@ -121,6 +123,7 @@ public class AssetServiceImplTest {
 	private User validPower;
 	
 	private User invalidPower;
+	*/
 	
 	private Authentication m_auth;
 	
@@ -129,33 +132,43 @@ public class AssetServiceImplTest {
 	@Before
 	public void setUp() {
 		m_databasePopulator.populateDatabase();
-		this.m_context = new SecurityContextImpl();
+		m_context = new SecurityContextImpl();
 		
-		this.validAdmin = new User(USERNAME, PASS, true, true, true, true,
-				new GrantedAuthority[] { ROLE_ADMIN });
-		this.invalidAdmin = new User(USERNAME, PASS, true, true, true, true,
+		validAdmin = new User(USERNAME, PASS, true, true, true, true,
 				new GrantedAuthority[] { ROLE_ADMIN });
 		
-		this.validProvision = new User(USERNAME, PASS, true, true, true, true,
+		/*
+		invalidAdmin = new User(USERNAME, PASS, true, true, true, true,
+				new GrantedAuthority[] { ROLE_ADMIN });
+		
+		validProvision = new User(USERNAME, PASS, true, true, true, true,
 				new GrantedAuthority[] { ROLE_PROVISION });
-		this.invalidProvision = new User(USERNAME, PASS, true, true, true, true,
+		invalidProvision = new User(USERNAME, PASS, true, true, true, true,
 				new GrantedAuthority[] { ROLE_PROVISION });
 		
-		this.validUser = new User(USERNAME, PASS, true, true, true, true,
+		validUser = new User(USERNAME, PASS, true, true, true, true,
 				new GrantedAuthority[] { ROLE_USER });
-		this.invalidUser = new User(USERNAME, PASS, true, true, true, true,
+		invalidUser = new User(USERNAME, PASS, true, true, true, true,
 				new GrantedAuthority[] { ROLE_USER });
 
-		this.validPower = new User(USERNAME, PASS, true, true, true, true,
+		validPower = new User(USERNAME, PASS, true, true, true, true,
 				new GrantedAuthority[] { ROLE_ADMIN, ROLE_PROVISION });
-		this.invalidPower = new User(USERNAME, PASS, true, true, true, true,
+		invalidPower = new User(USERNAME, PASS, true, true, true, true,
 				new GrantedAuthority[] { ROLE_USER, ROLE_PROVISION });
+				*/
 
-		this.m_auth = new PreAuthenticatedAuthenticationToken(
-				this.validAdmin, new Object());
-		this.m_context.setAuthentication(this.m_auth);
-		SecurityContextHolder.setContext(this.m_context);
-		this.m_securityContextService = new SpringSecurityContextService();
+		m_auth = new PreAuthenticatedAuthenticationToken(validAdmin, new Object());
+		m_context.setAuthentication(m_auth);
+		SecurityContextHolder.setContext(m_context);
+		// m_securityContextService = new SpringSecurityContextService();
+	}
+
+	@After
+	public void tearDown() {
+		for (final OnmsNode node : m_nodeDao.findAll()) {
+			m_nodeDao.delete(node);
+		}
+		m_nodeDao.flush();
 	}
 
 	@Test
@@ -182,7 +195,7 @@ public class AssetServiceImplTest {
 		onmsNode.setLabel("myNode");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
-		assetRecord.setAssetNumber("imported-id: 7");
+		assetRecord.setAssetNumber("imported-id: " + onmsNode.getId());
 		assetRecord.setAdmin("supermario");
 		assetRecord.setZip("myzip");
 		m_assetRecordDao.update(assetRecord);
@@ -199,39 +212,39 @@ public class AssetServiceImplTest {
 		m_assetRecordDao.flush();
 
 		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
-		assetServiceImpl.setNodeDao(this.m_nodeDao);
-		assetServiceImpl.setAssetRecordDao(this.m_assetRecordDao);
+		assetServiceImpl.setNodeDao(m_nodeDao);
+		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
 
 		System.out.println("AssetCommand: "
-				+ assetServiceImpl.getAssetByNodeId(7).toString());
+				+ assetServiceImpl.getAssetByNodeId(onmsNode.getId()).toString());
 		System.out.println("Suggestions: "
 				+ assetServiceImpl.getAssetSuggestions());
-		assertTrue("Test save or update by admin.", assetServiceImpl.getAssetByNodeId(7).getAllowModify());
+		assertTrue("Test save or update by admin.", assetServiceImpl.getAssetByNodeId(onmsNode.getId()).getAllowModify());
 	}
 
 //	@Test
 //	public void successAllowModifyAssetByAdmin() {
 //		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
-//		assetServiceImpl.setNodeDao(this.m_nodeDao);
-//		assetServiceImpl.setAssetRecordDao(this.m_assetRecordDao);
-//		this.m_auth = new PreAuthenticatedAuthenticationToken(
-//				this.validAdmin, new Object());
-//		this.m_context.setAuthentication(this.m_auth);
-//		SecurityContextHolder.setContext(this.m_context);
-//		this.m_securityContextService = new SpringSecurityContextService();
+//		assetServiceImpl.setNodeDao(m_nodeDao);
+//		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
+//		m_auth = new PreAuthenticatedAuthenticationToken(
+//				validAdmin, new Object());
+//		m_context.setAuthentication(m_auth);
+//		SecurityContextHolder.setContext(m_context);
+//		m_securityContextService = new SpringSecurityContextService();
 //		assertTrue("Test save or update by admin.", assetServiceImpl.getAssetByNodeId(7).getAllowModify());
 //	}
 //
 //	@Test
 //	public void failAllowModifyAssetByAdmin() {
 //		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
-//		assetServiceImpl.setNodeDao(this.m_nodeDao);
-//		assetServiceImpl.setAssetRecordDao(this.m_assetRecordDao);
-//		this.m_auth = new PreAuthenticatedAuthenticationToken(
-//				this.invalidAdmin, new Object());
-//		this.m_context.setAuthentication(this.m_auth);
-//		SecurityContextHolder.setContext(this.m_context);
-//		this.m_securityContextService = new SpringSecurityContextService();
+//		assetServiceImpl.setNodeDao(m_nodeDao);
+//		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
+//		m_auth = new PreAuthenticatedAuthenticationToken(
+//				invalidAdmin, new Object());
+//		m_context.setAuthentication(m_auth);
+//		SecurityContextHolder.setContext(m_context);
+//		m_securityContextService = new SpringSecurityContextService();
 //		assertFalse("Test save or update by admin.", assetServiceImpl.getAssetByNodeId(7).getAllowModify());
 //	}
 	
@@ -242,7 +255,7 @@ public class AssetServiceImplTest {
 		onmsNode.setLabel("myNode");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
-		assetRecord.setAssetNumber("imported-id: 7");
+		assetRecord.setAssetNumber("imported-id: " + onmsNode.getId());
 		assetRecord.setAdmin("supermario");
 		assetRecord.setLastModifiedDate(new Date());
 		assetRecord.setZip("myzip");
@@ -256,10 +269,10 @@ public class AssetServiceImplTest {
 		System.out.println("Asset to Save (Target): " + assetRecord);
 
 		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
-		assetServiceImpl.setNodeDao(this.m_nodeDao);
-		assetServiceImpl.setAssetRecordDao(this.m_assetRecordDao);
+		assetServiceImpl.setNodeDao(m_nodeDao);
+		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
 		System.out.println();
-		assertTrue(assetServiceImpl.saveOrUpdateAssetByNodeId(7, assetCommand));
+		assertTrue(assetServiceImpl.saveOrUpdateAssetByNodeId(onmsNode.getId(), assetCommand));
 	}
 
 	@Test
@@ -288,8 +301,8 @@ public class AssetServiceImplTest {
 		m_assetRecordDao.flush();
 
 		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
-		assetServiceImpl.setNodeDao(this.m_nodeDao);
-		assetServiceImpl.setAssetRecordDao(this.m_assetRecordDao);
-		System.out.println("Asset: " + assetServiceImpl.getAssetByNodeId(7));
+		assetServiceImpl.setNodeDao(m_nodeDao);
+		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
+		System.out.println("Asset: " + assetServiceImpl.getAssetByNodeId(onmsNode.getId()));
 	}
 }
