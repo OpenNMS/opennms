@@ -58,7 +58,6 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -70,6 +69,7 @@ import org.opennms.netmgt.linkd.DbIpRouteInterfaceEntry;
 import org.opennms.netmgt.linkd.DbStpInterfaceEntry;
 import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.linkd.DbVlanEntry;
+import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -81,6 +81,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
+import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
@@ -143,7 +144,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      */
     protected Map<Integer, String> serviceId2NameMap;
 
-    
     public static NetworkElementFactoryInterface getInstance(ServletContext servletContext) {
         return getInstance(WebApplicationContextUtils.getWebApplicationContext(servletContext));    
     }
@@ -347,6 +347,24 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return null;
     }
 
+    public Integer getIfIndex(int ipinterfaceid) {
+        SingleResultQuerier querier = new SingleResultQuerier(Vault.getDataSource(), "SELECT ifindex FROM IPINTERFACE WHERE ID = ?");
+        querier.execute(ipinterfaceid);
+        final Integer result = (Integer)querier.getResult();
+        if (result !=  null)
+        	return result;    	
+    	return -1;
+    }
+    
+    public Integer getIfIndex(int nodeID, String ipaddr) {
+        SingleResultQuerier querier = new SingleResultQuerier(Vault.getDataSource(), "SELECT ifindex FROM IPINTERFACE WHERE Nodeid = " + nodeID + " and ipaddr = '" + ipaddr + "'");
+        querier.execute();
+        final Integer result = (Integer)querier.getResult();
+        if (result !=  null)
+        	return result;    	
+    	return -1;
+    }
+    
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterface(int)
 	 */
@@ -388,7 +406,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("ipAddress", InetAddressUtils.addr(ipAddress)));
         criteria.add(Restrictions.eq("snmpIface.ifIndex", ifIndex));
-        
+
         List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(criteria);
         
         return ifaces.size() > 0 ? onmsIpInterface2Interface(ifaces.get(0)) : null;
@@ -438,24 +456,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.add(Restrictions.ne("isManaged", "D"));
         
         return onmsIpInterfaces2InterfaceArray(m_ipInterfaceDao.findMatching(criteria));
-    }
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#nodeHasIfAliases(int)
-	 */
-    public boolean nodeHasIfAliases(int nodeId) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.createAlias("node.assetRecord", "assetRecord");
-        criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.ilike("snmpInterface.ifAlias", "_", MatchMode.ANYWHERE));
-        
-        List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(criteria);
-        if(ifaces.size() > 0) {
-            return true;
-        }else {
-            return false;
-        }
     }
 
     /* (non-Javadoc)
@@ -1155,7 +1155,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.IpRouteInterface} objects.
      * @throws java.sql.SQLException if any.
      */
-    public IpRouteInterface[] getIpRoute(int nodeID, ServletContext servletContext) throws SQLException {
+    public IpRouteInterface[] getIpRoute(int nodeID) {
 
         IpRouteInterface[] nodes = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -1169,6 +1169,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             d.watch(rs);
             
             nodes = rs2IpRouteInterface(rs);
+        } catch (SQLException e) {
+        	 LogUtils.warnf(this, e, "An error occurred getting the IP Route for node %d", nodeID);
+        	 return null;
         } finally {
             d.cleanUp();
         }
@@ -1177,57 +1180,14 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
     
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getIpRoute(int)
-	 */
-    public IpRouteInterface[] getIpRoute(final int nodeId) {
-        try {
-            return getIpRoute(nodeId, null);
-        } catch (final SQLException e) {
-            LogUtils.warnf(this, e, "An error occurred getting the IP Route for node %d", nodeId);
-            return null;
-        }
-    }
-
-    /**
-     * <p>getIpRoute</p>
-     *
-     * @param nodeID a int.
-     * @param ifindex a int.
-     * @return an array of {@link org.opennms.web.element.IpRouteInterface} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public IpRouteInterface[] getIpRoute(int nodeID, int ifindex)
-            throws SQLException {
-
-        IpRouteInterface[] nodes = null;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPROUTEINTERFACE WHERE NODEID = ? AND ROUTEIFINDEX = ? AND STATUS != 'D' ORDER BY ROUTEDEST");
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            stmt.setInt(2, ifindex);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            
-            nodes = rs2IpRouteInterface(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return nodes;
-    }
-
-    /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#isParentNode(int)
 	 */
     public boolean isParentNode(int nodeId) {
-        OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
+        OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.add(Restrictions.eq("nodeParentId", nodeId));
         criteria.add(Restrictions.ne("status", "D"));
         
-        List<org.opennms.netmgt.model.DataLinkInterface> dlis = m_dataLinkInterfaceDao.findMatching(criteria);
+        List<DataLinkInterface> dlis = m_dataLinkInterfaceDao.findMatching(criteria);
         
         if(dlis.size() > 0) {
             return true;
@@ -1300,33 +1260,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         }
 
         return isRI;
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinksOnNode(int)
-	 */
-    public DataLinkInterface[] getDataLinksOnNode(int nodeID) {
-        DataLinkInterface[] normalnodes = getDataLinks(nodeID);
-        DataLinkInterface[] parentnodes = getDataLinksFromNodeParent(nodeID);
-//        if(s_networkElemFactory != null) {
-//            normalnodes = s_networkElemFactory.getDataLinks(nodeID);
-//            parentnodes = s_networkElemFactory.getDataLinksFromNodeParent(nodeID);
-//        }
-        
-        DataLinkInterface[] nodes = new DataLinkInterface[normalnodes.length+parentnodes.length]; 
-        int j = 0;
-
-        for (DataLinkInterface normalnode : normalnodes) {
-        	nodes[j++] = normalnode;
-        	
-        }
-        
-        for (DataLinkInterface parentnode : parentnodes) {
-        	nodes[j++] = parentnode;
-        }
-
-        return nodes;
-    	
     }
 
     /**
@@ -1476,119 +1409,137 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         
     }
     
-    /**
-     * <p>getDataLinks</p>
-     *
-     * @param nodeID a int.
-     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
-     */
-    protected DataLinkInterface[] getDataLinks(int nodeId) {
+    /* (non-Javadoc)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinksOnNode(int)
+	 */
+    public List<LinkInterface> getDataLinksOnNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
         criteria.add(Restrictions.eq("nodeId", nodeId));
         criteria.add(Restrictions.ne("status", "D"));
         criteria.addOrder(Order.asc("ifIndex"));
+
+        List<LinkInterface> ifaces = getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId);
+
+        criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
+        criteria.add(Restrictions.eq("nodeParentId", nodeId));
+        criteria.add(Restrictions.ne("status", "D"));
+
+        ifaces.addAll(getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId));
         
-        return dlis2DataLinkInterfaces(m_dataLinkInterfaceDao.findMatching(criteria));
+        return ifaces;
+    	
     }
 
-    /**
-     * <p>getDataLinksFromNodeParent</p>
-     *
-     * @param nodeID a int.
-     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
-     */
-    protected DataLinkInterface[] getDataLinksFromNodeParent(int parentNodeId) {
-        OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
-        criteria.add(Restrictions.eq("nodeParentId", parentNodeId));
-        criteria.add(Restrictions.ne("status", "D"));
-        criteria.addOrder(Order.asc("parentIfIndex"));
-        
-        return dlis2DataLinkInterfaces(m_dataLinkInterfaceDao.findMatching(criteria));
-        
+    public List<LinkInterface> getDataLinksOnInterface(int nodeId, String ipAddress){
+    	Interface iface = getInterface(nodeId, ipAddress);
+    	if (iface != null && new Integer(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
+    		return getDataLinksOnInterface(nodeId, iface.getIfIndex());    		
+    	}
+    	return new ArrayList<LinkInterface>();
     }
+    
+    public List<LinkInterface> getDataLinksOnInterface(int id){
+    	Interface iface = getInterface(id);
+    	if (iface != null && new Integer(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
+    		return getDataLinksOnInterface(iface.getNodeId(), iface.getIfIndex());    		
+    	}
+    	return new ArrayList<LinkInterface>();    	
+    }
+
 
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinksOnInterface(int, int)
 	 */
-    public DataLinkInterface[] getDataLinksOnInterface(int nodeID, int ifindex){
-        DataLinkInterface[] normalnodes = getDataLinks(nodeID,ifindex);
-        DataLinkInterface[] parentnodes = getDataLinksFromNodeParent(nodeID,ifindex);
-            
-        DataLinkInterface[] nodes = new DataLinkInterface[normalnodes.length+parentnodes.length]; 
-        int j = 0;
-
-        for (DataLinkInterface normalnode : normalnodes) {
-        	nodes[j++] = normalnode;
-        	
-        }
-        
-        for (DataLinkInterface parentnode : parentnodes) {
-        	nodes[j++] = parentnode;
-        }
-
-        return nodes;
-    	
-    	
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinks(int, int)
-	 */
-    public DataLinkInterface[] getDataLinks(int nodeId, int ifIndex) {
+    public List<LinkInterface> getDataLinksOnInterface(int nodeId, int ifIndex){
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
         criteria.add(Restrictions.eq("nodeId", nodeId));
-        criteria.add(Restrictions.ne("status", "D"));
         criteria.add(Restrictions.eq("ifIndex", ifIndex));
-        
-        return dlis2DataLinkInterfaces(m_dataLinkInterfaceDao.findMatching(criteria));
-    }
+        criteria.add(Restrictions.ne("status", "D"));
 
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinksFromNodeParent(int, int)
-	 */
-    public DataLinkInterface[] getDataLinksFromNodeParent(int nodeId, int ifIndex) {
-        OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
+        List<LinkInterface> ifaces = getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId);
+
+        criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
         criteria.add(Restrictions.eq("nodeParentId", nodeId));
         criteria.add(Restrictions.eq("parentIfIndex", ifIndex));
         criteria.add(Restrictions.ne("status", "D"));
+        criteria.addOrder(Order.asc("parentIfIndex"));
+
+        ifaces.addAll(getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId));
         
-        return dlis2DataLinkInterfaces(m_dataLinkInterfaceDao.findMatching(criteria));
+        return ifaces;
+    	
+    	
     }
 
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllDataLinks()
-	 */
-    public DataLinkInterface[] getAllDataLinks() {
-        OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
-        criteria.add(Restrictions.ne("status", "D"));
-        criteria.addOrder(Order.asc("nodeId"));
-        criteria.addOrder(Order.asc("ifIndex"));
-        
-        return dlis2DataLinkInterfaces(m_dataLinkInterfaceDao.findMatching(criteria));
-    }
 
-    private DataLinkInterface[] dlis2DataLinkInterfaces( List<org.opennms.netmgt.model.DataLinkInterface> dataLinks) {
-        List<DataLinkInterface> dLinks = new LinkedList<DataLinkInterface>();
-        for(org.opennms.netmgt.model.DataLinkInterface dataLink : dataLinks) {
-            dLinks.add(dli2DataLinkInterface(dataLink));
-        }
-        
-        return dLinks.toArray(new DataLinkInterface[dLinks.size()]);
+    private List<LinkInterface> getDataLinkInterface(List<DataLinkInterface> dlifaces, int nodeId) {
+    	List<LinkInterface> lifaces = new ArrayList<LinkInterface>();
+    	for (DataLinkInterface dliface: dlifaces) {
+    		if (dliface.getNodeId() == nodeId) {
+    			lifaces.add(createLinkInterface(dliface, false));
+    		} else if (dliface.getNodeParentId() == nodeId ) {
+    			lifaces.add(createLinkInterface(dliface, true));
+    		}
+    	}
+    	return lifaces;
     }
+    
+    /*
+     * Casi d'uso
+     * 1) nessuna interfaccia associabile (come rappresentare il link?) 
+     * se il nodo ha una sola interfaccia allora va associata anche a quella
+     * altrimenti non la associamo
+     * 2) node ha ip interface e node parent has snmp interface
+     * 3) node ha una interfaccia snmp e node parent pure
+     * 
+     */
+	private LinkInterface createLinkInterface(DataLinkInterface dliface, boolean isParent) {
 
-    private DataLinkInterface dli2DataLinkInterface(
-            org.opennms.netmgt.model.DataLinkInterface dataLink) {
-        return new DataLinkInterface(
-                        dataLink.getNodeId(), 
-                        dataLink.getNodeParentId(), 
-                        dataLink.getIfIndex(),
-                        dataLink.getParentIfIndex(), 
-                        null,
-                        null,
-                        dataLink.getLastPollTime().toString(),
-                        dataLink.getStatus().charAt(0));
+		Integer nodeid = dliface.getNodeId();
+		Integer linkedNodeid = dliface.getNodeParentId();
+		Integer ifindex = dliface.getIfIndex();
+		Integer linkedIfindex = dliface.getParentIfIndex();
+
+    	if (isParent) {
+    		nodeid = dliface.getNodeParentId();
+    		linkedNodeid = dliface.getNodeId();
+    		ifindex = dliface.getParentIfIndex();
+    		linkedIfindex = dliface.getIfIndex();
+    	} 
+    		
+		Interface iface = getInterfaceForLink(nodeid, ifindex);
+		Interface linkedIface = getInterfaceForLink(linkedNodeid, linkedIfindex); 
+    		
+    	return new LinkInterface(nodeid, ifindex, linkedNodeid, linkedIfindex, iface, linkedIface, Util.formatDateToUIString(dliface.getLastPollTime()), dliface.getStatus().charAt(0), dliface.getLinkTypeId());
     }
-
+	
+	private Interface getInterfaceForLink(int nodeid, int ifindex) {
+		Interface iface = null;
+		if (ifindex > 0 ) {
+			iface = getSnmpInterface(nodeid, ifindex);
+			
+			OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.OnmsIpInterface.class); 
+			criteria.add(Restrictions.sqlRestriction("nodeid = " + nodeid + " and ifindex = " + ifindex ));
+			List<String> addresses = new ArrayList<String>();
+			
+			for (OnmsIpInterface onmsIpInterface : m_ipInterfaceDao.findMatching(criteria)) {
+				addresses.add(onmsIpInterface.getIpAddress().getHostAddress());
+			}
+			
+			if (addresses.size() > 0 ) {
+				if (iface ==  null) {
+					iface = new Interface();
+					iface.m_nodeId = nodeid;
+					iface.m_ifIndex = ifindex;
+				}
+				iface.setIpaddresses(addresses);
+			} else {
+				if (iface != null)
+					iface.setIpaddresses(addresses);					
+			}
+		} 
+		return iface;
+	}
     /**
      * <p>getVlansOnNode</p>
      *
@@ -1731,7 +1682,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.AtInterface} objects.
      * @throws java.sql.SQLException if any.
      */
-    protected static AtInterface[] rs2AtInterface(ResultSet rs)
+    private static AtInterface[] rs2AtInterface(ResultSet rs)
             throws SQLException {
         if (rs == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -1754,7 +1705,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
             // Non-null field
             element = rs.getTimestamp("lastpolltime");
-            String lastPollTime = EventConstants.formatToString(new Date(
+            String lastPollTime = Util.formatDateToUIString(new Date(
                     ((Timestamp) element).getTime()));
 
             // Non-null field
@@ -1783,7 +1734,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.IpRouteInterface} objects.
      * @throws java.sql.SQLException if any.
      */
-    protected static IpRouteInterface[] rs2IpRouteInterface(ResultSet rs)
+    private static IpRouteInterface[] rs2IpRouteInterface(ResultSet rs)
             throws SQLException {
         if (rs == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -1808,7 +1759,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
             element = rs.getTimestamp("lastpolltime");
             if (element != null) {
-                ipRtIf.m_lastPollTime = EventConstants.formatToString(new Date(
+                ipRtIf.m_lastPollTime = Util.formatDateToUIString(new Date(
                         ((Timestamp) element).getTime()));
             }
 
@@ -1875,7 +1826,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.StpInterface} objects.
      * @throws java.sql.SQLException if any.
      */
-    protected static StpInterface[] rs2StpInterface(ResultSet rs)
+    private static StpInterface[] rs2StpInterface(ResultSet rs)
             throws SQLException {
         if (rs == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -1891,7 +1842,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
             element = rs.getTimestamp("lastpolltime");
             if (element != null) {
-                stpIf.m_lastPollTime = EventConstants.formatToString(new Date(
+                stpIf.m_lastPollTime = Util.formatDateToUIString(new Date(
                         ((Timestamp) element).getTime()));
             }
 
@@ -1974,7 +1925,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.StpNode} objects.
      * @throws java.sql.SQLException if any.
      */
-    protected static StpNode[] rs2StpNode(ResultSet rs) throws SQLException {
+    private static StpNode[] rs2StpNode(ResultSet rs) throws SQLException {
         if (rs == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -1995,7 +1946,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
             element = rs.getTimestamp("lastpolltime");
             if (element != null) {
-                stpNode.m_lastPollTime = EventConstants.formatToString(new Date(
+                stpNode.m_lastPollTime = Util.formatDateToUIString(new Date(
                         ((Timestamp) element).getTime()));
             }
 
@@ -2069,7 +2020,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.Vlan} objects.
      * @throws java.sql.SQLException if any.
      */
-    protected static Vlan[] rs2Vlan(ResultSet rs) throws SQLException {
+    private static Vlan[] rs2Vlan(ResultSet rs) throws SQLException {
         if (rs == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -2092,7 +2043,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
             // Non-null field
             element = rs.getTimestamp("lastpolltime");
-            String lastpolltime = EventConstants.formatToString(new Date(
+            String lastpolltime = Util.formatDateToUIString(new Date(
                         ((Timestamp) element).getTime()));
 
             element = new Integer(rs.getInt("vlantype"));
@@ -2119,86 +2070,13 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
 
     /**
-     * This method returns the data from the result set as an array of
-     * DataLinkInterface objects.
-     *
-     * @param rs a {@link java.sql.ResultSet} object.
-     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    protected static DataLinkInterface[] rs2DataLink(ResultSet rs)
-            throws SQLException {
-        if (rs == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        List<DataLinkInterface> dataLinkIfs = new ArrayList<DataLinkInterface>();
-
-        while (rs.next()) {
-            // Non-null field
-            Object element = new Integer(rs.getInt("nodeId"));
-            int nodeId = ((Integer) element).intValue();
-
-            // Non-null field
-            element = new Integer(rs.getInt("ifindex"));
-            int ifindex = ((Integer) element).intValue();
-
-            // Non-null field
-            element = rs.getTimestamp("lastpolltime");
-            String lastPollTime = EventConstants.formatToString(new Date(
-                        ((Timestamp) element).getTime()));
-
-            // Non-null field
-            element = new Integer(rs.getInt("nodeparentid"));
-            int nodeparentid = ((Integer) element).intValue();
-
-            // Non-null field
-            element = new Integer(rs.getInt("parentifindex"));
-            int parentifindex = ((Integer) element).intValue();
-
-            // Non-null field
-            element = rs.getString("status");
-            char status = ((String) element).charAt(0);
-
-            String parentipaddress = getIpAddress(nodeparentid, parentifindex);
-
-            String ipaddress = "";
-            if (ifindex == -1 ) {
-                ipaddress = getIpAddress(nodeId);
-            } else {
-                ipaddress = getIpAddress(nodeId, ifindex);
-            }
-
-            dataLinkIfs.add(new DataLinkInterface(nodeId, nodeparentid, ifindex, parentifindex, ipaddress, parentipaddress, lastPollTime, status));
-        }
-
-        return dataLinkIfs.toArray(new DataLinkInterface[dataLinkIfs.size()]);
-    }
-
-    /**
-     * <p>invertDataLinkInterface</p>
-     *
-     * @param nodes an array of {@link org.opennms.web.element.DataLinkInterface} objects.
-     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
-     */
-    protected static DataLinkInterface[] invertDataLinkInterface(DataLinkInterface[] nodes) {
-    	for (int i=0; i<nodes.length;i++) {
-    		DataLinkInterface dli = nodes[i];
-    		dli.invertNodewithParent();
-    		nodes[i] = dli;
-    	}
-    	
-    	return nodes;
-    }
-
-    /**
      * <p>getIpAddress</p>
      *
      * @param nodeid a int.
      * @return a {@link java.lang.String} object.
      * @throws java.sql.SQLException if any.
      */
-    protected static String getIpAddress(int nodeid) throws SQLException {
+    private static String getIpAddress(int nodeid) throws SQLException {
 
         String ipaddr = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -2231,7 +2109,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a {@link java.lang.String} object.
      * @throws java.sql.SQLException if any.
      */
-    protected static String getIpAddress(int nodeid, int ifindex)
+    private static String getIpAddress(int nodeid, int ifindex)
             throws SQLException {
         String ipaddr = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);

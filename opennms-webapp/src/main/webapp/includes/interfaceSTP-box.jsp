@@ -37,22 +37,22 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,org.opennms.netmgt.model.OnmsNode" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,org.opennms.netmgt.model.OnmsNode, org.opennms.web.WebSecurityUtils" %>
 
 <%
     
-    Interface intf = null;
-    StpInterface[] stpifs = null;
     String requestNode = request.getParameter("node");
-    String requestIntf = request.getParameter("intf");
     String requestIfindex = request.getParameter("ifindex");
-    if(requestNode != null && requestIfindex != null && requestIntf == null) {
-        intf = ElementUtil.getSnmpInterfaceByParams(request, getServletContext());
-        stpifs = NetworkElementFactory.getInstance(getServletContext()).getStpInterface(intf.getNodeId(), intf.getSnmpIfIndex());
-    } else {
-        intf = ElementUtil.getInterfaceByParams(request, getServletContext());
-        stpifs = NetworkElementFactory.getInstance(getServletContext()).getStpInterface(intf.getNodeId(), intf.getIfIndex());
-    }
+	
+    int nodeId = -1;
+	int ifIndex = -1;    
+	
+	if ( requestNode != null && requestIfindex != null ) {
+		nodeId = WebSecurityUtils.safeParseInt(requestNode);
+		ifIndex = WebSecurityUtils.safeParseInt(requestIfindex);
+	}
+    
+    StpInterface[] stpifs = NetworkElementFactory.getInstance(getServletContext()).getStpInterface(nodeId, ifIndex);
 
 
 %>
