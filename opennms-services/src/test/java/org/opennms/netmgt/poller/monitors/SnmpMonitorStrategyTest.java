@@ -136,8 +136,7 @@ public class SnmpMonitorStrategyTest {
     @Test
     public void testMeetsCriteriaWithTimeTicks() {
         TimeticksSnmpValue result = new TimeticksSnmpValue("1");
-        testSyntaxEquals(result, "0d 0h 0m 0s 10ms", "1d 1h 1m 1s 10ms");
-        testSyntaxMatches(result, "0h", "1h");
+        testSyntaxEquals(result, "1", "2");
         testOrderOperations(result, 1);
     }
 
