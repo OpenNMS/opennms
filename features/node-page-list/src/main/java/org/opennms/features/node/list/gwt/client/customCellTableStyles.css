@@ -30,6 +30,7 @@
 
 .cellTableCell {
   padding: 2px 15px;
+  background: inherit;
 }
 
 .cellTableFirstColumnFooter {

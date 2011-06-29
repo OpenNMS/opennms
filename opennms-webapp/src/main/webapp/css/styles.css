@@ -383,7 +383,7 @@ th a:hover {
 td {
 	border: 1px solid #999;
 	padding: 4px 5px;
-/* 	background-color: #FFF; */
+	background-color: #FFF;
 }
 
 td td, td p {
@@ -816,4 +816,8 @@ li.pagination {
 
 .stdform .indent {
 	margin-left: 240px;
+}
+
+.onms-table td{
+    background: #ffffff;
 }
