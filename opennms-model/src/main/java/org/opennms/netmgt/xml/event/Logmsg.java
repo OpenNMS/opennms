@@ -192,7 +192,7 @@ public class Logmsg implements Serializable {
      * @param notify the value of field 'notify'.
      */
     public void setNotify(
-            final boolean notify) {
+            final Boolean notify) {
         this._notify = notify;
     }
 

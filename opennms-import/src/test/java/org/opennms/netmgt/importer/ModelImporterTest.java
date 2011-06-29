@@ -39,7 +39,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.mock.snmp.MockSnmpAgent;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
@@ -53,7 +53,7 @@ import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.importer.specification.ImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
 import org.opennms.netmgt.model.OnmsAssetRecord;
@@ -297,30 +297,20 @@ public class ModelImporterTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitSnmpAgent(resource="classpath:/snmpTestData1.properties", host="127.0.0.1", port=9161, useMockSnmpStrategy=false)
     public void testAddSnmpInterfaces() throws Exception {
-        
-        ClassPathResource agentConfig = new ClassPathResource("/snmpTestData1.properties");
-        
-        MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(agentConfig, "127.0.0.1/9161");
+        createAndFlushServiceTypes();
+        createAndFlushCategories();
 
-        try {
-            createAndFlushServiceTypes();
-            createAndFlushCategories();
+        ModelImporter mi = m_importer;
+        String specFile = "/tec_dump.xml";
+        mi.importModelFromResource(new ClassPathResource(specFile));
 
-            ModelImporter mi = m_importer;
-            String specFile = "/tec_dump.xml";
-            mi.importModelFromResource(new ClassPathResource(specFile));
+        assertEquals(1, mi.getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
 
-            assertEquals(1, mi.getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
+        assertEquals(2, mi.getIpInterfaceDao().countAll());
 
-            assertEquals(2, mi.getIpInterfaceDao().countAll());
-
-            assertEquals(6, m_snmpInterfaceDao.countAll());
-
-        } finally {
-            agent.shutDownAndWait();
-        }
-
+        assertEquals(6, m_snmpInterfaceDao.countAll());
     }
 
 

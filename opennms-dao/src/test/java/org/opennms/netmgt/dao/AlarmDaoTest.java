@@ -35,9 +35,9 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
@@ -76,14 +76,12 @@ public class AlarmDaoTest {
 	private DatabasePopulator m_databasePopulator;
 	
     private static boolean m_populated = false;
-    private static DatabasePopulator m_lastPopulator;
     
     @BeforeTransaction
     public void setUp() {
         try {
             if (!m_populated) {
                 m_databasePopulator.populateDatabase();
-                m_lastPopulator = m_databasePopulator;
             }
         } catch (Throwable e) {
             e.printStackTrace(System.err);

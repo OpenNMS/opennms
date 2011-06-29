@@ -42,7 +42,7 @@ import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.AcknowledgedByFilter;
 import org.opennms.web.notification.filter.NotificationCriteria;

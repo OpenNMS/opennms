@@ -37,11 +37,11 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.mock.snmp.JUnitSnmpAgent;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
@@ -92,7 +92,7 @@ public class SnmpAssetProvisioningAdapterTest {
 
 	@Test
 	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
+	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties", useMockSnmpStrategy=false)
 	public void testAdd() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
@@ -110,7 +110,7 @@ public class SnmpAssetProvisioningAdapterTest {
 
 	@Test
 	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
+	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties", useMockSnmpStrategy=false)
 	public void testDelete() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);

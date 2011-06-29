@@ -201,12 +201,12 @@
               <report>project-team</report>
               <report>mailing-list</report>
               <!--
-        	  Continuous Integration report will be omitted
-        	  <report>cim</report>
-        	  
-        	  Issue tracking report will be omitted
-        	  <report>issue-tracking</report>
-        	  -->
+                Continuous Integration report will be omitted
+                <report>cim</report>
+
+                Issue tracking report will be omitted
+                <report>issue-tracking</report>
+              -->
               <report>license</report>
               <report>scm</report>
             </reports>
@@ -309,28 +309,26 @@
     </dependency>
     
     <!-- 
-         <dependency>
-           <groupId>xmlbeans</groupId>
-           <artifactId>xmlbeans-jsr173-api</artifactId>
-           <scope>compile</scope>
-         </dependency>
-         -->
+      <dependency>
+        <groupId>xmlbeans</groupId>
+        <artifactId>xmlbeans-jsr173-api</artifactId>
+        <scope>compile</scope>
+      </dependency>
+    -->
     <!-- alternative download from BEA site
-         <dependency>
-           <groupId>javax.xml</groupId>
-           <artifactId>jsr173</artifactId>
-           <scope>compile</scope>
-         </dependency>
-         -->
+      <dependency>
+        <groupId>javax.xml</groupId>
+        <artifactId>jsr173</artifactId>
+        <scope>compile</scope>
+      </dependency>
+    -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -338,31 +336,22 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>mock-snmp-agent</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-	  <groupId>org.opennms.core.test-api</groupId>
-	  <artifactId>org.opennms.core.test-api.http</artifactId>
-      <scope>test</scope>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
-      <scope>test</scope>
     </dependency>
     
     

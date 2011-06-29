@@ -129,6 +129,13 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         BOOT_COUNT_FILE = bootCountFile;
     }
 
+    public MockSnmpAgent(final File confFile, final Resource moFile) {
+        super(BOOT_COUNT_FILE, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
+        m_moLoader = new PropertiesBackedManagedObject();
+        m_moFile = moFile;
+        agent.setWorkerPool(ThreadPool.create("RequestPool", 4));
+    }
+    
     /*
      * Creates the mock agent with files to read and store the boot counter,
      * to read and store the agent configuration, and to read the mocked
@@ -153,12 +160,9 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      * @param bindAddress a {@link java.lang.String} object.
      * @throws IOException 
      */
-    public MockSnmpAgent(File confFile, Resource moFile, String bindAddress) {
-        super(BOOT_COUNT_FILE, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
-        m_moLoader = new PropertiesBackedManagedObject();
+    public MockSnmpAgent(final File confFile, final Resource moFile, final String bindAddress) {
+        this(confFile, moFile);
         m_address = bindAddress;
-        m_moFile = moFile;
-        agent.setWorkerPool(ThreadPool.create("RequestPool", 4));
     }
     
     /**

@@ -43,8 +43,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.mock.snmp.JUnitSnmpAgent;
-import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -61,7 +61,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener.class
 })
 @ContextConfiguration(locations={"classpath:emptyContext.xml"})
-@JUnitSnmpAgent(port=9161, resource="classpath:snmpTestData1.properties")
+@JUnitSnmpAgent(resource="classpath:snmpTestData1.properties", useMockSnmpStrategy=true)
 public class SnmpTrackerTest {
 
     public static class SnmpTableConstants {
@@ -217,7 +217,7 @@ public class SnmpTrackerTest {
     }
 
     @Test
-    @JUnitSnmpAgent(port=9161, resource="classpath:snmpTestDataIncompleteTable.properties")
+    @JUnitSnmpAgent(resource="classpath:snmpTestDataIncompleteTable.properties", useMockSnmpStrategy=true)
     public void testIncompleteTableData() throws Exception {
         TestRowCallback rc = new TestRowCallback();
         TableTracker tt = new TableTracker(rc,

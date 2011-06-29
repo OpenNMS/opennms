@@ -16,7 +16,7 @@ if (not defined $GIT) {
 	exit 1;
 }
 
-clean_git();
+clean_git() unless (exists $ENV{'SKIP_CLEAN'});
 
 my $hostname = `hostname 2>/dev/null`;
 chomp($hostname);
@@ -29,6 +29,6 @@ my @command = ($MVN, '-Dmaven.test.skip.exec=true', @ARGS, 'install', 'deploy');
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
-clean_git();
+clean_git() unless (exists $ENV{'SKIP_CLEAN'});
 
 exit 0;

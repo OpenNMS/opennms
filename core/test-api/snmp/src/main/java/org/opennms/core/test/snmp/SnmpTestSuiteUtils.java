@@ -26,11 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp;
+package org.opennms.core.test.snmp;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
 import org.opennms.test.PropertySettingTestSuite;

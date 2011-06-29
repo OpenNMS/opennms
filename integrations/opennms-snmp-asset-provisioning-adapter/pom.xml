@@ -34,12 +34,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>mock-snmp-agent</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -51,12 +45,14 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
-	  <groupId>org.opennms.core.test-api</groupId>
-	  <artifactId>org.opennms.core.test-api.http</artifactId>
-      <scope>test</scope>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.snmp</artifactId>
     </dependency>
 
     <!-- Because it requires EventIpcManager and applicationContext-daemon.xml -->
@@ -69,7 +65,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
 
   </dependencies>

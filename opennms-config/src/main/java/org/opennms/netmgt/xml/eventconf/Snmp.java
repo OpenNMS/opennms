@@ -11,6 +11,12 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -19,6 +25,8 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name="snmp")
+@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("serial")
 public class Snmp implements java.io.Serializable {
 
@@ -30,42 +38,38 @@ public class Snmp implements java.io.Serializable {
     /**
      * The snmp enterprise id
      */
-    private java.lang.String _id;
+	@XmlElement(name="id", required=true)
+    private String m_id;
 
     /**
      * The snmp enterprise id text
      */
-    private java.lang.String _idtext;
+	@XmlElement(name="idtext", required=false)
+    private String m_idtext;
 
     /**
      * The snmp version
      */
-    private java.lang.String _version;
+	@XmlElement(name="version", required=true)
+    private String m_version;
 
     /**
      * The specific trap number
      */
-    private int _specific;
-
-    /**
-     * keeps track of state for field: _specific
-     */
-    private boolean _has_specific;
+	@XmlElement(name="specific", required=false)
+    private Integer m_specific;
 
     /**
      * The generic trap number
      */
-    private int _generic;
-
-    /**
-     * keeps track of state for field: _generic
-     */
-    private boolean _has_generic;
+	@XmlElement(name="generic", required=false)
+    private Integer m_generic;
 
     /**
      * The community name
      */
-    private java.lang.String _community;
+	@XmlElement(name="community", required=false)
+    private String m_community;
 
 
       //----------------/
@@ -85,66 +89,62 @@ public class Snmp implements java.io.Serializable {
      */
     public void deleteGeneric(
     ) {
-        this._has_generic= false;
+        m_generic = null;
     }
 
     /**
      */
     public void deleteSpecific(
     ) {
-        this._has_specific= false;
+        m_specific = null;
     }
 
     /**
-     * Overrides the java.lang.Object.equals method.
+     * Overrides the Object.equals method.
      * 
      * @param obj
      * @return true if the objects are equal.
      */
     @Override()
     public boolean equals(
-            final java.lang.Object obj) {
+            final Object obj) {
         if ( this == obj )
             return true;
         
         if (obj instanceof Snmp) {
         
             Snmp temp = (Snmp)obj;
-            if (this._id != null) {
-                if (temp._id == null) return false;
-                else if (!(this._id.equals(temp._id))) 
+            if (this.m_id != null) {
+                if (temp.m_id == null) return false;
+                else if (!(this.m_id.equals(temp.m_id))) 
                     return false;
             }
-            else if (temp._id != null)
+            else if (temp.m_id != null)
                 return false;
-            if (this._idtext != null) {
-                if (temp._idtext == null) return false;
-                else if (!(this._idtext.equals(temp._idtext))) 
+            if (this.m_idtext != null) {
+                if (temp.m_idtext == null) return false;
+                else if (!(this.m_idtext.equals(temp.m_idtext))) 
                     return false;
             }
-            else if (temp._idtext != null)
+            else if (temp.m_idtext != null)
                 return false;
-            if (this._version != null) {
-                if (temp._version == null) return false;
-                else if (!(this._version.equals(temp._version))) 
+            if (this.m_version != null) {
+                if (temp.m_version == null) return false;
+                else if (!(this.m_version.equals(temp.m_version))) 
                     return false;
             }
-            else if (temp._version != null)
+            else if (temp.m_version != null)
                 return false;
-            if (this._specific != temp._specific)
+            if (this.m_specific != temp.m_specific)
                 return false;
-            if (this._has_specific != temp._has_specific)
+            if (this.m_generic != temp.m_generic)
                 return false;
-            if (this._generic != temp._generic)
-                return false;
-            if (this._has_generic != temp._has_generic)
-                return false;
-            if (this._community != null) {
-                if (temp._community == null) return false;
-                else if (!(this._community.equals(temp._community))) 
+            if (this.m_community != null) {
+                if (temp.m_community == null) return false;
+                else if (!(this.m_community.equals(temp.m_community))) 
                     return false;
             }
-            else if (temp._community != null)
+            else if (temp.m_community != null)
                 return false;
             return true;
         }
@@ -158,9 +158,9 @@ public class Snmp implements java.io.Serializable {
      * 
      * @return the value of field 'Community'.
      */
-    public java.lang.String getCommunity(
+    public String getCommunity(
     ) {
-        return this._community;
+        return this.m_community;
     }
 
     /**
@@ -169,9 +169,9 @@ public class Snmp implements java.io.Serializable {
      * 
      * @return the value of field 'Generic'.
      */
-    public int getGeneric(
+    public Integer getGeneric(
     ) {
-        return this._generic;
+        return this.m_generic;
     }
 
     /**
@@ -180,9 +180,9 @@ public class Snmp implements java.io.Serializable {
      * 
      * @return the value of field 'Id'.
      */
-    public java.lang.String getId(
+    public String getId(
     ) {
-        return this._id;
+        return this.m_id;
     }
 
     /**
@@ -191,9 +191,9 @@ public class Snmp implements java.io.Serializable {
      * 
      * @return the value of field 'Idtext'.
      */
-    public java.lang.String getIdtext(
+    public String getIdtext(
     ) {
-        return this._idtext;
+        return this.m_idtext;
     }
 
     /**
@@ -202,9 +202,9 @@ public class Snmp implements java.io.Serializable {
      * 
      * @return the value of field 'Specific'.
      */
-    public int getSpecific(
+    public Integer getSpecific(
     ) {
-        return this._specific;
+        return this.m_specific;
     }
 
     /**
@@ -213,9 +213,9 @@ public class Snmp implements java.io.Serializable {
      * 
      * @return the value of field 'Version'.
      */
-    public java.lang.String getVersion(
+    public String getVersion(
     ) {
-        return this._version;
+        return this.m_version;
     }
 
     /**
@@ -225,7 +225,7 @@ public class Snmp implements java.io.Serializable {
      */
     public boolean hasGeneric(
     ) {
-        return this._has_generic;
+        return m_generic != null;
     }
 
     /**
@@ -235,11 +235,11 @@ public class Snmp implements java.io.Serializable {
      */
     public boolean hasSpecific(
     ) {
-        return this._has_specific;
+        return m_specific != null;
     }
 
     /**
-     * Overrides the java.lang.Object.hashCode method.
+     * Overrides the Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming
      * Language Guide</b> by Joshua Bloch, Chapter 3
@@ -248,25 +248,8 @@ public class Snmp implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_id != null) {
-           result = 37 * result + _id.hashCode();
-        }
-        if (_idtext != null) {
-           result = 37 * result + _idtext.hashCode();
-        }
-        if (_version != null) {
-           result = 37 * result + _version.hashCode();
-        }
-        result = 37 * result + _specific;
-        result = 37 * result + _generic;
-        if (_community != null) {
-           result = 37 * result + _community.hashCode();
-        }
-        
-        return result;
+        return new HashCodeBuilder(17,37).append(getGeneric()).append(getSpecific())
+        	.append(getCommunity()).append(getId()).append(getIdtext()).append(getVersion()).toHashCode();
     }
 
     /**
@@ -323,8 +306,8 @@ public class Snmp implements java.io.Serializable {
      * @param community the value of field 'community'.
      */
     public void setCommunity(
-            final java.lang.String community) {
-        this._community = community;
+            final String community) {
+        this.m_community = community;
     }
 
     /**
@@ -335,8 +318,7 @@ public class Snmp implements java.io.Serializable {
      */
     public void setGeneric(
             final int generic) {
-        this._generic = generic;
-        this._has_generic = true;
+        this.m_generic = generic;
     }
 
     /**
@@ -346,8 +328,8 @@ public class Snmp implements java.io.Serializable {
      * @param id the value of field 'id'.
      */
     public void setId(
-            final java.lang.String id) {
-        this._id = id;
+            final String id) {
+        this.m_id = id;
     }
 
     /**
@@ -357,8 +339,8 @@ public class Snmp implements java.io.Serializable {
      * @param idtext the value of field 'idtext'.
      */
     public void setIdtext(
-            final java.lang.String idtext) {
-        this._idtext = idtext;
+            final String idtext) {
+        this.m_idtext = idtext;
     }
 
     /**
@@ -369,8 +351,7 @@ public class Snmp implements java.io.Serializable {
      */
     public void setSpecific(
             final int specific) {
-        this._specific = specific;
-        this._has_specific = true;
+        this.m_specific = specific;
     }
 
     /**
@@ -380,8 +361,8 @@ public class Snmp implements java.io.Serializable {
      * @param version the value of field 'version'.
      */
     public void setVersion(
-            final java.lang.String version) {
-        this._version = version;
+            final String version) {
+        this.m_version = version;
     }
 
     /**

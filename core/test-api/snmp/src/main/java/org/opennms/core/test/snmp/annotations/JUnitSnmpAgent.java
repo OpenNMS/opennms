@@ -28,7 +28,7 @@
 
 
 
-package org.opennms.mock.snmp;
+package org.opennms.core.test.snmp.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -46,12 +46,18 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD,ElementType.TYPE})
 public @interface JUnitSnmpAgent {
 
-    
     String resource() default "classpath:snmpwalk.properties";
     String host() default "";
     /**
-     * This value should match the port value configured in the unit test spring context object 
+     * This value should match the port value configured in the unit test spring context object
      * {@link ProxySnmpAgentConfigFactory}
      */
     int port() default 9161;
+    /**
+     * If set to true, use the MockSnmpStrategy instead of the MockSnmpAgent.  Note that if
+     * this annotation is inside a {@link JUnitSnmpAgents} annotation, the "useMockSnmpStrategy" 
+     * property there will override this.
+     * @return whether to use the MockSnmpStrategy
+     */
+    boolean useMockSnmpStrategy() default false;
 }

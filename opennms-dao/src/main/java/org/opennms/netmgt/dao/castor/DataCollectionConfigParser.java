@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -47,7 +48,6 @@ import java.util.regex.PatternSyntaxException;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.ValidationContext;
 import org.exolab.castor.xml.Validator;
-import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -217,7 +217,7 @@ public class DataCollectionConfigParser {
         });
         
         // Parse configuration files (populate external groups map)
-        final BarrierSignaler bs = new BarrierSignaler(listOfFiles.length);
+        final CountDownLatch latch = new CountDownLatch(listOfFiles.length);
         // Get a single validator that we can reuse for each unmarshalled object
         final Validator validator = new DatacollectionGroupDescriptor();
         // Get a single validation context that we can reuse for each unmarshalled object
@@ -248,7 +248,7 @@ public class DataCollectionConfigParser {
                         throwException("Can't parse XML file " + file + "; nested exception: " + e.getMessage(), e);
                     } finally {
                         IOUtils.closeQuietly(in);
-                        bs.signalAll();
+                        latch.countDown();
                     }
                 }
             };
@@ -256,7 +256,7 @@ public class DataCollectionConfigParser {
         }
 
         try {
-            bs.waitFor();
+            latch.await();
         } catch (InterruptedException e) {
             throwException("Exception while waiting for XML parsing threads to complete: " + e.getMessage(), e);
         }

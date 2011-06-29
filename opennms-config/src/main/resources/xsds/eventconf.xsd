@@ -432,7 +432,7 @@
   <element name="autoacknowledge">
     <annotation>
       <documentation>The autoacknowledge information for the user with state
-      controlling if event is marked acknoledged when inserted into the
+      controlling if event is marked acknowledged when inserted into the
       database</documentation>
     </annotation>
 

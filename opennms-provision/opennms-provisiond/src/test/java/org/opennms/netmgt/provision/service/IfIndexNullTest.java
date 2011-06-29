@@ -39,13 +39,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
-import org.opennms.mock.snmp.JUnitSnmpAgent;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventListener;
@@ -92,7 +93,10 @@ public class IfIndexNullTest {
     }
 
     @Test
-    @JUnitSnmpAgent(resource="classpath:snmpTestData-null.properties")
+    @JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host="172.20.1.201", port=161, resource="classpath:snmpTestData-null.properties"),
+        @JUnitSnmpAgent(host="172.20.1.204", port=161, resource="classpath:snmpTestData-null.properties")
+    }, useMockSnmpStrategy=true)
     public void testNullIfIndex() throws Exception {
         final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
         

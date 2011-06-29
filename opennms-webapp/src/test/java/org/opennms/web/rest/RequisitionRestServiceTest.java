@@ -38,7 +38,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.springframework.test.context.ContextConfiguration;
 
 

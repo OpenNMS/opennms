@@ -39,9 +39,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.JUnitSnmpAgent;
-import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
@@ -57,7 +57,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations={
         "classpath:/snmpConfigFactoryContext.xml"
 })
-@JUnitSnmpAgent(resource="classpath:/airPairR3_walk.properties")
+@JUnitSnmpAgent(resource="classpath:/airPairR3_walk.properties", useMockSnmpStrategy=false)
 @TestExecutionListeners({
     JUnitSnmpAgentExecutionListener.class
 })

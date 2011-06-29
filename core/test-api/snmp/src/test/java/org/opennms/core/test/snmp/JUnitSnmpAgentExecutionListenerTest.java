@@ -28,7 +28,7 @@
 
 
 
-package org.opennms.mock.snmp;
+package org.opennms.core.test.snmp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,8 +38,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.mock.snmp.MockSnmpAgent;
+import org.opennms.mock.snmp.MockSnmpAgentAware;
+import org.opennms.test.mock.MockLogAppender;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
@@ -73,7 +78,12 @@ public class JUnitSnmpAgentExecutionListenerTest implements MockSnmpAgentAware {
     public void setMockSnmpAgent(MockSnmpAgent agent) {
         m_agent = agent;
     }
-    
+
+    @Before
+    public void setUp() {
+    	MockLogAppender.setupLogging();
+    }
+
     @Test
     public void testAgentInjection() {
         assertNotNull(m_agent);
