@@ -35,8 +35,8 @@ import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.opennms.core.test.snmp.annotations.JUnitMockSnmpStrategyAgents;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
-import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
@@ -62,12 +62,12 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
     @Override
     public void beforeTestMethod(final TestContext testContext) throws Exception {
-        final JUnitSnmpAgents agents = findAgentListAnnotation(testContext);
+        final JUnitMockSnmpStrategyAgents agents = findAgentListAnnotation(testContext);
         Boolean useMockSnmpStrategy = null;
         testContext.setAttribute("strategyClass", System.getProperty("org.opennms.snmp.strategyClass"));
         
         if (agents != null) {
-            useMockSnmpStrategy = agents.useMockSnmpStrategy();
+            useMockSnmpStrategy = true;
             for (final JUnitSnmpAgent agent : agents.value()) {
                 handleSnmpAgent(testContext, agent, useMockSnmpStrategy);
             }
@@ -80,7 +80,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         if (config == null) return;
 
         boolean useMockSnmpStrategy = config.useMockSnmpStrategy();
-        // if the JUnitSnmpAgents object has set a property, use it globally instead
+        // if the agents object has set a property, use it globally instead
         if (agentsUseMockSnmpStrategy != null) {
             useMockSnmpStrategy = agentsUseMockSnmpStrategy;
         }
@@ -142,15 +142,15 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
     }
 
-    private JUnitSnmpAgents findAgentListAnnotation(TestContext testContext) {
+    private JUnitMockSnmpStrategyAgents findAgentListAnnotation(TestContext testContext) {
         final Method testMethod = testContext.getTestMethod();
-        final JUnitSnmpAgents config = testMethod.getAnnotation(JUnitSnmpAgents.class);
+        final JUnitMockSnmpStrategyAgents config = testMethod.getAnnotation(JUnitMockSnmpStrategyAgents.class);
         if (config != null) {
             return config;
         }
 
         final Class<?> testClass = testContext.getTestClass();
-        return testClass.getAnnotation(JUnitSnmpAgents.class);
+        return testClass.getAnnotation(JUnitMockSnmpStrategyAgents.class);
 
     }
 

@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD,ElementType.TYPE})
-public @interface JUnitSnmpAgents {
+public @interface JUnitMockSnmpStrategyAgents {
     JUnitSnmpAgent[] value() default {};
-    boolean useMockSnmpStrategy() default false;
 }

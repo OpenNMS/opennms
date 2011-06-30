@@ -39,8 +39,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitMockSnmpStrategyAgents;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
-import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -72,12 +72,12 @@ import org.springframework.util.Assert;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-@JUnitSnmpAgents(value={
+@JUnitMockSnmpStrategyAgents(value={
 		@JUnitSnmpAgent(resource = "classpath:snmpAssetTestData.properties", useMockSnmpStrategy=true),
 		@JUnitSnmpAgent(host="192.168.1.1", resource = "classpath:snmpAssetTestData.properties", useMockSnmpStrategy=true),
 		@JUnitSnmpAgent(host="172.20.1.201", resource = "classpath:snmpAssetTestData.properties", useMockSnmpStrategy=true),
 		@JUnitSnmpAgent(host="172.20.1.204", resource = "classpath:snmpAssetTestData.properties", useMockSnmpStrategy=true)
-}, useMockSnmpStrategy=true)
+})
 public class SnmpAssetProvisioningAdapterIntegrationTest {
 
 	@Autowired

@@ -31,7 +31,10 @@ package org.opennms.mock.snmp;
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
@@ -50,7 +53,9 @@ public class MockSnmpValue implements SnmpValue {
     }
 
     public static class HexStringSnmpValue extends MockSnmpValue {
-    	private final boolean m_isRaw;
+    	private static final Pattern HEX_PATTERN = Pattern.compile("^[a-fA-F0-9 :]*$");
+		private static final Pattern HEX_CHUNK_PATTERN = Pattern.compile("(..)[ :]?");
+        private final boolean m_isRaw;
 
     	public HexStringSnmpValue(final byte[] bytes) {
     		super(SnmpValue.SNMP_OCTET_STRING, new String(bytes));
@@ -63,25 +68,32 @@ public class MockSnmpValue implements SnmpValue {
         }
 
         public byte[] getBytes() {
-        	if (m_isRaw) {
-        		return toString().getBytes();
+        	final String string = super.toString();
+//        	LogUtils.debugf(this, "string = %s", string);
+            if (m_isRaw) {
+        		return string.getBytes();
         	} else {
-        		final String value = toString();
-        		final ByteArrayOutputStream os = new ByteArrayOutputStream();
-        		if (value.contains(" ") || value.contains(":")) {
-        			for (final String entry : value.split("[\\ \\:]")) {
-        				os.write(Integer.parseInt(entry, 16));
-        			}
+        		final Matcher hexMatcher = HEX_PATTERN.matcher(string);
+        		if (hexMatcher.matches()) {
+//        		    LogUtils.debugf(this, "%s matches ^[a-fA-F0-9 :]*$", string);
+                    final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    final Matcher m = HEX_CHUNK_PATTERN.matcher(string);
+                    while (m.find()) {
+//                        LogUtils.debugf(this, "matched: %s", m.group(1));
+                        os.write(Integer.parseInt(m.group(1), 16));
+                    }
+                    return os.toByteArray();
+        		} else {
+    		        LogUtils.debugf(this, "Not sure how to decide what to do with %s, just returning raw bytes.", string);
+    		        return string.getBytes();
         		}
-        		return os.toByteArray();
-//        		return toString().replaceAll("[\\:\\s]+, ", "").getBytes();
         	}
         }
         
         public String toString() {
-        	final byte[] data = super.toString().getBytes();
-
-        	final byte[] results = new byte[data.length];
+            final byte[] data = getBytes();
+            
+            final byte[] results = new byte[data.length];
             for (int i = 0; i < data.length; i++) {
                 results[i] = Character.isISOControl((char)data[i]) ? (byte)'.' : data[i];
             }
@@ -122,12 +134,11 @@ public class MockSnmpValue implements SnmpValue {
         }
 
         public String toHexString() {
-        	final byte[] data = super.toString().getBytes();
+        	final byte[] data = getBytes();
             final StringBuffer b = new StringBuffer();
             for (int i = 0; i < data.length; ++i) {
                 final int x = (int) data[i] & 0xff;
-                if (x < 16)
-                    b.append('0');
+                if (x < 16) b.append("0");
                 b.append(Integer.toString(x, 16).toLowerCase());
             }
             return b.toString();
@@ -429,7 +440,7 @@ public class MockSnmpValue implements SnmpValue {
         
     }
 
-    public static SnmpValue parseMibValue(String mibVal) {
+    public static SnmpValue parseMibValue(final String mibVal) {
         if (mibVal.startsWith("OID:"))
             return new OidSnmpValue(mibVal.substring("OID:".length()).trim());
         else if (mibVal.startsWith("Timeticks:"))

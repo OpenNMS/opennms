@@ -167,7 +167,7 @@ public class NewSuspectScanTest {
     @Test(timeout=300000)
     @Transactional
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
+    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties", useMockSnmpStrategy=true)
     public void testScanNewSuspect() throws Exception {
         
         //Verify empty database
@@ -232,7 +232,7 @@ public class NewSuspectScanTest {
         assertEquals(1, getNodeDao().countAll());
         
         //Verify ipinterface count
-        assertEquals(1, getInterfaceDao().countAll());
+        assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 1, getInterfaceDao().countAll());
         
         //Verify ifservices count - discover snmp service on other if
         assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 0, getMonitoredServiceDao().countAll());

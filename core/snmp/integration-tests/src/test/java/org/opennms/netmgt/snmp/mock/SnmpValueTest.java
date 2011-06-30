@@ -1,5 +1,6 @@
 package org.opennms.netmgt.snmp.mock;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -9,6 +10,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Arrays;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -16,6 +18,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.joesnmp.JoeSnmpValueFactory;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
+import org.opennms.test.mock.MockLogAppender;
 
 public class SnmpValueTest {
 	private static final SnmpValueFactory[] m_factories = new SnmpValueFactory[] {
@@ -24,6 +27,11 @@ public class SnmpValueTest {
 		new MockSnmpValueFactory()
 	};
 
+	@Before
+	public void setUp() {
+	    MockLogAppender.setupLogging();
+	}
+	
 	@Test
 	public void testCounter32() {
 		for (final SnmpValueFactory factory : m_factories) {
@@ -188,8 +196,8 @@ public class SnmpValueTest {
 			final String className = factory.getClass().getName();
 
 			final SnmpValue value = factory.getOctetString(rawBytes);
-//			System.err.println("HexString = " + value.toHexString());
-
+			
+			assertArrayEquals(className + ": getOctetString bytes should match", rawBytes, value.getBytes());
 			assertFalse(className + ": getOctetString displayable should be false", value.isDisplayable());
 			assertEquals(className + ": getOctetString to String should return " + stringBytes, stringBytes, value.toString());
 			assertEquals(className + ": getOctetString to DisplayString should return " + stringBytes, stringBytes, value.toDisplayString());
@@ -219,6 +227,7 @@ public class SnmpValueTest {
 
 			final SnmpValue value = factory.getOctetString(rawBytes);
 
+            assertArrayEquals(className + ": getOctetString bytes should match", rawBytes, value.getBytes());
 			assertFalse(className + ": getOctetString displayable should be false", value.isDisplayable());
 			assertEquals(className + ": getOctetString to String should return " + stringBytes, stringBytes, value.toString());
 			assertEquals(className + ": getOctetString to DisplayString should return " + stringBytes, stringBytes, value.toDisplayString());
