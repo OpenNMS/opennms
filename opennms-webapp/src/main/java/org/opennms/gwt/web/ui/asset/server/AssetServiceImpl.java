@@ -30,6 +30,7 @@ package org.opennms.gwt.web.ui.asset.server;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.opennms.gwt.web.ui.asset.client.AssetService;
@@ -85,6 +86,8 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 	 */
 	private SecurityContextService m_securityContext;
 
+	private HashSet<String> s_allowHtmlFields;
+
 	/** Constant <code>AUTOENABLE="A"</code> */
 	private static final String AUTOENABLE = "A";
 
@@ -135,6 +138,11 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 		s_connectionOptions.add(TELNET_CONNECTION);
 		s_connectionOptions.add(SSH_CONNECTION);
 		s_connectionOptions.add(RSH_CONNECTION);
+		
+		/*
+		 * Init AllowHtmlFields for sanitizing Strings 
+		 */
+		initAllowHtmlFields();
 	}
 
 	/** {@inheritDoc} */
@@ -247,7 +255,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 
 		// copy the transfer object for rpc back to the hibernate model
 		BeanUtils.copyProperties(
-				WebSecurityUtils.sanitizeBeanStringProperties(assetCommand),
+				WebSecurityUtils.sanitizeBeanStringProperties(assetCommand, s_allowHtmlFields),
 				this.m_onmsAssetRecord);
 
 		// set the last modified user from logged in user
@@ -271,7 +279,22 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 		// save was successful
 		return isSaved;
 	}
-
+	/**
+	 * <p>
+	 * initAllowHtmlFields
+	 * </p>
+	 * setup an list of fieldnames where html is allowed
+	 */
+	private void initAllowHtmlFields() {
+        s_allowHtmlFields = new HashSet<String>();
+        String allowHtmlFieldNames = System.getProperty("opennms.assets.allowHtmlFields");
+        if (allowHtmlFieldNames == null)
+            return;
+        for (String fieldName : allowHtmlFieldNames.split("\\s*,\\s*")) {
+            s_allowHtmlFields.add(fieldName.toLowerCase());
+        }
+    }
+	
 	/**
 	 * <p>
 	 * getAssetRecordDao
