@@ -33,6 +33,7 @@
   <jsp:param name="title" value="Modify Inventory" />
   <jsp:param name="headTitle" value="Modify" />
   <jsp:param name="headTitle" value="Inventory" />
+<<<<<<< HEAD
   <jsp:param name="breadcrumb" value="<a href ='asset/index.jsp'>Assets</a>" />
   <jsp:param name="breadcrumb" value="Inventory" />
 	<jsp:param name="meta">
@@ -40,6 +41,11 @@
 	    <meta name='gwt:module' content='org.opennms.gwt.web.ui.asset.Asset' />
 	  </jsp:attribute>
 	</jsp:param>
+=======
+  <jsp:param name="breadcrumb" value="<a href ='inventory/index.jsp'>Inventories</a>" />
+  <jsp:param name="breadcrumb" value="Modify" />
+	
+>>>>>>> invd-1.9-gwt
     <jsp:param name="meta">
 	  <jsp:attribute name="value">
         <link media="screen" href="css/dashboard.css" type="text/css" rel="stylesheet">
@@ -48,6 +54,10 @@
 	
 </jsp:include>
 
+<<<<<<< HEAD
 <div id="opennms-assetDyna"></div>
+=======
+<div id="opennms-inventoryNodePage"></div>
+>>>>>>> invd-1.9-gwt
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

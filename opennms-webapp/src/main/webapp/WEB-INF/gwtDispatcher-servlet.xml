@@ -22,7 +22,7 @@
       <map>
         <entry key="/surveillanceService.gwt" value-ref="gwtSurveillanceService"/>
         <entry key="/asset/assetService.gwt" value-ref="gwtAssetService"/>
-        <entry key="/inventory/assetService.gwt" value-ref="gwtAssetService"/>
+        <entry key="/inventory/inventoryService.gwt" value-ref="gwtInventoryService"/>
       </map>
     </property>
     <!--  property name="unwrappingGWTExceptions" value="true" / -->
@@ -50,6 +50,9 @@
   <bean name="gwtAssetService" class="org.opennms.gwt.web.ui.asset.server.AssetServiceImpl">
     <property name="nodeDao" ref="nodeDao" />
     <property name="assetRecordDao" ref="assetRecordDao" />
+  </bean>
+  
+  <bean name="gwtInventoryService" class="org.opennms.gwt.web.ui.inventory.server.InventoryServiceImpl">
   </bean>
 
 </beans>
