@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node_availability" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="99"/>
+	<property name="ireport.y" value="0"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -68,6 +68,9 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 		<parameter name="DS_START_TIME_STRING" class="java.lang.String" isForPrompting="false">
 			<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{DS_START_TIME})]]></defaultValueExpression>
 		</parameter>
+		<parameter name="DS_TIME_RANGE_STRING" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{DS_TIME_RANGE})]]></defaultValueExpression>
+		</parameter>
 		<queryString>
 			<![CDATA[SELECT
 	node_outages.categoryname,
@@ -88,9 +91,9 @@ FROM
 		active_nodes.nodelabel,
 		active_nodes.nodesyslocation,
 		active_nodes.nodesysdescription,
-		EXTRACT( epoch from ( '$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval ) - '$P!{DS_START_TIME_STRING}'::TIMESTAMP ) ) AS avail_total,
+		EXTRACT( epoch from ( '$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{DS_TIME_RANGE_STRING}'::TIMESTAMP) || ' days' as interval ) - '$P!{DS_START_TIME_STRING}'::TIMESTAMP ) ) AS avail_total,
 
-		--EXTRACT ( epoch from ('$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval ) ) ) - '$P!{DS_START_TIME_STRING}'::TIMESTAMP) AS avail_total,
+		--EXTRACT ( epoch from ('$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE_STRING}'::TIMESTAMP) || ' days' as interval ) ) ) - '$P!{DS_START_TIME_STRING}'::TIMESTAMP) AS avail_total,
 		CASE
 			WHEN
 				outages_scope.ifregainedservice - outages_scope.iflostservice is NULL
@@ -112,12 +115,12 @@ FROM
 	FROM
 		(SELECT
 			outages.nodeid,
-			least(('$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval )), outages.ifregainedservice) as ifregainedservice,
+			least(('$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE_STRING}'::TIMESTAMP) || ' days' as interval )), outages.ifregainedservice) as ifregainedservice,
 			greatest('$P!{DS_START_TIME_STRING}'::TIMESTAMP,outages.iflostservice) as iflostservice
 		FROM
 			outages, service, events
 		WHERE
-			(iflostservice, ifregainedservice) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP, '$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval )) AND
+			(iflostservice, ifregainedservice) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP, '$P!{DS_START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE_STRING}'::TIMESTAMP) || ' days' as interval )) AND
 			outages.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
@@ -255,10 +258,13 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{START_TIME})]]></defaultValueExpression>
 	</parameter>
+	<parameter name="TIME_RANGE_STRING" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{TIME_RANGE})]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
 	'$P!{START_TIME_STRING}'::TIMESTAMP AS start,
-	'$P!{START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{TIME_RANGE}'::TIMESTAMP ) - 1 || ' days' as interval) AS end]]>
+	'$P!{START_TIME_STRING}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{TIME_RANGE_STRING}'::TIMESTAMP ) - 1 || ' days' as interval) AS end]]>
 	</queryString>
 	<field name="start" class="java.sql.Timestamp"/>
 	<field name="end" class="java.sql.Timestamp"/>
