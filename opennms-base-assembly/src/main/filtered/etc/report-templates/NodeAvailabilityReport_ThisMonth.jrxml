@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node_availability" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="99"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -614,10 +614,10 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 				<textElement/>
 				<textFieldExpression class="java.util.Date"><![CDATA[$P{START_TIME}]]></textFieldExpression>
 			</textField>
-			<textField evaluationTime="Page">
-				<reportElement style="Body" x="253" y="15" width="131" height="14"/>
+			<textField>
+				<reportElement x="253" y="15" width="138" height="14"/>
 				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new Date($P{START_TIME}.getTime() + (86400000 * $P{TIME_RANGE_NUMBER}))]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{end}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
