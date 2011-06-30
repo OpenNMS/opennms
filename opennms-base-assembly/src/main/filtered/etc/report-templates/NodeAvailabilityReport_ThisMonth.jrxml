@@ -239,6 +239,10 @@ ORDER BY
 		<parameterDescription><![CDATA[Availability Warning]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new Double("97.0")]]></defaultValueExpression>
 	</parameter>
+	<parameter name="TIME_RANGE_NUMBER" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Report Time Range in Days]]></parameterDescription>
+		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
+	</parameter>
 	<parameter name="TIME_RANGE" class="java.util.Date" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
