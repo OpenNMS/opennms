@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,23 +25,23 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
---%>
-<%@page language="java" contentType="text/html" session="true"  %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Modify Asset" />
-  <jsp:param name="headTitle" value="Modify" />
-  <jsp:param name="headTitle" value="Asset" />
-  <jsp:param name="breadcrumb" value="<a href ='asset/index.jsp'>Assets</a>" />
-  <jsp:param name="breadcrumb" value="Modify" />
-    <jsp:param name="meta">
-	  <jsp:attribute name="value">
-        <link media="screen" href="css/dashboard.css" type="text/css" rel="stylesheet">
-	  </jsp:attribute>
-	</jsp:param>
-	
-</jsp:include>
 
-<div id="opennms-assetNodePage"></div>
+package org.opennms.gwt.web.ui.inventory.client;
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+import org.opennms.gwt.web.ui.inventory.shared.InventoryCommand;
+
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+
+/**
+ * @author <a href="mailto:MarkusNeumannMarkus@gmail.com">Markus Neumann</a>
+ *         </br> Client side GWT Interface for remote procedure calls (RPC) at
+ *         asset services.
+ */
+@RemoteServiceRelativePath("inventory")
+public interface InventoryService extends RemoteService {
+
+	InventoryCommand getInventoryByNodeId(int nodeId) throws Exception;
+	Boolean saveOrUpdateInventoryByNodeId(int nodeId, InventoryCommand asset) throws Exception;
+}

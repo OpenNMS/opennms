@@ -4,6 +4,7 @@
 	<!-- <inherits name="com.google.gwt.user.User" /> -->
 	<inherits name="org.opennms.gwt.web.ui.reports.ChooseResource"/>
 	<inherits name="org.opennms.gwt.web.ui.asset.Asset"/>
+	<inherits name="org.opennms.gwt.web.ui.inventory.Inventory"/>
 	<source path="client" />
 	<entry-point class="org.opennms.gwt.web.ui.client.CoreWeb" />
 </module>
