@@ -27,6 +27,7 @@ public class PropertyOidContainer {
 
         for (final Object obj : moProps.keySet()) {
             final String key = obj.toString();
+            if (!key.startsWith(".")) continue;
             final String value = moProps.getProperty(key);
 //            LogUtils.debugf(this, "%s = %s", key, value);
             m_tree.put(SnmpObjId.get(key), MockSnmpValue.parseMibValue(value));

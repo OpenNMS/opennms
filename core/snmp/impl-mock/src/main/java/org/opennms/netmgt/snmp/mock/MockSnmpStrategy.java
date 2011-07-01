@@ -11,7 +11,6 @@ import java.util.Map;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -71,10 +70,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
         }
         
         public String toString() {
-            return new ToStringBuilder(this)
-                .append("address", m_address)
-                .append("port", m_port)
-                .toString();
+        	return InetAddressUtils.str(m_address) + ":" + m_port;
         }
     }
 
@@ -89,10 +85,6 @@ public class MockSnmpStrategy implements SnmpStrategy {
     public SnmpWalker createWalker(final SnmpAgentConfig agentConfig, final String name, final CollectionTracker tracker) {
         LogUtils.debugf(this, "createWalker(%s/%d, %s, %s)", InetAddressUtils.str(agentConfig.getAddress()), agentConfig.getPort(), name, tracker.getClass().getName());
         final AgentAddress aa = new AgentAddress(agentConfig.getAddress(), agentConfig.getPort());
-        if (!m_loaders.containsKey(aa)) {
-            LogUtils.debugf(this, "no loader found for %s", aa);
-            return null;
-        }
         return new MockSnmpWalker(aa, m_loaders.get(aa), name, tracker, agentConfig.getMaxVarsPerPdu());
     }
 
@@ -109,7 +101,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
     public SnmpValue[] set(final SnmpAgentConfig agentConfig, final SnmpObjId[] oids, final SnmpValue[] values) {
         final AgentAddress aa = new AgentAddress(agentConfig.getAddress(), agentConfig.getPort());
         if (!m_loaders.containsKey(aa)) {
-            return null;
+            return new SnmpValue[values.length];
         }
         return m_loaders.get(aa).set(oids, values);
     }
@@ -127,15 +119,13 @@ public class MockSnmpStrategy implements SnmpStrategy {
     @Override
     public SnmpValue[] get(final SnmpAgentConfig agentConfig, final SnmpObjId[] oids) {
         final AgentAddress aa = new AgentAddress(agentConfig.getAddress(), agentConfig.getPort());
-        if (!m_loaders.containsKey(aa)) {
-            return new SnmpValue[] { null };
-        }
 
         final PropertyOidContainer container = m_loaders.get(aa);
+        if (container == null) return new SnmpValue[oids.length];
         final List<SnmpValue> values = new ArrayList<SnmpValue>();
 
         for (final SnmpObjId oid : oids) {
-            values.add(container.findValueForOid(oid));
+    		values.add(container.findValueForOid(oid));
         }
         return values.toArray(EMPTY_SNMP_VALUE_ARRAY);
     }

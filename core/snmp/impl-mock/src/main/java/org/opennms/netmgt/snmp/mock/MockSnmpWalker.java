@@ -48,11 +48,13 @@ public class MockSnmpWalker extends SnmpWalker {
         }
     }
 
-    private PropertyOidContainer m_container;
-    private ExecutorService m_executor;
+	private final AgentAddress m_agentAddress;
+    private final PropertyOidContainer m_container;
+    private final ExecutorService m_executor;
 
     public MockSnmpWalker(final AgentAddress agentAddress, final PropertyOidContainer container, final String name, final CollectionTracker tracker, int maxVarsPerPdu) {
         super(agentAddress.getAddress(), name, maxVarsPerPdu, 1, tracker);
+        m_agentAddress = agentAddress;
         m_container = container;
         m_executor = Executors.newSingleThreadExecutor();
     }
@@ -68,6 +70,12 @@ public class MockSnmpWalker extends SnmpWalker {
         final List<SnmpObjId> oids = builder.getOids();
         LogUtils.debugf(this, "'Sending' tracker PDU of size " + oids.size());
 
+        if (m_container == null) {
+        	LogUtils.infof(this, "No SNMP response data configured for %s; pretending we've timed out.", m_agentAddress);
+        	handleTimeout("No MockSnmpAgent data configured for '" + m_agentAddress + "'.");
+        	return;
+        }
+
         final Map<SnmpObjId,SnmpValue> responses = new LinkedHashMap<SnmpObjId,SnmpValue>();
         for (final SnmpObjId oid : oids) {
             responses.put(m_container.findNextOidForOid(oid), m_container.findNextValueForOid(oid));
@@ -81,16 +89,56 @@ public class MockSnmpWalker extends SnmpWalker {
         });
     }
 
+    @Override
+    protected void handleDone() {
+    	LogUtils.debugf(this, "handleDone()");
+    	super.handleDone();
+    }
+
+    @Override
+    protected void handleAuthError(final String msg) {
+    	LogUtils.debugf(this, "handleAuthError(%s)", msg);
+    	super.handleAuthError(msg);
+    }
+    
+    @Override
+    protected void handleError(final String msg) {
+    	LogUtils.debugf(this, "handleError(%s)", msg);
+    	super.handleError(msg);
+    }
+    
+    @Override
+    protected void handleError(final String msg, final Throwable t) {
+    	LogUtils.debugf(this, t, "handleError(%s, %s)", msg, t.getLocalizedMessage());
+    	super.handleError(msg, t);
+    }
+    
+    @Override
+    protected void handleFatalError(final Throwable e) {
+    	LogUtils.debugf(this, e, "handleFatalError(%s)", e.getLocalizedMessage());
+    	super.handleFatalError(e);
+    }
+
+    @Override
+    protected void handleTimeout(final String msg) {
+    	LogUtils.debugf(this, "handleTimeout(%s)", msg);
+    	super.handleTimeout(msg);
+    }
+
     protected void handleResponses(final Map<SnmpObjId, SnmpValue> responses) {
+    	LogUtils.debugf(this, "handleResponses(%s)", responses);
         try {
-            if (!processErrors(0, 0)) {
+            if (processErrors(0, 0)) {
+            	LogUtils.debugf(this, "Errors while handling responses... Whaaaat?");
+            } else {
+            	LogUtils.debugf(this, "Handling %d responses.", responses.size());
                 for (final Map.Entry<SnmpObjId,SnmpValue> entry : responses.entrySet()) {
                     processResponse(entry.getKey(), entry.getValue());
                 }
             }
             buildAndSendNextPdu();
-        } catch (final Throwable e) {
-            handleFatalError(e);
+        } catch (final Throwable t) {
+            handleFatalError(t);
         }
     }
 
@@ -99,4 +147,9 @@ public class MockSnmpWalker extends SnmpWalker {
         m_executor.shutdown();
     }
 
+    @Override
+    protected void buildAndSendNextPdu() throws IOException {
+    	LogUtils.debugf(this, "buildAndSendNextPdu()");
+    	super.buildAndSendNextPdu();
+    }
 }

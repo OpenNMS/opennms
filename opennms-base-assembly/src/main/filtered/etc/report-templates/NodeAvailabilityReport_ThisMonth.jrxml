@@ -242,10 +242,6 @@ ORDER BY
 		<parameterDescription><![CDATA[Availability Warning]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new Double("97.0")]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE_NUMBER" class="java.lang.Integer">
-		<parameterDescription><![CDATA[Report Time Range in Days]]></parameterDescription>
-		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
-	</parameter>
 	<parameter name="TIME_RANGE" class="java.util.Date" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
@@ -625,7 +621,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 				<textFieldExpression class="java.util.Date"><![CDATA[$P{START_TIME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="253" y="15" width="151" height="14"/>
+				<reportElement x="253" y="16" width="138" height="13"/>
 				<textElement/>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{end}]]></textFieldExpression>
 			</textField>

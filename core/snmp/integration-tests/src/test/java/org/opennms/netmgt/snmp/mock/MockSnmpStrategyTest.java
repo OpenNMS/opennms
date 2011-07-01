@@ -2,6 +2,7 @@ package org.opennms.netmgt.snmp.mock;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.net.InetAddress;
 
@@ -102,6 +103,70 @@ public class MockSnmpStrategyTest {
     }
 
     @Test
+    public void testSetSingleValue() throws Exception {
+    	m_strategy.set(getAgentConfig(), SnmpObjId.get(".1.3.5.1.1.3.0"), m_strategy.getValueFactory().getInt32(4));
+    	
+    	final SnmpValue result = m_strategy.get(getAgentConfig(), SnmpObjId.get(".1.3.5.1.1.3.0"));
+    	assertNotNull(result);
+    	assertEquals(4, result.toInt());
+    }
+
+    @Test
+    public void testSetBadAgent() throws Exception {
+    	final SnmpAgentConfig sac = getAgentConfig();
+    	sac.setAddress(InetAddressUtils.addr("1.2.3.4"));
+
+    	m_strategy.set(sac, SnmpObjId.get(".1.3.5.1.1.3.0"), m_strategy.getValueFactory().getInt32(4));
+    	
+    	final SnmpValue result = m_strategy.get(sac, SnmpObjId.get(".1.3.5.1.1.3.0"));
+    	
+    	assertNull(result);
+    }
+
+    @Test
+    public void testSetMultipleValues() throws Exception {
+        final SnmpObjId[] oids = new SnmpObjId[] {
+                SnmpObjId.get(".1.3.5.1.1.3.0"),
+                SnmpObjId.get(".1.3.5.1.1.4.0")
+        };
+        final SnmpValue[] values = new SnmpValue[] {
+        		m_strategy.getValueFactory().getInt32(4),
+        		m_strategy.getValueFactory().getGauge32(5)
+        };
+
+        m_strategy.set(getAgentConfig(), oids, values);
+    	
+    	final SnmpValue[] results = m_strategy.get(getAgentConfig(), oids);
+    	assertNotNull(results);
+    	assertEquals(2, results.length);
+    	assertEquals(4, results[0].toInt());
+    	assertEquals(5, results[1].toInt());
+    }
+
+    @Test
+    public void testSetMultipleBadAgent() throws Exception {
+    	final SnmpAgentConfig sac = getAgentConfig();
+    	sac.setAddress(InetAddressUtils.addr("1.2.3.4"));
+
+        final SnmpObjId[] oids = new SnmpObjId[] {
+                SnmpObjId.get(".1.3.5.1.1.3.0"),
+                SnmpObjId.get(".1.3.5.1.1.4.0")
+        };
+        final SnmpValue[] values = new SnmpValue[] {
+        		m_strategy.getValueFactory().getInt32(4),
+        		m_strategy.getValueFactory().getGauge32(5)
+        };
+
+        m_strategy.set(sac, oids, values);
+    	
+    	final SnmpValue[] results = m_strategy.get(sac, oids);
+    	assertNotNull(results);
+    	assertEquals(2, results.length);
+    	assertNull(results[0]);
+    	assertNull(results[1]);
+    }
+
+    @Test
     public void testTracker() throws Exception {
         final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
 
@@ -109,7 +174,19 @@ public class MockSnmpStrategyTest {
         assertEquals("number of columns returned must match test data", Long.valueOf(9).longValue(), ct.getCount());
     }
 
-    private void assertSnmpValueEquals(String message, int expectedType, int expectedValue, SnmpValue value) {
+    @Test
+    public void testTrackerTimeout() throws Exception {
+        final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
+        final SnmpAgentConfig sac = getAgentConfig();
+        sac.setPort(12345);
+        final SnmpWalker walker = SnmpUtils.createWalker(sac, "test", ct);
+        assertNotNull(walker);
+        walker.start();
+        walker.waitFor();
+        assertEquals("it should match no columns (timeout)", Long.valueOf(0).longValue(), ct.getCount());
+    }
+    
+    private void assertSnmpValueEquals(final String message, final int expectedType, final int expectedValue, final SnmpValue value) {
         assertEquals(message + " getType()", expectedType, value.getType());
         assertEquals(message + " toInt()", expectedValue, value.toInt());
     }
@@ -124,7 +201,7 @@ public class MockSnmpStrategyTest {
         return config;
     }
 
-    private void walk(CollectionTracker c, int maxVarsPerPdu, int maxRepetitions) throws Exception {
+    private void walk(final CollectionTracker c, final int maxVarsPerPdu, final int maxRepetitions) throws Exception {
         final SnmpAgentConfig config = getAgentConfig();
         final SnmpWalker walker = SnmpUtils.createWalker(config, "test", c);
         assertNotNull(walker);
