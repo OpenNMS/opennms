@@ -21,6 +21,9 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{START_TIME})]]></defaultValueExpression>
 	</parameter>
+	<parameter name="END_TIME_STRING" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{END_TIME})]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
 	node_outages.categoryname,
@@ -57,8 +60,8 @@ FROM
 		active_nodes.nodelabel,
 		active_nodes.nodesyslocation,
 		active_nodes.nodesysdescription,
-		('$P!{END_TIME}'::TIMESTAMP) - '$P!{START_TIME_STRING}'::TIMESTAMP AS avail_time_interval,
-		EXTRACT (epoch from ('$P!{END_TIME}'::TIMESTAMP) - '$P!{START_TIME_STRING}'::TIMESTAMP) AS avail_total,
+		('$P!{END_TIME_STRING}'::TIMESTAMP) - '$P!{START_TIME_STRING}'::TIMESTAMP AS avail_time_interval,
+		EXTRACT (epoch from ('$P!{END_TIME_STRING}'::TIMESTAMP) - '$P!{START_TIME_STRING}'::TIMESTAMP) AS avail_total,
 		CASE
 			WHEN
 				outages_scope.gained_service_timestamp - outages_scope.lost_service_timestamp is NULL
@@ -80,7 +83,7 @@ FROM
 	FROM
 		(SELECT
 			outages.nodeid,
-			least(('$P!{END_TIME}'::TIMESTAMP), outages.ifregainedservice) as gained_service_timestamp,
+			least(('$P!{END_TIME_STRING}'::TIMESTAMP), outages.ifregainedservice) as gained_service_timestamp,
 			greatest('$P!{START_TIME_STRING}'::TIMESTAMP,outages.iflostservice) as lost_service_timestamp
 		FROM
 			outages, service, events
