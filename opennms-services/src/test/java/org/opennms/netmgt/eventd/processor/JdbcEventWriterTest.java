@@ -115,6 +115,21 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         assertEquals("abc%0def", descr);
     }
     
+    /**
+     * Tests writing nulls to postgres db and the db encoding.
+     * @throws SQLException
+     */
+    public void testWriteEventLogmsgWithNull() throws Exception {
+        EventBuilder bldr = new EventBuilder("testUei", "testSource");
+        bldr.setLogDest("logndisplay");
+
+        bldr.setLogMessage("abc\u0000def");
+
+        m_jdbcEventWriter.process(null, bldr.getEvent());
+        final String logMessage = jdbcTemplate.queryForObject("SELECT eventLogmsg FROM events LIMIT 1", String.class);
+        assertEquals("abc%0def", logMessage);
+    }
+    
     public void testGetEventHostWithNullHost() throws Exception {
         jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
         int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");

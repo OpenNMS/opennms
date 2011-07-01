@@ -216,7 +216,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             // eventDisplay
             if (event.getLogmsg() != null) {
                 // set log message
-                set(insStmt, 15, event.getLogmsg().getContent());
+                set(insStmt, 15, Constants.format(event.getLogmsg().getContent(), 0));
                 String logdest = event.getLogmsg().getDest();
                 if (logdest.equals("logndisplay")) {
                     // if 'logndisplay' set both log and display column to yes
