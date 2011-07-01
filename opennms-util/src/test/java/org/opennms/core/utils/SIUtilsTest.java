@@ -28,6 +28,9 @@
 
 package org.opennms.core.utils;
 
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 import junit.framework.TestCase;
 
 /**
@@ -67,13 +70,15 @@ public class SIUtilsTest extends TestCase {
      * @link http://en.wikipedia.org/wiki/Digital_Signal_1
      */
     public void testOnePointFiveFourFourMeg() {
-        assertEquals("1.544 Mbps", SIUtils.getHumanReadableIfSpeed(1544000L));
+    	DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
+        assertEquals("1"+symbols.getDecimalSeparator()+"544 Mbps", SIUtils.getHumanReadableIfSpeed(1544000L));
     }
 
     /**
      * 1200bps modem line.
      */
     public void testTwelveHundred() {
-        assertEquals("1.2 kbps", SIUtils.getHumanReadableIfSpeed(1200L));
+    	DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
+        assertEquals("1"+symbols.getDecimalSeparator()+"2 kbps", SIUtils.getHumanReadableIfSpeed(1200L));
     }
 }
