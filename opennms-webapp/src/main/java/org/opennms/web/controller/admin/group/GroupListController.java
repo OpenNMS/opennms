@@ -29,6 +29,10 @@
 
 package org.opennms.web.controller.admin.group;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +59,13 @@ public class GroupListController extends AbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		Map<String, Group> groups = m_groupManager.getGroups();
-	    return new ModelAndView("admin/userGroupView/groups/list", "groups", groups.values());
+		List<Group> groupList = new ArrayList<Group>(groups.values());
+		Collections.sort(groupList, new Comparator<Group>() {
+		    public int compare(Group g1, Group g2) {
+                        return g1.getName().compareTo(g2.getName());
+		    }
+		});
+	        return new ModelAndView("admin/userGroupView/groups/list", "groups", groupList);
 	}
 
 	/**
