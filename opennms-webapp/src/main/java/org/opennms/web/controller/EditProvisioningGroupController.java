@@ -307,9 +307,15 @@ public class EditProvisioningGroupController extends SimpleFormController {
         }
         map.put("snmpPrimaryChoices", choices);
         
-        map.put("categories", m_provisioningService.getNodeCategoryNames());
-        map.put("assetFields", m_provisioningService.getAssetFieldNames());
-        map.put("services",  m_provisioningService.getServiceTypeNames());
+        List<String> categories = new ArrayList<String>(m_provisioningService.getNodeCategoryNames());
+        Collections.sort(categories);
+        List<String> assetFields = new ArrayList<String>(m_provisioningService.getAssetFieldNames());
+        Collections.sort(assetFields);
+        List<String> services = new ArrayList<String>(m_provisioningService.getServiceTypeNames());
+        Collections.sort(services);
+        map.put("categories", categories);
+        map.put("assetFields", assetFields);
+        map.put("services",  services);
         
         
         return map;
