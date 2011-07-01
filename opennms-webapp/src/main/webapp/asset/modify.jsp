@@ -155,6 +155,7 @@
               <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
                 <option<%=(Asset.CATEGORIES[i].equals(asset.getCategory()))?" selected":""%>><%=Asset.CATEGORIES[i]%></option> 
               <% } %>
+              </select>
 			<% } else { getTextField(request, "text", "category", asset.getCategory(), "20", "64"); } %>
             </td>
           </tr>
