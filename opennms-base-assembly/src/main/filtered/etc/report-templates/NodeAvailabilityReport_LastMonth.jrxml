@@ -224,12 +224,15 @@ ORDER BY
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
+		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
 		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="AVAILABILITY_WARNING" class="java.lang.Double">
+		<parameterDescription><![CDATA[Availability Warning]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new Double("98.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="AVAILABILITY_CRITICAL" class="java.lang.Double">
+		<parameterDescription><![CDATA[Availability Critial]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new Double("97.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
