@@ -31,6 +31,7 @@ package org.opennms.netmgt;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
+import java.util.Locale;
 
 import org.junit.Test;
 
@@ -38,10 +39,18 @@ public class EventConstantsTest {
 
     @Test
     public void testEventDateParse() throws Exception {
-        final String sampleTimeText = "Thursday, 10 March 2011 22:40:37 o'clock GMT";
+        String sampleTimeText = "Thursday, 10 March 2011 22:40:37 o'clock GMT";
+    	String localString = Locale.getDefault().getLanguage()+"_"+Locale.getDefault().getCountry();
+    	if (localString.equals("it_IT")) {
+            sampleTimeText = "Marted“, 10 Marzo 2011 22:40:37 o'clock GMT";
+    	} else if (localString.equals("fr_FR")) {
+            sampleTimeText = "Mardi, 10 Mars 2011 22:40:37 o'clock GMT";    		
+    	} else if (localString.equals("de_DE")) {
+            sampleTimeText = "Dienstag, 10 MŠrz 2011 22:40:37 o'clock GMT";		    		
+    	}
+		
         final long sampleTimeEpoch = 1299796837 * 1000L;
-        final Date date = EventConstants.parseToDate(sampleTimeText);
+        final Date date = EventConstants.parseToDate(sampleTimeText);        
         assertEquals(sampleTimeEpoch, date.getTime());
     }
-
 }
