@@ -50,7 +50,7 @@ import org.opennms.netmgt.xml.event.Value;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 
 /**
- * The EventQueueProcessor processes the events recieved by xmlrpcd and sends
+ * The EventQueueProcessor processes the events received by xmlrpcd and sends
  * notifications to the external XMLRPC server via XMLRPC protocol.
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>

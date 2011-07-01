@@ -127,7 +127,7 @@ final public class SshMonitor extends IPv4Monitor {
                 String response = ssh.getServerBanner();
 
                 if (response == null) {
-                    return PollStatus.unavailable("server closed connection before banner was recieved.");
+                    return PollStatus.unavailable("server closed connection before banner was received.");
                 }
 
                 if (regex.match(response)) {

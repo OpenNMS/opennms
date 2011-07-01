@@ -327,7 +327,7 @@ public class DNSAddressRequest {
      * @param length
      *            The length of the byte array.
      * @exception IOException
-     *                Thrown if there is an error while reading the recieved
+     *                Thrown if there is an error while reading the received
      *                packet
      * @throws java.io.IOException if any.
      */
@@ -397,7 +397,7 @@ public class DNSAddressRequest {
      * @param length
      *            The length of the byte array.
      * @exception IOException
-     *                Thrown if there is an error while reading the recieved
+     *                Thrown if there is an error while reading the received
      *                packet
      * @throws java.io.IOException if any.
      */
@@ -485,7 +485,7 @@ public class DNSAddressRequest {
 
     /**
      * <P>
-     * Returns the code string for the error code recieved.
+     * Returns the code string for the error code received.
      * </P>
      *
      * @param code
