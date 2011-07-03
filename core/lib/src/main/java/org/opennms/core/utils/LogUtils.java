@@ -12,6 +12,7 @@ import org.slf4j.Logger;
  * @version $Id: $
  */
 public class LogUtils {
+
     /**
      * <p>tracef</p>
      *
@@ -235,8 +236,10 @@ public class LogUtils {
     }
 
     private static Logger getLogger(final Object logee) {
-        Logger log;
-        if (logee instanceof String) {
+       Logger log;
+        if (logee instanceof Class<?>) {
+            log = ThreadCategory.getSlf4jInstance((Class<?>)logee);
+        } else if (logee instanceof String) {
             log = ThreadCategory.getSlf4jInstance((String)logee);
         } else if (logee instanceof Class<?>) {
             log = ThreadCategory.getSlf4jInstance((Class<?>)logee);
