@@ -32,6 +32,7 @@
 package org.opennms.netmgt.snmp;
 
 import java.io.IOException;
+import java.util.List;
 
 
 public interface SnmpStrategy {
@@ -50,7 +51,7 @@ public interface SnmpStrategy {
     
     SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
 
-    void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException;
+    void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort, List<SnmpV3User> snmpv3Users) throws IOException;
 
     void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException;
 

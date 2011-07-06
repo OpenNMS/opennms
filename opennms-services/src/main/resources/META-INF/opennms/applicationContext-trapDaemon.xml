@@ -11,6 +11,7 @@
     <property name="backlogQ" ref="backlogQ"/>
     <property name="processor" ref="processor"/>
     <property name="snmpTrapPort" ref="snmpTrapPort"/>
+    <property name="snmpV3Users" ref="snmpV3Users"/>
   </bean>
   
   <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
@@ -52,6 +53,11 @@
   <bean id="snmpTrapPort" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject" ref="trapdConfig"/>
     <property name="targetMethod" value="getSnmpTrapPort"/>
+  </bean>
+
+  <bean id="snmpV3Users" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="trapdConfig"/>
+    <property name="targetMethod" value="getSnmpV3Users"/>
   </bean>
   
   <tx:annotation-driven/>

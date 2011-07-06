@@ -46,6 +46,7 @@ package org.opennms.netmgt.trapd;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
@@ -54,6 +55,7 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessor;
@@ -115,6 +117,8 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
     private Integer m_snmpTrapPort;
 
+    private List<SnmpV3User> m_snmpV3Users;
+
     private boolean m_registeredForTraps;
 
 
@@ -174,7 +178,7 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
         }
 
         try {
-            SnmpUtils.registerForTraps(this, this, getSnmpTrapPort());
+            SnmpUtils.registerForTraps(this, this, getSnmpTrapPort(), getSnmpV3Users());
             m_registeredForTraps = true;
 
             log().debug("init: Creating the trap session");
@@ -404,4 +408,13 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
     public void setSnmpTrapPort(int snmpTrapPort) {
         m_snmpTrapPort = snmpTrapPort;
     }
+
+    public List<SnmpV3User> getSnmpV3Users() {
+        return m_snmpV3Users;
+    }
+
+    public void setSnmpV3Users(List<SnmpV3User> snmpV3Users) {
+        this.m_snmpV3Users = snmpV3Users;
+    }
+
 }

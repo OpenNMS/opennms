@@ -32,6 +32,10 @@
 
 package org.opennms.netmgt.config;
 
+import java.util.List;
+
+import org.opennms.netmgt.snmp.SnmpV3User;
+
 /**
  * <p>TrapdConfig interface.</p>
  *
@@ -52,4 +56,11 @@ public interface TrapdConfig {
      * @return a boolean.
      */
     public abstract boolean getNewSuspectOnTrap();
+
+    /**
+     * <p>getSnmpV3Users</p>
+     *
+     * @return a java.util.List.
+     */
+    public abstract List<SnmpV3User> getSnmpV3Users();
 }

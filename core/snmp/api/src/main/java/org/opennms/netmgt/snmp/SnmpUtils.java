@@ -162,8 +162,8 @@ public class SnmpUtils {
 //        return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
     }
     
-    public static void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException {
-        getStrategy().registerForTraps(listener, processorFactory, snmpTrapPort);
+    public static void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort, final List<SnmpV3User> snmpUsers) throws IOException {
+        getStrategy().registerForTraps(listener, processorFactory, snmpTrapPort, snmpUsers);
     }
     
     public static void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException {

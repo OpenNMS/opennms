@@ -41,6 +41,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
@@ -52,6 +53,7 @@ import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV2TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
+import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -301,7 +303,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
 
 
 
-    public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException {
+    public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort, List<SnmpV3User> snmpv3Users) throws IOException {
         RegistrationInfo info = new RegistrationInfo(listener, snmpTrapPort);
         
         JoeSnmpTrapNotifier m_trapHandler = new JoeSnmpTrapNotifier(listener, processorFactory);
@@ -393,6 +395,5 @@ public class JoeSnmpStrategy implements SnmpStrategy {
 	public byte[] getLocalEngineID() {
 		throw new UnsupportedOperationException();
 	}
-
 
 }

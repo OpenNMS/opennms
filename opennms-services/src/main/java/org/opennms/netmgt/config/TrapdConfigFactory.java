@@ -42,12 +42,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.snmp.SnmpV3User;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -210,6 +214,20 @@ public final class TrapdConfigFactory implements TrapdConfig {
      */
     public synchronized boolean getNewSuspectOnTrap() {
         return m_config.getNewSuspectOnTrap();
+    }
+
+    public synchronized List<SnmpV3User> getSnmpV3Users() {
+        List<SnmpV3User> snmpUsers = new ArrayList<SnmpV3User>();
+        for (Snmpv3User user : m_config.getSnmpv3UserCollection()) {
+            snmpUsers.add(new SnmpV3User(
+                    user.getEngineId(),
+                    user.getSecurityName(),
+                    user.getAuthProtocol(),
+                    user.getAuthPassphrase(),
+                    user.getPrivacyProtocol(),
+                    user.getPrivacyPassphrase()));
+        }
+        return snmpUsers;
     }
 
 }
