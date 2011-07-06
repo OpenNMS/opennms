@@ -160,7 +160,11 @@ public class SnmpUtils {
         return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
 //        return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
     }
-    
+
+    public static void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final InetAddress address, final int snmpTrapPort, final List<SnmpV3User> snmpUsers) throws IOException {
+        getStrategy().registerForTraps(listener, processorFactory, address, snmpTrapPort, snmpUsers);
+    }
+
     public static void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final InetAddress address, final int snmpTrapPort) throws IOException {
         getStrategy().registerForTraps(listener, processorFactory, address, snmpTrapPort);
     }
