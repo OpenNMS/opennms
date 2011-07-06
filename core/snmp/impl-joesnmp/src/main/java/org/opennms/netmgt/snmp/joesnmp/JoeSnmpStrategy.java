@@ -315,8 +315,8 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         s_registrations.put(listener, info);
     }
     
-    public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort, List<SnmpV3User> snmpv3Users) throws IOException {
-        registerForTraps(listener, processorFactory, address, snmpTrapPort, null);
+    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final InetAddress address, final int snmpTrapPort, final List<SnmpV3User> snmpv3Users) throws IOException {
+        registerForTraps(listener, processorFactory, address, snmpTrapPort);
     }
 
     public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final int snmpTrapPort) throws IOException {
