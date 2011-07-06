@@ -50,8 +50,9 @@
 
 <%
     Map serviceNameMap = new TreeMap(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
-    Set serviceNameSet = serviceNameMap.keySet();
-    Iterator serviceNameIterator = serviceNameSet.iterator();
+    List serviceNameList = new ArrayList(serviceNameMap.keySet());
+    Collections.sort(serviceNameList);
+    Iterator serviceNameIterator = serviceNameList.iterator();
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
