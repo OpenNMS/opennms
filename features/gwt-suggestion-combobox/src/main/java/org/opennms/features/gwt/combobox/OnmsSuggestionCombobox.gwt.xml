@@ -2,21 +2,16 @@
 <module rename-to='OnmsSuggestionCombobox'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
+  <inherits name="com.google.gwt.http.HTTP"/>
+  <inherits name="com.google.gwt.json.JSON"/>
 
-  <!-- Inherit the default GWT style sheet.  You can change       -->
-  <!-- the theme of your GWT application by uncommenting          -->
-  <!-- any one of the following lines.                            -->
-  <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
-  <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
   <inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/>
 
-  <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.opennms.features.gwt.combobox.client.OnmsSuggestionCombobox'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
-  <source path='shared'/>
 
 </module>
