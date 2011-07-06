@@ -30,74 +30,100 @@ package org.opennms.netmgt;
 
 import static org.junit.Assert.assertEquals;
 
-import java.text.DateFormat;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.test.mock.MockLogAppender;
 
+@RunWith(Parameterized.class)
 public class EventConstantsTest {
-	private static final DateFormat ENGLISH = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, new Locale("en", "US"));
-	private static final DateFormat ITALIAN = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, new Locale("it", "IT"));
-	private static final DateFormat FRENCH = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, new Locale("fr", "FR"));
-	private static final DateFormat GERMAN = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, new Locale("de", "DE"));
 
-	final String englishTimeText = "Thursday, March 10, 2011 5:40:37 PM EST";
-	final String italianTimeText = "Giovedi, 10 Marzo 2011 22:40:37 o'clock GMT";
-	final String frenchTimeText = "Jeudi, 10 Mars 2011 22:40:37 o'clock GMT";
-	final String germanTimeText = "Donnerstag, 10 Marz 2011 22:40:37 o'clock GMT";
-	
-	final String englishTimeTextf = "Thursday, March 10, 2011 11:40:37 PM CET";
-	final String italianTimeTextf = "giovedi 10 marzo 2011 23.40.37 CET";
-	final String frenchTimeTextf = "jeudi 10 mars 2011 23 h 40 CET";
-	final String germanTimeTextf = "Donnerstag, 10. Marz 2011 23:40 Uhr MEZ";
-	
-	final long sampleTimeEpoch = 1299796837 * 1000L;
+    // Test Parameters
+    private Locale m_testLocale;
+    private String m_gmtText;
+    private String m_cetText;
+    private Long m_timestamp;
+
+    @Parameters
+    public static Collection<Object[]> data() {
+            return Arrays.asList(new Object[][] {
+                            {
+                                new Locale("en", "US"),
+                                "Thursday, March 10, 2011 10:40:37 PM GMT",
+                                "Thursday, March 10, 2011 11:40:37 PM CET",
+                                Long.valueOf(1299796837 * 1000L)
+                            },
+                            {
+                                new Locale("it", "IT"),
+                                "gioved\u00EC 10 marzo 2011 22.40.37 GMT",
+                                "gioved\u00EC 10 marzo 2011 23.40.37 CET",
+                                Long.valueOf(1299796837 * 1000L)
+                            },
+                            {
+                                new Locale("fr", "FR"),
+                                "jeudi 10 mars 2011 22:40:37 GMT",
+                                "jeudi 10 mars 2011 23:40:37 CET",
+                                Long.valueOf(1299796837 * 1000L)
+                            },
+                            {
+                                new Locale("de", "DE"),
+                                "Donnerstag, 10. M\u00E4rz 2011 22:40:37 GMT",
+                                "Donnerstag, 10. M\u00E4rz 2011 23:40:37 MEZ",
+                                Long.valueOf(1299796837 * 1000L)
+                            }
+            });
+    }
+
+    public EventConstantsTest(final Locale locale, final String gmtText, final String cetText, final Long timestamp) {
+        m_testLocale = locale;
+        m_gmtText = gmtText;
+        m_cetText = cetText;
+        m_timestamp = timestamp;
+    }
+
+    // Initialized Inside the Tests
+    private Locale m_defaultLocale;
+
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+
+        m_defaultLocale = Locale.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("CET"));
+        Locale.setDefault(m_testLocale);
+        
+        // since formatters are thread-local, we need to reset them so they will re-initialize based on the current locale
+        EventConstants.FORMATTER_FULL.remove();
+        EventConstants.FORMATTER_LONG.remove();
+        EventConstants.FORMATTER_FULL_GMT.remove();
+        EventConstants.FORMATTER_LONG_GMT.remove();
+        EventConstants.FORMATTER_CUSTOM.remove();
+        EventConstants.FORMATTER_DEFAULT.remove();
+    }
+
+    @After
+    public void tearDown() {
+        Locale.setDefault(m_defaultLocale);
+    }
 
     @Test
     public void testEventDateParse() throws Exception {
-    	//Locale.setDefault(new Locale("en", "EN"));
-    	//Locale.setDefault(new Locale("it", "IT"));
-    	//Locale.setDefault(new Locale("fr", "FR"));
-    	//Locale.setDefault(new Locale("de", "DE"));
-        final Date date = EventConstants.parseToDate(getTimeText());
-        assertEquals(sampleTimeEpoch, date.getTime());
-        assertEquals(getTimeTextFormatted(), getDateFormat().format(date));
+        final Date date = EventConstants.parseToDate(m_cetText);
+        assertEquals(m_testLocale + ": time should equal " + m_timestamp, m_timestamp.longValue(), date.getTime());
     }
-    
-    private String getTimeText() {
-    	if (getLocaleString().equals("it_IT"))
-    		return italianTimeText;
-    	else if (getLocaleString().equals("fr_FR"))
-    		return frenchTimeText;
-    	else if (getLocaleString().equals("de_DE"))
-    		return germanTimeText;
-    	return englishTimeText;
-    }
-    
-    private String getTimeTextFormatted() {
-    	if (getLocaleString().equals("it_IT"))
-    		return italianTimeTextf;
-    	else if (getLocaleString().equals("fr_FR"))
-    		return frenchTimeTextf;
-    	else if (getLocaleString().equals("de_DE"))
-    		return germanTimeTextf;
-    	return englishTimeTextf;
-    }
-    
 
-    private DateFormat getDateFormat() {
-    	if (getLocaleString().equals("it_IT"))
-    		return ITALIAN;
-    	else if (getLocaleString().equals("fr_FR"))
-    		return FRENCH;
-    	else if (getLocaleString().equals("de_DE"))
-    		return GERMAN;
-    	return ENGLISH;
-    	
-    }
-    
-    private String getLocaleString() {
-    	return Locale.getDefault().getLanguage()+"_"+Locale.getDefault().getCountry();
+    @Test
+    public void testFormatToString() throws Exception {
+        final String formatted = EventConstants.formatToString(new Date(m_timestamp));
+        assertEquals(m_testLocale + ": formatted string should equal " + m_gmtText, m_gmtText, formatted);
     }
 }

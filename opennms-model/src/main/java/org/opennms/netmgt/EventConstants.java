@@ -1071,44 +1071,60 @@ public class EventConstants {
     /** Constant <code>OID_SNMP_IFINDEX</code> */
     public final static SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
 
+    static final ThreadLocal<DateFormat> FORMATTER_FULL = new ThreadLocal<DateFormat>() {
+        protected synchronized DateFormat initialValue() {
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+            formatter.setLenient(true);
+            return formatter;
+        }
+    };
 
-    private static final ThreadLocal<DateFormat> FORMATTER_FULL = new ThreadLocal<DateFormat>() {
-    	protected synchronized DateFormat initialValue() {
-        	final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-        	formatter.setLenient(true);
-        	return formatter;
-    	}
+    static final ThreadLocal<DateFormat> FORMATTER_LONG = new ThreadLocal<DateFormat>() {
+        protected synchronized DateFormat initialValue() {
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
+            formatter.setLenient(true);
+            return formatter;
+        }
     };
     
-    private static final ThreadLocal<DateFormat> FORMATTER_GMT = new ThreadLocal<DateFormat>() {
-    	protected synchronized DateFormat initialValue() {
-        	final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-        	formatter.setLenient(true);
-        	formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-        	return formatter;
-    	}
+    static final ThreadLocal<DateFormat> FORMATTER_FULL_GMT = new ThreadLocal<DateFormat>() {
+        protected synchronized DateFormat initialValue() {
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+            formatter.setLenient(true);
+            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+            return formatter;
+        }
     };
 
-    private static final ThreadLocal<DateFormat> FORMATTER_CUSTOM = new ThreadLocal<DateFormat>() {
-    	protected synchronized DateFormat initialValue() {
-        	final DateFormat formatter = new SimpleDateFormat("EEEEE, d MMMMM yyyy k:mm:ss 'o''clock' z");
-        	formatter.setLenient(true);
-        	return formatter;
-    	}
+    static final ThreadLocal<DateFormat> FORMATTER_LONG_GMT = new ThreadLocal<DateFormat>() {
+        protected synchronized DateFormat initialValue() {
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
+            formatter.setLenient(true);
+            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+            return formatter;
+        }
     };
 
-    private static final ThreadLocal<DateFormat> FORMATTER_SHORT = new ThreadLocal<DateFormat>() {
-    	protected synchronized DateFormat initialValue() {
-        	final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
-        	formatter.setLenient(true);
-        	return formatter;
-    	}
+    static final ThreadLocal<DateFormat> FORMATTER_CUSTOM = new ThreadLocal<DateFormat>() {
+        protected synchronized DateFormat initialValue() {
+            final DateFormat formatter = new SimpleDateFormat("EEEEE, d MMMMM yyyy k:mm:ss 'o''clock' z");
+            formatter.setLenient(true);
+            return formatter;
+        }
+    };
+
+    static final ThreadLocal<DateFormat> FORMATTER_DEFAULT = new ThreadLocal<DateFormat>() {
+        protected synchronized DateFormat initialValue() {
+            final DateFormat formatter = DateFormat.getDateTimeInstance();
+            formatter.setLenient(true);
+            return formatter;
+        }
     };
 
     /**
      * An utility method to parse a string into a 'Date' instance. Note that the
-     * string should be in the locale specific DateFormat.FULL style for both
-     * the date and time.
+     * string should be in the locale-specific DateFormat.LONG style for both
+     * the date and time, althought DateFormat.FULL will be accepted as well.
      *
      * @see java.text.DateFormat
      * @param timeString a {@link java.lang.String} object.
@@ -1116,35 +1132,35 @@ public class EventConstants {
      * @throws java.text.ParseException if any.
      */
     public static final Date parseToDate(final String timeString) throws ParseException {
-    	if (timeString == null) {
-    		throw new ParseException("time was null!", -1);
-    	}
+        if (timeString == null) {
+            throw new ParseException("time was null!", -1);
+        }
         try {
-            return FORMATTER_FULL.get().parse(timeString);
+            return FORMATTER_LONG.get().parse(timeString);
         } catch (final ParseException parseException) {
             try {
                 return FORMATTER_CUSTOM.get().parse(timeString);
-            } catch (final ParseException subException) {
-                throw parseException;
+            } catch (final ParseException pe) {
+                return FORMATTER_FULL.get().parse(timeString);
             }
         }
     }
 
     /**
-     * An utility method to format a 'Date' into a string in the local specific
-     * FULL DateFormat style for both the date and time.
+     * A utility method to format a 'Date' into a string in the locale-specific
+     * LONG DateFormat style for both the date and time.
      *
      * @see java.text.DateFormat
      * @param date a {@link java.util.Date} object.
      * @return a {@link java.lang.String} object.
      */
     public static final String formatToString(final Date date) {
-    	return FORMATTER_GMT.get().format(date);
+    	return FORMATTER_LONG_GMT.get().format(date);
     }
 
     /**
-     * An utility method to format a 'Date' into a string in the local specific
-     * DEFALUT DateFormat style for both the date and time. This is used by the
+     * A utility method to format a 'Date' into a string in the locale-specific
+     * default DateFormat style for both the date and time. This is used by the
      * webui and a change here should get all time display in the webui changed.
      *
      * @see java.text.DateFormat
@@ -1155,7 +1171,7 @@ public class EventConstants {
      * @return a {@link java.lang.String} object.
      */
     public static final String formatToUIString(final Date date) {
-		return FORMATTER_SHORT.get().format(date);
+		return FORMATTER_DEFAULT.get().format(date);
     }
 
     //
