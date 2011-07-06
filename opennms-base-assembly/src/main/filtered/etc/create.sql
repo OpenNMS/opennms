@@ -32,6 +32,7 @@
 --#      http://www.sortova.com/
 --#
 
+drop table accessLocks cascade;
 drop table category_node cascade;
 drop table categories cascade;
 drop table assets cascade;
@@ -187,6 +188,18 @@ create sequence pollResultNxtId minvalue 1;
 --#          sequence,   column, table
 --# install: mapNxtId mapid map
 create sequence mapNxtId minvalue 1;
+
+
+--# A table to use to manage upsert access
+
+CREATE TABLE accessLocks (
+    lockName varchar(40) not null,
+    constraint pk_accessLocks PRIMARY KEY (lockName)
+);
+
+
+--# 
+
 
 --########################################################################
 --# serverMap table - Contains a list of IP Addresses mapped to
@@ -2343,3 +2356,4 @@ insert into qrtz_locks values('STATE_ACCESS');
 insert into qrtz_locks values('MISFIRE_ACCESS');
 
 --# End Quartz persistence tables
+

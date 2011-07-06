@@ -165,7 +165,6 @@ public class NewSuspectScanTest {
     }
 
     @Test(timeout=300000)
-    @Transactional
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties", useMockSnmpStrategy=false)
     public void testScanNewSuspect() throws Exception {
@@ -199,7 +198,8 @@ public class NewSuspectScanTest {
         assertEquals(errorMsg.toString(), 2, getInterfaceDao().countAll());
 
         //Verify ifservices count - discover snmp service on other if
-        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
+        //assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
+        assertEquals("Unexpected number of services found.", 2, getMonitoredServiceDao().countAll());
 
         //Verify service count
         assertEquals(1, getServiceTypeDao().countAll());

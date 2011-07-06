@@ -33,8 +33,11 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.Table;
+
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
@@ -51,9 +54,10 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  * @version $Id: $
  */
 public abstract class AbstractDaoHibernate<T, K extends Serializable> extends HibernateDaoSupport implements OnmsDao<T, K> {
-
+    
     Class<T> m_entityClass;
-
+    private String m_lockName;
+    
     /**
      * <p>Constructor for AbstractDaoHibernate.</p>
      *
@@ -64,7 +68,28 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     public AbstractDaoHibernate(Class<T> entityClass) {
         super();
         m_entityClass = entityClass;
+        Table table = m_entityClass.getAnnotation(Table.class);
+        m_lockName = (table == null || "".equals(table.name()) ? m_entityClass.getSimpleName() : table.name()).toUpperCase() + "_ACCESS";
+        
+        
     }
+    
+    
+    
+    @Override
+    protected void initDao() throws Exception {
+        getHibernateTemplate().saveOrUpdate(new AccessLock(m_lockName));
+    }
+
+
+
+    /**
+     * This is used to lock the table in order to implement upsert type operations
+     */
+    public void lock() {
+        getHibernateTemplate().get(AccessLock.class, m_lockName, LockMode.UPGRADE);
+    }
+
 
     /** {@inheritDoc} */
     public void initialize(Object obj) {

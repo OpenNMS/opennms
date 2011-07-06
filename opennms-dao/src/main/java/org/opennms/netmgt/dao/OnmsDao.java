@@ -39,6 +39,12 @@ import org.opennms.netmgt.model.OnmsCriteria;
 public interface OnmsDao<T, K extends Serializable> {
     
     /**
+     * This is used to lock the table in order to implement upsert type operations
+     */
+    void lock();
+
+    
+    /**
      * <p>initialize</p>
      *
      * @param obj a {@link java.lang.Object} object.
