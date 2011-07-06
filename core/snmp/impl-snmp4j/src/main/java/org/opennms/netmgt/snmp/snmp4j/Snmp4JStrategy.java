@@ -34,18 +34,21 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV2TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
+import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -68,6 +71,7 @@ import org.snmp4j.security.SecurityModel;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
+import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
@@ -434,7 +438,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
     }
 
-    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort) throws IOException {
+    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort, List<SnmpV3User> snmpUsers) throws IOException {
     	final RegistrationInfo info = new RegistrationInfo(listener, address, snmpTrapPort);
         
     	final Snmp4JTrapNotifier m_trapHandler = new Snmp4JTrapNotifier(listener, processorFactory);
@@ -450,6 +454,35 @@ public class Snmp4JStrategy implements SnmpStrategy {
         info.setTransportMapping(transport);
         Snmp snmp = new Snmp(transport);
         snmp.addCommandResponder(m_trapHandler);
+
+        if (snmpUsers != null) {
+            for (SnmpV3User user : snmpUsers) {
+                SnmpAgentConfig config = new SnmpAgentConfig();
+                config.setVersion(SnmpConfiguration.VERSION3);
+                config.setSecurityName(user.getSecurityName());
+                config.setAuthProtocol(user.getAuthProtocol());
+                config.setAuthPassPhrase(user.getAuthPassPhrase());
+                config.setPrivProtocol(user.getPrivProtocol());
+                config.setPrivPassPhrase(user.getPrivPassPhrase());
+                Snmp4JAgentConfig agentConfig = new Snmp4JAgentConfig(config);
+                UsmUser usmUser = new UsmUser(
+                        agentConfig.getSecurityName(),
+                        agentConfig.getAuthProtocol(),
+                        agentConfig.getAuthPassPhrase(),
+                        agentConfig.getPrivProtocol(),
+                        agentConfig.getPrivPassPhrase()
+                );
+                /* This doesn't work as expected. Basically SNMP4J is ignoring the engineId
+                if (user.getEngineId() == null) {
+                    snmp.getUSM().addUser(agentConfig.getSecurityName(), usmUser);
+                } else {
+                    snmp.getUSM().addUser(agentConfig.getSecurityName(), new OctetString(user.getEngineId()), usmUser);
+                }
+                */
+                snmp.getUSM().addUser(agentConfig.getSecurityName(), usmUser);
+            }
+        }
+
         info.setSession(snmp);
         
         s_registrations.put(listener, info);
@@ -457,6 +490,10 @@ public class Snmp4JStrategy implements SnmpStrategy {
         snmp.listen();
     }
     
+    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort) throws IOException {
+        registerForTraps(listener, processorFactory, address, snmpTrapPort, null);
+    }
+
     public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final int snmpTrapPort) throws IOException {
     	registerForTraps(listener, processorFactory, null, snmpTrapPort);
     }

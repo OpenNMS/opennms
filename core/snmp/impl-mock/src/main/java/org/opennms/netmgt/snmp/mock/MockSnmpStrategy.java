@@ -21,6 +21,7 @@ import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV2TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
+import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -173,6 +174,11 @@ public class MockSnmpStrategy implements SnmpStrategy {
     }
 
     @Override
+    public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort, List<SnmpV3User> snmpv3Users) throws IOException {
+        LogUtils.warnf(this, "Can't register for traps.  No network in the MockSnmpStrategy!");
+    }
+
+    @Override
     public void unregisterForTraps(final TrapNotificationListener listener, final InetAddress address, final int snmpTrapPort) throws IOException {
     }
 
@@ -249,4 +255,5 @@ public class MockSnmpStrategy implements SnmpStrategy {
         final AgentAddress addr = new AgentAddress(agentAddress, agentPort);
         m_loaders.remove(addr);
     }
+
 }
