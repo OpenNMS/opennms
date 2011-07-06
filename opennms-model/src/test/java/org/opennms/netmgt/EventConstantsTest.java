@@ -43,14 +43,14 @@ public class EventConstantsTest {
 	private static final DateFormat GERMAN = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, new Locale("de", "DE"));
 
 	final String englishTimeText = "Thursday, March 10, 2011 5:40:37 PM EST";
-	final String italianTimeText = "Gioved“, 10 Marzo 2011 22:40:37 o'clock GMT";
+	final String italianTimeText = "Giovedi, 10 Marzo 2011 22:40:37 o'clock GMT";
 	final String frenchTimeText = "Jeudi, 10 Mars 2011 22:40:37 o'clock GMT";
-	final String germanTimeText = "Donnerstag, 10 MŠrz 2011 22:40:37 o'clock GMT";
+	final String germanTimeText = "Donnerstag, 10 Marz 2011 22:40:37 o'clock GMT";
 	
 	final String englishTimeTextf = "Thursday, March 10, 2011 11:40:37 PM CET";
-	final String italianTimeTextf = "gioved“ 10 marzo 2011 23.40.37 CET";
+	final String italianTimeTextf = "giovedi 10 marzo 2011 23.40.37 CET";
 	final String frenchTimeTextf = "jeudi 10 mars 2011 23 h 40 CET";
-	final String germanTimeTextf = "Donnerstag, 10. MŠrz 2011 23:40 Uhr MEZ";
+	final String germanTimeTextf = "Donnerstag, 10. Marz 2011 23:40 Uhr MEZ";
 	
 	final long sampleTimeEpoch = 1299796837 * 1000L;
 
