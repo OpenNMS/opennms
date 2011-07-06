@@ -47,6 +47,7 @@
 	<include file="1.9.7/changelog.xml"/>
 	<include file="1.9.8/changelog.xml"/>
 	<include file="1.9.9/changelog.xml"/>
+	<include file="1.9.90/changelog.xml"/>
 
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />

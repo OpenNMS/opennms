@@ -95,6 +95,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     /** {@inheritDoc} */
     @Override
     protected void initDao() throws Exception {
+        super.initDao();
         assertPropertiesSet();
         initializeConfigurations();
     }

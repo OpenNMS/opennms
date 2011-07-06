@@ -57,6 +57,8 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
+import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -86,6 +88,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -148,6 +151,9 @@ public class DefaultProvisionService implements ProvisionService {
     @Autowired
     private PluginRegistry m_pluginRegistry;
     
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+    
     private final ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
     private final ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
     
@@ -164,9 +170,7 @@ public class DefaultProvisionService implements ProvisionService {
     @Transactional
     public void insertNode(final OnmsNode node) {
         
-    	final OnmsDistPoller distPoller = m_distPollerDao.get("localhost");
-
-        node.setDistPoller(distPoller);
+        node.setDistPoller(createDistPollerIfNecessary("localhost", "127.0.0.1"));
         m_nodeDao.save(node);
         m_nodeDao.flush();
         
@@ -179,7 +183,7 @@ public class DefaultProvisionService implements ProvisionService {
     /** {@inheritDoc} */
     @Transactional
     public void updateNode(final OnmsNode node) {
-        
+
     	final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
         dbNode.mergeNode(node, m_eventForwarder, false);
@@ -245,62 +249,88 @@ public class DefaultProvisionService implements ProvisionService {
             scannedIface.setSnmpInterface(updateSnmpInterfaceAttributes(nodeId, snmpInterface));
         }
         
-        final OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, str(scannedIface.getIpAddress()));
-        debugf(this, "Updating interface attributes for DB interface %s for node %d with ip %s", dbIface, nodeId, str(scannedIface.getIpAddress()));
-        if (dbIface != null) {
-            if(dbIface.isManaged() && !scannedIface.isManaged()){
-            	final Set<OnmsMonitoredService> monSvcs = dbIface.getMonitoredServices();
-                
-                for(final OnmsMonitoredService monSvc : monSvcs){
-                    monSvc.visit(new DeleteEventVisitor(m_eventForwarder));
-                }
-                monSvcs.clear();
+        return new UpsertTemplate<OnmsIpInterface, IpInterfaceDao>(m_transactionManager, m_ipInterfaceDao) {
+
+            @Override
+            protected OnmsIpInterface query() {
+                OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, str(scannedIface.getIpAddress()));
+                debugf(this, "Updating interface attributes for DB interface %s for node %d with ip %s", dbIface, nodeId, str(scannedIface.getIpAddress()));
+                return dbIface;
             }
-            
-            dbIface.mergeInterfaceAttributes(scannedIface);
-            infof(this, "Updating IpInterface %s", dbIface);
-            m_ipInterfaceDao.update(dbIface);
-            m_ipInterfaceDao.flush();
-            return dbIface;
-        } else {
-        	final OnmsNode dbNode = m_nodeDao.load(nodeId);
-            assertNotNull(dbNode, "no node found with nodeId %d", nodeId);
-            // for performance reasons we don't add the ip interface to the node so we avoid loading all the interfaces
-            // setNode only sets the node in the interface
-            scannedIface.setNode(dbNode);
-            saveOrUpdate(scannedIface);
-            final AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
-            scannedIface.visit(visitor);
-            m_ipInterfaceDao.flush();
-            return scannedIface;
-        }
+
+            @Override
+            protected OnmsIpInterface doUpdate(final OnmsIpInterface dbIface) {
+                if(dbIface.isManaged() && !scannedIface.isManaged()){
+                    final Set<OnmsMonitoredService> monSvcs = dbIface.getMonitoredServices();
+                    
+                    for(final OnmsMonitoredService monSvc : monSvcs){
+                        monSvc.visit(new DeleteEventVisitor(m_eventForwarder));
+                    }
+                    monSvcs.clear();
+                }
+                
+                dbIface.mergeInterfaceAttributes(scannedIface);
+                infof(this, "Updating IpInterface %s", dbIface);
+                m_ipInterfaceDao.update(dbIface);
+                m_ipInterfaceDao.flush();
+                return dbIface;
+            }
+
+            @Override
+            protected OnmsIpInterface doInsert() {
+                final OnmsNode dbNode = m_nodeDao.load(nodeId);
+                assertNotNull(dbNode, "no node found with nodeId %d", nodeId);
+                // for performance reasons we don't add the ip interface to the node so we avoid loading all the interfaces
+                // setNode only sets the node in the interface
+                scannedIface.setNode(dbNode);
+                saveOrUpdate(scannedIface);
+//                final AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
+//                scannedIface.visit(visitor);
+                m_ipInterfaceDao.flush();
+                return scannedIface;
+            }
+        }.execute();
+        
 
     }
 
     /** {@inheritDoc} */
     @Transactional
     public OnmsSnmpInterface updateSnmpInterfaceAttributes(final Integer nodeId, final OnmsSnmpInterface snmpInterface) {
-    	final OnmsSnmpInterface dbSnmpIface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, snmpInterface.getIfIndex());
-    	debugf(this, "nodeId = %d, ifIndex = %d, dbSnmpIface = %s", nodeId, snmpInterface.getIfIndex(), dbSnmpIface);
-        if (dbSnmpIface != null) {
-            // update the interface that was found
-            dbSnmpIface.mergeSnmpInterfaceAttributes(snmpInterface);
-            infof(this, "Updating SnmpInterface %s", dbSnmpIface);
-            m_snmpInterfaceDao.update(dbSnmpIface);
-            m_snmpInterfaceDao.flush();
-            return dbSnmpIface;
-        } else {
-            // add the interface to the node, if it wasn't found
-        	final OnmsNode dbNode = m_nodeDao.load(nodeId);
-            assertNotNull(dbNode, "no node found with nodeId %d", nodeId);
-            // for performance reasons we don't add the snmp interface to the node so we avoid loading all the interfaces
-            // setNode only sets the node in the interface
-            snmpInterface.setNode(dbNode);
-            infof(this, "Saving SnmpInterface %s", snmpInterface);
-            m_snmpInterfaceDao.save(snmpInterface);
-            m_snmpInterfaceDao.flush();
-            return snmpInterface;
-        }
+        return new UpsertTemplate<OnmsSnmpInterface, SnmpInterfaceDao>(m_transactionManager, m_snmpInterfaceDao) {
+
+            @Override
+            public OnmsSnmpInterface query() {
+                final OnmsSnmpInterface dbSnmpIface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, snmpInterface.getIfIndex());
+                debugf(this, "nodeId = %d, ifIndex = %d, dbSnmpIface = %s", nodeId, snmpInterface.getIfIndex(), dbSnmpIface);
+                return dbSnmpIface;
+            }
+
+            @Override
+            public OnmsSnmpInterface doUpdate(OnmsSnmpInterface dbSnmpIface) {
+                // update the interface that was found
+                dbSnmpIface.mergeSnmpInterfaceAttributes(snmpInterface);
+                infof(this, "Updating SnmpInterface %s", dbSnmpIface);
+                m_snmpInterfaceDao.update(dbSnmpIface);
+                m_snmpInterfaceDao.flush();
+                return dbSnmpIface;
+            }
+
+            @Override
+            public OnmsSnmpInterface doInsert() {
+                // add the interface to the node, if it wasn't found
+                final OnmsNode dbNode = m_nodeDao.load(nodeId);
+                assertNotNull(dbNode, "no node found with nodeId %d", nodeId);
+                // for performance reasons we don't add the snmp interface to the node so we avoid loading all the interfaces
+                // setNode only sets the node in the interface
+                snmpInterface.setNode(dbNode);
+                infof(this, "Saving SnmpInterface %s", snmpInterface);
+                m_snmpInterfaceDao.save(snmpInterface);
+                m_snmpInterfaceDao.flush();
+                return snmpInterface;
+            }
+            
+        }.execute();
     }
 
     /** {@inheritDoc} */
@@ -308,30 +338,32 @@ public class DefaultProvisionService implements ProvisionService {
     public OnmsMonitoredService addMonitoredService(final Integer ipInterfaceId, final String svcName) {
     	final OnmsIpInterface iface = m_ipInterfaceDao.get(ipInterfaceId);
         assertNotNull(iface, "could not find interface with id %d", ipInterfaceId);
-        OnmsServiceType svcType = m_serviceTypeDao.findByName(svcName);
-        if (svcType == null) {
-            svcType = new OnmsServiceType(svcName);
-            m_serviceTypeDao.save(svcType);
-            m_serviceTypeDao.flush();
-        }
+        return addMonitoredService(iface, svcName);
         
-        OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(svcName);
-        if (svc != null) {
-            m_monitoredServiceDao.saveOrUpdate(svc);
-            m_monitoredServiceDao.flush();
-        } else {
-        
-            // this adds the service to the interface as a side effect
-            svc = new OnmsMonitoredService(iface, svcType);
-            svc.setStatus("A");
-            m_ipInterfaceDao.saveOrUpdate(iface);
-            m_ipInterfaceDao.flush();
-            final AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
-            svc.visit(visitor);
-        }
+    }
 
+    private OnmsMonitoredService addMonitoredService(final OnmsIpInterface iface, final String svcName) {
+        final OnmsServiceType svcType = createServiceTypeIfNecessary(svcName);
         
-        return svc;
+        return new CreateIfNecessaryTemplate<OnmsMonitoredService, MonitoredServiceDao>(m_transactionManager, m_monitoredServiceDao) {
+
+            @Override
+            protected OnmsMonitoredService query() {
+                return iface.getMonitoredServiceByServiceType(svcName);
+            }
+
+            @Override
+            protected OnmsMonitoredService doInsert() {
+                OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
+                svc.setStatus("A");
+                m_ipInterfaceDao.saveOrUpdate(iface);
+                m_ipInterfaceDao.flush();
+                final AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
+                svc.visit(visitor);
+                return svc;
+            }
+            
+        }.execute();
     }
 
     /** {@inheritDoc} */
@@ -339,30 +371,7 @@ public class DefaultProvisionService implements ProvisionService {
     public OnmsMonitoredService addMonitoredService(final Integer nodeId, final String ipAddress, final String svcName) {
     	final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
         assertNotNull(iface, "could not find interface with nodeid %d and ipAddr %s", nodeId, ipAddress);
-        OnmsServiceType svcType = m_serviceTypeDao.findByName(svcName);
-        if (svcType == null) {
-            svcType = new OnmsServiceType(svcName);
-            m_serviceTypeDao.save(svcType);
-            m_serviceTypeDao.flush();
-        }
-        
-        OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(svcName);
-        if (svc != null) {
-            m_monitoredServiceDao.saveOrUpdate(svc);
-            m_monitoredServiceDao.flush();
-        } else {
-        
-            // this adds the service to the interface as a side effect
-            svc = new OnmsMonitoredService(iface, svcType);
-            svc.setStatus("A");
-            m_ipInterfaceDao.saveOrUpdate(iface);
-            m_ipInterfaceDao.flush();
-            final AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
-            svc.visit(visitor);
-        }
-
-        
-        return svc;
+        return addMonitoredService(iface, svcName);
     }
 
     /**
@@ -375,17 +384,31 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
     /** {@inheritDoc} */
-    @Transactional
     public OnmsDistPoller createDistPollerIfNecessary(final String dpName, final String dpAddr) {
-    	OnmsDistPoller distPoller = m_distPollerDao.get(dpName);
-        if (distPoller == null) {
-            
-            distPoller = new OnmsDistPoller(dpName, dpAddr);
-            m_distPollerDao.save(distPoller);
-            m_distPollerDao.flush();
-        }
-        return distPoller;
+        return createDistPollerIfNecessary(new OnmsDistPoller(dpName, dpAddr));
     }
+    
+    public OnmsDistPoller createDistPollerIfNecessary(OnmsDistPoller scannedDistPoller) {
+        
+        final OnmsDistPoller distPoller = scannedDistPoller == null ? new OnmsDistPoller("localhost", "127.0.0.1") : scannedDistPoller;
+        
+        return new CreateIfNecessaryTemplate<OnmsDistPoller, DistPollerDao>(m_transactionManager, m_distPollerDao) {
+
+            @Override
+            protected OnmsDistPoller query() {
+                return m_distPollerDao.get(distPoller.getName());
+            }
+
+            @Override
+            public OnmsDistPoller doInsert() {
+                m_distPollerDao.save(distPoller);
+                m_distPollerDao.flush();
+                return distPoller;
+            }
+        }.execute();
+        
+    }
+    
     
 
     /** {@inheritDoc} */
@@ -478,14 +501,22 @@ public class DefaultProvisionService implements ProvisionService {
     
     @Transactional
     private OnmsServiceType loadServiceType(final String serviceName) {
-        OnmsServiceType type = m_serviceTypeDao.findByName(serviceName);
-        
-        if (type == null) {
-            type = new OnmsServiceType(serviceName);
-            m_serviceTypeDao.save(type);
-            m_serviceTypeDao.flush();
-        }
-        return type;
+        return new CreateIfNecessaryTemplate<OnmsServiceType, ServiceTypeDao>(m_transactionManager, m_serviceTypeDao) {
+
+            @Override
+            protected OnmsServiceType query() {
+                return m_serviceTypeDao.findByName(serviceName);
+            }
+
+            @Override
+            public OnmsServiceType doInsert() {
+                OnmsServiceType type = new OnmsServiceType(serviceName);
+                m_serviceTypeDao.save(type);
+                m_serviceTypeDao.flush();
+                return type;
+            }
+            
+        }.execute();
     }
     
     private void preloadExistingCategories() {
@@ -505,13 +536,22 @@ public class DefaultProvisionService implements ProvisionService {
     
     @Transactional
     private OnmsCategory loadCategory(final String name) {
-        OnmsCategory category = m_categoryDao.findByName(name);
-        if (category == null) {
-            category = new OnmsCategory(name);
-            m_categoryDao.save(category);
-            m_categoryDao.flush();
-        }
-        return category;
+        return new CreateIfNecessaryTemplate<OnmsCategory, CategoryDao>(m_transactionManager, m_categoryDao) {
+
+            @Override
+            protected OnmsCategory query() {
+                return m_categoryDao.findByName(name);
+            }
+
+            @Override
+            public OnmsCategory doInsert() {
+                OnmsCategory category = new OnmsCategory(name);
+                m_categoryDao.save(category);
+                m_categoryDao.flush();
+                return category;
+            }
+        }.execute();
+        
     }
     
     @Transactional(readOnly=true)
@@ -653,28 +693,27 @@ public class DefaultProvisionService implements ProvisionService {
     /** {@inheritDoc} */
     @Transactional
     public OnmsNode updateNodeAttributes(final OnmsNode node) {
-    	final OnmsNode dbNode = getDbNode(node);
 
-        if (dbNode == null) {
-        	final OnmsDistPoller scannedPoller = node.getDistPoller();
-            OnmsDistPoller dbPoller;
-            if (scannedPoller == null) {
-                dbPoller = m_distPollerDao.get("locahost");
-            } else {
-                dbPoller = m_distPollerDao.get(scannedPoller.getName());
-                if (dbPoller == null) {
-                    m_distPollerDao.save(scannedPoller);
-                    m_distPollerDao.flush();
-                    dbPoller = scannedPoller;
-                }
+        return new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
+
+            @Override
+            protected OnmsNode query() {
+                return getDbNode(node);
             }
-            
-            node.setDistPoller(dbPoller);
-            return saveOrUpdate(node);
-        } else {
-            dbNode.mergeNodeAttributes(node);            
-            return saveOrUpdate(dbNode);
-        }
+
+            @Override
+            protected OnmsNode doUpdate(OnmsNode dbNode) {
+                dbNode.mergeNodeAttributes(node);
+                return saveOrUpdate(dbNode);
+            }
+
+            @Override
+            protected OnmsNode doInsert() {
+                node.setDistPoller(createDistPollerIfNecessary(node.getDistPoller()));
+                return saveOrUpdate(node);
+            }
+        }.execute();
+        
     }
 
     @Transactional(readOnly=true)
@@ -813,6 +852,7 @@ public class DefaultProvisionService implements ProvisionService {
     /** {@inheritDoc} */
     @Transactional
     public OnmsIpInterface setIsPrimaryFlag(final Integer nodeId, final String ipAddress) {
+        // TODO upsert? not sure if this needs one.. leave the todo here in case
         if (nodeId == null) {
             LogUtils.debugf(this, "nodeId is null!");
             return null;
@@ -864,38 +904,54 @@ public class DefaultProvisionService implements ProvisionService {
     /** {@inheritDoc} */
     @Transactional
     public OnmsNode createUndiscoveredNode(final String ipAddress) {
-        if (m_nodeDao.findByForeignSourceAndIpAddress(FOREIGN_SOURCE_FOR_DISCOVERED_NODES, ipAddress).size() > 0) {
-            return null;
+        
+        OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
+
+            @Override
+            protected OnmsNode query() {
+                List<OnmsNode> nodes = m_nodeDao.findByForeignSourceAndIpAddress(FOREIGN_SOURCE_FOR_DISCOVERED_NODES, ipAddress);
+                return nodes.size() > 0 ? nodes.get(0) : null;
+            }
+
+            @Override
+            protected OnmsNode doUpdate(OnmsNode existingNode) {
+                // we found an existing node so exit by returning null;
+                return null;
+            }
+
+            @Override
+            protected OnmsNode doInsert() {
+                final Date now = new Date();
+                
+                final String hostname = getHostnameForIp(ipAddress);
+                
+                // @ipv6
+                final OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
+                node.setLabel(hostname == null ? ipAddress : hostname);
+                node.setLabelSource(hostname == null ? "A" : "H");
+                node.setForeignSource(FOREIGN_SOURCE_FOR_DISCOVERED_NODES);
+                node.setType("A");
+                node.setLastCapsdPoll(now);
+                
+                final OnmsIpInterface iface = new OnmsIpInterface(ipAddress, node);
+                iface.setIsManaged("M");
+                iface.setIpHostName(hostname);
+                iface.setIsSnmpPrimary(PrimaryType.NOT_ELIGIBLE);
+                iface.setIpLastCapsdPoll(now);
+                
+                m_nodeDao.save(node);
+                m_nodeDao.flush();
+                return node;
+            }
+        }.execute();
+        
+        if (node != null) {
+            
+            // we do this here rather than in the doInsert method because
+            // the doInsert may abort
+            node.visit(new AddEventVisitor(m_eventForwarder));
         }
         
-        /*
-         * We set the capsd polls to now so since the new suspect scan includes
-         * a regular node scan.  This prevents a simultaneous node scan from being
-         * started when the nodeAdded event comes in but still allows it to be
-         * scheduled for a scan according to the default foreignSource schedule
-         */
-        final Date now = new Date();
-        
-        final String hostname = getHostnameForIp(ipAddress);
-        
-        // @ipv6
-        final OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
-        node.setLabel(hostname == null ? ipAddress : hostname);
-        node.setLabelSource(hostname == null ? "A" : "H");
-        node.setForeignSource(FOREIGN_SOURCE_FOR_DISCOVERED_NODES);
-        node.setType("A");
-        node.setLastCapsdPoll(now);
-        
-        final OnmsIpInterface iface = new OnmsIpInterface(ipAddress, node);
-        iface.setIsManaged("M");
-        iface.setIpHostName(hostname);
-        iface.setIsSnmpPrimary(PrimaryType.NOT_ELIGIBLE);
-        iface.setIpLastCapsdPoll(now);
-        
-        m_nodeDao.save(node);
-        m_nodeDao.flush();
-        
-        node.visit(new AddEventVisitor(m_eventForwarder));
         return node;
         
     }
