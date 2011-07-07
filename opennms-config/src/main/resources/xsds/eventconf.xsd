@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- target package ::= org.opennms.netmgmt.xml.eventconf -->
+<schema targetNamespace="http://xmlns.opennms.org/xsd/eventconf"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/eventconf"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the eventconf.xml configuration file. This
+    schema is also used for files that are included in eventconf.xml by the
+    "event-file" element. Version: $Id: eventconf.xsd,v 1.9 2005/07/03
+    02:54:11 djgregor Exp $.</documentation>
+  </annotation>
+
+  <element name="events">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" ref="this:global"/>
+
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:event"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="event-file"
+                 type="string"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="global">
+    <annotation>
+      <documentation>Global settings for this configuration</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="this:security"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="security">
+    <annotation>
+      <documentation>Security settings for this configuration</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="doNotOverride"
+                 type="string">
+          <annotation>
+            <documentation>Event element whose value cannot be overridden by a
+            value in an incoming event</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="event">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" ref="this:mask">
+          <annotation>
+            <documentation>The event mask which helps to uniquely identify an
+            event</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="uei" type="string">
+          <annotation>
+            <documentation>The Universal Event Identifier</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="event-label" type="string">
+          <annotation>
+            <documentation>A human readable name used to identify an event in
+            the web ui</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" ref="this:snmp">
+          <annotation>
+            <documentation>The snmp information from the trap</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="descr" type="string">
+          <annotation>
+            <documentation>The event description</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" ref="this:logmsg">
+          <annotation>
+            <documentation>The event logmsg</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="severity" type="string">
+          <annotation>
+            <documentation>The event severity</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" ref="this:correlation">
+          <annotation>
+            <documentation>The event correlation information</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="operinstruct" type="string">
+          <annotation>
+            <documentation>The operator instruction for this
+            event</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:autoaction">
+          <annotation>
+            <documentation>The automatic action to occur when this event
+            occurs</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:varbindsdecode">
+          <annotation>
+            <documentation>The varbind decoding tag used to decode value 
+            into a string</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:operaction">
+          <annotation>
+            <documentation>The operator action to be taken when this event
+            occurs</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" ref="this:autoacknowledge">
+          <annotation>
+            <documentation>The autoacknowledge information for the
+            user</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="loggroup"
+                 type="string">
+          <annotation>
+            <documentation>A logical group with which to associate this
+            event</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" ref="this:tticket">
+          <annotation>
+            <documentation>The trouble ticket info</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:forward">
+          <annotation>
+            <documentation>The forwarding information for this
+            event</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:script">
+          <annotation>
+            <documentation>The script information for this
+            event</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="mouseovertext"
+                 type="string">
+          <annotation>
+            <documentation>The text to be displayed on a 'mouseOver' event
+            when this event is displayed in the event browser.</documentation>
+          </annotation>
+        </element>
+
+        <element ref="this:alarm-data" minOccurs="0" maxOccurs="1" >
+          <annotation>
+            <documentation>Data used to create an event.</documentation>
+          </annotation>
+        </element>
+
+      </sequence>
+      
+    </complexType>
+  </element>
+
+  <element name="mask">
+    <annotation>
+      <documentation>The Mask for event configuration: The mask contains one
+      or more 'maskelements' which uniquely identify an event. XXX need to add
+      information about varbind</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:maskelement"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:varbind"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="maskelement">
+    <annotation>
+      <documentation>The mask element</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="mename" type="string">
+          <annotation>
+            <documentation>The mask element name. Must be from the following
+            subset: "uei" (the OpenNMS Universal Event Identifier), "source"
+            (source of the event; "trapd" for received SNMP traps; warning:
+            these aren't that standardized), "host" (host related to the
+            event; for SNMP traps this is the IP source address of the host
+            that sent the trap to OpenNMS, "snmphost" (SNMP host related to
+            the event; for SNMPv1 traps this is IP address reported in the
+            trap; for SNMPv2 traps and later this is the same as "host"),
+            "nodeid" (the OpenNMS node identifier for the node related to this
+            event), "interface" (interface related to the event; for SNMP
+            traps this is the same as "snmphost"), "service", "id" (enterprise
+            ID in an SNMP trap), "specific" (specific value in an SNMP trap),
+            "generic" (generic value in an SNMP trap), or "community"
+            (community string in an SNMP trap).</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="1" name="mevalue"
+                 type="string">
+          <annotation>
+            <documentation>The mask element value. A case-sensitive, exact
+            match is performed. If the mask value has a "%" as the last
+            character, it will match zero or more characters at the end of the
+            string being matched. The mask element value matching is performed
+            by
+            org.opennms.netmgt.eventd.datablock.EventConfData#eventValuePassesMaskValue.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="snmp">
+    <annotation>
+      <documentation>The snmp information from the trap</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="id" type="string">
+          <annotation>
+            <documentation>The snmp enterprise id</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="idtext" type="string">
+          <annotation>
+            <documentation>The snmp enterprise id text</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="version" type="string">
+          <annotation>
+            <documentation>The snmp version</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="specific" type="int">
+          <annotation>
+            <documentation>The specific trap number</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="generic" type="int">
+          <annotation>
+            <documentation>The generic trap number</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="community" type="string">
+          <annotation>
+            <documentation>The community name</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="logmsg">
+    <annotation>
+      <documentation>The event logmsg with the destination attribute defining
+      if event is for display only, logonly, log and display or neither. A
+      destination attribute of 'donotpersist' indicates that Eventd is not to
+      persist the event to the database. A value of 'discardtraps' instructs
+      the SNMP trap daemon to not create events for incoming traps that match
+      this event. The optional notify attributed can be used to suppress notices
+      on a particular event (by default it is true - i.e. a notice will be sent.</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="notify" type="boolean" use="optional" default="true" />
+          <attribute default="logndisplay" name="dest" use="optional">
+            <simpleType>
+              <restriction base="string">
+                <pattern value="(logndisplay|displayonly|logonly|suppress|donotpersist|discardtraps)"/>
+              </restriction>
+            </simpleType>
+          </attribute>
+        </extension>
+      </simpleContent>
+    </complexType>
+
+
+  </element>
+
+  <element name="correlation">
+    <annotation>
+      <documentation>The event correlation information</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" name="cuei" type="string">
+          <annotation>
+            <documentation>A cancelling UEI for this event</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="cmin" type="string">
+          <annotation>
+            <documentation>The minimum count for this event</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="cmax" type="string">
+          <annotation>
+            <documentation>The maximum count for this event</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="ctime" type="string">
+          <annotation>
+            <documentation>The correlation time for this event</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute default="off" name="state" use="optional">
+        <annotation>
+          <documentation>The state determines if event is
+          correlated</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(on|off)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute default="suppressDuplicates" name="path" use="optional">
+        <annotation>
+          <documentation>The correlation path</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(suppressDuplicates|cancellingEvent|suppressAndCancel|pathOutage)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="autoaction">
+    <annotation>
+      <documentation>The automatic action to occur when this event occurs with
+      state controlling if action takes place</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute default="on" name="state" use="optional">
+            <simpleType>
+              <restriction base="string">
+                <pattern value="(on|off)"/>
+              </restriction>
+            </simpleType>
+          </attribute>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="operaction">
+    <annotation>
+      <documentation>The operator action to be taken when this event occurs
+      with state controlling if action takes place. The menutext gets
+      displayed in the UI.</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute default="on" name="state" use="optional">
+            <simpleType>
+              <restriction base="string">
+                <pattern value="(on|off)"/>
+              </restriction>
+            </simpleType>
+          </attribute>
+
+          <attribute name="menutext" type="string" use="required"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="autoacknowledge">
+    <annotation>
+      <documentation>The autoacknowledge information for the user with state
+      controlling if event is marked acknowledged when inserted into the
+      database</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute default="on" name="state" use="optional">
+            <simpleType>
+              <restriction base="string">
+                <pattern value="(on|off)"/>
+              </restriction>
+            </simpleType>
+          </attribute>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="tticket">
+    <annotation>
+      <documentation>The trouble ticket info with state on/off determining if
+      action is taken on the trouble ticket</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute default="on" name="state" use="optional">
+            <simpleType>
+              <restriction base="string">
+                <pattern value="(on|off)"/>
+              </restriction>
+            </simpleType>
+          </attribute>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="forward">
+    <annotation>
+      <documentation>The forwarding information for this event - state
+      determines if event is forwarded, mechanism determines how event is
+      forwarded</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute default="off" name="state" use="optional">
+            <simpleType>
+              <restriction base="string">
+                <pattern value="(on|off)"/>
+              </restriction>
+            </simpleType>
+          </attribute>
+
+          <attribute default="snmpudp" name="mechanism" use="optional">
+            <simpleType>
+              <restriction base="string">
+                <pattern value="(snmpudp|snmptcp|xmltcp|xmludp)"/>
+              </restriction>
+            </simpleType>
+          </attribute>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="script">
+    <annotation>
+      <documentation>The script information for this event - describes a
+      script to be executed whenever the event occurs</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="language" type="string" use="required"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="varbindsdecode">
+    <annotation>
+      <documentation>This element is used for converting event 
+      varbind value in static decoded string.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+          <element maxOccurs="1" minOccurs="1" name="parmid" type="string">
+          <annotation>
+            <documentation>The identifier of the parameters to be
+            decoded
+            </documentation>
+          </annotation>
+        </element>     
+          <element maxOccurs="unbounded" minOccurs="1" ref="this:decode">
+          <annotation>
+            <documentation>The value to string decoding map
+            </documentation>
+          </annotation>
+        </element>     
+        </sequence>
+    </complexType>
+   </element>
+
+  <element name="decode">
+    <annotation>
+      <documentation>This element is used for converting event 
+      varbind value in static decoded string.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="varbindvalue" type="string" use="required" />
+      <attribute name="varbinddecodedstring" type="string" use="required" />
+    </complexType>
+   </element>
+
+  <element name="alarm-data">
+    <annotation>
+      <documentation>This element is used for converting events into alarms.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="reduction-key" type="string" use="required" />
+      <attribute name="alarm-type" use="required" >
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="clear-key" type="string" use="optional" />
+      <attribute name="auto-clean" type="boolean" use="optional" default="false" />
+      <attribute name="x733-alarm-type" type="this:x733-alarm-type" use="optional" />
+      <attribute name="x733-probable-cause" type="int" use="optional" />
+    </complexType>
+  </element>
+  
+  <simpleType name="x733-alarm-type">
+    <restriction base="string" >
+      <pattern value="CommunicationsAlarm|ProcessingErrorAlarm|EnvironmentalAlarm|QualityOfServiceAlarm|EquipmentAlarm|IntegrityViolation|SecurityViolation|TimeDomainViolation|OperationalViolation|PhysicalViolation" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="rfc1903-snmp-tc">
+    <restriction base="string" >
+      <pattern value="PhysAddress|MacAddress|TruthValue|TestAndIncr|AutonomousType|InstancePointer|VariablePointer|RowPointer|RowStatus|TimeStamp|TimeInterval|DateAndTime|StorageType|TDomain|TAddress" />
+    </restriction>
+  </simpleType>
+
+  <element name="varbind">
+    <annotation>
+      <documentation>The varbind element</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="vbnumber" type="int">
+          <annotation>
+            <documentation>The varbind element number</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="1" name="vbvalue"
+                 type="string">
+          <annotation>
+            <documentation>The varbind element value</documentation>
+          </annotation>
+        </element>
+      </sequence>
+      <attribute name="textual-convention" type="this:rfc1903-snmp-tc" use="optional" />
+    </complexType>
+  </element>
+</schema>

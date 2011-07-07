@@ -1,42 +1,30 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2004 Jan 06: Added STATUS_SUSPEND and STATUS_RESUME to support update of polling
-// 		status on forced rescan.
-// 2003 Jan 31: Cleaned up some unused imports.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-// Tab Size = 8
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 package org.opennms.netmgt.capsd;
 
@@ -45,6 +33,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
@@ -205,7 +194,7 @@ public final class DbIfServiceEntry {
      * @throws java.sql.SQLException
      *             Thrown if an error occurs with the connection
      */
-    private void insert(Connection c) throws SQLException {
+    private void insert(Connection c, boolean noRollback) throws SQLException {
         if (m_fromDb)
             throw new IllegalStateException("The record already exists in the database");
 
@@ -262,6 +251,19 @@ public final class DbIfServiceEntry {
         final DBUtils d = new DBUtils(getClass());
         
         try {
+            // Delete any conflicting services marked as deleted
+            // before inserting this one
+            String delCmd = "DELETE FROM ifServices WHERE status = 'D' "
+                + "AND nodeid = ? AND ipAddr = ? AND serviceID = ?";
+
+            delStmt = c.prepareStatement(delCmd);
+            d.watch(delStmt);
+            delStmt.setLong(1, m_nodeId);
+            delStmt.setString(2, InetAddressUtils.str(m_ipAddr));
+            delStmt.setInt(3, m_serviceId);
+
+            delStmt.executeUpdate();
+
             stmt = c.prepareStatement(names.toString());
             d.watch(stmt);
             names = null;
@@ -299,29 +301,31 @@ public final class DbIfServiceEntry {
             try {
                 rc = stmt.executeUpdate();
             } catch (SQLException e) {
-                log().warn("ifServices DB insert got exception; will retry after "
-                         + "deletion of any existing records for this ifService "
-                         + "that are marked for deletion.",
-                         e);
+                if (noRollback) {
+                    throw e;
+                } else {
+                    log().warn("ifServices DB insert got exception; will retry after "
+                            + "deletion of any existing records for this ifService "
+                            + "that are marked for deletion.",
+                            e);
 
-                /*
-                 * Maybe there's already an entry for this (service, node, IP address)
-                 * in the table, but it's marked for deletion. Delete it and try
-                 * the insertion again.
-                 */
-                c.rollback();
-                String delCmd = "DELETE FROM ifServices WHERE status = 'D' "
-                             + "AND nodeid = ? AND ipAddr = ? AND serviceID = ?";
+                    /*
+                     * Maybe there's already an entry for this (service, node, IP address)
+                     * in the table, but it's marked for deletion. Delete it and try
+                     * the insertion again.
+                     */
+                    c.rollback();
 
-                delStmt = c.prepareStatement(delCmd);
-                d.watch(delStmt);
-                delStmt.setLong(1, m_nodeId);
-                delStmt.setString(2, InetAddressUtils.str(m_ipAddr));
-                delStmt.setInt(3, m_serviceId);
+                    delStmt = c.prepareStatement(delCmd);
+                    d.watch(delStmt);
+                    delStmt.setLong(1, m_nodeId);
+                    delStmt.setString(2, InetAddressUtils.str(m_ipAddr));
+                    delStmt.setInt(3, m_serviceId);
 
-                rc = delStmt.executeUpdate();
+                    delStmt.executeUpdate();
 
-                rc = stmt.executeUpdate();
+                    rc = stmt.executeUpdate();
+                }
             }
             log().debug("insert(): SQL update result = " + rc);
         } finally {
@@ -934,11 +938,15 @@ public final class DbIfServiceEntry {
      *            The database connection used to write the record.
      */
     void store(Connection db) throws SQLException {
+        store(db, false);
+    }
+
+    void store(Connection db, boolean noRollback) throws SQLException {
         if (m_changed != 0 || m_fromDb == false) {
             if (m_fromDb) {
                 update(db);
             } else {
-                insert(db);
+                insert(db, noRollback);
             }
         }
     }

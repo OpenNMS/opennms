@@ -1,45 +1,38 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications:
- * 
- * 2008 Jun 05: Reorganize a bit, add property mockSnmpAgent.sleepOnCreate that
- *              can be used to make createAgentAndRun sleep for the specified
- *              number of milliseconds upon startup. - dj@opennms.org
- * 2008 Feb 10: Eliminate warnings. - dj@opennms.org
- * 
- * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+
 package org.opennms.mock.snmp;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.BindException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -117,12 +110,32 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     private boolean m_stopped;
     private List<ManagedObject> m_moList;
     private MockSnmpMOLoader m_moLoader;
+    private static File BOOT_COUNT_FILE;
 
     // initialize Log4J logging
     static {
         LogFactory.setLogFactory(new Log4jLogFactory());
+        File bootCountFile;
+        try {
+            bootCountFile = File.createTempFile("mockSnmpAgent", "boot");
+            bootCountFile.createNewFile();
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(bootCountFile));
+            out.writeInt(0);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            bootCountFile = new File("/dev/null");
+        }
+        BOOT_COUNT_FILE = bootCountFile;
     }
 
+    public MockSnmpAgent(final File confFile, final Resource moFile) {
+        super(BOOT_COUNT_FILE, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
+        m_moLoader = new PropertiesBackedManagedObject();
+        m_moFile = moFile;
+        agent.setWorkerPool(ThreadPool.create("RequestPool", 4));
+    }
+    
     /*
      * Creates the mock agent with files to read and store the boot counter,
      * to read and store the agent configuration, and to read the mocked
@@ -145,13 +158,11 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      * @param confFile a {@link java.io.File} object.
      * @param moFile a {@link org.springframework.core.io.Resource} object.
      * @param bindAddress a {@link java.lang.String} object.
+     * @throws IOException 
      */
-    public MockSnmpAgent(File bootFile, File confFile, Resource moFile, String bindAddress) {
-        super(bootFile, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
-        m_moLoader = new PropertiesBackedManagedObject();
+    public MockSnmpAgent(final File confFile, final Resource moFile, final String bindAddress) {
+        this(confFile, moFile);
         m_address = bindAddress;
-        m_moFile = moFile;
-        agent.setWorkerPool(ThreadPool.create("RequestPool", 4));
     }
     
     /**
@@ -171,7 +182,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             throw new RuntimeException("Got IOException while checking for existence of mock object file: " + e, e);
         }
         
-        MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), new File("/dev/null"), moFile, bindAddress);
+        MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), moFile, bindAddress);
         Thread thread = new Thread(agent, agent.getClass().getSimpleName());
         thread.start();
 
@@ -346,7 +357,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
         for (final TransportMapping transportMapping : transportMappings) {
             try {
-                transportMapping.close();
+                if (transportMapping != null) transportMapping.close();
             } catch (final Throwable t) {
                 LogUtils.debugf(this, t, "an error occurred while closing the transport mapping");
             }

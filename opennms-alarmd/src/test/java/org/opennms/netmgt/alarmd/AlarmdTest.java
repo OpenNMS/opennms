@@ -1,41 +1,31 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2008 Jan 27: Test checks for event validity. - dj@opennms.org
-// 2008 Jan 27: Move alarm-specific tests to JdbcAlarmWriterTest. - dj@opennms.org
-// 2008 Jan 26: Change to use dependency injection for EventWriter and refactor
-//              quite a bit. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.alarmd;
 
 import static org.junit.Assert.assertEquals;
@@ -46,17 +36,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.concurrent.BarrierSignaler;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -71,30 +61,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.util.StringUtils;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
-    TemporaryDatabaseExecutionListener.class,
-    DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class
-})
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-alarmd.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+        "classpath:/META-INF/opennms/applicationContext-alarmd.xml"
 })
-@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
 public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
 
     private MockNetwork m_mockNetwork = new MockNetwork();
@@ -136,6 +114,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     @Test
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on specific IDs so we need a fresh database
     public void testPersistAlarm() throws Exception {
         MockNode node = m_mockNetwork.getNode(1);
 
@@ -181,7 +160,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
 
         final long millis = System.currentTimeMillis()+2500;
 
-        final BarrierSignaler signal = new BarrierSignaler(numberOfAlarmsToReduce);
+        final CountDownLatch signal = new CountDownLatch(numberOfAlarmsToReduce);
 
         for (int i=1; i<= numberOfAlarmsToReduce; i++) {
             MockUtil.println("Creating Runnable: "+i+" of "+numberOfAlarmsToReduce+" events to reduce.");
@@ -200,7 +179,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
                     } catch (Throwable t) {
                         t.printStackTrace();
                     } finally {
-                        signal.signal();
+                        signal.countDown();
                     }
                 }
             }
@@ -210,7 +189,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
             p.start();
         }
 
-        signal.waitFor();
+        signal.await();
 
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now

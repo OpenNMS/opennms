@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.web.springframework.security;
 
 import java.util.HashMap;
@@ -60,29 +88,29 @@ public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPop
 	 * @return a {@link java.util.Set} object.
 	 */
 	@Override
-	protected Set<GrantedAuthority> getAdditionalRoles(DirContextOperations user, String username) {
-		String userDn = user.getNameInNamespace();
-		Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+	protected Set<GrantedAuthority> getAdditionalRoles(final DirContextOperations user, final String username) {
+		final String userDn = user.getNameInNamespace();
+		final Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 
-		if (getGroupSearchBase() == null) {
+		if (super.getGroupSearchBase() == null) {
 			return authorities;
 		}
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("Searching for roles for user '" + username + "', DN = " + "'" + userDn + "', with filter "
-					+ groupSearchFilter + " in search base '" + getGroupSearchBase() + "'");
+					+ this.groupSearchFilter + " in search base '" + super.getGroupSearchBase() + "'");
 		}
 
 		@SuppressWarnings("unchecked")
-		Set<String> userRoles = ldapTemplate.searchForSingleAttributeValues(
-				getGroupSearchBase(), 
-				groupSearchFilter,
+		final Set<String> userRoles = ldapTemplate.searchForSingleAttributeValues(
+				super.getGroupSearchBase(), 
+				this.groupSearchFilter,
 				new String[]{userDn, username}, 
-				groupRoleAttribute
+				this.groupRoleAttribute
 		);
 
 		for(String group : userRoles) {
-			List<String> rolesForGroup = groupToRoleMap.get(group);
+			final List<String> rolesForGroup = this.groupToRoleMap.get(group);
 			logger.debug("Checking " + group + " for an associated role");
 			if (rolesForGroup != null) {
 				for(String role : rolesForGroup) {
@@ -96,13 +124,13 @@ public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPop
 	}
 
 	@Override
-	public void setGroupRoleAttribute(String groupRoleAttribute) {
+	public void setGroupRoleAttribute(final String groupRoleAttribute) {
 		super.setGroupRoleAttribute(groupRoleAttribute);
 		this.groupRoleAttribute = groupRoleAttribute;
 	}
 
 	@Override
-	public void setGroupSearchFilter(String groupSearchFilter) {
+	public void setGroupSearchFilter(final String groupSearchFilter) {
 		super.setGroupSearchFilter(groupSearchFilter);
 		this.groupSearchFilter = groupSearchFilter;
 	}
@@ -128,7 +156,14 @@ public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPop
 	 * </code>
 	 * </pre>
 	 */
-	public void setGroupToRoleMap(Map<String, List<String>> groupToRoleMap) {
+	public void setGroupToRoleMap(final Map<String, List<String>> groupToRoleMap) {
 		this.groupToRoleMap = groupToRoleMap;
+	}
+
+	@Override
+	public void setSearchSubtree(boolean searchSubtree) {
+		super.setSearchSubtree(searchSubtree);
+		int searchScope = searchSubtree ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE;
+		this.searchControls.setSearchScope(searchScope);
 	}
 }

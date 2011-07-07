@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.provision.adapters.link;
 
 import static org.easymock.EasyMock.expect;
@@ -5,12 +33,12 @@ import static org.easymock.EasyMock.expect;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.mock.snmp.MockSnmpValue;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.provision.adapters.link.EndPoint;
 import org.opennms.netmgt.provision.adapters.link.EndPointStatusException;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 
@@ -54,8 +82,8 @@ public class LinkMonitorValidatorTest {
     
     @Test
     public void dwoTestAirPair3Validator() throws Exception {
-        expect(m_mockEndPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 1"));
-        expect(m_mockEndPoint.get(AIR_PAIR_R3_DUPLEX_MISMATCH)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 1"));
+        expect(m_mockEndPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL)).andStubReturn(MockSnmpValue.parseMibValue("STRING: 1"));
+        expect(m_mockEndPoint.get(AIR_PAIR_R3_DUPLEX_MISMATCH)).andStubReturn(MockSnmpValue.parseMibValue("STRING: 1"));
         expect(m_mockEndPoint.getSysOid()).andStubReturn(".1.3.6.1.4.1.7262.1");
 
         replay();
@@ -67,8 +95,8 @@ public class LinkMonitorValidatorTest {
     
     @Test(expected=EndPointStatusException.class)
     public void dwoTestAirPair3FailingValidator() throws Exception {
-        expect(m_mockEndPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 2"));
-        expect(m_mockEndPoint.get(AIR_PAIR_R3_DUPLEX_MISMATCH)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 1"));
+        expect(m_mockEndPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL)).andStubReturn(MockSnmpValue.parseMibValue("STRING: 2"));
+        expect(m_mockEndPoint.get(AIR_PAIR_R3_DUPLEX_MISMATCH)).andStubReturn(MockSnmpValue.parseMibValue("STRING: 1"));
         expect(m_mockEndPoint.getSysOid()).andStubReturn(".1.3.6.1.4.1.7262.1");
         
         replay();

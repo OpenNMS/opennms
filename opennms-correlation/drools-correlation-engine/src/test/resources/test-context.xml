@@ -2,13 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
-        
-    <bean name="eventIpcManager" class="org.opennms.netmgt.eventd.EventIpcManagerProxy" />
-    
-    <bean name="mockEventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager" >
-        <property name="eventIpcManagerProxy" ref="eventIpcManager" />
+
+    <bean id="droolsCorrelationEngineBuilderConfigurationResource" class="java.lang.String">
+        <constructor-arg value="file:src/test/opennms-home/etc/drools-engine.xml" />
     </bean>
-    
+
+    <bean id="droolsCorrelationEngineBuilder" class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngineBuilder">
+    	<property name="eventIpcManager" ref="eventIpcManager" />
+    	<property name="correlationEngineRegistrar" ref="correlator" />
+    	<property name="configurationResource" ref="droolsCorrelationEngineBuilderConfigurationResource"/>
+    </bean>
+
     <bean name="correlator" class="org.opennms.netmgt.correlation.drools.MockCorrelator" />
-        
+
 </beans>

@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.web.element;
 
 import java.sql.SQLException;
@@ -141,18 +169,6 @@ public interface NetworkElementFactoryInterface {
 
 	Interface[] getInterfacesWithIfAlias(int nodeId,
 			String ifAlias);
-
-	/**
-	 * Returns true if node has any snmpIfAliases
-	 *
-	 * @Param nodeId
-	 *               The nodeId of the node we are looking at
-	 *               the ifAlias string we are looking for
-	 * @return boolean
-	 *               true if node has any snmpIfAliases
-	 * @param nodeId a int.
-	 */
-	boolean nodeHasIfAliases(int nodeId);
 
 	/**
 	 * <p>getAllInterfacesOnNode</p>
@@ -380,46 +396,38 @@ public interface NetworkElementFactoryInterface {
 	 * <p>getDataLinksOnNode</p>
 	 *
 	 * @param nodeID a int.
-	 * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+	 * @return an list of {@link org.opennms.web.element.LinkInterface} objects.
 	 * @throws java.sql.SQLException if any.
 	 */
-	DataLinkInterface[] getDataLinksOnNode(int nodeID);
+	List<LinkInterface> getDataLinksOnNode(int nodeID);
 
 	/**
 	 * <p>getDataLinksOnInterface</p>
 	 *
 	 * @param nodeID a int.
 	 * @param ifindex a int.
-	 * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+	 * @return an array of {@link org.opennms.web.element.LinkInterface} objects.
 	 */
-	DataLinkInterface[] getDataLinksOnInterface(int nodeID,
+	List<LinkInterface> getDataLinksOnInterface(int nodeID,
 			int ifindex);
 
 	/**
-	 * <p>getDataLinks</p>
+	 * <p>getDataLinksOnInterface</p>
 	 *
-	 * @param nodeID a int.
-	 * @param ifindex a int.
-	 * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+	 * @param ID a int identifier for interface.
+	 * @return an array of {@link org.opennms.web.element.LinkInterface} objects.
 	 */
-	DataLinkInterface[] getDataLinks(int nodeId, int ifIndex);
+	List<LinkInterface> getDataLinksOnInterface(int id);
 
 	/**
-	 * <p>getDataLinksFromNodeParent</p>
+	 * <p>getDataLinksOnInterface</p>
 	 *
 	 * @param nodeID a int.
-	 * @param ifindex a int.
-	 * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+	 * @param ipaddr a String.
+	 * @return an array of {@link org.opennms.web.element.LinkInterface} objects.
 	 */
-	DataLinkInterface[] getDataLinksFromNodeParent(int nodeId,
-			int ifIndex);
-
-	/**
-	 * <p>getAllDataLinks</p>
-	 *
-	 * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
-	 */
-	DataLinkInterface[] getAllDataLinks();
+	List<LinkInterface> getDataLinksOnInterface(int nodeID,
+			String ipaddr);
 
 	/**
 	 * Returns all non-deleted nodes with an IP address like the rule given.
@@ -497,4 +505,8 @@ public interface NetworkElementFactoryInterface {
     StpInterface[] getStpInterface(int nodeId, int ifIndex) throws SQLException;
 
     Vlan[] getVlansOnNode(int nodeID) throws SQLException;
+    
+    Integer getIfIndex(int ipinterfaceid);
+    
+    Integer getIfIndex(int nodeID, String ipaddr);
 }

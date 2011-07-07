@@ -1,32 +1,30 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 package org.opennms.netmgt.threshd;
 
@@ -65,10 +63,7 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AliasedResource;
-import org.opennms.netmgt.collectd.AttributeGroupType;
 import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionSet;
-import org.opennms.netmgt.collectd.CollectionSetVisitor;
 import org.opennms.netmgt.collectd.GenericIndexResource;
 import org.opennms.netmgt.collectd.GenericIndexResourceType;
 import org.opennms.netmgt.collectd.IfInfo;
@@ -79,7 +74,6 @@ import org.opennms.netmgt.collectd.NumericAttributeType;
 import org.opennms.netmgt.collectd.OnmsSnmpCollection;
 import org.opennms.netmgt.collectd.ResourceType;
 import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.collectd.SnmpAttributeType;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
@@ -90,6 +84,10 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;

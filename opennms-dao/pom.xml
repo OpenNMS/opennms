@@ -71,9 +71,12 @@
   <dependencies>
     <!-- OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>mock-snmp-agent</artifactId>
-      <scope>test</scope>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.snmp</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -132,7 +135,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <!-- for validating marshalled events -->
     <dependency>

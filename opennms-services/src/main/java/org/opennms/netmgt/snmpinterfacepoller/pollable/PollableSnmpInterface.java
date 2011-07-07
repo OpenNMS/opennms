@@ -1,36 +1,31 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications:
- * 
- * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.snmpinterfacepoller.pollable;
 
 import java.util.ArrayList;
@@ -155,8 +150,11 @@ public class PollableSnmpInterface implements ReadyRunnable {
      * @param snmpinterfaces a {@link java.util.List} object.
      */
     public void setSnmpinterfaces(List<OnmsSnmpInterface> snmpinterfaces) {
-        for (OnmsSnmpInterface value: snmpinterfaces) {
-            m_snmpinterfaces.put(value.getIfIndex(), value);            
+    	m_snmpinterfaces.clear();
+        for (OnmsSnmpInterface iface: snmpinterfaces) {
+    		if (iface.getIfAdminStatus().equals(SnmpMinimalPollInterface.IF_UP) && iface.getIfOperStatus().equals(SnmpMinimalPollInterface.IF_DOWN)) 
+    			sendOperDownEvent(iface);
+            m_snmpinterfaces.put(iface.getIfIndex(), iface);            
         }
     }
 
@@ -282,7 +280,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
             log().info("not polling: " + getParent().getIpaddress());
         } // End if polling
     } //end Run method
-    
+        
     private void doPoll(SnmpPollInterfaceMonitor pollMonitor, List<SnmpMinimalPollInterface> mifaces) {
         
         log().info("doPoll: input interfaces number: " + mifaces.size());
@@ -341,7 +339,6 @@ public class PollableSnmpInterface implements ReadyRunnable {
 
                     iface.setIfAdminStatus(new Integer(miface.getAdminstatus()));
                     iface.setIfOperStatus(new Integer(miface.getOperstatus()));
-                    iface.setPoll("P");
                     iface.setLastSnmpPoll(now);
                                     
                     
@@ -349,11 +346,11 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     try {
                         update(iface);
                     } catch (Throwable e) {
-                        log().warn("Error updating Interface" + iface.getIfName()+" " + e.getLocalizedMessage());
+                        log().warn("Failing updating Interface" + iface.getIfName()+" " + e.getLocalizedMessage());
                         refresh = true;
                     }
                 } else {
-                    log().warn("run: " + getContext().getServiceName() + " not available, doing nothing.....");
+                    log().debug("No "+ getContext().getServiceName() + " data available for interface.");
                 } //End if status OK
             } //end while on interface
             

@@ -96,16 +96,16 @@
    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <version>${project.version}</version>
       <type>test-jar</type>
-      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
-      <version>${project.version}</version>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -117,15 +117,13 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
-  		<groupId>org.opennms.dependencies</groupId>
-  		<artifactId>spring-test-dependencies</artifactId>
-      <scope>test</scope>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -135,7 +133,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

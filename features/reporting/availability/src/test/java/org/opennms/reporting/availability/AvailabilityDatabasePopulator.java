@@ -1,40 +1,31 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications:
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * 2008 Oct 04: Use new OnmsSeverity object when setting alarm severity. - dj@opennms.org
- * 
- * Created: April 5, 2007
- *
- * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.reporting.availability;
 
 import java.text.ParseException;
@@ -43,6 +34,7 @@ import java.util.Date;
 
 import junit.framework.Assert;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -52,6 +44,7 @@ import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.NotificationDao;
@@ -61,7 +54,6 @@ import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.UserNotificationDao;
-import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -112,7 +104,7 @@ public class AvailabilityDatabasePopulator {
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
-    private LocationMonitorDaoHibernate m_locationMonitorDao;
+    private LocationMonitorDao m_locationMonitorDao;
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -223,13 +215,13 @@ public class AvailabilityDatabasePopulator {
 //      + "(2,2,'192.168.100.2',1,'2005-05-01 10:00:00','2005-05-02 10:00:00');");
         try {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            OnmsMonitoredService node1If1Svc1 = getMonitoredServiceDao().get(1, "192.168.100.1", "ICMP");
-            OnmsMonitoredService node2If1Svc1 = getMonitoredServiceDao().get(2, "192.168.100.2", "ICMP");
+            OnmsMonitoredService node1If1Svc1 = getMonitoredServiceDao().get(1, InetAddressUtils.addr("192.168.100.1"), "ICMP");
+            OnmsMonitoredService node2If1Svc1 = getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.100.2"), "ICMP");
             @SuppressWarnings("unused")
-            OnmsMonitoredService node2If1Svc2 = getMonitoredServiceDao().get(2, "192.168.100.2", "SNMP");
-            OnmsMonitoredService node2If2Svc1 = getMonitoredServiceDao().get(2, "192.168.100.3", "ICMP");
+            OnmsMonitoredService node2If1Svc2 = getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.100.2"), "SNMP");
+            OnmsMonitoredService node2If2Svc1 = getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.100.3"), "ICMP");
             @SuppressWarnings("unused")
-            OnmsMonitoredService node2If2Svc2 = getMonitoredServiceDao().get(2, "192.168.100.3", "HTTP");
+            OnmsMonitoredService node2If2Svc2 = getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.100.3"), "HTTP");
             OnmsOutage outage1 = new OnmsOutage(df.parse("2005-05-01 09:00:00"), df.parse("2005-05-01 09:30:00"), event, event, node1If1Svc1, null, null);
             getOutageDao().save(outage1);
             getOutageDao().flush();
@@ -443,11 +435,11 @@ public class AvailabilityDatabasePopulator {
         m_node1 = node1;
     }
 
-    public LocationMonitorDaoHibernate getLocationMonitorDao() {
+    public LocationMonitorDao getLocationMonitorDao() {
         return m_locationMonitorDao;
     }
 
-    public void setLocationMonitorDao(LocationMonitorDaoHibernate locationMonitorDao) {
+    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
     }
 

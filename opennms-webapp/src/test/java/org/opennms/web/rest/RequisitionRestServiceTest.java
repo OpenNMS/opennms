@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.web.rest;
 
 import static org.junit.Assert.assertFalse;
@@ -9,28 +37,18 @@ import javax.xml.ws.WebServiceException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
-    DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class
-})
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/restServiceTest.xml"
 })
-
+@JUnitConfigurationEnvironment
 public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase {
     
     @Test

@@ -1,7 +1,36 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -12,25 +41,18 @@ import java.util.TreeMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.test.JUnitDNSServerExecutionListener;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.annotations.DNSEntry;
 import org.opennms.core.test.annotations.DNSZone;
 import org.opennms.core.test.annotations.JUnitDNSServer;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.poller.Parameter;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
@@ -38,12 +60,7 @@ import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-	OpenNMSConfigurationExecutionListener.class,
-	TransactionalTestExecutionListener.class,
-	JUnitDNSServerExecutionListener.class
-})
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitDNSServer(port=9153, zones={
             @DNSZone(name="example.com", entries={
@@ -53,150 +70,105 @@ import org.xbill.DNS.Type;
                     @DNSEntry(hostname="ipv6test", address="2001:4860:8007::63", ipv6=true)
             })
     })
+@JUnitConfigurationEnvironment
 public class DnsMonitorTest {
-	
-	@Before
-	public void setup() throws Exception {
-	    MockLogAppender.setupLogging();
-	}
-	
-	@Test
-	public void testParams() {
-	    Parms eventParms = new Parms();
-        Parm eventParm = new Parm();
-        Value parmValue = new Value();
+    
+    @Before
+    public void setup() throws Exception {
+        MockLogAppender.setupLogging();
+    }
+    
+    @Test
+    public void testIPV6Response() throws UnknownHostException {
+        final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
 
-        assertTrue(eventParms.getParmCount() == 0);
+        final ServiceMonitor monitor = new DnsMonitor();
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("::1"), "DNS");
 
-        eventParm.setParmName("test");
-        parmValue.setContent("test value");
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        assertTrue(eventParms.getParmCount() == 1);
-        assertTrue(eventParms.getParm(0).getParmName() == "test");
-        assertTrue(eventParms.getParm(0).getValue().getContent() == "test value");
-	}
-	
-	@Test
-	public void testIPV6Response() throws UnknownHostException {
-	    Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
-        Parameter p = new Parameter();
-
-        ServiceMonitor monitor = new DnsMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "localhost", "DNS", true);
-
-
-        p.setKey("port");
-        p.setValue("9153");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("retry");
-        p.setValue("1");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("1000");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "9153");
+        m.put("retry", "1");
+        m.put("timeout", "1000");
+        m.put("lookup", "ipv6.example.com");
         
-        p.setKey("lookup");
-        p.setValue("ipv6.example.com");
-        m.put(p.getKey(), p.getValue());
-        
-        PollStatus status = monitor.poll(svc, m);
+        final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
-	}
-	
-	@Test
-    public void testTypeNotFound() throws UnknownHostException {
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
-        Parameter p = new Parameter();
+    }
+    
+    @Test
+    // type not found is still considered a valid response with the default response codes
+    public void testNotFound() throws UnknownHostException {
+        final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
 
-        ServiceMonitor monitor = new DnsMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "localhost", "DNS", true);
+        final ServiceMonitor monitor = new DnsMonitor();
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.getLocalHostAddress(), "DNS");
 
-        p.setKey("port");
-        p.setValue("9153");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("retry");
-        p.setValue("2");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("5000");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "9153");
+        m.put("retry", "2");
+        m.put("timeout", "5000");
+        m.put("lookup", "bogus.example.com");
         
-        p.setKey("lookup");
-        p.setValue("bogus.example.com");
-        m.put(p.getKey(), p.getValue());
+        final PollStatus status = monitor.poll(svc, m);
+        MockUtil.println("Reason: "+status.getReason());
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+    }
+    
+    @Test
+    // type not found is still considered a valid response with the default response codes
+    public void testNotFoundWithCustomRcode() throws UnknownHostException {
+        final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+
+        final ServiceMonitor monitor = new DnsMonitor();
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.getLocalHostAddress(), "DNS");
+
+        m.put("port", "9153");
+        m.put("retry", "2");
+        m.put("timeout", "5000");
+        m.put("lookup", "bogus.example.com");
+        m.put("fatal-response-codes", "3");
         
-        PollStatus status = monitor.poll(svc, m);
+        final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
     }
-	
-	@Test
+    
+    @Test
     public void testUnrecoverable() throws UnknownHostException {
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
-        Parameter p = new Parameter();
+        final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
 
-        ServiceMonitor monitor = new DnsMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("192.168.1.120"), "DNS");
+        final ServiceMonitor monitor = new DnsMonitor();
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("192.168.1.120"), "DNS");
 
-
-        p.setKey("port");
-        p.setValue("9000");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("retry");
-        p.setValue("2");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("500");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "9000");
+        m.put("retry", "2");
+        m.put("timeout", "500");
         
-        PollStatus status = monitor.poll(svc, m);
+        final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
     }
-	
-	@Test
+    
+    @Test
     public void testDNSIPV4Response() throws UnknownHostException {
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
-        Parameter p = new Parameter();
+        final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
 
-        ServiceMonitor monitor = new DnsMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "localhost", "DNS", false);
+        final ServiceMonitor monitor = new DnsMonitor();
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.getLocalHostAddress(), "DNS");
 
-
-        p.setKey("port");
-        p.setValue("9153");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("retry");
-        p.setValue("1");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("3000");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "9153");
+        m.put("retry", "1");
+        m.put("timeout", "3000");
+        m.put("lookup", "example.com");
         
-        p.setKey("lookup");
-        p.setValue("example.com");
-        m.put(p.getKey(), p.getValue());
-        
-        PollStatus status = monitor.poll(svc, m);
+        final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
     }
-	
-	@Test
+    
+    @Test
     public void testDnsJavaResponse() throws IOException {
-        Lookup l = new Lookup("example.com");
-        SimpleResolver resolver = new SimpleResolver("127.0.0.1");
+        final Lookup l = new Lookup("example.com");
+        final SimpleResolver resolver = new SimpleResolver("127.0.0.1");
         resolver.setPort(9153);
         l.setResolver(resolver);
         l.run();
@@ -207,40 +179,62 @@ public class DnsMonitorTest {
         }
         assertTrue(l.getResult() == Lookup.SUCCESSFUL);
     }
-	
-	@Test
-	public void testDnsJavaQuadARecord() throws IOException {
-	    Lookup l = new Lookup("ipv6.example.com", Type.AAAA);
-	    SimpleResolver resolver = new SimpleResolver("::1");
-	    resolver.setPort(9153);
-        l.setResolver(resolver);
-	    l.run();
-	    
-	    System.out.println("result: " + l.getResult());
-	    if(l.getResult() == Lookup.SUCCESSFUL) {
-	        System.out.println(l.getAnswers()[0].rdataToString());
-	    }
-	    assertTrue(l.getResult() == Lookup.SUCCESSFUL);
-	}
-	
-	@Test
-	public void testDnsJavaWithDnsServer() throws TextParseException, UnknownHostException {
-	    Lookup l = new Lookup("example.com", Type.AAAA);
-        SimpleResolver resolver = new SimpleResolver("::1");
+    
+    @Test
+    public void testDnsJavaQuadARecord() throws IOException {
+        final Lookup l = new Lookup("ipv6.example.com", Type.AAAA);
+        final SimpleResolver resolver = new SimpleResolver("::1");
         resolver.setPort(9153);
         l.setResolver(resolver);
         l.run();
         
         System.out.println("result: " + l.getResult());
-        Record[] answers = l.getAnswers();
+        if(l.getResult() == Lookup.SUCCESSFUL) {
+            System.out.println(l.getAnswers()[0].rdataToString());
+        }
+        assertTrue(l.getResult() == Lookup.SUCCESSFUL);
+    }
+    
+    @Test
+    public void testDnsJavaWithDnsServer() throws TextParseException, UnknownHostException {
+        final Lookup l = new Lookup("example.com", Type.AAAA);
+        final SimpleResolver resolver = new SimpleResolver("::1");
+        resolver.setPort(9153);
+        l.setResolver(resolver);
+        l.run();
+        
+        System.out.println("result: " + l.getResult());
+        final Record[] answers = l.getAnswers();
         assertEquals(answers.length, 1);
         
-        Record record = answers[0];
+        final Record record = answers[0];
         System.err.println(record.getTTL());
         
         if(l.getResult() == Lookup.SUCCESSFUL) {
             System.out.println(l.getAnswers()[0].rdataToString());
         }
         assertTrue(l.getResult() == Lookup.SUCCESSFUL);
-	}
+    }
+
+    @Test
+    @JUnitDNSServer(port=9153, zones={})
+    public void testNoAnswer() throws Exception {
+        final Lookup l = new Lookup("example.com", Type.AAAA);
+        final SimpleResolver resolver = new SimpleResolver("::1");
+        resolver.setPort(9153);
+        l.setResolver(resolver);
+        l.run();
+        
+        System.out.println("result: " + l.getResult());
+        final Record[] answers = l.getAnswers();
+        assertEquals(answers.length, 1);
+        
+        final Record record = answers[0];
+        System.err.println(record.getTTL());
+        
+        if(l.getResult() == Lookup.SUCCESSFUL) {
+            System.out.println(l.getAnswers()[0].rdataToString());
+        }
+        assertTrue(l.getResult() == Lookup.SUCCESSFUL);
+    }
 }

@@ -2,11 +2,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
-        
-    <bean class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngineBuilder">
+
+    <bean id="droolsCorrelationEngineBuilderConfigurationResource" class="java.lang.String">
+        <constructor-arg value="file:${opennms.home}/etc/drools-engine.xml" />
+    </bean>
+    
+    <bean id="droolsCorrelationEngineBuilder" class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngineBuilder">
     	<property name="eventIpcManager" ref="eventIpcManager" />
     	<property name="correlationEngineRegistrar" ref="correlator" />
-    	<property name="configurationResource" value="file:${opennms.home}/etc/drools-engine.xml"/>
+    	<property name="configurationResource" ref="droolsCorrelationEngineBuilderConfigurationResource"/>
     </bean>
         
 </beans>

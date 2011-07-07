@@ -1,56 +1,46 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2010 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2010 Feb 16: Make fatal error codes configurable (bug 3564) - jeffg@opennms.org
-// 2003 Jul 18: Enabled retries for monitors.
-// 2003 Jun 11: Added a "catch" for RRD update errors. Bug #748.
-// 2003 Jan 31: Added the ability to imbed RRA information in poller packages.
-// 2003 Jan 29: Added response times to certain monitors.
-// 2002 Nov 12: Display DNS response time data in webUI.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-// Tab Size = 8
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.io.InterruptedIOException;
+import java.net.ConnectException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -58,8 +48,12 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.xbill.DNS.Lookup;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.Message;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
+import org.xbill.DNS.Type;
 
 /**
  * <P>
@@ -131,20 +125,25 @@ final public class DnsMonitor extends AbstractServiceMonitor {
         String lookup = ParameterMap.getKeyedString(parameters, "lookup", null);
         if (lookup == null || lookup.length() == 0) {
             // Get hostname of local machine for future DNS lookups
-            try {
-            	lookup = InetAddressUtils.str(InetAddress.getLocalHost());
-            } catch (final UnknownHostException ukE) {
-                ukE.fillInStackTrace();
-                throw new UndeclaredThrowableException(ukE);
-            }
+        	lookup = InetAddressUtils.getLocalHostAddressAsString();
+        	if (lookup == null) {
+        		throw new UnsupportedOperationException("Unable to look up local host address.");
+        	}
+        }
+
+        // What do we consider fatal?
+        //
+        final List<Integer> fatalCodes = new ArrayList<Integer>();
+        for (final int code : ParameterMap.getKeyedIntegerArray(parameters, "fatal-response-codes", DEFAULT_FATAL_RESP_CODES)) {
+            fatalCodes.add(code);
         }
         
         // get the address and DNS address request
         //
-        InetAddress addr = iface.getAddress();
-        
+        final InetAddress addr = iface.getAddress();
+
         PollStatus serviceStatus = null;
-        serviceStatus = pollDNS(timeoutTracker, port, addr, lookup);
+        serviceStatus = pollDNS(timeoutTracker, port, addr, lookup, fatalCodes);
 
         if (serviceStatus == null) {
             serviceStatus = logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
@@ -157,38 +156,42 @@ final public class DnsMonitor extends AbstractServiceMonitor {
         return serviceStatus;
     }
 
-    private PollStatus pollDNS(TimeoutTracker timeoutTracker, int port, InetAddress addr, String lookup) {
-            for (timeoutTracker.reset(); timeoutTracker.shouldRetry(); timeoutTracker.nextAttempt()) {
-                try {
-                    timeoutTracker.startAttempt();
-                    
-                    Lookup l = new Lookup(lookup);
-                    SimpleResolver resolver = new SimpleResolver(addr.getHostAddress());
-                    resolver.setPort(port);
-                    double timeout = timeoutTracker.getSoTimeout()/1000;
-                    resolver.setTimeout((timeout < 1 ? 1 : (int) timeout));
-                    l.setResolver(resolver);
-                    l.run();
+    private PollStatus pollDNS(final TimeoutTracker timeoutTracker, final int port, final InetAddress address, final String lookup, final List<Integer> fatalCodes) {
+    	final String addr = InetAddressUtils.str(address);
+        for (timeoutTracker.reset(); timeoutTracker.shouldRetry(); timeoutTracker.nextAttempt()) {
+            try {
+                final Name name = Name.fromString(lookup, Name.root);
+                final SimpleResolver resolver = new SimpleResolver();
+                resolver.setAddress(new InetSocketAddress(addr, port));
+                resolver.setLocalAddress((InetSocketAddress)null);
+                double timeout = timeoutTracker.getSoTimeout()/1000;
+                resolver.setTimeout((timeout < 1 ? 1 : (int) timeout));
+                final Record question = Record.newRecord(name, Type.A, DClass.IN);
+                final Message query = Message.newQuery(question);
 
-                    double responseTime = timeoutTracker.elapsedTimeInMillis();
-                    if(l.getResult() == Lookup.SUCCESSFUL) {
-                        return logUp(Level.DEBUG, responseTime, "valid DNS request received, responseTime= " + responseTime + "ms");
-                    }else if(l.getResult() == Lookup.HOST_NOT_FOUND) {
-                        return logDown(Level.DEBUG, "host not found on DNS (" + l.getErrorString() + "), responseTime= " + responseTime + "ms");
-                    }else if(l.getResult() == Lookup.TRY_AGAIN) {
-                        if(!timeoutTracker.shouldRetry()) {
-                            return logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
-                        }
-                    }else if(l.getResult() == Lookup.TYPE_NOT_FOUND) {
+                timeoutTracker.startAttempt();
+                final Message response = resolver.send(query);
+                double responseTime = timeoutTracker.elapsedTimeInMillis();
 
-                    }else if(l.getResult() == Lookup.UNRECOVERABLE) {
-                        return logDown(Level.DEBUG, "Never received valid DNS response for address (" + l.getErrorString() + "): " + addr);
-                    }
+                final Integer rcode = response.getHeader().getRcode();
+                LogUtils.debugf(this, "received response code: %s", rcode);
 
-                } catch (IOException ex) {
-                    return logDown(Level.WARN, "IOException while polling address: " + addr + " " + ex.getMessage(), ex);
+                if (fatalCodes.contains(rcode)) {
+                    return logDown(Level.DEBUG, "Received an invalid DNS response for address: " + addr);
+                } else {
+                    return logUp(Level.DEBUG, responseTime, "valid DNS request received, responseTime= " + responseTime + "ms");
                 }
+            } catch (final InterruptedIOException e) {
+                // No response received, retry without marking the poll failed. If we get this condition over and over until 
+                // the retries are exhausted, it will leave serviceStatus null and we'll get the log message at the bottom 
+            } catch (final NoRouteToHostException e) {
+                return logDown(Level.WARN, "No route to host exception for address: " + addr, e);
+            } catch (final ConnectException e) {
+                return logDown(Level.WARN, "Connection exception for address: " + addr, e);
+            } catch (final IOException e) {
+                return logDown(Level.WARN, "IOException while polling address: " + addr + " " + e.getMessage(), e);
             }
+        }
        
         return logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
     }

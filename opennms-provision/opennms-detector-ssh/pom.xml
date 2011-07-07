@@ -15,12 +15,12 @@
       <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
-    	<groupId>jakarta-regexp</groupId>
-    	<artifactId>jakarta-regexp</artifactId>
+      <groupId>jakarta-regexp</groupId>
+      <artifactId>jakarta-regexp</artifactId>
     </dependency>
     <dependency>
-    	<groupId>org.opennms</groupId>
-    	<artifactId>opennms-model</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -28,15 +28,22 @@
       <type>pom</type>
     </dependency>
     <dependency>
-  		<groupId>org.opennms.dependencies</groupId>
-  		<artifactId>spring-test-dependencies</artifactId>
-    	<scope>test</scope>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-test</artifactId>
-    	<scope>test</scope>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>
   </dependencies>
 </project>

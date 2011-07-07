@@ -1,40 +1,31 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2008 Aug 29: collect() can now throw CollectionException. - dj@opennms.org
-// 2008 May 13: Change expectation on IpInterfaceDao from get to load. - dj@opennms.org
-// 2008 Feb 09: Eliminate warnings. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
@@ -51,59 +42,56 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.JUnitSnmpAgent;
-import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.mock.snmp.MockSnmpAgentAware;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
+import org.opennms.netmgt.dao.support.JdbcFilterDao;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
-    TemporaryDatabaseExecutionListener.class,
-    JUnitCollectorExecutionListener.class,
-    JUnitSnmpAgentExecutionListener.class,
-    DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class
+    JUnitCollectorExecutionListener.class
 })
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@Transactional
-public class SnmpCollectorTest implements MockSnmpAgentAware {
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
+public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, TemporaryDatabaseAware<TemporaryDatabase>, TestContextAware {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -132,15 +120,33 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
 
     private MockSnmpAgent m_agent;
 
-    @Before
-    public void setUp() throws Exception {
-        MockLogAppender.setupLogging();
+    private TemporaryDatabase m_database;
+
+    public void setTemporaryDatabase(TemporaryDatabase database) {
+        m_database = database;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
         assertNotNull(m_mockEventIpcManager);
         assertNotNull(m_transactionManager);
         assertNotNull(m_nodeDao);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_serviceTypeDao);
-        
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+
+        // Initialize the JdbcFilterDao so that it will connect to the correct database
+        DatabaseSchemaConfigFactory.init();
+        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+        jdbcFilterDao.setDataSource(m_database);
+        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+        jdbcFilterDao.afterPropertiesSet();
+        FilterDaoFactory.setInstance(jdbcFilterDao);
+
         RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
 
         m_testHostName = InetAddressUtils.str(InetAddress.getLocalHost());
@@ -219,8 +225,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
                     "1/fw0/ifOutUcastPkts"
             }
     )
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
-    //@JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/bigrouter-walk.properties");
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties", useMockSnmpStrategy=false)
     public void testCollect() throws Exception {
         System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
 
@@ -251,6 +256,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
     }
 
     @Test
+    @Transactional
     @JUnitCollector(
             datacollectionConfig = "/org/opennms/netmgt/config/datacollection-persistTest-config.xml", 
             datacollectionType = "snmp",
@@ -263,7 +269,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
                     "1/fw0/ifInOctets"
             }
     )
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties", useMockSnmpStrategy=false)
     public void testPersist() throws Exception {
         File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
 
@@ -308,6 +314,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
     }
 
     @Test
+    @Transactional
     @JUnitCollector(
             datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
             datacollectionType = "snmp",
@@ -341,6 +348,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
     }
 
     @Test
+    @Transactional
     @JUnitCollector(
             datacollectionConfig="/org/opennms/netmgt/config/datacollection-brocade-config.xml", 
             datacollectionType="snmp",
@@ -383,7 +391,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
                     "1/brocadeFCPortIndex/8"
             }
     )
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties", useMockSnmpStrategy=false)
     public void testBrocadeCollect() throws Exception {
         m_collectionSpecification.initialize(m_collectionAgent);
 
@@ -412,6 +420,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
     }
 
     @Test
+    @Transactional
     @JUnitCollector(
             datacollectionConfig = "/org/opennms/netmgt/config/datacollection-brocade-no-ifaces-config.xml", 
             datacollectionType = "snmp",
@@ -454,7 +463,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
                     "1/brocadeFCPortIndex/8"
             }
     )
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties", useMockSnmpStrategy=false)
     public void testBug2447_GenericIndexedOnlyCollect() throws Exception {
         // don't forget to initialize the agent
         m_collectionSpecification.initialize(m_collectionAgent);

@@ -1,48 +1,31 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2008 Mar 16: Re-enable most of the disabled tests using TestSnmpValue
-//              objects for the SnmpValue objects instead of objects specific
-//              to an SNMP implementation.  Rename to SnmpMonitorStrategyTest
-//              because that's what we're really testing and remove the test
-//              suites because we never test a specific implementation. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-/*
- * Created on Nov 9, 2004
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+ * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertFalse;
@@ -53,18 +36,18 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.mock.snmp.MockSnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.Counter32SnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.Counter64SnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.Gauge32SnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.Integer32SnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.IpAddressSnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.OidSnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.StringSnmpValue;
+import org.opennms.mock.snmp.MockSnmpValue.TimeticksSnmpValue;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.Counter32SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.Counter64SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.Gauge32SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.Integer32SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.IpAddressSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.OidSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.StringSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.TimeticksSnmpValue;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -96,7 +79,7 @@ public class SnmpMonitorStrategyTest {
 
     @Test
     public void testMeetsCriteriaWithSnmpNull() {
-        SnmpValue result = TestSnmpValue.NULL_VALUE;
+        SnmpValue result = MockSnmpValue.NULL_VALUE;
         testSyntaxEquals(result, "", "1");
     }
 
@@ -153,8 +136,7 @@ public class SnmpMonitorStrategyTest {
     @Test
     public void testMeetsCriteriaWithTimeTicks() {
         TimeticksSnmpValue result = new TimeticksSnmpValue("1");
-        testSyntaxEquals(result, "0d 0h 0m 0s 10ms", "1d 1h 1m 1s 10ms");
-        testSyntaxMatches(result, "0h", "1h");
+        testSyntaxEquals(result, "1", "2");
         testOrderOperations(result, 1);
     }
 

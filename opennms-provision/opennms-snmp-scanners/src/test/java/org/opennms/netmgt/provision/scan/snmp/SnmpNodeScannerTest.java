@@ -1,32 +1,31 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
+ * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS Licensing       <license@opennms.org>
+ *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- */
+ *******************************************************************************/
+
 package org.opennms.netmgt.provision.scan.snmp;
 
 import static org.junit.Assert.assertEquals;
@@ -34,18 +33,21 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.ScanContext;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.mock.MockLogAppender;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.ContextConfiguration;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:emptyContext.xml"})
 public class SnmpNodeScannerTest {
     
     /**
@@ -113,8 +115,7 @@ public class SnmpNodeScannerTest {
     private InetAddress m_agentAddress;
     private SnmpAgentConfig m_agentConfig;
     private MockScanContext m_scanContext;
-    private MockSnmpAgent m_agent;
-    private static final Integer AGENT_PORT = 9161;
+    private static final int AGENT_PORT = 9161;
     
     private SnmpAgentConfigFactory snmpAgentConfigFactory() {
         return snmpAgentConfigFactory(m_agentConfig);
@@ -137,11 +138,6 @@ public class SnmpNodeScannerTest {
 
         m_agentAddress = InetAddress.getLocalHost();
         
-        m_agent = MockSnmpAgent.createAgentAndRun(
-            new ClassPathResource("org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties"),
-            InetAddressUtils.str(m_agentAddress)+"/"+AGENT_PORT
-        );
-        
         m_agentConfig = new SnmpAgentConfig(m_agentAddress);
         m_agentConfig.setPort(AGENT_PORT);
         
@@ -149,12 +145,8 @@ public class SnmpNodeScannerTest {
 
     }
 
-    @After
-    public void tearDown() throws Exception {
-        m_agent.shutDownAndWait();
-    }
-    
     @Test
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties", port=AGENT_PORT, useMockSnmpStrategy=true)
     public void testScan() throws Exception {
 
         SnmpNodeScanner scanner = new SnmpNodeScanner();
@@ -171,6 +163,7 @@ public class SnmpNodeScannerTest {
 
     @Test
     @Ignore("this will only work on the OpenNMS internal network ;)")
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties", port=AGENT_PORT, useMockSnmpStrategy=true)
     public void testOpennmsRouter() throws Exception {
         InetAddress agent = InetAddressUtils.addr("172.20.1.1");
         MockScanContext context = new MockScanContext(agent);

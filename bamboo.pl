@@ -14,9 +14,9 @@ if (not defined $GIT) {
 	exit 1;
 }
 
-clean_git();
+clean_git() unless (exists $ENV{'SKIP_CLEAN'});
 
-@command = ($MVN, @ARGS);
+my @command = ($MVN, @ARGS);
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 

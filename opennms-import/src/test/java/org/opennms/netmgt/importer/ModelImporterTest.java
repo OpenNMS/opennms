@@ -1,48 +1,45 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2008 Feb 10: Use default configs. - dj@opennms.org
-// 2007 Aug 25: Use AbstractTransactionalTemporaryDatabaseSpringContextTests
-//              and new Spring context files. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.importer;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.mock.snmp.MockSnmpAgent;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
@@ -54,48 +51,55 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.importer.specification.ImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.test.DaoTestConfigBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Unit test for ModelImport application.
  */
-public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath:/modelImporterTest.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class ModelImporterTest implements InitializingBean {
+    @Autowired
     private DatabasePopulator m_populator;
+    @Autowired
     private ServiceTypeDao m_serviceTypeDao;
+    @Autowired
     private CategoryDao m_categoryDao;
-
+    @Autowired
     private ModelImporter m_importer;
+    @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
     
-    @Override
-    protected void setUpConfiguration() {
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.afterPropertiesSet();
+    public void afterPropertiesSet() throws Exception {
+        assertNotNull(m_populator);
+        assertNotNull(m_categoryDao);
+        assertNotNull(m_serviceTypeDao);
+        assertNotNull(m_importer);
+        assertNotNull(m_snmpInterfaceDao);
     }
 
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-                "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-                "classpath:/modelImporterTest.xml"
-        };
-    }
-
-    @Override
+    @Before
     public void onSetUpInTransactionIfEnabled() throws Exception {
-        super.onSetUpInTransactionIfEnabled();
-        
         initSnmpPeerFactory();
     }
 
@@ -245,6 +249,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         
     }
     
+    @Test
     public void testVisit() throws Exception {
 
         SpecFile specFile = new SpecFile();
@@ -254,6 +259,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         verifyCounts(visitor);
     }
     
+    @Test
     public void testFindQuery() throws Exception {
         ModelImporter mi = m_importer;        
         String specFile = "/tec_dump.xml.smalltest";
@@ -263,6 +269,8 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         }
     }
     
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testPopulate() throws Exception {
         createAndFlushServiceTypes();
         createAndFlushCategories();
@@ -286,31 +294,23 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         //Verify service count
         assertEquals(3, mi.getServiceTypeDao().countAll());
     }
-    
+
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitSnmpAgent(resource="classpath:/snmpTestData1.properties", host="127.0.0.1", port=9161, useMockSnmpStrategy=false)
     public void testAddSnmpInterfaces() throws Exception {
-        
-        ClassPathResource agentConfig = new ClassPathResource("/snmpTestData1.properties");
-        
-        MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(agentConfig, "127.0.0.1/9161");
+        createAndFlushServiceTypes();
+        createAndFlushCategories();
 
-        try {
-            createAndFlushServiceTypes();
-            createAndFlushCategories();
+        ModelImporter mi = m_importer;
+        String specFile = "/tec_dump.xml";
+        mi.importModelFromResource(new ClassPathResource(specFile));
 
-            ModelImporter mi = m_importer;
-            String specFile = "/tec_dump.xml";
-            mi.importModelFromResource(new ClassPathResource(specFile));
+        assertEquals(1, mi.getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
 
-            assertEquals(1, mi.getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
+        assertEquals(2, mi.getIpInterfaceDao().countAll());
 
-            assertEquals(2, mi.getIpInterfaceDao().countAll());
-
-            assertEquals(6, getSnmpInterfaceDao().countAll());
-
-        } finally {
-            agent.shutDownAndWait();
-        }
-
+        assertEquals(6, m_snmpInterfaceDao.countAll());
     }
 
 
@@ -321,6 +321,8 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
      * 
      * @throws ModelImportException
      */
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testImportUtf8() throws Exception {
         createAndFlushServiceTypes();
         createAndFlushCategories();
@@ -341,6 +343,8 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
      * 
      * @throws ModelImportException
      */
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testDelete() throws Exception {
         createAndFlushServiceTypes();
         createAndFlushCategories();
@@ -352,7 +356,8 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         
         assertEquals(10, mi.getNodeDao().countAll());
     }
-    private void verifyCounts(CountingVisitor visitor) {
+
+    private static void verifyCounts(CountingVisitor visitor) {
         System.err.println(visitor);
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());
@@ -369,77 +374,24 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
     }
 
     private void createAndFlushServiceTypes() {
-        getServiceTypeDao().save(new OnmsServiceType("ICMP"));
-        getServiceTypeDao().save(new OnmsServiceType("SNMP"));
-        getServiceTypeDao().save(new OnmsServiceType("HTTP"));
-        getServiceTypeDao().flush();
-
-        setComplete();
-        endTransaction();
-        startNewTransaction();
+        m_serviceTypeDao.save(new OnmsServiceType("ICMP"));
+        m_serviceTypeDao.save(new OnmsServiceType("SNMP"));
+        m_serviceTypeDao.save(new OnmsServiceType("HTTP"));
+        m_serviceTypeDao.flush();
     }
     
     private void createAndFlushCategories() {
-        getCategoryDao().save(new OnmsCategory("AC"));
-        getCategoryDao().save(new OnmsCategory("AP"));
-        getCategoryDao().save(new OnmsCategory("UK"));
-        getCategoryDao().save(new OnmsCategory("BE"));
-        getCategoryDao().save(new OnmsCategory("high"));
-        getCategoryDao().save(new OnmsCategory("low"));
-        getCategoryDao().save(new OnmsCategory("Park Plaza"));
-        getCategoryDao().save(new OnmsCategory("Golden Tulip"));
-        getCategoryDao().save(new OnmsCategory("Hilton"));
-        getCategoryDao().save(new OnmsCategory("Scandic"));
-        getCategoryDao().save(new OnmsCategory("Best Western"));
-        getCategoryDao().flush();
-
-        setComplete();
-        endTransaction();
-        startNewTransaction();
+        m_categoryDao.save(new OnmsCategory("AC"));
+        m_categoryDao.save(new OnmsCategory("AP"));
+        m_categoryDao.save(new OnmsCategory("UK"));
+        m_categoryDao.save(new OnmsCategory("BE"));
+        m_categoryDao.save(new OnmsCategory("high"));
+        m_categoryDao.save(new OnmsCategory("low"));
+        m_categoryDao.save(new OnmsCategory("Park Plaza"));
+        m_categoryDao.save(new OnmsCategory("Golden Tulip"));
+        m_categoryDao.save(new OnmsCategory("Hilton"));
+        m_categoryDao.save(new OnmsCategory("Scandic"));
+        m_categoryDao.save(new OnmsCategory("Best Western"));
+        m_categoryDao.flush();
     }
-
-    public ModelImporter getImporter() {
-        return m_importer;
-    }
-
-
-    public void setImporter(ModelImporter importer) {
-        m_importer = importer;
-    }
-
-    public DatabasePopulator getPopulator() {
-        return m_populator;
-    }
-
-    public void setPopulator(DatabasePopulator populator) {
-        m_populator = populator;
-    }
-
-    public CategoryDao getCategoryDao() {
-        return m_categoryDao;
-    }
-
-    public void setCategoryDao(CategoryDao categoryDao) {
-        m_categoryDao = categoryDao;
-    }
-
-    public ServiceTypeDao getServiceTypeDao() {
-        return m_serviceTypeDao;
-    }
-
-    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
-        m_serviceTypeDao = serviceTypeDao;
-    }
-    
-    public SnmpInterfaceDao getSnmpInterfaceDao() {
-        return m_snmpInterfaceDao; 
-    }
-    
-    
-    
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
-    }
-    
-
 }

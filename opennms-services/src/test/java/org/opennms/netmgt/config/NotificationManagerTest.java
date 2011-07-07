@@ -1,44 +1,31 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2008 Jul 02: Get rid of DataSource stuff since it is now in our superclass.
-//              Use DaoTestConfigBean.  Add some comments. - dj@opennms.org
-// 2007 Jul 03: Fix test resource calls. - dj@opennms.org
-// 2007 Jul 03: Enable testIplikeAllStars. - dj@opennms.org
-// 2007 Jul 03: Move notifd configuration to a resource. - dj@opennms.org
-// 2007 Jun 29: Add additional tests for nodes without interfaces and interfaces
-//              without services.  Reset FilterDaoFactory on setup. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
@@ -54,16 +41,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
+import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -77,28 +66,15 @@ import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
-    TemporaryDatabaseExecutionListener.class,
-    JUnitSnmpAgentExecutionListener.class,
-    DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class
-})
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml"
 })
-@JUnitTemporaryDatabase()
-public class NotificationManagerTest {
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class NotificationManagerTest implements TemporaryDatabaseAware<TemporaryDatabase> {
 	@Autowired
 	private DataSource m_dataSource;
 
@@ -120,13 +96,22 @@ public class NotificationManagerTest {
     private NotificationManagerImpl m_notificationManager;
     private NotifdConfigManager m_configManager;
 
+    private TemporaryDatabase m_database;
+
+    public void setTemporaryDatabase(TemporaryDatabase database) {
+        m_database = database;
+    }
+
     @Before
     public void setUp() throws Exception {
-    	// Make sure we get a new FilterDaoFactory every time because our
-        // DataSource changes every test.
-    	FilterDaoFactory.setInstance(null);
-    	FilterDaoFactory.getInstance();
-    	
+        // Initialize Filter DAO
+        DatabaseSchemaConfigFactory.init();
+        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+        jdbcFilterDao.setDataSource(m_database);
+        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+        jdbcFilterDao.afterPropertiesSet();
+        FilterDaoFactory.setInstance(jdbcFilterDao);
+
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
         
@@ -203,6 +188,7 @@ public class NotificationManagerTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNoElement() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, null, null,
@@ -215,6 +201,7 @@ public class NotificationManagerTest {
      * the IP address is in the database on *some* node.
      */
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNoNodeIdWithIpAddr() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, "192.168.1.1", null,
@@ -228,6 +215,7 @@ public class NotificationManagerTest {
      * database.  This shouldn't send an event.
      */
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNoNodeIdWithIpAddrNotInDb() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, "192.168.1.2", null,
@@ -240,6 +228,7 @@ public class NotificationManagerTest {
      * the IP address and service is in the database on *some* node.
      */
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNoNodeIdWithService() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, null, "HTTP",
@@ -249,6 +238,7 @@ public class NotificationManagerTest {
 
     // FIXME... do we really want to return true if the rule is wrong?????
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testRuleBogus() {
         try {
             doTestNodeInterfaceServiceWithRule("node/interface/service match",
@@ -262,6 +252,7 @@ public class NotificationManagerTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testIplikeAllStars() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -270,6 +261,7 @@ public class NotificationManagerTest {
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNodeOnlyMatch() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, null, null,
@@ -278,6 +270,7 @@ public class NotificationManagerTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNodeOnlyMatchZeroesIpAddr() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "0.0.0.0", null,
@@ -286,6 +279,7 @@ public class NotificationManagerTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNodeOnlyNoMatch() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            3, null, null,
@@ -294,6 +288,7 @@ public class NotificationManagerTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testWrongNodeId() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            2, "192.168.1.1", "HTTP",
@@ -302,6 +297,7 @@ public class NotificationManagerTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testIpAddrSpecificPass() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", null,
@@ -310,6 +306,7 @@ public class NotificationManagerTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testIpAddrSpecificFail() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", null,
@@ -319,6 +316,7 @@ public class NotificationManagerTest {
     
 
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testIpAddrServiceSpecificPass() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -327,6 +325,7 @@ public class NotificationManagerTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testIpAddrServiceSpecificFail() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -335,6 +334,7 @@ public class NotificationManagerTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testIpAddrServiceSpecificWrongService() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "ICMP",
@@ -343,6 +343,7 @@ public class NotificationManagerTest {
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testIpAddrServiceSpecificWrongIP() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.2", "HTTP",
@@ -351,6 +352,7 @@ public class NotificationManagerTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testMultipleCategories() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -359,6 +361,7 @@ public class NotificationManagerTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testMultipleCategoriesNotMember() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            2, "192.168.1.1", "HTTP",
@@ -367,6 +370,7 @@ public class NotificationManagerTest {
     }
 
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testIpAddrMatchWithNoServiceOnInterface() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            4, null, null,
@@ -381,6 +385,7 @@ public class NotificationManagerTest {
      * it isn't referenced in the filter query.  Sucky, huh?
      */
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNodeMatchWithNoInterfacesOnNode() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            5, null, null,
@@ -395,6 +400,7 @@ public class NotificationManagerTest {
      * the user's filter (if any) is an AND, but it is if it's an OR.
      */
     @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testRuleWithOrNoMatch() {
         /*
          * Note: the nodeLabel for nodeId=3/ipAddr=192.168.1.2 is 'node 3'
@@ -419,7 +425,7 @@ public class NotificationManagerTest {
         assertEquals(description, matches, m_notificationManager.nodeInterfaceServiceValid(notif, builder.getEvent()));
     }
     
-    public class NotificationManagerImpl extends NotificationManager {
+    public static class NotificationManagerImpl extends NotificationManager {
         protected NotificationManagerImpl(NotifdConfigManager configManager, DataSource dcf) {
             super(configManager, dcf);
         }

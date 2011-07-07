@@ -1,38 +1,31 @@
-/*
- * This file is part of the OpenNMS(R) Application.
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications:
- * 
- * Created: January 21, 2009
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.web.rest;
 
 import java.net.URL;
@@ -48,6 +41,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -226,6 +220,14 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public Requisition getRequisition(@PathParam("foreignSource") String foreignSource) {
         return getActiveRequisition(foreignSource);
+    }
+
+    @GET
+    @Path("{foreignSource}/exists")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String requisitionExists(@PathParam("foreignSource") String foreignSource) {
+        Boolean exists = getActiveRequisition(foreignSource) != null;
+        return exists.toString();
     }
 
     /**
@@ -595,7 +597,7 @@ public class RequisitionRestService extends OnmsRestService {
     @PUT
     @Path("{foreignSource}/import")
     @Transactional
-    public Response importRequisition(@PathParam("foreignSource") String foreignSource) {
+    public Response importRequisition(@PathParam("foreignSource") String foreignSource, @QueryParam("suppressOutput") Boolean suppressOutput) {
         log().debug("importing requisition for foreign source " + foreignSource);
 
         Requisition req = getActiveRequisition(foreignSource);
@@ -609,7 +611,7 @@ public class RequisitionRestService extends OnmsRestService {
             throw new DataAccessResourceFailureException("Unable to send event to import group "+foreignSource, e);
         }
         
-        return Response.ok(req).build();
+        return suppressOutput == null || suppressOutput == false ? Response.ok(req).build() : Response.ok().build();
     }
     
     /**

@@ -22,8 +22,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <scope>test</scope>
       <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -38,7 +41,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -53,7 +55,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

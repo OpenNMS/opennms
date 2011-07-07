@@ -1,47 +1,30 @@
-//
-// // This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc. All rights
-// reserved.  OpenNMS(R) is a derivative work, containing both original code,
-// included code and modified code that was published under the GNU General
-// Public License. Copyrights for modified and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2008 Jul 29: Check the database version against a maximum version number
-//              and give the user the option to disable the test. - dj@opennms.org
-// 2008 May 31: Fix for part of bug #2369, don't use C3P0 data sources
-//              for the installer.  Also clean up some JNI library log
-//              and exception messages and cleanup imports. - dj@opennms.org
-// 2008 Mar 25: Removed unneeded code for admin database user name and
-//              password due to its removal in InstallerDb. - dj@opennms.org
-//
-// The code in this file is Copyright (C) 2004 DJ Gregor.
-//
-// Based on install.pl which was Copyright (C) 1999-2001 Oculan Corp. All
-// rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-// OpenNMS Licensing <license@opennms.org>
-// http://www.opennms.org/
-// http://www.opennms.com/
-//
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 package org.opennms.install;
 
@@ -161,7 +144,7 @@ public class Installer {
         loadProperties();
         parseArguments(argv);
 
-        boolean doDatabase = (m_update_database || m_do_inserts || m_update_iplike || m_update_unicode || m_fix_constraint);
+        final boolean doDatabase = (m_update_database || m_do_inserts || m_update_iplike || m_update_unicode || m_fix_constraint);
 
         if (!doDatabase && m_tomcat_conf == null && !m_install_webapp && m_library_search_path == null) {
             usage(options, m_commandLine, "Nothing to do.  Use -h for help.", null);
@@ -169,17 +152,17 @@ public class Installer {
         }
 
         if (doDatabase) {
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+        	final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
             
-            Reader fr = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
-            JdbcDataSource adminDsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(fr, ADMIN_DATA_SOURCE_NAME);
-            DataSource adminDs = new SimpleDataSource(adminDsConfig);
-            fr.close();
+            InputStream is = new FileInputStream(cfgFile);
+            final JdbcDataSource adminDsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(is, ADMIN_DATA_SOURCE_NAME);
+            final DataSource adminDs = new SimpleDataSource(adminDsConfig);
+            is.close();
 
-            fr = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
-            JdbcDataSource dsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(fr, OPENNMS_DATA_SOURCE_NAME);
-            DataSource ds = new SimpleDataSource(dsConfig);
-            fr.close();
+            is = new FileInputStream(cfgFile);
+            final JdbcDataSource dsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(is, OPENNMS_DATA_SOURCE_NAME);
+            final DataSource ds = new SimpleDataSource(dsConfig);
+            is.close();
 
             m_installerDb.setForce(m_force);
             m_installerDb.setIgnoreNotNull(m_ignore_not_null);
@@ -212,8 +195,9 @@ public class Installer {
 
         if (!Boolean.getBoolean("skip-native")) {
             String icmp_path = findLibrary("jicmp", m_library_search_path, false);
+            String icmp6_path = findLibrary("jicmp6", m_library_search_path, false);
             String jrrd_path = findLibrary("jrrd", m_library_search_path, false);
-            writeLibraryConfig(icmp_path, jrrd_path);
+            writeLibraryConfig(icmp_path, icmp6_path, jrrd_path);
         }
         
         /*
@@ -383,7 +367,7 @@ public class Installer {
          * Do this if we want to merge our properties with the system
          * properties...
          */
-        Properties sys = System.getProperties();
+        final Properties sys = System.getProperties();
         m_properties.putAll(sys);
 
         m_opennms_home = fetchProperty("install.dir");
@@ -395,7 +379,7 @@ public class Installer {
         m_install_servletdir = fetchProperty("install.servlet.dir");
         m_import_dir = fetchProperty("importer.requisition.dir");
 
-        String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
+        final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
 
         if (pg_lib_dir != null) {
             m_installerDb.setPostgresPlPgsqlLocation(pg_lib_dir + File.separator + "plpgsql");
@@ -406,19 +390,18 @@ public class Installer {
         m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
     }
 
-    private void loadEtcPropertiesFile(String propertiesFile)
-            throws IOException {
+    private void loadEtcPropertiesFile(final String propertiesFile) throws IOException {
         try {
-            Properties opennmsProperties = new Properties();
-            InputStream ois = new FileInputStream(m_etc_dir + File.separator + propertiesFile);
+        	final Properties opennmsProperties = new Properties();
+        	final InputStream ois = new FileInputStream(m_etc_dir + File.separator + propertiesFile);
             opennmsProperties.load(ois);
             // We only want to put() things that weren't already overridden in installer.properties
-            for (Entry<Object,Object> p : opennmsProperties.entrySet()) {
+            for (final Entry<Object,Object> p : opennmsProperties.entrySet()) {
                 if (!m_properties.containsKey(p.getKey())) {
                     m_properties.put(p.getKey(), p.getValue());
                 }
             }
-        } catch(FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             System.out.println("WARNING: unable to load " + m_etc_dir + File.separator + propertiesFile);
         }
     }
@@ -1058,7 +1041,9 @@ public class Installer {
                     "/usr/lib",
                     "/usr/local/lib",
                     "/opt/NMSjicmp/lib/32",
-                    "/opt/NMSjicmp/lib/64"
+                    "/opt/NMSjicmp/lib/64",
+                    "/opt/NMSjicmp6/lib/32",
+                    "/opt/NMSjicmp6/lib/64"
             };
             for (final String entry : defaults) {
                 searchPaths.add(entry);
@@ -1119,15 +1104,20 @@ public class Installer {
      * <p>writeLibraryConfig</p>
      *
      * @param jicmp_path a {@link java.lang.String} object.
+     * @param jicmp6_path TODO
      * @param jrrd_path a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-    public void writeLibraryConfig(final String jicmp_path, final String jrrd_path)
+    public void writeLibraryConfig(final String jicmp_path, final String jicmp6_path, final String jrrd_path)
             throws IOException {
         Properties libraryProps = new Properties();
 
         if (jicmp_path != null && jicmp_path.length() != 0) {
             libraryProps.put("opennms.library.jicmp", jicmp_path);
+        }
+
+        if (jicmp6_path != null && jicmp6_path.length() != 0) {
+            libraryProps.put("opennms.library.jicmp6", jicmp6_path);
         }
 
         if (jrrd_path != null && jrrd_path.length() != 0) {
@@ -1170,18 +1160,16 @@ public class Installer {
             pinger = PingerFactory.getInstance();
         
         } catch (UnsatisfiedLinkError e) {
-            System.out.println("UnsatisfiedLinkError while creating an "
-                    + "ICMP Pinger.  Most likely failed to load "
-                    + "libjicmp.so.  Try setting the property "
-                    + "'opennms.library.jicmp' to point at the "
-                    + "full path name of the libjicmp.so shared "
-                    + "library or switch to using the JnaPinger"
-                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
+            System.out.println("UnsatisfiedLinkError while creating an ICMP Pinger.  Most likely failed to load "
+                    + "libjicmp.so.  Try setting the property 'opennms.library.jicmp' to point at the "
+                    + "full path name of the libjicmp.so shared library or switch to using the JnaPinger "
+                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')\n"
+                    + "You can also set the 'opennms.library.jicmp6' property in the same manner to specify "
+                    + "the location of the JICMP6 library.");
             throw e;
         } catch (NoClassDefFoundError e) {
-            System.out.println("NoClassDefFoundError while creating an "
-                    + "IcmpSocket.  Most likely failed to load "
-                    + "libjicmp.so.");
+            System.out.println("NoClassDefFoundError while creating an IcmpSocket.  Most likely failed to load libjicmp.so" +
+            		"or libjicmp6.so.");
             throw e;
         } catch (Exception e) {
             System.out.println("Exception while creating an Pinger.");

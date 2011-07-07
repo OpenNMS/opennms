@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.web.controller.outage;
 
 import java.util.ArrayList;
@@ -6,8 +34,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.element.ElementUtil;
-import org.opennms.web.element.Interface;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.Outage;
 import org.opennms.web.outage.WebOutageRepository;
@@ -35,15 +62,18 @@ public class InterfaceOutagesController extends AbstractController implements In
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Interface iface = ElementUtil.getInterfaceByParams(request, getServletContext());
-
+    	String nodeIdString = request.getParameter("node");
+    	String ipAddr = request.getParameter("ipAddr");
+    	
+    	int nodeId = -1;
         Outage[] outages = new Outage[0];
 
-        if (iface.getNodeId() > 0 && iface.getIpAddress() != null) {
+        if (nodeIdString != null && ipAddr != null) {
+        	nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
             List<Filter> filters = new ArrayList<Filter>();
 
-            filters.add(new InterfaceFilter(iface.getIpAddress()));
-            filters.add(new NodeFilter(iface.getNodeId(), getServletContext()));
+            filters.add(new InterfaceFilter(ipAddr));
+            filters.add(new NodeFilter(nodeId, getServletContext()));
             filters.add(new RecentOutagesFilter());
 
             OutageCriteria criteria = new OutageCriteria(filters.toArray(new Filter[0]));
@@ -51,8 +81,8 @@ public class InterfaceOutagesController extends AbstractController implements In
         }
 
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
-        modelAndView.addObject("nodeId", iface.getNodeId());
-        modelAndView.addObject("ipAddr", iface.getIpAddress());
+        modelAndView.addObject("nodeId", nodeId);
+        modelAndView.addObject("ipAddr", ipAddr);
         modelAndView.addObject("outages", outages);
         return modelAndView;
     }
