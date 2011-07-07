@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -118,20 +117,6 @@ public final class DatabaseSchemaConfigFactory {
         } finally {
             IOUtils.closeQuietly(cfgStream);
         }
-    }
-
-    /**
-     * <p>Constructor for DatabaseSchemaConfigFactory.</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public DatabaseSchemaConfigFactory(final Reader reader) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(DatabaseSchema.class, reader);
-        finishConstruction();
     }
 
     /**

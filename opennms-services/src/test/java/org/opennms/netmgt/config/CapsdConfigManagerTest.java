@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
@@ -60,7 +60,7 @@ public class CapsdConfigManagerTest extends TestCase {
      * plugins cannot be loaded.
      */
     public void DISABLEDtestBadPlugin() throws Exception {
-        Reader reader = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/capsd-configuration-bad-class.xml");
+        InputStream reader = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/capsd-configuration-bad-class.xml");
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new ValidationException(ThrowableAnticipator.IGNORE_MESSAGE));

@@ -616,7 +616,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
 
     /**
-     * This method is used to rebuild the package agaist iplist mapping when
+     * This method is used to rebuild the package against iplist mapping when
      * needed. When a node gained service event occurs, poller has to determine
      * which package the ip/service combination is in, but if the interface is a
      * newly added one, the package iplist should be rebuilt so that poller

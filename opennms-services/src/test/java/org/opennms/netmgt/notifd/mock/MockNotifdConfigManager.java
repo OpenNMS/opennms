@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.notifd.mock;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.InputStream;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -54,9 +54,8 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
      * @throws ValidationException
      * @throws MarshalException
      */
-    @SuppressWarnings("deprecation")
     public MockNotifdConfigManager(String configString) throws MarshalException, ValidationException, IOException {
-        Reader reader = new StringReader(configString);
+        InputStream reader = new ByteArrayInputStream(configString.getBytes("UTF-8"));
         parseXml(reader);
         reader.close();
     }

@@ -250,9 +250,9 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     public static void saveToFile(File file)
             throws UnsupportedEncodingException, FileNotFoundException,
             IOException {
-        // Marshall to a string first, then write the string to the file. This
+        // Marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the XML from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         final String marshalledConfig = marshallConfig();
 
         SnmpPeerFactory.getWriteLock().lock();

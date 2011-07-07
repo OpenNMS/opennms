@@ -105,21 +105,6 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 	 */
 	 private static Map<String,String> m_oidMask2IpRouteclassName = new HashMap<String,String>();
 	 
-	/**
-	 * <p>Constructor for LinkdConfigManager.</p>
-	 *
-	 * @author <a href="mailto:david@opennms.org">David Hustace</a>
-     * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
-	 * @param reader a {@link java.io.Reader} object.
-	 * @throws org.exolab.castor.xml.MarshalException if any.
-	 * @throws org.exolab.castor.xml.ValidationException if any.
-	 * @throws java.io.IOException if any.
-	 */
-	@Deprecated
-    public LinkdConfigManager(final Reader reader) throws MarshalException, ValidationException, IOException {
-        reloadXML(reader);
-    }
-
     /**
      * <p>Constructor for LinkdConfigManager.</p>
      *

@@ -33,7 +33,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -89,18 +88,6 @@ public class HttpCollectionConfigFactory {
     /**
      * <p>Constructor for HttpCollectionConfigFactory.</p>
      *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public HttpCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-        initialize(rdr);
-    }
-
-    /**
-     * <p>Constructor for HttpCollectionConfigFactory.</p>
-     *
      * @param stream a {@link java.io.InputStream} object.
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
@@ -112,12 +99,6 @@ public class HttpCollectionConfigFactory {
     private void initialize(InputStream stream) throws MarshalException, ValidationException {
         log().debug("initialize: initializing http collection config factory.");
         m_config = CastorUtils.unmarshal(HttpDatacollectionConfig.class, stream);
-    }
-
-    @Deprecated
-    private void initialize(Reader rdr) throws MarshalException, ValidationException {
-        log().debug("initialize: initializing http collection config factory.");
-        m_config = CastorUtils.unmarshal(HttpDatacollectionConfig.class, rdr);
     }
 
     /**

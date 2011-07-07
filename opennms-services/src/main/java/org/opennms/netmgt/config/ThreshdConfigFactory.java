@@ -34,7 +34,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
@@ -58,19 +57,6 @@ import org.opennms.netmgt.ConfigFileConstants;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com>James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com>James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com>James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class ThreshdConfigFactory extends ThreshdConfigManager {
     /**
@@ -82,29 +68,6 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
-
-    /**
-     * Public constructor
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @param rdr a {@link java.io.Reader} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    // Changed scope to public to simplify tests
-    @Deprecated
-    public ThreshdConfigFactory(Reader rdr, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
-        super(rdr, localServer, verifyServer);
-
-    }
 
     /**
      * <p>Constructor for ThreshdConfigFactory.</p>

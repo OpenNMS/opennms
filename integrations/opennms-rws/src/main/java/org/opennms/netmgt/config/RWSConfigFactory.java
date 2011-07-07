@@ -31,7 +31,6 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -75,27 +74,6 @@ public final class RWSConfigFactory extends RWSConfigManager {
      * Loaded version
      */
     private long m_currentVersion = -1L;
-
-    /**
-     * Private constructor
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @param currentVersion a long.
-     * @param reader a {@link java.io.FileReader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    public RWSConfigFactory(final long currentVersion, final FileReader reader) throws MarshalException, ValidationException, IOException {
-        super(reader);
-        m_currentVersion = currentVersion;
-    }
 
     /**
      * <p>Constructor for RWSConfigFactory.</p>

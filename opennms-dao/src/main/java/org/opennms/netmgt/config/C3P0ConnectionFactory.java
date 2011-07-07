@@ -32,7 +32,6 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -56,14 +55,6 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
 
     public C3P0ConnectionFactory(final InputStream stream, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
     	super(stream, dsName);
-    }
-
-    /**
-     * @deprecated Use code for InputStream instead to avoid character set issues
-     * 
-     */
-    public C3P0ConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-    	super(rdr, dsName);
     }
 
     public C3P0ConnectionFactory(final String configFile, final String dsName) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {
