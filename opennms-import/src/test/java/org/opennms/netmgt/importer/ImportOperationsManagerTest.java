@@ -157,7 +157,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT)
     public void testGetOperations() {
         Map<String, Integer> assetNumberMap = getAssetNumberMap("imported:");
         ImportOperationsManager opsMgr = new ImportOperationsManager(assetNumberMap, getModelImporter());
@@ -174,7 +174,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT)
     public void testSaveThenUpdate() throws Exception {
 
 
@@ -218,7 +218,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT)
     public void testChangeIpAddr() throws Exception {
         doImportFromSpecFile(new ClassPathResource("/tec_dump.xml"), 1, 1);
 
@@ -234,7 +234,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT)
     public void testImportToOperationsMgr() throws Exception {
         doDoubleImport(new ClassPathResource("/tec_dump.xml"));
 

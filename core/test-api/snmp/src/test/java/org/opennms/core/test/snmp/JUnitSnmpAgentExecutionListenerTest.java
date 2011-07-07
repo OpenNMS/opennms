@@ -31,7 +31,6 @@
 package org.opennms.core.test.snmp;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -42,8 +41,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
-import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.test.mock.MockLogAppender;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
@@ -69,24 +66,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(JUnitSnmpAgentExecutionListener.class)
 @JUnitSnmpAgent(resource="classpath:loadSnmpDataTest.properties")
-public class JUnitSnmpAgentExecutionListenerTest implements MockSnmpAgentAware {
+public class JUnitSnmpAgentExecutionListenerTest {
     
     OID m_oid = new OID(".1.3.5.1.1.1.0");
-
-    MockSnmpAgent m_agent = null;
-    
-    public void setMockSnmpAgent(MockSnmpAgent agent) {
-        m_agent = agent;
-    }
 
     @Before
     public void setUp() {
     	MockLogAppender.setupLogging();
-    }
-
-    @Test
-    public void testAgentInjection() {
-        assertNotNull(m_agent);
     }
 
     @Test

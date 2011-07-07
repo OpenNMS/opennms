@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.joesnmp.JoeSnmpValueFactory;
@@ -164,26 +165,27 @@ public class SnmpValueTest {
 	@Test
 	public void testTimeTicks() {
 		for (final SnmpValueFactory factory : m_factories) {
-			final SnmpValue value = factory.getTimeTicks(42);
 			final String className = factory.getClass().getName();
-			
-			assertEquals(className + ": getTimeTicks to int should return " + value.toInt(), 42, value.toInt());
-			assertEquals(className + ": getTimeTicks to long should return " + value.toLong(), 42, value.toLong());
-			assertEquals(className + ": getTimeTicks to BigInteger should return " + value.toBigInteger(), BigInteger.valueOf(42), value.toBigInteger());
-			assertEquals(className + ": getTimeTicks to String should return 42", "42", value.toString());
-			assertEquals(className + ": getTimeTicks to DisplayString should return 42", "42", value.toDisplayString());
-			try {
-				value.toHexString();
-				fail(className + ": getTimeTicks to HexString should throw an IllegalArgumentException");
-			} catch (final IllegalArgumentException e) { /* expected */ }
-			try {
-				value.toInetAddress();
-				fail(className + ": getTimeTicks to InetAddress should throw an IllegalArgumentException");
-			} catch (final IllegalArgumentException e) { /* expected */ }
-			try {
-				value.toSnmpObjId();
-				fail(className + ": getTimeTicks to SnmpObjId should throw an IllegalArgumentException");
-			} catch (final IllegalArgumentException e) { /* expected */ }
+			final SnmpValue[] values = { factory.getTimeTicks(42), SnmpUtils.parseMibValue("Timeticks: (42) 0:00:42.00") };
+			for (final SnmpValue value : values) {
+				assertEquals(className + ": getTimeTicks to int should return " + value.toInt(), 42, value.toInt());
+				assertEquals(className + ": getTimeTicks to long should return " + value.toLong(), 42, value.toLong());
+				assertEquals(className + ": getTimeTicks to BigInteger should return " + value.toBigInteger(), BigInteger.valueOf(42), value.toBigInteger());
+				assertEquals(className + ": getTimeTicks to String should return 42", "42", value.toString());
+				assertEquals(className + ": getTimeTicks to DisplayString should return 42", "42", value.toDisplayString());
+				try {
+					value.toHexString();
+					fail(className + ": getTimeTicks to HexString should throw an IllegalArgumentException");
+				} catch (final IllegalArgumentException e) { /* expected */ }
+				try {
+					value.toInetAddress();
+					fail(className + ": getTimeTicks to InetAddress should throw an IllegalArgumentException");
+				} catch (final IllegalArgumentException e) { /* expected */ }
+				try {
+					value.toSnmpObjId();
+					fail(className + ": getTimeTicks to SnmpObjId should throw an IllegalArgumentException");
+				} catch (final IllegalArgumentException e) { /* expected */ }
+			}
 		}
 	}
 	

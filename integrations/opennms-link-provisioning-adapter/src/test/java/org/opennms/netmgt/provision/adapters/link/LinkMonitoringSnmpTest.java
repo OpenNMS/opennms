@@ -42,11 +42,11 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
@@ -57,11 +57,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations={
         "classpath:/snmpConfigFactoryContext.xml"
 })
-@JUnitSnmpAgent(resource="classpath:/airPairR3_walk.properties", useMockSnmpStrategy=false)
+@JUnitSnmpAgent(resource="classpath:/airPairR3_walk.properties")
 @TestExecutionListeners({
     JUnitSnmpAgentExecutionListener.class
 })
-public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
+public class LinkMonitoringSnmpTest {
     
     private static final String AIR_PAIR_R3_SYS_OID = ".1.3.6.1.4.1.7262.1";
     private static final String AIR_PAIR_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.1.19.3.1.0";
@@ -75,7 +75,6 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     private static final String HORIZON_DUO_SYSTEM_CAPACITY = ".1.3.6.1.4.1.7262.2.3.1.1.5.0";
     private static final String HORIZON_DUO_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.1";
     
-    private MockSnmpAgent m_snmpAgent;
     private SnmpAgentConfig m_agentConfig;
     private DefaultEndPointConfigurationDao m_configDao;
     
@@ -118,10 +117,8 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     
     @Test
     public void dwoTestLinkMonitorAirPairR3() throws UnknownHostException {
-        assertNotNull(m_snmpAgent);
-        
-        m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 1);
-        m_snmpAgent.updateCounter32Value(AIR_PAIR_R3_DUPLEX_MISMATCH, 1);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_R3_DUPLEX_MISMATCH), SnmpUtils.getValueFactory().getCounter32(1));
         
         EndPointImpl endPoint = getEndPoint(AIR_PAIR_R3_SYS_OID);
         
@@ -135,8 +132,8 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     
     @Test(expected=EndPointStatusException.class)
     public void dwoTestLinkMonitorAirPair3DownLossOfSignal() throws UnknownHostException, EndPointStatusException {
-        m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 2);
-        m_snmpAgent.updateCounter32Value(AIR_PAIR_R3_DUPLEX_MISMATCH, 1);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_R3_DUPLEX_MISMATCH), SnmpUtils.getValueFactory().getCounter32(1));
         
         EndPointImpl endPoint = getEndPoint(AIR_PAIR_R3_SYS_OID);
         
@@ -146,12 +143,10 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     
     @Test
     @Ignore
+    @JUnitSnmpAgent(resource="/airPairR4_walk.properties")
     public void dwoTestLinkMonitorAirPairR4() throws UnknownHostException {
-        ClassPathResource resource = new ClassPathResource("/airPairR4_walk.properties");
-        m_snmpAgent.updateValuesFromResource(resource);
-        
-        m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 1);
-        m_snmpAgent.updateCounter32Value(AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, 1);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
         
         EndPointImpl endPoint = getEndPoint(AIR_PAIR_R4_SYS_OID);
         
@@ -164,12 +159,10 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test
+    @JUnitSnmpAgent(resource="/horizon_compact_walk.properties")
     public void dwoTestLinkMonitorHorizonCompact() throws UnknownHostException {
-        ClassPathResource resource = new ClassPathResource("/horizon_compact_walk.properties");
-        m_snmpAgent.updateValuesFromResource(resource);
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, 1);
-        m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_ETHERNET_LINK_DOWN, 1);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_ETHERNET_LINK_DOWN), SnmpUtils.getValueFactory().getCounter32(1));
         
         EndPointImpl endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID);
         
@@ -182,12 +175,10 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test(expected=EndPointStatusException.class)
+    @JUnitSnmpAgent(resource="/horizon_compact_walk.properties")
     public void dwoTestLinkMonitorHorizonCompactDownLossOfSignal() throws EndPointStatusException, UnknownHostException {
-        ClassPathResource resource = new ClassPathResource("/horizon_compact_walk.properties");
-        m_snmpAgent.updateValuesFromResource(resource);
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, 2);
-        m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_ETHERNET_LINK_DOWN, 1);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_ETHERNET_LINK_DOWN), SnmpUtils.getValueFactory().getCounter32(1));
         
         EndPoint endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID);
         
@@ -195,12 +186,10 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test(expected=EndPointStatusException.class)
+    @JUnitSnmpAgent(resource="/horizon_compact_walk.properties")
     public void dwoTestLinkMonitorHorizonCompactDownEthernetLinkDown() throws EndPointStatusException, UnknownHostException {
-        ClassPathResource resource = new ClassPathResource("/horizon_compact_walk.properties");
-        m_snmpAgent.updateValuesFromResource(resource);
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, 1);
-        m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_ETHERNET_LINK_DOWN, 2);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_ETHERNET_LINK_DOWN), SnmpUtils.getValueFactory().getCounter32(2));
         
         EndPoint endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID);
         
@@ -208,12 +197,10 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test
+    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity1() throws UnknownHostException, EndPointStatusException {
-        ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
-        m_snmpAgent.updateValuesFromResource(resource);
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 1);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(1));
         
         EndPointImpl endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
         
@@ -222,12 +209,10 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test(expected=EndPointStatusException.class)
+    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity1DownModemLossSignal() throws UnknownHostException, EndPointStatusException {
-        ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
-        m_snmpAgent.updateValuesFromResource(resource);
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2);
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 1);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(1));
         
         EndPointImpl endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
         
@@ -236,12 +221,10 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test
+    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity2() throws UnknownHostException, EndPointStatusException {
-        ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
-        m_snmpAgent.updateValuesFromResource(resource);
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 2);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(2));
         
         EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
         
@@ -250,12 +233,10 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test(expected=EndPointStatusException.class)
+    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity2DownModemLossSignal() throws UnknownHostException, EndPointStatusException {
-        ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
-        m_snmpAgent.updateValuesFromResource(resource);
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2);
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 2);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(2));
         
         EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
         
@@ -264,12 +245,10 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test
+    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity3() throws UnknownHostException, EndPointStatusException {
-        ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
-        m_snmpAgent.updateValuesFromResource(resource);
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 3);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(3));
         
         EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
         
@@ -277,22 +256,13 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test(expected=EndPointStatusException.class)
+    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity3DownModemLossSignal() throws UnknownHostException, EndPointStatusException {
-        ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
-        m_snmpAgent.updateValuesFromResource(resource);
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2);
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 3);
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(3));
         
         EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
         
         m_configDao.getValidator().validate(endPoint);
     }
-   
-    
-    public void setMockSnmpAgent(MockSnmpAgent agent) {
-        m_snmpAgent = agent;
-    }
-
-
 }

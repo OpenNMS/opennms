@@ -53,9 +53,8 @@ import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -92,11 +91,14 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.style.ToStringCreator;
@@ -123,7 +125,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class ProvisionerTest implements MockSnmpAgentAware, InitializingBean {
+public class ProvisionerTest implements InitializingBean {
     
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -176,11 +178,7 @@ public class ProvisionerTest implements MockSnmpAgentAware, InitializingBean {
     
     private ForeignSource m_foreignSource;
 
-    private MockSnmpAgent m_agent;
-    
-    public void setMockSnmpAgent(MockSnmpAgent agent) {
-        m_agent = agent;
-    }
+	private SnmpAgentConfig m_agentConfig;
 
     public void afterPropertiesSet() {
         assertNotNull(m_mockEventIpcManager);
@@ -214,14 +212,13 @@ public class ProvisionerTest implements MockSnmpAgentAware, InitializingBean {
         props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
 
         MockLogAppender.setupLogging(props);
-        
-        //System.setProperty("mock.debug", "false");
     }
     
     @Before
     public void setUp() throws Exception {
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
+        m_agentConfig = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getLocalHostAddress());
 
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
         
@@ -243,9 +240,7 @@ public class ProvisionerTest implements MockSnmpAgentAware, InitializingBean {
         m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
         
         m_pausibleExecutor.pause();
-
     }
-
 
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
@@ -625,7 +620,8 @@ public class ProvisionerTest implements MockSnmpAgentAware, InitializingBean {
         
         assertEquals(2, getInterfaceDao().countAll());
 
-        m_agent.updateValuesFromResource(m_resourceLoader.getResource("classpath:snmpTestData4.properties"));
+        final Resource location = m_resourceLoader.getResource("classpath:snmpTestData4.properties");
+    	SnmpUtils.replaceAgentDataWithResource(m_agentConfig, location);
         
         importFromResource("classpath:/requisition_primary_addr_changed.xml");
         

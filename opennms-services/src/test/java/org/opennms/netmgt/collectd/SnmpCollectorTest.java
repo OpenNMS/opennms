@@ -45,8 +45,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collector.CollectionSet;
@@ -61,13 +59,16 @@ import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.InitializingBean;
@@ -91,7 +92,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
-public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, TemporaryDatabaseAware<TemporaryDatabase>, TestContextAware {
+public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase>, TestContextAware {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -118,9 +119,9 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
 
     private CollectionAgent m_collectionAgent;
 
-    private MockSnmpAgent m_agent;
-
     private TemporaryDatabase m_database;
+
+	private SnmpAgentConfig m_agentConfig;
 
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
@@ -187,6 +188,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+        m_agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.getLocalHostAddress());
     }
 
     @After
@@ -225,7 +227,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
                     "1/fw0/ifOutUcastPkts"
             }
     )
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties", useMockSnmpStrategy=false)
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testCollect() throws Exception {
         System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
 
@@ -269,7 +271,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
                     "1/fw0/ifInOctets"
             }
     )
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties", useMockSnmpStrategy=false)
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testPersist() throws Exception {
         File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
 
@@ -300,8 +302,8 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
         assertEquals(new Double(1234567.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
 
         // now update the data in the agent
-        m_agent.updateIntValue(".1.3.6.1.2.1.6.9.0", 456);
-        m_agent.updateCounter32Value(".1.3.6.1.2.1.2.2.1.10.6", 7654321);
+        SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.6.9.0"), SnmpUtils.getValueFactory().getInt32(456));
+        SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(7654321));
 
         CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
 
@@ -391,7 +393,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
                     "1/brocadeFCPortIndex/8"
             }
     )
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties", useMockSnmpStrategy=false)
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void testBrocadeCollect() throws Exception {
         m_collectionSpecification.initialize(m_collectionAgent);
 
@@ -463,7 +465,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
                     "1/brocadeFCPortIndex/8"
             }
     )
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties", useMockSnmpStrategy=false)
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void testBug2447_GenericIndexedOnlyCollect() throws Exception {
         // don't forget to initialize the agent
         m_collectionSpecification.initialize(m_collectionAgent);
@@ -494,10 +496,6 @@ public class SnmpCollectorTest implements MockSnmpAgentAware, InitializingBean, 
 
     private static String rrd(String file) {
         return file + RrdUtils.getExtension();
-    }
-
-    public void setMockSnmpAgent(MockSnmpAgent agent) {
-        m_agent = agent;
     }
 
     public void setTestContext(TestContext context) {

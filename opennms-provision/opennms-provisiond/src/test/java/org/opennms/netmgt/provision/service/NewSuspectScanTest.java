@@ -166,7 +166,7 @@ public class NewSuspectScanTest {
 
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties", useMockSnmpStrategy=false)
+    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
     public void testScanNewSuspect() throws Exception {
         
         //Verify empty database

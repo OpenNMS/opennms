@@ -58,6 +58,7 @@ import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Integer32;
+import org.snmp4j.smi.Null;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.SMIConstants;
@@ -65,7 +66,9 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class MockSnmpAgentTest extends TestCase {
 
@@ -172,6 +175,24 @@ public class MockSnmpAgentTest extends TestCase {
         assertNotNull(vals);
         assertEquals(1, vals.length);
     }
+    
+    public void testSet() throws Exception {
+        assertResultFromGet("1.2.3.4.5", SMIConstants.EXCEPTION_NO_SUCH_OBJECT, Null.noSuchObject);
+
+        assertResultFromSet("1.2.3.4.5", new Integer32(17), "1.2.3.4.5", SMIConstants.SYNTAX_INTEGER32, new Integer32(17));
+        
+        assertResultFromGet("1.2.3.4.5", SMIConstants.SYNTAX_INTEGER32, new Integer32(17));
+    }
+
+    public void testLoadSnmpResourceIntoAgent() throws Exception {
+    	final String contents = ".1.2.3.4.5 = STRING: Foo";
+
+    	final Resource resource = new ByteArrayResource(contents.getBytes());
+    	SnmpUtils.loadSnmpResourceIntoAgent(getAgentConfig(), resource);
+
+    	SnmpValue value = SnmpUtils.get(getAgentConfig(), SnmpObjId.get("1.2.3.4.5"));
+    	assertEquals("Foo", value.toString());
+    }
 
     public void testUpdateFromFileWithUSMTimeReset() throws Exception {
         assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
@@ -195,20 +216,24 @@ public class MockSnmpAgentTest extends TestCase {
         assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
     }
 
-    private void assertResultFromGet(String oidStr, int expectedSyntax, Integer32 expected) throws Exception {
+    private void assertResultFromGet(String oidStr, int expectedSyntax, Variable expected) throws Exception {
         assertResult(PDU.GET, oidStr, oidStr, expectedSyntax, expected);
     }
 
-    private void assertResultFromGetNext(String oidStr, String expectedOid, int expectedSyntax, Integer32 expected) throws UnknownHostException, IOException {
+    private void assertResultFromGetNext(String oidStr, String expectedOid, int expectedSyntax, Variable expected) throws UnknownHostException, IOException {
         assertResult(PDU.GETNEXT, oidStr, expectedOid, expectedSyntax, expected);
     }
 
-    private void assertResult(int pduType, String oidStr, String expectedOid, int expectedSyntax, Integer32 expected) throws UnknownHostException, IOException {
-        assertV3Result(pduType, oidStr, expectedOid, expectedSyntax, expected);
+    private void assertResultFromSet(String oidStr, Variable sendVariable, String expectedOid, int expectedSyntax, Variable expected) throws UnknownHostException, IOException {
+        assertV3Result(PDU.SET, oidStr, sendVariable, expectedOid, expectedSyntax, expected);
+    }
+    
+    private void assertResult(int pduType, String oidStr, String expectedOid, int expectedSyntax, Variable expected) throws UnknownHostException, IOException {
+        assertV3Result(pduType, oidStr, null, expectedOid, expectedSyntax, expected);
     }
 
     @SuppressWarnings("unused")
-    private void assertV1Result(int pduType, String oidStr, String expectedOid, int expectedSyntax, Integer32 expected) throws UnknownHostException, IOException {
+    private void assertV1Result(int pduType, String oidStr, String expectedOid, int expectedSyntax, Variable expected) throws UnknownHostException, IOException {
         PDU pdu = new PDU();
         OID oid = new OID(oidStr);
         pdu.add(new VariableBinding(oid));
@@ -283,10 +308,14 @@ public class MockSnmpAgentTest extends TestCase {
         }
     }
 
-    private void assertV3Result(int pduType, String oidStr, String expectedOid, int expectedSyntax, Integer32 expected) throws UnknownHostException, IOException {
+    private void assertV3Result(final int pduType, final String oidStr, final Variable sendVariable, final String expectedOid, final int expectedSyntax, final Variable expected) throws UnknownHostException, IOException {
         PDU pdu = new ScopedPDU();
         OID oid = new OID(oidStr);
-        pdu.add(new VariableBinding(oid));
+        if (sendVariable != null) {
+        	pdu.add(new VariableBinding(oid, sendVariable));
+        } else {
+        	pdu.add(new VariableBinding(oid));
+        }
         pdu.setType(pduType);
 
         OctetString userId = new OctetString("opennmsUser");

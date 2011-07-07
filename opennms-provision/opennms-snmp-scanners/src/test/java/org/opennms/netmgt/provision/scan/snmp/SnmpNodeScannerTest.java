@@ -146,7 +146,7 @@ public class SnmpNodeScannerTest {
     }
 
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties", port=AGENT_PORT, useMockSnmpStrategy=true)
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties", port=AGENT_PORT)
     public void testScan() throws Exception {
 
         SnmpNodeScanner scanner = new SnmpNodeScanner();
@@ -163,7 +163,7 @@ public class SnmpNodeScannerTest {
 
     @Test
     @Ignore("this will only work on the OpenNMS internal network ;)")
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties", port=AGENT_PORT, useMockSnmpStrategy=true)
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties", port=AGENT_PORT)
     public void testOpennmsRouter() throws Exception {
         InetAddress agent = InetAddressUtils.addr("172.20.1.1");
         MockScanContext context = new MockScanContext(agent);

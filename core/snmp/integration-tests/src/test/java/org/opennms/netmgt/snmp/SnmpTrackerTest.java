@@ -61,7 +61,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener.class
 })
 @ContextConfiguration(locations={"classpath:emptyContext.xml"})
-@JUnitSnmpAgent(resource="classpath:snmpTestData1.properties", useMockSnmpStrategy=true)
+@JUnitSnmpAgent(resource="classpath:snmpTestData1.properties")
 public class SnmpTrackerTest {
 
     public static class SnmpTableConstants {
@@ -217,7 +217,7 @@ public class SnmpTrackerTest {
     }
 
     @Test
-    @JUnitSnmpAgent(resource="classpath:snmpTestDataIncompleteTable.properties", useMockSnmpStrategy=true)
+    @JUnitSnmpAgent(resource="classpath:snmpTestDataIncompleteTable.properties")
     public void testIncompleteTableData() throws Exception {
         TestRowCallback rc = new TestRowCallback();
         TableTracker tt = new TableTracker(rc,

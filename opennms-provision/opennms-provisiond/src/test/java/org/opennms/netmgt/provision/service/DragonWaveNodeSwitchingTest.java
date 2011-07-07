@@ -45,8 +45,6 @@ import org.opennms.core.tasks.Task;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.NodeDao;
@@ -56,12 +54,14 @@ import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -79,7 +79,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
+public class DragonWaveNodeSwitchingTest {
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -96,7 +96,7 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
 
-    private MockSnmpAgent m_snmpAgent;
+	private SnmpAgentConfig m_agentConfig;
 
     @BeforeClass
     public static void setUpSnmpConfig() {
@@ -114,6 +114,7 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
         m_provisioner.start();
+        m_agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.getLocalHostAddress());
     }
 
     public void runScan(NodeScan scan) throws InterruptedException, ExecutionException {
@@ -142,7 +143,8 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
         String sysObjectId = onmsNode.getSysObjectId();
         assertEquals(".1.3.6.1.4.1.7262.2.3", sysObjectId);
 
-        m_snmpAgent.updateValuesFromResource(m_resourceLoader.getResource("classpath:/dw/walks/node3-walk.properties"));
+        final Resource location = m_resourceLoader.getResource("classpath:/dw/walks/node3-walk.properties");
+    	SnmpUtils.loadSnmpResourceIntoAgent(m_agentConfig, location);
 
         // Make sure agent reports the proper OID
         assertEquals(".1.3.6.1.4.1.7262.1", getSnmpValue("192.168.255.22", ".1.3.6.1.2.1.1.2.0").toDisplayString());
@@ -191,10 +193,5 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
 
     private void importResource(String location) throws Exception {
         m_provisioner.importModelFromResource(m_resourceLoader.getResource(location));
-    }
-
-    public void setMockSnmpAgent(MockSnmpAgent agent) {
-        m_snmpAgent = agent;
-
     }
 }

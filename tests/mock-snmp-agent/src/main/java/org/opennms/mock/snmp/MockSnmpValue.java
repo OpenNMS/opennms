@@ -440,35 +440,6 @@ public class MockSnmpValue implements SnmpValue {
         
     }
 
-    public static SnmpValue parseMibValue(final String mibVal) {
-        if (mibVal.startsWith("OID:"))
-            return new OidSnmpValue(mibVal.substring("OID:".length()).trim());
-        else if (mibVal.startsWith("Timeticks:"))
-            return new TimeticksSnmpValue(mibVal.substring("Timeticks:".length()).trim());
-        else if (mibVal.startsWith("STRING:"))
-            return new StringSnmpValue(mibVal.substring("STRING:".length()).trim());
-        else if (mibVal.startsWith("INTEGER:"))
-            return new NumberSnmpValue(SnmpValue.SNMP_INT32, mibVal.substring("INTEGER:".length()).trim());
-        else if (mibVal.startsWith("Gauge32:"))
-            return new NumberSnmpValue(SnmpValue.SNMP_GAUGE32, mibVal.substring("Gauge32:".length()).trim());
-        else if (mibVal.startsWith("Counter32:"))
-            return new NumberSnmpValue(SnmpValue.SNMP_COUNTER32, mibVal.substring("Counter32:".length()).trim());
-        else if (mibVal.startsWith("Counter64:"))
-            return new NumberSnmpValue(SnmpValue.SNMP_COUNTER64, mibVal.substring("Counter64:".length()).trim());
-        else if (mibVal.startsWith("IpAddress:"))
-            return new IpAddressSnmpValue(mibVal.substring("IpAddress:".length()).trim());
-        else if (mibVal.startsWith("Hex-STRING:"))
-            return new HexStringSnmpValue(mibVal.substring("Hex-STRING:".length()).trim());
-        else if (mibVal.startsWith("Network Address:"))
-            return new NetworkAddressSnmpValue(mibVal.substring("Network Address:".length()).trim());
-        else if (mibVal.startsWith("BITS:"))
-            return new HexStringSnmpValue(mibVal.substring("BITS:".length()).trim());
-        else if (mibVal.equals("\"\""))
-            return NULL_VALUE;
-
-        throw new IllegalArgumentException("Unknown Snmp Type: "+mibVal);
-    }
-
     public int toInt() {
         throw new IllegalArgumentException("Unable to convert "+this+" to an int");
     }

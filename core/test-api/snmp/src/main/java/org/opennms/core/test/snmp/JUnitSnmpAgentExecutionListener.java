@@ -63,27 +63,21 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     @Override
     public void beforeTestMethod(final TestContext testContext) throws Exception {
         final JUnitMockSnmpStrategyAgents agents = findAgentListAnnotation(testContext);
-        Boolean useMockSnmpStrategy = null;
         testContext.setAttribute("strategyClass", System.getProperty("org.opennms.snmp.strategyClass"));
         
         if (agents != null) {
-            useMockSnmpStrategy = true;
             for (final JUnitSnmpAgent agent : agents.value()) {
-                handleSnmpAgent(testContext, agent, useMockSnmpStrategy);
+                handleSnmpAgent(testContext, agent);
             }
         }
 
-        handleSnmpAgent(testContext, findAgentAnnotation(testContext), useMockSnmpStrategy);
+        handleSnmpAgent(testContext, findAgentAnnotation(testContext));
     }
 
-    protected void handleSnmpAgent(final TestContext testContext, final JUnitSnmpAgent config, final Boolean agentsUseMockSnmpStrategy) throws UnknownHostException, InterruptedException {
+    protected void handleSnmpAgent(final TestContext testContext, final JUnitSnmpAgent config) throws UnknownHostException, InterruptedException {
         if (config == null) return;
 
-        boolean useMockSnmpStrategy = config.useMockSnmpStrategy();
-        // if the agents object has set a property, use it globally instead
-        if (agentsUseMockSnmpStrategy != null) {
-            useMockSnmpStrategy = agentsUseMockSnmpStrategy;
-        }
+        final Boolean useMockSnmpStrategy = Boolean.getBoolean("org.opennms.core.test-api.snmp.useMockSnmpStrategy");
         LogUtils.debugf(this, "handleSnmpAgent(%s, %s, %s)", testContext, config, useMockSnmpStrategy);
         
         String host = config.host();
@@ -142,7 +136,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
     }
 
-    private JUnitMockSnmpStrategyAgents findAgentListAnnotation(TestContext testContext) {
+    private JUnitMockSnmpStrategyAgents findAgentListAnnotation(final TestContext testContext) {
         final Method testMethod = testContext.getTestMethod();
         final JUnitMockSnmpStrategyAgents config = testMethod.getAnnotation(JUnitMockSnmpStrategyAgents.class);
         if (config != null) {
@@ -155,7 +149,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     }
 
     @Override
-    public void afterTestMethod(TestContext testContext) throws Exception {
+    public void afterTestMethod(final TestContext testContext) throws Exception {
         final MockSnmpAgent agent = (MockSnmpAgent)testContext.getAttribute(MOCK_SNMP_AGENT);
         final String strategyClass = (String)testContext.getAttribute("strategyClass");
         

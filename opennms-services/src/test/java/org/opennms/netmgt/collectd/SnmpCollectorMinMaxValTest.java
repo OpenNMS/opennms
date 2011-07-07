@@ -35,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.Set;
 
 import org.junit.After;
@@ -44,8 +45,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -59,6 +58,9 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +84,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class SnmpCollectorMinMaxValTest implements MockSnmpAgentAware, TestContextAware {
+public class SnmpCollectorMinMaxValTest implements TestContextAware {
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
 
@@ -108,11 +110,14 @@ public class SnmpCollectorMinMaxValTest implements MockSnmpAgentAware, TestConte
 
     private CollectionAgent m_collectionAgent;
 
-    private MockSnmpAgent m_agent;
+	private SnmpAgentConfig m_agentConfig;
 
     @Before
     public void setUp() throws Exception {
-        MockLogAppender.setupLogging();
+    	final Properties p = new Properties();
+    	p.setProperty("log4j.logger.org.opennms.netmgt.snmp.SnmpUtils", "DEBUG");
+        MockLogAppender.setupLogging(p);
+
         assertNotNull(m_mockEventIpcManager);
         assertNotNull(m_transactionManager);
         assertNotNull(m_nodeDao);
@@ -159,6 +164,7 @@ public class SnmpCollectorMinMaxValTest implements MockSnmpAgentAware, TestConte
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+        m_agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.getLocalHostAddress());
     }
 
     @After
@@ -181,9 +187,9 @@ public class SnmpCollectorMinMaxValTest implements MockSnmpAgentAware, TestConte
                     "1/fw0/ifInOctets"
             }
     )
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties", useMockSnmpStrategy=false)
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testPersist() throws Exception {
-        File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
+    	final File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
 
         // node level collection
         File nodeDir = new File(snmpRrdDirectory, "1");
@@ -212,8 +218,8 @@ public class SnmpCollectorMinMaxValTest implements MockSnmpAgentAware, TestConte
         assertEquals(new Double(1234567.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
 
         // now update the data in the agent
-        m_agent.updateIntValue(".1.3.6.1.2.1.6.9.0", 456);
-        m_agent.updateCounter32Value(".1.3.6.1.2.1.2.2.1.10.6", 7654321);
+		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.6.9.0"), SnmpUtils.getValueFactory().getInt32(456));
+		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(7654321));
 
         CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
 
@@ -222,8 +228,8 @@ public class SnmpCollectorMinMaxValTest implements MockSnmpAgentAware, TestConte
         assertEquals(new Double(1234567.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis + 20000));
         
      // now update the data in the agent
-        m_agent.updateIntValue(".1.3.6.1.2.1.6.9.0", 456);
-        m_agent.updateCounter32Value(".1.3.6.1.2.1.2.2.1.10.6", 1234567);
+		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.6.9.0"), SnmpUtils.getValueFactory().getInt32(456));
+		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(1234567));
 
         CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
 
@@ -235,13 +241,8 @@ public class SnmpCollectorMinMaxValTest implements MockSnmpAgentAware, TestConte
         m_collectionSpecification.release(m_collectionAgent);
     }
 
-    
     private static String rrd(String file) {
         return file + RrdUtils.getExtension();
-    }
-
-    public void setMockSnmpAgent(MockSnmpAgent agent) {
-        m_agent = agent;
     }
 
     public void setTestContext(TestContext context) {

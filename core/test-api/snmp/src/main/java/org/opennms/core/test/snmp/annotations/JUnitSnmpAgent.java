@@ -53,11 +53,4 @@ public @interface JUnitSnmpAgent {
      * {@link ProxySnmpAgentConfigFactory}
      */
     int port() default 9161;
-    /**
-     * If set to true, use the MockSnmpStrategy instead of the MockSnmpAgent.  Note that if
-     * this annotation is inside a {@link JUnitMockSnmpStrategyAgents} annotation, the "useMockSnmpStrategy" 
-     * property there will override this.
-     * @return whether to use the MockSnmpStrategy
-     */
-    boolean useMockSnmpStrategy() default false;
 }

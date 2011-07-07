@@ -297,7 +297,7 @@ public class ModelImporterTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:/snmpTestData1.properties", host="127.0.0.1", port=9161, useMockSnmpStrategy=false)
+    @JUnitSnmpAgent(resource="classpath:/snmpTestData1.properties", host="127.0.0.1", port=9161)
     public void testAddSnmpInterfaces() throws Exception {
         createAndFlushServiceTypes();
         createAndFlushCategories();
