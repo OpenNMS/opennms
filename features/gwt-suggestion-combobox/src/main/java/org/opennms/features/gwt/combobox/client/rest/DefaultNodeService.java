@@ -100,7 +100,7 @@ public class DefaultNodeService implements NodeService {
 
     @Override
     public void getNodeByNodeLabel(String nodeLabel, RequestCallback callback) {
-        String url = BASE_URL + "?label=" + nodeLabel + "&limit=0";
+        String url = BASE_URL + "?label=" + nodeLabel + "&comparator=contains&limit=0";
         sendRequest(callback, url);
     }
 

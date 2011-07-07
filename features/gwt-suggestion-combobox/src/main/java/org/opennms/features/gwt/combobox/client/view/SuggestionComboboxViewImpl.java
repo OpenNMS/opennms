@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -87,7 +88,7 @@ public class SuggestionComboboxViewImpl extends Composite implements SuggestionC
     
     public SuggestionComboboxViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
-        m_layoutPanel.setSize("100%", "21px");
+        m_layoutPanel.setSize("100%", "23px");
         m_textBox.addKeyDownHandler(new KeyDownHandler() {
 
             @Override
@@ -111,12 +112,15 @@ public class SuggestionComboboxViewImpl extends Composite implements SuggestionC
         
         m_nodeList = new CellList<NodeDetail>(new NodeDetailCell());
         m_nodeList.setPageSize(10);
+        m_nodeList.getElement().getStyle().setFontSize(12, Unit.PX);
         m_nodeList.setSelectionModel(m_selectionModel);
 
         m_dataList = new ListDataProvider<NodeDetail>();
         m_dataList.addDataDisplay(m_nodeList);
         
         m_pager = new SimplePager();
+        m_pager.setStyleName("onms-table-no-borders-margin");
+        m_pager.getElement().getStyle().setWidth(100, Unit.PCT);
         m_pager.setDisplay(m_nodeList);
         
         FlowPanel flowPanel = new FlowPanel();
@@ -126,7 +130,10 @@ public class SuggestionComboboxViewImpl extends Composite implements SuggestionC
         m_popupPanel.add(flowPanel);
         m_popupPanel.setAutoHideEnabled(true);
         m_popupPanel.setAnimationEnabled(true);
-        m_popupPanel.setModal(true);
+        m_popupPanel.setModal(false);
+        m_popupPanel.getElement().getStyle().setBorderWidth(1, Unit.PX);
+        m_popupPanel.getElement().getStyle().setBorderColor("#B5B8C8");
+        m_popupPanel.getElement().getStyle().setPadding(1, Unit.PX);
     }
     
     @Override
@@ -142,7 +149,8 @@ public class SuggestionComboboxViewImpl extends Composite implements SuggestionC
             
             @Override
             public void setPosition(int offsetWidth, int offsetHeight) {
-                m_popupPanel.setPopupPosition(getAbsoluteLeft(), getAbsoluteTop() + 21);
+                m_popupPanel.setWidth((getOffsetWidth() - 5) + "px");
+                m_popupPanel.setPopupPosition(getAbsoluteLeft(), getAbsoluteTop() + 24);
             }
         });
     }

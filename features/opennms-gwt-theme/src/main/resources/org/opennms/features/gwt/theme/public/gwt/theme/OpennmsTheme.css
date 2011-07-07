@@ -1146,25 +1146,27 @@ td.datePickerMonth {
 /* OpenNMS Centric GWT Classes */
 .onms-ipinterface-status-unknown {
 	background: #B2DFFF;
-/* 	border-bottom-color: #B2DFFF; */
-/* 	border-right-color: #B2DFFF; */
 }
 
 .onms-ipinterface-status-indeterminate {
 	background: #F6CECD;
-/* 	border-bottom-color: #F6CECD; */
-/* 	border-right-color: #F6CECD; */
 }
 
 .onms-ipinterface-status-up {
 	background: #D8E1CD;
-/* 	border-bottom-color: #D8E1CD; */
-/* 	border-right-color: #D8E1CD; */
 }
 
 .onms-ipinterface-status-down {
 	background: #F5CDCD;
-/* 	border-bottom-color: #F5CDCD; */
-/* 	border-right-color: #F5CDCD; */
 }
 
+.onms-table-no-borders-margin{
+    margin: 0;
+    border-top: 1px;
+    background-color: #F0F0F0;
+}
+
+.onms-table-no-borders-margin td{
+    border: none;
+    background-color: inherit;
+}

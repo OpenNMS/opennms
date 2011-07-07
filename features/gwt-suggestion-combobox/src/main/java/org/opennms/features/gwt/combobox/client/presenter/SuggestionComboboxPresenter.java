@@ -11,6 +11,7 @@ import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
 
 public class SuggestionComboboxPresenter implements Presenter, SuggestionComboboxView.Presenter<NodeDetail>{
@@ -88,8 +89,7 @@ public class SuggestionComboboxPresenter implements Presenter, SuggestionCombobo
 
     @Override
     public void onNodeSelected() {
-        NodeDetail node = m_view.getSelectedNode();
-        Window.alert("you are going to this node: " + node.getLabel());
+        Location.assign("graph/chooseresource.htm?reports=all&parentResourceType=node&parentResource=" + m_view.getSelectedNode().getId());
     }
 
 }

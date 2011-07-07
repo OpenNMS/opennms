@@ -9,14 +9,14 @@ import com.google.gwt.user.client.ui.RootPanel;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class OnmsSuggestionCombobox implements EntryPoint {
+public class NodeSuggestionCombobox implements EntryPoint {
   
 
   /**
    * This is the entry point method.
    */
     public void onModuleLoad() {
-        NodeList<Element> nodes = RootPanel.getBodyElement().getElementsByTagName("opennms:nodeResourceCombobox");
+        NodeList<Element> nodes = RootPanel.getBodyElement().getElementsByTagName("opennms:nodeSuggestionCombobox");
         if(nodes.getLength() > 0) {
             for(int i = 0; i < nodes.getLength(); i++) {
                 Element elem = nodes.getItem(i);

@@ -11,6 +11,6 @@ public class NodeDetail extends JavaScriptObject {
     }-*/;
     
     public final native int getId() /*-{
-        return this["@id"];
+        return parseInt(this["@id"]);
     }-*/;
 }

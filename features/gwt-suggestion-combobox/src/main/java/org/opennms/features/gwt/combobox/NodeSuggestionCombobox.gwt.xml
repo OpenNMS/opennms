@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module rename-to='OnmsSuggestionCombobox'>
+<module rename-to='NodeSuggestionCombobox'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
   <inherits name="com.google.gwt.http.HTTP"/>
@@ -9,7 +9,7 @@
 
 
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='org.opennms.features.gwt.combobox.client.OnmsSuggestionCombobox'/>
+  <entry-point class='org.opennms.features.gwt.combobox.client.NodeSuggestionCombobox'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
