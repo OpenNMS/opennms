@@ -120,19 +120,6 @@ public class WmiPeerFactory extends PeerFactory {
     }
 
     /**
-     * <p>Constructor for WmiPeerFactory.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public WmiPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(WmiConfig.class, rdr);
-    }
-
-    /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
      *

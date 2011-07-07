@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -102,12 +101,6 @@ public class MonitoringLocationsFactoryTest {
 
     static class TestPollerConfigManager extends PollerConfigManager {
         String m_xml;
-
-        @Deprecated
-        public TestPollerConfigManager(Reader rdr, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
-            super(rdr, localServer, verifyServer);
-            save();
-        }
 
         public TestPollerConfigManager(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
             super(stream, localServer, verifyServer);

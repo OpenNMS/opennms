@@ -30,7 +30,6 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Collection;
 
@@ -64,19 +63,6 @@ public abstract class NotifdConfigManager {
      * 
      */
     protected NotifdConfiguration configuration;
-
-    /**
-     * <p>parseXml</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    public synchronized void parseXml(Reader reader) throws MarshalException, ValidationException, IOException {
-        configuration = CastorUtils.unmarshal(NotifdConfiguration.class, reader);
-    }
 
     /**
      * <p>parseXml</p>

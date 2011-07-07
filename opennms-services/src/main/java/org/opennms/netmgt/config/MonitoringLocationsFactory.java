@@ -33,7 +33,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -100,18 +99,6 @@ public class MonitoringLocationsFactory {
         initialize(stream);
     }
 
-    /**
-     * <p>Constructor for MonitoringLocationsFactory.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public MonitoringLocationsFactory(final Reader rdr) throws MarshalException, ValidationException {
-        initialize(rdr);
-    }
-
     public Lock getReadLock() {
         return m_readLock;
     }
@@ -123,13 +110,6 @@ public class MonitoringLocationsFactory {
     private void initialize(final InputStream stream) throws MarshalException, ValidationException {
         LogUtils.debugf(this, "initialize: initializing monitoring locations factory.");
         m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, stream);
-        initializeDefsMap();
-    }
-
-    @Deprecated
-    private void initialize(final Reader rdr) throws MarshalException, ValidationException {
-        LogUtils.debugf(this, "initialize: initializing monitoring locations factory.");
-        m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, rdr);
         initializeDefsMap();
     }
 

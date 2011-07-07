@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 
 import junit.framework.TestCase;
 
@@ -70,7 +70,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new StringReader(amiConfigXml));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
 
@@ -100,7 +100,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new StringReader(amiConfigXml));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -128,7 +128,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new StringReader(amiConfigXml));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -156,7 +156,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new StringReader(amiConfigXml));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -184,7 +184,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new StringReader(amiConfigXml));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -222,7 +222,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new StringReader(amiConfigXml));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -261,7 +261,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new StringReader(amiConfigXml));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -299,7 +299,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new StringReader(amiConfigXml));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -335,7 +335,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new StringReader(amiConfigXml));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -372,7 +372,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new StringReader(amiConfigXml));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());

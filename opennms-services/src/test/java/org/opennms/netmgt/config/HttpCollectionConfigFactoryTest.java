@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+
+import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import junit.framework.TestCase;
 
 /**
  * 
@@ -43,8 +44,8 @@ import junit.framework.TestCase;
  */
 public class HttpCollectionConfigFactoryTest extends TestCase {
 
-    public void testHttpCollectionConfigFactoryReader() throws MarshalException, ValidationException {
-        Reader rdr = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+    public void testHttpCollectionConfigFactoryReader() throws MarshalException, ValidationException, UnsupportedEncodingException {
+        InputStream rdr = new ByteArrayInputStream(("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
                 "<http-datacollection-config  \n" + 
                 "    xmlns:http-dc=\"http://xmlns.opennms.org/xsd/config/http-datacollection\" \n" + 
                 "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" + 
@@ -69,7 +70,7 @@ public class HttpCollectionConfigFactoryTest extends TestCase {
                 "      </uri>\n" + 
                 "    </uris>\n" + 
                 "  </http-collection>\n" + 
-                "</http-datacollection-config>");
+                "</http-datacollection-config>").getBytes("UTF-8"));
         new HttpCollectionConfigFactory(rdr);
         assertNotNull(HttpCollectionConfigFactory.getConfig());
     }

@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.config;
 
-import java.beans.PropertyVetoException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.sql.SQLException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -52,23 +49,6 @@ public class ConnectionFactoryUtil {
      */
     public static JdbcDataSource marshalDataSourceFromConfig(final InputStream stream, final String dsName) throws MarshalException, ValidationException {
     	final DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, stream);
-        return validateDataSourceConfiguration(dsName, dsc);
-    }
-
-    /**
-     * <p>marshalDataSourceFromConfig</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @param dsName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.beans.PropertyVetoException if any.
-     * @throws java.sql.SQLException if any.
-     * @deprecated Use code for InputStream instead to avoid character set issues
-     */
-    public static JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-    	final DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr);
         return validateDataSourceConfiguration(dsName, dsc);
     }
 

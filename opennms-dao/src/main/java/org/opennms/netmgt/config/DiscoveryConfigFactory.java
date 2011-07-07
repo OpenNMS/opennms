@@ -235,9 +235,9 @@ public final class DiscoveryConfigFactory {
     public void saveConfiguration(final DiscoveryConfiguration configuration) throws MarshalException, ValidationException, IOException {
         getWriteLock().lock();
         try {
-            // marshall to a string first, then write the string to the file. This
+            // marshal to a string first, then write the string to the file. This
             // way the original config
-            // isn't lost if the xml from the marshall is hosed.
+            // isn't lost if the XML from the marshal is hosed.
             final StringWriter stringWriter = new StringWriter();
             Marshaller.marshal(configuration, stringWriter);
             final String xml = stringWriter.toString();

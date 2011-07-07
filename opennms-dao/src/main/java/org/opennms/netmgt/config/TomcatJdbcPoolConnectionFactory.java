@@ -32,7 +32,6 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -51,14 +50,6 @@ public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
 
     public TomcatJdbcPoolConnectionFactory(final InputStream stream, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
     	super(stream, dsName);
-    }
-
-    /**
-     * @deprecated Use code for InputStream instead to avoid character set issues
-     * 
-     */
-    public TomcatJdbcPoolConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-    	super(rdr, dsName);
     }
 
     public TomcatJdbcPoolConnectionFactory(final String configFile, final String dsName) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {

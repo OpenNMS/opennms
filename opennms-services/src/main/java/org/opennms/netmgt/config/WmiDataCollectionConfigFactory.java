@@ -102,29 +102,11 @@ public class WmiDataCollectionConfigFactory {
          initialize(is);
      }
 
-     /**
-      * <p>Constructor for WmiDataCollectionConfigFactory.</p>
-      *
-      * @param rdr a {@link java.io.Reader} object.
-      * @throws org.exolab.castor.xml.MarshalException if any.
-      * @throws org.exolab.castor.xml.ValidationException if any.
-      */
-     @Deprecated
-     public WmiDataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-         initialize(rdr);
-     }
-
      private void initialize(InputStream stream) throws MarshalException, ValidationException {
          log().debug("initialize: initializing WMI collection config factory.");
          m_config = CastorUtils.unmarshal(WmiDatacollectionConfig.class, stream);
      }
      
-     @Deprecated
-     private void initialize(Reader rdr) throws MarshalException, ValidationException {
-         log().debug("initialize: initializing WMI collection config factory.");
-         m_config = CastorUtils.unmarshal(WmiDatacollectionConfig.class, rdr);
-     }
-
      /**
       * Be sure to call this method before calling getInstance().
       *

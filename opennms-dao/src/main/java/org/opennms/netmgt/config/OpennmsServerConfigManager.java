@@ -29,7 +29,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.InputStream;
-import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -44,18 +43,6 @@ public class OpennmsServerConfigManager {
      * The config class loaded from the config file
      */
     private LocalServer m_config;
-    
-    /**
-     * <p>Constructor for OpennmsServerConfigManager.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    protected OpennmsServerConfigManager(final Reader rdr) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(LocalServer.class, rdr);
-    }
     
     /**
      * <p>Constructor for OpennmsServerConfigManager.</p>
