@@ -15,4 +15,9 @@
       </createTable>
     </changeSet>
 
+    <changeSet author="brozow" id="1.9.90-make-accessLocks-case-insensitive" failOnError="true">
+      <renameTable oldTableName="accessLocks" newTableName="accesslocks" />
+      <renameColumn tableName="accesslocks" oldColumnName="lockName" newColumnName="lockname" />
+    </changeSet>
+
 </databaseChangeLog>
