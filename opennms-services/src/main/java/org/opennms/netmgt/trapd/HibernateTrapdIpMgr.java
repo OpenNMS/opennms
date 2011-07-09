@@ -39,7 +39,9 @@ package org.opennms.netmgt.trapd;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -96,8 +98,15 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
         if (addr == null || nodeid == -1) {
             return -1;
         }
-        
-        return longValue(m_knownips.put(addr, new Integer((int) nodeid)));
+
+        // Only add the address if it doesn't exist on the map. If it exists, only replace the current one if the new address is primary.
+        boolean add = true;
+        if (m_knownips.containsKey(addr)) {
+            OnmsIpInterface intf = m_ipInterfaceDao.findByNodeIdAndIpAddress(new Integer((int) nodeid), addr);
+            add = intf != null && intf.isPrimary();
+            log().info("setNodeId: address found " + intf + ". Should be added? " + add);
+        }
+        return add ? longValue(m_knownips.put(addr, new Integer((int) nodeid))) : -1;
     }
 
     /* (non-Javadoc)
@@ -150,5 +159,9 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
      */
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
+    }
+
+    protected ThreadCategory log() {
+        return ThreadCategory.getInstance(getClass());
     }
 }

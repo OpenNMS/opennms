@@ -122,14 +122,23 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     public Map<String, Integer> getInterfacesForNodes() {
         Map<String, Integer> map = new HashMap<String, Integer>();
         
-        List l = getHibernateTemplate().find("select distinct ipIf.ipAddress, ipIf.node.id from OnmsIpInterface as ipIf");
-
+        // Add all primary addresses first
+        List l = getHibernateTemplate().find("select distinct ipIf.ipAddress, ipIf.node.id from OnmsIpInterface as ipIf where ipIf.isSnmpPrimary = 'P'");
         for (Object o : l) {
             String ip = (String) ((Object[]) o)[0];
             Integer nodeId = (Integer) ((Object[]) o)[1];
             map.put(ip, nodeId);
         }
-        
+
+        // Add all non-primary addresses only if those addresses doesn't exist on the map.
+        List s = getHibernateTemplate().find("select distinct ipIf.ipAddress, ipIf.node.id from OnmsIpInterface as ipIf where ipIf.isSnmpPrimary != 'P'");
+        for (Object o : s) {
+            String ip = (String) ((Object[]) o)[0];
+            Integer nodeId = (Integer) ((Object[]) o)[1];
+            if (!map.containsKey(ip))
+                map.put(ip, nodeId);
+        }
+
         return map;
     }
 
