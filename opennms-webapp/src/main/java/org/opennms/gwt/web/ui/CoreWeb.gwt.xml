@@ -5,6 +5,7 @@
 	<inherits name="org.opennms.gwt.web.ui.reports.ChooseResource"/>
 	<inherits name="org.opennms.features.node.list.gwt.NodePageList"/>
 	<inherits name="org.opennms.features.gwt.combobox.NodeSuggestionCombobox"/>
+	<inherits name="org.opennms.features.gwt.ksc.combobox.KSCResourceCombobox"/>
 	
 	<!-- Theme -->
 	<inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/>

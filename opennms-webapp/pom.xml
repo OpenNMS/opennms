@@ -318,6 +318,18 @@
         <artifactId>org.opennms.features.node-page-list</artifactId>
         <version>${project.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-suggestion-combobox</artifactId>
+        <type>jar</type>
+    <version>${project.version}</version>
+        <scope>compile</scope>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
@@ -364,12 +376,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-    	<groupId>org.opennms.features</groupId>
-    	<artifactId>org.opennms.features.gwt-suggestion-combobox</artifactId>
-    	<type>jar</type>
-	<version>${project.version}</version>
-    	<scope>compile</scope>
-    </dependency>
+    
   </dependencies>
 </project>

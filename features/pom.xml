@@ -28,6 +28,7 @@
     <module>node-page-list</module>
     <module>opennms-gwt-theme</module>
     <module>gwt-suggestion-combobox</module>
+    <module>gwt-ksc-combobox</module>
   </modules>
 
   <profiles>
