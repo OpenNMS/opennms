@@ -45,26 +45,34 @@ import org.springframework.stereotype.Component;
 public class Win32ServiceDetector extends SnmpDetector {
     
     private static final String SV_SVC_OPERATING_STATE_OID = ".1.3.6.1.4.1.77.1.2.3.1.3";
-    private static final String DEFAULT_SERVICE_NAME = "Service";
+    private static final String DEFAULT_SERVICE_NAME = "Win32Service";
+
+    private String m_win32SvcName;
     
     /**
      * <p>Constructor for Win32ServiceDetector.</p>
      */
     public Win32ServiceDetector(){
         setServiceName(DEFAULT_SERVICE_NAME);
-        setOid(generateOid());
         setVbvalue("1");
     }
 
-    private String generateOid() {
-        int snLength = getServiceName().length();
+    public String getWin32ServiceName() {
+        return m_win32SvcName;
+    }
+
+    public void setWin32ServiceName(String serviceName) {
+        m_win32SvcName = serviceName;
+        log().debug("setWin32ServiceName: setting service name to " + serviceName);
+        int snLength = serviceName.length();
         
         StringBuffer serviceOidBuf = new StringBuffer(SV_SVC_OPERATING_STATE_OID);
         serviceOidBuf.append(".").append(Integer.toString(snLength));
-        for (byte thisByte : getServiceName().getBytes()) {
+        for (byte thisByte : serviceName.getBytes()) {
             serviceOidBuf.append(".").append(Byte.toString(thisByte));
         }
         
-        return serviceOidBuf.toString();
+        log().debug("setWin32ServiceName: the OID for the Win32 service  is " + serviceOidBuf.toString());
+        setOid(serviceOidBuf.toString());
     }
 }

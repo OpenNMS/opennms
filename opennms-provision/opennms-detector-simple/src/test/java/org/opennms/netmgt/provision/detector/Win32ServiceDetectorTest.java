@@ -32,6 +32,7 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
@@ -74,10 +75,11 @@ public class Win32ServiceDetectorTest implements ApplicationContextAware{
             m_detector.setRetries(2);
             m_detector.setTimeout(500);
             m_detector.setPort(TEST_PORT);
+            m_detector.setWin32ServiceName("VMware Tools Service");
         }
         
         if(m_snmpAgent == null) {
-            m_snmpAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/provision/detector/snmpTestData1.properties"), String.format("%s/%s", TEST_IP_ADDRESS, TEST_PORT));
+            m_snmpAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/provision/detector/windows2003.properties"), String.format("%s/%s", TEST_IP_ADDRESS, TEST_PORT));
         }
         
     }
@@ -91,7 +93,13 @@ public class Win32ServiceDetectorTest implements ApplicationContextAware{
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
-    
+
+    @Test
+    public void testDetectorFail() throws UnknownHostException{
+        m_detector.setWin32ServiceName("This service does not exist");
+        assertFalse(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+    }
+
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext; 
     }
