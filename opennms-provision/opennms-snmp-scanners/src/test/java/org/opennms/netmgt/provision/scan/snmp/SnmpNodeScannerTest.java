@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.ScanContext;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.mock.MockLogAppender;
@@ -123,12 +123,10 @@ public class SnmpNodeScannerTest {
     
     private SnmpAgentConfigFactory snmpAgentConfigFactory(final SnmpAgentConfig config) {
         return new SnmpAgentConfigFactory() {
-
-            public SnmpAgentConfig getAgentConfig(InetAddress address) {
+            public SnmpAgentConfig getAgentConfig(final InetAddress address) {
                 assertEquals(config.getAddress(), address);
                 return config;
             }
-            
         };
     }
 

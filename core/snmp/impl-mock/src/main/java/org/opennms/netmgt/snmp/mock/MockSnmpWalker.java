@@ -10,10 +10,10 @@ import java.util.concurrent.Executors;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
-import org.opennms.netmgt.snmp.mock.MockSnmpStrategy.AgentAddress;
 
 public class MockSnmpWalker extends SnmpWalker {
 
@@ -48,11 +48,11 @@ public class MockSnmpWalker extends SnmpWalker {
         }
     }
 
-	private final AgentAddress m_agentAddress;
+	private final SnmpAgentAddress m_agentAddress;
     private final PropertyOidContainer m_container;
     private final ExecutorService m_executor;
 
-    public MockSnmpWalker(final AgentAddress agentAddress, final PropertyOidContainer container, final String name, final CollectionTracker tracker, int maxVarsPerPdu) {
+    public MockSnmpWalker(final SnmpAgentAddress agentAddress, final PropertyOidContainer container, final String name, final CollectionTracker tracker, int maxVarsPerPdu) {
         super(agentAddress.getAddress(), name, maxVarsPerPdu, 1, tracker);
         m_agentAddress = agentAddress;
         m_container = container;

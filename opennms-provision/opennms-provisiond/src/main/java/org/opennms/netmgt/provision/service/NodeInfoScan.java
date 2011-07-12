@@ -38,7 +38,7 @@ import java.util.List;
 
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.RunInBatch;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;

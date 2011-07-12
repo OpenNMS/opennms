@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 

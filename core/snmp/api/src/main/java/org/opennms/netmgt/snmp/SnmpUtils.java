@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
@@ -107,23 +106,6 @@ public class SnmpUtils {
     public static SnmpValue[] set(final SnmpAgentConfig agentConfig, final SnmpObjId[] oids, final SnmpValue[] values) {
     	return getStrategy().set(agentConfig, oids, values);
     }
-
-	public static SnmpValue[] loadSnmpResourceIntoAgent(final SnmpAgentConfig agentConfig, final Resource location) {
-		final Properties props = SnmpUtils.loadProperties(location);
-
-    	final List<SnmpObjId> oids = new ArrayList<SnmpObjId>();
-    	final List<SnmpValue> values = new ArrayList<SnmpValue>();
-        for(final Entry<Object, Object> e : props.entrySet()) {
-            final String key = (String)e.getKey();
-            final String value = (String)e.getValue();
-            oids.add(SnmpObjId.get(key));
-            values.add(parseMibValue(value));
-        }
-		return set(agentConfig, oids.toArray(new SnmpObjId[0]), values.toArray(new SnmpValue[0]));
-	}
-
-	public static void replaceAgentDataWithResource(final SnmpAgentConfig m_agentConfig, final Resource location) {
-	}
 
     public static Properties getConfig() {
         return (sm_config == null ? System.getProperties() : sm_config);

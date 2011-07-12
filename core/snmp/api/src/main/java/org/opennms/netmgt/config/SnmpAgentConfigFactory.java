@@ -26,13 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+
 package org.opennms.netmgt.config;
 
-/**
- * Convenience superclass for NSClientPeerFactory and SnmpPeerFactory, with common code used in both
- *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- */
-public class PeerFactory {
+import java.net.InetAddress;
+
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+
+public interface SnmpAgentConfigFactory {
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
+    public SnmpAgentConfig getAgentConfig(InetAddress address);
 }

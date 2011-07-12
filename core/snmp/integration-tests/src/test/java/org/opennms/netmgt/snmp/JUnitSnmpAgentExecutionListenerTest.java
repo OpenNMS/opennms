@@ -28,19 +28,24 @@
 
 
 
-package org.opennms.core.test.snmp;
+package org.opennms.netmgt.snmp;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.core.test.snmp.annotations.JUnitMockSnmpStrategyAgents;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.SnmpAgentConfigProxyMapper;
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.test.mock.MockLogAppender;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
@@ -65,60 +70,52 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(JUnitSnmpAgentExecutionListener.class)
-@JUnitSnmpAgent(resource="classpath:loadSnmpDataTest.properties")
 public class JUnitSnmpAgentExecutionListenerTest {
-    
     OID m_oid = new OID(".1.3.5.1.1.1.0");
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
     	MockLogAppender.setupLogging();
+    	SnmpPeerFactory.setInstance(new ProxySnmpAgentConfigFactory());
+//    	LogUtils.debugf(this, "peer factory = %s", m_snmpPeerFactory.getClass().getName());
+//    	Assume.assumeTrue(System.getProperty("org.opennms.snmp.strategyClass", "blah").equals("org.opennms.netmgt.snmp.mock.MockSnmpStrategy"));
     }
 
     @Test
+    @JUnitSnmpAgent(resource="classpath:loadSnmpDataTest.properties", host="192.168.0.254")
     public void testClassAgent() throws Exception {
-        assertEquals(new OctetString("TestData"), get(localhost(), 9161, m_oid));
-    }
-    
-    @Test(expected=java.util.concurrent.TimeoutException.class)
-    @JUnitSnmpAgent(resource="classpath:loadSnmpDataTest.properties", port=9162)
-    public void testNoClassAgent() throws Exception {
-        assertEquals(new OctetString("TestData"), get(localhost(), 9161, m_oid));
+        assertEquals(new OctetString("TestData"), get(InetAddressUtils.addr("192.168.0.254"), m_oid));
     }
     
     @Test
-    @JUnitSnmpAgent(resource="classpath:differentSnmpData.properties", port=9162)
-    public void testMethodAgent() throws Exception {
-        assertEquals(new OctetString("DifferentTestData"), get(localhost(), 9162, m_oid));
+    @JUnitMockSnmpStrategyAgents({
+    		@JUnitSnmpAgent(host="192.168.0.1", port=161, resource="classpath:loadSnmpDataTest.properties"),
+    		@JUnitSnmpAgent(host="192.168.0.2", port=161, resource="classpath:differentSnmpData.properties")
+    })
+    public void testMultipleHosts() throws Exception {
+    	assertEquals(new OctetString("TestData"), get(InetAddressUtils.addr("192.168.0.1"), m_oid));
+    	assertEquals(new OctetString("DifferentTestData"), get(InetAddressUtils.addr("192.168.0.2"), m_oid));
     }
-    
 
+    private Variable get(final InetAddress address, final OID oid) throws Exception, IOException, TimeoutException {
 
-    /**
-     * @param localhost
-     * @param i
-     * @param string
-     * @return
-     * @throws IOException 
-     */
-    private Variable get(InetAddress localhost, int port, OID oid) throws Exception, IOException, TimeoutException {
-
-        TransportMapping transport = new DefaultUdpTransportMapping();
-        Snmp session = new Snmp(transport);
+    	final TransportMapping transport = new DefaultUdpTransportMapping();
+    	final Snmp session = new Snmp(transport);
         session.listen();
 
-        Target target = new CommunityTarget(new UdpAddress(localhost, port), new OctetString("public"));
+        final SnmpAgentAddress agentAddress = SnmpAgentConfigProxyMapper.getInstance().getAddress(address);
+        final Target target = new CommunityTarget(new UdpAddress(agentAddress.getAddress(), agentAddress.getPort()), new OctetString("public"));
         target.setTimeout(1000);
         target.setRetries(3);
         target.setVersion(SnmpConstants.version2c);
         
-        PDU pdu = new PDU();
+        final PDU pdu = new PDU();
         pdu.setType(PDU.GET);
         pdu.addOID(new VariableBinding(oid));
         
-        ResponseEvent e = session.get(pdu, target);
+        final ResponseEvent e = session.get(pdu, target);
         
-        PDU response = e.getResponse();
+        final PDU response = e.getResponse();
         if (response == null) {
             if (e.getError() != null) { 
                 throw e.getError();
@@ -133,18 +130,4 @@ public class JUnitSnmpAgentExecutionListenerTest {
         return response.get(0).getVariable();
         
     }
-
-    /**
-     * This method needs to return the same value as the default value of the <code>host</code>
-     * parameter inside 
-     * {@link JUnitSnmpAgentExecutionListener#beforeTestMethod(org.springframework.test.context.TestContext)}
-     * 
-     * @return
-     * @throws UnknownHostException 
-     */
-    private InetAddress localhost() throws UnknownHostException {
-        return InetAddress.getLocalHost();
-        // return InetAddressUtils.addr("127.0.0.1");
-    }
-
 }

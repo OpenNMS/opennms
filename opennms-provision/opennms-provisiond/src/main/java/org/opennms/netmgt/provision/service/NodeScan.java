@@ -50,7 +50,7 @@ import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -96,7 +96,7 @@ public class NodeScan implements RunInBatch {
      * @param foreignId a {@link java.lang.String} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
-     * @param agentConfigFactory a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
+     * @param agentConfigFactory a {@link org.opennms.netmgt.config.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
      */
     public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final DefaultTaskCoordinator taskCoordinator) {

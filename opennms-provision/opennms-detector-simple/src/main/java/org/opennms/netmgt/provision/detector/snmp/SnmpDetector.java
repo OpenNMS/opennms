@@ -35,7 +35,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.exchange.Exchange;
 import org.opennms.netmgt.provision.support.AbstractDetector;
@@ -259,7 +259,7 @@ public class SnmpDetector extends AbstractDetector {
     /**
      * <p>setAgentConfigFactory</p>
      *
-     * @param agentConfigFactory a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
+     * @param agentConfigFactory a {@link org.opennms.netmgt.config.SnmpAgentConfigFactory} object.
      */
     @Autowired
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
@@ -269,7 +269,7 @@ public class SnmpDetector extends AbstractDetector {
     /**
      * <p>getAgentConfigFactory</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
+     * @return a {@link org.opennms.netmgt.config.SnmpAgentConfigFactory} object.
      */
     public SnmpAgentConfigFactory getAgentConfigFactory() {
         return m_agentConfigFactory;

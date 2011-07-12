@@ -12,6 +12,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.ColumnTracker;
+import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -28,7 +29,7 @@ public class MockSnmpStrategyTest {
     @Before
     public void setUp() throws Exception {
         m_strategy = new MockSnmpStrategy();
-        MockSnmpStrategy.addHost(m_agentAddress, m_agentPort, new ClassPathResource("loadSnmpDataTest.properties"));
+        MockSnmpStrategy.addHost(new SnmpAgentAddress(m_agentAddress, m_agentPort), new ClassPathResource("loadSnmpDataTest.properties"));
         System.setProperty("org.opennms.snmp.strategyClass", m_strategy.getClass().getName());
     }
     

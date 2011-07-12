@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitMockSnmpStrategyAgents;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
@@ -124,7 +125,10 @@ public class DragonWaveNodeSwitchingTest {
     }
 
     @Test
-    @JUnitSnmpAgent(resource = "classpath:/dw/walks/node1-walk.properties")
+    @JUnitMockSnmpStrategyAgents({
+        @JUnitSnmpAgent(host="192.168.255.22", resource = "classpath:/dw/walks/node1-walk.properties"),
+        @JUnitSnmpAgent(host="192.168.255.40", resource = "classpath:/dw/walks/node3-walk.properties")
+    })
     public void testInitialSetup() throws Exception {
         
         final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
@@ -135,9 +139,6 @@ public class DragonWaveNodeSwitchingTest {
 
         OnmsNode onmsNode = m_nodeDao.findByForeignId("dw", "arthur");
         
-	//NodeScan scan = m_provisioner.createNodeScan(onmsNode.getId(), onmsNode.getForeignSource(), onmsNode.getForeignId());
-        //runScan(scan);
-
         eventRecieved.await();
 
         String sysObjectId = onmsNode.getSysObjectId();

@@ -777,7 +777,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * @param event
      *            The event to process.
      */
-    private void handleConfigureSNMP(Event event) {
+    private void handleConfigureSNMP(final Event event) {
         if (log().isDebugEnabled()) {
             log().debug("configureSNMPHandler: processing configure SNMP event..."+event);
         }

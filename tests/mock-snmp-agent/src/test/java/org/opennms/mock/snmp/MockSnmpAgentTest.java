@@ -31,6 +31,7 @@ package org.opennms.mock.snmp;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
@@ -58,7 +59,6 @@ import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Integer32;
-import org.snmp4j.smi.Null;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.SMIConstants;
@@ -66,9 +66,7 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 public class MockSnmpAgentTest extends TestCase {
 
@@ -79,7 +77,10 @@ public class MockSnmpAgentTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
-        MockLogAppender.setupLogging();
+        final Properties p = new Properties();
+        p.setProperty("log4j.logger.org.snmp4j", "DEBUG");
+        p.setProperty("log4j.logger.org.snmp4j.agent", "DEBUG");
+        MockLogAppender.setupLogging(true, p);
 
         // Create a global USM that all client calls will use
         MPv3.setEnterpriseID(5813);
@@ -177,21 +178,10 @@ public class MockSnmpAgentTest extends TestCase {
     }
     
     public void testSet() throws Exception {
-        assertResultFromGet("1.2.3.4.5", SMIConstants.EXCEPTION_NO_SUCH_OBJECT, Null.noSuchObject);
-
-        assertResultFromSet("1.2.3.4.5", new Integer32(17), "1.2.3.4.5", SMIConstants.SYNTAX_INTEGER32, new Integer32(17));
-        
-        assertResultFromGet("1.2.3.4.5", SMIConstants.SYNTAX_INTEGER32, new Integer32(17));
-    }
-
-    public void testLoadSnmpResourceIntoAgent() throws Exception {
-    	final String contents = ".1.2.3.4.5 = STRING: Foo";
-
-    	final Resource resource = new ByteArrayResource(contents.getBytes());
-    	SnmpUtils.loadSnmpResourceIntoAgent(getAgentConfig(), resource);
-
-    	SnmpValue value = SnmpUtils.get(getAgentConfig(), SnmpObjId.get("1.2.3.4.5"));
-    	assertEquals("Foo", value.toString());
+        final String oid = "1.3.5.1.1.3.0";
+        assertResultFromGet(oid, SMIConstants.SYNTAX_INTEGER32, new Integer32(42));
+		assertResultFromSet(oid, new Integer32(17), oid, SMIConstants.SYNTAX_INTEGER32, new Integer32(17));
+        assertResultFromGet(oid, SMIConstants.SYNTAX_INTEGER32, new Integer32(17));
     }
 
     public void testUpdateFromFileWithUSMTimeReset() throws Exception {
