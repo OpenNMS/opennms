@@ -40,7 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener;
-import org.opennms.core.test.snmp.annotations.JUnitMockSnmpStrategyAgents;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpAgentConfigProxyMapper;
@@ -88,7 +88,7 @@ public class JUnitSnmpAgentExecutionListenerTest {
     }
     
     @Test
-    @JUnitMockSnmpStrategyAgents({
+    @JUnitSnmpAgents({
     		@JUnitSnmpAgent(host="192.168.0.1", port=161, resource="classpath:loadSnmpDataTest.properties"),
     		@JUnitSnmpAgent(host="192.168.0.2", port=161, resource="classpath:differentSnmpData.properties")
     })

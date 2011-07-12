@@ -33,17 +33,17 @@ package org.opennms.core.test.snmp;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.opennms.core.test.snmp.annotations.JUnitMockSnmpStrategyAgents;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
+import org.opennms.mock.snmp.MockSnmpDataProvider;
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.SnmpAgentConfigProxyMapper;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
@@ -64,27 +64,44 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  */
 public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListener {
 
-    private static final String STRATEGY_CLASS_PROPERTY = "org.opennms.snmp.strategyClass";
+	private static final String STRATEGY_CLASS_PROPERTY = "org.opennms.snmp.strategyClass";
 
     private static final String STRATEGY_CLASS_KEY = "org.opennms.core.test-api.snmp.strategyClass";
     private static final String AGENT_KEY = "org.opennms.core.test-api.snmp.agentList";
+    private static final String PROVIDER_KEY = "org.opennms.core.test-api.snmp.dataProvider";
 
     @Override
     public void beforeTestMethod(final TestContext testContext) throws Exception {
-        final JUnitMockSnmpStrategyAgents agents = findAgentListAnnotation(testContext);
+        final JUnitSnmpAgents agents = findAgentListAnnotation(testContext);
         testContext.setAttribute(STRATEGY_CLASS_KEY, System.getProperty(STRATEGY_CLASS_PROPERTY));
-        testContext.setAttribute(AGENT_KEY, new ArrayList<MockSnmpAgent>());
+        final HashMap<SnmpAgentAddress,MockSnmpAgent> mockAgents = new HashMap<SnmpAgentAddress,MockSnmpAgent>();
+		testContext.setAttribute(AGENT_KEY, mockAgents);
+        
+        final Boolean useMockSnmpStrategy = Boolean.getBoolean("org.opennms.core.test-api.snmp.useMockSnmpStrategy");
+        final MockSnmpDataProvider provider;
+        if (useMockSnmpStrategy) {
+            System.setProperty(STRATEGY_CLASS_PROPERTY, MockSnmpStrategy.class.getName());
+        	provider = new MockSnmpStrategyDataProvider();
+        } else {
+        	provider = new MockSnmpAgentDataProvider(mockAgents);
+        }
+        testContext.setAttribute(PROVIDER_KEY, provider);
 
         if (agents != null) {
             for (final JUnitSnmpAgent agent : agents.value()) {
-                handleSnmpAgent(testContext, agent);
+                handleSnmpAgent(testContext, agent, provider);
             }
         }
 
-        handleSnmpAgent(testContext, findAgentAnnotation(testContext));
+        handleSnmpAgent(testContext, findAgentAnnotation(testContext), provider);
+        
+		if (testContext.getTestInstance() instanceof MockSnmpDataProviderAware) {
+			LogUtils.debugf(this, "injecting data provider into MockSnmpDataProviderAware test: %s", testContext.getTestInstance());
+			((MockSnmpDataProviderAware)testContext.getTestInstance()).setMockSnmpDataProvider(provider);
+		}
     }
 
-    protected void handleSnmpAgent(final TestContext testContext, final JUnitSnmpAgent config) throws UnknownHostException, InterruptedException {
+    protected void handleSnmpAgent(final TestContext testContext, final JUnitSnmpAgent config, MockSnmpDataProvider provider) throws UnknownHostException, InterruptedException {
         if (config == null) return;
 
         String factoryClassName = "unknown";
@@ -136,26 +153,19 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     	} while (mapper.contains(listenAddress));
     	mapper.addProxy(hostAddress, listenAddress);
 
-		if (useMockSnmpStrategy) {
-            System.setProperty(STRATEGY_CLASS_PROPERTY, MockSnmpStrategy.class.getName());
-            try {
-                MockSnmpStrategy.addHost(agentAddress, resource);
-            } catch (final IOException e) {
-                LogUtils.debugf(this, e, "Unable to add %s with resource %s to the MockSnmpStrategy!", agentAddress, config.resource());
-                e.printStackTrace();
-            }
-        } else {
+		if (!useMockSnmpStrategy) {
             LogUtils.debugf(this, "creating MockSnmpAgent on %s for 'real' address %s", listenAddress, agentAddress);
             final MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(resource, str(listenAddress.getAddress()) + "/" + listenAddress.getPort());
 
-            LogUtils.debugf(this, "Set up agent %s, loaded content from %s", agent, config.resource());
             @SuppressWarnings("unchecked")
-			final List<MockSnmpAgent> agents = (List<MockSnmpAgent>)testContext.getAttribute(AGENT_KEY);
-            agents.add(agent);
+			final Map<SnmpAgentAddress,MockSnmpAgent> agents = (Map<SnmpAgentAddress,MockSnmpAgent>)testContext.getAttribute(AGENT_KEY);
+            agents.put(agentAddress, agent);
         }
+
+		provider.setDataForAddress(agentAddress, resource);
     }
 
-    private JUnitSnmpAgent findAgentAnnotation(TestContext testContext) {
+    private JUnitSnmpAgent findAgentAnnotation(final TestContext testContext) {
         final Method testMethod = testContext.getTestMethod();
         final JUnitSnmpAgent config = testMethod.getAnnotation(JUnitSnmpAgent.class);
         if (config != null) {
@@ -167,15 +177,15 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
     }
 
-    private JUnitMockSnmpStrategyAgents findAgentListAnnotation(final TestContext testContext) {
+    private JUnitSnmpAgents findAgentListAnnotation(final TestContext testContext) {
         final Method testMethod = testContext.getTestMethod();
-        final JUnitMockSnmpStrategyAgents config = testMethod.getAnnotation(JUnitMockSnmpStrategyAgents.class);
+        final JUnitSnmpAgents config = testMethod.getAnnotation(JUnitSnmpAgents.class);
         if (config != null) {
             return config;
         }
 
         final Class<?> testClass = testContext.getTestClass();
-        return testClass.getAnnotation(JUnitMockSnmpStrategyAgents.class);
+        return testClass.getAnnotation(JUnitSnmpAgents.class);
 
     }
 
@@ -184,9 +194,9 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         final String strategyClass = (String)testContext.getAttribute(STRATEGY_CLASS_KEY);
 
         @SuppressWarnings("unchecked")
-		final List<MockSnmpAgent> agents = (List<MockSnmpAgent>)testContext.getAttribute(AGENT_KEY);
+		final Map<SnmpAgentAddress,MockSnmpAgent> agents = (Map<SnmpAgentAddress,MockSnmpAgent>)testContext.getAttribute(AGENT_KEY);
 
-        for (final MockSnmpAgent agent : agents) {
+        for (final MockSnmpAgent agent : agents.values()) {
             if (agent != null) {
                 LogUtils.debugf(this, "Shutting down agent ", agent);
                 agent.shutDownAndWait();
@@ -197,5 +207,34 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
             System.setProperty(STRATEGY_CLASS_PROPERTY, strategyClass);
         }
     }
+
+	private static final class MockSnmpStrategyDataProvider implements MockSnmpDataProvider {
+		@Override
+		public void setDataForAddress(final SnmpAgentAddress address, final Resource resource) {
+			try {
+				MockSnmpStrategy.setDataForAddress(address, resource);
+			} catch (final Throwable t) {
+				LogUtils.warnf(this, "Unable to set mock SNMP data for %s", address);
+			}
+		}
+	}
+
+	private static final class MockSnmpAgentDataProvider implements MockSnmpDataProvider {
+		private final Map<SnmpAgentAddress, MockSnmpAgent> m_agents;
+
+		public MockSnmpAgentDataProvider(final Map<SnmpAgentAddress,MockSnmpAgent> mockAgents) {
+			m_agents = mockAgents;
+		}
+
+		@Override
+		public void setDataForAddress(final SnmpAgentAddress address, final Resource resource) {
+			final MockSnmpAgent agent = m_agents.get(address);
+			if (agent == null) {
+				LogUtils.warnf(this, "Unable to set mock SNMP data for %s: no such agent", address);
+				return;
+			}
+			agent.updateValuesFromResource(resource);
+		}
+	}
 
 }

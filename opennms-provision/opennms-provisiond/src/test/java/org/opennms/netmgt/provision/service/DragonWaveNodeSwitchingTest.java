@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.UnknownHostException;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
@@ -43,9 +43,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.snmp.annotations.JUnitMockSnmpStrategyAgents;
+import org.opennms.core.test.snmp.MockSnmpDataProviderAware;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.mock.snmp.MockSnmpDataProvider;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.NodeDao;
@@ -55,14 +57,12 @@ import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -80,7 +80,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DragonWaveNodeSwitchingTest {
+public class DragonWaveNodeSwitchingTest implements MockSnmpDataProviderAware {
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -97,7 +97,7 @@ public class DragonWaveNodeSwitchingTest {
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
 
-	private SnmpAgentConfig m_agentConfig;
+	private MockSnmpDataProvider m_mockSnmpDataProvider;
 
     @BeforeClass
     public static void setUpSnmpConfig() {
@@ -110,54 +110,48 @@ public class DragonWaveNodeSwitchingTest {
 
     @Before
     public void setUp() throws Exception {
-        // Override the SnmpPeerFactory with an instance that directs all requests to
-        // the temporary JUnit SNMP agent
+        // Override the SnmpPeerFactory with an instance that directs all requests to the temporary JUnit SNMP agent
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
         m_provisioner.start();
-        m_agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.getLocalHostAddress());
     }
 
-    public void runScan(NodeScan scan) throws InterruptedException, ExecutionException {
-        Task t = scan.createTask();
+    public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
+    	final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
     }
 
     @Test
-    @JUnitMockSnmpStrategyAgents({
-        @JUnitSnmpAgent(host="192.168.255.22", resource = "classpath:/dw/walks/node1-walk.properties"),
-        @JUnitSnmpAgent(host="192.168.255.40", resource = "classpath:/dw/walks/node3-walk.properties")
+    @JUnitSnmpAgents({
+        @JUnitSnmpAgent(host="192.168.255.22", port=161, resource="classpath:/dw/walks/node1-walk.properties")
     })
     public void testInitialSetup() throws Exception {
-        
+        final InetAddress addr = InetAddressUtils.addr("192.168.255.22");
         final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
-
-        assertEquals(".1.3.6.1.4.1.7262.2.3", getSnmpValue("192.168.255.22", ".1.3.6.1.2.1.1.2.0").toDisplayString());
 
         importResource("classpath:/dw/import/dw_test_import.xml");
 
-        OnmsNode onmsNode = m_nodeDao.findByForeignId("dw", "arthur");
+        final OnmsNode onmsNode = m_nodeDao.findByForeignId("dw", "arthur");
         
         eventRecieved.await();
 
-        String sysObjectId = onmsNode.getSysObjectId();
+        final String sysObjectId = onmsNode.getSysObjectId();
         assertEquals(".1.3.6.1.4.1.7262.2.3", sysObjectId);
 
-        final Resource location = m_resourceLoader.getResource("classpath:/dw/walks/node3-walk.properties");
-    	SnmpUtils.loadSnmpResourceIntoAgent(m_agentConfig, location);
+		m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(addr, 161), m_resourceLoader.getResource("classpath:/dw/walks/node3-walk.properties"));
+        assertEquals(".1.3.6.1.4.1.7262.1", SnmpUtils.get(m_snmpPeerFactory.getAgentConfig(addr), SnmpObjId.get(".1.3.6.1.2.1.1.2.0")).toDisplayString());
+        
+        importResource("classpath:/dw/import/dw_test_import.xml");
 
-        // Make sure agent reports the proper OID
-        assertEquals(".1.3.6.1.4.1.7262.1", getSnmpValue("192.168.255.22", ".1.3.6.1.2.1.1.2.0").toDisplayString());
-
-        NodeScan scan2 = m_provisioner.createNodeScan(onmsNode.getId(), onmsNode.getForeignSource(), onmsNode.getForeignId());
+        final NodeScan scan2 = m_provisioner.createNodeScan(onmsNode.getId(), onmsNode.getForeignSource(), onmsNode.getForeignId());
         runScan(scan2);
 
         m_nodeDao.flush();
 
-        OnmsNode node = m_nodeDao.findByForeignId("dw", "arthur");
+        final OnmsNode node = m_nodeDao.findByForeignId("dw", "arthur");
 
-        String sysObjectId2 = node.getSysObjectId();
+        final String sysObjectId2 = node.getSysObjectId();
         assertEquals(".1.3.6.1.4.1.7262.1", sysObjectId2);
     }
 
@@ -176,23 +170,26 @@ public class DragonWaveNodeSwitchingTest {
         return eventRecieved;
     }
 
-    private SnmpValue getSnmpValue(String host, String oid) throws UnknownHostException {
-        return SnmpUtils.get(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr(host)), SnmpObjId.get(oid));
-    }
-
     @Test
-    @JUnitSnmpAgent(resource = "classpath:/dw/walks/node3-walk.properties")
+    @JUnitSnmpAgents({
+        @JUnitSnmpAgent(host="192.168.255.40", resource="classpath:/dw/walks/node3-walk.properties")
+    })
     public void testASetup() throws Exception {
 
         importResource("classpath:/dw/import/dw_test_import.xml");
 
-        OnmsNode onmsNode = m_nodeDao.get(1);
+        final OnmsNode onmsNode = m_nodeDao.findAll().get(0);
         String sysObjectId = onmsNode.getSysObjectId();
 
         assertEquals(".1.3.6.1.4.1.7262.1", sysObjectId);
     }
 
-    private void importResource(String location) throws Exception {
+    private void importResource(final String location) throws Exception {
         m_provisioner.importModelFromResource(m_resourceLoader.getResource(location));
     }
+
+	@Override
+	public void setMockSnmpDataProvider(final MockSnmpDataProvider provider) {
+		m_mockSnmpDataProvider = provider;
+	}
 }

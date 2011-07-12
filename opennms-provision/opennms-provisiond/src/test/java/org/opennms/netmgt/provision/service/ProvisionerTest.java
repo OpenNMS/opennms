@@ -52,9 +52,15 @@ import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.annotations.DNSEntry;
+import org.opennms.core.test.annotations.DNSZone;
+import org.opennms.core.test.annotations.JUnitDNSServer;
+import org.opennms.core.test.snmp.MockSnmpDataProviderAware;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.mock.snmp.MockSnmpDataProvider;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -91,14 +97,12 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.style.ToStringCreator;
@@ -125,7 +129,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class ProvisionerTest implements InitializingBean {
+public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAware {
     
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -178,7 +182,7 @@ public class ProvisionerTest implements InitializingBean {
     
     private ForeignSource m_foreignSource;
 
-	private SnmpAgentConfig m_agentConfig;
+	private MockSnmpDataProvider m_mockSnmpDataProvider;
 
     public void afterPropertiesSet() {
         assertNotNull(m_mockEventIpcManager);
@@ -206,7 +210,7 @@ public class ProvisionerTest implements InitializingBean {
     
     @BeforeClass
     public static void setUpSnmpConfig() {
-        Properties props = new Properties();
+        final Properties props = new Properties();
         props.setProperty("log4j.logger.org.hibernate", "INFO");
         props.setProperty("log4j.logger.org.springframework", "INFO");
         props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
@@ -218,7 +222,6 @@ public class ProvisionerTest implements InitializingBean {
     public void setUp() throws Exception {
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
-        m_agentConfig = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getLocalHostAddress());
 
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
         
@@ -228,7 +231,7 @@ public class ProvisionerTest implements InitializingBean {
         m_foreignSource.setName("imported:");
         m_foreignSource.setScanInterval(Duration.standardDays(1));
         
-        PluginConfig policy = new PluginConfig("setCategory", NodeCategorySettingPolicy.class.getName());
+        final PluginConfig policy = new PluginConfig("setCategory", NodeCategorySettingPolicy.class.getName());
         policy.addParameter("category", "TestCategory");
         policy.addParameter("label", "localhost");
         
@@ -245,11 +248,10 @@ public class ProvisionerTest implements InitializingBean {
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testVisit() throws Exception {
-
-        Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/NewFile2.xml"));
-        CountingVisitor visitor = new CountingVisitor();
+    	final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/NewFile2.xml"));
+    	final CountingVisitor visitor = new CountingVisitor();
         requisition.visit(visitor);
-        verifyCounts(visitor);
+        verifyBasicImportCounts(visitor);
     }
     
     /**
@@ -261,19 +263,24 @@ public class ProvisionerTest implements InitializingBean {
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @Ignore
-    public void dwImportDnsResourceRequisition() throws ForeignSourceRepositoryException, MalformedURLException {
-        Requisition r = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost/localhost"));
-        CountingVisitor v = new CountingVisitor();
-        r.visit(v);
-        verifyCounts2(v);
+    @JUnitDNSServer(port=9153, zones={
+    		@DNSZone(name="opennms.com.", entries={
+    				@DNSEntry(hostname="www", address="1.2.3.4"),
+    				@DNSEntry(hostname="www", address="::1:2:3:4")
+    		})
+    })
+    public void testDnsVisit() throws ForeignSourceRepositoryException, MalformedURLException {
+    	final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost:9153/opennms.com"));
+        final CountingVisitor visitor = new CountingVisitor();
+        requisition.visit(visitor);
+        verifyDnsImportCounts(visitor);
     }
 
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testSendEventsOnImport() throws Exception {
-        
-        MockNetwork network = new MockNetwork();
-        MockNode node = network.addNode(1, "node1");
+    	final MockNetwork network = new MockNetwork();
+        final MockNode node = network.addNode(1, "node1");
         network.addInterface("172.20.1.204");
         network.addService("ICMP");
         network.addService("HTTP");
@@ -289,17 +296,16 @@ public class ProvisionerTest implements InitializingBean {
         
     }
 
-    private void importFromResource(String path) throws Exception {
+    private void importFromResource(final String path) throws Exception {
         m_provisioner.importModelFromResource(m_resourceLoader.getResource(path));
     }
     
-    private void anticpateCreationEvents(MockElement element) {
+    private void anticpateCreationEvents(final MockElement element) {
         element.visit(new MockVisitorAdapter() {
-
             @Override
-            public void visitElement(MockElement e) {
-                Event newEvent = e.createNewEvent();
-                System.out.println("Anticipate Event "+newEvent.getUei());
+            public void visitElement(final MockElement e) {
+            	final Event newEvent = e.createNewEvent();
+                LogUtils.debugf(this, "Anticipate Event: %s", newEvent.getUei());
                 m_eventAnticipator.anticipateEvent(newEvent);
             }
             
@@ -311,17 +317,16 @@ public class ProvisionerTest implements InitializingBean {
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @Transactional
     public void testNonSnmpImportAndScan() throws Exception {
-                
         importFromResource("classpath:/import_localhost.xml");
         
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
+        final List<OnmsNode> nodes = getNodeDao().findAll();
+        final OnmsNode node = nodes.get(0);
 
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         
         runScan(scan);
         
-        OnmsNode scannedNode = getNodeDao().findAll().get(0);
+        final OnmsNode scannedNode = getNodeDao().findAll().get(0);
         assertEquals("TestCategory", scannedNode.getCategories().iterator().next().getName());
                 
     }
@@ -332,20 +337,20 @@ public class ProvisionerTest implements InitializingBean {
     public void testFindQuery() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
-        for (OnmsAssetRecord assetRecord : getAssetRecordDao().findAll()) {
-            System.err.println(assetRecord.getBuilding());
+        for (final OnmsAssetRecord assetRecord : getAssetRecordDao().findAll()) {
+            LogUtils.debugf(this, "Building = %s", assetRecord.getBuilding());
         }
     }
     
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testBigImport() throws Exception {
-        File file = new File("/tmp/tec_dump.xml.large");
+    	final File file = new File("/tmp/tec_dump.xml.large");
         if (file.exists()) {
             m_eventAnticipator.reset();
             m_eventAnticipator.setDiscardUnanticipated(true);
-            String path = file.toURI().toURL().toExternalForm();
-            System.err.println("Importing: "+path);
+            final String path = file.toURI().toURL().toExternalForm();
+            LogUtils.debugf(this, "Importing: %s", path);
             importFromResource(path);
         }
         
@@ -353,9 +358,8 @@ public class ProvisionerTest implements InitializingBean {
     
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:snmpTestData1.properties")
+    @JUnitSnmpAgent(host="172.20.1.201", resource="classpath:snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
-        
         importFromResource("classpath:/tec_dump.xml");
 
         //Verify distpoller count
@@ -380,7 +384,11 @@ public class ProvisionerTest implements InitializingBean {
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
+    @JUnitSnmpAgents({
+        @JUnitSnmpAgent(host="172.20.2.201", resource="classpath:snmpTestData3.properties"),
+        // for discovering the "SNMP" service on the second interface
+        @JUnitSnmpAgent(host="172.20.2.204", resource="classpath:snmpTestData3.properties")
+    })
     @Transactional
     public void testPopulateWithSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan2.xml");
@@ -403,11 +411,10 @@ public class ProvisionerTest implements InitializingBean {
         //Verify snmpInterface count
         assertEquals(1, getSnmpInterfaceDao().countAll());
         
-        
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
+        final List<OnmsNode> nodes = getNodeDao().findAll();
+        final OnmsNode node = nodes.get(0);
 
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
         
         //Verify distpoller count
@@ -434,14 +441,16 @@ public class ProvisionerTest implements InitializingBean {
 
         //Verify node count
         assertEquals(0, getNodeDao().countAll());
-        
-        
     }
 
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
+    @JUnitSnmpAgents({
+        @JUnitSnmpAgent(host="172.20.2.201", resource="classpath:snmpTestData3.properties"),
+        // for discovering the "SNMP" service on the second interface
+        @JUnitSnmpAgent(host="172.20.2.204", resource="classpath:snmpTestData3.properties")
+    })
     @Transactional
     public void testPopulateWithoutSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan_no_snmp_svc.xml");
@@ -460,12 +469,11 @@ public class ProvisionerTest implements InitializingBean {
         // Expect there to be no services since we are not provisioning one
         assertEquals(0, getMonitoredServiceDao().countAll());
         assertEquals(0, getServiceTypeDao().countAll());
-        
-        
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
 
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        final List<OnmsNode> nodes = getNodeDao().findAll();
+        final OnmsNode node = nodes.get(0);
+
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
         
         //Verify distpoller count
@@ -486,75 +494,29 @@ public class ProvisionerTest implements InitializingBean {
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
         
-        
         // Node Delete
         importFromResource("classpath:/nonodes.xml");
 
         //Verify node count
         assertEquals(0, getNodeDao().countAll());
-        
-        
     }
 
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:snmpwalk-demo.properties")
-    @Ignore("disable to get a working snapshot")
-    public void testPopulateWithIpv6SnmpAndNodeScan() throws Exception {
-        importFromResource("classpath:/requisition_then_scanv6.xml");
-
-        //Verify distpoller count
-        assertEquals(1, getDistPollerDao().countAll());
-        
-        //Verify node count
-        assertEquals(1, getNodeDao().countAll());
-        
-        //Verify ipinterface count
-        assertEquals(1, getInterfaceDao().countAll());
-        
-        //Verify ifservices count
-        assertEquals(1, getMonitoredServiceDao().countAll());
-        
-        //Verify service count
-        assertEquals(1, getServiceTypeDao().countAll());
-
-        //Verify snmpInterface count
-        assertEquals(1, getSnmpInterfaceDao().countAll());
-        
-        
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
-
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan);
-        
-        //Verify distpoller count
-        assertEquals(1, getDistPollerDao().countAll());
-        
-        //Verify node count
-        assertEquals(1, getNodeDao().countAll());
-        
-        //Verify ipinterface count
-        assertEquals("Unexpected number of IP interfaces found: " + getInterfaceDao().findAll(), 7, getInterfaceDao().countAll());
-        
-        //Verify ifservices count - discover snmp service on other if
-        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 7, getMonitoredServiceDao().countAll());
-        
-        //Verify service count
-        assertEquals("Unexpected number of service types found: " + getServiceTypeDao().findAll(), 1, getServiceTypeDao().countAll());
-
-        //Verify snmpInterface count
-        assertEquals("Unexpected number of SNMP interfaces found: " + getSnmpInterfaceDao().findAll(), 6, getSnmpInterfaceDao().countAll());
-    }
-
-    // fail if we take more than five minutes
-    @Test(timeout=300000)
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:snmpwalk-v6only.properties")
+    @JUnitSnmpAgents({
+        @JUnitSnmpAgent(host="10.1.15.245", resource="classpath:snmpwalk-demo.properties"),
+        @JUnitSnmpAgent(host="10.3.20.23", resource="classpath:snmpwalk-demo.properties"),
+        @JUnitSnmpAgent(host="2001:0470:e2f1:cafe:16c1:7cff:12d6:7bb9", resource="classpath:snmpwalk-demo.properties")
+    })
     @Transactional
-    public void testPopulateWithIpv6OnlySnmpAndNodeScan() throws Exception {
-        importFromResource("classpath:/requisition_then_scanv6only.xml");
+    public void testPopulateWithIpv6SnmpAndNodeScan() throws Exception {
+    	final ForeignSource fs = new ForeignSource();
+    	fs.setName("matt:");
+    	fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+    	m_foreignSourceRepository.putDefaultForeignSource(fs);
+    	
+    	importFromResource("classpath:/requisition_then_scanv6.xml");
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -575,10 +537,10 @@ public class ProvisionerTest implements InitializingBean {
         assertEquals(1, getSnmpInterfaceDao().countAll());
         
         
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
+        final List<OnmsNode> nodes = getNodeDao().findAll();
+        final OnmsNode node = nodes.get(0);
 
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
         
         //Verify distpoller count
@@ -603,16 +565,74 @@ public class ProvisionerTest implements InitializingBean {
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
+    @JUnitSnmpAgents({
+        @JUnitSnmpAgent(host="10.1.15.245", resource="classpath:snmpwalk-demo.properties"),
+        @JUnitSnmpAgent(host="10.3.20.23", resource="classpath:snmpwalk-demo.properties"),
+        @JUnitSnmpAgent(host="2001:0470:e2f1:cafe:16c1:7cff:12d6:7bb9", resource="classpath:snmpwalk-demo.properties")
+    })
     @Transactional
-    public void testImportAddrThenChangeAddr() throws Exception {
+    public void testPopulateWithIpv6OnlySnmpAndNodeScan() throws Exception {
+        importFromResource("classpath:/requisition_then_scanv6only.xml");
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
         
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(1, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(1, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(1, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(1, getSnmpInterfaceDao().countAll());
+
+        final List<OnmsNode> nodes = getNodeDao().findAll();
+        final OnmsNode node = nodes.get(0);
+
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        runScan(scan);
+        
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals("Unexpected number of IP interfaces found: " + getInterfaceDao().findAll(), 3, getInterfaceDao().countAll());
+        
+        //Verify ifservices count - discover snmp service on other if
+        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 3, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals("Unexpected number of service types found: " + getServiceTypeDao().findAll(), 1, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals("Unexpected number of SNMP interfaces found: " + getSnmpInterfaceDao().findAll(), 6, getSnmpInterfaceDao().countAll());
+    }
+
+    // fail if we take more than five minutes
+    @Test(timeout=300000)
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
+    @Transactional
+    @JUnitSnmpAgents({
+    	@JUnitSnmpAgent(host="172.20.2.201", port=161, resource="classpath:snmpTestData3.properties"),
+    	@JUnitSnmpAgent(host="172.20.2.202", port=161, resource="classpath:snmpTestData4.properties"),
+    	@JUnitSnmpAgent(host="172.20.2.204", port=161, resource="classpath:snmpTestData4.properties")
+    })
+    public void testImportAddrThenChangeAddr() throws Exception {
         importFromResource("classpath:/requisition_then_scan2.xml");
 
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
+        final List<OnmsNode> nodes = getNodeDao().findAll();
+        final OnmsNode node = nodes.get(0);
 
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         
         runScan(scan);
         
@@ -620,13 +640,14 @@ public class ProvisionerTest implements InitializingBean {
         
         assertEquals(2, getInterfaceDao().countAll());
 
-        final Resource location = m_resourceLoader.getResource("classpath:snmpTestData4.properties");
-    	SnmpUtils.replaceAgentDataWithResource(m_agentConfig, location);
+        System.err.println("-------------------------------------------------------------------------");
+
+        m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(InetAddressUtils.addr("172.20.2.201"), 161), m_resourceLoader.getResource("classpath:snmpTestData4.properties"));
         
         importFromResource("classpath:/requisition_primary_addr_changed.xml");
-        
-        NodeScan scan2 = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        
+
+        final NodeScan scan2 = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+
         runScan(scan2);
         
         m_nodeDao.flush();
@@ -637,7 +658,7 @@ public class ProvisionerTest implements InitializingBean {
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
         
-        System.err.println(getInterfaceDao().findAll());
+        LogUtils.debugf(this, "found: %s", getInterfaceDao().findAll());
         
         //Verify ipinterface count
         assertEquals(2, getInterfaceDao().countAll());
@@ -657,14 +678,11 @@ public class ProvisionerTest implements InitializingBean {
 
         //Verify node count
         assertEquals(0, getNodeDao().countAll());
-        
-        
     }
     
     @Test
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDeleteService() throws Exception {
-        
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
         
@@ -684,34 +702,27 @@ public class ProvisionerTest implements InitializingBean {
         
         //Verify service count
         assertEquals(2, getServiceTypeDao().countAll());
-        
-        
+
         // Locate the service to be deleted
-        OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
+        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
         assertNotNull(node);
-        int nodeid = node.getId();
-        
+        final int nodeid = node.getId();
+
         m_eventAnticipator.reset();
         m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.201.136.163", "HTTP"));
-        
 
         m_mockEventIpcManager.sendEventToListeners(deleteService(nodeid, "10.201.136.163", "HTTP"));
-        
         
         // this only waits until all the anticipated events are received so it is fast unless there is a bug
         m_eventAnticipator.waitForAnticipated(10000);
         m_eventAnticipator.verifyAnticipated();
-
-        
     }
 
     @Test
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDeleteInterface() throws Exception {
-        
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
-        
 
         importFromResource("classpath:/deleteService.xml");
         
@@ -729,14 +740,13 @@ public class ProvisionerTest implements InitializingBean {
         
         //Verify service count
         assertEquals(2, getServiceTypeDao().countAll());
-        
-        
+
         // Locate the service to be deleted
-        OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
+        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
         assertNotNull(node);
-        int nodeid = node.getId();
-        String ipaddr = "10.201.136.163";
-        
+        final int nodeid = node.getId();
+        final String ipaddr = "10.201.136.163";
+
         m_eventAnticipator.reset();
         m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, ipaddr, "ICMP"));
         m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, ipaddr, "HTTP"));
@@ -747,17 +757,13 @@ public class ProvisionerTest implements InitializingBean {
         // this only waits until all the anticipated events are received so it is fast unless there is a bug
         m_eventAnticipator.waitForAnticipated(10000);
         m_eventAnticipator.verifyAnticipated();
-
-        
     }
     
     @Test
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDeleteNode() throws Exception {
-
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
-        
 
         importFromResource("classpath:/deleteService.xml");
         
@@ -775,12 +781,11 @@ public class ProvisionerTest implements InitializingBean {
         
         //Verify service count
         assertEquals(2, getServiceTypeDao().countAll());
-        
-        
+
         // Locate the service to be deleted
-        OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
+        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
         assertNotNull(node);
-        int nodeid = node.getId();
+        final int nodeid = node.getId();
         m_eventAnticipator.reset();
 
         m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.136.160.1", "ICMP"));
@@ -801,27 +806,14 @@ public class ProvisionerTest implements InitializingBean {
 
         m_mockEventIpcManager.sendEventToListeners(deleteNode(nodeid));
         
-        
         // this only waits until all the anticipated events are received so it is fast unless there is a bug
         m_eventAnticipator.waitForAnticipated(10000);
         m_eventAnticipator.verifyAnticipated();
-
-        
     }
 
-    public void runScan(NodeScan scan) throws InterruptedException, ExecutionException {
-        Task t = scan.createTask();
-        t.schedule();
-        t.waitFor();
-    }
-
-    
-    
-    
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testPopulate() throws Exception {
-        
         importFromResource("classpath:/tec_dump.xml.smalltest");
 
         //Verify distpoller count
@@ -840,14 +832,16 @@ public class ProvisionerTest implements InitializingBean {
         assertEquals(3, getServiceTypeDao().countAll());
     }
     
-    
-    
-    
     private DistPollerDao getDistPollerDao() {
         return m_distPollerDao;
     }
 
-
+    private void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
+    	final Task t = scan.createTask();
+        t.schedule();
+        t.waitFor();
+    }
+    
     private NodeDao getNodeDao() {
         return m_nodeDao;
     }
@@ -876,7 +870,6 @@ public class ProvisionerTest implements InitializingBean {
         return m_assetRecordDao;
     }
     
-
     /**
      * This test first bulk imports 10 nodes then runs update with 1 node missing
      * from the import file.
@@ -887,7 +880,6 @@ public class ProvisionerTest implements InitializingBean {
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @Transactional
     public void testImportUtf8() throws Exception {
-
         m_provisioner.importModelFromResource(new ClassPathResource("/utf-8.xml"));
         
         assertEquals(1, getNodeDao().countAll());
@@ -921,11 +913,9 @@ public class ProvisionerTest implements InitializingBean {
      * @throws Exception
      */
     @Test(timeout=300000)
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testAssets() throws Exception {
         importFromResource("classpath:/tec_dump.xml");
-        assertEquals(1, getNodeDao().countAll());
-        OnmsNode n = getNodeDao().get(1);
+        final OnmsNode n = getNodeDao().findByForeignId("matt:", "4243");
         assertEquals("Asset Record: Manufacturer",     "Dell",                   n.getAssetRecord().getManufacturer());
         assertEquals("Asset Record: Operating System", "Windows Pi",             n.getAssetRecord().getOperatingSystem());
         assertEquals("Asset Record: Description",      "Large and/or In Charge", n.getAssetRecord().getDescription());
@@ -935,23 +925,19 @@ public class ProvisionerTest implements InitializingBean {
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
-       //importFromResource("classpath:/tec_dump.xml.smalltest");
-       
-       List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
-       
-       int nodeCount = getNodeDao().countAll();
-       System.err.println("NodeCount: "+nodeCount);
+    	final List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+    	final int nodeCount = getNodeDao().countAll();
+    	LogUtils.debugf(this, "NodeCount: %d", nodeCount);
 
-       
-       assertEquals(nodeCount, schedulesForNode.size());
-       assertEquals(nodeCount, m_provisioner.getScheduleLength());
+    	assertEquals(nodeCount, schedulesForNode.size());
+    	assertEquals(nodeCount, m_provisioner.getScheduleLength());
     }
     
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionServiceGetScheduleForNodesUponDelete() throws Exception {
        importFromResource("classpath:/tec_dump.xml.smalltest");
-       
+
        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
        
        assertEquals(10, schedulesForNode.size());
@@ -967,25 +953,20 @@ public class ProvisionerTest implements InitializingBean {
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionerAddNodeToSchedule() throws Exception{
-        
-        
         m_provisioner.scheduleRescanForExistingNodes();
         assertEquals(0, m_provisioner.getScheduleLength());
         
-       
-        
-        OnmsNode node = createNode();
+        final OnmsNode node = createNode();
         assertEquals(1, node.getId().intValue());
         
         assertNotNull(m_nodeDao.get(1));
         
-        EventBuilder bldr = new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Tests");
+        final EventBuilder bldr = new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Tests");
         bldr.setNodeid(1);
         
         m_mockEventIpcManager.broadcastNow(bldr.getEvent());
         
         assertEquals(1, m_provisioner.getScheduleLength());
-        
     }
     
     @Test(timeout=300000)
@@ -1097,14 +1078,12 @@ public class ProvisionerTest implements InitializingBean {
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @Transactional
     public void testSaveCategoriesOnUpdateNodeAttributes() throws Exception {
-        
         final String TEST_CATEGORY = "TEST_CATEGORY";
-        
         final String LABEL = "apknd";
         
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
-        Collection<OnmsNode> nodes = m_nodeDao.findByLabel(LABEL);
+        final Collection<OnmsNode> nodes = m_nodeDao.findByLabel(LABEL);
         assertNotNull(nodes);
         assertEquals(1, nodes.size());
         
@@ -1112,8 +1091,8 @@ public class ProvisionerTest implements InitializingBean {
         assertNotNull(node);
         assertEquals(LABEL, node.getLabel());
         assertFalse(node.hasCategory(TEST_CATEGORY));
-        
-        NodeCategorySettingPolicy policy = new NodeCategorySettingPolicy();
+
+        final NodeCategorySettingPolicy policy = new NodeCategorySettingPolicy();
         policy.setCategory(TEST_CATEGORY);
         policy.setLabel(LABEL);
         
@@ -1125,9 +1104,8 @@ public class ProvisionerTest implements InitializingBean {
         
         // flush here to force a write so we are sure that the OnmsCategories are correctly created
         m_nodeDao.flush();
-        
-        OnmsNode node2 = m_nodeDao.findByLabel(LABEL).iterator().next();
 
+        final OnmsNode node2 = m_nodeDao.findByLabel(LABEL).iterator().next();
         assertTrue(node2.hasCategory(TEST_CATEGORY));
         
 
@@ -1190,7 +1168,7 @@ public class ProvisionerTest implements InitializingBean {
         return node;
     }
     
-    private static void verifyCounts2(CountingVisitor visitor) {
+    private static void verifyDnsImportCounts(CountingVisitor visitor) {
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());
         assertEquals(0, visitor.getNodeCategoryCount());
@@ -1205,7 +1183,7 @@ public class ProvisionerTest implements InitializingBean {
         assertEquals(visitor.getServiceCategoryCount(), visitor.getServiceCategoryCompletedCount());
     }
     
-    private static void verifyCounts(CountingVisitor visitor) {
+    private static void verifyBasicImportCounts(CountingVisitor visitor) {
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());
         assertEquals(3, visitor.getNodeCategoryCount());
@@ -1369,4 +1347,9 @@ public class ProvisionerTest implements InitializingBean {
             m_assetCompleted++;
         }
     }
+
+	@Override
+	public void setMockSnmpDataProvider(final MockSnmpDataProvider provider) {
+		m_mockSnmpDataProvider = provider;
+	}
 }

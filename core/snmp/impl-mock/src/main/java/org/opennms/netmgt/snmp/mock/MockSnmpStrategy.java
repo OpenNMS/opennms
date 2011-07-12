@@ -201,7 +201,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
         return ArrayUtils.addAll(engineID, ip);
     }
 
-	public static void addHost(final SnmpAgentAddress agentAddress, final Resource resource) throws IOException {
+	public static void setDataForAddress(final SnmpAgentAddress agentAddress, final Resource resource) throws IOException {
         m_loaders.put(agentAddress, new PropertyOidContainer(resource));
     }
     

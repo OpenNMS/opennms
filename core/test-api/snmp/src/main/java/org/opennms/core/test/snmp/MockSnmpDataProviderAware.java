@@ -26,22 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.core.test.snmp;
 
-package org.opennms.mock.snmp;
+import org.opennms.mock.snmp.MockSnmpDataProvider;
 
-/**
- * MockSnmpAgentAware
- *
- * @author brozow
- * @version $Id: $
- */
-public interface MockSnmpAgentAware {
-    
-    /**
-     * <p>setMockSnmpAgent</p>
-     *
-     * @param agent a {@link org.opennms.mock.snmp.MockSnmpAgent} object.
-     */
-    public void setMockSnmpAgent(MockSnmpAgent agent);
 
+public interface MockSnmpDataProviderAware {
+    public void setMockSnmpDataProvider(MockSnmpDataProvider provider);
 }

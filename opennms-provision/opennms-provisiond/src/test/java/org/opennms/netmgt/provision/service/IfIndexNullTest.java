@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.snmp.annotations.JUnitMockSnmpStrategyAgents;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -93,7 +93,7 @@ public class IfIndexNullTest {
     }
 
     @Test
-    @JUnitMockSnmpStrategyAgents(value={
+    @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="172.20.1.201", port=161, resource="classpath:snmpTestData-null.properties"),
         @JUnitSnmpAgent(host="172.20.1.204", port=161, resource="classpath:snmpTestData-null.properties")
     })

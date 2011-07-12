@@ -713,7 +713,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      *
      * @param moFile a {@link org.springframework.core.io.Resource} object.
      */
-    public void updateValuesFromResource(Resource moFile) {
+    public void updateValuesFromResource(final Resource moFile) {
         unregisterManagedObjects();
         m_moFile = moFile;
         registerManagedObjects();

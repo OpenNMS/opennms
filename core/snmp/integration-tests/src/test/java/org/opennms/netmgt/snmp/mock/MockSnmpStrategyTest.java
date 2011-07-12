@@ -29,7 +29,7 @@ public class MockSnmpStrategyTest {
     @Before
     public void setUp() throws Exception {
         m_strategy = new MockSnmpStrategy();
-        MockSnmpStrategy.addHost(new SnmpAgentAddress(m_agentAddress, m_agentPort), new ClassPathResource("loadSnmpDataTest.properties"));
+        MockSnmpStrategy.setDataForAddress(new SnmpAgentAddress(m_agentAddress, m_agentPort), new ClassPathResource("loadSnmpDataTest.properties"));
         System.setProperty("org.opennms.snmp.strategyClass", m_strategy.getClass().getName());
     }
     
