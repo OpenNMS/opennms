@@ -197,17 +197,10 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     @Override
     public void afterTestMethod(final TestContext testContext) throws Exception {
         final String strategyClass = (String)testContext.getAttribute(STRATEGY_CLASS_KEY);
-
-        @SuppressWarnings("unchecked")
-		final Map<SnmpAgentAddress,MockSnmpAgent> agents = (Map<SnmpAgentAddress,MockSnmpAgent>)testContext.getAttribute(AGENT_KEY);
-
-        for (final MockSnmpAgent agent : agents.values()) {
-            if (agent != null) {
-                LogUtils.debugf(this, "Shutting down agent ", agent);
-                agent.shutDownAndWait();
-            }
-        }
+        final MockSnmpDataProvider provider = (MockSnmpDataProvider)testContext.getAttribute(PROVIDER_KEY);
         
+        provider.resetData();
+
         if (strategyClass != null) {
             System.setProperty(STRATEGY_CLASS_PROPERTY, strategyClass);
         }
@@ -221,6 +214,10 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 			} catch (final Throwable t) {
 				LogUtils.warnf(this, t, "Unable to set mock SNMP data for %s", address);
 			}
+		}
+		@Override
+		public void resetData() {
+			MockSnmpStrategy.resetData();
 		}
 	}
 
@@ -239,6 +236,18 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 				return;
 			}
 			agent.updateValuesFromResource(resource);
+		}
+
+		@Override
+		public void resetData() {
+			for (final MockSnmpAgent agent : m_agents.values()) {
+				try {
+					agent.shutDownAndWait();
+				} catch (final InterruptedException e) {
+					LogUtils.debugf(this, e, "Unable to shut down agent %s", agent);
+				}
+			}
+			m_agents.clear();
 		}
 	}
 

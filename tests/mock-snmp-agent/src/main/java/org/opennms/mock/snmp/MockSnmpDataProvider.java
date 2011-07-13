@@ -7,4 +7,6 @@ public interface MockSnmpDataProvider {
 
 	public void setDataForAddress(SnmpAgentAddress address, Resource resource);
 
+	public void resetData();
+
 }

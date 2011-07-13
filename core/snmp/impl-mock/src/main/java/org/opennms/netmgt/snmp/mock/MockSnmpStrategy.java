@@ -209,4 +209,8 @@ public class MockSnmpStrategy implements SnmpStrategy {
         m_loaders.remove(agentAddr);
     }
 
+	public static void resetData() {
+		m_loaders.clear();
+	}
+
 }
