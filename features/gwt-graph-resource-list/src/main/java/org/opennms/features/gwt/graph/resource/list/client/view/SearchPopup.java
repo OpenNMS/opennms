@@ -26,24 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.gwt.web.ui.reports.client;
+package org.opennms.features.gwt.graph.resource.list.client.view;
 
+import org.opennms.features.gwt.graph.resource.list.client.event.SearchClickEvent;
+import org.opennms.features.gwt.graph.resource.list.client.event.SearchClickEventHandler;
+import org.opennms.features.gwt.graph.resource.list.client.presenter.KscGraphResourceListPresenter.SearchPopupDisplay;
+
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.HasKeyPressHandlers;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.Widget;
 
-public class SearchPopup extends PopupPanel {
+public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
+    
     private Label m_label;
     private TextBox m_tf;
     private Button m_okBtn;
     private Button m_cancelBtn;
     private SimpleEventBus m_eventBus = new SimpleEventBus();
+    private UIObject m_target;
+    private LayoutPanel m_layoutPanel;
     
     public SearchPopup() {
         super(true);
@@ -67,20 +78,70 @@ public class SearchPopup extends PopupPanel {
             }
         });
         
-        HorizontalPanel hPanel = new HorizontalPanel();
-        hPanel.add(m_okBtn);
-        hPanel.add(m_cancelBtn);
+        m_layoutPanel = new LayoutPanel();
+        m_layoutPanel.setSize("100%", "22px");
+        m_layoutPanel.add(m_label);
+        m_layoutPanel.add(m_tf);
+        m_layoutPanel.add(m_okBtn);
+        m_layoutPanel.add(m_cancelBtn);
+        m_layoutPanel.setWidgetRightWidth(m_cancelBtn, 0, Unit.PX, 60, Unit.PX);
+        m_layoutPanel.setWidgetRightWidth(m_okBtn, 64, Unit.PX, 70, Unit.PX);
+        m_layoutPanel.setWidgetLeftRight(m_tf, 100, Unit.PX, 135, Unit.PX);
         
-        VerticalPanel vPanel = new VerticalPanel();
-        vPanel.add(m_label);
-        vPanel.add(m_tf);
-        vPanel.add(hPanel);
+        setAnimationEnabled(true);
         
-        setWidget(vPanel);
+        setWidget(m_layoutPanel);
     }
     
     public void addSearchClickEventHandler(SearchClickEventHandler handler) {
         m_eventBus.addHandler(SearchClickEvent.getType(), handler);
+    }
+
+    @Override
+    public HasClickHandlers getSearchConfirmBtn() {
+        return m_okBtn;
+    }
+
+    @Override
+    public HasClickHandlers getCancelBtn() {
+        return m_cancelBtn;
+    }
+
+    @Override
+    public String getSearchText() {
+        return m_tf.getText();
+    }
+
+    @Override
+    public void showSearchPopup() {
+        
+        setPopupPositionAndShow(new PositionCallback() {
+            
+            @Override
+            public void setPosition(int offsetWidth, int offsetHeight) {
+                int left = m_target.getAbsoluteLeft();
+                int top = m_target.getAbsoluteTop() + 355;
+                m_layoutPanel.setWidth((m_target.getOffsetWidth() - 12) + "px");
+                setPopupPosition(left, top);
+                
+            }
+        });
+        
+    }
+
+    @Override
+    public void hideSearchPopup() {
+        hide();
+    }
+
+    @Override
+    public void setTargetWidget(Widget target) {
+        m_target = target;
+    }
+
+    @Override
+    public HasKeyPressHandlers getTextBox() {
+        return m_tf;
     }
     
     

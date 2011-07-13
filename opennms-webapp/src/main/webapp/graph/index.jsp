@@ -65,12 +65,8 @@
   <jsp:param name="location" value="performance" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="Resource Graphs" />
-  <jsp:param value="true" name="enableExtJS"/>
 </jsp:include>
 
-<script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
-<script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
-<script type="text/javascript" src="js/GraphResourceView.js" ></script>
 
 <script type="text/javascript" >
   
@@ -155,16 +151,8 @@
 
 			                                          		]};
 
-		Ext.onReady(function(){
-			// IE likes page-relative links, everything else does base-HREF-relative links
-			var urlTemplate = "graph/chooseresource.htm?reports=all&parentResourceId={id}";
-			if(Ext.isIE){
-				urlTemplate = "chooseresource.htm?reports=all&parentResourceId={id}";
-			}
-			standardResourceViewInit("standard-resource", standardResourceData, urlTemplate);
-	  	})
 	</script>
-	<div id="standard-resource"></div>
+	<opennms:resourceList id="resourceList1" dataObject="standardResourceData"> </opennms:resourceList>
   </div>
   
 
@@ -191,16 +179,9 @@
                                             </c:forEach>
 
 			                                                                 		]};
-		Ext.onReady(function(){
-			// IE likes page-relative links, everything else does base-HREF-relative links
-			var urlTemplate = "graph/chooseresource.htm?endUrl=graph%2Fadhoc2.jsp&parentResourceId={id}";
-			if(Ext.isIE){
-				urlTemplate = "chooseresource.htm?endUrl=graph%2Fadhoc2.jsp&parentResourceId={id}";
-			}
-			customResourceViewInit("custom-resources", customResources, urlTemplate);
-		})
+		
 	</script>
-	<div id="custom-resources"></div>
+	<opennms:resourceList id="resourceList2" dataObject="customResources"> </opennms:resourceList>
   </div>
 </div>
 

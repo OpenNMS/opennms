@@ -26,10 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.gwt.web.ui.reports.client;
+package org.opennms.features.gwt.graph.resource.list.client.event;
 
-import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
 
-public interface SearchClickEventHandler extends EventHandler {
-    public void onSearchClickEvent(String searchTerm);
+public class SearchClickEvent extends GwtEvent<SearchClickEventHandler> {
+    
+    public static Type<SearchClickEventHandler> TYPE = new Type<SearchClickEventHandler>();
+    private String m_searchTerm;
+
+    public SearchClickEvent(String searchTerm) {
+        m_searchTerm = searchTerm;
+    }
+    
+    public static Type<SearchClickEventHandler> getType(){
+        return TYPE;
+    }
+    
+    @Override
+    public Type<SearchClickEventHandler> getAssociatedType() {
+        return TYPE;
+    }
+
+    @Override
+    protected void dispatch(SearchClickEventHandler handler) {
+        handler.onSearchClickEvent(m_searchTerm);
+    }
+
 }

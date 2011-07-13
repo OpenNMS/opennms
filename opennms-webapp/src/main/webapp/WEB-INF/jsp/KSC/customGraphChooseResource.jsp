@@ -205,6 +205,7 @@
 	  	 	});
       	</script>
       	<div id="resource-grid"></div> --%>
+      	<opennms:chooseResourceList id="resourceList"></opennms:chooseResourceList>
       	<div id="opennms:chooseResource" style="left: 20px;"></div>
         <%-- <form method="get" name="report" action="<%= org.opennms.web.api.Util.calculateUrlBase( request, "KSC/customGraphChooseResource.htm" ) %>" >
           <input type="hidden" name="selectedResourceId" value="${param.selectedResourceId}"/>

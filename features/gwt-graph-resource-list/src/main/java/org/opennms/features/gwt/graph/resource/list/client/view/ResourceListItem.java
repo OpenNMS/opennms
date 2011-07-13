@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.gwt.web.ui.reports.client;
+package org.opennms.features.gwt.graph.resource.list.client.view;
 
 import com.google.gwt.core.client.JavaScriptObject;
 

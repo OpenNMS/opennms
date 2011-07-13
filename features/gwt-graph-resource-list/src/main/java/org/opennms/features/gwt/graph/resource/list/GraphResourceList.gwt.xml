@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='GraphResourceList'>
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <inherits name='com.google.gwt.user.User'/>
+
+  <inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/>
+  
+  <!-- Specify the app entry point class.                         -->
+  <entry-point class='org.opennms.features.gwt.graph.resource.list.client.GraphResourceList'/>
+
+  <!-- Specify the paths for translatable code                    -->
+  <source path='client'/>
+
+</module>

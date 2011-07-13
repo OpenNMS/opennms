@@ -26,10 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.gwt.web.ui.reports.client;
+package org.opennms.features.gwt.graph.resource.list.client.event;
 
-import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.event.shared.EventHandler;
 
-public interface ResourceClientBundle extends ClientBundle {
-
+public interface SearchClickEventHandler extends EventHandler {
+    public void onSearchClickEvent(String searchTerm);
 }

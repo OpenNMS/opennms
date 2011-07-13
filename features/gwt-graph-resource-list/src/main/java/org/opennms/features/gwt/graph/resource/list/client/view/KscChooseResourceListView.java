@@ -26,31 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.gwt.web.ui.reports.client;
+package org.opennms.features.gwt.graph.resource.list.client.view;
 
-import com.google.gwt.event.shared.GwtEvent;
+import java.util.List;
 
-public class SearchClickEvent extends GwtEvent<SearchClickEventHandler> {
+import com.google.gwt.user.client.ui.Widget;
+
+
+public interface KscChooseResourceListView<T> {
     
-    public static Type<SearchClickEventHandler> TYPE = new Type<SearchClickEventHandler>();
-    private String m_searchTerm;
-
-    public SearchClickEvent(String searchTerm) {
-        m_searchTerm = searchTerm;
+    public interface Presenter<T>{
+        void onSearchButtonClicked();
+        void onResourceItemSelected();
+        void onChooseResourceClicked();
+        void onViewResourceClicked();
     }
     
-    public static Type<SearchClickEventHandler> getType(){
-        return TYPE;
-    }
+    void setDataList(List<ResourceListItem> dataList);
+    void setPresenter(Presenter<T> presenter);
+    void showWarning();
+    ResourceListItem getSelectedResource();
+    Widget asWidget();
     
-    @Override
-    public Type<SearchClickEventHandler> getAssociatedType() {
-        return TYPE;
-    }
-
-    @Override
-    protected void dispatch(SearchClickEventHandler handler) {
-        handler.onSearchClickEvent(m_searchTerm);
-    }
-
 }
