@@ -2,8 +2,10 @@ package org.opennms.netmgt.provision.detector.wmi;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.support.AbstractDetector;
+import org.opennms.protocols.wmi.WmiAgentConfig;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
 import org.opennms.protocols.wmi.WmiParams;
@@ -43,14 +45,12 @@ public class WmiDetector extends AbstractDetector {
     private String m_domain;
     
     public WmiDetector() {
-
+        super(PROTOCOL_NAME, 0);
     }
     
     
     @Override
     protected void onInit() {
-        setServiceName(PROTOCOL_NAME);
-        
         setMatchType(getMatchType() != null ? getMatchType() : DEFAULT_WMI_MATCH_TYPE);
         setCompVal(getCompVal() != null ? getCompVal() : DEFAULT_WMI_COMP_VAL);
         setCompOp(getCompOp() != null ? getCompOp() : DEFAULT_WMI_COMP_OP);
@@ -73,19 +73,26 @@ public class WmiDetector extends AbstractDetector {
                                          getCompVal(), getCompOp(), getWmiWqlStr(), getWmiObject());
         }
 
+        // Use WMI credentials from configuration files, and override values with the detector parameters if they exists.
+        final WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(address);
+        if (getUsername() != null)
+            agentConfig.setUsername(getUsername());
+        if (getPassword() != null)
+            agentConfig.setPassword(getPassword());
+        if (getDomain() != null)
+            agentConfig.setDomain(getDomain());
+        if (getRetries() > 0)
+            agentConfig.setRetries(getRetries());
+        if (getTimeout() > 0)
+            agentConfig.setTimeout(getTimeout());
 
         // Perform the operation specified in the parameters.
-        WmiResult result = isServer(address, getUsername(), getPassword(), getDomain(), getMatchType(),
-                getRetries(), getTimeout(), clientParams);
+        WmiResult result = isServer(address, agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), getMatchType(),
+                agentConfig.getRetries(), agentConfig.getTimeout(), clientParams);
 
         // Only fail on critical and unknown returns.
-        if (result != null && result.getResultCode() != WmiResult.RES_STATE_CRIT
-                && result.getResultCode() != WmiResult.RES_STATE_UNKNOWN) {
-
-            return true;
-        } else {
-            return false;
-        }
+        return (result != null && result.getResultCode() != WmiResult.RES_STATE_CRIT
+                && result.getResultCode() != WmiResult.RES_STATE_UNKNOWN);
     }
     
     private WmiResult isServer(InetAddress host, String user, String pass,
