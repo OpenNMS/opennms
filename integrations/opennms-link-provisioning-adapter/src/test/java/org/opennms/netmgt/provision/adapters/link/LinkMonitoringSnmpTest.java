@@ -31,38 +31,37 @@ package org.opennms.netmgt.provision.adapters.link;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.UnknownHostException;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations= {
+		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/snmpConfigFactoryContext.xml"
 })
-@JUnitSnmpAgent(resource="classpath:/airPairR3_walk.properties")
-@TestExecutionListeners({
-    JUnitSnmpAgentExecutionListener.class
-})
 public class LinkMonitoringSnmpTest {
-    
+    @Autowired
+    private SnmpPeerFactory m_snmpPeerFactory;
+
     private static final String AIR_PAIR_R3_SYS_OID = ".1.3.6.1.4.1.7262.1";
     private static final String AIR_PAIR_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.1.19.3.1.0";
     private static final String AIR_PAIR_R3_DUPLEX_MISMATCH = ".1.3.6.1.4.1.7262.1.19.2.3.0";
@@ -75,52 +74,43 @@ public class LinkMonitoringSnmpTest {
     private static final String HORIZON_DUO_SYSTEM_CAPACITY = ".1.3.6.1.4.1.7262.2.3.1.1.5.0";
     private static final String HORIZON_DUO_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.1";
     
-    private SnmpAgentConfig m_agentConfig;
     private DefaultEndPointConfigurationDao m_configDao;
     
+    private EndPointImpl getEndPoint(final String sysOid, final String address) throws UnknownHostException {
+    	final EndPointImpl endPoint = new EndPointImpl(InetAddressUtils.getLocalHostAddress(), getAgentConfig(address));
+        endPoint.setSysOid(sysOid);
+        return endPoint;
+    }
+
+	private SnmpAgentConfig getAgentConfig(final String address) {
+		return m_snmpPeerFactory.getAgentConfig(addr(address));
+	}
+    
     @Before
-    public void setup() throws InterruptedException, UnknownHostException {
-        
-        if(m_agentConfig == null) {
-            m_agentConfig = new SnmpAgentConfig(InetAddressUtils.getLocalHostAddress());
-            m_agentConfig.setPort(9161);
-            m_agentConfig.setReadCommunity("public");
-        }
-        
-        
-        DefaultEndPointConfigurationDao dao = new DefaultEndPointConfigurationDao();
+    public void setUp() throws InterruptedException, UnknownHostException {
+    	SnmpPeerFactory.setInstance(m_snmpPeerFactory);
+        final DefaultEndPointConfigurationDao dao = new DefaultEndPointConfigurationDao();
         dao.setConfigResource(new ClassPathResource("/testDWO-configuration.xml"));
         dao.afterPropertiesSet();
         m_configDao = dao;
-        
-        
-    }
-    
-    @After
-    public void tearDown() throws InterruptedException{
-        
     }
     
     @Test
+    @JUnitSnmpAgent(host="192.168.255.10", resource="classpath:/airPairR3_walk.properties")
     public void dwoTestEndPointImplGetOid() throws UnknownHostException {
-        EndPointImpl endPoint = getEndPoint(null);
+        EndPointImpl endPoint = getEndPoint(null, "192.168.255.10");
         SnmpValue snmpVal = endPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL);
         assertNotNull(snmpVal);
         assertEquals("1", snmpVal.toString());
     }
 
-    private EndPointImpl getEndPoint(String sysOid) throws UnknownHostException {
-        EndPointImpl endPoint = new EndPointImpl(InetAddressUtils.getLocalHostAddress(), m_agentConfig);
-        endPoint.setSysOid(sysOid);
-        return endPoint;
-    }
-    
     @Test
+    @JUnitSnmpAgent(host="192.168.255.10", resource="classpath:/airPairR3_walk.properties")
     public void dwoTestLinkMonitorAirPairR3() throws UnknownHostException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_R3_DUPLEX_MISMATCH), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.255.10"), SnmpObjId.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.255.10"), SnmpObjId.get(AIR_PAIR_R3_DUPLEX_MISMATCH), SnmpUtils.getValueFactory().getCounter32(1));
         
-        EndPointImpl endPoint = getEndPoint(AIR_PAIR_R3_SYS_OID);
+        EndPointImpl endPoint = getEndPoint(AIR_PAIR_R3_SYS_OID, "192.168.255.10");
         
         EndPointTypeValidator validator = m_configDao.getValidator();
         try {
@@ -131,11 +121,12 @@ public class LinkMonitoringSnmpTest {
     }
     
     @Test(expected=EndPointStatusException.class)
+    @JUnitSnmpAgent(host="192.168.255.10", resource="classpath:/airPairR3_walk.properties")
     public void dwoTestLinkMonitorAirPair3DownLossOfSignal() throws UnknownHostException, EndPointStatusException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_R3_DUPLEX_MISMATCH), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.255.10"), SnmpObjId.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(getAgentConfig("192.168.255.10"), SnmpObjId.get(AIR_PAIR_R3_DUPLEX_MISMATCH), SnmpUtils.getValueFactory().getCounter32(1));
         
-        EndPointImpl endPoint = getEndPoint(AIR_PAIR_R3_SYS_OID);
+        EndPointImpl endPoint = getEndPoint(AIR_PAIR_R3_SYS_OID, "192.168.255.10");
         
         m_configDao.getValidator().validate(endPoint);
         
@@ -143,12 +134,12 @@ public class LinkMonitoringSnmpTest {
     
     @Test
     @Ignore
-    @JUnitSnmpAgent(resource="/airPairR4_walk.properties")
+    @JUnitSnmpAgent(host="192.168.255.20", resource="/airPairR4_walk.properties")
     public void dwoTestLinkMonitorAirPairR4() throws UnknownHostException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.255.20"), SnmpObjId.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.255.20"), SnmpObjId.get(AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
         
-        EndPointImpl endPoint = getEndPoint(AIR_PAIR_R4_SYS_OID);
+        EndPointImpl endPoint = getEndPoint(AIR_PAIR_R4_SYS_OID, "192.168.255.20");
         
         try {
            m_configDao.getValidator().validate(endPoint); 
@@ -159,12 +150,12 @@ public class LinkMonitoringSnmpTest {
     }
     
     @Test
-    @JUnitSnmpAgent(resource="/horizon_compact_walk.properties")
+    @JUnitSnmpAgent(host="192.168.255.31", resource="/horizon_compact_walk.properties")
     public void dwoTestLinkMonitorHorizonCompact() throws UnknownHostException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_ETHERNET_LINK_DOWN), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.255.31"), SnmpObjId.get(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.255.31"), SnmpObjId.get(HORIZON_COMPACT_ETHERNET_LINK_DOWN), SnmpUtils.getValueFactory().getCounter32(1));
         
-        EndPointImpl endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID);
+        EndPointImpl endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID, "192.168.255.31");
         
         try {
             m_configDao.getValidator().validate(endPoint);
@@ -175,93 +166,93 @@ public class LinkMonitoringSnmpTest {
     }
     
     @Test(expected=EndPointStatusException.class)
-    @JUnitSnmpAgent(resource="/horizon_compact_walk.properties")
+    @JUnitSnmpAgent(host="192.168.255.31", resource="/horizon_compact_walk.properties")
     public void dwoTestLinkMonitorHorizonCompactDownLossOfSignal() throws EndPointStatusException, UnknownHostException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_ETHERNET_LINK_DOWN), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.255.31"), SnmpObjId.get(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(getAgentConfig("192.168.255.31"), SnmpObjId.get(HORIZON_COMPACT_ETHERNET_LINK_DOWN), SnmpUtils.getValueFactory().getCounter32(1));
         
-        EndPoint endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID);
+        EndPoint endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID, "192.168.255.31");
         
         m_configDao.getValidator().validate(endPoint);
     }
     
     @Test(expected=EndPointStatusException.class)
-    @JUnitSnmpAgent(resource="/horizon_compact_walk.properties")
+    @JUnitSnmpAgent(host="192.168.255.31", resource="/horizon_compact_walk.properties")
     public void dwoTestLinkMonitorHorizonCompactDownEthernetLinkDown() throws EndPointStatusException, UnknownHostException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_COMPACT_ETHERNET_LINK_DOWN), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(getAgentConfig("192.168.255.31"), SnmpObjId.get(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.255.31"), SnmpObjId.get(HORIZON_COMPACT_ETHERNET_LINK_DOWN), SnmpUtils.getValueFactory().getCounter32(2));
         
-        EndPoint endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID);
+        EndPoint endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID, "192.168.255.31");
         
         m_configDao.getValidator().validate(endPoint);
     }
     
     @Test
-    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
+    @JUnitSnmpAgent(host="192.168.254.10", resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity1() throws UnknownHostException, EndPointStatusException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(1));
         
-        EndPointImpl endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
+        EndPointImpl endPoint = getEndPoint(HORIZON_DUO_SYS_OID, "192.168.254.10");
         
         m_configDao.getValidator().validate(endPoint);
         
     }
     
     @Test(expected=EndPointStatusException.class)
-    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
+    @JUnitSnmpAgent(host="192.168.254.10", resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity1DownModemLossSignal() throws UnknownHostException, EndPointStatusException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(1));
         
-        EndPointImpl endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
+        EndPointImpl endPoint = getEndPoint(HORIZON_DUO_SYS_OID, "192.168.254.10");
         
         m_configDao.getValidator().validate(endPoint);
         
     }
     
     @Test
-    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
+    @JUnitSnmpAgent(host="192.168.254.10", resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity2() throws UnknownHostException, EndPointStatusException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(2));
         
-        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
+        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID, "192.168.254.10");
         
         m_configDao.getValidator().validate(endPoint);
         
     }
     
     @Test(expected=EndPointStatusException.class)
-    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
+    @JUnitSnmpAgent(host="192.168.254.10", resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity2DownModemLossSignal() throws UnknownHostException, EndPointStatusException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(2));
         
-        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
+        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID, "192.168.254.10");
         
         m_configDao.getValidator().validate(endPoint);
         
     }
     
     @Test
-    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
+    @JUnitSnmpAgent(host="192.168.254.10", resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity3() throws UnknownHostException, EndPointStatusException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(3));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(1));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(3));
         
-        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
+        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID, "192.168.254.10");
         
         m_configDao.getValidator().validate(endPoint);
     }
     
     @Test(expected=EndPointStatusException.class)
-    @JUnitSnmpAgent(resource="/horizon_duo_walk.properties")
+    @JUnitSnmpAgent(host="192.168.254.10", resource="/horizon_duo_walk.properties")
     public void dwoTestLinkMonitorHorizonDuoCapacity3DownModemLossSignal() throws UnknownHostException, EndPointStatusException {
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
-    	SnmpUtils.set(m_agentConfig, SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(3));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL), SnmpUtils.getValueFactory().getCounter32(2));
+    	SnmpUtils.set(getAgentConfig("192.168.254.10"), SnmpObjId.get(HORIZON_DUO_SYSTEM_CAPACITY), SnmpUtils.getValueFactory().getCounter32(3));
         
-        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
+        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID, "192.168.254.10");
         
         m_configDao.getValidator().validate(endPoint);
     }

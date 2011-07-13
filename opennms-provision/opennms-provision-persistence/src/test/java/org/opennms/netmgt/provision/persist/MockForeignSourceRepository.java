@@ -113,4 +113,22 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
         throw new UnsupportedOperationException("no URL in the mock repository");
     }
 
+    public ForeignSource getDefaultForeignSource() throws ForeignSourceRepositoryException {
+    	final ForeignSource fs = getForeignSource("default");
+    	if (fs == null) {
+    		return super.getDefaultForeignSource();
+    	}
+    	return fs;
+    }
+
+    public void putDefaultForeignSource(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+        if (foreignSource == null) {
+            throw new ForeignSourceRepositoryException("foreign source was null");
+        }
+        foreignSource.setDefault(true);
+        foreignSource.setName("default");
+        foreignSource.updateDateStamp();
+        
+        save(foreignSource);
+    }
 }

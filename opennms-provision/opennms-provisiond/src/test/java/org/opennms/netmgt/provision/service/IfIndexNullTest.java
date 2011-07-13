@@ -99,15 +99,15 @@ public class IfIndexNullTest {
     })
     public void testNullIfIndex() throws Exception {
         final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
-        
+
         m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/tec_dump.xml"));
         
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
+        final List<OnmsNode> nodes = getNodeDao().findAll();
+        final OnmsNode node = nodes.get(0);
         
         eventRecieved.await();
         
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
         
         //Verify ipinterface count
@@ -115,8 +115,8 @@ public class IfIndexNullTest {
         
     }
     
-    public void runScan(NodeScan scan) throws InterruptedException, ExecutionException {
-        Task t = scan.createTask();
+    public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
+    	final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
     }

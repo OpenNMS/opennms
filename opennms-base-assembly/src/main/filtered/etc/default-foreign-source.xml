@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<foreign-source date-stamp="2011-07-12T17:37:18.623-04:00" name="default" xmlns="http://xmlns.opennms.org/xsd/config/foreign-source">
-    <scan-interval>1d</scan-interval>
-    <detectors>
-        <detector class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" name="SNMP"/>
-    </detectors>
-    <policies/>
-</foreign-source>

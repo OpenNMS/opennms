@@ -30,7 +30,6 @@ package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
@@ -40,12 +39,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -54,14 +53,17 @@ import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.mock.EventAnticipator;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Unit test for ModelImport application.
@@ -107,7 +109,7 @@ public class NewSuspectScanTest {
     private ProvisionService m_provisionService;
     
     @Autowired
-    private PausibleScheduledThreadPoolExecutor m_pausibleExecutor;
+    private MockEventIpcManager m_eventSubscriber;
     
     private ForeignSourceRepository m_foreignSourceRepository;
     
@@ -116,18 +118,13 @@ public class NewSuspectScanTest {
     static private String s_initialDiscoveryEnabledValue;
     
     @BeforeClass
-    public static void setUpSnmpConfig() {
-        SnmpPeerFactory.setFile(new File("src/test/proxy-snmp-config.xml"));
-
+    public static void setUpLogging() {
         Properties props = new Properties();
         props.setProperty("log4j.logger.org.hibernate", "INFO");
         props.setProperty("log4j.logger.org.springframework", "INFO");
         props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
 
         MockLogAppender.setupLogging(props);
-        
-        //System.setProperty("mock.debug", "false");
-        
     }
 
     @BeforeClass
@@ -148,25 +145,29 @@ public class NewSuspectScanTest {
     
     @Before
     public void setUp() throws Exception {
-        
-        m_provisioner.start();
-        
         m_foreignSource = new ForeignSource();
         m_foreignSource.setName("imported:");
         m_foreignSource.setScanInterval(Duration.standardDays(1));
-        
-        m_foreignSourceRepository = new MockForeignSourceRepository();
-        m_foreignSourceRepository.save(m_foreignSource);
-        
-        m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
-        
-        m_pausibleExecutor.pause();
+        final PluginConfig detector = new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector");
+        detector.addParameter("timeout", "1000");
+        detector.addParameter("retries", "0");
+		m_foreignSource.addDetector(detector);
 
+        m_foreignSourceRepository = new MockForeignSourceRepository();
+        m_foreignSourceRepository.putDefaultForeignSource(m_foreignSource);
+
+        m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
+
+        m_provisioner.setEventForwarder(m_eventSubscriber);
+        m_provisioner.start();
     }
 
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
+    @JUnitSnmpAgents({
+        @JUnitSnmpAgent(host="172.20.2.201", resource="classpath:snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="172.20.2.204", resource="classpath:snmpTestData3.properties")
+    })
     public void testScanNewSuspect() throws Exception {
         
         //Verify empty database
@@ -177,12 +178,18 @@ public class NewSuspectScanTest {
         assertEquals(0, getServiceTypeDao().countAll());
         assertEquals(0, getSnmpInterfaceDao().countAll());
 
+        final EventAnticipator anticipator = m_eventSubscriber.getEventAnticipator();
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(1).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(InetAddressUtils.addr("172.20.2.201")).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(InetAddressUtils.addr("172.20.2.201")).setService("SNMP").getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(InetAddressUtils.addr("172.20.2.204")).setService("SNMP").getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(InetAddressUtils.addr("172.20.2.201")).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(1).getEvent());
 
-        NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddressUtils.addr("172.20.2.201"));
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddressUtils.addr("172.20.2.201"));
         runScan(scan);
 
-        // wait for NodeScan triggered by NodeAdded to complete
-        Thread.sleep(100000);
+        anticipator.verifyAnticipated(200000, 0, 0, 0, 0);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -221,10 +228,16 @@ public class NewSuspectScanTest {
         assertEquals(0, getServiceTypeDao().countAll());
         assertEquals(0, getSnmpInterfaceDao().countAll());
         
-        
-        NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddressUtils.addr("172.20.2.201"));
+        final EventAnticipator anticipator = m_eventSubscriber.getEventAnticipator();
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(1).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(InetAddressUtils.addr("172.20.2.201")).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(1).getEvent());
+
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddressUtils.addr("172.20.2.201"));
         runScan(scan);
         
+        anticipator.verifyAnticipated(200000, 0, 0, 0, 0);
+
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
         
@@ -245,8 +258,8 @@ public class NewSuspectScanTest {
         
     }
     
-    public void runScan(NewSuspectScan scan) throws InterruptedException, ExecutionException {
-        Task t = scan.createTask();
+    public void runScan(final NewSuspectScan scan) throws InterruptedException, ExecutionException {
+        final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
     }
@@ -280,5 +293,4 @@ public class NewSuspectScanTest {
     private ServiceTypeDao getServiceTypeDao() {
         return m_serviceTypeDao;
     }
-
 }

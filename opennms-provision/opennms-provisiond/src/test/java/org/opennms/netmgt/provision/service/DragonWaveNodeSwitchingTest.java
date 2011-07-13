@@ -176,7 +176,7 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpDataProviderAware {
     })
     public void testASetup() throws Exception {
 
-        importResource("classpath:/dw/import/dw_test_import.xml");
+    	importResource("classpath:/dw/import/dw_test_import.xml");
 
         final OnmsNode onmsNode = m_nodeDao.findAll().get(0);
         String sysObjectId = onmsNode.getSysObjectId();
