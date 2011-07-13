@@ -36,9 +36,12 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class MockSnmpValue implements SnmpValue {
+	public static final Pattern HEX_PATTERN = Pattern.compile("^[a-fA-F0-9 :]*$");
+	public static final Pattern HEX_CHUNK_PATTERN = Pattern.compile("(..)[ :]?");
     
     public static class NetworkAddressSnmpValue extends MockSnmpValue {
 
@@ -51,18 +54,18 @@ public class MockSnmpValue implements SnmpValue {
         }
 
     }
-
-    public static class HexStringSnmpValue extends MockSnmpValue {
-    	private static final Pattern HEX_PATTERN = Pattern.compile("^[a-fA-F0-9 :]*$");
-		private static final Pattern HEX_CHUNK_PATTERN = Pattern.compile("(..)[ :]?");
+    
+    public static class OctetStringSnmpValue extends MockSnmpValue {
         private final boolean m_isRaw;
+		private byte[] m_bytes;
 
-    	public HexStringSnmpValue(final byte[] bytes) {
+    	public OctetStringSnmpValue(final byte[] bytes) {
     		super(SnmpValue.SNMP_OCTET_STRING, new String(bytes));
+    		m_bytes = bytes;
     		m_isRaw = true;
     	}
 
-        public HexStringSnmpValue(final String value) {
+        public OctetStringSnmpValue(final String value) {
             super(SnmpValue.SNMP_OCTET_STRING, value);
             m_isRaw = false;
         }
@@ -71,7 +74,7 @@ public class MockSnmpValue implements SnmpValue {
         	final String string = super.toString();
 //        	LogUtils.debugf(this, "string = %s", string);
             if (m_isRaw) {
-        		return string.getBytes();
+        		return m_bytes;
         	} else {
         		final Matcher hexMatcher = HEX_PATTERN.matcher(string);
         		if (hexMatcher.matches()) {
@@ -145,7 +148,7 @@ public class MockSnmpValue implements SnmpValue {
         }
         
         public boolean isDisplayable() {
-            return false;
+            return SnmpUtils.allBytesDisplayable(getBytes());
         }
 
     }

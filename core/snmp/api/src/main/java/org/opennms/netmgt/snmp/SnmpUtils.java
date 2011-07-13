@@ -63,7 +63,6 @@ public class SnmpUtils {
     }
 
     public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker... trackers) {
-        LogUtils.debugf(SnmpUtils.class, "strategy = %s", getStrategyClassName());
         return getStrategy().createWalker(agentConfig, name, createTooBigTracker(agentConfig, trackers));
     }
 
@@ -297,7 +296,7 @@ public class SnmpUtils {
 		} else if (mibVal.startsWith("STRING:"))
 			return getValueFactory().getOctetString(mibVal.substring("STRING:".length()).trim().getBytes());
 	    else if (mibVal.startsWith("INTEGER:"))
-			return getValueFactory().getInt32(Integer.valueOf(mibVal.substring("INTEGER:".length()).trim()));
+			return getValueFactory().getInt32(Integer.valueOf(mibVal.substring("INTEGER:".length()).trim().replaceAll(" *.[Bb]ytes$", "")));
 	    else if (mibVal.startsWith("Gauge32:"))
 	    	return getValueFactory().getGauge32(Long.valueOf(mibVal.substring("Gauge32:".length()).trim()));
 	    else if (mibVal.startsWith("Counter32:"))
@@ -307,7 +306,7 @@ public class SnmpUtils {
 	    else if (mibVal.startsWith("IpAddress:"))
 	    	return getValueFactory().getIpAddress(InetAddressUtils.addr(mibVal.substring("IpAddress:".length()).trim()));
 	    else if (mibVal.startsWith("Hex-STRING:"))
-			return getValueFactory().getOctetString(mibVal.substring("STRING:".length()).trim().getBytes());
+			return getValueFactory().getOctetString(mibVal.substring("Hex-STRING:".length()).trim().getBytes());
 	    else if (mibVal.startsWith("Network Address:"))
 			return getValueFactory().getOctetString(mibVal.substring("Network Address:".length()).trim().getBytes());
 	    else if (mibVal.startsWith("BITS:"))

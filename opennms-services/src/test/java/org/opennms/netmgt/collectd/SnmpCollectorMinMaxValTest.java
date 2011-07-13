@@ -30,9 +30,9 @@ package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.Set;
@@ -44,12 +44,14 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
@@ -84,7 +86,11 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @Transactional
 public class SnmpCollectorMinMaxValTest implements TestContextAware {
-    @Autowired
+    private static final String TEST_HOST_ADDRESS = "172.20.1.205";
+    private static final String TEST_NODE_LABEL = "TestNode"; 
+
+
+	@Autowired
     private MockEventIpcManager m_mockEventIpcManager;
 
     @Autowired
@@ -104,10 +110,6 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware {
 
     private TestContext m_context;
 
-    private String m_testHostName;
-
-    private final static String TEST_NODE_LABEL = "TestNode"; 
-
     private CollectionSpecification m_collectionSpecification;
 
     private CollectionAgent m_collectionAgent;
@@ -116,7 +118,7 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware {
 
     @Before
     public void setUp() throws Exception {
-    	final Properties p = new Properties();
+        final Properties p = new Properties();
     	p.setProperty("log4j.logger.org.opennms.netmgt.snmp.SnmpUtils", "DEBUG");
         MockLogAppender.setupLogging(p);
 
@@ -125,10 +127,14 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware {
         assertNotNull(m_nodeDao);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_serviceTypeDao);
-        
-        RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
+        assertNotNull(m_snmpPeerFactory);
 
-        m_testHostName = InetAddressUtils.str(InetAddress.getLocalHost());
+        assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
+
+        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
+        m_agentConfig = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr(TEST_HOST_ADDRESS));
+
+        RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
 
         OnmsIpInterface iface = null;
         OnmsNode testNode = null;
@@ -141,7 +147,7 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware {
             builder.addSnmpInterface(2).setIfName("gif0").setPhysAddr("00:11:22:33:45").setIfType(55);
             builder.addSnmpInterface(3).setIfName("stf0").setPhysAddr("00:11:22:33:46").setIfType(57);
 
-            InterfaceBuilder ifBldr = builder.addInterface(m_testHostName).setIsSnmpPrimary("P");
+            InterfaceBuilder ifBldr = builder.addInterface(TEST_HOST_ADDRESS).setIsSnmpPrimary("P");
             ifBldr.addSnmpInterface(6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
 
             testNode = builder.getCurrentNode();
@@ -152,25 +158,17 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware {
             testNode = testNodes.iterator().next();
         }
 
-        Set<OnmsIpInterface> ifaces = testNode.getIpInterfaces();
+        final Set<OnmsIpInterface> ifaces = testNode.getIpInterfaces();
         assertEquals(1, ifaces.size());
         iface = ifaces.iterator().next();
+        
+        LogUtils.debugf(this, "iface = %s", iface);
 
-        /*
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayInputStream(
-                ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<snmp-config port=\"9161\" retry=\"1\" timeout=\"1000\" read-community=\"public\" version=\"v2c\">\n"
-                + "</snmp-config>").getBytes("UTF-8") )));
-                */
-
-        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
-
-        SnmpCollector collector = new SnmpCollector();
+        final SnmpCollector collector = new SnmpCollector();
         collector.initialize(null);
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
-        m_agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.getLocalHostAddress());
     }
 
     @After
@@ -193,22 +191,22 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware {
                     "1/fw0/ifInOctets"
             }
     )
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
+    @JUnitSnmpAgent(host=TEST_HOST_ADDRESS, resource="/org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testPersist() throws Exception {
     	final File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
 
         // node level collection
-        File nodeDir = new File(snmpRrdDirectory, "1");
-        File rrdFile = new File(nodeDir, rrd("tcpCurrEstab"));
+    	final File nodeDir = new File(snmpRrdDirectory, "1");
+    	final File rrdFile = new File(nodeDir, rrd("tcpCurrEstab"));
 
         // interface level collection
-        File ifDir = new File(nodeDir, "fw0");
-        File ifRrdFile = new File(ifDir, rrd("ifInOctets"));
+    	final File ifDir = new File(nodeDir, "fw0");
+    	final File ifRrdFile = new File(ifDir, rrd("ifInOctets"));
 
-        int numUpdates = 2;
-        int stepSizeInSecs = 1;
+    	final int numUpdates = 2;
+    	final int stepSizeInSecs = 1;
 
-        int stepSizeInMillis = stepSizeInSecs*1000;
+    	final int stepSizeInMillis = stepSizeInSecs*1000;
 
         // don't forget to initialize the agent
         m_collectionSpecification.initialize(m_collectionAgent);
@@ -247,12 +245,11 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware {
         m_collectionSpecification.release(m_collectionAgent);
     }
 
-    private static String rrd(String file) {
+    private static String rrd(final String file) {
         return file + RrdUtils.getExtension();
     }
 
-    public void setTestContext(TestContext context) {
+    public void setTestContext(final TestContext context) {
         m_context = context;
     }
-
 }

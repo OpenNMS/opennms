@@ -65,7 +65,7 @@ public class Win32ServiceDetectorTest implements ApplicationContextAware {
 
         if(m_detector == null) {
             m_detector = getDetector(Win32ServiceDetector.class);
-            m_detector.setRetries(2);
+            m_detector.setRetries(1);
             m_detector.setTimeout(500);
         }
     }

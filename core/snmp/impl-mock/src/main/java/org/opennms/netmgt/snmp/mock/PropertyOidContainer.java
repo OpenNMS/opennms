@@ -30,7 +30,9 @@ public class PropertyOidContainer {
             final String key = obj.toString();
             if (!key.startsWith(".")) continue;
             final String value = moProps.getProperty(key);
-//            LogUtils.debugf(this, "%s = %s", key, value);
+            if (value.contains("No Such Object available on this agent at this OID")) { continue; }
+            if (value.contains("No more variables left in this MIB View")) { continue; }
+//          LogUtils.debugf(this, "%s = %s", key, value);
             m_tree.put(SnmpObjId.get(key), SnmpUtils.parseMibValue(value));
         }
     }

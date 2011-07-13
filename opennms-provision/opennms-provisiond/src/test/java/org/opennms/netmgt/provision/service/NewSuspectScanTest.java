@@ -197,15 +197,14 @@ public class NewSuspectScanTest {
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
 
-        StringBuffer errorMsg = new StringBuffer();
+        final StringBuffer errorMsg = new StringBuffer();
         //Verify ipinterface count
-        for (OnmsIpInterface iface : getInterfaceDao().findAll()) {
+        for (final OnmsIpInterface iface : getInterfaceDao().findAll()) {
             errorMsg.append(iface.toString());
         }
         assertEquals(errorMsg.toString(), 2, getInterfaceDao().countAll());
 
         //Verify ifservices count - discover snmp service on other if
-        //assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
         assertEquals("Unexpected number of services found.", 2, getMonitoredServiceDao().countAll());
 
         //Verify service count

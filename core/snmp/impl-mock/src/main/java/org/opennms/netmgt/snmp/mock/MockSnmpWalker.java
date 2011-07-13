@@ -56,7 +56,7 @@ public class MockSnmpWalker extends SnmpWalker {
         super(agentAddress.getAddress(), name, maxVarsPerPdu, 1, tracker);
         m_agentAddress = agentAddress;
         m_container = container;
-        m_executor = Executors.newSingleThreadExecutor();
+        m_executor = Executors.newCachedThreadPool();
     }
 
     @Override
@@ -81,12 +81,16 @@ public class MockSnmpWalker extends SnmpWalker {
             responses.put(m_container.findNextOidForOid(oid), m_container.findNextValueForOid(oid));
         }
 
+        // FIXME: why can I not run this in an executor??
+        handleResponses(responses);
+        /*
         m_executor.submit(new Runnable() {
             @Override
             public void run() {
                 handleResponses(responses);
             }
         });
+        */
     }
 
     @Override

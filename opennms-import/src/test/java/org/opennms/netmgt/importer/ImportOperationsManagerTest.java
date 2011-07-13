@@ -222,8 +222,6 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
         assertEquals("Failed to add new interface 172.20.1.202", 1, m_ipInterfaceDao.findByIpAddress("172.20.1.202").size());
         assertEquals("Failed to delete removed interface 172.20.1.204", 0, m_ipInterfaceDao.findByIpAddress("172.20.1.204").size());
-
-
     }
 
     @Test

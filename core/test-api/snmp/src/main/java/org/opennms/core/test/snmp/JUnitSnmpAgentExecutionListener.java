@@ -58,12 +58,11 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 /**
  * This {@link TestExecutionListener} looks for the {@link JUnitSnmpAgent} annotation
  * and uses attributes on it to launch a mock SNMP agent for use during unit testing.
- *
- * @author brozow
- * @version $Id: $
  */
 public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListener {
-
+	private static final Boolean useMockSnmpStrategyDefault = true;
+	
+	private static final String USE_STRATEGY_PROPERTY = "org.opennms.core.test-api.snmp.useMockSnmpStrategy";
 	private static final String STRATEGY_CLASS_PROPERTY = "org.opennms.snmp.strategyClass";
 
     private static final String STRATEGY_CLASS_KEY = "org.opennms.core.test-api.snmp.strategyClass";
@@ -76,8 +75,9 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         testContext.setAttribute(STRATEGY_CLASS_KEY, System.getProperty(STRATEGY_CLASS_PROPERTY));
         final HashMap<SnmpAgentAddress,MockSnmpAgent> mockAgents = new HashMap<SnmpAgentAddress,MockSnmpAgent>();
 		testContext.setAttribute(AGENT_KEY, mockAgents);
-        
-        final Boolean useMockSnmpStrategy = Boolean.getBoolean("org.opennms.core.test-api.snmp.useMockSnmpStrategy");
+
+		final String useMockSnmpStrategyString = System.getProperty(USE_STRATEGY_PROPERTY, useMockSnmpStrategyDefault.toString());
+        final Boolean useMockSnmpStrategy = Boolean.valueOf(useMockSnmpStrategyString);
         final MockSnmpDataProvider provider;
         if (useMockSnmpStrategy) {
             System.setProperty(STRATEGY_CLASS_PROPERTY, MockSnmpStrategy.class.getName());
@@ -115,8 +115,8 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         	LogUtils.warnf(this, "SNMP Peer Factory (%s) is not the ProxySnmpAgentConfigFactory -- did you forget to include applicationContext-proxy-snmp.xml?", factoryClassName);
         }
 
-        final Boolean useMockSnmpStrategy = Boolean.getBoolean("org.opennms.core.test-api.snmp.useMockSnmpStrategy");
-        LogUtils.debugf(this, "handleSnmpAgent(%s, %s, %s)", testContext, config, useMockSnmpStrategy);
+        final String useMockSnmpStrategy = System.getProperty(USE_STRATEGY_PROPERTY, useMockSnmpStrategyDefault.toString());
+        LogUtils.debugf(this, "handleSnmpAgent(testContext, %s, %s)", config, useMockSnmpStrategy);
 
         String host = config.host();
         if (host == null || "".equals(host)) {
@@ -144,6 +144,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     	
     	final InetAddress localHost = InetAddress.getLocalHost();
     	final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
+
     	SnmpAgentAddress listenAddress = null;
 
     	// try to find an unused port on localhost
@@ -151,10 +152,14 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     	do {
     		listenAddress = new SnmpAgentAddress(localHost, mappedPort++);
     	} while (mapper.contains(listenAddress));
-    	mapper.addProxy(hostAddress, listenAddress);
 
-		if (!useMockSnmpStrategy) {
-            LogUtils.debugf(this, "creating MockSnmpAgent on %s for 'real' address %s", listenAddress, agentAddress);
+		if (Boolean.valueOf(useMockSnmpStrategy)) {
+			// map to itself  =)
+	    	mapper.addProxy(hostAddress, agentAddress);
+		} else {
+	    	mapper.addProxy(hostAddress, listenAddress);
+
+	    	LogUtils.debugf(this, "creating MockSnmpAgent on %s for 'real' address %s", listenAddress, agentAddress);
             final MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(resource, str(listenAddress.getAddress()) + "/" + listenAddress.getPort());
 
             @SuppressWarnings("unchecked")
@@ -214,7 +219,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 			try {
 				MockSnmpStrategy.setDataForAddress(address, resource);
 			} catch (final Throwable t) {
-				LogUtils.warnf(this, "Unable to set mock SNMP data for %s", address);
+				LogUtils.warnf(this, t, "Unable to set mock SNMP data for %s", address);
 			}
 		}
 	}
