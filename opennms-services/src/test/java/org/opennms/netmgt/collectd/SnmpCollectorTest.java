@@ -31,7 +31,6 @@ package org.opennms.netmgt.collectd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Collection;
@@ -109,6 +108,9 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
 
+	@Autowired
+	private SnmpPeerFactory m_snmpPeerFactory;
+
     private TestContext m_context;
 
     private String m_testHostName;
@@ -178,10 +180,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
         assertEquals(1, ifaces.size());
         iface = ifaces.iterator().next();
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayInputStream(
-                ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<snmp-config port=\"9161\" retry=\"1\" timeout=\"1000\" read-community=\"public\" version=\"v2c\">\n"
-                + "</snmp-config>").getBytes("UTF-8") )));
+        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
 
         SnmpCollector collector = new SnmpCollector();
         collector.initialize(null);

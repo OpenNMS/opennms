@@ -31,7 +31,6 @@ package org.opennms.netmgt.importer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -41,6 +40,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -53,7 +53,6 @@ import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
@@ -78,7 +77,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -102,6 +102,8 @@ public class ImportOperationsManagerTest implements InitializingBean {
     IpInterfaceDao m_ipInterfaceDao;
     @Autowired
     SnmpInterfaceDao m_snmpInterfaceDao;
+    @Autowired
+	private SnmpPeerFactory m_snmpPeerFactory;
 
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_populator);
@@ -112,6 +114,9 @@ public class ImportOperationsManagerTest implements InitializingBean {
         assertNotNull(m_categoryDao);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_snmpInterfaceDao);
+        assertNotNull(m_snmpPeerFactory);
+
+        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
     }
 
     @Before
@@ -122,17 +127,6 @@ public class ImportOperationsManagerTest implements InitializingBean {
         MockLogAppender.setupLogging(p);
 
         m_populator.populateDatabase();
-
-        SnmpPeerFactory spf = new SnmpPeerFactory(new ByteArrayInputStream(("<?xml version=\"1.0\"?>\n" + 
-                "<snmp-config port=\"1691\" retry=\"3\" timeout=\"800\"\n" + 
-                "             read-community=\"public\" \n" + 
-                "             version=\"v1\" \n" + 
-                "             max-vars-per-pdu=\"10\" proxy-host=\"127.0.0.1\">\n" + 
-                "\n" + 
-                "</snmp-config>\n" + 
-                "\n" + 
-        "").getBytes()));
-        SnmpPeerFactory.setInstance(spf);
 
         m_categoryDao.save(new OnmsCategory("AC"));
         m_categoryDao.save(new OnmsCategory("UK"));
@@ -218,7 +212,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT)
+    @JUnitSnmpAgent(host="172.20.1.201", resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testChangeIpAddr() throws Exception {
         doImportFromSpecFile(new ClassPathResource("/tec_dump.xml"), 1, 1);
 
@@ -234,7 +228,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT)
+    @JUnitSnmpAgent(host="172.20.1.201", resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testImportToOperationsMgr() throws Exception {
         doDoubleImport(new ClassPathResource("/tec_dump.xml"));
 
