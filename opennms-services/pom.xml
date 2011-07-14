@@ -194,11 +194,6 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jdhcp-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>jivesoftware</groupId>
       <artifactId>smack</artifactId>
       <scope>compile</scope>
