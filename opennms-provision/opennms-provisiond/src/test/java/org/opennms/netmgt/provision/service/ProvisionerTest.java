@@ -105,6 +105,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -128,6 +129,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@DirtiesContext
 public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAware {
     
     @Autowired
@@ -256,21 +258,28 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @JUnitDNSServer(port=9153, zones={
-    		@DNSZone(name="opennms.com.", entries={
-    				@DNSEntry(hostname="www", address="1.2.3.4"),
-    				@DNSEntry(hostname="www", address="::1:2:3:4", ipv6=true)
+    		@DNSZone(name="opennms.com.", v4address="1.2.3.4", entries={
+    				@DNSEntry(hostname="www", address="1.2.3.4")
+    				// V6 support is only in master right now
+    				// @DNSEntry(hostname="www", address="::1:2:3:4", ipv6=true)
     		})
     })
     public void testDnsVisit() throws ForeignSourceRepositoryException, MalformedURLException {
     	final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost:9153/opennms.com"));
         final CountingVisitor visitor = new CountingVisitor() {
-        	public void visitNode(final OnmsNodeRequisition nodeReq) {
-        		m_nodes.add(nodeReq);
+			public void visitNode(final OnmsNodeRequisition req) {
+        		LogUtils.debugf(this, "visitNode: %s/%s %s", req.getForeignSource(), req.getForeignId(), req.getNodeLabel());
+        		m_nodes.add(req);
         		m_nodeCount++;
+        	}
+        	public void visitInterface(final OnmsIpInterfaceRequisition req) {
+        		LogUtils.debugf(this, "visitInterface: %s", req.getIpAddr());
+        		m_ifaces.add(req);
+        		m_ifaceCount++;
         	}
         };
         requisition.visit(visitor);
-        LogUtils.debugf(this, "nodes = %s", visitor.getNodes());
+
         verifyDnsImportCounts(visitor);
     }
 
@@ -992,7 +1001,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionerRescanWorkingWithDiscoveredNodesDiscoveryEnabled() throws Exception{
-        System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
+    	System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         // populator creates 4 provisioned nodes and 2 discovered nodes
         m_populator.populateDatabase();
 
@@ -1168,10 +1177,13 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     
     private static void verifyDnsImportCounts(CountingVisitor visitor) {
         assertEquals(1, visitor.getModelImportCount());
-        assertEquals(1, visitor.getNodeCount());
+        // 1 for "opennms.com", 1 for "www.opennms.com"
+        assertEquals(2, visitor.getNodeCount());
         assertEquals(0, visitor.getNodeCategoryCount());
+        // 1 IPv4 address per hostname
         assertEquals(2, visitor.getInterfaceCount());
-        assertEquals(2, visitor.getMonitoredServiceCount());
+        // 2 services per interface (ICMP + SNMP)
+        assertEquals(4, visitor.getMonitoredServiceCount());
         assertEquals(0, visitor.getServiceCategoryCount());
         assertEquals(visitor.getModelImportCount(), visitor.getModelImportCompletedCount());
         assertEquals(visitor.getNodeCount(), visitor.getNodeCompletedCount());
@@ -1211,16 +1223,21 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         protected int m_svcCategoryCompleted;
         protected int m_assetCount;
         protected int m_assetCompleted;
-		protected List<OnmsNodeRequisition> m_nodes = new ArrayList<OnmsNodeRequisition>();
-        
+        protected List<OnmsNodeRequisition> m_nodes = new ArrayList<OnmsNodeRequisition>();
+        protected List<OnmsIpInterfaceRequisition> m_ifaces = new ArrayList<OnmsIpInterfaceRequisition>();
+
+		public List<OnmsNodeRequisition> getNodes() {
+			return m_nodes;
+		}
+
+		public List<OnmsIpInterfaceRequisition> getInterfaces() {
+			return m_ifaces;
+		}
+
         public int getModelImportCount() {
             return m_modelImportCount;
         }
         
-        public List<OnmsNodeRequisition> getNodes() {
-        	return m_nodes;
-		}
-
 		public int getModelImportCompletedCount() {
             return m_modelImportCompleted;
         }
@@ -1278,7 +1295,6 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         }
 
         public void visitNode(final OnmsNodeRequisition nodeReq) {
-        	m_nodes.add(nodeReq);
             m_nodeCount++;
             assertEquals("apknd", nodeReq.getNodeLabel());
             assertEquals("4243", nodeReq.getForeignId());
