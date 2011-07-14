@@ -33,11 +33,14 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.InetAddressUtils;
@@ -46,6 +49,8 @@ import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.io.Resource;
 
 public class SnmpUtils {
+	public static final Pattern HEX_PATTERN = Pattern.compile("^[a-fA-F0-9 :]*$");
+	public static final Pattern HEX_CHUNK_PATTERN = Pattern.compile("(..)[ :]?");
 
     private static Properties sm_config;
 
@@ -305,9 +310,28 @@ public class SnmpUtils {
 	    	return getValueFactory().getCounter64(BigInteger.valueOf(Long.valueOf(mibVal.substring("Counter64:".length()).trim())));
 	    else if (mibVal.startsWith("IpAddress:"))
 	    	return getValueFactory().getIpAddress(InetAddressUtils.addr(mibVal.substring("IpAddress:".length()).trim()));
-	    else if (mibVal.startsWith("Hex-STRING:"))
-			return getValueFactory().getOctetString(mibVal.substring("Hex-STRING:".length()).trim().getBytes());
-	    else if (mibVal.startsWith("Network Address:"))
+	    else if (mibVal.startsWith("Hex-STRING:")) {
+			final String trimmed = mibVal.substring("Hex-STRING:".length()).trim();
+			final ByteBuffer bb = ByteBuffer.allocate(trimmed.length());
+			if (trimmed.matches("^.*[ :].*$")) {
+				for (final String chunk : trimmed.split("[ :]")) {
+					short s = Short.valueOf(chunk, 16);
+					bb.put((byte)(s & 0xFF));
+				}
+			} else {
+				if (trimmed.length() % 2 != 0) {
+					LogUtils.warnf(SnmpUtils.class, "Hex-STRING %s does not have ' ' or ':' separators, but it is an uneven number of characters.", trimmed);
+				}
+				final Matcher m = HEX_CHUNK_PATTERN.matcher(trimmed);
+				while (m.find()) {
+					bb.put(Byte.valueOf(m.group(1), 16));
+				}
+			}
+			final byte[] parsed = new byte[bb.position()];
+			bb.flip();
+			bb.get(parsed);
+			return getValueFactory().getOctetString(parsed);
+	    } else if (mibVal.startsWith("Network Address:"))
 			return getValueFactory().getOctetString(mibVal.substring("Network Address:".length()).trim().getBytes());
 	    else if (mibVal.startsWith("BITS:"))
 			return getValueFactory().getOctetString(mibVal.substring("BITS:".length()).trim().getBytes());

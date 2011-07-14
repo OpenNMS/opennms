@@ -49,7 +49,7 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     private final Map<String,ForeignSource> m_foreignSources = new HashMap<String,ForeignSource>();
 
     public Set<String> getActiveForeignSourceNames() {
-        Set<String> fsNames = new TreeSet<String>();
+    	final Set<String> fsNames = new TreeSet<String>();
         fsNames.addAll(m_requisitions.keySet());
         fsNames.addAll(m_foreignSources.keySet());
         return fsNames;
@@ -62,24 +62,28 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     public Set<ForeignSource> getForeignSources() {
         return new TreeSet<ForeignSource>(m_foreignSources.values());
     }
-    
-    public ForeignSource getForeignSource(String foreignSourceName) {
+
+    public ForeignSource getForeignSource(final String foreignSourceName) {
         Assert.notNull(foreignSourceName);
-        ForeignSource foreignSource = m_foreignSources.get(foreignSourceName);
+        final ForeignSource foreignSource = m_foreignSources.get(foreignSourceName);
         if (foreignSource == null) {
-            foreignSource = getDefaultForeignSource();
+        	if (foreignSourceName == "default") {
+        		return super.getDefaultForeignSource();
+        	} else {
+        		return getDefaultForeignSource();
+        	}
         }
         return foreignSource;
     }
 
-    public void save(ForeignSource foreignSource) {
+    public void save(final ForeignSource foreignSource) {
         Assert.notNull(foreignSource);
         Assert.notNull(foreignSource.getName());
         foreignSource.updateDateStamp();
         m_foreignSources.put(foreignSource.getName(), foreignSource);
     }
 
-    public void delete(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         m_foreignSources.remove(foreignSource.getName());
     }
 
@@ -87,29 +91,29 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
         return new TreeSet<Requisition>(m_requisitions.values());
     }
 
-    public Requisition getRequisition(String foreignSourceName) {
+    public Requisition getRequisition(final String foreignSourceName) {
         Assert.notNull(foreignSourceName);
         return m_requisitions.get(foreignSourceName);
     }
 
-    public Requisition getRequisition(ForeignSource foreignSource) {
+    public Requisition getRequisition(final ForeignSource foreignSource) {
         Assert.notNull(foreignSource);
         Assert.notNull(foreignSource.getName());
         return getRequisition(foreignSource.getName());
     }
 
-    public void save(Requisition requisition) {
+    public void save(final Requisition requisition) {
         Assert.notNull(requisition);
         Assert.notNull(requisition.getForeignSource());
         requisition.updateDateStamp();
         m_requisitions.put(requisition.getForeignSource(), requisition);
     }
 
-    public void delete(Requisition requisition) throws ForeignSourceRepositoryException {
+    public void delete(final Requisition requisition) throws ForeignSourceRepositoryException {
         m_requisitions.remove(requisition.getForeignSource());
     }
 
-    public URL getRequisitionURL(String foreignSource) {
+    public URL getRequisitionURL(final String foreignSource) {
         throw new UnsupportedOperationException("no URL in the mock repository");
     }
 
@@ -121,7 +125,7 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     	return fs;
     }
 
-    public void putDefaultForeignSource(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public void putDefaultForeignSource(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("foreign source was null");
         }

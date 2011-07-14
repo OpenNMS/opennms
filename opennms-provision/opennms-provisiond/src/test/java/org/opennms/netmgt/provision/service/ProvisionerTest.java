@@ -36,7 +36,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +46,6 @@ import java.util.concurrent.ExecutionException;
 import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
@@ -56,8 +55,8 @@ import org.opennms.core.test.annotations.DNSEntry;
 import org.opennms.core.test.annotations.DNSZone;
 import org.opennms.core.test.annotations.JUnitDNSServer;
 import org.opennms.core.test.snmp.MockSnmpDataProviderAware;
-import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.mock.snmp.MockSnmpDataProvider;
@@ -202,12 +201,6 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertNotNull(m_populator);
     }
 
-    @Before
-    public void dwVerifyDnsUrlHandlerFactory() throws MalformedURLException {
-        new URL("dns://david:rocks@localhost:53/opennms");
-        assertNotNull("failed to wire the ImportSchedule class", m_importSchedule);
-    }
-    
     @BeforeClass
     public static void setUpSnmpConfig() {
         final Properties props = new Properties();
@@ -262,17 +255,22 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
      */
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @Ignore
     @JUnitDNSServer(port=9153, zones={
     		@DNSZone(name="opennms.com.", entries={
     				@DNSEntry(hostname="www", address="1.2.3.4"),
-    				@DNSEntry(hostname="www", address="::1:2:3:4")
+    				@DNSEntry(hostname="www", address="::1:2:3:4", ipv6=true)
     		})
     })
     public void testDnsVisit() throws ForeignSourceRepositoryException, MalformedURLException {
     	final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost:9153/opennms.com"));
-        final CountingVisitor visitor = new CountingVisitor();
+        final CountingVisitor visitor = new CountingVisitor() {
+        	public void visitNode(final OnmsNodeRequisition nodeReq) {
+        		m_nodes.add(nodeReq);
+        		m_nodeCount++;
+        	}
+        };
         requisition.visit(visitor);
+        LogUtils.debugf(this, "nodes = %s", visitor.getNodes());
         verifyDnsImportCounts(visitor);
     }
 
@@ -1008,7 +1006,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionerRemoveNodeInSchedule() throws Exception{
         importFromResource("classpath:/tec_dump.xml.smalltest");
-        
+
         //m_provisioner.scheduleRescanForExistingNodes();
         assertEquals(10, m_provisioner.getScheduleLength());
         
@@ -1172,7 +1170,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());
         assertEquals(0, visitor.getNodeCategoryCount());
-        assertEquals(1, visitor.getInterfaceCount());
+        assertEquals(2, visitor.getInterfaceCount());
         assertEquals(2, visitor.getMonitoredServiceCount());
         assertEquals(0, visitor.getServiceCategoryCount());
         assertEquals(visitor.getModelImportCount(), visitor.getModelImportCompletedCount());
@@ -1199,26 +1197,31 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     }
 
     static class CountingVisitor implements RequisitionVisitor {
-        private int m_modelImportCount;
-        private int m_modelImportCompleted;
-        private int m_nodeCount;
-        private int m_nodeCompleted;
-        private int m_nodeCategoryCount;
-        private int m_nodeCategoryCompleted;
-        private int m_ifaceCount;
-        private int m_ifaceCompleted;
-        private int m_svcCount;
-        private int m_svcCompleted;
-        private int m_svcCategoryCount;
-        private int m_svcCategoryCompleted;
-        private int m_assetCount;
-        private int m_assetCompleted;
+        protected int m_modelImportCount;
+        protected int m_modelImportCompleted;
+        protected int m_nodeCount;
+        protected int m_nodeCompleted;
+        protected int m_nodeCategoryCount;
+        protected int m_nodeCategoryCompleted;
+        protected int m_ifaceCount;
+        protected int m_ifaceCompleted;
+        protected int m_svcCount;
+        protected int m_svcCompleted;
+        protected int m_svcCategoryCount;
+        protected int m_svcCategoryCompleted;
+        protected int m_assetCount;
+        protected int m_assetCompleted;
+		protected List<OnmsNodeRequisition> m_nodes = new ArrayList<OnmsNodeRequisition>();
         
         public int getModelImportCount() {
             return m_modelImportCount;
         }
         
-        public int getModelImportCompletedCount() {
+        public List<OnmsNodeRequisition> getNodes() {
+        	return m_nodes;
+		}
+
+		public int getModelImportCompletedCount() {
             return m_modelImportCompleted;
         }
         
@@ -1270,33 +1273,34 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
             return m_assetCompleted;
         }
         
-        public void visitModelImport(Requisition req) {
+        public void visitModelImport(final Requisition req) {
             m_modelImportCount++;
         }
 
-        public void visitNode(OnmsNodeRequisition nodeReq) {
+        public void visitNode(final OnmsNodeRequisition nodeReq) {
+        	m_nodes.add(nodeReq);
             m_nodeCount++;
             assertEquals("apknd", nodeReq.getNodeLabel());
             assertEquals("4243", nodeReq.getForeignId());
         }
 
-        public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
+        public void visitInterface(final OnmsIpInterfaceRequisition ifaceReq) {
             m_ifaceCount++;
         }
 
-        public void visitMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
+        public void visitMonitoredService(final OnmsMonitoredServiceRequisition monSvcReq) {
             m_svcCount++;
         }
 
-        public void visitNodeCategory(OnmsNodeCategoryRequisition catReq) {
+        public void visitNodeCategory(final OnmsNodeCategoryRequisition catReq) {
             m_nodeCategoryCount++;
         }
         
-        public void visitServiceCategory(OnmsServiceCategoryRequisition catReq) {
+        public void visitServiceCategory(final OnmsServiceCategoryRequisition catReq) {
             m_svcCategoryCount++;
         }
         
-        public void visitAsset(OnmsAssetRequisition assetReq) {
+        public void visitAsset(final OnmsAssetRequisition assetReq) {
             m_assetCount++;
         }
         

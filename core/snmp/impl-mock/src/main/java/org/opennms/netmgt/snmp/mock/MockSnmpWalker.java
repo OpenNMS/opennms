@@ -17,7 +17,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class MockSnmpWalker extends SnmpWalker {
 
-    public static final class MockPduBuilder extends WalkerPduBuilder {
+	public static final class MockPduBuilder extends WalkerPduBuilder {
         private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
 
         public MockPduBuilder(final int maxVarsPerPdu) {
@@ -56,7 +56,7 @@ public class MockSnmpWalker extends SnmpWalker {
         super(agentAddress.getAddress(), name, maxVarsPerPdu, 1, tracker);
         m_agentAddress = agentAddress;
         m_container = container;
-        m_executor = Executors.newCachedThreadPool();
+        m_executor = Executors.newSingleThreadExecutor();
     }
 
     @Override
@@ -70,27 +70,7 @@ public class MockSnmpWalker extends SnmpWalker {
         final List<SnmpObjId> oids = builder.getOids();
         LogUtils.debugf(this, "'Sending' tracker PDU of size " + oids.size());
 
-        if (m_container == null) {
-        	LogUtils.infof(this, "No SNMP response data configured for %s; pretending we've timed out.", m_agentAddress);
-        	handleTimeout("No MockSnmpAgent data configured for '" + m_agentAddress + "'.");
-        	return;
-        }
-
-        final Map<SnmpObjId,SnmpValue> responses = new LinkedHashMap<SnmpObjId,SnmpValue>();
-        for (final SnmpObjId oid : oids) {
-            responses.put(m_container.findNextOidForOid(oid), m_container.findNextValueForOid(oid));
-        }
-
-        // FIXME: why can I not run this in an executor??
-        handleResponses(responses);
-        /*
-        m_executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                handleResponses(responses);
-            }
-        });
-        */
+        m_executor.submit(new ResponseHandler(oids));
     }
 
     @Override
@@ -129,23 +109,6 @@ public class MockSnmpWalker extends SnmpWalker {
     	super.handleTimeout(msg);
     }
 
-    protected void handleResponses(final Map<SnmpObjId, SnmpValue> responses) {
-    	LogUtils.debugf(this, "handleResponses(%s)", responses);
-        try {
-            if (processErrors(0, 0)) {
-            	LogUtils.debugf(this, "Errors while handling responses... Whaaaat?");
-            } else {
-            	LogUtils.debugf(this, "Handling %d responses.", responses.size());
-                for (final Map.Entry<SnmpObjId,SnmpValue> entry : responses.entrySet()) {
-                    processResponse(entry.getKey(), entry.getValue());
-                }
-            }
-            buildAndSendNextPdu();
-        } catch (final Throwable t) {
-            handleFatalError(t);
-        }
-    }
-
     @Override
     protected void close() throws IOException {
         m_executor.shutdown();
@@ -155,5 +118,60 @@ public class MockSnmpWalker extends SnmpWalker {
     protected void buildAndSendNextPdu() throws IOException {
     	LogUtils.debugf(this, "buildAndSendNextPdu()");
     	super.buildAndSendNextPdu();
+    }
+
+    private final class ResponseHandler implements Runnable {
+		private final List<SnmpObjId> m_oids;
+
+		private ResponseHandler(final List<SnmpObjId> oids) {
+			m_oids = oids;
+		}
+
+		@Override
+		public void run() {
+		    handleResponses();
+		}
+
+	    protected void handleResponses() {
+	    	LogUtils.debugf(this, "handleResponses(%s)", m_oids);
+	        try {
+	            if (m_container == null) {
+	            	LogUtils.infof(this, "No SNMP response data configured for %s; pretending we've timed out.", m_agentAddress);
+	            	Thread.sleep(100);
+	            	handleTimeout("No MockSnmpAgent data configured for '" + m_agentAddress + "'.");
+	            	return;
+	            }
+
+	            final Map<SnmpObjId,SnmpValue> responses = new LinkedHashMap<SnmpObjId,SnmpValue>();
+	            for (final SnmpObjId oid : m_oids) {
+	                responses.put(m_container.findNextOidForOid(oid), m_container.findNextValueForOid(oid));
+	            }
+
+	            if (processErrors(0, 0)) {
+	            	LogUtils.debugf(this, "Errors while handling responses... Whaaaat?");
+	            } else {
+	            	LogUtils.debugf(this, "Handling %d responses.", responses.size());
+	                for (final Map.Entry<SnmpObjId,SnmpValue> entry : responses.entrySet()) {
+	                	processResponse(entry.getKey(), entry.getValue());
+	                }
+	            }
+				buildAndSendNextPdu();
+				/*
+	            m_executor.submit(new Runnable() {
+					@Override
+					public void run() {
+			            try {
+							buildAndSendNextPdu();
+						} catch (final Exception e) {
+							LogUtils.debugf(this, e, "Failed to build and send next PDU.");
+				            handleFatalError(e);
+						}
+					}
+	            });
+	            */
+	        } catch (final Throwable t) {
+	            handleFatalError(t);
+	        }
+	    }
     }
 }

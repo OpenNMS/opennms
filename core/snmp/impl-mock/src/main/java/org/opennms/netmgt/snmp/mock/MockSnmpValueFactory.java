@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.regex.Matcher;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpValue;
@@ -22,15 +21,7 @@ public class MockSnmpValueFactory implements SnmpValueFactory {
 
 	@Override
 	public SnmpValue getOctetString(final byte[] bytes) {
-		final String byteString = new String(bytes);
-//		System.err.println("byteString = " + byteString);
-		final Matcher m = MockSnmpValue.HEX_PATTERN.matcher(byteString);
-		if (m.matches()) {
-//			System.err.println("formatted");
-			return new MockSnmpValue.OctetStringSnmpValue(byteString);
-		} else {
-			return new MockSnmpValue.OctetStringSnmpValue(bytes);
-		}
+		return new MockSnmpValue.OctetStringSnmpValue(bytes);
 	}
 
 	@Override
@@ -75,6 +66,7 @@ public class MockSnmpValueFactory implements SnmpValueFactory {
 		if (bytes == null) return null;
 		final ByteBuffer bb = ByteBuffer.allocate(bytes.length);
 		bb.put(bytes);
+		bb.flip();
 		final String value = m_defaultCharset.decode(bb).toString();
 		switch (type) {
 			case SnmpValue.SNMP_COUNTER32:

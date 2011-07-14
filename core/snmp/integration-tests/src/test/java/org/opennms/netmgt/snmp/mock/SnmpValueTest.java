@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.junit.Before;
@@ -33,6 +34,22 @@ public class SnmpValueTest {
 	    MockLogAppender.setupLogging();
 	}
 	
+	@Test
+	public void testParseHex() {
+		final String trimmed = "00 24 81 8F 40 17";
+		final ByteBuffer bb = ByteBuffer.allocate(trimmed.length());
+		for (final String chunk : trimmed.split("[ :]")) {
+			short s = Short.valueOf(chunk, 16);
+			final byte b = (byte)(s & 0xFF);
+			bb.put(b);
+		}
+		final byte[] parsed = new byte[bb.position()];
+		bb.flip();
+		bb.get(parsed);
+		
+		assertArrayEquals(new byte[] { (byte)0x0, (byte)0x24, (byte)0x81, (byte)0x8f, (byte)0x40, (byte)0x17 }, parsed);
+	}
+
 	@Test
 	public void testCounter32() {
 		for (final SnmpValueFactory factory : m_factories) {
@@ -203,7 +220,7 @@ public class SnmpValueTest {
 			final String className = factory.getClass().getName();
 
 			final SnmpValue value = factory.getOctetString(rawBytes);
-			
+
 			assertArrayEquals(className + ": getOctetString bytes should match", rawBytes, value.getBytes());
 			assertFalse(className + ": getOctetString displayable should be false", value.isDisplayable());
 			assertEquals(className + ": getOctetString to String should return " + stringBytes, stringBytes, value.toString());

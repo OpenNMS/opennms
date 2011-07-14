@@ -57,6 +57,9 @@ import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -115,14 +118,21 @@ public class DragonWaveNodeSwitchingTest implements InitializingBean, MockSnmpDa
     @BeforeClass
     public static void setUpSnmpConfig() {
         Properties props = new Properties();
+        props.setProperty("log4j.logger.org.opennms.netmgt.dao.castor.DataCollectionConfigParser", "WARN");
         props.setProperty("log4j.logger.org.hibernate", "INFO");
         props.setProperty("log4j.logger.org.springframework", "INFO");
-        props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
+        props.setProperty("log4j.logger.org.hibernate.SQL", "INFO");
         MockLogAppender.setupLogging(props);
     }
 
     @Before
     public void setUp() throws Exception {
+    	final ForeignSource fs = new ForeignSource();
+    	fs.setName("default");
+    	fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+    	final MockForeignSourceRepository mfsr = new MockForeignSourceRepository();
+    	mfsr.putDefaultForeignSource(fs);
+    	m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
         m_provisioner.start();
     }
 
@@ -172,7 +182,7 @@ public class DragonWaveNodeSwitchingTest implements InitializingBean, MockSnmpDa
 
     @Test
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="192.168.255.40", resource="classpath:/dw/walks/node3-walk.properties")
+        @JUnitSnmpAgent(host="192.168.255.22", resource="classpath:/dw/walks/node3-walk.properties")
     })
     @JUnitTemporaryDatabase
     public void testASetup() throws Exception {
