@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao.db;
 
 import java.lang.reflect.Method;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
@@ -52,6 +53,7 @@ public class OpenNMSConfigurationExecutionListener extends AbstractTestExecution
             final Class<?> testClass = testContext.getTestClass();
             anno = testClass.getAnnotation(JUnitConfigurationEnvironment.class);
         }
+        LogUtils.debugf(this, "annotation = %s", anno);
         return anno;
     }
 

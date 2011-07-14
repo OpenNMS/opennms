@@ -74,6 +74,13 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     	super.beforeTestClass(testContext);
 
         final JUnitSnmpAgents agents = findAgentListAnnotation(testContext);
+        final JUnitSnmpAgent agent = findAgentAnnotation(testContext);
+
+        if (agents == null && agent == null) {
+        	// no annotations found
+        	return;
+        }
+
         testContext.setAttribute(STRATEGY_CLASS_KEY, System.getProperty(STRATEGY_CLASS_PROPERTY));
         final HashMap<SnmpAgentAddress,MockSnmpAgent> mockAgents = new HashMap<SnmpAgentAddress,MockSnmpAgent>();
 		testContext.setAttribute(AGENT_KEY, mockAgents);
@@ -90,8 +97,8 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         testContext.setAttribute(PROVIDER_KEY, provider);
 
         if (agents != null) {
-            for (final JUnitSnmpAgent agent : agents.value()) {
-                handleSnmpAgent(testContext, agent, provider);
+            for (final JUnitSnmpAgent a : agents.value()) {
+                handleSnmpAgent(testContext, a, provider);
             }
         }
 
@@ -107,11 +114,12 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     public void afterTestMethod(final TestContext testContext) throws Exception {
     	super.afterTestMethod(testContext);
 
-        final String strategyClass = (String)testContext.getAttribute(STRATEGY_CLASS_KEY);
         final MockSnmpDataProvider provider = (MockSnmpDataProvider)testContext.getAttribute(PROVIDER_KEY);
-        
-        provider.resetData();
+        if (provider != null) {
+        	provider.resetData();
+        }
 
+        final String strategyClass = (String)testContext.getAttribute(STRATEGY_CLASS_KEY);
         if (strategyClass != null) {
             System.setProperty(STRATEGY_CLASS_PROPERTY, strategyClass);
         }

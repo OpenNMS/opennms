@@ -149,27 +149,32 @@ public class MockSnmpStrategy implements SnmpStrategy {
 
     @Override
     public SnmpV1TrapBuilder getV1TrapBuilder() {
-        return new NullSnmpV1TrapBuilder();
+    	throw new UnsupportedOperationException("Not yet implemented!");
+//        return new NullSnmpV1TrapBuilder();
     }
 
     @Override
     public SnmpTrapBuilder getV2TrapBuilder() {
-        return new NullSnmpTrapBuilder();
+    	throw new UnsupportedOperationException("Not yet implemented!");
+//        return new NullSnmpTrapBuilder();
     }
 
     @Override
     public SnmpV3TrapBuilder getV3TrapBuilder() {
-        return new NullSnmpV3TrapBuilder();
+    	throw new UnsupportedOperationException("Not yet implemented!");
+//        return new NullSnmpV3TrapBuilder();
     }
 
     @Override
     public SnmpV2TrapBuilder getV2InformBuilder() {
-        return new NullSnmpV2TrapBuilder();
+    	throw new UnsupportedOperationException("Not yet implemented!");
+//        return new NullSnmpV2TrapBuilder();
     }
 
     @Override
     public SnmpV3TrapBuilder getV3InformBuilder() {
-        return new NullSnmpV3TrapBuilder();
+    	throw new UnsupportedOperationException("Not yet implemented!");
+//        return new NullSnmpV3TrapBuilder();
     }
 
     @Override
