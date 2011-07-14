@@ -50,9 +50,11 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
 		"classpath:/META-INF/opennms/detectors.xml"
 })
-@JUnitSnmpAgent(host="172.20.1.205", resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
+@JUnitSnmpAgent(host=BgpSessionDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
 public class BgpSessionDetectorTest {
-    @Autowired
+    static final String TEST_IP_ADDRESS = "172.20.1.205";
+
+	@Autowired
     private BgpSessionDetector m_detector;
 
     @Before
@@ -65,11 +67,11 @@ public class BgpSessionDetectorTest {
     @Test
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setBgpPeerIp("172.20.1.201");
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("172.20.1.205"), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
     
     @Test
     public void testDetectorFail() throws UnknownHostException{
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("172.20.1.205"), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
 }

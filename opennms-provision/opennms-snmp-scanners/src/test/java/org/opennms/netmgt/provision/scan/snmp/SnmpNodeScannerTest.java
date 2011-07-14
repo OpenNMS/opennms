@@ -48,7 +48,10 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
+@JUnitSnmpAgent(host=SnmpNodeScannerTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties")
 public class SnmpNodeScannerTest {
+	static final String TEST_IP_ADDRESS = "172.20.1.205";
+	
 	@Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;
     
@@ -121,13 +124,12 @@ public class SnmpNodeScannerTest {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        m_agentAddress = InetAddressUtils.addr("172.20.1.205");
+        m_agentAddress = InetAddressUtils.addr(TEST_IP_ADDRESS);
         m_scanContext = new MockScanContext(m_agentAddress);
 
     }
 
     @Test
-    @JUnitSnmpAgent(host="172.20.1.205", resource="classpath:org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties")
     public void testScan() throws Exception {
 
     	final SnmpNodeScanner scanner = new SnmpNodeScanner();

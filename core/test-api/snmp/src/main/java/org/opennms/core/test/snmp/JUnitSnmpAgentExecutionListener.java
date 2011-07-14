@@ -71,6 +71,8 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
     @Override
     public void beforeTestMethod(final TestContext testContext) throws Exception {
+    	super.beforeTestClass(testContext);
+
         final JUnitSnmpAgents agents = findAgentListAnnotation(testContext);
         testContext.setAttribute(STRATEGY_CLASS_KEY, System.getProperty(STRATEGY_CLASS_PROPERTY));
         final HashMap<SnmpAgentAddress,MockSnmpAgent> mockAgents = new HashMap<SnmpAgentAddress,MockSnmpAgent>();
@@ -101,7 +103,21 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 		}
     }
 
-    protected void handleSnmpAgent(final TestContext testContext, final JUnitSnmpAgent config, MockSnmpDataProvider provider) throws UnknownHostException, InterruptedException {
+    @Override
+    public void afterTestMethod(final TestContext testContext) throws Exception {
+    	super.afterTestMethod(testContext);
+
+        final String strategyClass = (String)testContext.getAttribute(STRATEGY_CLASS_KEY);
+        final MockSnmpDataProvider provider = (MockSnmpDataProvider)testContext.getAttribute(PROVIDER_KEY);
+        
+        provider.resetData();
+
+        if (strategyClass != null) {
+            System.setProperty(STRATEGY_CLASS_PROPERTY, strategyClass);
+        }
+    }
+
+    private void handleSnmpAgent(final TestContext testContext, final JUnitSnmpAgent config, MockSnmpDataProvider provider) throws UnknownHostException, InterruptedException {
         if (config == null) return;
 
         String factoryClassName = "unknown";
@@ -192,18 +208,6 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         final Class<?> testClass = testContext.getTestClass();
         return testClass.getAnnotation(JUnitSnmpAgents.class);
 
-    }
-
-    @Override
-    public void afterTestMethod(final TestContext testContext) throws Exception {
-        final String strategyClass = (String)testContext.getAttribute(STRATEGY_CLASS_KEY);
-        final MockSnmpDataProvider provider = (MockSnmpDataProvider)testContext.getAttribute(PROVIDER_KEY);
-        
-        provider.resetData();
-
-        if (strategyClass != null) {
-            System.setProperty(STRATEGY_CLASS_PROPERTY, strategyClass);
-        }
     }
 
 	private static final class MockSnmpStrategyDataProvider implements MockSnmpDataProvider {

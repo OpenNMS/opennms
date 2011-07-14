@@ -36,9 +36,9 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.provision.detector.snmp.OmsaStorageDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
@@ -46,16 +46,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/detectors.xml",
-        "classpath:/META-INF/opennms/test/snmpConfigFactoryContext.xml"})
+@ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+		"classpath:/META-INF/opennms/detectors.xml"
+})
+@JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
 public class OmsaStorageDetectorTest {
+    static final String TEST_IP_ADDRESS = "192.168.0.1";
 
     @Autowired
     private OmsaStorageDetector m_detector;
-
-    private static final int TEST_PORT = 1691;
-    private static final String TEST_IP_ADDRESS = "127.0.0.1";
 
     @Before
     public void setUp() throws InterruptedException {
@@ -63,18 +63,15 @@ public class OmsaStorageDetectorTest {
 
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
-        m_detector.setPort(TEST_PORT);
         m_detector.setVirtualDiskNumber("1");
     }
 
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
 
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setVirtualDiskNumber("2");
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));

@@ -55,10 +55,11 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
 		"classpath:/META-INF/opennms/detectors.xml"
 })
-@JUnitSnmpAgent(host="172.20.1.205", resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
+@JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
 public class SnmpDetectorTest implements ApplicationContextAware {
     
-    private SnmpDetector m_detector;
+    static final String TEST_IP_ADDRESS = "172.20.1.205";
+	private SnmpDetector m_detector;
     private ApplicationContext m_applicationContext;
     private InetAddress m_testIpAddress;
     private DetectorMonitor m_detectorMonitor;
@@ -67,7 +68,7 @@ public class SnmpDetectorTest implements ApplicationContextAware {
     public void setUp() throws InterruptedException, UnknownHostException {
         MockLogAppender.setupLogging();
 
-        m_testIpAddress = InetAddressUtils.addr("172.20.1.205");
+        m_testIpAddress = InetAddressUtils.addr(TEST_IP_ADDRESS);
         m_detectorMonitor = new NullDetectorMonitor();
 
         if(m_detector == null) {
