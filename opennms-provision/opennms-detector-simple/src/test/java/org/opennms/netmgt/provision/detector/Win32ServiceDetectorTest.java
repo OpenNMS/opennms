@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.detector;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
@@ -39,53 +39,44 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.snmp.Win32ServiceDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {"classpath:/META-INF/opennms/detectors.xml",
         "classpath:/META-INF/opennms/test/snmpConfigFactoryContext.xml"})
-public class Win32ServiceDetectorTest implements ApplicationContextAware {
+public class Win32ServiceDetectorTest {
     
     private static final int TEST_PORT = 1691;
     private static final String TEST_IP_ADDRESS = "127.0.0.1";
     
-    private ApplicationContext m_applicationContext;
+    @Autowired
     private Win32ServiceDetector m_detector;
     
     @Before
     public void setUp() throws InterruptedException {
         MockLogAppender.setupLogging();
 
-        if(m_detector == null) {
-            m_detector = getDetector(Win32ServiceDetector.class);
-            m_detector.setRetries(2);
-            m_detector.setTimeout(500);
-            m_detector.setPort(TEST_PORT);
-        }
+        m_detector.setRetries(2);
+        m_detector.setTimeout(500);
+        m_detector.setPort(TEST_PORT);
+        m_detector.setWin32ServiceName("VMware Tools Service");
     }
     
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/windows2003.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
-    
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext; 
-    }
-    
-    private Win32ServiceDetector getDetector(final Class<? extends ServiceDetector> detectorClass) {
-        final Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (Win32ServiceDetector) bean;
+
+    @Test
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/windows2003.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
+    public void testDetectorFail() throws UnknownHostException{
+        m_detector.setWin32ServiceName("This service does not exist");
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
 
 }

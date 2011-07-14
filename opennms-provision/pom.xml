@@ -19,7 +19,6 @@
     <module>opennms-provision-persistence</module>
     <module>opennms-detector-datagram</module>
     <module>opennms-detector-radius</module>
-    <module>opennms-detector-dhcp</module>
     <module>opennms-detector-jmx</module>
     <module>opennms-detector-jdbc</module>
     <module>opennms-detector-ssh</module>
@@ -70,11 +69,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-radius</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-detector-dhcp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

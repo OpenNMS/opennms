@@ -21,7 +21,6 @@
     <module>jaxb</module>
     <module>jcifs</module>
     <module>jdbc-pool</module>
-    <module>jdhcp</module>
     <module>jersey</module>
     <module>jfreechart</module>
     <module>jinterop</module>

@@ -125,6 +125,9 @@
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
     <module>opennms-xmp</module>
+
+    <!-- extra modules -->
+    <module>dhcp</module>
   </modules>
   <build>
   <extensions>
@@ -158,9 +161,9 @@
         <version>1.5</version>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
+        <groupId>org.opennms.core.build</groupId>
         <artifactId>castor-maven-plugin</artifactId>
-        <version>2.0-alpha1</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <goals>
@@ -236,16 +239,6 @@
             <version>${xercesVersion}</version>
           </dependency>
         </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>org.opennms.core.build</groupId>
-        <artifactId>castor-process-maven-plugin</artifactId>
-        <version>${project.version}</version>
-        <executions>
-          <execution>
-            <goals><goal>generate</goal></goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -384,6 +377,96 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-jspc-maven-plugin</artifactId>
         <version>${jettyVersion}</version>
+      </plugin>
+      <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+      <plugin>
+      	<groupId>org.eclipse.m2e</groupId>
+      	<artifactId>lifecycle-mapping</artifactId>
+      	<version>1.0.0</version>
+      	<configuration>
+      		<lifecycleMappingMetadata>
+      			<pluginExecutions>
+      				<pluginExecution>
+      					<pluginExecutionFilter>
+      						<groupId>org.codehaus.groovy.maven</groupId>
+      						<artifactId>gmaven-plugin</artifactId>
+      						<versionRange>[1.0,)</versionRange>
+      						<goals>
+      							<goal>execute</goal>
+      						</goals>
+      					</pluginExecutionFilter>
+      					<action>
+      						<ignore />
+      					</action>
+      				</pluginExecution>
+      				<pluginExecution>
+      					<pluginExecutionFilter>
+      						<groupId>org.codehaus.groovy.maven</groupId>
+      						<artifactId>gmaven-plugin</artifactId>
+      						<versionRange>[1.0,)</versionRange>
+      						<goals>
+      							<goal>compile</goal>
+      							<goal>testCompile</goal>
+      						</goals>
+      					</pluginExecutionFilter>
+      					<action>
+      						<execute />
+      					</action>
+      				</pluginExecution>
+      				<pluginExecution>
+      					<pluginExecutionFilter>
+      						<groupId>
+      							org.codehaus.mojo.webstart
+      						</groupId>
+      						<artifactId>
+      							webstart-maven-plugin
+      						</artifactId>
+      						<versionRange>[0.9,)</versionRange>
+      						<goals>
+      							<goal>jnlp-download-servlet</goal>
+      						</goals>
+      					</pluginExecutionFilter>
+      					<action>
+      						<ignore></ignore>
+      					</action>
+      				</pluginExecution>
+      				<pluginExecution>
+      					<pluginExecutionFilter>
+      						<groupId>
+      							com.sun.tools.jxc.maven2
+      						</groupId>
+      						<artifactId>
+      							maven-jaxb-schemagen-plugin
+      						</artifactId>
+      						<versionRange>[1.2,)</versionRange>
+      						<goals>
+      							<goal>generate</goal>
+      						</goals>
+      					</pluginExecutionFilter>
+      					<action>
+      						<ignore></ignore>
+      					</action>
+      				</pluginExecution>
+      				<pluginExecution>
+      					<pluginExecutionFilter>
+      						<groupId>
+      							org.mortbay.jetty
+      						</groupId>
+      						<artifactId>
+      							jetty-jspc-maven-plugin
+      						</artifactId>
+      						<versionRange>[1.0,)</versionRange>
+      						<goals>
+      							<goal>jspc</goal>
+      						</goals>
+      					</pluginExecutionFilter>
+      					<action>
+      						<ignore></ignore>
+      					</action>
+      				</pluginExecution>
+      			</pluginExecutions>
+      		</lifecycleMappingMetadata>
+      	</configuration>
       </plugin>
     </plugins>
   </pluginManagement>
@@ -946,6 +1029,11 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.dhcp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.jdbc-collector</artifactId>
         <version>${project.version}</version>
@@ -1139,12 +1227,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jdhcp-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jradius-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -1271,11 +1353,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-datagram</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-detector-dhcp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2039,11 +2116,6 @@
         <groupId>com.novell.ldap</groupId>
         <artifactId>jldap</artifactId>
         <version>4.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.dhcp.jdhcp</groupId>
-        <artifactId>jdhcp</artifactId>
-        <version>1.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>

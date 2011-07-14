@@ -11,6 +11,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS Core Build Tools</name>
   <modules>
-    <module>castor-process-maven-plugin</module>
+    <module>castor-maven-plugin</module>
   </modules>
 </project>

@@ -9,5 +9,6 @@
     <componentDescriptor>src/assembly/components/rxtx.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/webapps.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/adapters.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/dhcp.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>
