@@ -32,25 +32,94 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import org.opennms.util.ilr.Collector.SortColumn;
+
 public class Main {
 
-	/**
-	 * @param args
-	 * @throws IOException  	
-	 */
-	public static void main(String[] args) throws IOException {
-		main(args, System.out);
-	}
-	public static void main(String[] args, OutputStream out) throws IOException {
-		Collector c = new Collector();
-		for(int i=0 ; i < args.length ; i++){
-			c.readLogMessagesFromFile(args[i]);
-		}
+    /**
+     * @param args
+     * @throws IOException  	
+     */
+    Collector c = new Collector();
+    public static void main(String[] args) throws IOException {
+        new Main().execute(args, System.out);
+    }
+    public void execute(String[] args, OutputStream out) {
+        ArgumentParser argParser = new ArgumentParser("ILR", this);
+        try {
+            argParser.processArgs(args);
+        } catch (Exception e) {
+            System.err.println("Unable to parse Arguments."+ e);
+            argParser.printHelpOptions();
+        }
+        
+        PrintWriter writer = new PrintWriter(out,true);
 
-		PrintWriter writer = new PrintWriter(out,true);
-		
-		c.printReport(writer);
+        c.printReport(writer);
 
-	}
+    }
+    @Option (shortName ="tpt", longName = "totalPersistTime", help = "Sorts by total persist time")
+    public void sortByTotalPersistTime() {
+        c.setSortColumn(SortColumn.TOTALPERSISTTIME);
+    }
+    @Option (shortName ="tct", longName = "totalCollectionTime", help = "Sorts by total collection time")
+    public void sortByTotalCollectiontime() {
+        c.setSortColumn(SortColumn.TOTALCOLLECTTIME);
+    }
+    @Option (shortName ="up", longName = "unsuccesfulPercentage", help = "Sorts by unsuccessful percentage")
+    public void sortByUnsuccessfulPercentage() {
+        c.setSortColumn(SortColumn.UNSUCCESSPERCENTAGE);
+    }
+    @Option (shortName ="auct", longName = "averageUnsuccessfulCollectionTime", help = "Sorts by average unsuccessful collection time")
+    public void sortByAverageUnsuccessfulCollectionTime() {
+        c.setSortColumn(SortColumn.AVGUNSUCCESSCOLLECTTIME);
+    }
+    @Option (shortName ="sp", longName = "successfulPercentage", help = "Sorts by successful percentage")
+    public void sortBySuccessfulPercentage() {
+        c.setSortColumn(SortColumn.SUCCESSPERCENTAGE);
+    }
+    @Option (shortName ="asct", longName = "averageSuccessfulCollectionTime", help = "Sorts by average successful collection time")
+    public void sortByAverageSuccessfulCollectionTime() {
+        c.setSortColumn(SortColumn.AVGSUCCESSCOLLECTTIME);
+    }
+    @Option (shortName ="atbc", longName = "averageTimeBetweenCollections", help = "Sorts by average time between collections")
+    public void sortByAverageTimeBetweenCollections() {
+        c.setSortColumn(SortColumn.AVGTIMEBETWEENCOLLECTS);
+    }
+    @Option (shortName ="act", longName = "averageCollectionTime", help = "Sorts by average collection time")
+    public void sortByAverageCollectionTime() {
+        c.setSortColumn(SortColumn.AVGCOLLECTTIME);
+    }
+    @Option (shortName ="tc", longName = "totalCollections", help = "Sorts by total collections")
+    public void sortByTotalCollections() {
+        c.setSortColumn(SortColumn.TOTALCOLLECTS);
+    }
+    public Collector getCollector(){
+        return c;
+    }
+    @Arguments(help = "One or more instrumentation log files (with debug logging enabled)")
+    public void processLogFile(String fileName) {
+        try {
 
+            c.readLogMessagesFromFile(fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void parseHelpOption(String [] args, int i) {
+        if (args[i].equals( "-h") || args[i].equals( "--help")){
+            System.out.println("Usage: Main.java <input> <sort method>");
+            System.out.println("<input> is your input file, <sort method> is a");
+            System.out.println("column sorting method chosen from the following list:");
+            System.out.println("-tc or --totalCollections : Sorts by total collections");
+            System.out.println("-act or --averageCollectionTime : Sorts by average collection time");
+            System.out.println("-atbc or --averageTimeBetweenCollections : Sorts by average time between collections");
+            System.out.println("-asct or --averageSuccessfulCollectionTime : Sorts by average sucessful collection time");
+            System.out.println("-sp or --successfulPercentage : Sorts by successful percentage");
+            System.out.println("-auct or --averageUnsuccessfulCollectionTime : Sorts by average unsuccessful collection time");
+            System.out.println("-up or --unsuccessfulPercentage : Sorts by unsuccessful percentage");
+            System.out.println("-tct or --totalCollectionTime : Sorts by total collection time");
+            System.out.println("-tpt or --totalPersistTime : Sorts by total persist time");
+        }
+    }
 }
