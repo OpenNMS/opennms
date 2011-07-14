@@ -27,13 +27,6 @@ public class ResourceTable extends CellTable<ResourceListItem> {
         m_selectionModel = new SingleSelectionModel<ResourceListItem>(); 
         setSelectionModel(m_selectionModel);
         
-//        getSelectionModel().addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-//            
-//            public void onSelectionChange(SelectionChangeEvent event) {
-//                m_selectionModel = event;
-//            }
-//        });
-        
         addColumn(resourceColumn, "Resources");
         
     }

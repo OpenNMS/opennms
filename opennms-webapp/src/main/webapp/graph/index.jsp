@@ -152,7 +152,7 @@
 			                                          		]};
 
 	</script>
-	<opennms:resourceList id="resourceList1" dataObject="standardResourceData"> </opennms:resourceList>
+	<opennms:graphResourceList id="resourceList1" dataObject="standardResourceData"> </opennms:graphResourceList>
   </div>
   
 
@@ -181,7 +181,7 @@
 			                                                                 		]};
 		
 	</script>
-	<opennms:resourceList id="resourceList2" dataObject="customResources"> </opennms:resourceList>
+	<opennms:graphResourceList id="resourceList2" dataObject="customResources"> </opennms:graphResourceList>
   </div>
 </div>
 

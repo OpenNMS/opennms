@@ -44,7 +44,7 @@ public class DefaultResourceListViewImpl extends Composite implements DefaultRes
     public DefaultResourceListViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
         
-        m_layoutPanel.setSize("100%", "500px");
+        m_layoutPanel.setSize("100%", "425px");
         
         m_dataProvider = new ListDataProvider<ResourceListItem>();
         m_dataProvider.addDataDisplay(m_resourceTable);

@@ -47,7 +47,6 @@
   <jsp:param name="breadcrumb" value="<a href='${baseHref}report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="<a href='${baseHref}KSC/index.htm'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom Graph" />
-  <jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
 <c:set var="totalRecords" value="${fn:length(resources)}"/>
 <script type="text/javascript">
@@ -199,13 +198,7 @@
       </c:when>
       
       <c:otherwise>
-      	<%-- <script type="text/javascript">
-	      	Ext.onReady(function(){
-	  	      customResourceViewInit("resource-grid", data, "blah");
-	  	 	});
-      	</script>
-      	<div id="resource-grid"></div> --%>
-      	<opennms:chooseResourceList id="resourceList"></opennms:chooseResourceList>
+      	<opennms:kscChooseResourceList id="resourceList"></opennms:kscChooseResourceList>
       	<div id="opennms:chooseResource" style="left: 20px;"></div>
         <%-- <form method="get" name="report" action="<%= org.opennms.web.api.Util.calculateUrlBase( request, "KSC/customGraphChooseResource.htm" ) %>" >
           <input type="hidden" name="selectedResourceId" value="${param.selectedResourceId}"/>

@@ -30,7 +30,7 @@ package org.opennms.features.gwt.graph.resource.list.client.view;
 
 import org.opennms.features.gwt.graph.resource.list.client.event.SearchClickEvent;
 import org.opennms.features.gwt.graph.resource.list.client.event.SearchClickEventHandler;
-import org.opennms.features.gwt.graph.resource.list.client.presenter.KscGraphResourceListPresenter.SearchPopupDisplay;
+import org.opennms.features.gwt.graph.resource.list.client.presenter.DefaultResourceListPresenter.SearchPopupDisplay;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;

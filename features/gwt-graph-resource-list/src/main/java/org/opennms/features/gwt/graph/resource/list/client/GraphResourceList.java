@@ -17,21 +17,39 @@ public class GraphResourceList implements EntryPoint {
    * This is the entry point method.
    */
     public void onModuleLoad() {
-        NodeList<Element> nodes = RootPanel.getBodyElement().getElementsByTagName("opennms:kscChooseResourceList");
-        if(nodes.getLength() > 0) {
-            for(int i = 0; i < nodes.getLength(); i++) {
-                Element elem = nodes.getItem(i);
-                AppController appView = new AppController(getResourceListData(getDataObjectAttribute(elem)));
+        NodeList<Element> kscChooseResourceList = RootPanel.getBodyElement().getElementsByTagName("opennms:kscChooseResourceList");
+        if(kscChooseResourceList.getLength() > 0) {
+            for(int i = 0; i < kscChooseResourceList.getLength(); i++) {
+                Element elem = kscChooseResourceList.getItem(i);
+                KscChooseResourceAppController appView = new KscChooseResourceAppController(getResourceListData(getDataObjectAttribute(elem)));
                 appView.go(RootPanel.get(elem.getId()));
             }
         }
         
-        NodeList<Element> resourceListNodes = RootPanel.getBodyElement().getElementsByTagName("opennms:resourceList");
-        if(resourceListNodes.getLength() > 0) {
-            for(int i = 0; i < resourceListNodes.getLength(); i++) {
-                Element elem = resourceListNodes.getItem(i);
+        NodeList<Element> graphResourceListNodes = RootPanel.getBodyElement().getElementsByTagName("opennms:graphResourceList");
+        if(graphResourceListNodes.getLength() > 0) {
+            for(int i = 0; i < graphResourceListNodes.getLength(); i++) {
+                Element elem = graphResourceListNodes.getItem(i);
                 ResourceListAppController resourceListView = new ResourceListAppController(getResourceListData(getDataObjectAttribute(elem)));
                 resourceListView.go(RootPanel.get(elem.getId()));
+            }
+        }
+        
+        NodeList<Element> nodeSnmpReportNodes = RootPanel.getBodyElement().getElementsByTagName("opennms:nodeSnmpReportList");
+        if(nodeSnmpReportNodes.getLength() > 0) {
+            for(int i = 0; i < nodeSnmpReportNodes.getLength(); i++) {
+                Element elem = nodeSnmpReportNodes.getItem(i);
+                KscReportListAppController nodeSnmpReportList = new KscReportListAppController(getResourceListData(getDataObjectAttribute(elem)));
+                nodeSnmpReportList.go(RootPanel.get(elem.getId()));
+            }
+        }
+        
+        NodeList<Element> kscCustomReportNodes = RootPanel.getBodyElement().getElementsByTagName("opennms:kscCustomReportList");
+        if(kscCustomReportNodes.getLength() > 0) {
+            for(int i = 0; i < kscCustomReportNodes.getLength(); i++) {
+                Element elem = kscCustomReportNodes.getItem(i);
+                KscCustomReportAppController kscCustomReportList = new KscCustomReportAppController(getResourceListData(getDataObjectAttribute(elem)));
+                kscCustomReportList.go(RootPanel.get(elem.getId()));
             }
         }
     }

@@ -28,9 +28,9 @@
 
 package org.opennms.features.gwt.graph.resource.list.client.presenter;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.gwt.graph.resource.list.client.view.DefaultResourceListView;
 import org.opennms.features.gwt.graph.resource.list.client.view.KscChooseResourceListView;
 import org.opennms.features.gwt.graph.resource.list.client.view.ResourceListItem;
 
@@ -38,150 +38,71 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.dom.client.HasKeyPressHandlers;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
-public class KscGraphResourceListPresenter implements Presenter, KscChooseResourceListView.Presenter<ResourceListItem> {
+public class KscGraphResourceListPresenter extends DefaultResourceListPresenter implements Presenter, KscChooseResourceListView.Presenter<ResourceListItem> {
     
-    public interface SearchPopupDisplay {
-        HasClickHandlers getSearchConfirmBtn();
-        HasClickHandlers getCancelBtn();
-        HasKeyPressHandlers getTextBox();
+    public interface ViewChoiceDisplay{
+        HasClickHandlers getViewButton();
+        HasClickHandlers getChooseButton();
         Widget asWidget();
-        String getSearchText();
-        void showSearchPopup();
-        void hideSearchPopup();
-        void setTargetWidget(Widget target);
     }
     
-    KscChooseResourceListView<ResourceListItem> m_view;
     SearchPopupDisplay m_searchPopup;
     List<ResourceListItem> m_dataList;
+    private ViewChoiceDisplay m_viewChoiceDisplay;
     
-    public KscGraphResourceListPresenter(KscChooseResourceListView<ResourceListItem> view, SearchPopupDisplay searchPopupView, JsArray<ResourceListItem> resourceList) {
-        m_view = view;
-        m_view.setPresenter(this);
+    public KscGraphResourceListPresenter(DefaultResourceListView<ResourceListItem> view, SearchPopupDisplay searchPopupView, JsArray<ResourceListItem> resourceList, ViewChoiceDisplay viewChoiceDisplay) {
+        super(view, searchPopupView, resourceList);
         
-        initializeSearchPopup(searchPopupView);
-        
-        m_dataList = convertJsArrayToList(resourceList);
-        
-        m_view.setDataList(m_dataList);
+        initializeViewChoiceDisplay(viewChoiceDisplay);
     }
     
+   
 
-    private void initializeSearchPopup(SearchPopupDisplay searchPopupView) {
-        m_searchPopup = searchPopupView;
-        m_searchPopup.setTargetWidget(m_view.asWidget());
-        m_searchPopup.getSearchConfirmBtn().addClickHandler(new ClickHandler() {
 
+    private void initializeViewChoiceDisplay(ViewChoiceDisplay viewChoiceDisplay) {
+        m_viewChoiceDisplay = viewChoiceDisplay;
+        viewChoiceDisplay.getChooseButton().addClickHandler(new ClickHandler() {
+            
             @Override
             public void onClick(ClickEvent event) {
-                m_searchPopup.hideSearchPopup();
-                m_view.setDataList(filterList(m_searchPopup.getSearchText()));
+                ResourceListItem resource = getView().getSelectedResource();
+                if(resource != null) {
+                    Location.assign("KSC/customGraphEditDetails.htm?resourceId=" + resource.getId());
+                }else {
+                    getView().showWarning();
+                }
+                
             }
         });
         
-        m_searchPopup.getCancelBtn().addClickHandler(new ClickHandler() {
-
+        viewChoiceDisplay.getViewButton().addClickHandler(new ClickHandler() {
+            
             @Override
             public void onClick(ClickEvent event) {
-                m_searchPopup.hideSearchPopup();
-            }
-        });
-        
-        m_searchPopup.getTextBox().addKeyPressHandler(new KeyPressHandler() {
-            
-            @Override
-            public void onKeyPress(KeyPressEvent event) {
-                if(event.getCharCode() == KeyCodes.KEY_ENTER) {
-                    m_searchPopup.hideSearchPopup();
-                    m_view.setDataList(filterList(m_searchPopup.getSearchText()));
+                ResourceListItem resource = getView().getSelectedResource();
+                if(resource != null){
+                    Location.assign("KSC/customGraphChooseResource.htm?selectedResourceId=&resourceId=" + resource.getId());
+                }else{
+                    getView().showWarning();
                 }
+                
             }
         });
     }
-
-
-    private List<ResourceListItem> convertJsArrayToList(JsArray<ResourceListItem> resourceList) {
-        List<ResourceListItem> data = new ArrayList<ResourceListItem>();
-        for(int i = 0; i < resourceList.length(); i++) {
-            data.add(resourceList.get(i));
-        }
-        return data;
-    }
-
-    public void updateSearchTerm(String searchTerm) {
-        if(searchTerm.equals("")) {
-            m_view.setDataList(m_dataList);
-        }else {
-            List<ResourceListItem> newList = new ArrayList<ResourceListItem>();
-            
-            for(ResourceListItem item : m_dataList) {
-                if(item.getValue().contains(searchTerm)) {
-                    newList.add(item);
-                }
-            }
-            
-            m_view.setDataList(newList);
-        }
-        
-    }
-
+    
     @Override
     public void go(HasWidgets container) {
-        container.clear();
-        container.add(m_view.asWidget());
+        super.go(container);
+        container.add(m_viewChoiceDisplay.asWidget());
     }
-
-
-    @Override
-    public void onSearchButtonClicked() {
-        m_searchPopup.showSearchPopup();
-    }
-
+    
     @Override
     public void onResourceItemSelected() {
-        // TODO Auto-generated method stub
         
-    }
-
-
-    @Override
-    public void onChooseResourceClicked() {
-        ResourceListItem resource = m_view.getSelectedResource();
-        if(resource != null) {
-            Location.assign("KSC/customGraphEditDetails.htm?resourceId=" + resource.getId());
-        }else {
-            m_view.showWarning();
-        }
-    }
-
-
-    @Override
-    public void onViewResourceClicked() {
-        ResourceListItem resource = m_view.getSelectedResource();
-        if(resource != null){
-            Location.assign("KSC/customGraphChooseResource.htm?selectedResourceId=&resourceId=" + resource.getId());
-        }else{
-            m_view.showWarning();
-        }
-        
-    }
-
-    private List<ResourceListItem> filterList(String searchText) {
-        List<ResourceListItem> list = new ArrayList<ResourceListItem>();
-        for(ResourceListItem item : m_dataList) {
-            if(item.getValue().contains(searchText)) {
-                list.add(item);
-            }
-        }
-        return list;
     }
 
 }

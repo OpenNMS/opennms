@@ -28,24 +28,12 @@
 
 package org.opennms.features.gwt.graph.resource.list.client.view;
 
-import java.util.List;
 
-import com.google.gwt.user.client.ui.Widget;
-
-
-public interface KscChooseResourceListView<T> {
+public interface KscChooseResourceListView<T> extends ResourceListView<T> {
     
-    public interface Presenter<T>{
-        void onSearchButtonClicked();
-        void onResourceItemSelected();
-        void onChooseResourceClicked();
-        void onViewResourceClicked();
+    public interface Presenter<T> extends ResourceListView.Presenter<T>{
+        
     }
     
-    void setDataList(List<ResourceListItem> dataList);
     void setPresenter(Presenter<T> presenter);
-    void showWarning();
-    ResourceListItem getSelectedResource();
-    Widget asWidget();
-    
 }
