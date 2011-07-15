@@ -18,6 +18,7 @@ public class KscReportResourceChooser implements ViewChoiceDisplay {
         m_viewBtn = new Button("View Child Resource");
         
         m_vertPanel = new VerticalPanel();
+        m_vertPanel.setStyleName("onms-table-no-borders-margin");
         m_vertPanel.add(m_chooseBtn);
         m_vertPanel.add(m_viewBtn);
     }

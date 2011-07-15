@@ -162,14 +162,6 @@
 														</c:forEach>	
           		                                		]}
           </script>
-          <script type="text/javascript">
-          	Ext.onReady(function(){
-				/*
-					domainGridInitView("domain-reports", domainData, "<%= Util.calculateUrlBase(request, "KSC/customView.htm") %>");
-				*/
-            });
-          </script>
-          <div id="domain-reports"></div>
           <form method="get" name="choose_domain" action="<%= Util.calculateUrlBase(request, "KSC/customView.htm") %>" onsubmit="return validateDomain();">
             <input type="hidden" name="<%=CustomViewController.Parameters.type%>" value="domain">
 

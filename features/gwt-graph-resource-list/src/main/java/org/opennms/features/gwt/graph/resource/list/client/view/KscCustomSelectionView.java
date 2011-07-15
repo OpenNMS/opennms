@@ -25,6 +25,7 @@ public class KscCustomSelectionView implements SelectionDisplay {
     
     public KscCustomSelectionView() {
         m_vertPanel = new VerticalPanel();
+        m_vertPanel.setStyleName("onms-table-no-borders-margin");
         m_submitButton = new Button("Submit");
         m_viewRB = new RadioButton("group1", "View");
         m_customizeRB = new RadioButton("group1","Customize");

@@ -60,6 +60,9 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
         super(true);
         
         m_label = new Label("Search for Node:");
+        m_label.getElement().getStyle().setFontSize(70, Unit.PCT);
+        m_label.getElement().getStyle().setPaddingTop(3, Unit.PX);
+        m_label.getElement().getStyle().setPaddingLeft(5, Unit.PX);
         m_tf = new TextBox();
         m_okBtn = new Button("OK");
         m_okBtn.addClickHandler(new ClickHandler() {
@@ -120,7 +123,7 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
             @Override
             public void setPosition(int offsetWidth, int offsetHeight) {
                 int left = m_target.getAbsoluteLeft();
-                int top = m_target.getAbsoluteTop() + 355;
+                int top = m_target.getAbsoluteTop() + 274;
                 m_layoutPanel.setWidth((m_target.getOffsetWidth() - 12) + "px");
                 setPopupPosition(left, top);
                 
