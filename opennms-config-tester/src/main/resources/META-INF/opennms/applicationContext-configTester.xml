@@ -21,7 +21,7 @@
         <entry key="database-schema.xml" value="databaseSchemaConfigFactory"/>
         <entry key="datacollection-config.xml" value="dataCollectionConfigDao"/>
         <entry key="destinationPaths.xml" value="destinationPathFactory"/>
-        <entry key="dhcpd-configuration.xml" value="dhcpdConfigFactory"/>
+        <!-- <entry key="dhcpd-configuration.xml" value="dhcpdConfigFactory"/> --><!-- Not part of standard build -->
         <entry key="discovery-configuration.xml" value="discoveryConfigFactory"/>
         <entry key="eventconf.xml" value="eventConfDao"/>
         <entry key="eventd-configuration.xml" value="eventdConfigFactory"/>

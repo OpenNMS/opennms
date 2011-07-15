@@ -167,11 +167,6 @@ public class ConfigTesterTest {
 	}
 	
 	@Test
-	public void testDhcpdConfiguration() {
-        testConfigFile("dhcpd-configuration.xml");
-	}
-	
-	@Test
 	public void testDiscoveryConfiguration() {
         testConfigFile("discovery-configuration.xml");
 	}
