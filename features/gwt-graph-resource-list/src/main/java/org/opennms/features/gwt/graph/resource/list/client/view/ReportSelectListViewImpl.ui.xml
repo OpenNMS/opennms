@@ -1,0 +1,12 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:opennms="urn:import:org.opennms.features.gwt.graph.resource.list.client.view">
+	<ui:style>
+		
+	</ui:style>
+	<g:LayoutPanel ui:field="m_layoutPanel">
+	   <g:layer top="0" right="0" bottom="0" left="0" >
+	       <opennms:ReportSelectListCellTree></opennms:ReportSelectListCellTree>
+	   </g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder> 

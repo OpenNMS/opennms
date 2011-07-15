@@ -52,6 +52,15 @@ public class GraphResourceList implements EntryPoint {
                 kscCustomReportList.go(RootPanel.get(elem.getId()));
             }
         }
+        
+        NodeList<Element> reportSelectListNodes = RootPanel.getBodyElement().getElementsByTagName("opennms:reportSelectionList");
+        if(reportSelectListNodes.getLength() > 0) {
+            for(int i = 0; i < reportSelectListNodes.getLength(); i++) {
+                Element elem = reportSelectListNodes.getItem(i);
+                ReportSelectListAppController reportSelectListAppController = new ReportSelectListAppController(getResourceListData(getDataObjectAttribute(elem)));
+                reportSelectListAppController.go(RootPanel.get(elem.getId()));
+            }
+        }
     }
 
 
