@@ -70,7 +70,6 @@ import org.opennms.netmgt.config.databaseReports.DatabaseReports;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
-import org.opennms.netmgt.config.dhcpd.DhcpdConfiguration;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
@@ -274,10 +273,6 @@ public class WillItUnmarshalTest {
     @Test
     public void testExampleDestinationPaths() throws Exception {
         unmarshalExample("destinationPaths.xml", DestinationPaths.class);
-    }
-    @Test
-    public void testDhcpdConfiguration() throws Exception {
-        unmarshal("dhcpd-configuration.xml", DhcpdConfiguration.class);
     }
     @Test
     public void testDiscoveryConfiguration() throws Exception {

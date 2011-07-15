@@ -62,6 +62,7 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
     /** {@inheritDoc} */
     @Override
     public String getResourceNameFromIndex(CollectionResource resource) {
+        log().debug("Finding the value of sibling column " + m_siblingColumnName + " for resource " + resource.getInstance() + "@" + resource.getParent());
         StringAttributeVisitor visitor = new StringAttributeVisitor(m_siblingColumnName);
         resource.visit(visitor);
         String value = (visitor.getValue() != null ? visitor.getValue() : resource.getInstance());

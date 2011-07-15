@@ -125,6 +125,9 @@
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
     <module>opennms-xmp</module>
+
+    <!-- extra modules -->
+    <module>dhcp</module>
   </modules>
   <build>
   <extensions>
@@ -1026,6 +1029,11 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.dhcp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.jdbc-collector</artifactId>
         <version>${project.version}</version>
@@ -1219,12 +1227,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jdhcp-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jradius-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -1351,11 +1353,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-datagram</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-detector-dhcp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2119,11 +2116,6 @@
         <groupId>com.novell.ldap</groupId>
         <artifactId>jldap</artifactId>
         <version>4.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.dhcp.jdhcp</groupId>
-        <artifactId>jdhcp</artifactId>
-        <version>1.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>

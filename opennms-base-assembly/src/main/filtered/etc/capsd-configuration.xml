@@ -65,10 +65,6 @@
         <property key="retry" value="1" />
         <property key="lookup" value="localhost" />
     </protocol-plugin>
-    <protocol-plugin protocol="DHCP" class-name="org.opennms.netmgt.capsd.plugins.DhcpPlugin" scan="on">
-        <property key="timeout" value="3000" />
-        <property key="retry" value="1" />
-    </protocol-plugin>
     <protocol-plugin protocol="IMAP" class-name="org.opennms.netmgt.capsd.plugins.ImapPlugin" scan="on">
         <property key="port" value="143" />
         <property key="timeout" value="3000" />

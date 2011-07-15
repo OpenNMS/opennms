@@ -55,6 +55,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.xbill.DNS.ARecord;
+import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TSIG;
@@ -224,7 +225,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      * Builds a Requisition based on the A records returned in a zone transfer from the
      * specified zone.
      * 
-     * @return an instance of the JaxB annotated Requistion class than can be marshaled
+     * @return an instance of the JaxB annotated Requisition class than can be marshaled
      *   into the XML and streamed to the Provisioner
      *   
      * @throws IOException
@@ -284,8 +285,16 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      *   A record returned from a DNS zone transfer query.
      */
     private RequisitionNode createRequisitionNode(Record rec) {
-        ARecord arec = (ARecord)rec;
-        String addr = StringUtils.stripStart(arec.getAddress().toString(), "/");
+        String addr = null;
+        if ("A".equals(Type.string(rec.getType()))) {
+            ARecord arec = (ARecord)rec;
+            addr = StringUtils.stripStart(arec.getAddress().toString(), "/");
+        } else if ("AAAA".equals(Type.string(rec.getType()))) {
+            AAAARecord aaaarec = (AAAARecord)rec;
+            addr = aaaarec.rdataToString();
+        } else {
+            throw new IllegalArgumentException("Invalid record type " + Type.string(rec.getType()) + ". A or AAAA expected.");
+        }
 
         RequisitionNode n = new RequisitionNode();
         
@@ -315,7 +324,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         n.setNodeLabel(nodeLabel);
         
         RequisitionInterface i = new RequisitionInterface();
-        i.setDescr("DNS-A");
+        i.setDescr("DNS-" + Type.string(rec.getType()));
         i.setIpAddr(addr);
         i.setSnmpPrimary("P");
         i.setManaged(Boolean.TRUE);
@@ -344,10 +353,8 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         log().info("matchingRecord: checking rec: "+rec+" to see if it should be imported...");
 
         boolean matches = false;
-        
-        if ("A".equals(Type.string(rec.getType()))) {
-            
-            log().debug("matchingRecord: record is a an A record, continuing...");
+        if ("A".equals(Type.string(rec.getType())) || "AAAA".equals(Type.string(rec.getType()))) {
+            log().debug("matchingRecord: record is an " + Type.string(rec.getType()) + " record, continuing...");
             
             String expression = determineExpressionFromUrl(getUrl());
             
@@ -374,7 +381,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
                 
             } else {
                 
-                log().debug("matchingRecord: on expression for this zone, returning valid match for this A record...");
+                log().debug("matchingRecord: no expression for this zone, returning valid match for this " + Type.string(rec.getType()) + " record...");
                 
                 matches = true;
             }
