@@ -42,19 +42,18 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dhcp.detector.DhcpDetector;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import edu.bucknell.net.JDHCP.DHCPMessage;
 import edu.bucknell.net.JDHCP.DHCPSocket;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class DhcpDetectorTest{
 	
@@ -69,17 +68,18 @@ public class DhcpDetectorTest{
     private Thread m_dhcpdThread = null;
     
     @Before
-    public void setup() {
+    public void setUp() {
         MockLogAppender.setupLogging();
 
         m_dhcpd = Dhcpd.getInstance();
         m_dhcpd.init();
-        m_dhcpd.start();
+        // binds on port 68, hardcoded  :P
+        //m_dhcpd.start();
     }
     
     @After
     public void tearDown(){
-        m_dhcpd.stop();
+        // m_dhcpd.stop();
     }
     
 	@Test
