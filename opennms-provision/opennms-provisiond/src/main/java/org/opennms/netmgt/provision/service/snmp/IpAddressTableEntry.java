@@ -62,33 +62,10 @@ import org.opennms.netmgt.snmp.SnmpValue;
  */
 public final class IpAddressTableEntry extends SnmpTableEntry {
     // Lookup strings for specific table entries
-    //
-    /** Constant <code>IP_ADDRESS_IF_INDEX="ipAdEntIfIndex"</code> */
+
     public final static String IP_ADDRESS_IF_INDEX = "ipAddressIfIndex";
-
-    /** Constant <code>IP_ADDR_ENT_NETMASK="ipAdEntNetMask"</code> */
     public final static String IP_ADDR_ENT_NETMASK = "ipAddressPrefix";
-
-    /** Constant <code>ms_elemList</code> */
-    public static NamedSnmpVar[] ms_elemList = null;
-
-    /**
-     * <P>
-     * Initialize the element list for the class. This is class wide data, but
-     * will be used by each instance.
-     * </P>
-     */
-    static {
-        // Array size has changed from 5 to 4...no longer going after
-        // ipAdEntReasmMaxSize variable because we aren't currently using
-        // it and not all agents implement it which causes the collection
-        // of the ipAddrTable to fail
-        IpAddressTableEntry.ms_elemList = new NamedSnmpVar[2];
-        int ndx = 0;
-
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, IP_ADDRESS_IF_INDEX, ".1.3.6.1.2.1.4.34.1.3", 1);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, IP_ADDR_ENT_NETMASK, ".1.3.6.1.2.1.4.34.1.5", 2);
-    }
+    public final static String IP_ADDR_TYPE        = "ipAddressType";
 
     /**
      * <P>
@@ -97,6 +74,13 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
      * </P>
      */
     public static final String TABLE_OID = "..1.3.6.1.2.1.4.34.1";
+
+    /** Constant <code>ms_elemList</code> */
+    public static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
+    	new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, IP_ADDRESS_IF_INDEX, TABLE_OID + ".3", 1),
+    	new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, IP_ADDR_ENT_NETMASK, TABLE_OID + ".5", 2),
+    	new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, IP_ADDR_TYPE,        TABLE_OID + ".4", 3)
+    };
 
     private InetAddress m_inetAddress = null;
 
@@ -123,7 +107,6 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
      * @return a {@link java.net.InetAddress} object.
      */
     public InetAddress getIpAddress() {
-    	// LogUtils.debugf(this, "getIpAddress: ipAddress = %s", InetAddressUtils.str(m_inetAddress));
     	return m_inetAddress;
     }
 
@@ -133,8 +116,6 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
      * @return a {@link java.lang.Integer} object.
      */
     public Integer getIpAddressIfIndex() {
-    	// final SnmpValue value = getValue(IP_ADDRESS_IF_INDEX);
-    	// LogUtils.debugf(this, "getIpAddressIfIndex: value = %s", value.toDisplayString());
         return getInt32(IpAddressTableEntry.IP_ADDRESS_IF_INDEX);
     }
 
@@ -165,11 +146,9 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
     }
     
     /**
-     * This is a hack, we get the IP address from the instance information.  :P
+     * This is a hack, we get the IP address from the instance information when storing one of the columns.  :P
      */
     public void storeResult(final SnmpResult result) {
-    	// LogUtils.debugf(this, "storeResult: %s", result);
-
     	final int[] instanceIds = result.getInstance().getIds();
     	final int addressType = instanceIds[1];
 		if (addressType == IPAddressTableTracker.TYPE_IPV4 || addressType == IPAddressTableTracker.TYPE_IPV6) {
