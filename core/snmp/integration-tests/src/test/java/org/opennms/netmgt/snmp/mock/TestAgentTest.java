@@ -114,15 +114,15 @@ public class TestAgentTest extends TestCase {
         SnmpObjId z1 = SnmpObjId.get(zeroInst1Base, "0");
         SnmpObjId z2 = SnmpObjId.get(zeroInst2Base, "0");
         
-        assertEquals(getValueFor(z1), m_agent.getValueFor(z1));
-        assertEquals(getValueFor(z2), m_agent.getValueFor(z2));
+        assertEquals(getValueFor(z1).toString(), m_agent.getValueFor(z1).toString());
+        assertEquals(getValueFor(z2).toString(), m_agent.getValueFor(z2).toString());
         // make sure they are not the same
         assertFalse(getValueFor(z2).equals(m_agent.getValueFor(z1)));
         
         // try a column
         for(int i = 1; i <= columnLength; i++) {
             SnmpObjId colOid = SnmpObjId.get(col2Base, ""+i);
-            assertEquals(getValueFor(colOid), m_agent.getValueFor(colOid));
+            assertEquals(getValueFor(colOid).toString(), m_agent.getValueFor(colOid).toString());
         }
         
         // what should it do if you ask for an invalid one - return null

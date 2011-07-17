@@ -46,12 +46,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {"classpath:/META-INF/opennms/detectors.xml",
-"classpath:/META-INF/opennms/test/snmpConfigFactoryContext.xml"})
+@ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+		"classpath:/META-INF/opennms/detectors.xml"
+})
+@JUnitSnmpAgent(host=HostResourceSWRunDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
 public class HostResourceSWRunDetectorTest {
-    
-    private static final int TEST_PORT = 1691;
-    private static final String TEST_IP_ADDRESS = "127.0.0.1";
+    static final String TEST_IP_ADDRESS = "172.20.1.205";
 
     @Autowired
     private HostResourceSWRunDetector m_detector;
@@ -62,24 +63,20 @@ public class HostResourceSWRunDetectorTest {
 
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
-        m_detector.setPort(TEST_PORT);
     }
     
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testDetectorFail() throws UnknownHostException{
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
     
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setServiceToDetect("WindowServer");
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
 
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testLackOfCaseSensitivity() throws UnknownHostException{
         m_detector.setServiceToDetect("Omnitek XR.exe");
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));

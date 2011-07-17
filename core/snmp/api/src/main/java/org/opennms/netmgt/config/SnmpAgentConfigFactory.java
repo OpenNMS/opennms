@@ -27,20 +27,13 @@
  *******************************************************************************/
 
 
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.config;
 
 import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
-/**
- * <p>SnmpAgentConfigFactory interface.</p>
- *
- * @author brozow
- * @version $Id: $
- */
 public interface SnmpAgentConfigFactory {
-    
     /**
      * <p>getAgentConfig</p>
      *
@@ -48,5 +41,4 @@ public interface SnmpAgentConfigFactory {
      * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
     public SnmpAgentConfig getAgentConfig(InetAddress address);
-
 }

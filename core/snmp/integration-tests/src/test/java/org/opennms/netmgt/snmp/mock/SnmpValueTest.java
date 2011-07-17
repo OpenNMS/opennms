@@ -8,12 +8,14 @@ import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.joesnmp.JoeSnmpValueFactory;
@@ -32,6 +34,22 @@ public class SnmpValueTest {
 	    MockLogAppender.setupLogging();
 	}
 	
+	@Test
+	public void testParseHex() {
+		final String trimmed = "00 24 81 8F 40 17";
+		final ByteBuffer bb = ByteBuffer.allocate(trimmed.length());
+		for (final String chunk : trimmed.split("[ :]")) {
+			short s = Short.valueOf(chunk, 16);
+			final byte b = (byte)(s & 0xFF);
+			bb.put(b);
+		}
+		final byte[] parsed = new byte[bb.position()];
+		bb.flip();
+		bb.get(parsed);
+		
+		assertArrayEquals(new byte[] { (byte)0x0, (byte)0x24, (byte)0x81, (byte)0x8f, (byte)0x40, (byte)0x17 }, parsed);
+	}
+
 	@Test
 	public void testCounter32() {
 		for (final SnmpValueFactory factory : m_factories) {
@@ -88,9 +106,11 @@ public class SnmpValueTest {
 	public void testNull() {
 		for (final SnmpValueFactory factory : m_factories) {
 			final SnmpValue value = factory.getNull();
-			assertTrue(factory.getClass().getName() + ": Null isNull should be true", value.isNull());
-			assertFalse(factory.getClass().getName() + ": Null isEndOfMib should be false", value.isEndOfMib());
-			assertFalse(factory.getClass().getName() + ": Null isError should be false", value.isError());
+			final String factoryClassName = factory.getClass().getName();
+			assertFalse(factoryClassName + ": Null isDisplayable should be false", value.isDisplayable());
+			assertTrue(factoryClassName + ": Null isNull should be true", value.isNull());
+			assertFalse(factoryClassName + ": Null isEndOfMib should be false", value.isEndOfMib());
+			assertFalse(factoryClassName + ": Null isError should be false", value.isError());
 		}
 	}
 
@@ -100,7 +120,8 @@ public class SnmpValueTest {
 			final InetAddress address = InetAddressUtils.addr("192.168.0.1");
 			final SnmpValue value = factory.getIpAddress(address);
 			final String className = factory.getClass().getName();
-			
+
+			assertTrue(className + ": getInetAddress isDisplayable should be true", value.isDisplayable());
 			assertEquals(className + ": getInetAddress to InetAddress should return 192.168.0.1", address, value.toInetAddress());
 			assertEquals(className + ": getInetAddress to String should return 192.168.0.1", "192.168.0.1", value.toString());
 			assertEquals(className + ": getInetAddress to DisplayString should return 192.168.0.1", "192.168.0.1", value.toDisplayString());
@@ -135,6 +156,7 @@ public class SnmpValueTest {
 			final SnmpValue value = factory.getObjectId(id);
 			final String className = factory.getClass().getName();
 
+			assertTrue(className + ": getInetAddress isDisplayable should be true", value.isDisplayable());
 			assertEquals(className + ": getObjectId to SnmpObjId should return " + oid, id, value.toSnmpObjId());
 			assertEquals(className + ": getObjectId to String should return " + oid, oid, value.toString());
 			assertEquals(className + ": getObjectId to DisplayString should return " + oid, oid, value.toDisplayString());
@@ -164,26 +186,28 @@ public class SnmpValueTest {
 	@Test
 	public void testTimeTicks() {
 		for (final SnmpValueFactory factory : m_factories) {
-			final SnmpValue value = factory.getTimeTicks(42);
 			final String className = factory.getClass().getName();
-			
-			assertEquals(className + ": getTimeTicks to int should return " + value.toInt(), 42, value.toInt());
-			assertEquals(className + ": getTimeTicks to long should return " + value.toLong(), 42, value.toLong());
-			assertEquals(className + ": getTimeTicks to BigInteger should return " + value.toBigInteger(), BigInteger.valueOf(42), value.toBigInteger());
-			assertEquals(className + ": getTimeTicks to String should return 42", "42", value.toString());
-			assertEquals(className + ": getTimeTicks to DisplayString should return 42", "42", value.toDisplayString());
-			try {
-				value.toHexString();
-				fail(className + ": getTimeTicks to HexString should throw an IllegalArgumentException");
-			} catch (final IllegalArgumentException e) { /* expected */ }
-			try {
-				value.toInetAddress();
-				fail(className + ": getTimeTicks to InetAddress should throw an IllegalArgumentException");
-			} catch (final IllegalArgumentException e) { /* expected */ }
-			try {
-				value.toSnmpObjId();
-				fail(className + ": getTimeTicks to SnmpObjId should throw an IllegalArgumentException");
-			} catch (final IllegalArgumentException e) { /* expected */ }
+			final SnmpValue[] values = { factory.getTimeTicks(42), SnmpUtils.parseMibValue("Timeticks: (42) 0:00:42.00") };
+			for (final SnmpValue value : values) {
+				assertTrue(className + ": getInetAddress isDisplayable should be true", value.isDisplayable());
+				assertEquals(className + ": getTimeTicks to int should return " + value.toInt(), 42, value.toInt());
+				assertEquals(className + ": getTimeTicks to long should return " + value.toLong(), 42, value.toLong());
+				assertEquals(className + ": getTimeTicks to BigInteger should return " + value.toBigInteger(), BigInteger.valueOf(42), value.toBigInteger());
+				assertEquals(className + ": getTimeTicks to String should return 42", "42", value.toString());
+				assertEquals(className + ": getTimeTicks to DisplayString should return 42", "42", value.toDisplayString());
+				try {
+					value.toHexString();
+					fail(className + ": getTimeTicks to HexString should throw an IllegalArgumentException");
+				} catch (final IllegalArgumentException e) { /* expected */ }
+				try {
+					value.toInetAddress();
+					fail(className + ": getTimeTicks to InetAddress should throw an IllegalArgumentException");
+				} catch (final IllegalArgumentException e) { /* expected */ }
+				try {
+					value.toSnmpObjId();
+					fail(className + ": getTimeTicks to SnmpObjId should throw an IllegalArgumentException");
+				} catch (final IllegalArgumentException e) { /* expected */ }
+			}
 		}
 	}
 	
@@ -196,7 +220,7 @@ public class SnmpValueTest {
 			final String className = factory.getClass().getName();
 
 			final SnmpValue value = factory.getOctetString(rawBytes);
-			
+
 			assertArrayEquals(className + ": getOctetString bytes should match", rawBytes, value.getBytes());
 			assertFalse(className + ": getOctetString displayable should be false", value.isDisplayable());
 			assertEquals(className + ": getOctetString to String should return " + stringBytes, stringBytes, value.toString());
@@ -247,7 +271,38 @@ public class SnmpValueTest {
 		}
 	}
 	
+	@Test
+	public void testNormalString() {
+		for (final SnmpValueFactory factory : m_factories) {
+			final String text = "I like cheese!";
+			final String hex = "49206c696b652063686565736521";
+			final byte[] rawBytes = text.getBytes();
+			final String className = factory.getClass().getName();
+
+			final SnmpValue value = factory.getOctetString(rawBytes);
+
+            assertArrayEquals(className + ": getOctetString bytes should match", rawBytes, value.getBytes());
+			assertTrue(className + ": getOctetString displayable should be true", value.isDisplayable());
+			assertEquals(className + ": getOctetString to String should return " + text, text, value.toString());
+			assertEquals(className + ": getOctetString to DisplayString should return " + text, text, value.toDisplayString());
+			assertEquals(className + ": getOctetString to HexString should return " + hex, hex, value.toHexString());
+			try {
+				value.toInt();
+				fail(className + ": getOctetString to int should throw an IllegalArgumentException");
+			} catch (final IllegalArgumentException e) { /* expected */ }
+			try {
+				value.toLong();
+				fail(className + ": getOctetString to long should throw an IllegalArgumentException");
+			} catch (final IllegalArgumentException e) { /* expected */ }
+			try {
+				value.toBigInteger();
+				fail(className + ": getOctetString to BigInteger should throw an IllegalArgumentException");
+			} catch (final IllegalArgumentException e) { /* expected */ }
+		}
+	}
+
 	private void doNumericCheck(final String className, final String methodName, final SnmpValue result, final String expectedResultString, final Long expectedResultNumber) {
+		assertTrue(className + ": " + methodName + " isDisplayable should be true", result.isDisplayable());
 		assertEquals(className + ": " + methodName + " to int should return " + expectedResultString, expectedResultNumber.intValue(), result.toInt());
 		assertEquals(className + ": " + methodName + " to long should return " + expectedResultString, expectedResultNumber.longValue(), result.toLong());
 		assertEquals(className + ": " + methodName + " to BigInteger should return " + expectedResultString, BigInteger.valueOf(expectedResultNumber.longValue()), result.toBigInteger());
@@ -267,27 +322,5 @@ public class SnmpValueTest {
 			fail(className + ": " + methodName + " to SnmpObjId should throw an IllegalArgumentException");
 		} catch (final IllegalArgumentException e) { /* expected */ }
 	}
-
-	/*
-	@Test
-	public void testHexString() {
-		final String hexString = "00 50 56 E7 A7 2F";
-		final SnmpValue nativeStringBytes = m_nativeSnmpFactory.getOctetString(hexString.getBytes());
-		final SnmpValue mockStringBytes = m_mockFactory.getOctetString(hexString.getBytes());
-		
-		final byte[] rawBytes = { 0, (byte)0x50, (byte)0x56, (byte)0xe7, (byte)0xa7, (byte)0x2f };
-		
-		final SnmpValue nativeRawBytes = m_nativeSnmpFactory.getOpaque(rawBytes);
-		final SnmpValue mockRawBytes = m_mockFactory.getOctetString(rawBytes);
-
-		assertEquals(hexString, nativeStringBytes.toString());
-		assertEquals(hexString, mockStringBytes.toString());
-
-		assertEquals(hexString.replaceAll(" ", ":"), nativeRawBytes.toString());
-		assertEquals(hexString, mockRawBytes.toString());
-
-		assertEquals(nativeStringBytes.toDisplayString(), mockStringBytes.toDisplayString());
-	}
-	*/
 
 }

@@ -29,18 +29,28 @@
 package org.opennms.netmgt.snmp;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.springframework.core.io.Resource;
 
 public class SnmpUtils {
+	public static final Pattern HEX_PATTERN = Pattern.compile("^[a-fA-F0-9 :]*$");
+	public static final Pattern HEX_CHUNK_PATTERN = Pattern.compile("(..)[ :]?");
 
     private static Properties sm_config;
 
@@ -58,7 +68,6 @@ public class SnmpUtils {
     }
 
     public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker... trackers) {
-        LogUtils.debugf(SnmpUtils.class, "strategy = %s", getStrategyClassName());
         return getStrategy().createWalker(agentConfig, name, createTooBigTracker(agentConfig, trackers));
     }
 
@@ -93,12 +102,12 @@ public class SnmpUtils {
     public static SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
         return getStrategy().getBulk(agentConfig, oids);
     }
-    
-    public static SnmpValue set(SnmpAgentConfig agentConfig, SnmpObjId oid, SnmpValue value) {
+
+    public static SnmpValue set(final SnmpAgentConfig agentConfig, final SnmpObjId oid, final SnmpValue value) {
     	return getStrategy().set(agentConfig, oid, value);
     }
 
-    public static SnmpValue[] set(SnmpAgentConfig agentConfig, SnmpObjId[] oids, SnmpValue[] values) {
+    public static SnmpValue[] set(final SnmpAgentConfig agentConfig, final SnmpObjId[] oids, final SnmpValue[] values) {
     	return getStrategy().set(agentConfig, oids, values);
     }
 
@@ -106,8 +115,7 @@ public class SnmpUtils {
         return (sm_config == null ? System.getProperties() : sm_config);
     }
 
-    public static List<SnmpValue> getColumns(SnmpAgentConfig agentConfig, String name, SnmpObjId oid) 
-	throws InterruptedException {
+    public static List<SnmpValue> getColumns(final SnmpAgentConfig agentConfig, final String name, final SnmpObjId oid)  throws InterruptedException {
 
         final List<SnmpValue> results = new ArrayList<SnmpValue>();
         
@@ -119,8 +127,8 @@ public class SnmpUtils {
             }
            
         });
-	walker.start();
-	walker.waitFor();
+        walker.start();
+        walker.waitFor();
         return results;
     }
     
@@ -147,7 +155,7 @@ public class SnmpUtils {
     }
     
     public static SnmpStrategy getStrategy() {
-        String strategyClass = getStrategyClassName();
+    	final String strategyClass = getStrategyClassName();
         try {
             return (SnmpStrategy)Class.forName(strategyClass).newInstance();
         } catch (Exception e) {
@@ -259,5 +267,78 @@ public class SnmpUtils {
         }
         return true;
     }
+
+	/**
+	 * <p>loadProperties</p>
+	 *
+	 * @param propertiesFile a {@link org.springframework.core.io.Resource} object.
+	 * @return a {@link java.util.Properties} object.
+	 */
+	public static  Properties loadProperties(final Resource propertiesFile) {
+		final Properties moProps = new Properties();
+		InputStream inStream = null;
+		try {
+	        inStream = propertiesFile.getInputStream();
+			moProps.load( inStream );
+		} catch (final Exception ex) {
+		    LogUtils.warnf(SnmpUtils.class, ex, "Unable to read property file %s", propertiesFile);
+			return null;
+		} finally {
+	        IOUtils.closeQuietly(inStream);
+		}
+	    return moProps;
+	}
+
+	public static SnmpValue parseMibValue(final String mibVal) {
+	    if (mibVal.startsWith("OID:"))
+	    	return getValueFactory().getObjectId(SnmpObjId.get(mibVal.substring("OID:".length()).trim()));
+	    else if (mibVal.startsWith("Timeticks:")) {
+	    	String timeticks = mibVal.substring("Timeticks:".length()).trim();
+			if (timeticks.contains("(")) {
+				timeticks = timeticks.replaceAll("^.*\\((\\d*?)\\).*$", "$1");
+			}
+			return getValueFactory().getTimeTicks(Long.valueOf(timeticks));
+		} else if (mibVal.startsWith("STRING:"))
+			return getValueFactory().getOctetString(mibVal.substring("STRING:".length()).trim().getBytes());
+	    else if (mibVal.startsWith("INTEGER:"))
+			return getValueFactory().getInt32(Integer.valueOf(mibVal.substring("INTEGER:".length()).trim().replaceAll(" *.[Bb]ytes$", "")));
+	    else if (mibVal.startsWith("Gauge32:"))
+	    	return getValueFactory().getGauge32(Long.valueOf(mibVal.substring("Gauge32:".length()).trim()));
+	    else if (mibVal.startsWith("Counter32:"))
+	    	return getValueFactory().getCounter32(Long.valueOf(mibVal.substring("Counter32:".length()).trim()));
+	    else if (mibVal.startsWith("Counter64:"))
+	    	return getValueFactory().getCounter64(BigInteger.valueOf(Long.valueOf(mibVal.substring("Counter64:".length()).trim())));
+	    else if (mibVal.startsWith("IpAddress:"))
+	    	return getValueFactory().getIpAddress(InetAddressUtils.addr(mibVal.substring("IpAddress:".length()).trim()));
+	    else if (mibVal.startsWith("Hex-STRING:")) {
+			final String trimmed = mibVal.substring("Hex-STRING:".length()).trim();
+			final ByteBuffer bb = ByteBuffer.allocate(trimmed.length());
+			if (trimmed.matches("^.*[ :].*$")) {
+				for (final String chunk : trimmed.split("[ :]")) {
+					short s = Short.valueOf(chunk, 16);
+					bb.put((byte)(s & 0xFF));
+				}
+			} else {
+				if (trimmed.length() % 2 != 0) {
+					LogUtils.warnf(SnmpUtils.class, "Hex-STRING %s does not have ' ' or ':' separators, but it is an uneven number of characters.", trimmed);
+				}
+				final Matcher m = HEX_CHUNK_PATTERN.matcher(trimmed);
+				while (m.find()) {
+					bb.put(Byte.valueOf(m.group(1), 16));
+				}
+			}
+			final byte[] parsed = new byte[bb.position()];
+			bb.flip();
+			bb.get(parsed);
+			return getValueFactory().getOctetString(parsed);
+	    } else if (mibVal.startsWith("Network Address:"))
+			return getValueFactory().getOctetString(mibVal.substring("Network Address:".length()).trim().getBytes());
+	    else if (mibVal.startsWith("BITS:"))
+			return getValueFactory().getOctetString(mibVal.substring("BITS:".length()).trim().getBytes());
+	    else if (mibVal.equals("\"\""))
+	    	return getValueFactory().getNull();
+	
+	    throw new IllegalArgumentException("Unknown Snmp Type: "+mibVal);
+	}
 
 }

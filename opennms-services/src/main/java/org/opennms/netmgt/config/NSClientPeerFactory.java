@@ -77,7 +77,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class NSClientPeerFactory extends PeerFactory {
+public final class NSClientPeerFactory {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();

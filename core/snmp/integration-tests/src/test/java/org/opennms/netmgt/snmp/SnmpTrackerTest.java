@@ -33,7 +33,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,28 +42,25 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    JUnitSnmpAgentExecutionListener.class,
-    DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@ContextConfiguration(locations={"classpath:emptyContext.xml"})
-@JUnitSnmpAgent(resource="classpath:snmpTestData1.properties", useMockSnmpStrategy=true)
+@JUnitSnmpAgent(host="172.20.1.205", resource="classpath:snmpTestData1.properties")
 public class SnmpTrackerTest {
+	@Autowired
+	private SnmpPeerFactory m_snmpPeerFactory;
 
-    public static class SnmpTableConstants {
+    public static final class SnmpTableConstants {
         static final SnmpObjId ifTable = SnmpObjId.get(".1.3.6.1.2.1.2.2.1");
         static final SnmpObjId ifIndex = SnmpObjId.get(ifTable, "1");
         static final SnmpObjId ifDescr = SnmpObjId.get(ifTable, "2");
@@ -93,11 +89,11 @@ public class SnmpTrackerTest {
     static private class CountingColumnTracker extends ColumnTracker {
         private long m_count = 0;
 
-        public CountingColumnTracker(SnmpObjId base) {
+        public CountingColumnTracker(final SnmpObjId base) {
             super(base);
         }
         
-        public CountingColumnTracker(SnmpObjId base, int maxRepetitions) {
+        public CountingColumnTracker(final SnmpObjId base, final int maxRepetitions) {
             super(base, maxRepetitions);
         }
         
@@ -106,27 +102,26 @@ public class SnmpTrackerTest {
         }
         
         @Override
-        protected void storeResult(SnmpResult res) {
-            System.err.println(String.format("storing result %s", res));
+        protected void storeResult(final SnmpResult res) {
+        	LogUtils.debugf(this, "storing result: %s", res);
             m_count++;
         }
 
     }
 
-    static private class ResultTable {
+    static private final class ResultTable {
+    	private int m_rowsAdded = 0;
+    	private Map<SnmpInstId, SnmpRowResult> m_results = new HashMap<SnmpInstId, SnmpRowResult>();
         
-        int m_rowsAdded = 0;
-        Map<SnmpInstId, SnmpRowResult> m_results = new HashMap<SnmpInstId, SnmpRowResult>();
-        
-        SnmpValue getResult(SnmpObjId base, SnmpInstId inst) {
-            SnmpRowResult row = m_results.get(inst);
+        SnmpValue getResult(final SnmpObjId base, final SnmpInstId inst) {
+        	final SnmpRowResult row = m_results.get(inst);
             if (row == null) {
                 return null;
             }
             return row.getValue(base);
         }
 
-        SnmpValue getResult(SnmpObjId base, String inst) {
+        SnmpValue getResult(final SnmpObjId base, final String inst) {
             return getResult(base, new SnmpInstId(inst));
         }
         
@@ -134,7 +129,7 @@ public class SnmpTrackerTest {
             return m_rowsAdded;
         }
         
-        void addSnmpRowResult(SnmpRowResult row) {
+        void addSnmpRowResult(final SnmpRowResult row) {
             m_rowsAdded++;
             m_results.put(row.getInstance(), row);
         }
@@ -144,8 +139,8 @@ public class SnmpTrackerTest {
         }
 
         public int getColumnCount() {
-            int maxColumns = Integer.MIN_VALUE;
-            for(SnmpRowResult row : m_results.values()) {
+        	int maxColumns = Integer.MIN_VALUE;
+            for(final SnmpRowResult row : m_results.values()) {
                 maxColumns = Math.max(maxColumns, row.getColumnCount());
             }
             return maxColumns;
@@ -153,11 +148,10 @@ public class SnmpTrackerTest {
 
     }
     static private class TestRowCallback implements RowCallback {
-        private List<SnmpRowResult> m_responses = new ArrayList<SnmpRowResult>();
-        
-        private ResultTable m_results = new ResultTable();
+        private final List<SnmpRowResult> m_responses = new ArrayList<SnmpRowResult>();
+        private final ResultTable m_results = new ResultTable();
 
-        public void rowCompleted(SnmpRowResult row) {
+        public void rowCompleted(final SnmpRowResult row) {
             m_responses.add(row);
             m_results.addSnmpRowResult(row);
         }
@@ -171,14 +165,12 @@ public class SnmpTrackerTest {
         }
     }
 
-    private void walk(CollectionTracker c, int maxVarsPerPdu, int maxRepetitions) throws Exception {
-        SnmpAgentConfig config = new SnmpAgentConfig();
-        config.setAddress(InetAddress.getLocalHost());
-        config.setPort(9161);
+    private void walk(final CollectionTracker c, final int maxVarsPerPdu, final int maxRepetitions) throws Exception {
+    	final SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr("172.20.1.205"));
         config.setVersion(SnmpAgentConfig.VERSION2C);
         config.setMaxVarsPerPdu(maxVarsPerPdu);
         config.setMaxRepetitions(maxRepetitions);
-        SnmpWalker walker = SnmpUtils.createWalker(config, "test", c);
+        final SnmpWalker walker = SnmpUtils.createWalker(config, "test", c);
         assertNotNull(walker);
         walker.start();
         walker.waitFor();
@@ -187,24 +179,24 @@ public class SnmpTrackerTest {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
+        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
     }
     
     @Test
     public void testColumnTracker() throws Exception {
-        CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1"));
-
+    	final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1"));
         walk(ct, 10, 3);
         assertEquals("number of columns returned must match test data", Long.valueOf(6).longValue(), ct.getCount());
     }
  
     @Test
     public void testTableTrackerWithFullTable() throws Exception {
-        TestRowCallback rc = new TestRowCallback();
-        TableTracker tt = new TableTracker(rc, SnmpTableConstants.ifIndex, SnmpTableConstants.ifDescr, SnmpTableConstants.ifSpeed);
+    	final TestRowCallback rc = new TestRowCallback();
+    	final TableTracker tt = new TableTracker(rc, SnmpTableConstants.ifIndex, SnmpTableConstants.ifDescr, SnmpTableConstants.ifSpeed);
 
         walk(tt, 3, 10);
 
-        ResultTable results = rc.getResults();
+        final ResultTable results = rc.getResults();
         assertTrue("tracker must be finished", tt.isFinished());
         assertEquals("number of rows added must match test data", 6, results.getRowsAdded());
         assertEquals("number of rows must match test data", 6, results.getRowCount());
@@ -217,10 +209,10 @@ public class SnmpTrackerTest {
     }
 
     @Test
-    @JUnitSnmpAgent(resource="classpath:snmpTestDataIncompleteTable.properties", useMockSnmpStrategy=true)
+    @JUnitSnmpAgent(host="172.20.1.205", resource="classpath:snmpTestDataIncompleteTable.properties")
     public void testIncompleteTableData() throws Exception {
-        TestRowCallback rc = new TestRowCallback();
-        TableTracker tt = new TableTracker(rc,
+    	final TestRowCallback rc = new TestRowCallback();
+        final TableTracker tt = new TableTracker(rc,
             SnmpTableConstants.ifIndex, SnmpTableConstants.ifDescr, SnmpTableConstants.ifMtu,
             SnmpTableConstants.ifLastChange, SnmpTableConstants.ifInUcastPkts, SnmpTableConstants.ifInErrors,
             SnmpTableConstants.ifOutUcastPkts, SnmpTableConstants.ifOutNUcastPkts, SnmpTableConstants.ifOutErrors
@@ -229,7 +221,7 @@ public class SnmpTrackerTest {
         walk(tt, 4, 3);
 
         printResponses(rc);
-        ResultTable results = rc.getResults();
+        final ResultTable results = rc.getResults();
         assertTrue("tracker must be finished", tt.isFinished());
         assertEquals("number of rows added must match test data", 6, results.getRowsAdded());
         assertEquals("number of rows must match test data", 6, results.getRowCount());
@@ -242,24 +234,24 @@ public class SnmpTrackerTest {
     @Test
     @Ignore("Hmm, what *should* this do?  When using a callback, we don't pass storeResult() up-stream...")
     public void testAggregateTable() throws Exception {
-        TestRowCallback rc = new TestRowCallback();
-        TableTracker[] tt = new TableTracker[2];
+    	final TestRowCallback rc = new TestRowCallback();
+        final TableTracker[] tt = new TableTracker[2];
         tt[0] = new TableTracker(rc, SnmpTableConstants.ifIndex, SnmpTableConstants.ifDescr);
         tt[1] = new TableTracker(rc, SnmpTableConstants.ifMtu, SnmpTableConstants.ifLastChange);
-        AggregateTracker at = new AggregateTracker(tt);
-        
+        final AggregateTracker at = new AggregateTracker(tt);
+
         walk(at, 4, 10);
 
         printResponses(rc);
     }
 
-    private void printResponses(TestRowCallback rc) {
-        List<SnmpRowResult> responses = rc.getResponses();
+    private void printResponses(final TestRowCallback rc) {
+    	final List<SnmpRowResult> responses = rc.getResponses();
         for (int i = 0; i < responses.size(); i++) {
-            SnmpRowResult row = responses.get(i);
-            System.err.println(String.format("%d: instance=%s", i, row.getInstance()));
-            for (SnmpResult res : row.getResults()) {
-                System.err.println(String.format("    %s=%s", res.getBase(), res.getValue()));
+            final SnmpRowResult row = responses.get(i);
+            LogUtils.debugf(this, "%d: instance=%s", i, row.getInstance());
+            for (final SnmpResult res : row.getResults()) {
+            	LogUtils.debugf(this, "    %s=%s", res.getBase(), res.getValue());
             }
         }
     }

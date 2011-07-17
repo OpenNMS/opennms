@@ -28,19 +28,15 @@
 
 package org.opennms.mock.snmp;
 
-import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class MockSnmpValue implements SnmpValue {
-    
-    public static class NetworkAddressSnmpValue extends MockSnmpValue {
+	public static class NetworkAddressSnmpValue extends MockSnmpValue {
 
         public NetworkAddressSnmpValue(final String value) {
             super(SnmpValue.SNMP_OCTET_STRING, value);
@@ -51,43 +47,17 @@ public class MockSnmpValue implements SnmpValue {
         }
 
     }
+    
+    public static class OctetStringSnmpValue extends MockSnmpValue {
+		private byte[] m_bytes;
 
-    public static class HexStringSnmpValue extends MockSnmpValue {
-    	private static final Pattern HEX_PATTERN = Pattern.compile("^[a-fA-F0-9 :]*$");
-		private static final Pattern HEX_CHUNK_PATTERN = Pattern.compile("(..)[ :]?");
-        private final boolean m_isRaw;
-
-    	public HexStringSnmpValue(final byte[] bytes) {
+    	public OctetStringSnmpValue(final byte[] bytes) {
     		super(SnmpValue.SNMP_OCTET_STRING, new String(bytes));
-    		m_isRaw = true;
+    		m_bytes = bytes;
     	}
 
-        public HexStringSnmpValue(final String value) {
-            super(SnmpValue.SNMP_OCTET_STRING, value);
-            m_isRaw = false;
-        }
-
         public byte[] getBytes() {
-        	final String string = super.toString();
-//        	LogUtils.debugf(this, "string = %s", string);
-            if (m_isRaw) {
-        		return string.getBytes();
-        	} else {
-        		final Matcher hexMatcher = HEX_PATTERN.matcher(string);
-        		if (hexMatcher.matches()) {
-//        		    LogUtils.debugf(this, "%s matches ^[a-fA-F0-9 :]*$", string);
-                    final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    final Matcher m = HEX_CHUNK_PATTERN.matcher(string);
-                    while (m.find()) {
-//                        LogUtils.debugf(this, "matched: %s", m.group(1));
-                        os.write(Integer.parseInt(m.group(1), 16));
-                    }
-                    return os.toByteArray();
-        		} else {
-    		        LogUtils.debugf(this, "Not sure how to decide what to do with %s, just returning raw bytes.", string);
-    		        return string.getBytes();
-        		}
-        	}
+        	return m_bytes;
         }
         
         public String toString() {
@@ -98,39 +68,6 @@ public class MockSnmpValue implements SnmpValue {
                 results[i] = Character.isISOControl((char)data[i]) ? (byte)'.' : data[i];
             }
             return new String(results);
-            /*
-            if (m_isRaw) {
-                //
-                // format the string for hex
-                //
-
-                StringBuffer b = new StringBuffer();
-                // b.append("SNMP Octet String [length = " + m_data.length + ", fmt
-                // = HEX] = [");
-                for (int i = 0; i < data.length; ++i) {
-                    int x = (int) data[i] & 0xff;
-                    if (x < 16)
-                        b.append('0');
-                    b.append(Integer.toString(x, 16).toUpperCase());
-
-                    if (i < data.length - 1)
-                        b.append(' ');
-                }
-                // b.append(']');
-                return b.toString();
-            } else {
-                //
-                // raw output
-                //
-                // rs = "SNMP Octet String [length = " + m_data.length + ", fmt =
-                // RAW] = [" + new String(m_data) + "]";
-                byte[] results = new byte[data.length];
-                for (int i = 0; i < data.length; i++) {
-                    results[i] = Character.isISOControl((char)data[i]) ? (byte)'.' : data[i];
-                }
-                return new String(results);
-            }
-            */
         }
 
         public String toHexString() {
@@ -145,7 +82,7 @@ public class MockSnmpValue implements SnmpValue {
         }
         
         public boolean isDisplayable() {
-            return false;
+            return SnmpUtils.allBytesDisplayable(getBytes());
         }
 
     }
@@ -438,35 +375,6 @@ public class MockSnmpValue implements SnmpValue {
             return false;
         }
         
-    }
-
-    public static SnmpValue parseMibValue(final String mibVal) {
-        if (mibVal.startsWith("OID:"))
-            return new OidSnmpValue(mibVal.substring("OID:".length()).trim());
-        else if (mibVal.startsWith("Timeticks:"))
-            return new TimeticksSnmpValue(mibVal.substring("Timeticks:".length()).trim());
-        else if (mibVal.startsWith("STRING:"))
-            return new StringSnmpValue(mibVal.substring("STRING:".length()).trim());
-        else if (mibVal.startsWith("INTEGER:"))
-            return new NumberSnmpValue(SnmpValue.SNMP_INT32, mibVal.substring("INTEGER:".length()).trim());
-        else if (mibVal.startsWith("Gauge32:"))
-            return new NumberSnmpValue(SnmpValue.SNMP_GAUGE32, mibVal.substring("Gauge32:".length()).trim());
-        else if (mibVal.startsWith("Counter32:"))
-            return new NumberSnmpValue(SnmpValue.SNMP_COUNTER32, mibVal.substring("Counter32:".length()).trim());
-        else if (mibVal.startsWith("Counter64:"))
-            return new NumberSnmpValue(SnmpValue.SNMP_COUNTER64, mibVal.substring("Counter64:".length()).trim());
-        else if (mibVal.startsWith("IpAddress:"))
-            return new IpAddressSnmpValue(mibVal.substring("IpAddress:".length()).trim());
-        else if (mibVal.startsWith("Hex-STRING:"))
-            return new HexStringSnmpValue(mibVal.substring("Hex-STRING:".length()).trim());
-        else if (mibVal.startsWith("Network Address:"))
-            return new NetworkAddressSnmpValue(mibVal.substring("Network Address:".length()).trim());
-        else if (mibVal.startsWith("BITS:"))
-            return new HexStringSnmpValue(mibVal.substring("BITS:".length()).trim());
-        else if (mibVal.equals("\"\""))
-            return NULL_VALUE;
-
-        throw new IllegalArgumentException("Unknown Snmp Type: "+mibVal);
     }
 
     public int toInt() {

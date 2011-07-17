@@ -76,7 +76,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
  */
-public class WmiPeerFactory extends PeerFactory {
+public class WmiPeerFactory {
     /**
      * The singleton instance of this factory
      */

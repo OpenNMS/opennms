@@ -299,8 +299,8 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         RequisitionNode n = new RequisitionNode();
         
         String host = rec.getName().toString();
-        String nodeLabel = StringUtils.stripStart(host, ".");
-        
+        String nodeLabel = StringUtils.stripEnd(StringUtils.stripStart(host, "."), ".");
+
         n.setBuilding(getForeignSource());
         
         switch(m_foreignIdHashSource) {

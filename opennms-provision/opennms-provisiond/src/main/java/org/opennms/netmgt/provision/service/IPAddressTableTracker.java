@@ -69,14 +69,19 @@ public class IPAddressTableTracker extends TableTracker {
 	public static final int TYPE_IPV4 = 1;
 	public static final int TYPE_IPV6 = 2;
 
+    private static final int IP_ADDRESS_TYPE_UNICAST = 1;
+    // private static final int IP_ADDRESS_TYPE_ANYCAST = 2;
+    // private static final int IP_ADDRESS_TYPE_BROADCAST = 3;
+
     private static SnmpObjId[] s_tableColumns = new SnmpObjId[] {
         IP_ADDRESS_IF_INDEX,
-        IP_ADDRESS_PREFIX_INDEX
+        IP_ADDRESS_PREFIX_INDEX,
+        IP_ADDRESS_TYPE_INDEX
     };
     
     class IPAddressRow extends SnmpRowResult {
 
-        public IPAddressRow(final int columnCount, final SnmpInstId instance) {
+		public IPAddressRow(final int columnCount, final SnmpInstId instance) {
             super(columnCount, instance);
             LogUtils.debugf(this, "column count = %d, instance = %s", columnCount, instance);
         }
@@ -99,6 +104,11 @@ public class IPAddressTableTracker extends TableTracker {
             return null;
         }
 
+        public Integer getType() {
+        	final SnmpValue value = getValue(IP_ADDRESS_TYPE_INDEX);
+        	return value.toInt();
+        }
+        
         private String getNetMask() {
         	final SnmpValue value = getValue(IP_ADDRESS_PREFIX_INDEX);
         	
@@ -122,10 +132,15 @@ public class IPAddressTableTracker extends TableTracker {
             
         	final Integer ifIndex = getIfIndex();
         	final String ipAddr = getIpAddress();
+        	final Integer type = getType();
         	final String netMask = getNetMask();
             
-        	LogUtils.debugf(this, "createInterfaceFromRow: ifIndex = %s, ipAddress = %s, netmask = %s", ifIndex, ipAddr, netMask);
+        	LogUtils.debugf(this, "createInterfaceFromRow: ifIndex = %s, ipAddress = %s, type = %s, netmask = %s", ifIndex, ipAddr, type, netMask);
 
+        	if (type != IP_ADDRESS_TYPE_UNICAST) {
+        		return null;
+        	}
+        	
         	final OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
             snmpIface.setNetMask(netMask);
             snmpIface.setCollectionEnabled(true);

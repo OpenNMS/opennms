@@ -31,16 +31,13 @@ package org.opennms.netmgt.provision.support;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
-
-    public SnmpAgentConfig getAgentConfig(InetAddress address) {
-       SnmpAgentConfig agentConfig = new SnmpAgentConfig(address);
-       agentConfig.setVersion(SnmpAgentConfig.DEFAULT_VERSION);
-       
-        return agentConfig;
+    public SnmpAgentConfig getAgentConfig(final InetAddress address) {
+    	final SnmpAgentConfig agentConfig = new SnmpAgentConfig(address);
+    	agentConfig.setVersion(SnmpAgentConfig.DEFAULT_VERSION);
+    	return agentConfig;
     }
-
 }

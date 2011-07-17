@@ -70,7 +70,6 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
         
         final JUnitHttpServer config = findTestAnnotation(JUnitHttpServer.class, testContext);
         
-        LogUtils.debugf(this, "config = %s", config);
         if (config == null)
             return;
 

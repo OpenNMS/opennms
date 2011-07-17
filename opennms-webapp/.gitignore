@@ -7,3 +7,4 @@ bin
 tomcat
 www-test
 war
+.gwt
