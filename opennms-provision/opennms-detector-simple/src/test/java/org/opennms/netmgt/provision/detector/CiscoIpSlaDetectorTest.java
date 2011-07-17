@@ -46,13 +46,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/detectors.xml",
-        "classpath:/META-INF/opennms/test/snmpConfigFactoryContext.xml"})
+@ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+		"classpath:/META-INF/opennms/detectors.xml"
+})
+@JUnitSnmpAgent(host=CiscoIpSlaDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/ciscoIpSlaSnmpTestData1.properties")
 public class CiscoIpSlaDetectorTest {
-
-    private static final int TEST_PORT = 1691;
-    private static final String TEST_IP_ADDRESS = "127.0.0.1";
+    static final String TEST_IP_ADDRESS = "192.168.0.1";
 
     @Autowired
     private CiscoIpSlaDetector m_detector;
@@ -63,18 +63,15 @@ public class CiscoIpSlaDetectorTest {
 
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
-        m_detector.setPort(TEST_PORT);
         m_detector.setAdminTag("to_detect");
     }
 
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/ciscoIpSlaSnmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
 
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/ciscoIpSlaSnmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setAdminTag("extraneous_1");
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));

@@ -137,19 +137,19 @@ public class Snmp4JStrategy implements SnmpStrategy {
     	throw new UnsupportedOperationException("Snmp4JStrategy.getBulk not yet implemented.");
     }
 
-    public SnmpValue set(SnmpAgentConfig agentConfig, SnmpObjId oid, SnmpValue value) {
+    public SnmpValue set(final SnmpAgentConfig agentConfig, final SnmpObjId oid, final SnmpValue value) {
         if (log().isDebugEnabled()) {
             log().debug("set: OID: " + oid + " value: " + value.toString() + " for Agent: " + agentConfig);
         }
         
-        SnmpObjId[] oids = { oid };
-        SnmpValue[] values = { value };
-        SnmpValue[] retvalues = set(agentConfig, oids, values);
+        final SnmpObjId[] oids = { oid };
+        final SnmpValue[] values = { value };
+        final SnmpValue[] retvalues = set(agentConfig, oids, values);
         
         return retvalues[0];
     }
 
-    public SnmpValue[] set(SnmpAgentConfig agentConfig, SnmpObjId[] oids, SnmpValue[] values) {
+    public SnmpValue[] set(final SnmpAgentConfig agentConfig, final SnmpObjId[] oids, final SnmpValue[] values) {
         if (log().isDebugEnabled()) {
             log().debug("set: OIDs: " + Arrays.toString(oids) + " values: " + Arrays.toString(values) + " for Agent: " + agentConfig);
         }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,13 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.test.snmp;
 
-/**
- * Convenience superclass for NSClientPeerFactory and SnmpPeerFactory, with common code used in both
- *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- */
-public class PeerFactory {
+import org.opennms.mock.snmp.MockSnmpDataProvider;
+
+
+public interface MockSnmpDataProviderAware {
+    public void setMockSnmpDataProvider(MockSnmpDataProvider provider);
 }

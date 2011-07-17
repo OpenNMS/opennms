@@ -39,6 +39,7 @@ import java.util.TreeMap;
 import org.opennms.mock.snmp.MockSnmpValue;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class TestAgent {
@@ -87,7 +88,7 @@ public class TestAgent {
         for (Entry<Object, Object> entry : mibData.entrySet()) {
             SnmpObjId objId = SnmpObjId.get(entry.getKey().toString());
             
-            setAgentValue(objId, MockSnmpValue.parseMibValue(entry.getValue().toString()));
+            setAgentValue(objId, SnmpUtils.parseMibValue(entry.getValue().toString()));
         }
     }
 

@@ -37,9 +37,9 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
@@ -50,16 +50,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.test.context.ContextConfiguration;
 
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {"classpath:/META-INF/opennms/detectors.xml",
-        "classpath:/META-INF/opennms/test/snmpConfigFactoryContext.xml"})
+@ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+		"classpath:/META-INF/opennms/detectors.xml"
+})
+@JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
 public class SnmpDetectorTest implements ApplicationContextAware {
     
-    private static final int TEST_PORT = 1691;
-    private static final String TEST_IP_ADDRESS = "127.0.0.1";
-    
-    private SnmpDetector m_detector;
+    static final String TEST_IP_ADDRESS = "172.20.1.205";
+	private SnmpDetector m_detector;
     private ApplicationContext m_applicationContext;
     private InetAddress m_testIpAddress;
     private DetectorMonitor m_detectorMonitor;
@@ -75,35 +75,28 @@ public class SnmpDetectorTest implements ApplicationContextAware {
             m_detector = getDetector(SnmpDetector.class);
             m_detector.setRetries(2);
             m_detector.setTimeout(500);
-            m_detector.setPort(TEST_PORT);
         }
     }
     
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testIsForcedV1ProtocolSupported() throws UnknownHostException {
         m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
         m_detector.setForceVersion("snmpv1");
-        m_detector.setAgentConfigFactory(new AnAgentConfigFactory());
-        
         assertTrue(m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
     }
     
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testIsExpectedValue() throws UnknownHostException {
         m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
         assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
     }
     
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
     public void testIsExpectedValueNoVbValue() throws UnknownHostException {
         assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
     }
     
     @Test
-    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT, useMockSnmpStrategy=true)
      public void testIsProtocolSupportedInetAddress() throws UnknownHostException {
          assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
          

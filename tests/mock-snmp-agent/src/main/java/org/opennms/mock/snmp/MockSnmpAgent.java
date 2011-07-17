@@ -110,7 +110,10 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     private boolean m_stopped;
     private List<ManagedObject> m_moList;
     private MockSnmpMOLoader m_moLoader;
+
     private static File BOOT_COUNT_FILE;
+
+	public static boolean allowSetOnMissingOid = false;
 
     // initialize Log4J logging
     static {
@@ -649,8 +652,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
     }
     
-    private void assertNotNull(String string, Object o) {
-        if (o == null) {
+    private void assertNotNull(final String string, final Object o) {
+    	if (!allowSetOnMissingOid  && o == null) {
             throw new IllegalStateException(string);
         }
     }
@@ -710,7 +713,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      *
      * @param moFile a {@link org.springframework.core.io.Resource} object.
      */
-    public void updateValuesFromResource(Resource moFile) {
+    public void updateValuesFromResource(final Resource moFile) {
         unregisterManagedObjects();
         m_moFile = moFile;
         registerManagedObjects();

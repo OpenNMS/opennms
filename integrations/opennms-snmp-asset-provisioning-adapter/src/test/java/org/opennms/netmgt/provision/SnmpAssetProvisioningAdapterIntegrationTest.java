@@ -39,7 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.snmp.annotations.JUnitMockSnmpStrategyAgents;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.NodeDao;
@@ -72,11 +72,11 @@ import org.springframework.util.Assert;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-@JUnitMockSnmpStrategyAgents(value={
-		@JUnitSnmpAgent(resource = "classpath:snmpAssetTestData.properties", useMockSnmpStrategy=true),
-		@JUnitSnmpAgent(host="192.168.1.1", resource = "classpath:snmpAssetTestData.properties", useMockSnmpStrategy=true),
-		@JUnitSnmpAgent(host="172.20.1.201", resource = "classpath:snmpAssetTestData.properties", useMockSnmpStrategy=true),
-		@JUnitSnmpAgent(host="172.20.1.204", resource = "classpath:snmpAssetTestData.properties", useMockSnmpStrategy=true)
+@JUnitSnmpAgents(value={
+		@JUnitSnmpAgent(resource = "classpath:snmpAssetTestData.properties"),
+		@JUnitSnmpAgent(host="192.168.1.1", resource = "classpath:snmpAssetTestData.properties"),
+		@JUnitSnmpAgent(host="172.20.1.201", resource = "classpath:snmpAssetTestData.properties"),
+		@JUnitSnmpAgent(host="172.20.1.204", resource = "classpath:snmpAssetTestData.properties")
 })
 public class SnmpAssetProvisioningAdapterIntegrationTest {
 

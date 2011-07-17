@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import org.apache.commons.io.IOUtils;
 import org.opennms.mock.snmp.MockSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.springframework.core.io.Resource;
 
@@ -29,8 +30,10 @@ public class PropertyOidContainer {
             final String key = obj.toString();
             if (!key.startsWith(".")) continue;
             final String value = moProps.getProperty(key);
-//            LogUtils.debugf(this, "%s = %s", key, value);
-            m_tree.put(SnmpObjId.get(key), MockSnmpValue.parseMibValue(value));
+            if (value.contains("No Such Object available on this agent at this OID")) { continue; }
+            if (value.contains("No more variables left in this MIB View")) { continue; }
+//          LogUtils.debugf(this, "%s = %s", key, value);
+            m_tree.put(SnmpObjId.get(key), SnmpUtils.parseMibValue(value));
         }
     }
 

@@ -92,7 +92,7 @@ public class SnmpAssetProvisioningAdapterTest {
 
 	@Test
 	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties", useMockSnmpStrategy=false)
+	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testAdd() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
@@ -110,7 +110,7 @@ public class SnmpAssetProvisioningAdapterTest {
 
 	@Test
 	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties", useMockSnmpStrategy=false)
+	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testDelete() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);

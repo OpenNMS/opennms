@@ -28,22 +28,21 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.config.SnmpAgentConfigProxyMapper;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.ConfigurationTestUtils;
 
-/**
- * ProxySnmpAgentConfigFactory
- *
- * @author brozow
- */
 public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 
     public ProxySnmpAgentConfigFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
@@ -51,10 +50,21 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
     }
 
     public SnmpAgentConfig getAgentConfig(final InetAddress address) {
-    	final SnmpAgentConfig config = new SnmpAgentConfig(InetAddressUtils.getLocalHostAddress());
+    	final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
+    	final SnmpAgentAddress agentAddress = mapper.getAddress(address);
+    	
+    	final String addressString = str(address);
+		if (agentAddress == null) {
+    		LogUtils.debugf(this, "No agent address mapping found for %s!  Try adding a @JUnitSnmpAgent(host=\"%s\", resource=\"...\" entry...", addressString, addressString);
+    		return super.getAgentConfig(address);
+    		// throw new IllegalArgumentException("No agent address mapping found for " + addressString);
+    	}
+
+		final SnmpAgentConfig config = new SnmpAgentConfig(agentAddress.getAddress());
         config.setProxyFor(address);
-        // This port should match the default port inside {@link JUnitSnmpAgent}
-        config.setPort(9161);
+        config.setPort(agentAddress.getPort());
+        
+        LogUtils.debugf(this, "proxying %s -> %s", addressString, agentAddress);
         return config;
     }
 
