@@ -580,14 +580,13 @@ public abstract class MockEventUtil {
      * @param e2 a {@link org.opennms.netmgt.xml.event.Event} object.
      * @return a boolean.
      */
-    public static boolean eventsMatch(Event e1, Event e2) {
-        if (e1 == e2) {
+    public static boolean eventsMatch(final Event e1, final Event e2) {
+    	if (e1 == e2) {
             return true;
         }
         if (e1 == null || e2 == null) {
             return false;
         }
-
         if (e1.getUei() != e2.getUei() && (e1.getUei() == null || e2.getUei() == null || !e1.getUei().equals(e2.getUei()))) {
 			return false;
         }

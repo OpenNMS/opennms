@@ -60,7 +60,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Where;
-import org.opennms.core.utils.InetAddressUtils;
 import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "service")
@@ -361,14 +360,17 @@ Comparable<OnmsMonitoredService> {
      */
     public String toString() {
         return new ToStringCreator(this)
-        .append("ipAddr", InetAddressUtils.str(getIpAddress()))
-        .append("ifindex", getIfIndex())
-        .append("lastgood", getLastGood())
-        .append("lastfail", getLastFail())
-        .append("qualifier", getQualifier())
-        .append("status", getStatus())
-        .append("source", getSource())
-        .append("notify", getNotify())
+        .append("id", m_id)
+        .append("lastGood", m_lastGood)
+        .append("lastFail", m_lastFail)
+        .append("qualifier", m_qualifier)
+        .append("status", m_status)
+        .append("source", m_source)
+        .append("notify", m_notify)
+        .append("serviceType", m_serviceType)
+        .append("ipInterface", m_ipInterface)
+        .append("currentOutages", m_currentOutages)
+        .append("applications", m_applications)
         .toString();
     }
 

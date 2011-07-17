@@ -55,5 +55,4 @@ public interface SnmpValueFactory {
     SnmpValue getNull();
 
     SnmpValue getOpaque(byte[] bs);
-
 }

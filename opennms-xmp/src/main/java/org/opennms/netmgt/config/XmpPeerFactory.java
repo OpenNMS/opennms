@@ -45,7 +45,7 @@ import org.opennms.netmgt.config.xmpConfig.XmpConfig;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @version $Id: $
  */
-public class XmpPeerFactory extends PeerFactory {
+public class XmpPeerFactory {
 
     /**
      * The singleton instance of this factory
