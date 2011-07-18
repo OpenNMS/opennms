@@ -157,7 +157,7 @@ public abstract class SnmpWalker {
         try {
             close();
         } catch (IOException e) {
-            log().error(getName()+": Unexpected Error occured closing snmp session for: "+m_address, e);
+            log().error(getName()+": Unexpected Error occured closing SNMP session for: "+m_address, e);
         }
     }
 

@@ -376,7 +376,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		final OnmsIpInterface primaryInterface = node.getPrimaryInterface();
 		InetAddress ipaddr = InetAddressUtils.getLocalHostAddress();
 		if (primaryInterface == null) {
-			log().debug("getIpForNode: found null Snmp Primary Interface, getting interfaces");
+			log().debug("getIpForNode: found null SNMP Primary Interface, getting interfaces");
 			final Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
 			for (final OnmsIpInterface onmsIpInterface : ipInterfaces) {
 				log().debug("getIpForNode: trying Interface with id: " + onmsIpInterface.getId());
@@ -387,7 +387,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 
 			}
 		} else {        
-			log().debug("getIpForNode: found Snmp Primary Interface");
+			log().debug("getIpForNode: found SNMP Primary Interface");
 			if (InetAddressUtils.str(primaryInterface.getIpAddress()) != null )
 				ipaddr = primaryInterface.getIpAddress();
 			else 
@@ -404,11 +404,11 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	@EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
 	public void handleReloadConfigEvent(final Event event) {
 		if (isReloadConfigEventTarget(event)) {
-			LogUtils.debugf(this, "Reloading the snmp asset adapter configuration");
+			LogUtils.debugf(this, "Reloading the SNMP asset adapter configuration");
 			try {
 				m_config.update();
 			} catch (Throwable e) {
-				LogUtils.infof(this, e, "Unable to reload snmp asset adapter configuration");
+				LogUtils.infof(this, e, "Unable to reload SNMP asset adapter configuration");
 			}
 		}
 	}

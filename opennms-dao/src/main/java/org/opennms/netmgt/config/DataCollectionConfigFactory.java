@@ -31,7 +31,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.IOException;
 
-import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
 import org.springframework.core.io.FileSystemResource;
 

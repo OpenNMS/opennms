@@ -63,7 +63,7 @@ import java.io.Reader;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 public class XmpConfigFactory {
 

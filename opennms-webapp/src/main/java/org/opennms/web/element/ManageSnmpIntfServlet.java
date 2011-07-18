@@ -89,7 +89,7 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
             SnmpPeerFactory.init();
         } catch (Throwable e) {
             throw new ServletException(
-                    "Could not determine the snmp service ID", e);
+                    "Could not determine the SNMP service ID", e);
         }
     }
 

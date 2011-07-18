@@ -33,8 +33,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.opennms.core.utils.Argument;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
 import org.opennms.netmgt.dao.MicroblogConfigurationDao;

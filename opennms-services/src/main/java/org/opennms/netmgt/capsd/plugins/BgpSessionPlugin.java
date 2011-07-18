@@ -224,7 +224,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
         } catch (NumberFormatException e) {
             log().warn("Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            log().warn("Invalid Snmp Criteria: " + e.getMessage());
+            log().warn("Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             log().warn("Unexpected exception during SNMP poll of interface " + ipaddr, t);
         }

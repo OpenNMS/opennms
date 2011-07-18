@@ -34,7 +34,7 @@ import java.util.Map;
 import org.opennms.netmgt.scheduler.Schedule;
 
 /**
- * Represents an Snmp PollableNetwork
+ * Represents an SNMP PollableNetwork
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $

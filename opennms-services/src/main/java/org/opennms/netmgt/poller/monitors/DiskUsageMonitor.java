@@ -54,12 +54,14 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * Check for disks via HOST-RESOURCES-MIB.  This should be extended to
  * support BOTH UCD-SNMP-MIB and HOST-RESOURCES-MIB
  * </p>
+ * <p>
+ * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
+ * </p>
  *
  * @author <A HREF="mailto:jason.aras@gmail.com">Jason Aras</A>
  * @version $Id: $
  */
 
-//this does snmp and there relies on the snmp configuration so it is not distributable
 @Distributable(DistributionContext.DAEMON)
 final public class DiskUsageMonitor extends SnmpMonitorStrategy {
     private static final String m_serviceName = "DISK-USAGE";
@@ -231,7 +233,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
         } catch (NumberFormatException e) {
             status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
+            status = logDown(Level.ERROR, "Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }

@@ -163,12 +163,12 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	/** * */
 	/**
-	 * The Vlan Table information
+	 * The VLAN Table information
 	 */
 	public SnmpTable<SnmpTableEntry> m_vlanTable;
 
 	/**
-	 * The list of vlan snmp collection object
+	 * The list of VLAN SNMP collection object
 	 */
 
 	public java.util.Map<Vlan,SnmpVlanCollection> m_snmpVlanCollection; 
@@ -201,7 +201,7 @@ public final class SnmpCollection implements ReadyRunnable {
     private final Linkd m_linkd;
 
     /**
-	 * Constructs a new snmp collector for a node using the passed interface as
+	 * Constructs a new SNMP collector for a node using the passed interface as
 	 * the collection point. The collection does not occur until the
 	 * <code>run</code> method is invoked.
 	 *
@@ -469,8 +469,8 @@ public final class SnmpCollection implements ReadyRunnable {
                 LogUtils.infof(this, "SnmpCollection.run: failed to collect dpCacheTable for %s", hostAddress);
 			if (collectVlanTable && !this.hasVlanTable())
                 LogUtils.infof(this, "SnmpCollection.run: failed to collect Vlan for %s", hostAddress);
-			// Schedule snmp vlan collection only on VLAN.
-			// If it has not vlan collection no data download is done.
+			// Schedule SNMP VLAN collection only on VLAN.
+			// If it has not VLAN collection no data download is done.
 			
 			Vlan vlan = null;
 

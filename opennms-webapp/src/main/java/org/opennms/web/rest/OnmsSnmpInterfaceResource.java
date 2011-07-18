@@ -152,7 +152,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             throwException(Status.BAD_REQUEST, "addSnmpInterface: can't find node " + nodeCriteria);
         }
         if (snmpInterface == null) {
-            throwException(Status.BAD_REQUEST, "addSnmpInterface: snmp interface object cannot be null");
+            throwException(Status.BAD_REQUEST, "addSnmpInterface: SNMP interface object cannot be null");
         }
         log().debug("addSnmpInterface: adding interface " + snmpInterface);
         node.addSnmpInterface(snmpInterface);
@@ -181,7 +181,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         }
         OnmsEntity snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
         if (snmpInterface == null) {
-            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find snmp interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
+            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
         }
         log().debug("deletSnmpInterface: deleting interface with ifIndex " + ifIndex + " from node " + nodeCriteria);
         node.getSnmpInterfaces().remove(snmpInterface);
@@ -208,13 +208,13 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
         }
         if (ifIndex < 0) {
-            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: invalid ifIndex specified for snmp interface on node " + node.getId() + ": " + ifIndex);
+            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: invalid ifIndex specified for SNMP interface on node " + node.getId() + ": " + ifIndex);
         }
         OnmsSnmpInterface snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
         if (snmpInterface == null) {
-            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find snmp interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
+            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
         }
-        log().debug("updateSnmpInterface: updating snmp interface " + snmpInterface);
+        log().debug("updateSnmpInterface: updating SNMP interface " + snmpInterface);
         BeanWrapper wrapper = new BeanWrapperImpl(snmpInterface);
         for(String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
@@ -240,7 +240,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                 e = bldr.getEvent();
             }
         }
-        log().debug("updateSnmpInterface: snmp interface " + snmpInterface + " updated");
+        log().debug("updateSnmpInterface: SNMP interface " + snmpInterface + " updated");
         m_snmpInterfaceDao.saveOrUpdate(snmpInterface);
         
         if (e != null) {

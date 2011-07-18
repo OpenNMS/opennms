@@ -49,7 +49,7 @@ import org.opennms.netmgt.config.capsd.SmbAuth;
  */
 public interface CapsdConfig {
     /**
-     * This integer value is used to represent the primary snmp interface
+     * This integer value is used to represent the primary SNMP interface
      * ifindex in the ipinterface table for SNMP hosts that don't support
      * the MIB2 ipAddrTable
      */

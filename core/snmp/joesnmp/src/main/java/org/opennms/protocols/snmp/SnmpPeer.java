@@ -76,7 +76,7 @@ public class SnmpPeer extends Object implements Cloneable {
 
     /**
      * The default parameters for communicating with the agent. These include
-     * the read/write community string and the snmp protocol version.
+     * the read/write community string and the SNMP protocol version.
      */
     private SnmpParameters m_params;
 
@@ -118,7 +118,7 @@ public class SnmpPeer extends Object implements Cloneable {
      * @param peer
      *            The remote agent address
      * @param port
-     *            The snmp port on the remote
+     *            The SNMP port on the remote
      * 
      */
     public SnmpPeer(InetAddress peer, int port) {

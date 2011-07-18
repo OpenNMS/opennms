@@ -162,7 +162,7 @@ public class Linkd extends AbstractServiceDaemon {
 			    LogUtils.debugf(this, "ScheduleCollectionForNode: package active: %s", snmpcoll.getPackageName());
 			} else {
 				// schedule discovery link
-			    LogUtils.debugf(this, "ScheduleCollectionForNode: Schedulink Discovery Link for Active Package: %s", snmpcoll.getPackageName());
+			    LogUtils.debugf(this, "ScheduleCollectionForNode: Scheduling Discovery Link for Active Package: %s", snmpcoll.getPackageName());
 				DiscoveryLink discovery = this.getDiscoveryLink(snmpcoll.getPackageName());
 	   			if (discovery.getScheduler() == null) {
 	   				discovery.setScheduler(m_scheduler);
@@ -174,7 +174,7 @@ public class Linkd extends AbstractServiceDaemon {
 			if (snmpcoll.getScheduler() == null) {
 					snmpcoll.setScheduler(m_scheduler);
 			}
-			LogUtils.debugf(this, "ScheduleCollectionForNode: Schedulink Snmp Collection for Package/Nodeid: %s/%d/%s", snmpcoll.getPackageName(), node.getNodeId(), snmpcoll.getInfo());
+			LogUtils.debugf(this, "ScheduleCollectionForNode: Scheduling SNMP Collection for Package/Nodeid: %s/%d/%s", snmpcoll.getPackageName(), node.getNodeId(), snmpcoll.getInfo());
 			snmpcoll.schedule();
 		}
 	}
@@ -231,7 +231,7 @@ public class Linkd extends AbstractServiceDaemon {
         try {
             coll = new SnmpCollection(this, SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipaddr)));
         } catch (final Throwable t) {
-            LogUtils.errorf(this, t, "getSnmpCollection: Failed to load snmpcollection parameter from snmp configuration file");
+            LogUtils.errorf(this, t, "getSnmpCollection: Failed to load snmpcollection parameter from SNMP configuration file");
         }
 
         return coll;
@@ -416,7 +416,7 @@ public class Linkd extends AbstractServiceDaemon {
 			// get readyRunnuble
 			// wakeup RR
 			Iterator<SnmpCollection> ite = getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
-			LogUtils.debugf(this, "wakeUpNodeCollection: get Snmp Collection from Scratch! Iterating on found.");
+			LogUtils.debugf(this, "wakeUpNodeCollection: get SNMP Collection from Scratch! Iterating on found.");
 			while (ite.hasNext()) {
 				ReadyRunnable rr = getReadyRunnable(ite.next());
 				if (rr == null) {
@@ -446,7 +446,7 @@ public class Linkd extends AbstractServiceDaemon {
 		    LogUtils.warnf(this, "deleteNode: node not found: %d", nodeid);
 		} else {
 			Iterator<SnmpCollection> ite = getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
-			LogUtils.debugf(this, "deleteNode: get Snmp Collection from Scratch! Iterating on found.");
+			LogUtils.debugf(this, "deleteNode: get SNMP Collection from Scratch! Iterating on found.");
 
 			while (ite.hasNext()) {
 				ReadyRunnable rr = getReadyRunnable(ite.next());
@@ -509,7 +509,7 @@ public class Linkd extends AbstractServiceDaemon {
 			// get collections
 			// get readyRunnuble
 			// suspend RR
-		    LogUtils.debugf(this, "suspendNodeCollection: get Snmp Collection from Scratch! Iterating on found.");
+		    LogUtils.debugf(this, "suspendNodeCollection: get SNMP Collection from Scratch! Iterating on found.");
 			Iterator<SnmpCollection> ite = getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
 			while (ite.hasNext()) {
 				ReadyRunnable rr = getReadyRunnable(ite.next());
@@ -544,7 +544,7 @@ public class Linkd extends AbstractServiceDaemon {
 
 		LinkableNode node = removeNode(InetAddressUtils.str(snmpcoll.getTarget()));
 		if (node == null) {
-		    LogUtils.errorf(this, "No node found for snmp collection: %s unscheduling!", snmpcoll.getInfo());
+		    LogUtils.errorf(this, "No node found for SNMP collection: %s unscheduling!", snmpcoll.getInfo());
 			m_scheduler.unschedule(snmpcoll);
 			return;
 		}

@@ -54,12 +54,12 @@ import org.opennms.core.utils.ParameterMap;
  * referenced to "SNMP Reference Guide", available from
  * http://support.dell.com/support/edocs/software/svradmin/6.1/en
  * </p>
+ * <p>
+ * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
+ * </p>
  *
  * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
  */
-
-// this does snmp and there relies on the snmp configuration so it is not
-// distributable
 @Distributable(DistributionContext.DAEMON)
 final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
     /**
@@ -296,7 +296,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
         } catch (NumberFormatException e) {
             status = logDown(Level.WARN, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.WARN, "Invalid Snmp Criteria: " + e.getMessage());
+            status = logDown(Level.WARN, "Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }

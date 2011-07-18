@@ -11,11 +11,10 @@ package org.opennms.netmgt.config.dhcpd;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Top-level element for the dhcpd-configuration.xml

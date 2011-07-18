@@ -112,7 +112,7 @@ public class LinkableNode extends Object {
 	 */
 	public String toString() {
 		StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n");
-		str.append("Snmp Primary Ip Address = " + m_snmpprimaryaddr + "\n");
+		str.append("SNMP Primary Ip Address = " + m_snmpprimaryaddr + "\n");
 		return str.toString();
 	}
 

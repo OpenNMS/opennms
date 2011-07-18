@@ -62,7 +62,7 @@ public class Event implements java.io.Serializable {
     private String m_eventLabel;
 
     /**
-     * The snmp information from the trap
+     * The SNMP information from the trap
      */
 	@XmlElement(name="snmp", required=false)
     private Snmp m_snmp;
@@ -981,7 +981,7 @@ public class Event implements java.io.Serializable {
 
     /**
      * Returns the value of field 'snmp'. The field 'snmp' has the
-     * following description: The snmp information from the trap
+     * following description: The SNMP information from the trap
      * 
      * @return the value of field 'Snmp'.
      */
@@ -1817,7 +1817,7 @@ public class Event implements java.io.Serializable {
 
     /**
      * Sets the value of field 'snmp'. The field 'snmp' has the
-     * following description: The snmp information from the trap
+     * following description: The SNMP information from the trap
      * 
      * @param snmp the value of field 'snmp'.
      */

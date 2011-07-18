@@ -215,7 +215,7 @@ public class ServiceParameters {
     public int getSnmpMaxRepetitions(int current) {
         int maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "max-repetitions", -1);
         if (maxRepetitions == -1) {
-            // incase someone is using an ancient config file
+            // in case someone is using an ancient config file
             maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "maxRepetitions", current);
         }
         return maxRepetitions;

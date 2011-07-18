@@ -41,7 +41,7 @@
 		org.opennms.netmgt.config.CapsdConfigFactory,
 		org.opennms.core.resource.Vault,
 		org.opennms.core.utils.BundleLists,
-		org.opennms.netmgt.ConfigFileConstants,
+		org.opennms.core.utils.ConfigFileConstants,
 		java.io.FileInputStream
 	"
 %>

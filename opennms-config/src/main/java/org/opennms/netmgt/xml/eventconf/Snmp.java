@@ -21,7 +21,7 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
 /**
- * The snmp information from the trap
+ * The SNMP information from the trap
  * 
  * @version $Revision$ $Date$
  */
@@ -36,19 +36,19 @@ public class Snmp implements java.io.Serializable {
     //--------------------------/
 
     /**
-     * The snmp enterprise id
+     * The SNMP enterprise ID
      */
 	@XmlElement(name="id", required=true)
     private String m_id;
 
     /**
-     * The snmp enterprise id text
+     * The SNMP enterprise ID text
      */
 	@XmlElement(name="idtext", required=false)
     private String m_idtext;
 
     /**
-     * The snmp version
+     * The SNMP version
      */
 	@XmlElement(name="version", required=true)
     private String m_version;
@@ -176,7 +176,7 @@ public class Snmp implements java.io.Serializable {
 
     /**
      * Returns the value of field 'id'. The field 'id' has the
-     * following description: The snmp enterprise id
+     * following description: The SNMP enterprise ID
      * 
      * @return the value of field 'Id'.
      */
@@ -187,7 +187,7 @@ public class Snmp implements java.io.Serializable {
 
     /**
      * Returns the value of field 'idtext'. The field 'idtext' has
-     * the following description: The snmp enterprise id text
+     * the following description: The SNMP enterprise ID text
      * 
      * @return the value of field 'Idtext'.
      */
@@ -209,7 +209,7 @@ public class Snmp implements java.io.Serializable {
 
     /**
      * Returns the value of field 'version'. The field 'version'
-     * has the following description: The snmp version
+     * has the following description: The SNMP version
      * 
      * @return the value of field 'Version'.
      */
@@ -323,7 +323,7 @@ public class Snmp implements java.io.Serializable {
 
     /**
      * Sets the value of field 'id'. The field 'id' has the
-     * following description: The snmp enterprise id
+     * following description: The SNMP enterprise id
      * 
      * @param id the value of field 'id'.
      */
@@ -334,7 +334,7 @@ public class Snmp implements java.io.Serializable {
 
     /**
      * Sets the value of field 'idtext'. The field 'idtext' has the
-     * following description: The snmp enterprise id text
+     * following description: The SNMP enterprise id text
      * 
      * @param idtext the value of field 'idtext'.
      */
@@ -356,7 +356,7 @@ public class Snmp implements java.io.Serializable {
 
     /**
      * Sets the value of field 'version'. The field 'version' has
-     * the following description: The snmp version
+     * the following description: The SNMP version
      * 
      * @param version the value of field 'version'.
      */

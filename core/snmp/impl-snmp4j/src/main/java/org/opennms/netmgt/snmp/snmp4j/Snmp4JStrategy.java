@@ -339,7 +339,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
             retvalues = convertResponseToValues(responseEvent);
 
             if (log().isDebugEnabled()) {
-                log().debug("processResponse: Snmp operation successful. Value: "+Arrays.toString(retvalues));
+                log().debug("processResponse: SNMP operation successful, value: "+Arrays.toString(retvalues));
             }
         }
 
