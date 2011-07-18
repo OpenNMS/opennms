@@ -76,7 +76,7 @@ import org.opennms.protocols.ami.AmiAgentConfig;
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public class AmiPeerFactory extends PeerFactory {
+public class AmiPeerFactory {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();

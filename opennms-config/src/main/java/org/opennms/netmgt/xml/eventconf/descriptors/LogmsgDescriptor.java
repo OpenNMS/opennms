@@ -86,7 +86,6 @@ public class LogmsgDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -134,7 +133,6 @@ public class LogmsgDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -175,7 +173,6 @@ public class LogmsgDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }

@@ -11,6 +11,18 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -19,6 +31,8 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name="maskelement")
+@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("serial")
 public class Maskelement implements java.io.Serializable {
 
@@ -54,7 +68,8 @@ public class Maskelement implements java.io.Serializable {
      *  "generic" (generic value in an SNMP trap), or "community"
      *  (community string in an SNMP trap).
      */
-    private java.lang.String _mename;
+	@XmlElement(name="mename", required=true)
+    private String m_mename;
 
     /**
      * The mask element value. A case-sensitive, exact
@@ -66,7 +81,8 @@ public class Maskelement implements java.io.Serializable {
      *  by
      *  org.opennms.netmgt.eventd.datablock.EventConfData#eventValuePassesMaskValue.
      */
-    private java.util.List<java.lang.String> _mevalueList;
+	@XmlElement(name="mevalue", required=true)
+    private List<String> m_mevalueList;
 
 
       //----------------/
@@ -75,7 +91,7 @@ public class Maskelement implements java.io.Serializable {
 
     public Maskelement() {
         super();
-        this._mevalueList = new java.util.ArrayList<java.lang.String>();
+        this.m_mevalueList = new ArrayList<String>();
     }
 
 
@@ -87,13 +103,13 @@ public class Maskelement implements java.io.Serializable {
      * 
      * 
      * @param vMevalue
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addMevalue(
-            final java.lang.String vMevalue)
-    throws java.lang.IndexOutOfBoundsException {
-        this._mevalueList.add(vMevalue);
+            final String vMevalue)
+    throws IndexOutOfBoundsException {
+        this.m_mevalueList.add(vMevalue);
     }
 
     /**
@@ -101,14 +117,14 @@ public class Maskelement implements java.io.Serializable {
      * 
      * @param index
      * @param vMevalue
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addMevalue(
             final int index,
-            final java.lang.String vMevalue)
-    throws java.lang.IndexOutOfBoundsException {
-        this._mevalueList.add(index, vMevalue);
+            final String vMevalue)
+    throws IndexOutOfBoundsException {
+        this.m_mevalueList.add(index, vMevalue);
     }
 
     /**
@@ -117,39 +133,39 @@ public class Maskelement implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<java.lang.String> enumerateMevalue(
+    public Enumeration<String> enumerateMevalue(
     ) {
-        return java.util.Collections.enumeration(this._mevalueList);
+        return Collections.enumeration(this.m_mevalueList);
     }
 
     /**
-     * Overrides the java.lang.Object.equals method.
+     * Overrides the Object.equals method.
      * 
      * @param obj
      * @return true if the objects are equal.
      */
     @Override()
     public boolean equals(
-            final java.lang.Object obj) {
+            final Object obj) {
         if ( this == obj )
             return true;
         
         if (obj instanceof Maskelement) {
         
             Maskelement temp = (Maskelement)obj;
-            if (this._mename != null) {
-                if (temp._mename == null) return false;
-                else if (!(this._mename.equals(temp._mename))) 
+            if (this.m_mename != null) {
+                if (temp.m_mename == null) return false;
+                else if (!(this.m_mename.equals(temp.m_mename))) 
                     return false;
             }
-            else if (temp._mename != null)
+            else if (temp.m_mename != null)
                 return false;
-            if (this._mevalueList != null) {
-                if (temp._mevalueList == null) return false;
-                else if (!(this._mevalueList.equals(temp._mevalueList))) 
+            if (this.m_mevalueList != null) {
+                if (temp.m_mevalueList == null) return false;
+                else if (!(this.m_mevalueList.equals(temp.m_mevalueList))) 
                     return false;
             }
-            else if (temp._mevalueList != null)
+            else if (temp.m_mevalueList != null)
                 return false;
             return true;
         }
@@ -187,28 +203,28 @@ public class Maskelement implements java.io.Serializable {
      * 
      * @return the value of field 'Mename'.
      */
-    public java.lang.String getMename(
+    public String getMename(
     ) {
-        return this._mename;
+        return this.m_mename;
     }
 
     /**
      * Method getMevalue.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
-     * @return the value of the java.lang.String at the given index
+     * @return the value of the String at the given index
      */
-    public java.lang.String getMevalue(
+    public String getMevalue(
             final int index)
-    throws java.lang.IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._mevalueList.size()) {
-            throw new IndexOutOfBoundsException("getMevalue: Index value '" + index + "' not in range [0.." + (this._mevalueList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_mevalueList.size()) {
+            throw new IndexOutOfBoundsException("getMevalue: Index value '" + index + "' not in range [0.." + (this.m_mevalueList.size() - 1) + "]");
         }
         
-        return (java.lang.String) _mevalueList.get(index);
+        return (String) m_mevalueList.get(index);
     }
 
     /**
@@ -220,10 +236,10 @@ public class Maskelement implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public java.lang.String[] getMevalue(
+    public String[] getMevalue(
     ) {
-        java.lang.String[] array = new java.lang.String[0];
-        return (java.lang.String[]) this._mevalueList.toArray(array);
+        String[] array = new String[0];
+        return (String[]) this.m_mevalueList.toArray(array);
     }
 
     /**
@@ -233,9 +249,9 @@ public class Maskelement implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<java.lang.String> getMevalueCollection(
+    public List<String> getMevalueCollection(
     ) {
-        return this._mevalueList;
+        return this.m_mevalueList;
     }
 
     /**
@@ -245,11 +261,11 @@ public class Maskelement implements java.io.Serializable {
      */
     public int getMevalueCount(
     ) {
-        return this._mevalueList.size();
+        return this.m_mevalueList.size();
     }
 
     /**
-     * Overrides the java.lang.Object.hashCode method.
+     * Overrides the Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming
      * Language Guide</b> by Joshua Bloch, Chapter 3
@@ -258,17 +274,7 @@ public class Maskelement implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_mename != null) {
-           result = 37 * result + _mename.hashCode();
-        }
-        if (_mevalueList != null) {
-           result = 37 * result + _mevalueList.hashCode();
-        }
-        
-        return result;
+        return new HashCodeBuilder(17,37).append(getMename()).append(getMevalue()).toHashCode();
     }
 
     /**
@@ -292,9 +298,9 @@ public class Maskelement implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<java.lang.String> iterateMevalue(
+    public Iterator<String> iterateMevalue(
     ) {
-        return this._mevalueList.iterator();
+        return this.m_mevalueList.iterator();
     }
 
     /**
@@ -333,7 +339,7 @@ public class Maskelement implements java.io.Serializable {
      */
     public void removeAllMevalue(
     ) {
-        this._mevalueList.clear();
+        this.m_mevalueList.clear();
     }
 
     /**
@@ -343,8 +349,8 @@ public class Maskelement implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeMevalue(
-            final java.lang.String vMevalue) {
-        boolean removed = _mevalueList.remove(vMevalue);
+            final String vMevalue) {
+        boolean removed = m_mevalueList.remove(vMevalue);
         return removed;
     }
 
@@ -354,10 +360,10 @@ public class Maskelement implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public java.lang.String removeMevalueAt(
+    public String removeMevalueAt(
             final int index) {
-        java.lang.Object obj = this._mevalueList.remove(index);
-        return (java.lang.String) obj;
+        Object obj = this.m_mevalueList.remove(index);
+        return (String) obj;
     }
 
     /**
@@ -392,8 +398,8 @@ public class Maskelement implements java.io.Serializable {
      * @param mename the value of field 'mename'.
      */
     public void setMename(
-            final java.lang.String mename) {
-        this._mename = mename;
+            final String mename) {
+        this.m_mename = mename;
     }
 
     /**
@@ -401,19 +407,19 @@ public class Maskelement implements java.io.Serializable {
      * 
      * @param index
      * @param vMevalue
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void setMevalue(
             final int index,
-            final java.lang.String vMevalue)
-    throws java.lang.IndexOutOfBoundsException {
+            final String vMevalue)
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._mevalueList.size()) {
-            throw new IndexOutOfBoundsException("setMevalue: Index value '" + index + "' not in range [0.." + (this._mevalueList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_mevalueList.size()) {
+            throw new IndexOutOfBoundsException("setMevalue: Index value '" + index + "' not in range [0.." + (this.m_mevalueList.size() - 1) + "]");
         }
         
-        this._mevalueList.set(index, vMevalue);
+        this.m_mevalueList.set(index, vMevalue);
     }
 
     /**
@@ -422,12 +428,12 @@ public class Maskelement implements java.io.Serializable {
      * @param vMevalueArray
      */
     public void setMevalue(
-            final java.lang.String[] vMevalueArray) {
+            final String[] vMevalueArray) {
         //-- copy array
-        _mevalueList.clear();
+        m_mevalueList.clear();
         
         for (int i = 0; i < vMevalueArray.length; i++) {
-                this._mevalueList.add(vMevalueArray[i]);
+                this.m_mevalueList.add(vMevalueArray[i]);
         }
     }
 
@@ -438,11 +444,11 @@ public class Maskelement implements java.io.Serializable {
      * @param vMevalueList the Vector to copy.
      */
     public void setMevalue(
-            final java.util.List<java.lang.String> vMevalueList) {
+            final List<String> vMevalueList) {
         // copy vector
-        this._mevalueList.clear();
+        this.m_mevalueList.clear();
         
-        this._mevalueList.addAll(vMevalueList);
+        this.m_mevalueList.addAll(vMevalueList);
     }
 
     /**
@@ -453,8 +459,8 @@ public class Maskelement implements java.io.Serializable {
      * @param mevalueList the Vector to set.
      */
     public void setMevalueCollection(
-            final java.util.List<java.lang.String> mevalueList) {
-        this._mevalueList = mevalueList;
+            final List<String> mevalueList) {
+        this.m_mevalueList = mevalueList;
     }
 
     /**

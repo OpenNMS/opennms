@@ -76,7 +76,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
  */
-public class WmiPeerFactory extends PeerFactory {
+public class WmiPeerFactory {
     /**
      * The singleton instance of this factory
      */
@@ -117,19 +117,6 @@ public class WmiPeerFactory extends PeerFactory {
      */
     public WmiPeerFactory(InputStream stream) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(WmiConfig.class, stream);
-    }
-
-    /**
-     * <p>Constructor for WmiPeerFactory.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public WmiPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(WmiConfig.class, rdr);
     }
 
     /**

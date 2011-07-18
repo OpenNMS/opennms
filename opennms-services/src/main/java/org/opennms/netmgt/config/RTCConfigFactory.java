@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
@@ -175,26 +174,8 @@ public final class RTCConfigFactory {
         marshal(stream);
     }
 
-    /**
-     * <p>Constructor for RTCConfigFactory.</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public RTCConfigFactory(Reader reader) throws IOException, MarshalException, ValidationException {
-        marshal(reader);
-    }
-
     private void marshal(InputStream stream) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(RTCConfiguration.class, stream);
-    }
-    
-    @Deprecated
-    private void marshal(Reader reader) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(RTCConfiguration.class, reader);
     }
     
     /**

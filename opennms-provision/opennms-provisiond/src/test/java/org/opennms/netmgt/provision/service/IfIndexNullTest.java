@@ -39,16 +39,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
-import org.opennms.mock.snmp.JUnitSnmpAgent;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,21 +93,30 @@ public class IfIndexNullTest {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
+        final MockForeignSourceRepository mfsr = new MockForeignSourceRepository();
+        final ForeignSource fs = new ForeignSource();
+        fs.setName("default");
+        fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+        mfsr.putDefaultForeignSource(fs);
+        m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
     }
 
     @Test
-    @JUnitSnmpAgent(resource="classpath:snmpTestData-null.properties")
+    @JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host="172.20.1.201", port=161, resource="classpath:snmpTestData-null.properties"),
+        @JUnitSnmpAgent(host="172.20.1.204", port=161, resource="classpath:snmpTestData-null.properties")
+    })
     public void testNullIfIndex() throws Exception {
         final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
-        
+
         m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/tec_dump.xml"));
         
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
+        final List<OnmsNode> nodes = getNodeDao().findAll();
+        final OnmsNode node = nodes.get(0);
         
         eventRecieved.await();
         
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
         
         //Verify ipinterface count
@@ -111,8 +124,8 @@ public class IfIndexNullTest {
         
     }
     
-    public void runScan(NodeScan scan) throws InterruptedException, ExecutionException {
-        Task t = scan.createTask();
+    public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
+    	final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
     }

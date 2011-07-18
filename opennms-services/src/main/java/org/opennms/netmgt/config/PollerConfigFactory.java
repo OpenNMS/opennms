@@ -78,29 +78,6 @@ public final class PollerConfigFactory extends PollerConfigManager {
     private long m_currentVersion = -1L;
 
     /**
-     * Private constructor
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @param currentVersion a long.
-     * @param reader a {@link java.io.Reader} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    public PollerConfigFactory(final long currentVersion, final Reader reader, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException, IOException {
-        super(reader, localServer, verifyServer);
-        m_currentVersion = currentVersion;
-    }
-
-    /**
      * <p>Constructor for PollerConfigFactory.</p>
      *
      * @param currentVersion a long.

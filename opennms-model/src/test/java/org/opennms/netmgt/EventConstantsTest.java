@@ -30,18 +30,109 @@ package org.opennms.netmgt;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.test.mock.MockLogAppender;
 
+@RunWith(Parameterized.class)
 public class EventConstantsTest {
+
+    // Test Parameters
+    private Locale m_testLocale;
+    private TimeZone m_testTimeZone;
+    private String m_gmtText;
+    private String m_zoneText;
+    private Long m_timestamp;
+
+    @Parameters
+    public static Collection<Object[]> data() {
+            return Arrays.asList(new Object[][] {
+                            {
+                                new Locale("en", "US"),
+                                TimeZone.getTimeZone("CET"),
+                                "Thursday, March 10, 2011 10:40:37 PM GMT",
+                                "Thursday, March 10, 2011 11:40:37 PM CET",
+                                Long.valueOf(1299796837 * 1000L)
+                            },
+                            {
+                                new Locale("it", "IT"),
+                                TimeZone.getTimeZone("CET"),
+                                "gioved\u00EC 10 marzo 2011 22.40.37 GMT",
+                                "gioved\u00EC 10 marzo 2011 23.40.37 CET",
+                                Long.valueOf(1299796837 * 1000L)
+                            },
+                            {
+                                new Locale("fr", "FR"),
+                                TimeZone.getTimeZone("CET"),
+                                "jeudi 10 mars 2011 22:40:37 GMT",
+                                "jeudi 10 mars 2011 23:40:37 CET",
+                                Long.valueOf(1299796837 * 1000L)
+                            },
+                            {
+                                new Locale("de", "DE"),
+                                TimeZone.getTimeZone("CET"),
+                                "Donnerstag, 10. M\u00E4rz 2011 22:40:37 GMT",
+                                "Donnerstag, 10. M\u00E4rz 2011 23:40:37 MEZ",
+                                Long.valueOf(1299796837 * 1000L)
+                            }
+            });
+    }
+
+    public EventConstantsTest(final Locale locale, final TimeZone timeZone, final String gmtText, final String zoneText, final Long timestamp) {
+        m_testLocale = locale;
+        m_testTimeZone = timeZone;
+        m_gmtText = gmtText;
+        m_zoneText = zoneText;
+        m_timestamp = timestamp;
+    }
+
+    // Initialized Inside the Tests
+    private Locale m_defaultLocale;
+    private TimeZone m_defaultTimeZone;
+
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+
+        m_defaultLocale = Locale.getDefault();
+        m_defaultTimeZone = TimeZone.getDefault();
+        Locale.setDefault(m_testLocale);
+        TimeZone.setDefault(m_testTimeZone);
+        
+        // since formatters are thread-local, we need to reset them so they will re-initialize based on the current locale
+        EventConstants.FORMATTER_FULL.remove();
+        EventConstants.FORMATTER_LONG.remove();
+        EventConstants.FORMATTER_FULL_GMT.remove();
+        EventConstants.FORMATTER_LONG_GMT.remove();
+        EventConstants.FORMATTER_CUSTOM.remove();
+        EventConstants.FORMATTER_DEFAULT.remove();
+    }
+
+    @After
+    public void tearDown() {
+        Locale.setDefault(m_defaultLocale);
+        TimeZone.setDefault(m_defaultTimeZone);
+    }
 
     @Test
     public void testEventDateParse() throws Exception {
-        final String sampleTimeText = "Thursday, 10 March 2011 22:40:37 o'clock GMT";
-        final long sampleTimeEpoch = 1299796837 * 1000L;
-        final Date date = EventConstants.parseToDate(sampleTimeText);
-        assertEquals(sampleTimeEpoch, date.getTime());
+        final Date date = EventConstants.parseToDate(m_zoneText);
+        assertEquals(m_testLocale + ": time should equal " + m_timestamp, m_timestamp.longValue(), date.getTime());
     }
 
+    @Test
+    public void testFormatToString() throws Exception {
+        final String formatted = EventConstants.formatToString(new Date(m_timestamp));
+        assertEquals(m_testLocale + ": formatted string should equal " + m_gmtText, m_gmtText, formatted);
+    }
 }

@@ -11,6 +11,13 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -22,6 +29,8 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name="forward")
+@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("serial")
 public class Forward implements java.io.Serializable {
 
@@ -33,17 +42,20 @@ public class Forward implements java.io.Serializable {
     /**
      * internal content storage
      */
-    private java.lang.String _content = "";
+	@XmlValue
+    private String m_content = "";
 
     /**
      * Field _state.
      */
-    private java.lang.String _state = "off";
+	@XmlAttribute(name="state", required=false)
+    private String m_state;
 
     /**
      * Field _mechanism.
      */
-    private java.lang.String _mechanism = "snmpudp";
+	@XmlAttribute(name="mechanism", required=false)
+    private String m_mechanism;
 
 
       //----------------/
@@ -52,9 +64,6 @@ public class Forward implements java.io.Serializable {
 
     public Forward() {
         super();
-        setContent("");
-        setState("off");
-        setMechanism("snmpudp");
     }
 
 
@@ -77,26 +86,26 @@ public class Forward implements java.io.Serializable {
         if (obj instanceof Forward) {
         
             Forward temp = (Forward)obj;
-            if (this._content != null) {
-                if (temp._content == null) return false;
-                else if (!(this._content.equals(temp._content))) 
+            if (this.m_content != null) {
+                if (temp.m_content == null) return false;
+                else if (!(this.m_content.equals(temp.m_content))) 
                     return false;
             }
-            else if (temp._content != null)
+            else if (temp.m_content != null)
                 return false;
-            if (this._state != null) {
-                if (temp._state == null) return false;
-                else if (!(this._state.equals(temp._state))) 
+            if (this.m_state != null) {
+                if (temp.m_state == null) return false;
+                else if (!(this.m_state.equals(temp.m_state))) 
                     return false;
             }
-            else if (temp._state != null)
+            else if (temp.m_state != null)
                 return false;
-            if (this._mechanism != null) {
-                if (temp._mechanism == null) return false;
-                else if (!(this._mechanism.equals(temp._mechanism))) 
+            if (this.m_mechanism != null) {
+                if (temp.m_mechanism == null) return false;
+                else if (!(this.m_mechanism.equals(temp.m_mechanism))) 
                     return false;
             }
-            else if (temp._mechanism != null)
+            else if (temp.m_mechanism != null)
                 return false;
             return true;
         }
@@ -109,9 +118,9 @@ public class Forward implements java.io.Serializable {
      * 
      * @return the value of field 'Content'.
      */
-    public java.lang.String getContent(
+    public String getContent(
     ) {
-        return this._content;
+        return this.m_content;
     }
 
     /**
@@ -119,9 +128,9 @@ public class Forward implements java.io.Serializable {
      * 
      * @return the value of field 'Mechanism'.
      */
-    public java.lang.String getMechanism(
+    public String getMechanism(
     ) {
-        return this._mechanism;
+        return this.m_mechanism;
     }
 
     /**
@@ -129,9 +138,9 @@ public class Forward implements java.io.Serializable {
      * 
      * @return the value of field 'State'.
      */
-    public java.lang.String getState(
+    public String getState(
     ) {
-        return this._state;
+        return this.m_state;
     }
 
     /**
@@ -144,20 +153,7 @@ public class Forward implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_content != null) {
-           result = 37 * result + _content.hashCode();
-        }
-        if (_state != null) {
-           result = 37 * result + _state.hashCode();
-        }
-        if (_mechanism != null) {
-           result = 37 * result + _mechanism.hashCode();
-        }
-        
-        return result;
+        return new HashCodeBuilder(17,37).append(getContent()).append(getMechanism()).append(getState()).toHashCode();
     }
 
     /**
@@ -214,8 +210,8 @@ public class Forward implements java.io.Serializable {
      * @param content the value of field 'content'.
      */
     public void setContent(
-            final java.lang.String content) {
-        this._content = content;
+            final String content) {
+        this.m_content = content;
     }
 
     /**
@@ -224,8 +220,8 @@ public class Forward implements java.io.Serializable {
      * @param mechanism the value of field 'mechanism'.
      */
     public void setMechanism(
-            final java.lang.String mechanism) {
-        this._mechanism = mechanism;
+            final String mechanism) {
+        this.m_mechanism = mechanism;
     }
 
     /**
@@ -234,8 +230,8 @@ public class Forward implements java.io.Serializable {
      * @param state the value of field 'state'.
      */
     public void setState(
-            final java.lang.String state) {
-        this._state = state;
+            final String state) {
+        this.m_state = state;
     }
 
     /**

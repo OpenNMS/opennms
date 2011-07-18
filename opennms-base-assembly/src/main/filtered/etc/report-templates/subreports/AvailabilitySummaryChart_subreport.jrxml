@@ -14,6 +14,9 @@
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
+	<parameter name="TIME_SERIES_START_TIME_STRING" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM F HH:mm:ss Z yyyy").format($P{TIME_SERIES_START_TIMESTAMP})]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[select
   dow,
@@ -24,7 +27,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
   EXTRACT( epoch from sum(case when iflostservice-ifregainedservice is null then interval'0' else least(de,ifregainedservice)-greatest(ds,iflostservice) end) ) as outagetime_seconds
 
 from (
-      select * from generate_daily_series($P{TIME_SERIES_START_TIMESTAMP}, $P{TIME_SERIES_LENGTH})
+      select * from generate_daily_series($P{TIME_SERIES_START_TIME_STRING}::TIMESTAMP, $P{TIME_SERIES_LENGTH})
       )
       as days
 
@@ -90,7 +93,7 @@ order by
 	dow]]>
 	</queryString>
 	<field name="dow" class="java.lang.Integer"/>
-	<field name="daystart" class="java.util.Date"/>
+	<field name="daystart" class="java.sql.Timestamp"/>
 	<field name="avail_time_interval" class="org.postgresql.util.PGInterval"/>
 	<field name="avail_time_second" class="java.lang.Double"/>
 	<field name="outagetime" class="org.postgresql.util.PGInterval"/>

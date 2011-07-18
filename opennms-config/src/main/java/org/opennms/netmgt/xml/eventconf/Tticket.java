@@ -11,6 +11,15 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.Reader;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -20,6 +29,8 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name="tticket")
+@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("serial")
 public class Tticket implements java.io.Serializable {
 
@@ -31,12 +42,14 @@ public class Tticket implements java.io.Serializable {
     /**
      * internal content storage
      */
-    private java.lang.String _content = "";
+	@XmlValue
+    private String m_content;
 
     /**
      * Field _state.
      */
-    private java.lang.String _state = "on";
+	@XmlAttribute(name="state", required=false)
+    private String m_state;
 
 
       //----------------/
@@ -45,8 +58,6 @@ public class Tticket implements java.io.Serializable {
 
     public Tticket() {
         super();
-        setContent("");
-        setState("on");
     }
 
 
@@ -55,33 +66,33 @@ public class Tticket implements java.io.Serializable {
     //-----------/
 
     /**
-     * Overrides the java.lang.Object.equals method.
+     * Overrides the Object.equals method.
      * 
      * @param obj
      * @return true if the objects are equal.
      */
     @Override()
     public boolean equals(
-            final java.lang.Object obj) {
+            final Object obj) {
         if ( this == obj )
             return true;
         
         if (obj instanceof Tticket) {
         
             Tticket temp = (Tticket)obj;
-            if (this._content != null) {
-                if (temp._content == null) return false;
-                else if (!(this._content.equals(temp._content))) 
+            if (this.m_content != null) {
+                if (temp.m_content == null) return false;
+                else if (!(this.m_content.equals(temp.m_content))) 
                     return false;
             }
-            else if (temp._content != null)
+            else if (temp.m_content != null)
                 return false;
-            if (this._state != null) {
-                if (temp._state == null) return false;
-                else if (!(this._state.equals(temp._state))) 
+            if (this.m_state != null) {
+                if (temp.m_state == null) return false;
+                else if (!(this.m_state.equals(temp.m_state))) 
                     return false;
             }
-            else if (temp._state != null)
+            else if (temp.m_state != null)
                 return false;
             return true;
         }
@@ -94,9 +105,9 @@ public class Tticket implements java.io.Serializable {
      * 
      * @return the value of field 'Content'.
      */
-    public java.lang.String getContent(
+    public String getContent(
     ) {
-        return this._content;
+        return this.m_content;
     }
 
     /**
@@ -104,13 +115,13 @@ public class Tticket implements java.io.Serializable {
      * 
      * @return the value of field 'State'.
      */
-    public java.lang.String getState(
+    public String getState(
     ) {
-        return this._state;
+        return this.m_state;
     }
 
     /**
-     * Overrides the java.lang.Object.hashCode method.
+     * Overrides the Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming
      * Language Guide</b> by Joshua Bloch, Chapter 3
@@ -119,17 +130,7 @@ public class Tticket implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_content != null) {
-           result = 37 * result + _content.hashCode();
-        }
-        if (_state != null) {
-           result = 37 * result + _state.hashCode();
-        }
-        
-        return result;
+        return new HashCodeBuilder(17,37).append(getContent()).append(getState()).toHashCode();
     }
 
     /**
@@ -186,8 +187,8 @@ public class Tticket implements java.io.Serializable {
      * @param content the value of field 'content'.
      */
     public void setContent(
-            final java.lang.String content) {
-        this._content = content;
+            final String content) {
+        this.m_content = content;
     }
 
     /**
@@ -196,8 +197,8 @@ public class Tticket implements java.io.Serializable {
      * @param state the value of field 'state'.
      */
     public void setState(
-            final java.lang.String state) {
-        this._state = state;
+            final String state) {
+        this.m_state = state;
     }
 
     /**
@@ -212,7 +213,7 @@ public class Tticket implements java.io.Serializable {
      * org.opennms.netmgt.xml.eventconf.Tticket
      */
     public static org.opennms.netmgt.xml.eventconf.Tticket unmarshal(
-            final java.io.Reader reader)
+            final Reader reader)
     throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
         return (org.opennms.netmgt.xml.eventconf.Tticket) Unmarshaller.unmarshal(org.opennms.netmgt.xml.eventconf.Tticket.class, reader);
     }

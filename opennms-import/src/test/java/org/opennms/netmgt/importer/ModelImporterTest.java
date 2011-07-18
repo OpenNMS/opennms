@@ -31,15 +31,11 @@ package org.opennms.netmgt.importer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.mock.snmp.MockSnmpAgent;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
@@ -53,7 +49,6 @@ import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.importer.specification.ImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
 import org.opennms.netmgt.model.OnmsAssetRecord;
@@ -74,10 +69,25 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/modelImporterTest.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@JUnitSnmpAgents({
+    @JUnitSnmpAgent(host="172.20.1.201", resource="classpath:/snmpTestData1.properties"),
+    @JUnitSnmpAgent(host="192.168.2.1", resource="classpath:/snmpTestData1.properties"),
+    @JUnitSnmpAgent(host="10.99.99.99", resource="classpath:/snmpTestData1.properties"),
+    @JUnitSnmpAgent(host="10.128.2.1", resource="classpath:/snmpTestData1.properties"),
+    @JUnitSnmpAgent(host="10.128.7.1", resource="classpath:/snmpTestData1.properties"),
+    @JUnitSnmpAgent(host="10.131.177.1", resource="classpath:/snmpTestData1.properties"),
+    @JUnitSnmpAgent(host="10.131.180.1", resource="classpath:/snmpTestData1.properties"),
+    @JUnitSnmpAgent(host="10.131.182.1", resource="classpath:/snmpTestData1.properties"),
+    @JUnitSnmpAgent(host="10.131.185.1", resource="classpath:/snmpTestData1.properties"),
+    @JUnitSnmpAgent(host="10.132.80.1", resource="classpath:/snmpTestData1.properties"),
+    @JUnitSnmpAgent(host="10.132.78.1", resource="classpath:/snmpTestData1.properties"),
+    @JUnitSnmpAgent(host="10.136.160.1", resource="classpath:/snmpTestData1.properties")
+})
 public class ModelImporterTest implements InitializingBean {
     @Autowired
     private DatabasePopulator m_populator;
@@ -89,6 +99,8 @@ public class ModelImporterTest implements InitializingBean {
     private ModelImporter m_importer;
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
+    @Autowired
+    private SnmpPeerFactory m_snmpPeerFactory;
     
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_populator);
@@ -96,29 +108,12 @@ public class ModelImporterTest implements InitializingBean {
         assertNotNull(m_serviceTypeDao);
         assertNotNull(m_importer);
         assertNotNull(m_snmpInterfaceDao);
-    }
-
-    @Before
-    public void onSetUpInTransactionIfEnabled() throws Exception {
-        initSnmpPeerFactory();
-    }
-
-    private void initSnmpPeerFactory() throws IOException, MarshalException, ValidationException {
-        ByteArrayInputStream rdr = new ByteArrayInputStream(("<?xml version=\"1.0\"?>" +
-        		"<snmp-config port=\"9161\" retry=\"3\" timeout=\"800\" " +
-        			"read-community=\"public\" " +
-        			"version=\"v1\" " +
-        			"max-vars-per-pdu=\"10\" proxy-host=\"127.0.0.1\">" +
-        		"</snmp-config>").getBytes());
+        assertNotNull(m_snmpPeerFactory);
         
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
-        
+        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
     }
-
 
     class CountingVisitor implements ImportVisitor {
-        
-
         private int m_modelImportCount;
         private int m_modelImportCompleted;
         private int m_nodeCount;
@@ -298,29 +293,18 @@ public class ModelImporterTest implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testAddSnmpInterfaces() throws Exception {
-        
-        ClassPathResource agentConfig = new ClassPathResource("/snmpTestData1.properties");
-        
-        MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(agentConfig, "127.0.0.1/9161");
+        createAndFlushServiceTypes();
+        createAndFlushCategories();
 
-        try {
-            createAndFlushServiceTypes();
-            createAndFlushCategories();
+        ModelImporter mi = m_importer;
+        String specFile = "/tec_dump.xml";
+        mi.importModelFromResource(new ClassPathResource(specFile));
 
-            ModelImporter mi = m_importer;
-            String specFile = "/tec_dump.xml";
-            mi.importModelFromResource(new ClassPathResource(specFile));
+        assertEquals(1, mi.getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
 
-            assertEquals(1, mi.getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
+        assertEquals(2, mi.getIpInterfaceDao().countAll());
 
-            assertEquals(2, mi.getIpInterfaceDao().countAll());
-
-            assertEquals(6, m_snmpInterfaceDao.countAll());
-
-        } finally {
-            agent.shutDownAndWait();
-        }
-
+        assertEquals(6, m_snmpInterfaceDao.countAll());
     }
 
 

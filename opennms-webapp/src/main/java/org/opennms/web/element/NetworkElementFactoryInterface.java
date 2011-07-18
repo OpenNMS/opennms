@@ -171,18 +171,6 @@ public interface NetworkElementFactoryInterface {
 			String ifAlias);
 
 	/**
-	 * Returns true if node has any snmpIfAliases
-	 *
-	 * @Param nodeId
-	 *               The nodeId of the node we are looking at
-	 *               the ifAlias string we are looking for
-	 * @return boolean
-	 *               true if node has any snmpIfAliases
-	 * @param nodeId a int.
-	 */
-	boolean nodeHasIfAliases(int nodeId);
-
-	/**
 	 * <p>getAllInterfacesOnNode</p>
 	 *
 	 * @param nodeId a int.
@@ -408,46 +396,38 @@ public interface NetworkElementFactoryInterface {
 	 * <p>getDataLinksOnNode</p>
 	 *
 	 * @param nodeID a int.
-	 * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+	 * @return an list of {@link org.opennms.web.element.LinkInterface} objects.
 	 * @throws java.sql.SQLException if any.
 	 */
-	DataLinkInterface[] getDataLinksOnNode(int nodeID);
+	List<LinkInterface> getDataLinksOnNode(int nodeID);
 
 	/**
 	 * <p>getDataLinksOnInterface</p>
 	 *
 	 * @param nodeID a int.
 	 * @param ifindex a int.
-	 * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+	 * @return an array of {@link org.opennms.web.element.LinkInterface} objects.
 	 */
-	DataLinkInterface[] getDataLinksOnInterface(int nodeID,
+	List<LinkInterface> getDataLinksOnInterface(int nodeID,
 			int ifindex);
 
 	/**
-	 * <p>getDataLinks</p>
+	 * <p>getDataLinksOnInterface</p>
 	 *
-	 * @param nodeID a int.
-	 * @param ifindex a int.
-	 * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+	 * @param ID a int identifier for interface.
+	 * @return an array of {@link org.opennms.web.element.LinkInterface} objects.
 	 */
-	DataLinkInterface[] getDataLinks(int nodeId, int ifIndex);
+	List<LinkInterface> getDataLinksOnInterface(int id);
 
 	/**
-	 * <p>getDataLinksFromNodeParent</p>
+	 * <p>getDataLinksOnInterface</p>
 	 *
 	 * @param nodeID a int.
-	 * @param ifindex a int.
-	 * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+	 * @param ipaddr a String.
+	 * @return an array of {@link org.opennms.web.element.LinkInterface} objects.
 	 */
-	DataLinkInterface[] getDataLinksFromNodeParent(int nodeId,
-			int ifIndex);
-
-	/**
-	 * <p>getAllDataLinks</p>
-	 *
-	 * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
-	 */
-	DataLinkInterface[] getAllDataLinks();
+	List<LinkInterface> getDataLinksOnInterface(int nodeID,
+			String ipaddr);
 
 	/**
 	 * Returns all non-deleted nodes with an IP address like the rule given.
@@ -525,4 +505,8 @@ public interface NetworkElementFactoryInterface {
     StpInterface[] getStpInterface(int nodeId, int ifIndex) throws SQLException;
 
     Vlan[] getVlansOnNode(int nodeID) throws SQLException;
+    
+    Integer getIfIndex(int ipinterfaceid);
+    
+    Integer getIfIndex(int nodeID, String ipaddr);
 }

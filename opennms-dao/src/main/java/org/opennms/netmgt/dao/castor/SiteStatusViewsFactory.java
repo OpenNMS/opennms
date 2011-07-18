@@ -33,7 +33,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,25 +91,6 @@ public class SiteStatusViewsFactory {
      */
     public SiteStatusViewsFactory(InputStream stream) throws MarshalException, ValidationException {
         initialize(stream);
-    }
-
-    /**
-     * <p>Constructor for SiteStatusViewsFactory.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public SiteStatusViewsFactory(Reader rdr) throws MarshalException, ValidationException {
-        initialize(rdr);
-    }
-
-    @Deprecated
-    private void initialize(Reader rdr) throws MarshalException, ValidationException {
-        log().debug("initialize: initializing site status views factory.");
-        m_config = CastorUtils.unmarshal(SiteStatusViewConfiguration.class, rdr);
-        initializeViewsMap();
     }
 
     private void initialize(InputStream stream) throws MarshalException, ValidationException {

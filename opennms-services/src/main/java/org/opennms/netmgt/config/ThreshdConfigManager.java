@@ -31,9 +31,12 @@
  */
 package org.opennms.netmgt.config;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.isInetAddressInRange;
+import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.Enumeration;
@@ -45,8 +48,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
-import static org.opennms.core.utils.InetAddressUtils.*;
 import org.opennms.core.utils.IpListFromUrl;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.threshd.ExcludeRange;
@@ -88,29 +91,6 @@ public abstract class ThreshdConfigManager {
      */
     protected String m_localServer;
     
-    /**
-     * <p>Constructor for ThreshdConfigManager.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public ThreshdConfigManager(Reader rdr, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(ThreshdConfiguration.class, rdr);
-
-        createUrlIpMap();
-
-        m_verifyServer = verifyServer;
-        m_localServer = localServer;
-
-        createPackageIpListMap();
-
-
-    }
-
     /**
      * <p>Constructor for ThreshdConfigManager.</p>
      *
@@ -188,9 +168,7 @@ public abstract class ThreshdConfigManager {
                     m_pkgIpMap.put(pkg, ipList);
                 }
             } catch (Throwable t) {
-                if (log.isEnabledFor(ThreadCategory.Level.ERROR)) {
-                    log.error("createPackageIpMap: failed to map package: " + pkg.getName() + " to an IP List", t);
-                }
+                LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
             }
         }
     }

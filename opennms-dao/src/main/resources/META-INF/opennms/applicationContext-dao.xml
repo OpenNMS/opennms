@@ -33,6 +33,7 @@
     <property name="dataSource" ref="dataSource" />
     <property name="annotatedClasses">
       <list>
+        <value>org.opennms.netmgt.dao.hibernate.AccessLock</value>
         <value>org.opennms.netmgt.model.OnmsDistPoller</value>
         <value>org.opennms.netmgt.model.OnmsAssetRecord</value>
         <value>org.opennms.netmgt.model.PathElement</value>
@@ -88,6 +89,7 @@
 
   <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
     <property name="sessionFactory" ref="sessionFactory" />
+    <property name="nestedTransactionAllowed" value="true"/>
   </bean>
 
   <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">

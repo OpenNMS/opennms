@@ -38,12 +38,13 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.mock.snmp.JUnitSnmpAgent;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
@@ -71,6 +72,12 @@ import org.springframework.util.Assert;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@JUnitSnmpAgents(value={
+		@JUnitSnmpAgent(resource = "classpath:snmpAssetTestData.properties"),
+		@JUnitSnmpAgent(host="192.168.1.1", resource = "classpath:snmpAssetTestData.properties"),
+		@JUnitSnmpAgent(host="172.20.1.201", resource = "classpath:snmpAssetTestData.properties"),
+		@JUnitSnmpAgent(host="172.20.1.204", resource = "classpath:snmpAssetTestData.properties")
+})
 public class SnmpAssetProvisioningAdapterIntegrationTest {
 
 	@Autowired
@@ -116,7 +123,6 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 
 	@Test
 	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testAddNode() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
@@ -141,7 +147,6 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 
 	@Test
 	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	@Transactional
 	public void testAddNodeDirectly() throws InterruptedException {
 		OnmsNode node = m_nodeDao.get(NODE_ID);
@@ -158,7 +163,6 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 
 	@Test
 	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testAddSameOperationTwice() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(2);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
@@ -185,7 +189,6 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 
 	@Test
 	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testUpdateNode() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(2);
 		m_adapter.getOperationQueue().addListener(verifyOperations);

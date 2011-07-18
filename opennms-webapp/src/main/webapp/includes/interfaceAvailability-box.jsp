@@ -41,6 +41,7 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.category.*,
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.*,
 		java.util.*
 	"
@@ -74,36 +75,31 @@
 %>
 
 <%
-    Interface intf = ElementUtil.getInterfaceByParams(request, getServletContext());
-    int nodeId = intf.getNodeId();
-    String ipAddr = intf.getIpAddress();
+    String requestNode = request.getParameter("node");
+    String ipAddr = request.getParameter("ipAddr");
+    String overallStatusString = request.getParameter("interfaceStatus");
+	String overallStatus = "Indeterminate";
+
+	int nodeId = -1;
+	
+	if ( requestNode != null ) {
+		nodeId = WebSecurityUtils.safeParseInt(requestNode);
+	}
 
     //get the child services (in alphabetical order)
-    Service[] services = this.getServices(intf);
-    if( services == null ) { 
-        services = new Service[0]; 
-    }
+    Service[] services = ElementUtil.getServicesOnInterface(nodeId, ipAddr,getServletContext());
 
     //get the interface's overall service level availiability for the last 24 hrs
     double overallRtcValue = this.model.getInterfaceAvailability(nodeId, ipAddr);
-%>
 
-<%
-String overallStatus;
-String overallStatusString;
-
-if (overallRtcValue < 0) {
-    overallStatus = "Indeterminate";
-    overallStatusString = ElementUtil.getInterfaceStatusString(intf);
-} else {
-    if (services.length < 1) {
-        overallStatus = "Indeterminate";
-        overallStatusString = "Not Monitored";
-    } else {
-        overallStatus = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue);
-        overallStatusString = CategoryUtil.formatValue(overallRtcValue) + "%";
-    }
-}
+	if (overallRtcValue > 0) {
+    	if (services.length < 1) {
+        	overallStatusString = "Not Monitored";
+    	} else {
+        	overallStatus = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue);
+        	overallStatusString = CategoryUtil.formatValue(overallRtcValue) + "%";
+    	}
+	}
 %>
 
 <h3>Availability</h3>
@@ -139,39 +135,3 @@ if (overallRtcValue < 0) {
     <td colspan="2" style="text-align: right;">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%>
   </tr>   
 </table>   
-
-<%!    
-    /** Convenient anonymous class for sorting Service objects by service name. */
-    protected Comparator serviceComparator = new Comparator() {
-        public int compare(Object o1, Object o2) {
-            //for brevity's sake assume they're both Services
-            Service s1 = (Service)o1;
-            Service s2 = (Service)o2;
-            
-            return s1.getServiceName().compareTo(s2.getServiceName());
-        }
-        
-        public boolean equals(Object o1, Object o2) {
-            //for brevity's sake assume they're both Services
-            Service s1 = (Service)o1;
-            Service s2 = (Service)o2;
-            
-            return s1.getServiceName().equals(s2.getServiceName());
-        }        
-    };
-
-    
-    public Service[] getServices(Interface intf) throws java.sql.SQLException {
-        if( intf == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
-        }
-        
-        Service[] svcs = NetworkElementFactory.getInstance(getServletContext()).getServicesOnInterface(intf.getNodeId(), intf.getIpAddress());
-        
-        if( svcs != null ) {
-            Arrays.sort(svcs, this.serviceComparator); 
-        }
-        
-        return svcs;
-    }
-%>

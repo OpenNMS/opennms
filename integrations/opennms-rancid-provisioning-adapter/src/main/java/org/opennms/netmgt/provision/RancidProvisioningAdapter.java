@@ -773,15 +773,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     @EventHandler(uei = EventConstants.RANCID_GROUP_PROCESSING_COMPLETED_UEI)
     public void handleRancidGroupProcessingCompleted(Event e) {
         log().debug("handleRancidGroupProcessingCompleted: get Event uei/id: " + e.getUei() + "/" + e.getDbid());
-        if (e.getParms() != null ) {
-            Iterator<Parm> ite = e.getParms().iterateParm();
-            while (ite.hasNext()) {
-                Parm parm = ite.next();
-                log().debug("handleRancidGroupProcessingCompleted: parm name: " + parm.getParmName());
-                if (parm.getParmName().equals(".1.3.6.1.4.1.31543.1.1.2.1.1.3")) {
-                    updateGroupConfiguration(parm.getValue().getContent());
-                    break;
-                }
+        for (Parm parm : e.getParmCollection()) {
+            log().debug("handleRancidGroupProcessingCompleted: parm name: " + parm.getParmName());
+            if (parm.getParmName().equals(".1.3.6.1.4.1.31543.1.1.2.1.1.3")) {
+                updateGroupConfiguration(parm.getValue().getContent());
+                break;
             }
         }
     }

@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
-		<version>${project.version}</version>
+      <version>${project.version}</version>
       <type>pom</type>
     </dependency>
     <dependency>
@@ -28,9 +28,8 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
-      <artifactId>org.opennms.core.snmp.integration-tests</artifactId>
-		<version>${project.version}</version>
-      <type>test-jar</type>
+      <artifactId>org.opennms.core.snmp.implementations.mock</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>

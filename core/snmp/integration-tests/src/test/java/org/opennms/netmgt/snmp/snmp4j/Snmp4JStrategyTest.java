@@ -30,9 +30,9 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.opennms.mock.snmp.MockSnmpValue.StringSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.StringSnmpValue;
 import org.opennms.test.mock.MockLogAppender;
 import org.snmp4j.PDU;
 import org.snmp4j.smi.SMIConstants;

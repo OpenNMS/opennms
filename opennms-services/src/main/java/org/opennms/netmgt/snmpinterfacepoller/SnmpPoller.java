@@ -345,12 +345,13 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 log().error("configureSNMPHandler: event contained invalid firstIpAddress.  "+event);
                 return;
             }
-        } catch (Throwable e) {
-            log().error("reloadSnmpConfig: ",e);
+        } catch (final Throwable e) {
+            log().error("reloadSnmpConfig: ", e);
+            return;
         }
         
-        IPAddressRange range = new IPAddressRange(info.getFirstIPAddress(), info.getLastIPAddress());
-        for (IPAddress ipaddr : range) {
+        final IPAddressRange range = new IPAddressRange(info.getFirstIPAddress(), info.getLastIPAddress());
+        for (final IPAddress ipaddr : range) {
             log().debug("reloadSnmpConfig: found ipaddr: " + ipaddr);
             if (getNetwork().hasPollableInterface(ipaddr.toDbString())) {
                 log().debug("reloadSnmpConfig: recreating the Interface to poll: " + ipaddr);

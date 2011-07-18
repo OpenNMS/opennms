@@ -52,14 +52,13 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.xml.sax.InputSource;
 
 /**
- * This class is the main respository for SNMP configuration information used by
+ * This class is the main repository for SNMP configuration information used by
  * the capabilities daemon. When this class is loaded it reads the snmp
  * configuration into memory, and uses the configuration to find the
  * {@link org.opennms.netmgt.snmp.SnmpAgentConfig SnmpAgentConfig} objects for specific
@@ -70,16 +69,16 @@ import org.xml.sax.InputSource;
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
  *
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
+ * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner</a>
  */
-public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFactory {
+public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     private static final int DEFAULT_SNMP_PORT = 161;
     private static final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private static final Lock m_readLock = m_globalLock.readLock();
     private static final Lock m_writeLock = m_globalLock.writeLock();
-    
+
     /**
      * The singleton instance of this factory
      */
@@ -148,7 +147,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     /**
      * A constructor that takes a config string for use mostly in tests
      */
-    public SnmpPeerFactory(String configString) throws IOException {
+    public SnmpPeerFactory(final String configString) throws IOException {
         SnmpPeerFactory.getWriteLock().lock();
         try {
             m_config = JaxbUtils.unmarshal(SnmpConfig.class, configString);
@@ -212,31 +211,6 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     }
 
     /**
-     * Reload the config from the default config file
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public static void reload() throws IOException {
-        SnmpPeerFactory.getWriteLock().lock();
-        try {
-            m_singleton = null;
-            m_loaded = false;
-    
-            init();
-        } finally {
-            SnmpPeerFactory.getWriteLock().unlock();
-        }
-    }
-
-    /**
      * Saves the current settings to disk
      *
      * @throws java.io.IOException if any.
@@ -247,12 +221,12 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         saveToFile(getFile());
     }
 
-    public static void saveToFile(File file)
+    public static void saveToFile(final File file)
             throws UnsupportedEncodingException, FileNotFoundException,
             IOException {
-        // Marshall to a string first, then write the string to the file. This
+        // Marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the XML from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         final String marshalledConfig = marshallConfig();
 
         SnmpPeerFactory.getWriteLock().lock();
@@ -344,11 +318,11 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     }
 
     /** {@inheritDoc} */
-    public SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
+    public SnmpAgentConfig getAgentConfig(final InetAddress agentAddress) {
         return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
     }
     
-    private SnmpAgentConfig getAgentConfig(InetAddress agentInetAddress, int requestedSnmpVersion) {
+    private SnmpAgentConfig getAgentConfig(final InetAddress agentInetAddress, final int requestedSnmpVersion) {
         SnmpPeerFactory.getReadLock().lock();
         try {
             if (m_config == null) {
@@ -691,16 +665,6 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         }
     }
 
-    @SuppressWarnings("unused")
-    private static void setSnmpConfig(final SnmpConfig m_config) {
-        SnmpPeerFactory.getWriteLock().lock();
-        try {
-            SnmpPeerFactory.m_config = m_config;
-        } finally {
-            SnmpPeerFactory.getWriteLock().unlock();
-        }
-    }
-
     /**
      * Enhancement: Allows specific or ranges to be merged into snmp configuration
      * with many other attributes.  Uses new classes the wrap Castor generated code to
@@ -712,10 +676,10 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      *
      * @param info a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
      */
-    public void define(SnmpEventInfo info) {
+    public void define(final SnmpEventInfo info) {
         getWriteLock().lock();
         try {
-            SnmpConfigManager mgr = new SnmpConfigManager(m_config);
+        	final SnmpConfigManager mgr = new SnmpConfigManager(m_config);
             mgr.mergeIntoConfig(info.createDef());
         } finally {
             getWriteLock().unlock();

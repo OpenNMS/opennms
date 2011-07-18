@@ -29,7 +29,6 @@
 package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * UpsertService
@@ -38,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public interface UpsertService {
     
-    @Transactional
     public OnmsSnmpInterface upsert(int nodeId, OnmsSnmpInterface snmpIface, int sleep);
 
 }

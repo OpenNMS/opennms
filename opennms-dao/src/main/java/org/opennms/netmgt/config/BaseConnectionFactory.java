@@ -33,7 +33,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -61,22 +60,6 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
     protected BaseConnectionFactory(final InputStream stream, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
         LogUtils.infof(this, "Setting up data source %s from input stream.", dsName);
         final JdbcDataSource ds = ConnectionFactoryUtil.marshalDataSourceFromConfig(stream, dsName);
-        initializePool(ds);
-    }
-
-    /**
-     * @param rdr A configuration file as a {@link Reader}.
-     * @param dsName The data source's name.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.beans.PropertyVetoException if any.
-     * @throws java.sql.SQLException if any.
-     * @deprecated Use code for InputStream instead to avoid character set issues
-     * 
-     */
-    protected BaseConnectionFactory(final Reader rdr, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-    	LogUtils.infof(this, "Setting up data source %s from reader.", dsName);
-    	final JdbcDataSource ds = ConnectionFactoryUtil.marshalDataSourceFromConfig(rdr, dsName);
         initializePool(ds);
     }
 

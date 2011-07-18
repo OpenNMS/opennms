@@ -33,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.easymock.EasyMock;
-import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -80,7 +79,6 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
 
 	}
 
-	protected BarrierSignaler m_signaler;
     public MockDataCollectionConfig m_config;
     
     protected SnmpObjId m_sysNameOid;
@@ -112,8 +110,6 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         m_config = new MockDataCollectionConfig();
         DataCollectionConfigFactory.setInstance(m_config);
         
-        m_signaler = new BarrierSignaler(1);
-
         m_sysNameOid = SnmpObjId.get(".1.3.6.1.2.1.1.5");
         m_ifOutOctets = SnmpObjId.get("..1.3.6.1.2.1.2.2.1.16");
         m_invalid = SnmpObjId.get(".1.5.6.1.2.1.1.5");

@@ -11,6 +11,12 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -20,6 +26,8 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name="decode")
+@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("serial")
 public class Decode implements java.io.Serializable {
 
@@ -31,12 +39,14 @@ public class Decode implements java.io.Serializable {
     /**
      * Field _varbindvalue.
      */
-    private java.lang.String _varbindvalue;
+	@XmlAttribute(name="varbindvalue", required=true)
+    private String m_varbindvalue;
 
     /**
      * Field _varbinddecodedstring.
      */
-    private java.lang.String _varbinddecodedstring;
+	@XmlAttribute(name="varbinddecodedstring",required=true)
+    private String m_varbinddecodedstring;
 
 
       //----------------/
@@ -67,19 +77,19 @@ public class Decode implements java.io.Serializable {
         if (obj instanceof Decode) {
         
             Decode temp = (Decode)obj;
-            if (this._varbindvalue != null) {
-                if (temp._varbindvalue == null) return false;
-                else if (!(this._varbindvalue.equals(temp._varbindvalue))) 
+            if (this.m_varbindvalue != null) {
+                if (temp.m_varbindvalue == null) return false;
+                else if (!(this.m_varbindvalue.equals(temp.m_varbindvalue))) 
                     return false;
             }
-            else if (temp._varbindvalue != null)
+            else if (temp.m_varbindvalue != null)
                 return false;
-            if (this._varbinddecodedstring != null) {
-                if (temp._varbinddecodedstring == null) return false;
-                else if (!(this._varbinddecodedstring.equals(temp._varbinddecodedstring))) 
+            if (this.m_varbinddecodedstring != null) {
+                if (temp.m_varbinddecodedstring == null) return false;
+                else if (!(this.m_varbinddecodedstring.equals(temp.m_varbinddecodedstring))) 
                     return false;
             }
-            else if (temp._varbinddecodedstring != null)
+            else if (temp.m_varbinddecodedstring != null)
                 return false;
             return true;
         }
@@ -91,9 +101,9 @@ public class Decode implements java.io.Serializable {
      * 
      * @return the value of field 'Varbinddecodedstring'.
      */
-    public java.lang.String getVarbinddecodedstring(
+    public String getVarbinddecodedstring(
     ) {
-        return this._varbinddecodedstring;
+        return this.m_varbinddecodedstring;
     }
 
     /**
@@ -101,9 +111,9 @@ public class Decode implements java.io.Serializable {
      * 
      * @return the value of field 'Varbindvalue'.
      */
-    public java.lang.String getVarbindvalue(
+    public String getVarbindvalue(
     ) {
-        return this._varbindvalue;
+        return this.m_varbindvalue;
     }
 
     /**
@@ -116,17 +126,7 @@ public class Decode implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_varbindvalue != null) {
-           result = 37 * result + _varbindvalue.hashCode();
-        }
-        if (_varbinddecodedstring != null) {
-           result = 37 * result + _varbinddecodedstring.hashCode();
-        }
-        
-        return result;
+        return new HashCodeBuilder(17,37).append(getVarbinddecodedstring()).append(getVarbindvalue()).toHashCode();
     }
 
     /**
@@ -183,8 +183,8 @@ public class Decode implements java.io.Serializable {
      * 'varbinddecodedstring'.
      */
     public void setVarbinddecodedstring(
-            final java.lang.String varbinddecodedstring) {
-        this._varbinddecodedstring = varbinddecodedstring;
+            final String varbinddecodedstring) {
+        this.m_varbinddecodedstring = varbinddecodedstring;
     }
 
     /**
@@ -193,8 +193,8 @@ public class Decode implements java.io.Serializable {
      * @param varbindvalue the value of field 'varbindvalue'.
      */
     public void setVarbindvalue(
-            final java.lang.String varbindvalue) {
-        this._varbindvalue = varbindvalue;
+            final String varbindvalue) {
+        this.m_varbindvalue = varbindvalue;
     }
 
     /**

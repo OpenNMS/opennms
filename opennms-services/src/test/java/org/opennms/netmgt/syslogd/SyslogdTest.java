@@ -48,14 +48,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
-import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -110,7 +108,7 @@ public class SyslogdTest {
         boolean foundBeer = false;
         boolean foundMalt = false;
         assertEquals(10514, SyslogdConfigFactory.getInstance().getSyslogPort());
-        for (UeiMatch match : SyslogdConfigFactory.getInstance().getUeiList().getUeiMatch()) {
+        for (final UeiMatch match : SyslogdConfigFactory.getInstance().getUeiList().getUeiMatch()) {
             if (match.getProcessMatch() != null) {
                 if (!foundBeer && "beerd".equals(match.getProcessMatch().getExpression())) {
                     foundBeer = true;
@@ -142,38 +140,38 @@ public class SyslogdTest {
     private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg) throws UnknownHostException, InterruptedException {
         startSyslogdGracefully();
         
-        EventBuilder expectedEventBldr = new EventBuilder(expectedUEI, "syslogd");
+        final EventBuilder expectedEventBldr = new EventBuilder(expectedUEI, "syslogd");
         expectedEventBldr.setInterface(addr(expectedHost));
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(expectedLogMsg);
     
-        EventAnticipator ea = new EventAnticipator();
+        final EventAnticipator ea = new EventAnticipator();
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
-        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
-        DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
-        SyslogdConfig config = SyslogdConfigFactory.getInstance();
-        Thread worker = new Thread(new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()), SyslogConnection.class.getSimpleName());
+        final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
+        final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
+        final SyslogdConfig config = SyslogdConfigFactory.getInstance();
+        final Thread worker = new Thread(new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()), SyslogConnection.class.getSimpleName());
         worker.run();
 
-        ea.verifyAnticipated(1000,0,0,0,0);
-        Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
+        ea.verifyAnticipated(5000,0,0,0,0);
+        final Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
         assertEquals("Log messages do not match", expectedLogMsg, receivedEvent.getLogmsg().getContent());
         
         return ea.getAnticipatedEventsRecieved();
     }
     
-    private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg, Map<String,String> expectedParams) throws UnknownHostException, InterruptedException {
-        List<Event> receivedEvents = doMessageTest(testPDU, expectedHost, expectedUEI, expectedLogMsg);
-        
-        Map<String,String> actualParms = new HashMap<String,String>();
-        for (Parm actualParm : receivedEvents.get(0).getParms().getParmCollection()) {
+	private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg, Map<String,String> expectedParams) throws UnknownHostException, InterruptedException {
+    	final List<Event> receivedEvents = doMessageTest(testPDU, expectedHost, expectedUEI, expectedLogMsg);
+
+        final Map<String,String> actualParms = new HashMap<String,String>();
+        for (final Parm actualParm : receivedEvents.get(0).getParms().getParmCollection()) {
             actualParms.put(actualParm.getParmName(), actualParm.getValue().getContent());
         }
 
-        for (String expectedKey : expectedParams.keySet()) {
-            String expectedValue = expectedParams.get(expectedKey);
+        for (final String expectedKey : expectedParams.keySet()) {
+        	final String expectedValue = expectedParams.get(expectedKey);
             assertTrue("Actual event does not have a parameter called " + expectedKey, actualParms.containsKey(expectedKey));
             assertEquals("Actual event has a parameter called " + expectedKey + " but its value does not match", expectedValue, actualParms.get(expectedKey));
         }
@@ -215,12 +213,12 @@ public class SyslogdTest {
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/severityOnly";
         final String testMsg = "beer - Not just for dinner anymore";
     
-        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+        final EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
         expectedEventBldr.setInterface(addr(localhost));
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(testMsg);
         
-        EventAnticipator ea = new EventAnticipator();
+        final EventAnticipator ea = new EventAnticipator();
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
@@ -231,10 +229,8 @@ public class SyslogdTest {
         } catch (UnknownHostException uhe) {
             //Failures are for weenies
         }
-    
-        assertEquals(0, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
+
+        ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
 
     @Test
@@ -246,7 +242,7 @@ public class SyslogdTest {
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverityProcess";
         final String testMsg = "beer - Not just for lunch anymore";
     
-        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+        final EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
         expectedEventBldr.setInterface(addr(localhost));
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(testMsg);
@@ -255,7 +251,7 @@ public class SyslogdTest {
         expectedEventBldr.addParam("service", "local1");
         expectedEventBldr.addParam("severity", "Warning");
     
-        EventAnticipator ea = new EventAnticipator();
+        final EventAnticipator ea = new EventAnticipator();
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
@@ -267,21 +263,19 @@ public class SyslogdTest {
             //Failures are for weenies
         }
     
-        assertEquals(0, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
+        ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
     
     @Test
     public void testRegexFacilitySeverityMatch() throws Exception {
         startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
-        String localhost = m_localhost;
+        final String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for lunch anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverity";
         final String testMsg = "beer - Not just for lunch anymore";
     
-        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+        final EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
         expectedEventBldr.setInterface(addr(localhost));
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(testMsg);
@@ -289,7 +283,7 @@ public class SyslogdTest {
         expectedEventBldr.addParam("service", "local1");
         expectedEventBldr.addParam("severity", "Warning");
     
-        EventAnticipator ea = new EventAnticipator();
+        final EventAnticipator ea = new EventAnticipator();
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
@@ -301,28 +295,26 @@ public class SyslogdTest {
             //Failures are for weenies
         }
     
-        assertEquals(0, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
+        ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
     
     @Test
     public void testRegexFacilityMatch() throws Exception {
         startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
-        String localhost = m_localhost;
+        final String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for lunch anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilityOnly";
         final String testMsg = "beer - Not just for lunch anymore";
     
-        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+        final EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
         expectedEventBldr.setInterface(addr(localhost));
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(testMsg);
         
         expectedEventBldr.addParam("service", "local0");
     
-        EventAnticipator ea = new EventAnticipator();
+        final EventAnticipator ea = new EventAnticipator();
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
@@ -333,29 +325,27 @@ public class SyslogdTest {
         } catch (UnknownHostException uhe) {
             //Failures are for weenies
         }
-    
-        assertEquals(0, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
+
+        ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
     
     @Test
     public void testRegexProcessMatch() throws Exception {
         startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
-        String localhost = m_localhost;
+        final String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beerd: beer - Not just for breakfast anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/processOnly";
         final String testMsg = "beer - Not just for breakfast anymore";
-    
-        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+
+        final EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
         expectedEventBldr.setInterface(addr(localhost));
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(testMsg);
         
         expectedEventBldr.addParam("process", "beerd");
-    
-        EventAnticipator ea = new EventAnticipator();
+
+        final EventAnticipator ea = new EventAnticipator();
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
@@ -367,9 +357,7 @@ public class SyslogdTest {
             //Failures are for weenies
         }
     
-        assertEquals(0, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
+        ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
 
     @Test
@@ -440,15 +428,14 @@ public class SyslogdTest {
         startSyslogdGracefully();
         final String testPDU = "2007-01-01 127.0.0.1 A JUNK message";
         
-        EventAnticipator ea = new EventAnticipator();
+        final EventAnticipator ea = new EventAnticipator();
         m_eventIpcManager.addEventListener(ea);
         
         SyslogClient sc = null;
         sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
         sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        
-        Thread.sleep(3000);
-        assertEquals(0, ea.unanticipatedEvents().size());
+
+        ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
 
     @Test
@@ -456,15 +443,14 @@ public class SyslogdTest {
         startSyslogdGracefully();
         final String testPDU = "2007-01-01 127.0.0.1 A TrAsH message";
         
-        EventAnticipator ea = new EventAnticipator();
+        final EventAnticipator ea = new EventAnticipator();
         m_eventIpcManager.addEventListener(ea);
         
         SyslogClient sc = null;
         sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
         sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        
-        Thread.sleep(3000);
-        assertEquals(0, ea.unanticipatedEvents().size());
+
+        ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
     
     @Test
@@ -474,7 +460,7 @@ public class SyslogdTest {
         final String expectedLogMsg = "Secretly replaced rangerrick's coffee with 42 wombats";
         final String[] testGroups = { "rangerrick's", "42", "wombats" };
         
-        Map<String,String> expectedParms = new HashMap<String,String>();
+        final Map<String,String> expectedParms = new HashMap<String,String>();
         expectedParms.put("group1", testGroups[0]);
         expectedParms.put("whoseBeverage", testGroups[0]);
         expectedParms.put("group2", testGroups[1]);
@@ -489,13 +475,13 @@ public class SyslogdTest {
     public void testRegexUEIWithOnlyUserSpecifiedParameterAssignments() throws InterruptedException {
         startSyslogdGracefully();
         
-        String localhost = m_localhost;
+        final String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 tea: Secretly replaced cmiskell's tea with 666 ferrets";
         final String testUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/userSpecifiedOnly";
         final String testMsg = "Secretly replaced cmiskell's tea with 666 ferrets";
         final String[] testGroups = { "cmiskell's", "666", "ferrets" };
 
-        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+        final EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
         expectedEventBldr.setInterface(addr(localhost));
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(testMsg);
@@ -504,7 +490,7 @@ public class SyslogdTest {
         expectedEventBldr.addParam("count", testGroups[1]);
         expectedEventBldr.addParam("replacementItem", testGroups[2]);
     
-        EventAnticipator ea = new EventAnticipator();
+        final EventAnticipator ea = new EventAnticipator();
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
@@ -515,10 +501,8 @@ public class SyslogdTest {
         } catch (UnknownHostException uhe) {
             //Failures are for weenies
         }
-    
-        assertEquals(0, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
+
+        ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
 
 }

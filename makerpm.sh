@@ -23,6 +23,14 @@ if [ -z "$RELEASE_MICRO" ]; then
 	RELEASE_MICRO=0
 fi
 
+if [ -z "$RELEASE_MINOR" ]; then
+	if [ -n "$GIT" ] && [ -x "$GIT" ]; then
+		RELEASE_MINOR=`git log --pretty='format:%cd' --date=short -1 | grep '^Date:' | awk '{ print $2 }' | sed -e 's,-,,g'`
+	else
+		RELEASE_MINOR=`date '+%Y%m%d'`
+	fi
+fi
+
 EXTRA_INFO=""
 EXTRA_INFO2=""
 
@@ -39,7 +47,6 @@ if [ -n "$GIT" ] && [ -x "$GIT" ]; then
 fi
 
 if [ $RELEASE_MAJOR = 0 ]; then
-	RELEASE_MINOR=`date '+%Y%m%d'`
 	RELEASE=$RELEASE_MAJOR.$RELEASE_MINOR.$RELEASE_MICRO
 else
 	RELEASE=$RELEASE_MAJOR

@@ -465,7 +465,9 @@
   </jsp:include>
   
   <!-- Recent outages box -->
-  <jsp:include page="/outage/nodeOutages-box.htm" flush="false" />
+  <jsp:include page="/outage/nodeOutages-box.htm" flush="false"> 
+    <jsp:param name="node" value="${model.id}" />
+  </jsp:include>
 </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

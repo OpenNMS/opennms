@@ -306,13 +306,17 @@ public class EditProvisioningGroupController extends SimpleFormController {
         
         String groupName = request.getParameter("groupName");
         if (groupName != null) {
-            map.put("services",  m_provisioningService.getServiceTypeNames(groupName));
+            List<String> services = new ArrayList<String>(m_provisioningService.getServiceTypeNames(groupName));
+            Collections.sort(services);
+            map.put("services",  services);
         }
-        
-        map.put("categories", m_provisioningService.getNodeCategoryNames());
-        map.put("assetFields", m_provisioningService.getAssetFieldNames());
-        
-        
+
+        List<String> categories = new ArrayList<String>(m_provisioningService.getNodeCategoryNames());
+        Collections.sort(categories);
+        List<String> assetFields = new ArrayList<String>(m_provisioningService.getAssetFieldNames());
+        Collections.sort(assetFields);
+        map.put("categories", categories);
+        map.put("assetFields", assetFields);
         
         
         return map;

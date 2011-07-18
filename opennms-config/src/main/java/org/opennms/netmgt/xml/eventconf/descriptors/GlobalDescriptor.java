@@ -92,7 +92,6 @@ public class GlobalDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return new org.opennms.netmgt.xml.eventconf.Security();
             }

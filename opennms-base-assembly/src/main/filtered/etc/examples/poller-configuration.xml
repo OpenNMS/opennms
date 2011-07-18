@@ -179,13 +179,6 @@
       <parameter key="rrd-base-name" value="ssh" />
       <parameter key="ds-name" value="ssh" />
     </service>
-    <service name="DHCP" interval="300000" user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="3000" />
-      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
-      <parameter key="rrd-base-name" value="dhcp" />
-      <parameter key="ds-name" value="dhcp" />
-    </service>
     <service name="IMAP" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="1" />
       <parameter key="port" value="143" />
@@ -579,6 +572,7 @@
     <downtime interval="300000" begin="43200000" end="432000000" />  <!-- 5m, 12h, 5d -->
     <downtime begin="432000000" delete="true" />         <!-- anything after 5 days delete -->
   </package>
+  
   <package name="Windows Services">
     <filter>IPADDR != '0.0.0.0'</filter>
     <specific>0.0.0.0</specific>
@@ -683,6 +677,33 @@
     <downtime begin="432000000" delete="true" />         <!-- anything after 5 days delete -->
   </package>
 
+  <package name="DHCP">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <specific>0.0.0.0</specific>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+    <include-url>file:${install.etc.dir}/include</include-url>
+    <rrd step = "300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <service name="DHCP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="dhcp" />
+      <parameter key="ds-name" value="dhcp" />
+    </service>
+
+    <downtime interval="15000" begin="0" end="300000" />     <!-- 15s, 0, 5m -->
+    <downtime interval="30000" begin="300000" end="43200000" />  <!-- 30s, 5m, 12h -->
+    <downtime interval="300000" begin="43200000" end="432000000" />  <!-- 5m, 12h, 5d -->
+    <downtime begin="432000000" delete="true" />         <!-- anything after 5 days delete -->
+  </package>
+
   <monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor" />
   <monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor" />
   <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
@@ -693,7 +714,6 @@
   <monitor service="HypericAgent" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="HypericHQ" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor" />
   <monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor" />
-  <monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor" />
   <monitor service="DNS" class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
   <monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor" />
   <monitor service="SNMP" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
@@ -751,5 +771,8 @@
   <monitor service="MSExchangeTransport" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
   <monitor service="XMP" class-name="org.opennms.netmgt.poller.monitors.XmpMonitor" />
   <monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" />
+  
+  <!--  DHCP monitor now distributed separately.  It must be installed to enable the following -->
+  <monitor service="DHCP" class-name="org.opennms.netmgt.dhcp.monitor.DhcpMonitor" />
 
 </poller-configuration>

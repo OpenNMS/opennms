@@ -33,7 +33,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigInteger;
@@ -78,7 +77,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class NSClientPeerFactory extends PeerFactory {
+public final class NSClientPeerFactory {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -122,19 +121,6 @@ public final class NSClientPeerFactory extends PeerFactory {
      */
     public NSClientPeerFactory(final InputStream stream) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(NsclientConfig.class, stream);
-    }
-
-    /**
-     * <p>Constructor for NSClientPeerFactory.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public NSClientPeerFactory(final Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(NsclientConfig.class, rdr);
     }
 
     public Lock getReadLock() {

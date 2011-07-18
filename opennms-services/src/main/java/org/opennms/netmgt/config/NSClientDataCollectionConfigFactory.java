@@ -99,17 +99,6 @@ public class NSClientDataCollectionConfigFactory {
          }
      }
 
-     /**
-      * <p>Constructor for NSClientDataCollectionConfigFactory.</p>
-      *
-      * @param rdr a {@link java.io.Reader} object.
-      * @throws org.exolab.castor.xml.MarshalException if any.
-      * @throws org.exolab.castor.xml.ValidationException if any.
-      */
-     public NSClientDataCollectionConfigFactory(final Reader rdr) throws MarshalException, ValidationException {
-         initialize(rdr);
-     }
-
      public Lock getReadLock() {
          return m_readLock;
      }
@@ -121,12 +110,6 @@ public class NSClientDataCollectionConfigFactory {
      private void initialize(final InputStream stream) throws MarshalException, ValidationException {
          LogUtils.debugf(this, "initialize: initializing NSCLient collection config factory.");
          m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, stream);
-     }
-
-     @Deprecated
-     private void initialize(final Reader rdr) throws MarshalException, ValidationException {
-         LogUtils.debugf(this, "initialize: initializing NSCLient collection config factory.");
-         m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, rdr);
      }
 
      /**

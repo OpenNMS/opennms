@@ -93,7 +93,6 @@ public class VarbindsdecodeDescriptor extends org.exolab.castor.xml.util.XMLClas
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return null;
             }
@@ -145,7 +144,6 @@ public class VarbindsdecodeDescriptor extends org.exolab.castor.xml.util.XMLClas
                 }
             }
             @Override
-            @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
                 return new org.opennms.netmgt.xml.eventconf.Decode();
             }

@@ -19,6 +19,14 @@
     </annotation>
 
     <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:snmpv3-user">
+          <annotation>
+            <documentation>SNMPv3 configuration.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
       <attribute name="snmp-trap-address" use="optional" type="string" default="*" >
         <annotation>
           <documentation>The IP address on which trapd listens for connections.
@@ -47,4 +55,75 @@
       </attribute>
     </complexType>
   </element>
+
+
+  <element name="snmpv3-user">
+    <annotation>
+      <documentation>SNMPv3 User Configuration.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="engine-id" type="string" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Application Engine ID</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="security-name" type="string" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Security Name (User Name)</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="security-level" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Security Level (noAuthNoPriv, authNoPriv, authPriv)</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1" />
+            <maxInclusive value="3" />
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="auth-protocol" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Authentication Protocol</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(MD5|SHA)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="auth-passphrase" type="string" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Authentication Password Phrase</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="privacy-protocol" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Privacy Protocol</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(DES|AES|AES192|AES256)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="privacy-passphrase" type="string" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Privacy Password Phrase</documentation>
+        </annotation>
+      </attribute>
+
+    </complexType>
+  </element>
+
 </schema>

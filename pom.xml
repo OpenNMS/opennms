@@ -125,6 +125,9 @@
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
     <module>opennms-xmp</module>
+
+    <!-- extra modules -->
+    <module>dhcp</module>
   </modules>
   <build>
   <extensions>
@@ -158,9 +161,9 @@
         <version>1.5</version>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
+        <groupId>org.opennms.core.build</groupId>
         <artifactId>castor-maven-plugin</artifactId>
-        <version>2.0-alpha1</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <goals>
@@ -236,16 +239,6 @@
             <version>${xercesVersion}</version>
           </dependency>
         </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>org.opennms.core.build</groupId>
-        <artifactId>castor-process-maven-plugin</artifactId>
-        <version>${project.version}</version>
-        <executions>
-          <execution>
-            <goals><goal>generate</goal></goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -385,6 +378,96 @@
         <artifactId>jetty-jspc-maven-plugin</artifactId>
         <version>${jettyVersion}</version>
       </plugin>
+      <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+      <plugin>
+      	<groupId>org.eclipse.m2e</groupId>
+      	<artifactId>lifecycle-mapping</artifactId>
+      	<version>1.0.0</version>
+      	<configuration>
+      		<lifecycleMappingMetadata>
+      			<pluginExecutions>
+      				<pluginExecution>
+      					<pluginExecutionFilter>
+      						<groupId>org.codehaus.groovy.maven</groupId>
+      						<artifactId>gmaven-plugin</artifactId>
+      						<versionRange>[1.0,)</versionRange>
+      						<goals>
+      							<goal>execute</goal>
+      						</goals>
+      					</pluginExecutionFilter>
+      					<action>
+      						<ignore />
+      					</action>
+      				</pluginExecution>
+      				<pluginExecution>
+      					<pluginExecutionFilter>
+      						<groupId>org.codehaus.groovy.maven</groupId>
+      						<artifactId>gmaven-plugin</artifactId>
+      						<versionRange>[1.0,)</versionRange>
+      						<goals>
+      							<goal>compile</goal>
+      							<goal>testCompile</goal>
+      						</goals>
+      					</pluginExecutionFilter>
+      					<action>
+      						<execute />
+      					</action>
+      				</pluginExecution>
+      				<pluginExecution>
+      					<pluginExecutionFilter>
+      						<groupId>
+      							org.codehaus.mojo.webstart
+      						</groupId>
+      						<artifactId>
+      							webstart-maven-plugin
+      						</artifactId>
+      						<versionRange>[0.9,)</versionRange>
+      						<goals>
+      							<goal>jnlp-download-servlet</goal>
+      						</goals>
+      					</pluginExecutionFilter>
+      					<action>
+      						<ignore></ignore>
+      					</action>
+      				</pluginExecution>
+      				<pluginExecution>
+      					<pluginExecutionFilter>
+      						<groupId>
+      							com.sun.tools.jxc.maven2
+      						</groupId>
+      						<artifactId>
+      							maven-jaxb-schemagen-plugin
+      						</artifactId>
+      						<versionRange>[1.2,)</versionRange>
+      						<goals>
+      							<goal>generate</goal>
+      						</goals>
+      					</pluginExecutionFilter>
+      					<action>
+      						<ignore></ignore>
+      					</action>
+      				</pluginExecution>
+      				<pluginExecution>
+      					<pluginExecutionFilter>
+      						<groupId>
+      							org.mortbay.jetty
+      						</groupId>
+      						<artifactId>
+      							jetty-jspc-maven-plugin
+      						</artifactId>
+      						<versionRange>[1.0,)</versionRange>
+      						<goals>
+      							<goal>jspc</goal>
+      						</goals>
+      					</pluginExecutionFilter>
+      					<action>
+      						<ignore></ignore>
+      					</action>
+      				</pluginExecution>
+      			</pluginExecutions>
+      		</lifecycleMappingMetadata>
+      	</configuration>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
@@ -407,8 +490,7 @@
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-resources-plugin</artifactId>
-       <!-- Don't upgrade this past 2.3 for now!  Major escaping bugs! -->
-       <version>2.3</version>
+       <version>2.5</version>
        <configuration>
           <encoding>UTF-8</encoding>
           <escapeString>\</escapeString>
@@ -926,15 +1008,29 @@
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.dns</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.http</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.snmp</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.xml</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.dhcp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1065,6 +1161,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-mock-simpleserver</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>mock-snmp-agent</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
@@ -1120,12 +1222,6 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jnlp-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jdhcp-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -1223,6 +1319,7 @@
         <artifactId>opennms-dao</artifactId>
         <type>test-jar</type>
         <version>${project.version}</version>
+        <scope>test</scope>
         <exclusions>
           <exclusion>
             <groupId>cglib</groupId>
@@ -1256,11 +1353,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-datagram</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-detector-dhcp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1399,6 +1491,7 @@
         <artifactId>opennms-provision-persistence</artifactId>
         <version>${project.version}</version>
         <type>test-jar</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1429,6 +1522,7 @@
         <groupId>org.opennms.tests</groupId>
         <artifactId>org.opennms.tests.mock-elements</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1480,6 +1574,7 @@
         <artifactId>opennms-services</artifactId>
         <version>${project.version}</version>
         <type>test-jar</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1512,14 +1607,16 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-          <artifactId>spring-test-dependencies</artifactId>
+        <artifactId>spring-test-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-test</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1625,6 +1722,7 @@
         <artifactId>snmp-test-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -1831,6 +1929,7 @@
         <groupId>org.dbunit</groupId>
         <artifactId>dbunit</artifactId>
         <version>2.2</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.google.collections</groupId>
@@ -1973,6 +2072,7 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.8.2</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.jwebunit</groupId>
@@ -2016,11 +2116,6 @@
         <groupId>com.novell.ldap</groupId>
         <artifactId>jldap</artifactId>
         <version>4.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.dhcp.jdhcp</groupId>
-        <artifactId>jdhcp</artifactId>
-        <version>1.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -2102,6 +2197,7 @@
         <groupId>xmlunit</groupId>
         <artifactId>xmlunit</artifactId>
         <version>1.2</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>

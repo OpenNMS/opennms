@@ -5,6 +5,7 @@ use File::Spec;
 use Getopt::Long qw(:config permute bundling pass_through);
 
 use vars qw(
+	$BUILD_PROFILE
 	$GIT
 	$HELP
 	$JAVA_HOME
@@ -15,10 +16,11 @@ use vars qw(
 	$VERBOSE
 	@ARGS
 );
-$HELP       = undef;
-$JAVA_HOME  = undef;
-$VERBOSE    = undef;
-@ARGS       = ();
+$BUILD_PROFILE = "default";
+$HELP          = undef;
+$JAVA_HOME     = undef;
+$VERBOSE       = undef;
+@ARGS          = ();
 
 # path to git executable
 $GIT = `which git 2>/dev/null`;
@@ -46,11 +48,18 @@ my $result = GetOptions(
 	"help|h"                    => \$HELP,
 	"enable-tests|tests|test|t" => \$TESTS,
 	"maven-opts|m=s"            => \$MAVEN_OPTS,
+	"profile|p=s"               => \$BUILD_PROFILE,
 	"java-home|java|j=s"        => \$JAVA_HOME,
 	"verbose|v"                 => \$VERBOSE,
 );
+
 if (not $result) {
 	error("failed to parse command-line options");
+	exit 1;
+}
+if ($BUILD_PROFILE !~ /^(default|dir|full|fulldir)$/) {
+	error("unknown --profile option, $BUILD_PROFILE, must be one of 'default', 'dir', 'full', or 'fulldir'");
+	exit 1;
 }
 
 @ARGS = @ARGV;
@@ -63,6 +72,7 @@ usage: $0 [-h] [-j \$JAVA_HOME] [-t] [-v]
 	-j/--java-home DIR     set \$JAVA_HOME to DIR
 	-m/--maven-opts OPTS   set \$MAVEN_OPTS to OPTS
 	                       (default: $MAVEN_OPTS)
+	-p/--profile PROFILE   default, dir, full, or fulldir
 	-t/--enable-tests      enable tests when building
 	-v/--verbose           be more verbose
 END
@@ -104,6 +114,14 @@ if (grep { $_ =~ /^-Droot.dir=/ } @ARGS) {
 	debug("setting root.dir to $PREFIX");
 	unshift(@ARGS, '-Droot.dir=' . $PREFIX);
 }
+
+if (grep { $_ =~ /^-Dbuild.profile=/ } @ARGS) {
+	debug("build.profile defined");
+} else {
+	debug("setting build.profile to $BUILD_PROFILE");
+	unshift(@ARGS, "-Dbuild.profile=$BUILD_PROFILE");
+}
+
 
 if (-r $ENV{'HOME'} . "/.opennms-buildrc") {
 	if (open(FILEIN, $ENV{'HOME'} . "/.opennms-buildrc")) {

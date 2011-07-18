@@ -17,7 +17,47 @@ X-Separate errors from successful in collection attempts
  X-Output Global stats
  X-Output service stats heading
  X-Output stats for a single service
- -Output entire report
- -Sort service stats
- -output sorted service stats
- -Close log file in finally
+ X -Output entire report
+-Close log file in finally
+X-Add persist time stats
+X -Sort service stats
+	X -Sort by average collection time (2 days)
+		X -Write custom comparator
+		X -Create enum value to use as a flag
+		X -pass enum to comparator method
+		X -Sort collection using custom comparator
+		X -Create method to set enum flag
+	X -Sort by total collection time (1 day)
+	X -Sort by average time between collections (half a day for the rest)
+	X -Sort by successful collections
+	X -Sort by successful percentage
+	X -Sort by unsuccessful collections
+	X -Sort by unsuccessful percentage
+	X -Sort by total collections
+	X -Sort by total persist time
+	X -Sort by service name
+X -Reverse sorting of service stats (1 day)
+	X -Create enum value to use as a flag
+	X -Create method to set enum
+	(implementation changed) -create method to reverse previously sorted list
+	X -Pass enum to comparator 
+	X -Reverse the sort order of a comparator
+X -Parse command line parameters (2 days) 
+	X -check each args[] value for predetermined flags
+	X -parse each value when if/when it matches any of the previously decided upon flags
+-output sorted service stats
+-Add Filtering (I am going to have to figure this one out...) (3 days)
+	-Filter by service
+ 	-Filter by greater than (webapp)
+ 	-Filter by less than (webapp)
+ -Add reverse filtering "all but this." (Figuring out filtering should help with this one) (1 day)
+ 
+ 
+ -Go back and make method names consistent (specifically error/unsuccessful collection methods) (a few hours)
+ -Rename methods to be more informative (a few hours)
+ -Refactor. 
+  
+   Total estimated time: 10.5 days.
+   Current time spent: 3 days
+   Total estimated work left: 4 days
+   Status: Ahead of schedule

@@ -30,10 +30,10 @@ package org.opennms.netmgt.capsd.snmp;
 
 import junit.framework.TestCase;
 
+import org.opennms.mock.snmp.MockSnmpValue;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue;
 
 /**
  * We are trying to make sure that this doesn't happen:
@@ -55,8 +55,8 @@ public class SnmpStoreTest extends TestCase {
         SnmpObjId base = SnmpObjId.get(baseOid);
         SnmpInstId inst = new SnmpInstId("1");
         
-        store.storeResult(new SnmpResult(base, inst, new TestSnmpValue.StringSnmpValue(ifAliasValue)));
-        store.storeResult(new SnmpResult(base, inst, TestSnmpValue.END_OF_MIB));
+        store.storeResult(new SnmpResult(base, inst, new MockSnmpValue.StringSnmpValue(ifAliasValue)));
+        store.storeResult(new SnmpResult(base, inst, MockSnmpValue.END_OF_MIB));
         
         assertEquals("ifAlias value", ifAliasValue, store.getDisplayString(ifAliasName));
     }

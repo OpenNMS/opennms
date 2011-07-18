@@ -19,7 +19,6 @@
     <module>opennms-provision-persistence</module>
     <module>opennms-detector-datagram</module>
     <module>opennms-detector-radius</module>
-    <module>opennms-detector-dhcp</module>
     <module>opennms-detector-jmx</module>
     <module>opennms-detector-jdbc</module>
     <module>opennms-detector-ssh</module>
@@ -28,69 +27,64 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-provision-api</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-provision-api</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-mock-simpleserver</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-mock-simpleserver</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-detector-lineoriented</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-lineoriented</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-detector-simple</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-simple</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-snmp-scanners</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-snmp-scanners</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-provisiond</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-provisiond</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-provision-persistence</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-provision-persistence</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-detector-datagram</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-datagram</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-detector-radius</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-radius</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-detector-dhcp</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-jmx</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-detector-jmx</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-jdbc</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-detector-jdbc</artifactId>
-	<version>${project.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-detector-ssh</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-ssh</artifactId>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

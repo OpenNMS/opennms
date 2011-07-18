@@ -142,6 +142,9 @@ public class DemandPollServiceTest extends TestCase {
 			
 		}
 
+                public void lock() {
+		}
+
         public List<DemandPoll> findMatching(OnmsCriteria criteria) {
             throw new UnsupportedOperationException("not yet implemeneted");
         }
