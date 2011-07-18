@@ -84,7 +84,17 @@ install: build
 	mv debian/temp/etc/mapsadapter-configuration.xml                 debian/opennms-plugin-provisioning-map/etc/opennms/
 	mv debian/temp/etc/snmp-asset-adapter-configuration.xml          debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
 	find debian/opennms-plugin*/etc/opennms -type f -execdir chmod 644 {} \;
-
+	
+	##
+	## Setup the protocol packages
+	##
+	install -d -m 755 debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-dhcp/etc/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-dhcp/var/lib/opennms/xsds
+	mv debian/temp/lib/org.opennms.dhcp-*.jar     debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
+	mv debian/temp/etc/dhcpd-configuration.xml    debian/opennms-plugin-protocol-dhcp/etc/opennms/
+	mv debian/temp/share/xsds/dhcpd-configuration.xsd debian/opennms-plugin-protocol-dhcp/var/lib/opennms/xsds/
+	
 	##
 	## Setup the libopennms-java package
 	##

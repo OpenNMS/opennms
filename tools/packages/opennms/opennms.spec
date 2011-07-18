@@ -160,6 +160,7 @@ Requires:	opennms-plugin-provisioning-map
 Requires:	opennms-plugin-provisioning-rancid
 Requires:   opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-ticketer-centric
+Requires:	opennms-plugin-protocol-dhcp
 
 %description plugins
 This installs all optional plugins for OpenNMS.
@@ -229,6 +230,19 @@ Requires:   opennms-core = %{version}-%{release}
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
 fields with data fetched from SNMP GET requests.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-protocol-dhcp
+Summary:    DHCP Poller and Detector Plugin for OpenNMS
+Group:      Applications/System
+Requires:   opennms-core = %{version}-%{release}
+
+%description plugin-protocol-dhcp
+The DHCP protocol plugin provides a daemon, provisioning detector, capsd plugin, and
+poller monitor for DHCP.
 
 %{extrainfo}
 %{extrainfo2}
@@ -343,36 +357,42 @@ pushd $RPM_BUILD_ROOT
 
 # core package files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
-    sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
-    grep -v '%{_initrddir}/opennms-remote-poller' | \
-    grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-    grep -v 'link-adapter-configuration.xml' | \
-    grep -v 'endpoint-configuration.xml' | \
-    grep -v 'mapsadapter-configuration.xml' | \
-    grep -v 'snmp-asset-adapter-configuration.xml' | \
-    sort > %{_tmppath}/files.main
+	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
+	grep -v '%{_initrddir}/opennms-remote-poller' | \
+	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
+	grep -v 'link-adapter-configuration.xml' | \
+	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'mapsadapter-configuration.xml' | \
+	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v 'dhcpd-configuration.xml' | \
+	sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
-    sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
-    grep -v '/remote-poller.sh' | \
-    grep -v '/remote-poller.jar' | \
-    sort >> %{_tmppath}/files.main
+	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	grep -v '/remote-poller.sh' | \
+	grep -v '/remote-poller.jar' | \
+	sort >> %{_tmppath}/files.main
+find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
+	sed -e "s,^$RPM_BUILD_ROOT,," | \
+	grep -v 'dhcpd-configuration.xsd' | \
+	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
-    sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
-    grep -v 'provisioning-adapter' | \
-    sort >> %{_tmppath}/files.main
+	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	grep -v 'provisioning-adapter' | \
+	grep -v 'org.opennms.dhcp-' | \
+	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
-    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
-    sort >> %{_tmppath}/files.main
+	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+	sort >> %{_tmppath}/files.main
 
 # jetty
 find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
-    sed -e "s,^$RPM_BUILD_ROOT,," | \
-    grep -v '/WEB-INF/[^/]*\.xml$' | \
-    grep -v '/WEB-INF/[^/]*\.properties$' | \
-    sort >> %{_tmppath}/files.jetty
+	sed -e "s,^$RPM_BUILD_ROOT,," | \
+	grep -v '/WEB-INF/[^/]*\.xml$' | \
+	grep -v '/WEB-INF/[^/]*\.properties$' | \
+	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir} -type d | \
-    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
-    sort >> %{_tmppath}/files.jetty
+	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+	sort >> %{_tmppath}/files.jetty
 
 popd
 
@@ -390,7 +410,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{instprefix}/contrib
-			%{sharedir}
 			%{logdir}
 			%{logdir}/controller
 			%{logdir}/daemon
@@ -437,6 +456,11 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-provisioning-snmp-asset
 %attr(664,root,root) %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
 %attr(664,root,root) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
+
+%files plugin-protocol-dhcp
+%attr(664,root,root) %config(noreplace) %{instprefix}/etc/dhcpd-configuration.xml
+%attr(664,root,root) %{instprefix}/lib/org.opennms.dhcp-*.jar
+%attr(664,root,root) %{sharedir}/xsds/dhcpd-configuration.xsd
 
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
