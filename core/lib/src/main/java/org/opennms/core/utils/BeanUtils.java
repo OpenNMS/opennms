@@ -38,12 +38,7 @@ import org.springframework.context.access.DefaultLocatorFactory;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  */
-public class BeanUtils {
-    /**
-     * Don't allow this class to be instantiated.  All methods are static.
-     */
-    private BeanUtils() {
-    }
+public abstract class BeanUtils {
 
     /**
      * Get a Spring BeanFactory by context ID.
