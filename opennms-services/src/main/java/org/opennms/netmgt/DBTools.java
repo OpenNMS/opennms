@@ -36,8 +36,7 @@ import java.util.regex.PatternSyntaxException;
  * This class is intended to be group some utility classes related with RDBMS
  * and the capsd and monitoring plugins.
  *
- * @author Jose Vicente Nunez Zuleta (josevnz@users.sourceforge.net) - RHCE,
- *         SJCD, SJCP
+ * @author Jose Vicente Nunez Zuleta (josevnz@users.sourceforge.net) - RHCE, SJCD, SJCP
  * @version 0.1 - 07/22/2002
  * @since 0.1
  */
@@ -57,15 +56,15 @@ public class DBTools {
     /**
      * Minimal port range
      */
-    public static int MIN_PORT_VALUE = 1024;
+    public static final int MIN_PORT_VALUE = 1024;
 
     /**
-     * Maximun port range
+     * Maximum port range
      */
-    public static int MAX_PORT_VALUE = 65535;
+    public static final int MAX_PORT_VALUE = 65535;
 
     /**
-     * Default Sybase JDBC driver to use. Defults to
+     * Default Sybase JDBC driver to use. Defaults to
      * 'com.sybase.jdbc2.jdbc.SybDriver'
      */
     public static final String DEFAULT_JDBC_DRIVER = "com.sybase.jdbc2.jdbc.SybDriver";
@@ -77,7 +76,7 @@ public class DBTools {
 
     /**
      * Default port to use to check this service. Defaults to '4100' Make sure
-     * than is less than MAX_PORT_VALUE and greather than MIN_PORT_VALUE
+     * than is less than MAX_PORT_VALUE and greater than MIN_PORT_VALUE
      * 
      * @see #MIN_PORT_VALUE
      * @see #MAX_PORT_VALUE
@@ -86,7 +85,7 @@ public class DBTools {
 
     /**
      * Default database password. Should be empty. You should not put a database
-     * password here (or event worst, harcode it in the code) Instead call the
+     * password here (or event worst, hardcode it in the code) Instead call the
      * class method that accepts a map
      */
     public static final String DEFAULT_DATABASE_PASSWORD = "";
@@ -108,7 +107,7 @@ public class DBTools {
 
     /**
      * Returns a single instance of this class to the caller. We do not want
-     * multplie copies of this class loaded, just one.
+     * multiple copies of this class loaded, just one.
      *
      * @return DBTools A class instance
      */
@@ -123,7 +122,7 @@ public class DBTools {
     /**
      * Return how many instances of this objects are loaded now
      *
-     * @return int Nnumber of instances on this JVM
+     * @return int Number of instances on this JVM
      */
     public int getNumberOfInstances() {
         return _counter;
