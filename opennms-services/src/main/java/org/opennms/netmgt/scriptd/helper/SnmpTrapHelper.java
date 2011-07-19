@@ -81,7 +81,7 @@ public class SnmpTrapHelper {
     private static final String SNMP_TRAP_COMMUNITY_OID = ".1.3.6.1.6.3.18.1.4.0";
 
     /**
-     * The snmp trap enterprise OID, which if present in a V2 trap is the last
+     * The SNMP trap enterprise OID, which if present in a V2 trap is the last
      * varbind
      */
     private static final String SNMP_TRAP_ENTERPRISE_OID = ".1.3.6.1.6.3.1.1.4.3.0";
@@ -696,7 +696,7 @@ public class SnmpTrapHelper {
 
     /**
      * 
-     * This helper methis helps snmp trap daemon
+     * This helper method helps SNMP trap daemon
      * administrator to set up authentication
      * An snmpv3 trap is sent using the sender 
      * EngineID that needs to be known 

@@ -226,10 +226,10 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 			//now perform operation to complete
 			if (enableDownloadDiscovery) {
-			    LogUtils.infof(this, "run: get further unknown mac address snmp bridge table info");
+			    LogUtils.infof(this, "run: get further unknown MAC address SNMP bridge table info");
 				snmpParseBridgeNodes();
 			} else {
-			    LogUtils.infof(this, "run: skipping get further unknown mac address snmp bridge table info");
+			    LogUtils.infof(this, "run: skipping get further unknown MAC address SNMP bridge table info");
 			}
 
 			// First of all use quick methods to get backbone ports for speeding
@@ -418,7 +418,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                         // bits are settable).
                         int designatedbridgeport = Integer.parseInt(stpPortDesignatedPort.substring(1), 16);
 
-						// try to see if designated bridge is linkable snmp node
+						// try to see if designated bridge is linkable SNMP node
 
                         final LinkableNode designatedNode = getNodeFromMacIdentifierOfBridgeNode(stpPortDesignatedBridge.substring(4));
 
@@ -1318,7 +1318,7 @@ public final class DiscoveryLink implements ReadyRunnable {
     
 				final InetAddress addr = InetAddressUtils.addr(curNode.getSnmpPrimaryIpAddr());
 				if (addr == null) {
-    			    LogUtils.errorf(this, "parseBridgeNodes: Failed to load snmp parameter from snmp configuration file.");
+    			    LogUtils.errorf(this, "parseBridgeNodes: Failed to load SNMP parameter from SNMP configuration file.");
     				return;
 				}
 				agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(addr);

@@ -57,13 +57,13 @@ import antlr.StringUtils;
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
+ * <p>
+ * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
+ * </p>
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-
-//this does snmp and there relies on the snmp configuration so it is not distributable
-
 @Distributable(DistributionContext.DAEMON)
 public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     /**

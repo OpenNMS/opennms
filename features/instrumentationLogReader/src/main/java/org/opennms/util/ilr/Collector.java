@@ -165,7 +165,6 @@ public class Collector {
 
     private abstract static class LongComparator implements Comparator<ServiceCollector> {
 
-        @Override
         public int compare(ServiceCollector o1, ServiceCollector o2) {
             Long a = Long.valueOf(getLong(o1));
             Long b = Long.valueOf(getLong(o2));
@@ -177,7 +176,6 @@ public class Collector {
     }
     private abstract static class DoubleComparator implements Comparator<ServiceCollector> {
 
-        @Override
         public int compare(ServiceCollector o1, ServiceCollector o2) {
             Double a = Double.valueOf(getDouble(o1));
             Double b = Double.valueOf(getDouble(o2));

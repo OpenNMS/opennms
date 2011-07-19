@@ -31,8 +31,8 @@ package org.opennms.netmgt.config.dhcpd;
 import java.io.File;
 import java.io.IOException;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.ConfigFileConstants;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS

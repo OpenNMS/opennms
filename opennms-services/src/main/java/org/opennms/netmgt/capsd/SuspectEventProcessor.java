@@ -45,10 +45,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.IfCollector.SupportedProtocol;
 import org.opennms.netmgt.capsd.snmp.IfTable;
@@ -1551,7 +1551,7 @@ final class SuspectEventProcessor implements Runnable {
             throws SQLException {
         List<InetAddress> priSnmpAddrs = new ArrayList<InetAddress>();
 
-        log().debug("getPrimarySnmpInterfaceFromDb: retrieving primary snmp interface(s) from DB for node "
+        log().debug("getPrimarySnmpInterfaceFromDb: retrieving primary SNMP interface(s) from DB for node "
                 + node.getNodeId());
         InetAddress oldPrimarySnmpIf = null;
 
@@ -1568,7 +1568,7 @@ final class SuspectEventProcessor implements Runnable {
                 log().debug("getPrimarySnmpInterfaceFromDb: String oldPrimaryAddr = " + oldPrimaryAddr);
                 if (oldPrimaryAddr != null) {
                     oldPrimarySnmpIf = addr(oldPrimaryAddr);
-                    log().debug("getPrimarySnmpInterfaceFromDb: old primary Snmp interface is " + oldPrimaryAddr);
+                    log().debug("getPrimarySnmpInterfaceFromDb: old primary SNMP interface is " + oldPrimaryAddr);
                     priSnmpAddrs.add(oldPrimarySnmpIf);
                 }
             }

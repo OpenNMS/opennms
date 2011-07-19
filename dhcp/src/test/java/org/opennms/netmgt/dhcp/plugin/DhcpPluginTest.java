@@ -39,7 +39,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dhcp.plugin.DhcpPlugin;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 
 

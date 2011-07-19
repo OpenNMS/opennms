@@ -258,7 +258,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
      */
     public void run() {        
         if (getParent().polling()) {
-            log().info("run: polling snmp interfaces on package/interface " + getParent().getPackageName()+ "/" + getName() + "on primary address: " + getParent().getIpaddress());
+            log().info("run: polling SNMP interfaces on package/interface " + getParent().getPackageName()+ "/" + getName() + "on primary address: " + getParent().getIpaddress());
             if (m_snmpinterfaces == null || m_snmpinterfaces.isEmpty()) {
                 log().debug("No Interface found. Doing nothing");
             } else {

@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.opennms.core.utils.BundleLists;
-import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.core.utils.ConfigFileConstants;
 
 public class ExcludeUeisProperties {
 	private String[] m_ueis;

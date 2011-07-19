@@ -39,7 +39,7 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
- * Represents an Snmp PollableInterface
+ * Represents an SNMP PollableInterface
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $

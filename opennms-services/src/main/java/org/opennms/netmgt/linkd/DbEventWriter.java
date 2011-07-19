@@ -421,7 +421,7 @@ public class DbEventWriter implements QueryManager {
                     int targetCdpNodeId = getNodeidFromIp(dbConn, cdpTargetIpAddr);
     
                     if (targetCdpNodeId == -1) {
-                        LogUtils.warnf(this, "No nodeid found: cdp interface not added to Linkable Snmp Node. Skipping");
+                        LogUtils.warnf(this, "No nodeid found: cdp interface not added to Linkable SNMP Node. Skipping");
                         sendNewSuspectEvent(cdpTargetIpAddr, snmpcoll.getTarget(), snmpcoll.getPackageName());
                         continue;
                     }
@@ -429,7 +429,7 @@ public class DbEventWriter implements QueryManager {
                     int cdpTargetIfindex = getIfIndexByName(dbConn, targetCdpNodeId, cdpTargetDevicePort);
     
                     if (cdpTargetIfindex == -1) {
-                        LogUtils.warnf(this, "No valid if target index found: cdp interface not added to Linkable Snmp Node. Skipping");
+                        LogUtils.warnf(this, "No valid if target index found: cdp interface not added to Linkable SNMP Node. Skipping");
                         continue;
                     }
     
@@ -438,7 +438,7 @@ public class DbEventWriter implements QueryManager {
                     cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);
                     cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
     
-                    LogUtils.debugf(this, "Adding cdp interface to Linkable Snmp Node." + cdpIface.toString());
+                    LogUtils.debugf(this, "Adding cdp interface to Linkable SNMP Node." + cdpIface.toString());
     
                     cdpInterfaces.add(cdpIface);
                 }
@@ -505,7 +505,7 @@ public class DbEventWriter implements QueryManager {
                     }
     
                     if (routeIface == null) {
-                        LogUtils.warnf(this, "store: No nodeid found for next hop ip" + nexthop + " Skipping ip route interface add to Linkable Snmp Node");
+                        LogUtils.warnf(this, "store: No nodeid found for next hop ip" + nexthop + " Skipping ip route interface add to Linkable SNMP Node");
                         // try to find it in ipinterface
                         sendNewSuspectEvent(nexthop, snmpcoll.getTarget(), snmpcoll.getPackageName());
                     } else {
@@ -581,7 +581,7 @@ public class DbEventWriter implements QueryManager {
     
                 List<Vlan> vlans = new ArrayList<Vlan>();
                 Iterator<SnmpTableEntry> ite3 = snmpcoll.getVlanTable().getEntries().iterator();
-                LogUtils.debugf(this, "store: saving Snmp Vlan Table to vlan table in DB");
+                LogUtils.debugf(this, "store: saving SNMP VLAN Table to vlan table in DB");
                 while (ite3.hasNext()) {
                     SnmpTableEntry ent = ite3.next();
     
@@ -1383,7 +1383,7 @@ public class DbEventWriter implements QueryManager {
     
             }
     
-            LogUtils.debugf(this, "getNodesInfo: found " + linknodes.size() + " snmp primary ip nodes");
+            LogUtils.debugf(this, "getNodesInfo: found " + linknodes.size() + " SNMP primary IP nodes");
     
             return linknodes;
         } finally {

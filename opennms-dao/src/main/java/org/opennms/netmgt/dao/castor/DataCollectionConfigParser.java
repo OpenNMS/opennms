@@ -108,7 +108,7 @@ public class DataCollectionConfigParser {
                 }
             }
         } else {
-            log().info("parse: snmp collection " + collection.getName() + " doesn't have any external reference.");
+            log().info("parse: SNMP collection " + collection.getName() + " doesn't have any external reference.");
         }
     }
     
@@ -311,7 +311,7 @@ public class DataCollectionConfigParser {
         }
         // Add System Definition to target SNMP collection
         if (contains(collection.getSystems().getSystemDefCollection(), systemDef)) {
-            log().warn("addSystemDef: system definition " + systemDefName + " already exist on snmp collection " + collection.getName());
+            log().warn("addSystemDef: system definition " + systemDefName + " already exist on SNMP collection " + collection.getName());
         } else {
             log().debug("addSystemDef: adding system definition " + systemDef.getName() + " to snmp-collection " + collection.getName());
             collection.getSystems().addSystemDef(systemDef);
@@ -322,7 +322,7 @@ public class DataCollectionConfigParser {
                     log().warn("addSystemDef: group " + groupName + " does not exist on global container");
                 } else {
                     if (contains(collection.getGroups().getGroupCollection(), group)) {
-                        log().debug("addSystemDef: group " + groupName + " already exist on snmp collection " + collection.getName());
+                        log().debug("addSystemDef: group " + groupName + " already exist on SNMP collection " + collection.getName());
                     } else {
                         log().debug("addSystemDef: adding mib object group " + group.getName() + " to snmp-collection " + collection.getName());
                         collection.getGroups().addGroup(group);

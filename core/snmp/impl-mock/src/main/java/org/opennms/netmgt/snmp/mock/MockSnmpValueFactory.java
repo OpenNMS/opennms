@@ -96,7 +96,7 @@ public class MockSnmpValueFactory implements SnmpValueFactory {
 			case SnmpValue.SNMP_OPAQUE:
 				throw new IllegalArgumentException("Unable to handle opaque types in MockSnmpValue");
 			default:
-		        throw new IllegalArgumentException("Unknown Snmp Type: "+type);
+		        throw new IllegalArgumentException("Unknown SNMP value type: "+type);
 		}
 	}
 

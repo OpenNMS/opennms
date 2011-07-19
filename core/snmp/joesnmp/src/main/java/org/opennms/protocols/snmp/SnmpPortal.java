@@ -551,7 +551,7 @@ public class SnmpPortal extends Object {
         }
 
         //
-        // get the snmp version.
+        // get the SNMP version.
         //
         SnmpInt32 int32 = new SnmpInt32();
         offset = int32.decodeASN(buf, offset, m_encoder);

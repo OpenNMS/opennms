@@ -44,11 +44,11 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -666,8 +666,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     /**
-     * Enhancement: Allows specific or ranges to be merged into snmp configuration
-     * with many other attributes.  Uses new classes the wrap Castor generated code to
+     * Enhancement: Allows specific or ranges to be merged into SNMP configuration
+     * with many other attributes.  Uses new classes the wrap Castor-generated code to
      * help with merging, comparing, and optimizing definitions.  Thanks for your
      * initial work on this Gerald.
      *

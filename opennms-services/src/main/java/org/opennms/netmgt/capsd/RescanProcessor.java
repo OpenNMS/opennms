@@ -47,9 +47,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.IfCollector.SupportedProtocol;
 import org.opennms.netmgt.capsd.snmp.IfTable;
@@ -564,7 +564,7 @@ public final class RescanProcessor implements Runnable {
             DbNodeEntry node, int ifIndex, IfSnmpCollector snmpc,
             InetAddress ifAddr) throws SQLException {
         if (log().isDebugEnabled()) {
-            log().debug("updateNonIpInterface: updating non-IP snmp interface "
+            log().debug("updateNonIpInterface: updating non-IP SNMP interface "
                       + "with nodeId=" + node.getNodeId() + " and ifIndex="
                       + ifIndex);
         }
@@ -817,7 +817,7 @@ public final class RescanProcessor implements Runnable {
                       + ifaddrString + "(targetIf="
                       + str(target) + ")");
             if (doesSnmp) {
-                log().debug("updateInterface: the snmp collection passed in is "
+                log().debug("updateInterface: the SNMP collection passed in is "
                           + "collected via"
                           + (snmpc ==  null ? "No SnmpCollection passed in (snmpc == null)" : str(snmpc.getCollectorTargetAddress())));
             }
@@ -855,7 +855,7 @@ public final class RescanProcessor implements Runnable {
             ipAddrTable = snmpc.getIpAddrTable();
 
             if (ipAddrTable == null) {
-                log().error("updateInterface: null ipAddrTable in the snmp "
+                log().error("updateInterface: null ipAddrTable in the SNMP "
                           + "collection");
             } else {
                 if (ifaddrString.equals("0.0.0.0") || ifaddr.isLoopbackAddress()) {
@@ -1707,7 +1707,7 @@ public final class RescanProcessor implements Runnable {
          */		
         if (snmpc != null && !snmpc.failed() && ifIndex != -1) {
             if (log().isDebugEnabled()) {
-                log().debug("updateSnmpInfo: updating snmp interface for "
+                log().debug("updateSnmpInfo: updating SNMP interface for "
                           + "nodeId/ifIndex="
                           + node.getNodeId() + "/" + ifIndex);
             }
@@ -1887,7 +1887,7 @@ public final class RescanProcessor implements Runnable {
             // end if complete snmp info available
         } else if (snmpc != null && snmpc.hasIpAddrTable() && ifIndex != -1) {
             if (log().isDebugEnabled()) {
-                log().debug("updateSnmpInfo: updating snmp interface for "
+                log().debug("updateSnmpInfo: updating SNMP interface for "
                           + "nodeId/ifIndex/ipAddr="
                           + node.getNodeId() + "/" + ifIndex + "/" + ifaddr
                           + " based on ipAddrTable only - No ifTable "
@@ -1924,7 +1924,7 @@ public final class RescanProcessor implements Runnable {
             // allow for lame snmp hosts with no ipAddrTable
             ifIndex = CapsdConfig.LAME_SNMP_HOST_IFINDEX;
             if (log().isDebugEnabled()) {
-                log().debug("updateSnmpInfo: updating snmp interface for "
+                log().debug("updateSnmpInfo: updating SNMP interface for "
                           + "nodeId/ipAddr=" + node.getNodeId() + "/" + ifaddr
                           + " based on ip address only - No ipAddrTable "
                           + "available");
@@ -2600,7 +2600,7 @@ public final class RescanProcessor implements Runnable {
 
         // SNMP collection successful?
         if (!snmpc.hasIpAddrTable()) {
-            log().error("areDbInterfacesInSnmpCollection: Snmp Collector failed.");
+            log().error("areDbInterfacesInSnmpCollection: SNMP Collector failed.");
             return false;
         }
 
@@ -2612,7 +2612,7 @@ public final class RescanProcessor implements Runnable {
         }
 
         if (ipAddrTable == null) {
-            log().error("areDbInterfacesInSnmpCollection: null ipAddrTable in the snmp collection");
+            log().error("areDbInterfacesInSnmpCollection: null ipAddrTable in the SNMP collection");
             return false;
         }
 
@@ -2650,7 +2650,7 @@ public final class RescanProcessor implements Runnable {
             
             if (!found) {
                 if (log().isDebugEnabled()) {
-                    log().debug("areDbInterfacesInSnmpCollection: ipaddress : " + ipaddrString + " not in the snmp collection. Snmp collection may not be usable.");
+                    log().debug("areDbInterfacesInSnmpCollection: ipaddress : " + ipaddrString + " not in the SNMP collection. SNMP collection may not be usable.");
                 }
                 return false;
             }
@@ -3002,23 +3002,23 @@ public final class RescanProcessor implements Runnable {
         final String ifaddrString = str(ifaddr);
 
         if (ifaddrString == null) {
-        	log().info("old primary snmp interface has an invalid address: " + ifaddr);
+        	log().info("old primary SNMP interface has an invalid address: " + ifaddr);
         	return false;
         }
 
 		if (log().isDebugEnabled()) {
-            log().debug("running collection for DB primary snmp interface " + ifaddrString);
+            log().debug("running collection for DB primary SNMP interface " + ifaddrString);
         }
         IfCollector collector = new IfCollector(m_pluginManager, ifaddr, true, probedAddrs);
         collector.run();
         IfSnmpCollector snmpc = collector.getSnmpCollector();
         if (snmpc == null) {
-            log().debug("SNMP Collector from DB primary snmp interface is null");
+            log().debug("SNMP Collector from DB primary SNMP interface is null");
         } else {
             gotSnmpCollection = true;
             collectorMap.put(ifaddrString, collector);
             if (log().isDebugEnabled()) {
-                log().debug("SNMP data collected from DB primary snmp interface" + ifaddrString);
+                log().debug("SNMP data collected from DB primary SNMP interface" + ifaddrString);
             }
             if (!snmpc.hasIfTable()) {
                 log().debug("SNMP Collector has no IfTable");
@@ -3097,7 +3097,7 @@ public final class RescanProcessor implements Runnable {
 
         if (newSnmpPrimaryIf == null) {
             newSnmpPrimaryIf = snmpc.getCollectorTargetAddress();
-            psiType = "snmp collector target address";
+            psiType = "SNMP collector target address";
         }
 
         if (newSnmpPrimaryIf != null) {
@@ -3106,7 +3106,7 @@ public final class RescanProcessor implements Runnable {
             }
             SuspectEventProcessor.setPrimarySnmpInterface(dbc, dbNodeEntry, newSnmpPrimaryIf, oldPriIf);
         } else {
-            log().debug("SuspectEventProcessor: Unable to determine a primary snmp interface");
+            log().debug("SuspectEventProcessor: Unable to determine a primary SNMP interface");
         }   
         
         /*

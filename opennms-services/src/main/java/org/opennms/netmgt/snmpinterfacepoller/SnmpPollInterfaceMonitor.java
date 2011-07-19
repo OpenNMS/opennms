@@ -100,7 +100,7 @@ public class SnmpPollInterfaceMonitor {
             int i=0;
             for(SnmpValue result : results) {
                 if (result != null) {
-                    log().debug("Snmp Value is "+ result.toInt() + " for oid: " + oids[i]);
+                    log().debug("SNMP Value is "+ result.toInt() + " for oid: " + oids[i]);
                     if (i< mifaces.size()) {
                         SnmpMinimalPollInterface miface = mifaces.get(i);
                         miface.setStatus(PollStatus.up());
@@ -111,14 +111,14 @@ public class SnmpPollInterfaceMonitor {
                         miface.setOperstatus(result.toInt());
                     }
                 } else {
-                    log().info("Snmp Value is null for oid: " + oids[i]);
+                    log().info("SNMP Value is null for oid: " + oids[i]);
                 }
                 i++;
             }
         } catch (NumberFormatException e) {
             log().error("Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            log().error("Invalid Snmp Criteria: " + e.getMessage());
+            log().error("Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             log().error("Unexpected exception during SNMP poll of interface " + agentConfig, t);
         }

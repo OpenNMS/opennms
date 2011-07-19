@@ -108,7 +108,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	public boolean collectBridgeForwardingTable= true;
 
 	/**
-	 * Constructs a new snmp collector for a node using the passed interface as
+	 * Constructs a new SNMP collector for a node using the passed interface as
 	 * the collection point. The collection does not occur until the
 	 * <code>run</code> method is invoked.
 	 * 
@@ -129,7 +129,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	// for debug only
 
 	/**
-	 * Constructs a new snmp collector for a node using the passed interface as
+	 * Constructs a new SNMP collector for a node using the passed interface as
 	 * the collection point. The collection does not occur until the
 	 * <code>run</code> method is invoked.
 	 * 

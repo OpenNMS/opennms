@@ -285,12 +285,11 @@ public class HttpMonitorTest {
 
         Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
         Parameter p = new Parameter();
-        HttpMonitor monitor = new HttpMonitor();
         p.setKey("basic-authentication");
         p.setValue("Aladdin:open sesame");
         m.put(p.getKey(), p.getValue());
-        assertEquals("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", monitor.determineBasicAuthentication(m));
-        assertFalse( "QWxhZGRpbjpvcZVuIHNlc2FtZQ==".equals(monitor.determineBasicAuthentication(m)));
+        assertEquals("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", HttpMonitor.determineBasicAuthentication(m));
+        assertFalse( "QWxhZGRpbjpvcZVuIHNlc2FtZQ==".equals(HttpMonitor.determineBasicAuthentication(m)));
     }
 
     @Test

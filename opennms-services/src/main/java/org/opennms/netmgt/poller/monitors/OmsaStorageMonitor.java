@@ -56,9 +56,11 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
-//this does snmp and there relies on the snmp configuration so it is not distributable
 /**
  * <p>OmsaStorageMonitor class.</p>
+ * <p>
+ * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
+ * </p>
  *
  * @author ranger
  * @version $Id: $
@@ -183,7 +185,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         } catch (NumberFormatException e) {
             status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
+            status = logDown(Level.ERROR, "Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }

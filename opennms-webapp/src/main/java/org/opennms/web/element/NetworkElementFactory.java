@@ -518,8 +518,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /*
-     * Returns all interfaces, but only includes snmp data if includeSNMP is true
-     * This may be useful for pages that don't need snmp data and don't want to execute
+     * Returns all interfaces, but only includes SNMP data if includeSNMP is true
+     * This may be useful for pages that don't need SNMP data and don't want to execute
      * a sub-query per interface!
      *
      * @param includeSNMP a boolean.
@@ -1489,8 +1489,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * 1) nessuna interfaccia associabile (come rappresentare il link?) 
      * se il nodo ha una sola interfaccia allora va associata anche a quella
      * altrimenti non la associamo
-     * 2) node ha ip interface e node parent has snmp interface
-     * 3) node ha una interfaccia snmp e node parent pure
+     * 2) node ha ip interface e node parent has SNMP interface
+     * 3) node ha una interfaccia SNMP e node parent pure
      * 
      */
 	private LinkInterface createLinkInterface(DataLinkInterface dliface, boolean isParent) {

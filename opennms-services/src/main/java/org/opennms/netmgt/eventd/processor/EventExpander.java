@@ -583,7 +583,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 e.setUei(econf.getUei());
             }
 
-            // Copy the Snmp Information
+            // Copy the SNMP information
             //
             if (e.getSnmp() == null && econf.getSnmp() != null) {
                 e.setSnmp(transform(econf.getSnmp()));

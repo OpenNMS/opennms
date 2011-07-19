@@ -15,7 +15,6 @@ public class Filter {
     static PropertyGetter<String> serviceID() {
         return new PropertyGetter<String>() {
 
-            @Override
             public String get(ServiceCollector c) {
                 return c.getServiceID();
             }
@@ -27,7 +26,6 @@ public class Filter {
     static PropertyGetter<Integer> collectionCount() {
         return new PropertyGetter<Integer>() {
 
-            @Override
             public Integer get(ServiceCollector c) {
                 return c.getCollectionCount();
             }
@@ -39,7 +37,6 @@ public class Filter {
     static Predicate<ServiceCollector> and(final Predicate<ServiceCollector> a, final Predicate<ServiceCollector> b) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return a.apply(svcCollector) && b.apply(svcCollector);
             }
@@ -49,7 +46,6 @@ public class Filter {
     static Predicate<ServiceCollector> or(final Predicate<ServiceCollector> a, final Predicate<ServiceCollector> b) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return a.apply(svcCollector) || b.apply(svcCollector);
             }
@@ -60,7 +56,6 @@ public class Filter {
     static <T> Predicate<ServiceCollector> eq(final PropertyGetter<T> getter, final T val) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return getter.get(svcCollector).equals(val);
             }
@@ -71,7 +66,6 @@ public class Filter {
     static Predicate<ServiceCollector> greaterThan(final PropertyGetter<Integer> getter, final Integer val) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return getter.get(svcCollector) > val;
             }
@@ -82,7 +76,6 @@ public class Filter {
     static Predicate<ServiceCollector> lessThan(final PropertyGetter<Integer> getter, final Integer val) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return getter.get(svcCollector) < val;
             }
@@ -92,7 +85,6 @@ public class Filter {
     static Predicate<ServiceCollector> byServiceID(final String serviceID) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getServiceID().equals(serviceID);
             }
@@ -103,7 +95,6 @@ public class Filter {
     static Predicate<ServiceCollector> byPartialServiceID(final String searchString) {
         return new Predicate<ServiceCollector>() {
             
-            @Override
             public boolean apply(ServiceCollector svcCollector){
                 return svcCollector.getServiceID().contains(searchString);
             }
@@ -113,7 +104,6 @@ public class Filter {
     static Predicate<ServiceCollector> byTotalCollections(final long totalCollections) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getCollectionCount() == totalCollections;
             }
@@ -124,7 +114,6 @@ public class Filter {
     static Predicate<ServiceCollector> byTotalCollectionTime(final long totalCollectionTime) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getCollectionCount() == totalCollectionTime;
             }
@@ -135,7 +124,6 @@ public class Filter {
     static Predicate<ServiceCollector> byAverageCollectionTime(final long averageCollectionTime) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getCollectionCount() == averageCollectionTime;
             }
@@ -146,7 +134,6 @@ public class Filter {
     static Predicate<ServiceCollector> byAverageTimeBetweenCollections(final long averageTimeBetweenCollections) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getCollectionCount() == averageTimeBetweenCollections;
             }
@@ -157,7 +144,6 @@ public class Filter {
     static Predicate<ServiceCollector> byTotalSuccessfulCollections(final long totalSuccessfulCollections) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getCollectionCount() == totalSuccessfulCollections;
             }
@@ -168,7 +154,6 @@ public class Filter {
     static Predicate<ServiceCollector> bySuccessfulPercentage(final double successfulPercentage) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getCollectionCount() == successfulPercentage;
             }
@@ -179,7 +164,6 @@ public class Filter {
     static Predicate<ServiceCollector> byAverageSuccessfulCollectionTime(final long averageSuccessfulCollectionTime) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getCollectionCount() == averageSuccessfulCollectionTime;
             }
@@ -190,7 +174,6 @@ public class Filter {
     static Predicate<ServiceCollector> byTotalUnsuccessfulCollections(final long totalUnsuccessfulCollections) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getCollectionCount() == totalUnsuccessfulCollections;
             }
@@ -201,7 +184,6 @@ public class Filter {
     static Predicate<ServiceCollector> byUnsuccessfulPercentage(final double unsuccessfulPercentage) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getCollectionCount() == unsuccessfulPercentage;
             }
@@ -212,7 +194,6 @@ public class Filter {
     static Predicate<ServiceCollector> byAverageUnsuccessfulCollectionTime(final long averageUnsuccessfulCollectionTime) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getCollectionCount() == averageUnsuccessfulCollectionTime;
             }
@@ -223,7 +204,6 @@ public class Filter {
     static Predicate<ServiceCollector> byTotalPersistTime(final long totalPersistTime) {
         return new Predicate<ServiceCollector>() {
 
-            @Override
             public boolean apply(ServiceCollector svcCollector) {
                 return svcCollector.getCollectionCount() == totalPersistTime;
             }
