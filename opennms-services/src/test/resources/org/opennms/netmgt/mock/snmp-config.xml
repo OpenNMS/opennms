@@ -2,9 +2,9 @@
 <snmp-config retry="3" timeout="3000" read-community="public"
   write-community="private" port="161" version="v1">
 
-  <definition port="9161" version="@myVersion@" security-name="opennmsUser"
+  <definition port="9161" version="${myVersion}" security-name="opennmsUser"
     auth-passphrase="0p3nNMSv3" privacy-passphrase="0p3nNMSv3">
-    <specific>@myLocalHost@</specific>
+    <specific>${myLocalHost}</specific>
   </definition>
 
   <definition version="v1" read-community="specificv1">
@@ -17,7 +17,7 @@
   </definition>
 
   <definition version="v1" read-community="specificv1"
-    proxy-host="@myLocalHost@">
+    proxy-host="${myLocalHost}">
     <specific>10.0.0.3</specific>
   </definition>
 
