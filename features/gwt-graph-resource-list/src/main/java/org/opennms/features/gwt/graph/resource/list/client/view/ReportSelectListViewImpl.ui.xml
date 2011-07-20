@@ -6,6 +6,8 @@
 			overflow:auto;
 			
 		}
+		
+		
 	</ui:style>
 	<g:LayoutPanel ui:field="m_layoutPanel">
 	   <g:layer top="0" right="0" bottom="40px" left="0" >
@@ -13,8 +15,8 @@
 	           <opennms:ReportSelectListCellTree ui:field="m_reportCellTree"></opennms:ReportSelectListCellTree>
            </g:FlowPanel>
 	   </g:layer>
-	   <g:layer height="40px" right="0" left="0" bottom="0">
-	       <g:HorizontalPanel>
+	   <g:layer height="40px" width="300px" left="0" bottom="0">
+	       <g:HorizontalPanel styleName="onms-table-no-borders-margin">
 	           <g:Button ui:field="m_removeButton">Clear Selection</g:Button>
 	           <g:Button ui:field="m_graphButton">Graph Selection</g:Button>
 	       </g:HorizontalPanel>
