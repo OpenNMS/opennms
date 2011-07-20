@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt;
+package org.opennms.core.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

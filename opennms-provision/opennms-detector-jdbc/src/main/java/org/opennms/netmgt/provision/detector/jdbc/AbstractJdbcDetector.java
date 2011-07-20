@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.jdbc;
 
+import org.opennms.core.utils.DBTools;
 import org.opennms.netmgt.provision.detector.jdbc.client.JDBCClient;
 import org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
-import org.opennms.netmgt.provision.support.jdbc.DBTools;
 
 /**
  * <p>Abstract AbstractJdbcDetector class.</p>

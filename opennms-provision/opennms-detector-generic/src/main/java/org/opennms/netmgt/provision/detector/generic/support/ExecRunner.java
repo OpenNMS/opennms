@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.StringTokenizer;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.StreamGobbler;
 
 /**
  * <P>

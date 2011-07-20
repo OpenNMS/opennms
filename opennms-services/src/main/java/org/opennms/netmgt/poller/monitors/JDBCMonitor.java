@@ -40,9 +40,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.DBTools;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.DBTools;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;

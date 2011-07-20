@@ -31,7 +31,7 @@ package org.opennms.tools.rrd.converter;
 import java.util.Date;
 
 /**
- * This LogUtils class is a simple log4j emulator that prints output to {@link System.err}.
+ * This LogUtils class is a simple log4j emulator that prints output to {@link System#err}.
  */
 public abstract class LogUtils {
     public static enum Level {
