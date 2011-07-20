@@ -31,10 +31,10 @@ package org.opennms.netmgt.provision.detector.generic.client;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.generic.request.GpRequest;
 import org.opennms.netmgt.provision.detector.generic.response.GpResponse;
-import org.opennms.netmgt.provision.detector.generic.support.ExecRunner;
 import org.opennms.netmgt.provision.support.Client;
 
 /**
