@@ -157,14 +157,15 @@ public class ReportSelectListCellTree extends CellTree {
             }
             
             for(String typeName : types.keySet()) {
+                ResourceType rType = new ResourceType(typeName);
                 
                 for(ResourceListItem r : resourceList) {
                     if(r.getType().equals(typeName)) {
-                        ResourceType rType = new ResourceType(typeName);
                         rType.addResourceListItem(r);
-                        m_resourceTypes.add(rType);
                     }
+                   
                 }
+                m_resourceTypes.add(rType);
             }
         }
 
