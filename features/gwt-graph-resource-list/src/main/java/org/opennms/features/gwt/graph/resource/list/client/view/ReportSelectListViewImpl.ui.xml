@@ -2,13 +2,18 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:opennms="urn:import:org.opennms.features.gwt.graph.resource.list.client.view">
 	<ui:style>
-		
+		.divContainer{
+			overflow:auto;
+			
+		}
 	</ui:style>
 	<g:LayoutPanel ui:field="m_layoutPanel">
 	   <g:layer top="0" right="0" bottom="40px" left="0" >
-	       <opennms:ReportSelectListCellTree ui:field="m_reportCellTree"></opennms:ReportSelectListCellTree>
+	       <g:FlowPanel styleName="{style.divContainer}">
+	           <opennms:ReportSelectListCellTree ui:field="m_reportCellTree"></opennms:ReportSelectListCellTree>
+           </g:FlowPanel>
 	   </g:layer>
-	   <g:layer top="460px" right="0" left="0" bottom="0">
+	   <g:layer height="40px" right="0" left="0" bottom="0">
 	       <g:HorizontalPanel>
 	           <g:Button ui:field="m_removeButton">Clear Selection</g:Button>
 	           <g:Button ui:field="m_graphButton">Graph Selection</g:Button>
