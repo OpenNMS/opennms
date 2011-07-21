@@ -63,7 +63,7 @@ public interface ServiceThresholder {
      *
      * @param parameters a {@link java.util.Map} object.
      */
-    public void initialize(Map parameters);
+    public void initialize(Map<?,?> parameters);
     
     /**
      * Called when configurations have changed and need to be refreshed at the ServiceThresolder level.
@@ -85,7 +85,7 @@ public interface ServiceThresholder {
      * @param iface a {@link org.opennms.netmgt.threshd.ThresholdNetworkInterface} object.
      * @param parameters a {@link java.util.Map} object.
      */
-    public void initialize(ThresholdNetworkInterface iface, Map parameters);
+    public void initialize(ThresholdNetworkInterface iface, Map<?,?> parameters);
 
     /**
      * <p>release</p>
@@ -104,5 +104,5 @@ public interface ServiceThresholder {
      * @param parameters a {@link java.util.Map} object.
      * @return a int.
      */
-    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map parameters);
+    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map<?,?> parameters);
 }

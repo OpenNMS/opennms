@@ -131,7 +131,7 @@ final class LatencyThresholder implements ServiceThresholder {
      *                plug-in from functioning.
      */
     @Override
-    public void initialize(Map parameters) {
+    public void initialize(Map<?,?> parameters) {
         // Service name
         //
         m_svcName = (String) parameters.get("svcName");
@@ -162,7 +162,7 @@ final class LatencyThresholder implements ServiceThresholder {
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
      */
-    public void initialize(ThresholdNetworkInterface iface, Map parameters) {
+    public void initialize(ThresholdNetworkInterface iface, Map<?,?> parameters) {
         // Get interface address from NetworkInterface
         //
         if (iface.getType() != NetworkInterface.TYPE_INET)
@@ -336,7 +336,7 @@ final class LatencyThresholder implements ServiceThresholder {
      *
      * Perform threshold checking.
      */
-    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map parameters) {
+    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map<?,?> parameters) {
 		LatencyInterface latIface = new LatencyInterface(iface, m_svcName);
 		LatencyParameters latParms = new LatencyParameters(parameters, m_svcName);
         

@@ -161,7 +161,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
             returnValue = "void";
         }
         
-        else if (returnValue instanceof Map && !(returnValue instanceof Hashtable)) {
+        else if (returnValue instanceof Map<?,?> && !(returnValue instanceof Hashtable<?,?>)) {
             returnValue = new Hashtable<Object, Object>((Map<?, ?>)returnValue);
         }
         

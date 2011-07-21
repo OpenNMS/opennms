@@ -69,7 +69,7 @@ public class SnmpThresholdConfiguration {
      * @param thresholdsDao a {@link org.opennms.netmgt.threshd.ThresholdsDao} object.
      * @param parms a {@link java.util.Map} object.
      */
-    public SnmpThresholdConfiguration(ThresholdsDao thresholdsDao, Map parms) {
+    public SnmpThresholdConfiguration(ThresholdsDao thresholdsDao, Map<?,?> parms) {
         setRange(ParameterMap.getKeyedInteger(parms, "range", SnmpThresholdConfiguration.DEFAULT_RANGE));
         setInterval(ParameterMap.getKeyedInteger(parms, "interval", SnmpThresholdConfiguration.DEFAULT_INTERVAL));
         setThresholdGroup(thresholdsDao.get(ParameterMap.getKeyedString(parms, "thresholding-group", DEFAULT_GROUP)));

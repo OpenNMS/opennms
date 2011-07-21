@@ -67,7 +67,7 @@ public class MX4JConnectionFactory {
    * @param address a {@link java.net.InetAddress} object.
    * @return a {@link org.opennms.protocols.jmx.connectors.MX4JConnectionWrapper} object.
    */
-  public static MX4JConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address) {
+  public static MX4JConnectionWrapper getMBeanServerConnection(Map<?,?> propertiesMap, InetAddress address) {
       MX4JConnectionWrapper connectionWrapper = null;
       JMXServiceURL url = null;
       
@@ -99,7 +99,7 @@ public class MX4JConnectionFactory {
               String username   = ParameterMap.getKeyedString(propertiesMap, "username", null);
               String password   = ParameterMap.getKeyedString(propertiesMap, "password", null);
               
-              HashMap env = new HashMap();
+              Map<String,Object> env = new HashMap<String,Object>();
               
               // Provide the credentials required by the server to successfully
               // perform user authentication

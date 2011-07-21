@@ -167,7 +167,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
-    public void initialize(Map parameters) {
+    public void initialize(Map<?,?> parameters) {
     }
 
     /**
@@ -189,7 +189,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
      */
-    public void initialize(ThresholdNetworkInterface iface, Map parameters) {
+    public void initialize(ThresholdNetworkInterface iface, Map<?,?> parameters) {
         // Get interface address from NetworkInterface
         if (iface.getType() != NetworkInterface.TYPE_INET) {
             throw new RuntimeException("Unsupported interface type, only TYPE_INET currently supported");
@@ -378,7 +378,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      *
      * Perform threshold checking.
      */
-    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map parameters) {
+    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map<?,?> parameters) {
         ThreadCategory log = log();
         String dsDir = serviceName;
 
