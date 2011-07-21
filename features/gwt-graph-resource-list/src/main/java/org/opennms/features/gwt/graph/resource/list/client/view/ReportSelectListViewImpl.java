@@ -6,12 +6,12 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -28,12 +28,17 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
     LayoutPanel m_layoutPanel;
     
     @UiField
+    FlowPanel m_treeContainer;
+    
+    @UiField
     Button m_removeButton;
     
     @UiField
     Button m_graphButton;
     
     @UiField
+    Button m_searchButton;
+    
     ReportSelectListCellTree m_reportCellTree;
     
     private List<ResourceListItem> m_dataList;
@@ -63,11 +68,11 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
         initWidget(uiBinder.createAndBindUi(this));
         
         m_layoutPanel.setSize("100%", "500px");
-        
+        m_treeContainer.add(makeCellTree(m_dataList));
     }
     
-    @UiFactory ReportSelectListCellTree makeCellTree() {
-        return new ReportSelectListCellTree(m_dataList, m_selectionModel);
+    private ReportSelectListCellTree makeCellTree(List<ResourceListItem> list) {
+        return new ReportSelectListCellTree(list, m_selectionModel);
     }
     
     @UiHandler("m_graphButton")
@@ -80,9 +85,15 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
         m_presenter.onClearSelectionButtonClick();
     }
     
+    @UiHandler("m_searchButton")
+    public void onSearchButtonClick(ClickEvent event) {
+        m_presenter.onSearchButtonClick();
+    }
+    
     @Override
     public void setDataList(List<ResourceListItem> dataList) {
-        
+        m_treeContainer.clear();
+        m_treeContainer.add(makeCellTree(dataList));
     }
 
     @Override
@@ -103,6 +114,17 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
     @Override
     public void showWarning() {
         Window.alert("Please Select a Report to Graph");
+    }
+
+    @Override
+    public List<ResourceListItem> getDataList() {
+        return m_dataList;
+    }
+
+    @Override
+    public Widget searchPopupTarget() {
+        GWT.log("treeContainer height: " + m_treeContainer.getOffsetHeight());
+        return m_treeContainer.asWidget();
     }
 
 

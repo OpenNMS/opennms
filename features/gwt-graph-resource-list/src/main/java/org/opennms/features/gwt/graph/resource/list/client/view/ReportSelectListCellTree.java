@@ -43,6 +43,7 @@ public class ReportSelectListCellTree extends CellTree {
         public List<ResourceListItem> getResourceList(){
             return m_resourceList;
         }
+        
     }
     
     
@@ -52,9 +53,7 @@ public class ReportSelectListCellTree extends CellTree {
             @Override
             public void render(Context context, ResourceListItem value, SafeHtmlBuilder sb) {
                 if(value != null) {
-                    //sb.appendHtmlConstant("<div style='font-size: 70%;'>");
                     sb.appendEscaped(value.getValue());
-                    //sb.appendHtmlConstant("</div>");
                 }
                 
             }
@@ -64,9 +63,7 @@ public class ReportSelectListCellTree extends CellTree {
             @Override
             public void render(Context context, ResourceType value, SafeHtmlBuilder sb) {
                 if(value != null) {
-                    //sb.appendHtmlConstant("<div style='font-size: 70%'>");
-                    sb.appendEscaped(value.getName());
-                    //sb.appendHtmlConstant("</div>");
+                    sb.appendEscaped(value.getName() + "    (" + value.getResourceList().size() + ")");
                 }
             }
         }
@@ -126,9 +123,7 @@ public class ReportSelectListCellTree extends CellTree {
 
                 @Override
                 public void render(Context context, ResourceListItem value, SafeHtmlBuilder sb) {
-                    sb.appendHtmlConstant("<table><tbody><tr>");
                     super.render(context, value, sb);
-                    sb.appendHtmlConstant("</tr></tbody></table>");
                 }
 
                 @Override

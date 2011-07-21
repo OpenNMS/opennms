@@ -4,21 +4,21 @@
 	<ui:style>
 		.divContainer{
 			overflow:auto;
-			
+			height: 460px;
 		}
 		
 		
 	</ui:style>
 	<g:LayoutPanel ui:field="m_layoutPanel">
 	   <g:layer top="0" right="0" bottom="40px" left="0" >
-	       <g:FlowPanel styleName="{style.divContainer}">
-	           <opennms:ReportSelectListCellTree ui:field="m_reportCellTree"></opennms:ReportSelectListCellTree>
+	       <g:FlowPanel ui:field="m_treeContainer" styleName="{style.divContainer}">
            </g:FlowPanel>
 	   </g:layer>
-	   <g:layer height="40px" width="300px" left="0" bottom="0">
+	   <g:layer height="40px" left="0" right="0" bottom="0" minWidth="350px">
 	       <g:HorizontalPanel styleName="onms-table-no-borders-margin">
 	           <g:Button ui:field="m_removeButton">Clear Selection</g:Button>
 	           <g:Button ui:field="m_graphButton">Graph Selection</g:Button>
+	           <g:Button ui:field="m_searchButton">Search</g:Button>
 	       </g:HorizontalPanel>
 	   </g:layer>
 	</g:LayoutPanel>

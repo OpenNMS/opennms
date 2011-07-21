@@ -18,4 +18,6 @@ public interface ReportSelectListView<T> {
     Widget asWidget();
     void clearAllSelections();
     void showWarning();
+    List<ResourceListItem> getDataList();
+    Widget searchPopupTarget();
 }

@@ -55,6 +55,7 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
     private SimpleEventBus m_eventBus = new SimpleEventBus();
     private UIObject m_target;
     private LayoutPanel m_layoutPanel;
+    private int m_heightOffset = 274;
     
     public SearchPopup() {
         super(true);
@@ -123,7 +124,7 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
             @Override
             public void setPosition(int offsetWidth, int offsetHeight) {
                 int left = m_target.getAbsoluteLeft();
-                int top = m_target.getAbsoluteTop() + 274;
+                int top = m_target.getAbsoluteTop() + getHeightOffset();
                 m_layoutPanel.setWidth((m_target.getOffsetWidth() - 12) + "px");
                 setPopupPosition(left, top);
                 
@@ -145,6 +146,16 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
     @Override
     public HasKeyPressHandlers getTextBox() {
         return m_tf;
+    }
+
+    @Override
+    public void setHeightOffset(int offset) {
+        m_heightOffset = offset;
+        
+    }
+    
+    private int getHeightOffset() {
+        return m_heightOffset;
     }
     
     

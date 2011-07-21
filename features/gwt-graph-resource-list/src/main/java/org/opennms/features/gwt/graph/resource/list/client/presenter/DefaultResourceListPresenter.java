@@ -26,6 +26,7 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
         HasKeyPressHandlers getTextBox();
         Widget asWidget();
         String getSearchText();
+        void setHeightOffset(int offset);
         void showSearchPopup();
         void hideSearchPopup();
         void setTargetWidget(Widget target);
