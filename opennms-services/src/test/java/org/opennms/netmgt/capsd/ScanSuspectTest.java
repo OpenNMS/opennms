@@ -30,8 +30,6 @@ package org.opennms.netmgt.capsd;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -175,21 +173,9 @@ public class ScanSuspectTest extends OpenNMSTestCase {
         super.tearDown();
     }
 
-    protected InetAddress myLocalHost() {
-        
-      try {
-          return InetAddress.getLocalHost();
-      } catch (UnknownHostException e) {
-          e.printStackTrace();
-          fail("Exception getting localhost");
-      }
-      
-      return null;
-    }
-    
     public final void testStartStop() throws MarshalException, ValidationException, IOException {
         m_capsd.start();
-        m_capsd.scanSuspectInterface(InetAddressUtils.str(this.myLocalHost()));
+        m_capsd.scanSuspectInterface(InetAddressUtils.getLocalHostAddressAsString());
         m_capsd.stop();
     }
     

@@ -29,10 +29,9 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
@@ -253,11 +252,7 @@ final class CollectableService implements ReadyRunnable {
         builder.setNodeid(m_nodeId);
         builder.setInterface(m_agent.getInetAddress());
         builder.setService(m_spec.getServiceName());
-        try {
-            builder.setHost(InetAddress.getLocalHost().getHostAddress());
-        } catch (UnknownHostException ex) {
-            builder.setHost("unresolved.host");
-        }
+        builder.setHost(InetAddressUtils.getLocalHostName());
         
         if (reason != null) {
             builder.addParam("reason", reason);

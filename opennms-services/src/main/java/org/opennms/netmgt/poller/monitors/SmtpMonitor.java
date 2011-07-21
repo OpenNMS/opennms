@@ -37,7 +37,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -46,7 +45,6 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -88,14 +86,14 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
     /**
      * The name of the local host.
      */
-    private static String LOCALHOST_NAME;
+    private static final String LOCALHOST_NAME = InetAddressUtils.getLocalHostName();
 
     /**
-     * Used to check for a multiline response. A multline response begins with
-     * the same 3 digit response code, but has a hypen after the last number
+     * Used to check for a multiline response. A multiline response begins with
+     * the same 3 digit response code, but has a hyphen after the last number
      * instead of a space.
      */
-    private static RE MULTILINE = null;
+    private static final RE MULTILINE;
 
     /**
      * Used to check for the end of a multiline response. The end of a multiline
@@ -103,16 +101,10 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
      */
     private RE ENDMULTILINE = null;
 
-    // Init the local host and MULTILINE
-    //
+    /**
+     * Init MULTILINE
+     */
     static {
-        try {
-            LOCALHOST_NAME = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException uhE) {
-            ThreadCategory.getInstance(SmtpMonitor.class).error("Failed to resolve localhost name, using localhost");
-            LOCALHOST_NAME = "localhost";
-        }
-
         try {
             MULTILINE = new RE("^[0-9]{3}-");
         } catch (RESyntaxException ex) {

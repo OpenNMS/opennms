@@ -30,7 +30,6 @@ package org.opennms.netmgt.threshd;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -131,6 +130,7 @@ final class LatencyThresholder implements ServiceThresholder {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map parameters) {
         // Service name
         //
@@ -139,14 +139,7 @@ final class LatencyThresholder implements ServiceThresholder {
             log().debug("initialize: latency thresholder for service '" + m_svcName + "'");
 
         // Get local host name (used when generating threshold events)
-        //
-        try {
-            m_host = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            if (log().isEnabledFor(ThreadCategory.Level.WARN))
-                log().warn("initialize: Unable to resolve local host name.", e);
-            m_host = "unresolved.host";
-        }
+        m_host = InetAddressUtils.getLocalHostName();
     }
 
     /**

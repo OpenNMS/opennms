@@ -31,7 +31,6 @@ package org.opennms.netmgt.trapd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
@@ -68,7 +67,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
     /**
      * The name of the local host.
      */
-    private String m_localAddr;
+    private static final String LOCALHOST_ADDRESS = InetAddressUtils.getLocalHostName();
 
     /**
      * Current status of the fiber
@@ -226,7 +225,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
         // construct event with 'trapd' as source
         EventBuilder bldr = new EventBuilder(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
         bldr.setInterface(addr(trapInterface));
-        bldr.setHost(m_localAddr);
+        bldr.setHost(LOCALHOST_ADDRESS);
 
         // send the event to eventd
         m_eventMgr.sendNow(bldr.getEvent());
@@ -277,13 +276,6 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      * The constructor
      */
     public TrapQueueProcessor() {
-        try {
-            m_localAddr = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            m_localAddr = "localhost";
-            log().error("<ctor>: Error looking up local hostname: " + e, e);
-        }
-
     }
 
 
