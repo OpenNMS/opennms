@@ -175,7 +175,7 @@ public class ScanSuspectTest extends OpenNMSTestCase {
 
     public final void testStartStop() throws MarshalException, ValidationException, IOException {
         m_capsd.start();
-        m_capsd.scanSuspectInterface(InetAddressUtils.getLocalHostAddressAsString());
+        m_capsd.scanSuspectInterface(InetAddressUtils.str(this.myLocalHost()));
         m_capsd.stop();
     }
     
