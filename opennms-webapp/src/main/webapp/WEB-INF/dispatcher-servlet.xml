@@ -3,12 +3,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx" 
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-2.5.xsd"
        >
   
   <context:annotation-config/>
+  <context:component-scan base-package="org.opennms.web.controller" /> 
+  
 
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
@@ -20,6 +25,8 @@
     </property>
   </bean>
 
+<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
   <bean	class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
   	    <property name="order" value="0"/>
   </bean>
@@ -28,6 +35,16 @@
     <property name="flowRegistry" ref="flowRegistry"/>
     <property name="order" value="1"/>
   </bean>
+
+  <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+    <property name="order" value="2"/>
+  </bean>
+
+
+  <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+    <property name="order" value="2"/>
+  </bean>
+
 
   <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 	<property name="viewClass"
@@ -55,6 +72,12 @@
     <property name="order" value="1"/>
   </bean>
 
+  <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+  <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+  
+
   <!-- Home Page -->
   <bean name="/frontPage.htm" class="org.opennms.web.controller.FrontPageController"/>
 
@@ -63,6 +86,7 @@
     <property name="foreignSourceService" ref="defaultForeignSourceService" />
     <property name="commandName" value="groupAction" />
   </bean>
+
 
   <bean name="/admin/editProvisioningGroup.htm" class="org.opennms.web.controller.EditProvisioningGroupController">
     <property name="provisioningService" ref="manualProvisioningService" />
@@ -271,6 +295,7 @@
     <property name="defaultSortStyle" value="ID" />
     <property name="webEventRepository" ref="webEventRepository" />
   </bean>
+  
 
   <alias name="/event/list.htm" alias="/event/list" />
   <bean name="/event/list.htm" class="org.opennms.web.controller.event.EventFilterController">
