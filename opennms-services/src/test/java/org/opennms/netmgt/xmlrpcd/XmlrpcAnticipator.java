@@ -115,7 +115,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
                 if (!a.getClass().getName().equals(b.getClass().getName())) {
                     return false;
                 }
-                if (a instanceof Hashtable) {
+                if (a instanceof Hashtable<?,?>) {
                     if (!hashtablesMatchIgnoringDescriptionKeys(a, b)) {
                         return false;
                     }

@@ -33,8 +33,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -81,11 +79,7 @@ public class NtpDetectorTest implements ApplicationContextAware {
             
         };
         m_server.setPort(1800);
-        try {
-            m_server.setInetAddress(InetAddress.getLocalHost());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        m_server.setInetAddress(InetAddressUtils.getLocalHostAddress());
     }
     
     @After

@@ -38,7 +38,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -98,16 +97,9 @@ public final class SmtpPlugin extends AbstractPlugin {
     /**
      * The name of the local host.
      */
-    private static String LOCALHOST_NAME;
+    private static final String LOCALHOST_NAME = InetAddressUtils.getLocalHostName();
 
     static {
-        try {
-            LOCALHOST_NAME = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException uhE) {
-            ThreadCategory.getInstance(SmtpPlugin.class).error("Failed to resolve localhost name, using localhost");
-            LOCALHOST_NAME = "localhost";
-        }
-
         try {
             MULTILINE_RESULT = new RE("^[1-5][0-9]{2}-");
         } catch (RESyntaxException re) {

@@ -2,7 +2,6 @@ package org.opennms.netmgt.snmp.mock;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -187,12 +186,8 @@ public class MockSnmpStrategy implements SnmpStrategy {
         engineID[3] = (byte) (s_enterpriseId & 0xFF);
         byte[] ip = new byte[0];
 
-        try {
-            ip = InetAddress.getLocalHost().getAddress();
-        } catch (final UnknownHostException ex) {
-            LogUtils.debugf(this, "Local host cannot be determined for creation of local engine ID");
-            ip = "OpenNMS".getBytes();
-        }
+        ip = InetAddressUtils.getLocalHostAddress().getAddress();
+
         if (ip.length == 4) {
             // IPv4
             engineID[4] = 1;

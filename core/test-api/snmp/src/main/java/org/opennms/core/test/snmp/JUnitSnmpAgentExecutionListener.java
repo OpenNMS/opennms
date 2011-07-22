@@ -41,6 +41,7 @@ import java.util.Map;
 
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.mock.snmp.MockSnmpDataProvider;
@@ -154,7 +155,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
              * Linux: 127.0.0.1
              * Mac OS: primary external interface
              */
-            host = str(InetAddress.getLocalHost());
+            host = InetAddressUtils.getLocalHostAddressAsString();
             //host = "127.0.0.1";
         }
         

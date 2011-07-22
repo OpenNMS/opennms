@@ -34,7 +34,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +45,7 @@ import java.util.regex.PatternSyntaxException;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
@@ -215,12 +215,7 @@ final class ConvertToEvent {
         bldr.setCreationTime(message.getDate());
 
         // Set event host
-        try {
-            bldr.setHost(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException uhE) {
-            bldr.setHost("unresolved.host");
-            LogUtils.warnf(ConvertToEvent.class, uhE, "Failed to resolve local hostname.");
-        }
+        bldr.setHost(InetAddressUtils.getLocalHostName());
 
         final String hostAddress = message.getHostAddress();
         if (hostAddress != null && hostAddress.length() > 0) {

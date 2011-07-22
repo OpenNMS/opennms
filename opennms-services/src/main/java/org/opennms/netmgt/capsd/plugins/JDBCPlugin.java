@@ -39,9 +39,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.opennms.core.utils.DBTools;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.DBTools;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
 /**

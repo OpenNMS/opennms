@@ -32,7 +32,10 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 
 public class TestMonitoringLocationsConfiguration extends MonitoringLocationsConfiguration {
-    @Override
+
+	private static final long serialVersionUID = 3008390415267170754L;
+
+	@Override
     public void validate() throws ValidationException {
     }
 

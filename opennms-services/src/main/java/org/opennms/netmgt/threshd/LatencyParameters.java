@@ -40,7 +40,7 @@ import org.opennms.core.utils.ParameterMap;
  */
 public class LatencyParameters {
 
-	private Map m_parameters;
+	private Map<?,?> m_parameters;
 	private String m_svcName;
 
 	/**
@@ -49,7 +49,7 @@ public class LatencyParameters {
 	 * @param parameters a {@link java.util.Map} object.
 	 * @param svcName a {@link java.lang.String} object.
 	 */
-	public LatencyParameters(Map parameters, String svcName) {
+	public LatencyParameters(Map<?,?> parameters, String svcName) {
 
 		m_parameters = parameters;
 		m_svcName = svcName;
@@ -60,7 +60,7 @@ public class LatencyParameters {
 	 *
 	 * @return a {@link java.util.Map} object.
 	 */
-	public Map getParameters() {
+	public Map<?,?> getParameters() {
 		return m_parameters;
 	}
 	
@@ -75,19 +75,19 @@ public class LatencyParameters {
 	}
 
 	int getInterval() {
-		Map parameters = getParameters();
+		Map<?,?> parameters = getParameters();
 	    int interval = ParameterMap.getKeyedInteger(parameters, "interval", LatencyThresholder.DEFAULT_INTERVAL);
 	    return interval;
 	}
 
 	String getGroupName() {
-		Map parameters = getParameters();
+		Map<?,?> parameters = getParameters();
 	    String groupName = ParameterMap.getKeyedString(parameters, "thresholding-group", "default");
 	    return groupName;
 	}
 	
 	int getRange() {
-		Map parameters = getParameters();
+		Map<?,?> parameters = getParameters();
 	    int range = ParameterMap.getKeyedInteger(parameters, "range", LatencyThresholder.DEFAULT_RANGE);
 	    return range;
 	}

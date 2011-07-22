@@ -28,8 +28,6 @@
 
 package org.opennms.web.controller.admin.thresholds;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,6 +39,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -434,11 +433,7 @@ public class ThresholdController extends AbstractController implements Initializ
     
     private EventBuilder createEventBuilder(String uei) {
         EventBuilder ebldr = new EventBuilder(uei, "Web UI");
-        try {
-            ebldr.setHost(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException uhE) {
-            ebldr.setHost("unresolved.host");
-        }
+        ebldr.setHost(InetAddressUtils.getLocalHostName());
         return ebldr;
     }
     private void sendNotifEvent(Event event) throws ServletException {

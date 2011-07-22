@@ -82,7 +82,7 @@ public interface PollerProvisioner {
      * @param parameters a {@link java.util.Map} object.
      * @return a boolean.
      */
-    boolean addService(String packageName, String svcName, int interval, Map parameters);
+    boolean addService(String packageName, String svcName, int interval, Map<?,?> parameters);
     
     /**
      * <p>getServiceInterval</p>
@@ -100,6 +100,6 @@ public interface PollerProvisioner {
      * @param svcName a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
      */
-    Map getServiceParameters(String packageName, String svcName);
+    Map<?,?> getServiceParameters(String packageName, String svcName);
 
 }

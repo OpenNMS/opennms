@@ -37,6 +37,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 
 public class SyslogClient {
@@ -99,11 +100,7 @@ public class SyslogClient {
         }
         this.facility = facility;
 
-        try {
-            address = InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
-            LogUtils.warnf(this, e, "Unable to get local host.");
-        }
+        address = InetAddressUtils.getLocalHostAddress();
         
         try {
             socket = new DatagramSocket();

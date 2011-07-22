@@ -53,7 +53,10 @@ import de.novanic.eventservice.service.RemoteEventServiceServlet;
  * @since 1.8.1
  */
 public class LocationStatusServiceImpl extends RemoteEventServiceServlet implements LocationStatusService {
-    volatile Set<String> m_activeApplications = new HashSet<String>();
+
+	private static final long serialVersionUID = 7152723329766982720L;
+
+	volatile Set<String> m_activeApplications = new HashSet<String>();
 
     private ApplicationContext m_context;
     @SuppressWarnings("unused")

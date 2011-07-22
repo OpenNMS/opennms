@@ -35,11 +35,11 @@ import java.util.Map;
 
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
+import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.netmgt.utils.ExecRunner;
 
 /**
  * <P>

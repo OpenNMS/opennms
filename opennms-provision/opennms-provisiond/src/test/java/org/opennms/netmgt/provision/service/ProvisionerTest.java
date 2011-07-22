@@ -992,10 +992,10 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         // populator creates 4 provisioned nodes and 2 discovered nodes
         m_populator.populateDatabase();
 
-        importFromResource("classpath:/tec_dump.xml.smalltest");
-        
         m_provisioner.scheduleRescanForExistingNodes();
-        assertEquals(10, m_provisioner.getScheduleLength());
+        
+        // make sure just the provisioned nodes are scheduled
+        assertEquals(4, m_provisioner.getScheduleLength());
     }
 
     @Test(timeout=300000)
@@ -1005,10 +1005,10 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         // populator creates 4 provisioned nodes and 2 discovered nodes
         m_populator.populateDatabase();
 
-        importFromResource("classpath:/tec_dump.xml.smalltest");
-        
         m_provisioner.scheduleRescanForExistingNodes();
-        assertEquals(12, m_provisioner.getScheduleLength());
+        
+        // make sure all the nodes are scheduled (even the discovered ones)
+        assertEquals(6, m_provisioner.getScheduleLength());
     }
 
     @Test(timeout=300000)

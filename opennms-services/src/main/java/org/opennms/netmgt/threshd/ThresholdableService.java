@@ -29,7 +29,6 @@
 package org.opennms.netmgt.threshd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
@@ -125,7 +124,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
      * The map of service parameters. These parameters are mapped by the
      * composite key <em>(package name, service name)</em>.
      */
-    private static Map<String,Map> SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap<String,Map>());
+    private static Map<String,Map<?,?>> SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap<String,Map<?,?>>());
 
     private Threshd m_threshd;
 
@@ -295,11 +294,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
         bldr.setNodeid(m_nodeId);
         bldr.setInterface(m_address);
         bldr.setService("SNMP");
-        try {
-            bldr.setHost(InetAddressUtils.str(InetAddress.getLocalHost()));
-        } catch (final UnknownHostException ex) {
-            bldr.setHost("unresolved.host");
-        }
+        bldr.setHost(InetAddressUtils.getLocalHostName());
 
         // Send the event
         //
@@ -343,7 +338,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
         LogUtils.debugf(this, "run: starting new threshold check for %s", getHostAddress());
 
         int status = ServiceThresholder.THRESHOLDING_FAILED;
-        final Map propertiesMap = SVC_PROP_MAP.get(m_svcPropKey);
+        final Map<?,?> propertiesMap = SVC_PROP_MAP.get(m_svcPropKey);
         try {
             status = m_thresholder.check(this, m_proxy, propertiesMap);
         } catch (final Throwable t) {
@@ -383,8 +378,8 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
         return;
     }
 
-    Map getPropertyMap() {
-        return (Map) SVC_PROP_MAP.get(m_svcPropKey);
+    Map<?,?> getPropertyMap() {
+        return (Map<?,?>) SVC_PROP_MAP.get(m_svcPropKey);
     }
 
     /**
