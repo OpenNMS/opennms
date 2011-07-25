@@ -510,7 +510,7 @@ public class Correlation implements java.io.Serializable {
      */
     public void setPath(
             final String path) {
-        this.m_path = path;
+        this.m_path = path.intern();
     }
 
     /**
@@ -522,7 +522,7 @@ public class Correlation implements java.io.Serializable {
      */
     public void setState(
             final String state) {
-        this.m_state = state;
+        this.m_state = state.intern();
     }
 
     /**

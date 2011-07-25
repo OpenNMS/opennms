@@ -252,7 +252,7 @@ public class Logmsg implements java.io.Serializable {
      */
     public void setDest(
             final String dest) {
-        this.m_dest = dest;
+        this.m_dest = dest.intern();
     }
 
     /**
