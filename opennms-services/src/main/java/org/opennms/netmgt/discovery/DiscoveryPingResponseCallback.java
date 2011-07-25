@@ -29,8 +29,8 @@
 package org.opennms.netmgt.discovery;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -51,13 +51,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     public void handleResponse(InetAddress address, EchoPacket response) {
         EventBuilder eb = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, EVENT_SOURCE_VALUE);
         eb.setInterface(address);
-
-        try {
-            eb.setHost(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException uhE) {
-            eb.setHost("unresolved.host");
-            log().warn("Failed to resolve local hostname", uhE);
-        }
+        eb.setHost(InetAddressUtils.getLocalHostName());
 
         eb.addParam("RTT", response.getReceivedTimeNanos() - response.getSentTimeNanos());
 

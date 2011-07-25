@@ -69,7 +69,7 @@ public class WmiAgentState {
      * @param address a {@link java.net.InetAddress} object.
      * @param parameters a {@link java.util.Map} object.
      */
-    public WmiAgentState(final InetAddress address, final Map parameters) {
+    public WmiAgentState(final InetAddress address, final Map<?,?> parameters) {
         m_address = InetAddressUtils.str(address);
         m_agentConfig = WmiPeerFactory.getInstance().getAgentConfig(address);
         m_manager = new WmiManager(m_address, m_agentConfig.getUsername(), m_agentConfig.getPassword(), m_agentConfig.getDomain());

@@ -31,8 +31,6 @@ package org.opennms.web.admin.nodeManagement;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -110,12 +109,7 @@ public class AddNewInterfaceServlet extends HttpServlet {
     private void createAndSendNewSuspectInterfaceEvent(String ipaddr) throws ServletException {
         EventBuilder bldr = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, EVENT_SOURCE_VALUE);
         bldr.setInterface(addr(ipaddr));
-
-        try {
-            bldr.setHost(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException uhE) {
-            bldr.setHost("unresolved.host");
-        }
+        bldr.setHost(InetAddressUtils.getLocalHostName());
 
 
         try {

@@ -38,8 +38,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -184,7 +182,7 @@ public abstract class OpenNMSIntegrationTestCase extends AbstractTransactionalDa
         MockAgentConfiguration mockAgentConfig = getMockAgentConfiguration();
         if (mockAgentConfig != null) {
 
-            String localhost = getLocalHostAddress();
+            String localhost = InetAddressUtils.getLocalHostAddressAsString();
             m_agent = MockSnmpAgent.createAgentAndRun(mockAgentConfig.getSnmpDataResource(), localhost + "/9161");
 
             File snmpConfigFile = new File(etcDestDir, "snmp-config.xml");
@@ -223,18 +221,6 @@ public abstract class OpenNMSIntegrationTestCase extends AbstractTransactionalDa
         return JaxbUtils.unmarshal(SnmpConfig.class, new FileSystemResource(snmpConfig));
     }
     
-    protected String getLocalHostAddress() {
-        try {
-            return InetAddressUtils.str(InetAddress.getLocalHost());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            fail("Exception getting localhost");
-        }
-        
-        return null;
-    }
-
-
     protected MockAgentConfiguration getMockAgentConfiguration() {
         return null;
     }

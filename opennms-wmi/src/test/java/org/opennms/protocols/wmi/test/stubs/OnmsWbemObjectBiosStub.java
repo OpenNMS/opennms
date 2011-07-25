@@ -42,7 +42,7 @@ public class OnmsWbemObjectBiosStub implements OnmsWbemObject {
         props = propset;
     }
 
-    public OnmsWbemObject wmiExecMethod(String methodName, List params, List namedValueSet) {
+    public OnmsWbemObject wmiExecMethod(String methodName, List<?> params, List<?> namedValueSet) {
         return null;
     }
 

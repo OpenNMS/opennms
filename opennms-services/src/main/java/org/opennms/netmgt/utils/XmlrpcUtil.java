@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.utils;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -66,13 +63,7 @@ public final class XmlrpcUtil {
 
 
 
-        String hostAddress = null;
-        try {
-            hostAddress = InetAddressUtils.str(InetAddress.getLocalHost());
-        } catch (UnknownHostException uhE) {
-            hostAddress = "localhost";
-            log.warn("createAndSendXmlrpcNotificationEvent: Could not lookup the host name for " + " the local host machine, address set to localhost", uhE);
-        }
+        String hostAddress = InetAddressUtils.getLocalHostAddressAsString();
 
         EventBuilder bldr = new EventBuilder(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI, generator);
         bldr.setHost(hostAddress);

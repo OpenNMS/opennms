@@ -78,7 +78,7 @@ public class WebMonitor extends AbstractServiceMonitor {
 
     /** {@inheritDoc} */
     @Override
-    public PollStatus poll(MonitoredService svc, Map map) {
+    public PollStatus poll(MonitoredService svc, Map<String,Object> map) {
         PollStatus pollStatus = PollStatus.unresponsive();
         DefaultHttpClient httpClient = new DefaultHttpClient();
 

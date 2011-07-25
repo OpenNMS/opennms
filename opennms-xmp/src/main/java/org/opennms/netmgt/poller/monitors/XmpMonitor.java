@@ -137,7 +137,7 @@ public class XmpMonitor extends AbstractServiceMonitor {
 
     /** {@inheritDoc} */
     @Override
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String,Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
         
         PollStatus status = PollStatus.unavailable();

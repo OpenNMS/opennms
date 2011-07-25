@@ -51,6 +51,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @since 1.8.1
  */
 public class LocationInfo implements IsSerializable, Serializable, Comparable<LocationInfo> {
+
+	private static final long serialVersionUID = 2001265865152467286L;
+
 	private String m_name;
 	private String m_area;
 	private String m_geolocation;

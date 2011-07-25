@@ -198,6 +198,6 @@ public interface Provisioner {
      * @return Always returns true.
      * @throws java.lang.IllegalArgumentException when arguments are outside of ranges
      */
-    Map getServiceConfiguration(String pkName, String serviceId);    
+    Map<?,?> getServiceConfiguration(String pkName, String serviceId);    
 
 }

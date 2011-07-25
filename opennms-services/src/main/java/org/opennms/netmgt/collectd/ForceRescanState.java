@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -95,19 +93,9 @@ public class ForceRescanState {
         
         bldr.setService(SnmpCollector.SERVICE_NAME);
         
-        bldr.setHost(determineLocalHostName());
+        bldr.setHost(InetAddressUtils.getLocalHostName());
 
         return bldr.getEvent();
-    }
-
-    String determineLocalHostName() {
-    	// Get local host name (used when generating threshold events)
-    	try {
-    		return InetAddress.getLocalHost().getHostName();
-    	} catch (UnknownHostException e) {
-    		log().warn("initialize: Unable to resolve local host name.", e);
-    		return "unresolved.host";
-    	}
     }
 
     /**

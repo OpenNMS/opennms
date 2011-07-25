@@ -30,7 +30,6 @@ package org.opennms.netmgt.threshd;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -131,7 +130,8 @@ final class LatencyThresholder implements ServiceThresholder {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
-    public void initialize(Map parameters) {
+    @Override
+    public void initialize(Map<?,?> parameters) {
         // Service name
         //
         m_svcName = (String) parameters.get("svcName");
@@ -139,14 +139,7 @@ final class LatencyThresholder implements ServiceThresholder {
             log().debug("initialize: latency thresholder for service '" + m_svcName + "'");
 
         // Get local host name (used when generating threshold events)
-        //
-        try {
-            m_host = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            if (log().isEnabledFor(ThreadCategory.Level.WARN))
-                log().warn("initialize: Unable to resolve local host name.", e);
-            m_host = "unresolved.host";
-        }
+        m_host = InetAddressUtils.getLocalHostName();
     }
 
     /**
@@ -169,7 +162,7 @@ final class LatencyThresholder implements ServiceThresholder {
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
      */
-    public void initialize(ThresholdNetworkInterface iface, Map parameters) {
+    public void initialize(ThresholdNetworkInterface iface, Map<?,?> parameters) {
         // Get interface address from NetworkInterface
         //
         if (iface.getType() != NetworkInterface.TYPE_INET)
@@ -343,7 +336,7 @@ final class LatencyThresholder implements ServiceThresholder {
      *
      * Perform threshold checking.
      */
-    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map parameters) {
+    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map<?,?> parameters) {
 		LatencyInterface latIface = new LatencyInterface(iface, m_svcName);
 		LatencyParameters latParms = new LatencyParameters(parameters, m_svcName);
         

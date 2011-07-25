@@ -43,6 +43,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @since 1.8.1
  */
 public class LocationDetails implements Serializable, IsSerializable {
+
+	private static final long serialVersionUID = -3516138717790564429L;
+
 	private LocationMonitorState m_locationMonitorState;
 	private ApplicationState m_applicationState;
 

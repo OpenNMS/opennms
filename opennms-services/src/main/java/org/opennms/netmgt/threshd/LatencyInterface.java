@@ -30,7 +30,6 @@ package org.opennms.netmgt.threshd;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
 
@@ -175,13 +174,7 @@ public class LatencyInterface {
 	
 	
 	    // Set event host
-	    //
-	    try {
-	        bldr.setHost(InetAddress.getLocalHost().getHostName());
-	    } catch (UnknownHostException uhE) {
-	        bldr.setHost("unresolved.host");
-	        log.warn("Failed to resolve local hostname", uhE);
-	    }
+        bldr.setHost(InetAddressUtils.getLocalHostName());
 	    
 	    bldr.addParam("ds", threshold.getDsName());
 	    bldr.addParam("value", dsValue);

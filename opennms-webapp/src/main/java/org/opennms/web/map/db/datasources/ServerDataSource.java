@@ -58,7 +58,7 @@ import org.opennms.web.map.MapsConstants;
  */
 public class ServerDataSource implements DataSourceInterface {
 
-	private Map params;
+	private Map<?,?> params;
 	boolean initialized = false;
 	private Map<String, String> severityMapping = new HashMap<String, String>();
 
@@ -84,7 +84,7 @@ public class ServerDataSource implements DataSourceInterface {
 	 *
 	 * @param params a {@link java.util.Map} object.
 	 */
-	public ServerDataSource(Map params){
+	public ServerDataSource(Map<?,?> params){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
 		this.params = params;
