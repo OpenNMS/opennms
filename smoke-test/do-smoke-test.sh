@@ -73,11 +73,12 @@ get_source() {
 configure_opennms() {
 	banner "Configuring OpenNMS"
 
-	pushd "$OPENNMS_HOME"
-		cat <<END >"$OPENNMS_HOME/etc/opennms.conf"
-START_TIMEOUT=60
-STATUS_WAIT=5
-END
+	pushd opennms-home
+		find * -type f | sort -u | while read FILE; do
+			dir=`dirname "$FILE"`
+			mkdir -p "$dir"
+			install -c "$FILE" "$OPENNMS_HOME/$FILE"
+		done
 	popd
 
 	/opt/opennms/bin/runjava -s || die "'runjava -s' failed."
