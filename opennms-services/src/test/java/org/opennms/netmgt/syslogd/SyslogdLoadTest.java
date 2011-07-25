@@ -268,7 +268,7 @@ public class SyslogdLoadTest {
     public void testEventd() throws Exception {
     	m_eventd.start();
 
-        EventProxy ep = this.createEventProxy();
+        EventProxy ep = createEventProxy();
 
         Log eventLog = new Log();
         Events events = new Events();
@@ -304,7 +304,7 @@ public class SyslogdLoadTest {
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
     }
 
-    private EventProxy createEventProxy() throws UnknownHostException {
+    private static EventProxy createEventProxy() throws UnknownHostException {
         /*
          * Rather than defaulting to localhost all the time, give an option in properties
          */
@@ -324,7 +324,7 @@ public class SyslogdLoadTest {
         return proxy;
     }
 
-    public class EventCounter implements EventListener {
+    public static class EventCounter implements EventListener {
         private AtomicInteger m_eventCount = new AtomicInteger(0);
         private int m_expectedCount = 0;
 
@@ -335,7 +335,7 @@ public class SyslogdLoadTest {
         // Me love you, long time.
         public void waitForFinish(final long time) {
             final long start = System.currentTimeMillis();
-            while (m_eventCounter.getCount() < m_expectedCount) {
+            while (this.getCount() < m_expectedCount) {
                 if (System.currentTimeMillis() - start > time) {
                     LogUtils.warnf(this, "waitForFinish timeout (%s) reached", time);
                     break;
