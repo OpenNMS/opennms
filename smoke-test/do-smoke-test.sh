@@ -8,6 +8,9 @@ fi
 DIRNAME=`dirname $0`
 ME=`cd $DIRNAME; pwd`
 
+if [ -z "$MATCH_RPM" ]; then
+	MATCH_RPM=no
+fi
 OPENNMS_HOME=/opt/opennms
 SOURCEDIR="$ME/opennms-source"
 
@@ -64,9 +67,16 @@ get_source() {
 			git branch -t "$RPM_BRANCH" origin/"$RPM_BRANCH"
 			git checkout "$RPM_BRANCH" || die "Unable to check out $RPM_BRANCH branch."
 		fi
-		git pull || die "Unable to pull latest code."
 		git clean -fdx || die "Unable to clean source tree."
-		git reset --hard `get_hash_from_rpm` || die "Unable to reset git tree."
+		git reset --hard HEAD
+		git pull || die "Unable to pull latest code."
+
+		# if $MATCH_RPM is set to "yes", then reset the code to the git hash the RPM was built from
+		case $MATCH_RPM in
+			yes|y)
+				git reset --hard `get_hash_from_rpm` || die "Unable to reset git tree."
+				;;
+		esac
 	popd
 }
 

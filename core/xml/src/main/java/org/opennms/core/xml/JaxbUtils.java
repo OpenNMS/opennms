@@ -40,7 +40,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -83,12 +82,10 @@ public class JaxbUtils {
 	}
 
 	private static final MarshallingExceptionTranslator EXCEPTION_TRANSLATOR = new MarshallingExceptionTranslator();
-	/*
 	private static ThreadLocal<Map<Class<?>, Marshaller>> m_marshallers = new ThreadLocal<Map<Class<?>, Marshaller>>();
 	private static ThreadLocal<Map<Class<?>, Unmarshaller>> m_unMarshallers = new ThreadLocal<Map<Class<?>, Unmarshaller>>();
 	private static final Map<Class<?>,JAXBContext> m_contexts = Collections.synchronizedMap(new WeakHashMap<Class<?>,JAXBContext>());
 	private static final Map<Class<?>,Schema> m_schemas = Collections.synchronizedMap(new WeakHashMap<Class<?>,Schema>());
-	*/
 
 	private JaxbUtils() {
 	}
@@ -188,7 +185,6 @@ public class JaxbUtils {
 	public static Marshaller getMarshallerFor(final Object obj, final JAXBContext jaxbContext) {
 		final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
 
-		/*
 		Map<Class<?>, Marshaller> marshallers = m_marshallers.get();
 		if (jaxbContext == null) {
 			if (marshallers == null) {
@@ -200,7 +196,6 @@ public class JaxbUtils {
 				return marshallers.get(clazz);
 			}
 		}
-		*/
 		LogUtils.debugf(clazz, "creating unmarshaller for %s", clazz);
 
 		try {
@@ -213,9 +208,9 @@ public class JaxbUtils {
 			final Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			//final Schema schema = getValidatorFor(clazz);
-			//marshaller.setSchema(schema);
-			// if (jaxbContext == null) marshallers.put(clazz, marshaller);
+			final Schema schema = getValidatorFor(clazz);
+			marshaller.setSchema(schema);
+			if (jaxbContext == null) marshallers.put(clazz, marshaller);
 			
 			return marshaller;
 		} catch (JAXBException e) {
@@ -233,7 +228,6 @@ public class JaxbUtils {
 	public static Unmarshaller getUnmarshallerFor(final Object obj, final JAXBContext jaxbContext) {
 		final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
 
-		/*
 		Map<Class<?>, Unmarshaller> unmarshallers = m_unMarshallers.get();
 		if (jaxbContext == null) {
 			if (unmarshallers == null) {
@@ -245,7 +239,6 @@ public class JaxbUtils {
 				return unmarshallers.get(clazz);
 			}
 		}
-		*/
 		LogUtils.debugf(clazz, "creating unmarshaller for %s", clazz);
 
 		try {
@@ -256,9 +249,9 @@ public class JaxbUtils {
 				context = jaxbContext;
 			}
 			final Unmarshaller unmarshaller = context.createUnmarshaller();
-			//final Schema schema = getValidatorFor(clazz);
-			//unmarshaller.setSchema(schema);
-			// if (jaxbContext == null) unmarshallers.put(clazz, unmarshaller);
+			final Schema schema = getValidatorFor(clazz);
+			unmarshaller.setSchema(schema);
+			if (jaxbContext == null) unmarshallers.put(clazz, unmarshaller);
 
 			return unmarshaller;
 		} catch (JAXBException e) {
@@ -267,8 +260,10 @@ public class JaxbUtils {
 	}
 
 	private static JAXBContext getContextFor(final Class<?> clazz) throws JAXBException {
+	    /*
 		return JAXBContext.newInstance(clazz);
-		/* NO!  Leaks SymbolTable objects  :(
+		NO!  Leaks SymbolTable objects  :(
+        */
 		final JAXBContext context;
 		if (m_contexts.containsKey(clazz)) {
 			context = m_contexts.get(clazz);
@@ -277,7 +272,6 @@ public class JaxbUtils {
 			m_contexts.put(clazz, context);
 		}
 		return context;
-		*/
 	}
 
 	private static Schema getValidatorFor(final Class<?> origClazz) {
@@ -285,10 +279,10 @@ public class JaxbUtils {
 		LogUtils.tracef(clazz, "finding XSD for class %s", clazz);
 
 		/* NO!  Leaks SymbolTable objects  :(
+        */
 		if (m_schemas.containsKey(clazz)) {
 			return m_schemas.get(clazz);
 		}
-		*/
 
 		final ValidateUsing schemaFileAnnotation = clazz.getAnnotation(ValidateUsing.class);
 		if (schemaFileAnnotation == null || schemaFileAnnotation.value() == null) {
@@ -328,7 +322,7 @@ public class JaxbUtils {
 				return null;
 			}
 			final Schema schema = factory.newSchema(new StreamSource(schemaInputStream));
-//			m_schemas.put(clazz, schema);
+			m_schemas.put(clazz, schema);
 			return schema;
 		} catch (final Throwable t) {
 			LogUtils.warnf(clazz, t, "an error occurred while attempting to load %s for validation", schemaFileName);

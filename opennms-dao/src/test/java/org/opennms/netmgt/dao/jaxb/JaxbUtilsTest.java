@@ -45,6 +45,7 @@ import javax.xml.validation.Validator;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
@@ -195,5 +196,52 @@ public class JaxbUtilsTest {
 		assertNotNull(log);
 		assertNotNull(log.getEvents());
 		assertEquals(1, log.getEvents().getEvent().length);
+	}
+	
+	@Test
+	@Ignore
+	public void testValidationMemoryLeak() throws Exception {
+        final String text = "<log>\n" + 
+            " <events>\n" + 
+            "  <event >\n" + 
+            "   <uei>uei.opennms.org/internal/capsd/addNode</uei>\n" + 
+            "   <source>perl_send_event</source>\n" + 
+            "   <time>Tuesday, 12 April 2011 18:05:00 o'clock GMT</time>\n" + 
+            "   <host></host>\n" + 
+            "   <interface>10.0.0.1</interface>\n" + 
+            "   <parms>\n" + 
+            "    <parm>\n" + 
+            "     <parmName><![CDATA[txno]]></parmName>\n" + 
+            "     <value type=\"string\" encoding=\"text\"><![CDATA[1]]></value>\n" + 
+            "    </parm>\n" + 
+            "    <parm>\n" + 
+            "     <parmName><![CDATA[nodelabel]]></parmName>\n" + 
+            "     <value type=\"string\" encoding=\"text\"><![CDATA[test10]]></value>\n" + 
+            "    </parm>\n" + 
+            "   </parms>\n" + 
+            "  </event>\n" + 
+            " </events>\n" + 
+            "</log>\n";
+        
+        final int eventCount = 1000000;
+        final int logEvery = (eventCount / 1000);
+        
+        MockLogAppender.setupLogging(true, "INFO");
+
+        LogUtils.infof(this, "starting");
+        Thread.sleep(30000);
+        for (int i = 0; i < eventCount; i++) {
+            if (i % logEvery == 0) {
+                LogUtils.infof(this, "- event #%d", i);
+            }
+            final Log log = JaxbUtils.unmarshal(Log.class, text);
+            assertNotNull(log);
+            assertNotNull(log.getEvents());
+            final String results = JaxbUtils.marshal(log);
+            assertNotNull(results);
+            assertTrue(results.contains("uei.opennms.org/internal/capsd/addNode"));
+        }
+        LogUtils.infof(this, "finished");
+        Thread.sleep(30000);
 	}
 }
