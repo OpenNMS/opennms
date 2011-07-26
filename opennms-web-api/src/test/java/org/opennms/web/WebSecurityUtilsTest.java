@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package test.java.org.opennms.web.org.opennms.web.api;
+package org.opennms.web;
 
 import static org.junit.Assert.assertTrue;
 
