@@ -64,9 +64,6 @@
 		            ]
 			}
 </script>
-  <script type="text/javascript" src="<%= org.opennms.web.api.Util.calculateUrlBase( request, "js/opennms/ux/PageableGrid.js" ) %>" ></script>
-  <script type="text/javascript" src="<%= org.opennms.web.api.Util.calculateUrlBase( request, "js/opennms/ux/LocalPageableProxy.js" ) %>" ></script>
-  <script type="text/javascript" src="<%= org.opennms.web.api.Util.calculateUrlBase( request, "js/CustomGraphResourceView.js" ) %>" ></script>
   <%--
   <script type="text/javascript" >
   
