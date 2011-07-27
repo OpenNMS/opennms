@@ -161,6 +161,7 @@
 	<br/>
 	
 	<div id="snmp-grid"></div>
+	<opennms:snmpSelectList id="selectList"></opennms:snmpSelectList>
 	<% if (interfaces.size() > 0) { %>
 	<%-- <table class="standardfirst">
 		<tr>

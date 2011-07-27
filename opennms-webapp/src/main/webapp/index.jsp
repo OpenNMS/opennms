@@ -33,7 +33,6 @@
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
-	<jsp:param name="enableExtJS" value="false"/>
 </jsp:include>
 
 	<!-- Left Column -->

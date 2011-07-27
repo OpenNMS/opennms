@@ -336,6 +336,12 @@
         <type>jar</type>
         <version>${project.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-snmpselect-list</artifactId>
+        <type>jar</type>
+        <version>${project.version}</version>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
