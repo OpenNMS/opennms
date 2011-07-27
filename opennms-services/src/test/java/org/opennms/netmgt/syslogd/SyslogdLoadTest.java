@@ -177,7 +177,7 @@ public class SyslogdLoadTest {
     public void testDefaultSyslogd() throws Exception {
         startSyslogdGracefully();
 
-        int eventCount = 100;
+        final int eventCount = 100;
         
         List<Integer> foos = new ArrayList<Integer>();
 
@@ -188,9 +188,9 @@ public class SyslogdLoadTest {
 
         m_eventCounter.setAnticipated(eventCount);
 
-        long start = System.currentTimeMillis();
         String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
         SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        final long start = System.currentTimeMillis();
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
