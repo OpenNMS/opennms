@@ -87,7 +87,7 @@ public class SyslogClient {
     public static final int LOG_NDELAY = 0x08; // don't delay open
     public static final int LOG_NOWAIT = 0x10; // don't wait for console forks
 
-    private static final int PORT = 10514;
+    public static final int PORT = 10514;
 
     private String ident;
     private int facility;
