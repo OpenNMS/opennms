@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.nsclient;
+package org.opennms.protocols.nsclient;
 
 import java.net.InetAddress;
 

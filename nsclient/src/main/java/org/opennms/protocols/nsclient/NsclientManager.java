@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.nsclient;
+package org.opennms.protocols.nsclient;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -373,7 +373,7 @@ public class NsclientManager {
      * service. The input and output streams are created after the socket is
      * connected.
      *
-     * @throws org.opennms.netmgt.poller.nsclient.NsclientException
+     * @throws org.opennms.protocols.nsclient.NsclientException
      *             if the hostname is unknown if the connection is refused if
      *             there is no route to the host if the host did not respond
      *             if there was an unexpected IO error. The thrown exception
@@ -472,7 +472,7 @@ public class NsclientManager {
      *            on the respones from the remote service.
      * @return the NsclientPacket as processed by the check command method
      *         that is called.
-     * @throws org.opennms.netmgt.poller.nsclient.NsclientException
+     * @throws org.opennms.protocols.nsclient.NsclientException
      *             this method rethrows org.opennms.netmgt.poller.nsclient.NsclientExceptions caused by the check
      *             commands.
      */

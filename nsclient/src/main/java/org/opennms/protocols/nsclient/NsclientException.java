@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.nsclient;
+package org.opennms.protocols.nsclient;
 
 /**
  * This object implements the internal exceptions used by the
