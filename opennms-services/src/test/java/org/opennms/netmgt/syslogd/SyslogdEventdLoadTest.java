@@ -29,6 +29,7 @@
 package org.opennms.netmgt.syslogd;
 
 import static org.junit.Assert.assertEquals;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,15 +51,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.Match;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -73,22 +75,9 @@ import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
-    TemporaryDatabaseExecutionListener.class,
-    DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class
-})
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -98,6 +87,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
         "classpath:/META-INF/opennms/testEventProxy.xml"
 })
+@JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class SyslogdEventdLoadTest {
 
@@ -168,7 +158,7 @@ public class SyslogdEventdLoadTest {
     }
 
     private void startSyslogdGracefully() {
-        //ConvertToEvent.invalidate();
+        ConvertToEvent.invalidate();
         try {
             m_syslogd = new Syslogd();
             m_syslogd.init();
@@ -200,18 +190,13 @@ public class SyslogdEventdLoadTest {
         m_eventCounter.setAnticipated(eventCount);
 
         long start = System.currentTimeMillis();
-        final String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
-        final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
+        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
         for (int i = 0; i < eventCount; i++) {
-            final int foo = foos.get(i);
-            //DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            //Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
-            //worker.start();
-            new Thread() {
-              public void run() {
-                sc.syslog(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-              }
-            }.start();
+            int foo = foos.get(i);
+            DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
+            Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
+            worker.start();
         }
 
         long mid = System.currentTimeMillis();
@@ -221,6 +206,62 @@ public class SyslogdEventdLoadTest {
         final long total = (end - start);
         final double eventsPerSecond = (eventCount * 1000.0 / total);
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
+    }
+
+    @Test
+    @Transactional
+    public void testRfcSyslog() throws Exception {
+        loadSyslogConfiguration("/etc/syslogd-rfc-configuration.xml");
+
+        startSyslogdGracefully();
+
+        m_eventCounter.anticipate();
+
+        InetAddress address = InetAddress.getLocalHost();
+
+        // handle an invalid packet
+        byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
+        DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
+        Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
+        worker.run();
+
+        // handle a valid packet
+        bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
+        pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
+        worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
+        worker.run();
+
+        m_eventCounter.waitForFinish(120000);
+        
+        assertEquals(1, m_eventCounter.getCount());
+    }
+
+    @Test
+    @Transactional
+    public void testNGSyslog() throws Exception {
+        loadSyslogConfiguration("/etc/syslogd-syslogng-configuration.xml");
+
+        startSyslogdGracefully();
+
+        m_eventCounter.anticipate();
+
+        InetAddress address = InetAddress.getLocalHost();
+
+        // handle an invalid packet
+        byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
+        DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
+        Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
+        worker.run();
+
+        // handle a valid packet
+        bytes = "<34>monkeysatemybrain!\0".getBytes();
+        pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
+        worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
+        worker.run();
+
+        m_eventCounter.waitForFinish(120000);
+        
+        assertEquals(1, m_eventCounter.getCount());
     }
 
     @Test
@@ -242,7 +283,7 @@ public class SyslogdEventdLoadTest {
             String expectedUei = "uei.example.org/syslog/loadTest/foo" + eventNum;
             final EventBuilder eb = new EventBuilder(expectedUei, "SyslogdLoadTest");
 
-            Event thisEvent = eb.setInterface("127.0.0.1")
+            Event thisEvent = eb.setInterface(addr("127.0.0.1"))
                 .setLogDest("logndisplay")
                 .setLogMessage("A load test has been received as a Syslog Message")
                 .getEvent();
@@ -274,7 +315,7 @@ public class SyslogdEventdLoadTest {
         InetAddress proxyAddr = null;
         EventProxy proxy = null;
 
-        proxyAddr = InetAddress.getByName(proxyHostName);
+        proxyAddr = InetAddressUtils.addr(proxyHostName);
 
         if (proxyAddr == null) {
         	proxy = new TcpEventProxy();

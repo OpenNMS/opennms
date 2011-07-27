@@ -42,7 +42,7 @@
         <entry key="microblog-configuration.xml" value="microblogConfigurationDao"/>
         <entry key="model-importer.properties" value="modelImporterProperties"/>
         <!--  <entry key="modemConfig.properties" value="unknown"/> -->
-        <entry key="monitoring-locations.xml" value="monitoringLocationsFactory"/>
+        <!--  <entry key="monitoring-locations.xml" value="locationMonitorDaoHibernate"/> -->
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
         <entry key="notificationCommands.xml" value="notificationCommandFactory"/>
         <!-- <entry key="notifications.xml" value="notificationFactory"/> --><!-- database access -->
