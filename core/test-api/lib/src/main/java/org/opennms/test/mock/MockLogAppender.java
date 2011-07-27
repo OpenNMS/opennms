@@ -227,6 +227,7 @@ public class MockLogAppender extends AppenderSkeleton {
         setProperty(logConfig, "log4j.logger.org.exolab.castor", "INFO");
         setProperty(logConfig, "log4j.logger.org.snmp4j", "ERROR");
         setProperty(logConfig, "log4j.logger.org.snmp4j.agent", "ERROR");
+        setProperty(logConfig, "log4j.logger.com.mchange.v2.c3p0.impl", "WARN");
         setProperty(logConfig, "log4j.logger.org.hibernate.cfg.AnnotationBinder", "ERROR" + consoleAppender + ", MOCK");
         
         PropertyConfigurator.configure(logConfig);
