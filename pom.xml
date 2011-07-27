@@ -97,6 +97,7 @@
     <module>integration-tests</module>
 
     <!-- old structure -->
+    <module>nsclient</module>
     <module>opennms-test</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
@@ -1474,6 +1475,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.nsclient</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

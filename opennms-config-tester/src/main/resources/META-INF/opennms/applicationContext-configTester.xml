@@ -295,12 +295,6 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   </bean>
   -->
 
-  <bean id="monitoringLocationsFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.MonitoringLocationsFactory.init</value></property>
-  </bean>
-
-  <bean id="monitoringLocationsFactory" class="org.opennms.netmgt.config.MonitoringLocationsFactory" depends-on="monitoringLocationsFactory-init" factory-method="getInstance"/>
-
   <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
   </bean>

@@ -57,14 +57,14 @@ import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.nsclient.Definition;
 import org.opennms.netmgt.config.nsclient.NsclientConfig;
 import org.opennms.netmgt.config.nsclient.Range;
-import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
+import org.opennms.protocols.nsclient.NSClientAgentConfig;
 import org.springframework.core.io.FileSystemResource;
 
 /**
  * This class is the main repository for NSCLient configuration information used by
  * the capabilities daemon. When this class is loaded it reads the nsclient
  * configuration into memory, and uses the configuration to find the
- * {@link org.opennms.netmgt.nsclient.NSClientAgentConfig NSClientAgentConfig} objects for specific
+ * {@link org.opennms.protocols.nsclient.nsclient.NSClientAgentConfig NSClientAgentConfig} objects for specific
  * addresses. If an address cannot be located in the configuration then a
  * default peer instance is returned to the caller.
  *
@@ -243,7 +243,7 @@ public final class NSClientPeerFactory {
      * <p>getAgentConfig</p>
      *
      * @param agentInetAddress a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.netmgt.poller.nsclient.NSClientAgentConfig} object.
+     * @return a {@link org.opennms.protocols.nsclient.NSClientAgentConfig} object.
      */
     public NSClientAgentConfig getAgentConfig(final InetAddress agentInetAddress) {
         getReadLock().lock();

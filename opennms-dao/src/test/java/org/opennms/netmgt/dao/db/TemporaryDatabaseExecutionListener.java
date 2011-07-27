@@ -77,6 +77,9 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 		final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
 		if (jtd == null) return;
 
+        final PooledDataSource pds = (PooledDataSource)testContext.getAttribute("org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener.pooledDataSource");
+        if (pds != null) pds.hardReset();
+        
 		try {
 			// DON'T REMOVE THE DATABASE, just rely on the ShutdownHook to remove them instead
 			// otherwise you might remove the class-level database that is reused between tests.
@@ -213,22 +216,19 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
 		m_database = m_databases.remove();
 		final PooledDataSource pooledDataSource = (PooledDataSource)DataSources.pooledDataSource(m_database);
-		
-        Runtime.getRuntime().addShutdownHook(new Thread() {
 
-            @Override
-            public void run() {
-                try {
-                    pooledDataSource.close();
-                } catch (final Throwable t) {
-                    LogUtils.debugf(this, t, "failed to close pooled data source");
-                }
-            }
-
-        });
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+		    @Override
+		    public void run() {
+		        try { pooledDataSource.close(); }
+		        catch (final Throwable t) { LogUtils.debugf(this, t, "failed to close pooled data source"); }
+		    }
+		});
 
         final LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(pooledDataSource);
 		DataSourceFactory.setInstance(proxy);
+		
+		testContext.setAttribute("org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener.pooledDataSource", pooledDataSource);
 		System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s", testContext, m_database.toString()));
 	}
 

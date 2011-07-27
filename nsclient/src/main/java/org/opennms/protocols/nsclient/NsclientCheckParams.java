@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.nsclient;
+package org.opennms.protocols.nsclient;
 
 /**
  * This class contains the parameters used to perform and validate checks
