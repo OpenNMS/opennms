@@ -76,16 +76,9 @@
 	<jsp:param name="location" value="admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Select SNMP Interfaces" />
-	<jsp:param value="true" name="enableExtJS"/>
 </jsp:include>
 
-<script type='text/javascript' src='js/opennms/ux/EditorPageableGrid.js'></script>
-<script type='text/javascript' src='js/opennms/ux/EditorSNMPInterfaceGrid.js'></script>
-<script type='text/javascript' src='js/SNMPCollectionView.js'></script>
 <script type="text/javascript" >
-	Ext.onReady(function(){
-		snmpCollectionViewInit("snmp-grid", <%=nodeId%>);
-	});
 	
 	function applyChanges() {
 		if (confirm("Are you sure you want to proceed? This action can be undone by returning to this page.")) {
@@ -160,7 +153,7 @@
 	<%=listNodeName(nodeId, nodeLabel)%>
 	<br/>
 	
-	<div id="snmp-grid"></div>
+	<opennms:snmpSelectList id="selectList"></opennms:snmpSelectList>
 	<% if (interfaces.size() > 0) { %>
 	<%-- <table class="standardfirst">
 		<tr>

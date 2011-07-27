@@ -303,6 +303,41 @@
       <groupId>struts</groupId>
       <artifactId>struts</artifactId>
     </dependency>
+    <!-- GWT components -->
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.node-page-list</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-suggestion-combobox</artifactId>
+        <type>jar</type>
+        <version>${project.version}</version>
+        <scope>compile</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-graph-resources-list</artifactId>
+        <type>jar</type>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-snmpselect-list</artifactId>
+        <type>jar</type>
+        <version>${project.version}</version>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
@@ -349,5 +384,6 @@
       <scope>test</scope>
     </dependency>
 
+    
   </dependencies>
 </project>
