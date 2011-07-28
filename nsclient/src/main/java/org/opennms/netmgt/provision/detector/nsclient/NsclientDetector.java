@@ -26,10 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.simple;
+package org.opennms.netmgt.provision.detector.nsclient;
 
-import org.opennms.netmgt.provision.detector.simple.client.NsclientClient;
-import org.opennms.netmgt.provision.detector.simple.request.NsclientRequest;
+import org.opennms.netmgt.provision.detector.nsclient.client.NsclientClient;
+import org.opennms.netmgt.provision.detector.nsclient.request.NsclientRequest;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
