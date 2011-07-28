@@ -84,10 +84,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>org.opennms.nsclient</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.dns</artifactId>
     </dependency>

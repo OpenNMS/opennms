@@ -35,10 +35,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>org.opennms.nsclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
     </dependency>
     <dependency>
