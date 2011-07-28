@@ -12,7 +12,7 @@
            <g:FlowPanel ui:field="m_simplePagerContainer"/>
        </g:layer>
        <g:layer top="308px" width="55px" right="0" height="23px">
-           <g:Button ui:field="m_searchBtn">Search</g:Button>
+           <g:Button ui:field="m_searchBtn" width="100%">Search</g:Button>
        </g:layer>
     </g:LayoutPanel>
 </ui:UiBinder> 
