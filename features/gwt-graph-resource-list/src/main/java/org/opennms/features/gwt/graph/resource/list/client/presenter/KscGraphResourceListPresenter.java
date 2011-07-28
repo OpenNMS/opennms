@@ -38,6 +38,7 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -71,7 +72,12 @@ public class KscGraphResourceListPresenter extends DefaultResourceListPresenter 
             public void onClick(ClickEvent event) {
                 ResourceListItem resource = getView().getSelectedResource();
                 if(resource != null) {
-                    Location.assign("KSC/customGraphEditDetails.htm?resourceId=" + resource.getId());
+                    UrlBuilder urlBuilder = new UrlBuilder();
+                    urlBuilder.setHost(Location.getHost());
+                    urlBuilder.setPath("opennms/KSC/customGraphEditDetails.htm");
+                    urlBuilder.setParameter("resourceId", resource.getId());
+                    
+                    Location.assign(urlBuilder.buildString());
                 }else {
                     getView().showWarning();
                 }
@@ -85,7 +91,13 @@ public class KscGraphResourceListPresenter extends DefaultResourceListPresenter 
             public void onClick(ClickEvent event) {
                 ResourceListItem resource = getView().getSelectedResource();
                 if(resource != null){
-                    Location.assign("KSC/customGraphChooseResource.htm?selectedResourceId=&resourceId=" + resource.getId());
+                    UrlBuilder urlBuilder = new UrlBuilder();
+                    urlBuilder.setHost(Location.getHost());
+                    urlBuilder.setPath("KSC/customGraphChooseResource.htm");
+                    urlBuilder.setParameter("selectedResourceId", "");
+                    urlBuilder.setParameter("resourceId", resource.getId());
+                    
+                    Location.assign(urlBuilder.buildString());
                 }else{
                     getView().showWarning();
                 }

@@ -6,7 +6,9 @@
 	</ui:style>
 	<g:LayoutPanel ui:field="m_layoutPanel">
 	   <g:layer top="0" left="0" right="0" bottom="30px">
-	       <opennms:SnmpSelectTable ui:field="m_snmpSelectTable"></opennms:SnmpSelectTable>
+	       <g:FlowPanel>
+	           <opennms:SnmpSelectTable ui:field="m_snmpSelectTable"></opennms:SnmpSelectTable>
+	       </g:FlowPanel>
 	   </g:layer>
 	   <g:layer height="30px" left="0" right="0" bottom="0">
 	       <g:FlowPanel ui:field="m_pagerContainer"/>

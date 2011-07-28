@@ -62,10 +62,12 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
         
         m_label = new Label("Search for Node:");
         m_label.getElement().getStyle().setFontSize(70, Unit.PCT);
-        m_label.getElement().getStyle().setPaddingTop(3, Unit.PX);
+        m_label.getElement().getStyle().setPaddingTop(4, Unit.PX);
         m_label.getElement().getStyle().setPaddingLeft(5, Unit.PX);
         m_tf = new TextBox();
+        m_tf.setSize("99%", "15px");
         m_okBtn = new Button("OK");
+        m_okBtn.setSize("100%", "100%");
         m_okBtn.addClickHandler(new ClickHandler() {
             
             public void onClick(ClickEvent event) {
@@ -75,6 +77,7 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
         });
         
         m_cancelBtn = new Button("Cancel");
+        m_cancelBtn.setSize("100%", "100%");
         m_cancelBtn.addClickHandler(new ClickHandler() {
             
             public void onClick(ClickEvent event) {
@@ -83,7 +86,7 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
         });
         
         m_layoutPanel = new LayoutPanel();
-        m_layoutPanel.setSize("100%", "22px");
+        m_layoutPanel.setSize("100%", "25px");
         m_layoutPanel.add(m_label);
         m_layoutPanel.add(m_tf);
         m_layoutPanel.add(m_okBtn);

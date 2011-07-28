@@ -8,6 +8,7 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -35,23 +36,28 @@ public class KscCustomReportListPresenter extends DefaultResourceListPresenter i
             
             @Override
             public void onClick(ClickEvent event) {
-                String url = null;
+                UrlBuilder urlBuilder = new UrlBuilder();
+                urlBuilder.setHost(Location.getHost());
+                urlBuilder.setPath("opennms/KSC/formProcMain.htm");
+                
                 if(m_selectionDisplay.getSelectAction() != null) {
                     if(m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.VIEW)) {
-                        url = "KSC/formProcMain.htm?report_action=View&report="+ getView().getSelectedResource().getId();
+                        urlBuilder.setParameter("report_action", "View");
                     }else if(m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.CUSTOMIZE)) {
-                        url = "KSC/formProcMain.htm?report_action=Customize&report="+ getView().getSelectedResource().getId();
+                        urlBuilder.setParameter("report_action", "Customize");
                     }else if(m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.CREATE_NEW)) {
-                        url = "KSC/formProcMain.htm?report_action=Create&report="+ getView().getSelectedResource().getId();
+                        urlBuilder.setParameter("report_action", "Create");
                     }else if(m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.CREATE_NEW_FROM_EXISTING)) {
-                        url = "KSC/formProcMain.htm?report_action=CreateFrom&report="+ getView().getSelectedResource().getId();
+                        urlBuilder.setParameter("report_action", "CreateFrom");
                     }else if(m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.DELETE)) {
-                        url = "KSC/formProcMain.htm?report_action=Delete&report="+ getView().getSelectedResource().getId();
+                        urlBuilder.setParameter("report_action", "Delete");
                     }
                 }
                 
-                if(url != null) {
-                    Location.assign(url);
+                urlBuilder.setParameter("report", "" + getView().getSelectedResource().getId());
+                
+                if(m_selectionDisplay.getSelectAction() == null) {
+                    Location.assign(urlBuilder.buildString());
                 }else {
                     getView().showWarning();
                 }

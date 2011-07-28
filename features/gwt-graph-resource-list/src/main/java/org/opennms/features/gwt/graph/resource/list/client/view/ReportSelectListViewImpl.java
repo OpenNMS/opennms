@@ -69,6 +69,7 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
         
         m_layoutPanel.setSize("100%", "500px");
         m_treeContainer.add(makeCellTree(m_dataList));
+        
     }
     
     private ReportSelectListCellTree makeCellTree(List<ResourceListItem> list) {

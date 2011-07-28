@@ -5,6 +5,7 @@ import org.opennms.features.gwt.graph.resource.list.client.view.ResourceListItem
 import org.opennms.features.gwt.graph.resource.list.client.view.SearchPopup;
 
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.user.client.Window.Location;
 
 public class KscReportListPresenter extends DefaultResourceListPresenter {
@@ -17,7 +18,13 @@ public class KscReportListPresenter extends DefaultResourceListPresenter {
 
     @Override
     public void onResourceItemSelected() {
-        Location.assign("KSC/customView.htm?type=" + getView().getSelectedResource().getType() +"&report=" + getView().getSelectedResource().getId());
+        UrlBuilder urlBuilder = new UrlBuilder();
+        urlBuilder.setHost(Location.getHost());
+        urlBuilder.setPath("opennms/KSC/customView.htm");
+        urlBuilder.setParameter("type", getView().getSelectedResource().getType());
+        urlBuilder.setParameter("report", "" + getView().getSelectedResource().getId());
+        
+        Location.assign(urlBuilder.buildString());
     }
     
 

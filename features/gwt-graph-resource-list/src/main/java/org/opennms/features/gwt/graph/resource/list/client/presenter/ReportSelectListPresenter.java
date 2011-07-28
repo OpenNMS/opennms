@@ -72,7 +72,7 @@ public class ReportSelectListPresenter implements Presenter, ReportSelectListVie
         List<ResourceListItem> reports = getView().getSelectedReports();
         if(reports != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("graph/results.htm?reports=all&resourceId=");
+            sb.append(Location.getHost() + "/opennms/graph/results.htm?reports=all&resourceId=");
             
             
             boolean first = true;
