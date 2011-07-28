@@ -389,9 +389,10 @@ Comparable<OnmsMonitoredService> {
         .append("source", m_source)
         .append("notify", m_notify)
         .append("serviceType", m_serviceType)
-        .append("ipInterface", m_ipInterface)
-        .append("currentOutages", m_currentOutages)
-        .append("applications", m_applications)
+        // cannot include these since the require db queries
+//        .append("ipInterface", m_ipInterface)
+//        .append("currentOutages", m_currentOutages)
+//        .append("applications", m_applications)
         .toString();
     }
 

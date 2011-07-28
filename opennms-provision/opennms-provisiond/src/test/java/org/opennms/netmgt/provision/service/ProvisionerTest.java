@@ -250,7 +250,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     }
     
     
-    @Test//(timeout=300000)
+    @Test(timeout=300000)
     @JUnitTemporaryDatabase
     // 192.0.2.0/24 reserved by IANA for testing purposes
     @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:no-ipaddrtable.properties")
@@ -289,8 +289,6 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         //Verify snmpInterface count
         assertEquals(0, getSnmpInterfaceDao().countAll());
-        
-        Thread.sleep(300000);
         
     }
     
