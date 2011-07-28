@@ -37,6 +37,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
@@ -700,19 +701,16 @@ public final class DbAtInterfaceEntry {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		String sep = System.getProperty("line.separator");
-		StringBuffer buf = new StringBuffer();
-
-		buf.append("from db = ").append(m_fromDb).append(sep);
-		buf.append("node id = ").append(m_nodeId).append(sep);
-		buf.append("ip address = ").append(m_ipaddr).append(sep);
-		buf.append("physaddr = ").append(m_physaddr).append(sep);
-		buf.append("source node id = ").append(m_sourcenodeid).append(sep);
-		buf.append("ifindex = ").append(m_ifindex).append(sep);
-		buf.append("status = ").append(m_status).append(sep);
-		buf.append("last poll time = ").append(m_lastPollTime).append(sep);
-		return buf.toString();
-
+		return new ToStringBuilder(this)
+			.append("fromDB?", m_fromDb)
+			.append("nodeID", m_nodeId)
+			.append("ipAddress", m_ipaddr)
+			.append("physAddress", m_physaddr)
+			.append("sourceNodeID", m_sourcenodeid)
+			.append("ifIndex", m_ifindex)
+			.append("status", m_status)
+			.append("lastPollTime", m_lastPollTime)
+			.toString();
 	}
 
 }

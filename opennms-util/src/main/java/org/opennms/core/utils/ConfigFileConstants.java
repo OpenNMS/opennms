@@ -328,11 +328,6 @@ public final class ConfigFileConstants {
      */
     public static final int SITE_STATUS_VIEWS_FILE_NAME;
     
-    /**
-     * The monitoring locations config file (distributed monitoring)
-     */
-    public static final int MONITORING_LOCATIONS_FILE_NAME;
-    
     /** Constant <code>HTTP_COLLECTION_CONFIG_FILE_NAME</code> */
     public static final int HTTP_COLLECTION_CONFIG_FILE_NAME;
 
@@ -577,8 +572,6 @@ public final class ConfigFileConstants {
         
         SITE_STATUS_VIEWS_FILE_NAME = 62;
         
-        MONITORING_LOCATIONS_FILE_NAME = 63;
-        
         HTTP_COLLECTION_CONFIG_FILE_NAME = 64;
         
         NSCLIENT_COLLECTION_CONFIG_FILE_NAME = 65;
@@ -696,7 +689,6 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
         FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
         FILE_ID_TO_NAME[SITE_STATUS_VIEWS_FILE_NAME] = "site-status-views.xml";
-        FILE_ID_TO_NAME[MONITORING_LOCATIONS_FILE_NAME] = "monitoring-locations.xml";
         FILE_ID_TO_NAME[HTTP_COLLECTION_CONFIG_FILE_NAME] = "http-datacollection-config.xml";
         FILE_ID_TO_NAME[NSCLIENT_COLLECTION_CONFIG_FILE_NAME] = "nsclient-datacollection-config.xml";
         FILE_ID_TO_NAME[NSCLIENT_CONFIG_FILE_NAME] = "nsclient-config.xml";

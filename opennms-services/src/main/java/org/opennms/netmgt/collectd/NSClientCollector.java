@@ -60,11 +60,11 @@ import org.opennms.netmgt.config.nsclient.NsclientCollection;
 import org.opennms.netmgt.config.nsclient.Wpm;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
-import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
-import org.opennms.netmgt.poller.nsclient.NsclientException;
-import org.opennms.netmgt.poller.nsclient.NsclientManager;
-import org.opennms.netmgt.poller.nsclient.NsclientPacket;
+import org.opennms.protocols.nsclient.NSClientAgentConfig;
+import org.opennms.protocols.nsclient.NsclientCheckParams;
+import org.opennms.protocols.nsclient.NsclientException;
+import org.opennms.protocols.nsclient.NsclientManager;
+import org.opennms.protocols.nsclient.NsclientPacket;
 
 /**
  * <p>NSClientCollector class.</p>

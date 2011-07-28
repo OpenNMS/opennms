@@ -42,7 +42,7 @@
         <entry key="microblog-configuration.xml" value="microblogConfigurationDao"/>
         <entry key="model-importer.properties" value="modelImporterProperties"/>
         <!--  <entry key="modemConfig.properties" value="unknown"/> -->
-        <entry key="monitoring-locations.xml" value="monitoringLocationsFactory"/>
+        <!--  <entry key="monitoring-locations.xml" value="locationMonitorDaoHibernate"/> -->
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
         <entry key="notificationCommands.xml" value="notificationCommandFactory"/>
         <!-- <entry key="notifications.xml" value="notificationFactory"/> --><!-- database access -->
@@ -294,12 +294,6 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
     </property>
   </bean>
   -->
-
-  <bean id="monitoringLocationsFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.MonitoringLocationsFactory.init</value></property>
-  </bean>
-
-  <bean id="monitoringLocationsFactory" class="org.opennms.netmgt.config.MonitoringLocationsFactory" depends-on="monitoringLocationsFactory-init" factory-method="getInstance"/>
 
   <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>

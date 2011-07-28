@@ -303,7 +303,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     
             final StringBuffer filterRules = new StringBuffer(filter.getContent());
     
-            LogUtils.debugf(this, "createPackageIpMap: package is %s. filter rules are: %s", pkg.getName(), filterRules.toString());
+            LogUtils.debugf(this, "getIpList: package is %s. filter rules are: %s", pkg.getName(), filterRules.toString());
             return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         } finally {
             getReadLock().unlock();

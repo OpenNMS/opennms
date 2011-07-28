@@ -4,6 +4,8 @@ use Fcntl ':mode';
 use File::Find;
 use File::Copy;
 
+my $debug = 0;
+
 my $header = "This file is part of OpenNMS(R).
 
 Copyright (C) ###datestring### The OpenNMS Group, Inc.
@@ -67,171 +69,188 @@ sub write_properties {
 
 die "usage: $0 <directory>" if (@ARGV == 0);
 
+my @directories = ();
+
+for my $entry (@ARGV) {
+	if (-d $entry) {
+		push(@directories, $entry);
+	} elsif (-f $entry) {
+		process_file($entry);
+	} else {
+		print STDERR "! warning: $entry does not exist! ($!)\n";
+	}
+}
+
 find({
 	wanted => sub {
-		my $name = $File::Find::name;
-		return if ($name =~ /\/target\//);
-		return if ($name =~ /\/\.git\//);
-		return unless (-f $name);
-		return unless ($name =~ /\.(jsp|java|properties)$/);
-		return if ($name =~ /\/test\/.*\.properties$/);
-		return if ($name =~ /\/castor.properties$/);
+		process_file($File::Find::name);
+	},
+	no_chdir => 1
+}, @directories) unless (@directories == 0);
 
-		print "* $name\n" if ($debug);
+sub process_file {
+	my $name = shift;
 
-		my $begin_date = 2011;
-		my $end_date   = 2011;
+	return if ($name =~ /\/target\//);
+	return if ($name =~ /\/\.git\//);
+	return unless (-f $name);
+	return unless ($name =~ /\.(jsp|java|properties)$/);
+	return if ($name =~ /\/test\/.*\.properties$/);
+	return if ($name =~ /\/castor.properties$/);
 
-		open (GIT, "git log --date=short '$name' |") or die "unable to read from 'git log --date=short $name': $!\n";
-		while (my $line = <GIT>) {
-			if ($line =~ /^\s*Date:\s+(\d+)/) {
-				my $date = $1;
-				if ($date < $begin_date) {
-					$begin_date = $date;
-				} elsif ($date > $end_date) {
-					$end_date = $date;
-				}
+	print "* $name\n";
+
+	my $begin_date = 2011;
+	my $end_date   = 2011;
+
+	open (GIT, "git log --date=short '$name' |") or die "unable to read from 'git log --date=short $name': $!\n";
+	while (my $line = <GIT>) {
+		if ($line =~ /^\s*Date:\s+(\d+)/) {
+			my $date = $1;
+			if ($date < $begin_date) {
+				$begin_date = $date;
+			} elsif ($date > $end_date) {
+				$end_date = $date;
 			}
 		}
-		close (GIT);
+	}
+	close (GIT);
 
-		my $datestring = "$begin_date-$end_date";
-		if ($begin_date == $end_date) {
-			$datestring = "$begin_date";
-		}
+	my $datestring = "$begin_date-$end_date";
+	if ($begin_date == $end_date) {
+		$datestring = "$begin_date";
+	}
 
-		open (FILEIN, "$name") or die "unable to read from $name: $!\n";
-		open (FILEOUT, ">$name.tmp.$$") or die "unable to write to $name.tmp.$$: $!\n";
+	open (FILEIN, "$name") or die "unable to read from $name: $!\n";
+	open (FILEOUT, ">$name.tmp.$$") or die "unable to write to $name.tmp.$$: $!\n";
 
-		my (undef, undef, $mode) = lstat($name);
+	my (undef, undef, $mode) = lstat($name);
 
-		my ($extension) = $name =~ /.*\.(.*?)$/;
-		my $found = 0;
-		my $in_header = undef;
-		my $in_comment = undef;
-		my $comment_contents = "";
+	my ($extension) = $name =~ /.*\.(.*?)$/;
+	my $found = 0;
+	my $in_header = undef;
+	my $in_comment = undef;
+	my $comment_contents = "";
 
-		LOOP: while (my $line = <FILEIN>) {
-			print "  $line" if ($debug);
+	LOOP: while (my $line = <FILEIN>) {
+		print "  $line" if ($debug);
 
-			print "1. in_comment = $in_comment\n" if ($debug);
-			print "2. in_header  = $in_header\n"  if ($debug);
-			if (defined $in_comment) {
-				my $doit = 0;
-				if ($in_comment eq "/*") {
-					if ($line =~ /\*\//) {
-						$doit = 1;
-					}
-				} elsif ($extension eq "jsp" and $in_comment eq "<%--") {
-					if ($line =~ /\-\-\%\>/) {
-						$doit = 1;
-					}
-				} elsif ($extension eq "jsp" and $in_comment eq "<!--") {
-					if ($line =~ /\-\-\!?\>/) {
-						$doit = 1;
-					}
-				} elsif ($extension eq "properties" and $in_comment eq "#") {
-					if (($line !~ /^\s*#/ and $line !~ /^\s*$/) or ($line =~ /^\s*\#\#\#\#\#\#\#\#\#\#\#*\s*$/)) {
-						$doit = 1;
-					}
-				} elsif ($in_comment eq "//") {
-					if ($line !~ /^\s*\/\// and $line !~ /^\s*$/) {
-						$doit = 1;
-					}
+		print "1. in_comment = $in_comment\n" if ($debug);
+		print "2. in_header  = $in_header\n"  if ($debug);
+		if (defined $in_comment) {
+			my $doit = 0;
+			if ($in_comment eq "/*") {
+				if ($line =~ /\*\//) {
+					$doit = 1;
 				}
+			} elsif ($extension eq "jsp" and $in_comment eq "<%--") {
+				if ($line =~ /\-\-\%\>/) {
+					$doit = 1;
+				}
+			} elsif ($extension eq "jsp" and $in_comment eq "<!--") {
+				if ($line =~ /\-\-\!?\>/) {
+					$doit = 1;
+				}
+			} elsif ($extension eq "properties" and $in_comment eq "#") {
+				if (($line !~ /^\s*#/ and $line !~ /^\s*$/) or ($line =~ /^\s*\#\#\#\#\#\#\#\#\#\#\#*\s*$/)) {
+					$doit = 1;
+				}
+			} elsif ($in_comment eq "//") {
+				if ($line !~ /^\s*\/\// and $line !~ /^\s*$/) {
+					$doit = 1;
+				}
+			}
 
-				if ($doit) {
-					if (defined $in_header) {
-						if ($in_comment eq "//") {
-							if ($extension eq "jsp") {
-								write_java($datestring);
-							} else {
-								&{"write_$extension"}($datestring);
-							}
-							print FILEOUT $line;
-						} elsif ($in_comment eq "#" and $line !~ /^\s*\#\#\#\#\#\#\#\#\#\#\#*\s*$/) {
-							&{"write_$extension"}($datestring);
-							print FILEOUT $line;
+			if ($doit) {
+				if (defined $in_header) {
+					if ($in_comment eq "//") {
+						if ($extension eq "jsp") {
+							write_java($datestring);
 						} else {
 							&{"write_$extension"}($datestring);
 						}
+						print FILEOUT $line;
+					} elsif ($in_comment eq "#" and $line !~ /^\s*\#\#\#\#\#\#\#\#\#\#\#*\s*$/) {
+						&{"write_$extension"}($datestring);
+						print FILEOUT $line;
 					} else {
-						$comment_contents .= $line;
-						print FILEOUT $comment_contents;
+						&{"write_$extension"}($datestring);
 					}
-					$in_comment = undef;
-					$in_header = undef;
-					$comment_contents = undef;
-					next LOOP;
+				} else {
+					$comment_contents .= $line;
+					print FILEOUT $comment_contents;
 				}
+				$in_comment = undef;
+				$in_header = undef;
+				$comment_contents = undef;
+				next LOOP;
 			}
-			
-			print "3. in_comment = $in_comment\n" if ($debug);
-			print "4. in_header = $in_header\n"   if ($debug);
-			if (not defined $in_comment) {
-				if ($line =~ /^\s*(\/\*|\/\/)/) {
-					$in_comment = $1;
-				} elsif ($line =~ /\s*(\/\*|\/\/)\s*$/) {
-					$in_comment = $1;
-				} elsif ($extension eq "jsp" and $line =~ /(\<\!\-\-)/) {
-					$in_comment = $1;
-				} elsif ($extension eq "jsp" and $line =~ /(\<\%\-\-)/) {
-					$in_comment = $1;
-				} elsif ($extension eq "properties" and $line =~ /^\s*(\#)/) {
-					$in_comment = $1;
-				}
-
-				if ($in_comment eq "/*" and $line =~ /\*\//) {
-					$in_comment = undef;
-				}
-				if ($extension eq "jsp" and $in_comment eq "<!--" and $line =~ /\-\-\!?\>/) {
-					$in_comment = undef;
-				}
-				if ($extension eq "jsp" and $in_comment eq "<%--" and $line =~ /\-\-\%\>/) {
-					$in_comment = undef;
-				}
+		}
+		
+		print "3. in_comment = $in_comment\n" if ($debug);
+		print "4. in_header = $in_header\n"   if ($debug);
+		if (not defined $in_comment) {
+			if ($line =~ /^\s*(\/\*|\/\/)/) {
+				$in_comment = $1;
+			} elsif ($line =~ /\s*(\/\*|\/\/)\s*$/) {
+				$in_comment = $1;
+			} elsif ($extension eq "jsp" and $line =~ /(\<\!\-\-)/) {
+				$in_comment = $1;
+			} elsif ($extension eq "jsp" and $line =~ /(\<\%\-\-)/) {
+				$in_comment = $1;
+			} elsif ($extension eq "properties" and $line =~ /^\s*(\#)/) {
+				$in_comment = $1;
 			}
 
-			print "5. in_comment = $in_comment\n" if ($debug);
-			print "6. in_header = $in_header\n"   if ($debug);
-			if (not $found and not defined $in_header) {
-				if (defined $in_comment and ($line =~ /This file is (a )?part of (the )?OpenNMS/i or $line =~ /The OpenNMS Project Contributor Agreement/)) {
-					$in_header = $in_comment;
-					$found = 1;
-				}
+			if ($in_comment eq "/*" and $line =~ /\*\//) {
+				$in_comment = undef;
 			}
-
-			print "7. in_comment = $in_comment\n" if ($debug);
-			print "8. in_header = $in_header\n"   if ($debug);
-			if ($in_comment) {
-				$comment_contents .= $line;
-			} else {
-				print FILEOUT $line;
+			if ($extension eq "jsp" and $in_comment eq "<!--" and $line =~ /\-\-\!?\>/) {
+				$in_comment = undef;
+			}
+			if ($extension eq "jsp" and $in_comment eq "<%--" and $line =~ /\-\-\%\>/) {
+				$in_comment = undef;
 			}
 		}
 
-		close (FILEOUT);
-		close (FILEIN);
+		print "5. in_comment = $in_comment\n" if ($debug);
+		print "6. in_header = $in_header\n"   if ($debug);
+		if (not $found and not defined $in_header) {
+			if (defined $in_comment and ($line =~ /This file is (a )?part of (the )?OpenNMS/i or $line =~ /The OpenNMS Project Contributor Agreement/)) {
+				$in_header = $in_comment;
+				$found = 1;
+			}
+		}
+
+		print "7. in_comment = $in_comment\n" if ($debug);
+		print "8. in_header = $in_header\n"   if ($debug);
+		if ($in_comment) {
+			$comment_contents .= $line;
+		} else {
+			print FILEOUT $line;
+		}
+	}
+
+	close (FILEOUT);
+	close (FILEIN);
+
+	move("$name.tmp.$$", "$name");
+	chmod($mode, $name);
+
+	if (not $found) {
+		open (FILEIN, "$name") or die "unable to read from $name: $!\n";
+		open (FILEOUT, ">$name.tmp.$$") or die "unable to write to $name.tmp.$$: $!\n";
+
+		&{"write_$extension"}($datestring);
+
+		while (my $line = <FILEIN>) {
+			print FILEOUT $line;
+		}
+
+		close(FILEOUT);
+		close(FILEIN);
 
 		move("$name.tmp.$$", "$name");
 		chmod($mode, $name);
-
-		if (not $found) {
-			open (FILEIN, "$name") or die "unable to read from $name: $!\n";
-			open (FILEOUT, ">$name.tmp.$$") or die "unable to write to $name.tmp.$$: $!\n";
-
-			&{"write_$extension"}($datestring);
-
-			while (my $line = <FILEIN>) {
-				print FILEOUT $line;
-			}
-
-			close(FILEOUT);
-			close(FILEIN);
-
-			move("$name.tmp.$$", "$name");
-			chmod($mode, $name);
-		}
-	},
-	no_chdir => 1
-}, @ARGV);
+	}
+}

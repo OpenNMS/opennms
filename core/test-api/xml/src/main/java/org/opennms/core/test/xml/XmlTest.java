@@ -154,7 +154,7 @@ abstract public class XmlTest<T> {
 	@Test
 	public void validateJaxbXmlAgainstSchema() throws Exception {
 		LogUtils.debugf(this, "Validating against XSD: %s", m_schemaFile);
-		javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass(), null);
+		javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass(), null, true);
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         final Schema schema = factory.newSchema(new StreamSource(m_schemaFile));
 		unmarshaller.setSchema(schema);

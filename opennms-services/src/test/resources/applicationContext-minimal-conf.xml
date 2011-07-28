@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="eventConfResourceLocation" class="java.lang.String">
+      <constructor-arg value="classpath:/minimal-eventconf.xml" />
+    </bean>
+
+    <bean id="dataCollectionConfResourceLocation" class="java.lang.String">
+      <constructor-arg value="classpath:/minimal-datacollection-config.xml" />
+    </bean>
+
+    <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao">
+      <property name="configResource" ref="dataCollectionConfResourceLocation" />
+      <property name="configDirectory" value="src/test/resources/empty" />
+    </bean>
+
+    <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod">
+        <value>org.opennms.netmgt.config.DataCollectionConfigFactory.setInstance</value>
+      </property>
+      <property name="arguments">
+        <list>
+          <ref bean="dataCollectionConfigDao" />
+        </list>
+      </property>
+    </bean>
+    
+    <bean id="dataCollectionConfig" class="org.opennms.netmgt.config.DataCollectionConfigFactory" depends-on="dataCollectionConfig-init" factory-method="getInstance" />
+
+</beans>

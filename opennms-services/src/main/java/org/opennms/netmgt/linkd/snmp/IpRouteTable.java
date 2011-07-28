@@ -62,7 +62,7 @@ public class IpRouteTable extends SnmpTable<IpRouteTableEntry>
 	}
 	
     /** {@inheritDoc} */
-    protected IpRouteTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected IpRouteTableEntry createTableEntry(final SnmpObjId base, final SnmpInstId inst, final Object val) {
         return new IpRouteTableEntry();
     }
 

@@ -249,6 +249,49 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         verifyBasicImportCounts(visitor);
     }
     
+    
+    @Test(timeout=300000)
+    @JUnitTemporaryDatabase
+    // 192.0.2.0/24 reserved by IANA for testing purposes
+    @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:no-ipaddrtable.properties")
+    public void testNoIPAddrTable() throws Exception {
+        importFromResource("classpath:/no-ipaddrtable.xml");
+
+        OnmsNode node = getNodeDao().findByForeignId("no-ipaddrtable", "123");
+        
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(1, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(3, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+        
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        runScan(scan);
+   
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(1, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(3, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+        
+    }
+    
     /**
      * We have to ignore this test until there is a DNS service available in the test harness
      * 

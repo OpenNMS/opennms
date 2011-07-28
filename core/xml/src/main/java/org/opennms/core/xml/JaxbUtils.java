@@ -40,7 +40,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -67,8 +66,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 public class JaxbUtils {
-    private static final class LoggingValidationEventHandler implements
-			ValidationEventHandler {
+    private static final class LoggingValidationEventHandler implements ValidationEventHandler {
 		private final Class<?> m_clazz;
 
 		private LoggingValidationEventHandler(Class<?> clazz) {
@@ -83,12 +81,11 @@ public class JaxbUtils {
 	}
 
 	private static final MarshallingExceptionTranslator EXCEPTION_TRANSLATOR = new MarshallingExceptionTranslator();
-	/*
 	private static ThreadLocal<Map<Class<?>, Marshaller>> m_marshallers = new ThreadLocal<Map<Class<?>, Marshaller>>();
 	private static ThreadLocal<Map<Class<?>, Unmarshaller>> m_unMarshallers = new ThreadLocal<Map<Class<?>, Unmarshaller>>();
 	private static final Map<Class<?>,JAXBContext> m_contexts = Collections.synchronizedMap(new WeakHashMap<Class<?>,JAXBContext>());
 	private static final Map<Class<?>,Schema> m_schemas = Collections.synchronizedMap(new WeakHashMap<Class<?>,Schema>());
-	*/
+    private static final boolean VALIDATE_IF_POSSIBLE = true;
 
 	private JaxbUtils() {
 	}
@@ -109,10 +106,14 @@ public class JaxbUtils {
 	}
 
 	public static <T> T unmarshal(final Class<T> clazz, final File file) {
+        return unmarshal(clazz, file, VALIDATE_IF_POSSIBLE);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final File file, final boolean validate) {
 		FileReader reader = null;
 		try {
 			reader = new FileReader(file);
-			return unmarshal(clazz, new InputSource(reader), null);
+			return unmarshal(clazz, new InputSource(reader), null, validate);
 		} catch (final FileNotFoundException e) {
 			throw EXCEPTION_TRANSLATOR.translate("reading " + file, e);
 		} finally {
@@ -121,33 +122,53 @@ public class JaxbUtils {
 	}
 
 	public static <T> T unmarshal(final Class<T> clazz, final Reader reader) {
-		return unmarshal(clazz, new InputSource(reader), null);
+        return unmarshal(clazz, reader, VALIDATE_IF_POSSIBLE);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final Reader reader, final boolean validate) {
+		return unmarshal(clazz, new InputSource(reader), null, validate);
 	}
 
 	public static <T> T unmarshal(final Class<T> clazz, final String xml) {
+        return unmarshal(clazz, xml, VALIDATE_IF_POSSIBLE);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final String xml, final boolean validate) {
 		final StringReader sr = new StringReader(xml);
 		final InputSource is = new InputSource(sr);
 		try {
-			return unmarshal(clazz, is, null);
+			return unmarshal(clazz, is, null, validate);
 		} finally {
 			IOUtils.closeQuietly(sr);
 		}
 	}
 
 	public static <T> T unmarshal(final Class<T> clazz, final Resource resource) {
+        return unmarshal(clazz, resource, VALIDATE_IF_POSSIBLE);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final Resource resource, final boolean validate) {
 		try {
-			return unmarshal(clazz, new InputSource(resource.getInputStream()), null);
+			return unmarshal(clazz, new InputSource(resource.getInputStream()), null, validate);
 		} catch (final IOException e) {
 			throw EXCEPTION_TRANSLATOR.translate("getting a configuration resource from spring", e);
 		}
 	}
-	
+
 	public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource) {
-		return unmarshal(clazz, inputSource, null);
+        return unmarshal(clazz, inputSource, VALIDATE_IF_POSSIBLE);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final boolean validate) {
+		return unmarshal(clazz, inputSource, null, validate);
 	}
 
 	public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext) {
-		final Unmarshaller um = getUnmarshallerFor(clazz, jaxbContext);
+        return unmarshal(clazz, inputSource, jaxbContext, VALIDATE_IF_POSSIBLE);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final boolean validate) {
+		final Unmarshaller um = getUnmarshallerFor(clazz, jaxbContext, validate);
 		
 		LogUtils.debugf(clazz, "unmarshalling class %s from input source %s with unmarshaller %s", clazz.getSimpleName(), inputSource, um);
 		try {
@@ -188,7 +209,6 @@ public class JaxbUtils {
 	public static Marshaller getMarshallerFor(final Object obj, final JAXBContext jaxbContext) {
 		final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
 
-		/*
 		Map<Class<?>, Marshaller> marshallers = m_marshallers.get();
 		if (jaxbContext == null) {
 			if (marshallers == null) {
@@ -200,7 +220,6 @@ public class JaxbUtils {
 				return marshallers.get(clazz);
 			}
 		}
-		*/
 		LogUtils.debugf(clazz, "creating unmarshaller for %s", clazz);
 
 		try {
@@ -213,9 +232,9 @@ public class JaxbUtils {
 			final Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			//final Schema schema = getValidatorFor(clazz);
-			//marshaller.setSchema(schema);
-			// if (jaxbContext == null) marshallers.put(clazz, marshaller);
+			final Schema schema = getValidatorFor(clazz);
+			marshaller.setSchema(schema);
+			if (jaxbContext == null) marshallers.put(clazz, marshaller);
 			
 			return marshaller;
 		} catch (JAXBException e) {
@@ -228,12 +247,14 @@ public class JaxbUtils {
 	 * JAXBUtils will create and cache a context for the given object.
 	 * @param obj The object type to be unmarshaled.
 	 * @param jaxbContext An optional JAXB context to create the unmarshaller from.
+	 * @param validate TODO
 	 * @return an Unmarshaller
 	 */
-	public static Unmarshaller getUnmarshallerFor(final Object obj, final JAXBContext jaxbContext) {
+	public static Unmarshaller getUnmarshallerFor(final Object obj, final JAXBContext jaxbContext, boolean validate) {
 		final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
 
-		/*
+		Unmarshaller unmarshaller = null;
+
 		Map<Class<?>, Unmarshaller> unmarshallers = m_unMarshallers.get();
 		if (jaxbContext == null) {
 			if (unmarshallers == null) {
@@ -242,33 +263,39 @@ public class JaxbUtils {
 			}
 			if (unmarshallers.containsKey(clazz)) {
 				LogUtils.debugf(clazz, "found unmarshaller for %s", clazz);
-				return unmarshallers.get(clazz);
+				unmarshaller = unmarshallers.get(clazz);
 			}
 		}
-		*/
-		LogUtils.debugf(clazz, "creating unmarshaller for %s", clazz);
-
-		try {
-			final JAXBContext context;
-			if (jaxbContext == null) {
-				context = getContextFor(clazz);
-			} else {
-				context = jaxbContext;
-			}
-			final Unmarshaller unmarshaller = context.createUnmarshaller();
-			//final Schema schema = getValidatorFor(clazz);
-			//unmarshaller.setSchema(schema);
-			// if (jaxbContext == null) unmarshallers.put(clazz, unmarshaller);
-
-			return unmarshaller;
-		} catch (JAXBException e) {
-			throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
+		
+		if (unmarshaller == null) {
+            try {
+                final JAXBContext context;
+                if (jaxbContext == null) {
+                        context = getContextFor(clazz);
+                } else {
+                    context = jaxbContext;
+                }
+                unmarshaller = context.createUnmarshaller();
+            } catch (final JAXBException e) {
+                throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
+            }
 		}
+
+		LogUtils.debugf(clazz, "created unmarshaller for %s", clazz);
+
+		if (validate) {
+            final Schema schema = getValidatorFor(clazz);
+            if (schema == null) {
+                LogUtils.debugf(clazz, "Validation is enabled, but no XSD found for class %s", clazz.getSimpleName());
+            }
+            unmarshaller.setSchema(schema);
+		}
+        if (jaxbContext == null) unmarshallers.put(clazz, unmarshaller);
+
+        return unmarshaller;
 	}
 
 	private static JAXBContext getContextFor(final Class<?> clazz) throws JAXBException {
-		return JAXBContext.newInstance(clazz);
-		/* NO!  Leaks SymbolTable objects  :(
 		final JAXBContext context;
 		if (m_contexts.containsKey(clazz)) {
 			context = m_contexts.get(clazz);
@@ -277,22 +304,18 @@ public class JaxbUtils {
 			m_contexts.put(clazz, context);
 		}
 		return context;
-		*/
 	}
 
 	private static Schema getValidatorFor(final Class<?> origClazz) {
 		final Class<?> clazz = (Class<?>)(origClazz instanceof Class<?> ? origClazz : origClazz.getClass());
 		LogUtils.tracef(clazz, "finding XSD for class %s", clazz);
 
-		/* NO!  Leaks SymbolTable objects  :(
 		if (m_schemas.containsKey(clazz)) {
 			return m_schemas.get(clazz);
 		}
-		*/
 
 		final ValidateUsing schemaFileAnnotation = clazz.getAnnotation(ValidateUsing.class);
 		if (schemaFileAnnotation == null || schemaFileAnnotation.value() == null) {
-			LogUtils.debugf(clazz, "no XSD found for class %s", clazz.getSimpleName());
 			return null;
 		}
 		
@@ -328,7 +351,7 @@ public class JaxbUtils {
 				return null;
 			}
 			final Schema schema = factory.newSchema(new StreamSource(schemaInputStream));
-//			m_schemas.put(clazz, schema);
+			m_schemas.put(clazz, schema);
 			return schema;
 		} catch (final Throwable t) {
 			LogUtils.warnf(clazz, t, "an error occurred while attempting to load %s for validation", schemaFileName);

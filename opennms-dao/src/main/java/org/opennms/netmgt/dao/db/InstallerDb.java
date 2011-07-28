@@ -2853,6 +2853,11 @@ public class InstallerDb {
          */
         addColumnReplacement("alarms.alarmid", new NextValReplacement("alarmsNxtId", getDataSource()));
 
+        /* linkd updates */
+        addColumnReplacement("vlan.id", new DoNotAddColumnReplacement());
+        addColumnReplacement("stpnode.id", new DoNotAddColumnReplacement());
+        addColumnReplacement("stpinterface.id", new DoNotAddColumnReplacement());
+        addColumnReplacement("iprouteinterface.id", new DoNotAddColumnReplacement());
     }
     
     /**

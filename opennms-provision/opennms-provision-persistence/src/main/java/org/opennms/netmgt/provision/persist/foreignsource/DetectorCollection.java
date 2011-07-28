@@ -48,9 +48,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DetectorCollection implements List<PluginConfig> {
     private LinkedList<PluginConfig> m_list = null;
 
-	/**
+    /**
      * 
      */
+    @SuppressWarnings("unused")
     private static final long serialVersionUID = 10L;
 
     public DetectorCollection() {

@@ -218,6 +218,14 @@ public class EventAnticipator implements EventListener {
                     anticipatedSize + "):\n");
             problems.append(listEvents("\t", missingEvents));
         }
+        
+        if (sleepAfter > 0) {
+            try {
+                Thread.sleep(sleepAfter);
+            } catch (InterruptedException e) {
+            }
+        }
+
         if (unanticipatedSize >= 0 && unanticipatedEvents().size() != unanticipatedSize) {
             problems.append(unanticipatedEvents().size() +
                     " unanticipated events received (expected " +

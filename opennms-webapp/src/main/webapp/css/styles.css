@@ -817,3 +817,7 @@ li.pagination {
 .stdform .indent {
 	margin-left: 240px;
 }
+
+.onms-table td{
+    background: #ffffff;
+}

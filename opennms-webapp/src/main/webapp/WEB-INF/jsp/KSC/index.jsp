@@ -56,13 +56,7 @@
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="breadcrumb" value="<a href='${baseHref}report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="KSC Reports" />
-  <jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
-
-<script type="text/javascript" src="<%= Util.calculateUrlBase(request, "js/opennms/ux/PageableGrid.js") %>" ></script>
-<script type="text/javascript" src="<%= Util.calculateUrlBase(request, "js/opennms/ux/ResourcesPageableGrid.js") %>" ></script>
-<script type="text/javascript" src="<%= Util.calculateUrlBase(request, "js/opennms/ux/LocalPageableProxy.js") %>" ></script>
-<script type="text/javascript" src="<%= Util.calculateUrlBase(request, "js/KSCIndexView.js") %>" ></script>
 
 <!-- A script for validating Node ID Selection Form before submittal -->
 <script type="text/javascript" >
@@ -110,12 +104,9 @@
 											</c:forEach>
 				                             ]};
 		
-		Ext.onReady(function(){
-				customizedReportsInitView("custom-resources", customData, "<%= Util.calculateUrlBase(request) %>KSC/formProcMain.htm?report_action={action}");
-		})
+		
 	</script>
-	<div id="custom-resources"></div>
-      
+    <opennms:kscCustomReportList id="kscReportList" dataObject="customData"></opennms:kscCustomReportList>
   </div>
 
 <h3 class="o-box">Node SNMP Interface Reports</h3>
@@ -139,11 +130,9 @@
 												  </c:if>
 												</c:forEach>
       	                                  	]};
-        	Ext.onReady(function(){
-					nodeSNMPReportsInitView("snmp-reports", nodeData, "<%= Util.calculateUrlBase(request) %>KSC/customView.htm?type={type}&report={id}")
-            });
       </script>
       <div id="snmp-reports"></div>
+      <opennms:nodeSnmpReportList id="nodeSnmpList" dataObject="nodeData"></opennms:nodeSnmpReportList>
 </div>
 
 <h3 class="o-box">Domain SNMP Interface Reports</h3>
@@ -173,14 +162,6 @@
 														</c:forEach>	
           		                                		]}
           </script>
-          <script type="text/javascript">
-          	Ext.onReady(function(){
-				/*
-					domainGridInitView("domain-reports", domainData, "<%= Util.calculateUrlBase(request, "KSC/customView.htm") %>");
-				*/
-            });
-          </script>
-          <div id="domain-reports"></div>
           <form method="get" name="choose_domain" action="<%= Util.calculateUrlBase(request, "KSC/customView.htm") %>" onsubmit="return validateDomain();">
             <input type="hidden" name="<%=CustomViewController.Parameters.type%>" value="domain">
 

@@ -62,6 +62,12 @@ public final class IpNetToMediaTableEntry extends SnmpTableEntry
 	/** Constant <code>INTM_TYPE="ipNetToMediatype"</code> */
 	public final static	String	INTM_TYPE		= "ipNetToMediatype";
 
+    /**
+     * <P>The TABLE_OID is the object identifier that represents
+     * the root of the IP Address table in the MIB forest.</P>
+     */
+    public static final String  TABLE_OID   = ".1.3.6.1.2.1.4.22.1";    // start of table (GETNEXT)
+
 	/**
 	 * <P>The keys that will be supported by default from the 
 	 * TreeMap base class. Each of the elements in the list
@@ -69,62 +75,45 @@ public final class IpNetToMediaTableEntry extends SnmpTableEntry
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[]	ms_elemList = null;
-	
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static
-	{
-		ms_elemList = new NamedSnmpVar[4];
-		int ndx = 0;
-		
-		/**
-		 * The interface on which this entry's equivalence
- 		 * is effective. The interface identified by a
- 		 * particular value of this index is the same
- 		 * interface as identified by the same value of
- 		 * ifIndex.
-		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,			INTM_INDEX,		".1.3.6.1.2.1.4.22.1.1",  1);
+	public static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
+	    /**
+	     * The interface on which this entry's equivalence
+         * is effective. The interface identified by a
+         * particular value of this index is the same
+         * interface as identified by the same value of
+         * ifIndex.
+         */
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       INTM_INDEX,    TABLE_OID + ".1",  1),
 
-		/**
-		 * The media-dependent `physical' address. 
-		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,	INTM_PHYSADDR,	".1.3.6.1.2.1.4.22.1.2",  2);
-		
-		/**
-		 * The IpAddress corresponding to the media-
-		 * dependent `physical' address.
-		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS,		INTM_NETADDR,	".1.3.6.1.2.1.4.22.1.3",  3);
-		
-		/**
-		 * The type of mapping.
- 		 * Setting this object to the value invalid(2) has
- 		 * the effect of invalidating the corresponding entry
- 		 * in the ipNetToMediaTable. That is, it effectively
- 		 * disassociates the interface identified with said
- 		 * entry from the mapping identified with said entry.
- 		 * It is an implementation-specific matter as to
- 		 * whether the agent removes an invalidated entry
- 		 * from the table. Accordingly, management stations
- 		 * must be prepared to receive tabular information
- 		 * from agents that corresponds to entries not
- 		 * currently in use. Proper interpretation of such
- 		 * entries requires examination of the relevant
- 		 * ipNetToMediaType object.
-		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,			INTM_TYPE,		".1.3.6.1.2.1.4.22.1.4",  4);
-	}
-	
-
-	/**
-	 * <P>The TABLE_OID is the object identifier that represents
-	 * the root of the IP Address table in the MIB forest.</P>
-	 */
-	public static final String	TABLE_OID	= ".1.3.6.1.2.1.4.22.1";	// start of table (GETNEXT)
+        /**
+         * The media-dependent `physical' address. 
+         */
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, INTM_PHYSADDR, TABLE_OID + ".2",  2),
+        
+        /**
+         * The IpAddress corresponding to the media-
+         * dependent `physical' address.
+         */
+	    new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS,   INTM_NETADDR,  TABLE_OID + ".3",  3),
+        
+        /**
+         * The type of mapping.
+         * Setting this object to the value invalid(2) has
+         * the effect of invalidating the corresponding entry
+         * in the ipNetToMediaTable. That is, it effectively
+         * disassociates the interface identified with said
+         * entry from the mapping identified with said entry.
+         * It is an implementation-specific matter as to
+         * whether the agent removes an invalidated entry
+         * from the table. Accordingly, management stations
+         * must be prepared to receive tabular information
+         * from agents that corresponds to entries not
+         * currently in use. Proper interpretation of such
+         * entries requires examination of the relevant
+         * ipNetToMediaType object.
+         */
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       INTM_TYPE,     TABLE_OID + ".4",  4)
+	};
 
 	/**
 	 * <P>Creates a default instance of the ipNetToMedia
