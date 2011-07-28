@@ -44,6 +44,7 @@ import java.util.TreeMap;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -545,5 +546,19 @@ public class TemporaryDatabase implements DataSource {
 
     public String getUrl() {
         return m_url;
+    }
+    
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("driver", m_driver)
+            .append("url", m_url)
+            .append("testDatabase", m_testDatabase)
+            .append("useExisting", m_useExisting)
+            .append("setupIpLike", m_setupIpLike)
+            .append("populateSchema", m_populateSchema)
+            .append("dataSource", m_dataSource)
+            .append("adminDataSource", m_adminDataSource)
+            .append("adminUser", m_adminUser)
+            .toString();
     }
 }

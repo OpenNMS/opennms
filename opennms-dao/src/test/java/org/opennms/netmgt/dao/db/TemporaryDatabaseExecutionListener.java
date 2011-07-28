@@ -225,11 +225,12 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 		    }
 		});
 
-        final LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(pooledDataSource);
+		final LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(pooledDataSource);
 		DataSourceFactory.setInstance(proxy);
 		
 		testContext.setAttribute("org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener.pooledDataSource", pooledDataSource);
 		System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s", testContext, m_database.toString()));
+        System.err.println("Temporary Database Name: " + m_database.getTestDatabase());
 	}
 
 	private static class CreateNewDatabaseCallable implements Callable<TemporaryDatabase> {

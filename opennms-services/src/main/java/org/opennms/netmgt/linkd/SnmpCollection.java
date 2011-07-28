@@ -42,6 +42,7 @@ import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTable;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTable;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
+import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -171,7 +172,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * The list of VLAN SNMP collection object
 	 */
 
-	public java.util.Map<Vlan,SnmpVlanCollection> m_snmpVlanCollection; 
+	public java.util.Map<OnmsVlan,SnmpVlanCollection> m_snmpVlanCollection; 
 
 	/**
 	 * The scheduler object
@@ -216,7 +217,7 @@ public final class SnmpCollection implements ReadyRunnable {
 		m_ipRoute = null;
 		m_vlanTable = null;
 		m_CdpCache = null;
-		m_snmpVlanCollection = new HashMap<Vlan,SnmpVlanCollection>();
+		m_snmpVlanCollection = new HashMap<OnmsVlan,SnmpVlanCollection>();
 	}
 
 	/**
@@ -321,7 +322,7 @@ public final class SnmpCollection implements ReadyRunnable {
 		return -1;
 	}
 
-	Map<Vlan, SnmpVlanCollection> getSnmpVlanCollections() {
+	Map<OnmsVlan, SnmpVlanCollection> getSnmpVlanCollections() {
 		return m_snmpVlanCollection;
 	}
 
@@ -472,13 +473,13 @@ public final class SnmpCollection implements ReadyRunnable {
 			// Schedule SNMP VLAN collection only on VLAN.
 			// If it has not VLAN collection no data download is done.
 			
-			Vlan vlan = null;
+			OnmsVlan vlan = null;
 
 			if (this.hasVlanTable()) {
 				if (!m_vlanClass.equals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable")
 						&& !m_vlanClass.equals("org.opennms.netmgt.linkd.snmp.IntelVlanTable")) {
 
-					runAndSaveSnmpVlanCollection(new Vlan(TRUNK_VLAN_INDEX,TRUNK_VLAN_NAME,VlanCollectorEntry.VLAN_STATUS_OPERATIONAL));
+					runAndSaveSnmpVlanCollection(new OnmsVlan(TRUNK_VLAN_INDEX,TRUNK_VLAN_NAME,VlanCollectorEntry.VLAN_STATUS_OPERATIONAL));
 				} else {
 				    LogUtils.debugf(this, "SnmpCollection.run: start collection for %d VLAN entries", getVlanTable().getEntries().size());
 
@@ -507,13 +508,13 @@ public final class SnmpCollection implements ReadyRunnable {
 						}
 						m_agentConfig.setReadCommunity(community + "@" + vlanindex);
 
-						runAndSaveSnmpVlanCollection(new Vlan(vlanindex,vlanname,status));
+						runAndSaveSnmpVlanCollection(new OnmsVlan(vlanindex,vlanname,status));
 						m_agentConfig.setReadCommunity(community);
 					}  
 				}
 
 			} else {
-				runAndSaveSnmpVlanCollection(new Vlan(DEFAULT_VLAN_INDEX,DEFAULT_VLAN_NAME,VlanCollectorEntry.VLAN_STATUS_OPERATIONAL));
+				runAndSaveSnmpVlanCollection(new OnmsVlan(DEFAULT_VLAN_INDEX,DEFAULT_VLAN_NAME,VlanCollectorEntry.VLAN_STATUS_OPERATIONAL));
 			}
 			// update info in linkd used correctly by discoveryLink
 			LogUtils.debugf(this, "SnmpCollection.run: saving collection into database");
@@ -533,7 +534,7 @@ public final class SnmpCollection implements ReadyRunnable {
 		runned = true;
 	}
 	
-	private void runAndSaveSnmpVlanCollection(Vlan vlan) {
+	private void runAndSaveSnmpVlanCollection(OnmsVlan vlan) {
 		SnmpVlanCollection snmpvlancollection = new SnmpVlanCollection(m_agentConfig,m_collectStpNode,m_collectStpTable,m_collectBridgeForwardingTable);
 		snmpvlancollection.run();
 		
@@ -541,6 +542,7 @@ public final class SnmpCollection implements ReadyRunnable {
 		    LogUtils.debugf(this, "SnmpCollection.run: no bridge info found");
 		} else {
 		    LogUtils.debugf(this, "SnmpCollection.run: adding bridge info to snmpcollection");
+		    LogUtils.debugf(this, "VLAN = %s, SnmpVlanCollection = %s", vlan, snmpvlancollection);
 			m_snmpVlanCollection.put(vlan,snmpvlancollection);
 		}
 

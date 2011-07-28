@@ -118,7 +118,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
             infof(this, "link between nodes %d and %d already exists", nodeParentId, nodeId);  
         } else {
             dli = new DataLinkInterface();
-            dli.setNodeId(nodeId);
+            dli.setNode(node);
             dli.setNodeParentId(nodeParentId);
             dli.setIfIndex(getPrimaryIfIndexForNode(node));
             dli.setParentIfIndex(getPrimaryIfIndexForNode(parentNode));
