@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.nsclient;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -38,7 +38,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.opennms.netmgt.provision.detector.simple.NsclientDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;

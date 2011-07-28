@@ -26,14 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.simple.client;
+package org.opennms.netmgt.provision.detector.nsclient.client;
 
 import java.io.IOException;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.provision.detector.simple.request.NsclientRequest;
+import org.opennms.netmgt.provision.detector.nsclient.request.NsclientRequest;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.protocols.nsclient.NsclientException;
 import org.opennms.protocols.nsclient.NsclientManager;
