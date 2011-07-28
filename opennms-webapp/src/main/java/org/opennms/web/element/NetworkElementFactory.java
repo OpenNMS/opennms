@@ -1475,7 +1475,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     private List<LinkInterface> getDataLinkInterface(List<DataLinkInterface> dlifaces, int nodeId) {
     	List<LinkInterface> lifaces = new ArrayList<LinkInterface>();
     	for (DataLinkInterface dliface: dlifaces) {
-    		if (dliface.getNodeId() == nodeId) {
+    		if (dliface.getNode().getId() == nodeId) {
     			lifaces.add(createLinkInterface(dliface, false));
     		} else if (dliface.getNodeParentId() == nodeId ) {
     			lifaces.add(createLinkInterface(dliface, true));
@@ -1495,14 +1495,14 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      */
 	private LinkInterface createLinkInterface(DataLinkInterface dliface, boolean isParent) {
 
-		Integer nodeid = dliface.getNodeId();
+		Integer nodeid = dliface.getNode().getId();
 		Integer linkedNodeid = dliface.getNodeParentId();
 		Integer ifindex = dliface.getIfIndex();
 		Integer linkedIfindex = dliface.getParentIfIndex();
 
     	if (isParent) {
     		nodeid = dliface.getNodeParentId();
-    		linkedNodeid = dliface.getNodeId();
+    		linkedNodeid = dliface.getNode().getId();
     		ifindex = dliface.getParentIfIndex();
     		linkedIfindex = dliface.getIfIndex();
     	} 

@@ -577,27 +577,30 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
             configuredString = StringUtils.join(allowedResourceTypes, ", ");
         }
 
-        String allowableValues = "any positive number, 'ifIndex', or any of the configured resourceTypes: " + configuredString;
-        Collection<SnmpCollection> snmpCollections = getContainer().getObject().getSnmpCollectionCollection();
-        for (SnmpCollection collection : snmpCollections) {
-            for (Group group : collection.getGroups().getGroupCollection()) {
-                for (MibObj mibObj : group.getMibObjCollection()) {
-                    String instance = mibObj.getInstance();
-                    if (instance == null) {
-                        continue;
-                    }
-                    if (s_digitsPattern.matcher(instance).matches()) {
-                        continue;
-                    }
-                    if (MibObject.INSTANCE_IFINDEX.equals(instance)) {
-                        continue;
-                    }
-                    if (allowedResourceTypes.contains(instance)) {
-                        continue;
-                    }
-                    // XXX this should be a better exception
-                    throw new IllegalArgumentException("instance '" + instance + "' invalid in mibObj definition for OID '" + mibObj.getOid() + "' in collection '" + collection.getName() + "' for group '" + group.getName() + "'.  Allowable instance values: " + allowableValues);
-                }
+        final String allowableValues = "any positive number, 'ifIndex', or any of the configured resourceTypes: " + configuredString;
+        final Collection<SnmpCollection> snmpCollections = getContainer().getObject().getSnmpCollectionCollection();
+        for (final SnmpCollection collection : snmpCollections) {
+            final Groups groups = collection.getGroups();
+            if (groups != null) {
+				for (final Group group : groups.getGroupCollection()) {
+	                for (final MibObj mibObj : group.getMibObjCollection()) {
+	                    String instance = mibObj.getInstance();
+	                    if (instance == null) {
+	                        continue;
+	                    }
+	                    if (s_digitsPattern.matcher(instance).matches()) {
+	                        continue;
+	                    }
+	                    if (MibObject.INSTANCE_IFINDEX.equals(instance)) {
+	                        continue;
+	                    }
+	                    if (allowedResourceTypes.contains(instance)) {
+	                        continue;
+	                    }
+	                    // XXX this should be a better exception
+	                    throw new IllegalArgumentException("instance '" + instance + "' invalid in mibObj definition for OID '" + mibObj.getOid() + "' in collection '" + collection.getName() + "' for group '" + group.getName() + "'.  Allowable instance values: " + allowableValues);
+	                }
+				}
             }
         }
     }

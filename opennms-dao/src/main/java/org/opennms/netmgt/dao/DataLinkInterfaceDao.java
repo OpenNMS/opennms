@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.model.DataLinkInterface;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 
 /**
@@ -65,4 +66,14 @@ public interface DataLinkInterfaceDao extends OnmsDao<DataLinkInterface, Integer
      * @return a {@link java.util.Collection} object.
      */
     Collection<DataLinkInterface> findByNodeParentId(Integer nodeParentId);
+
+    void markDeletedIfNodeDeleted();
+
+    DataLinkInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifindex);
+
+    void deactivateIfOlderThan(Timestamp now);
+
+    void setStatusForNode(Integer nodeid, Character action);
+
+    void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, Character action);
 }

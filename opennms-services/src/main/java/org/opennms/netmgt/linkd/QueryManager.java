@@ -172,4 +172,7 @@ public interface QueryManager {
      */
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate);
 
+    public Linkd getLinkd();
+	public void setLinkd(final Linkd linkd);
+
 }

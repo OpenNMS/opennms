@@ -75,7 +75,7 @@
 <%	} %>
 
 
-<table class="o-box">
+<table class="o-box onms-table">
 <%
 	for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = i.next();

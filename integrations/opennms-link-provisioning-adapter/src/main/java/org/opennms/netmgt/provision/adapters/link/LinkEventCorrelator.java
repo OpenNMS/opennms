@@ -385,7 +385,7 @@ public class LinkEventCorrelator {
             }
             LinkState linkState = linkStateObj.getLinkState();
             
-            if (dli.getNodeId() == nodeId) {
+            if (dli.getNode().getId() == nodeId) {
                 isParent = false;
             } else {
                 isParent = true;
@@ -408,7 +408,7 @@ public class LinkEventCorrelator {
             }
             LinkState linkState = linkStateObj.getLinkState();
             
-            if (dli.getNodeId() == nodeId) {
+            if (dli.getNode().getId() == nodeId) {
                 linkState = linkState.nodeEndPointDeleted(transition);
             } else {
                 linkState = linkState.parentNodeEndPointDeleted(transition);
@@ -433,7 +433,7 @@ public class LinkEventCorrelator {
             }
             LinkState linkState = linkStateObj.getLinkState();
             
-            if (dli.getNodeId() == nodeId) {
+            if (dli.getNode().getId() == nodeId) {
                 isParent = false;
             } else {
                 isParent = true;
@@ -456,7 +456,7 @@ public class LinkEventCorrelator {
             }
             LinkState linkState = linkStateObj.getLinkState();
             
-            if (dli.getNodeId() == nodeId) {
+            if (dli.getNode().getId() == nodeId) {
                 linkState = linkState.nodeEndPointFound(transition);
             } else {
                 linkState = linkState.parentNodeEndPointFound(transition);

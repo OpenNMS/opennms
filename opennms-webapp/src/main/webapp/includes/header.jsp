@@ -117,13 +117,6 @@ final String baseHref = Util.calculateUrlBase( request );
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/gwt-asset.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/onms-gwt-chrome.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
-        <c:choose>
-        	<c:when test="${param.enableExtJS == 'true'}">
-        		<link rel='stylesheet' type='text/css' href='<%= baseHref %>extJS/resources/css/ext-all.css' />
-  				<link rel='stylesheet' type='text/css' href='<%= baseHref %>css/o-styles.css' media='screen' />
-  				<link rel='stylesheet' type='text/css' href='<%= baseHref %>extJS/resources/css/opennmsGridTheme.css' />
-        	</c:when>
-        </c:choose>
     </c:when>
   </c:choose>
   <c:forEach var="link" items="${paramValues.link}">
@@ -133,12 +126,7 @@ final String baseHref = Util.calculateUrlBase( request );
     <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
         <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
     </c:if>
-	<c:if test="${param.enableExtJS == 'true'}">
-  		<script type='text/javascript' src='<%= baseHref %>extJS/source/core/Ext.js'></script>
-  		<script type='text/javascript' src='<%= baseHref %>extJS/source/adapter/ext-base.js'></script>
-  		<script type='text/javascript' src='<%= baseHref %>extJS/ext-all-debug.js'></script>
-  		<script type='text/javascript'>Ext.BLANK_IMAGE_URL = '<%= baseHref %>extJS/resources/images/default/s.gif'</script>
-	</c:if>
+
 
 	<c:if test="${param.storageAdmin == 'true'}">
   		<script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>

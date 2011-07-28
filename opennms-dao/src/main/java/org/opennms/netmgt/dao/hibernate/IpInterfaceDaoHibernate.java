@@ -155,4 +155,12 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         }
     }
 
+	@Override
+	public OnmsIpInterface findPrimaryInterfaceByNodeId(final Integer nodeId) {
+		Assert.notNull(nodeId, "nodeId cannot be null");
+		// SELECT ipaddr FROM ipinterface WHERE nodeid = ? AND issnmpprimary = 'P'
+
+        return findUnique("from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary = 'P'", nodeId);
+	}
+
 }

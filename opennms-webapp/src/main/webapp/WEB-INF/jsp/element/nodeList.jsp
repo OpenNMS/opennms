@@ -64,14 +64,6 @@
   <jsp:param name="breadcrumb" value="Node List"/>
 </jsp:include>
 
-<%--<link rel="stylesheet" type="text/css" href="extJS/resources/css/ext-all.css"/>
-<link rel="stylesheet" type="text/css" href="extJS/resources/css/opennmsGridTheme.css" />
-<script type="text/javascript" src="extJS/adapter/ext/ext-base.js"></script>
-<script type="text/javascript" src="extJS/ext-all.js"></script>
-<script type="text/javascript" src="js/nodeListGrid.js"></script>
-<script type='text/javascript'>Ext.BLANK_IMAGE_URL = 'extJS/resources/images/default/s.gif'</script>--%>
-
-<div id="node-grid"></div>
 <c:choose>
   <c:when test="${command.listInterfaces}">
     <h3>Nodes and their interfaces</h3>

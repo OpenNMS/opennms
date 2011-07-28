@@ -340,15 +340,15 @@ public class DatabasePopulator {
         getOnmsMapElementDao().save(mapElement);
         getOnmsMapElementDao().flush();
         
-        final DataLinkInterface dli = new DataLinkInterface(node1.getId(), 1, node1.getId(), 1, "A", new Date());
+        final DataLinkInterface dli = new DataLinkInterface(node1, 1, node1.getId(), 1, "A", new Date());
         getDataLinkInterfaceDao().save(dli);
         getDataLinkInterfaceDao().flush();
         
-        final DataLinkInterface dli2 = new DataLinkInterface(node1.getId(), 2, node1.getId(), 1, "A", new Date());
+        final DataLinkInterface dli2 = new DataLinkInterface(node1, 2, node1.getId(), 1, "A", new Date());
         getDataLinkInterfaceDao().save(dli2);
         getDataLinkInterfaceDao().flush();
         
-        final DataLinkInterface dli3 = new DataLinkInterface(node2.getId(), 1, node1.getId(), 1, "A", new Date());
+        final DataLinkInterface dli3 = new DataLinkInterface(node2, 1, node1.getId(), 1, "A", new Date());
         getDataLinkInterfaceDao().save(dli3);
         getDataLinkInterfaceDao().flush();
         

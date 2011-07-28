@@ -47,7 +47,6 @@
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>" />
   <jsp:param name="breadcrumb" value="Choose" />
-  <jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
 
 <c:set var="totalRecords" value="0"/>
@@ -79,16 +78,7 @@
 
 	
 </script>
-	
-  <script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
-  <script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
-  <script type="text/javascript" src="js/ChooseResourceView.js" ></script>
   <script type="text/javascript" >
-  	  Ext.onReady(function(){
-  		chooseResourceViewInit("resources-view", data, removeGraphStringIfIE("${model.endUrl}"));
-  		
-  	  });
-
 	  function removeGraphStringIfIE(modelUrl){
 		  if(Ext.isIE){
 			  if(modelUrl.substring(0,6) == "graph/"){
@@ -189,7 +179,12 @@
   </c:when>
   
   <c:otherwise>
-  	<div id="resources-view"></div>
+  <div>
+    <h3 class="o-box">Node Resources</h3>
+    <div class="boxWrapper">
+        <opennms:reportSelectionList id="choose-resource" dataObject="data"></opennms:reportSelectionList>
+    </div>
+  </div>
       <%--<h3 class="o-box">
         Choose resources to query
       </h3>

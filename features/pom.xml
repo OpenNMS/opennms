@@ -25,6 +25,13 @@
     <module>request-tracker</module>
     <module>system-report</module>
     <module>isoc-ipv6-gui</module>
+    <module>node-page-list</module>
+    <module>opennms-gwt-theme</module>
+    <module>gwt-suggestion-combobox</module>
+    <module>gwt-ksc-combobox</module>
+    <module>gwt-graph-resource-list</module>
+    <module>gwt-snmpselect-list</module>
+    <module>gwt-tableresources</module>
   </modules>
 
   <profiles>

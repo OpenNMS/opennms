@@ -92,7 +92,7 @@ public class DataLinkInterfaceDaoHibernateTest {
             fail("No DataLinkInterface record with ID " + id + " was found, the only IDs are: " + ids.toString());
         }
         assertNotNull(dli);
-        assertEquals(m_databasePopulator.getNode1().getId(), dli.getNodeId());
+        assertEquals(m_databasePopulator.getNode1().getId(), dli.getNode().getId());
         assertEquals(Integer.valueOf(1), dli.getIfIndex());
     }
 
@@ -100,7 +100,7 @@ public class DataLinkInterfaceDaoHibernateTest {
     @Transactional
     public void testSaveDataLinkInterface() {
         // Create a new data link interface and save it.
-        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode2().getId(), 2, m_databasePopulator.getNode1().getId(), 1, "?", new Date());
+        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode2(), 2, m_databasePopulator.getNode1().getId(), 1, "?", new Date());
         dli.setLinkTypeId(101);
         m_dataLinkInterfaceDao.save(dli);
         m_dataLinkInterfaceDao.flush();
@@ -110,7 +110,7 @@ public class DataLinkInterfaceDaoHibernateTest {
         DataLinkInterface dli2 = m_dataLinkInterfaceDao.findById(dli.getId());
         assertSame(dli, dli2);
         assertEquals(dli.getId(), dli2.getId());
-        assertEquals(dli.getNodeId(), dli2.getNodeId());
+        assertEquals(dli.getNode().getId(), dli2.getNode().getId());
         assertEquals(dli.getIfIndex(), dli2.getIfIndex());
         assertEquals(dli.getNodeParentId(), dli2.getNodeParentId());
         assertEquals(dli.getParentIfIndex(), dli2.getParentIfIndex());

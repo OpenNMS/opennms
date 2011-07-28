@@ -68,7 +68,7 @@ public class LinkEventSendingStateTransition implements LinkStateTransition {
     }
 
     private void sendDataLinkEvent(String uei) {
-        String endPoint1 = m_nodeLinkService.getNodeLabel(m_dataLinkInterface.getNodeId());
+        String endPoint1 = m_dataLinkInterface.getNode().getLabel();
         String endPoint2 = m_nodeLinkService.getNodeLabel(m_dataLinkInterface.getNodeParentId());
         
         
