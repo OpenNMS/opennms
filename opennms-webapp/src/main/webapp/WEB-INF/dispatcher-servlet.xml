@@ -9,6 +9,9 @@
        >
   
   <context:annotation-config/>
+  
+  <!-- Scan the following packages for controllers that are annotated with the @Controller annotation -->
+  <context:component-scan base-package="org.opennms.web.controller"/>
 
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
@@ -20,6 +23,7 @@
     </property>
   </bean>
 
+  <!-- Map controllers based on their bean name -->
   <bean	class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
   	    <property name="order" value="0"/>
   </bean>
@@ -28,6 +32,10 @@
     <property name="flowRegistry" ref="flowRegistry"/>
     <property name="order" value="1"/>
   </bean>
+  
+  <!-- These HandlerMapping beans ensure that @RequestMapping-annotated classes and methods are resolvable -->
+  <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
+  <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 
   <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 	<property name="viewClass"
@@ -50,14 +58,6 @@
     <property name="flowExecutor" ref="flowExecutor" />
   </bean>
   
-  <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
-    <property name="flowRegistry" ref="flowRegistry"/>
-    <property name="order" value="1"/>
-  </bean>
-
-  <!-- Home Page -->
-  <bean name="/frontPage.htm" class="org.opennms.web.controller.FrontPageController"/>
-
   <bean name="/admin/provisioningGroups.htm" class="org.opennms.web.controller.ProvisioningGroupsController">
     <property name="provisioningService" ref="manualProvisioningService" />
     <property name="foreignSourceService" ref="defaultForeignSourceService" />
@@ -134,12 +134,6 @@
   <bean name="/surveillanceView.htm"
         class="org.opennms.web.controller.SurveillanceViewController">
     <property name="service" ref="surveillanceService" />
-  </bean>
-
-  <bean name="/catstatus.htm"
-		class="org.opennms.web.controller.CategoryStatusController">
-	<property name="categoryStatusService"
-	          ref="categoryStatusService" />
   </bean>
 
   <!--<bean name="/daemonstatus.htm"
