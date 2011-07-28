@@ -8,6 +8,7 @@ import org.opennms.features.gwt.ksc.combobox.client.view.KscComboboxViewImpl;
 import org.opennms.features.gwt.ksc.combobox.client.view.KscReportDetail;
 
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
 
@@ -46,7 +47,12 @@ public class KscComboboxPresenter implements Presenter, KscComboboxView.Presente
 
     @Override
     public void onKscReportSelected() {
-        Location.assign("KSC/customView.htm?type=custom&report=" + m_view.getSelectedReport().getId());
+        UrlBuilder urlBuilder = new UrlBuilder();
+        urlBuilder.setHost(Location.getHost());
+        urlBuilder.setPath("opennms/KSC/customView.htm");
+        urlBuilder.setParameter("type", "custom");
+        urlBuilder.setParameter("report", "" + m_view.getSelectedReport().getId());
+        Location.assign(urlBuilder.buildString());
     }
 
     @Override

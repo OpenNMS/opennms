@@ -319,9 +319,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
     @JUnitCollector(
             datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
             datacollectionType = "snmp",
-            anticipateRrds = {
-                    "test"
-            }
+            anticipateRrds = { "test" }
     )
     public void testUsingFetch() throws Exception {
         File snmpDir = (File)m_context.getAttribute("rrdDirectory");

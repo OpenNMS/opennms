@@ -64,17 +64,17 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
     }
 
     /** {@inheritDoc} */
-    public DataLinkInterface findById(Integer id) {
+    public DataLinkInterface findById(final Integer id) {
         return findUnique("from DataLinkInterface as dli where dli.id = ?", id);
     }
 
     /** {@inheritDoc} */
-    public Collection<DataLinkInterface> findByNodeId(Integer nodeId) {
-        return find("from DataLinkInterface as dli where dli.nodeId = ?", nodeId);
+    public Collection<DataLinkInterface> findByNodeId(final Integer nodeId) {
+        return find("from DataLinkInterface as dli where dli.node.id = ?", nodeId);
     }
 
     /** {@inheritDoc} */
-    public Collection<DataLinkInterface> findByNodeParentId(Integer nodeParentId) {
+    public Collection<DataLinkInterface> findByNodeParentId(final Integer nodeParentId) {
         return find("from DataLinkInterface as dli where dli.nodeParentId = ?", nodeParentId);
     }
 
@@ -132,7 +132,7 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
     }
 
     @Override
-    public void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, Character action) {
+    public void setStatusForNodeAndIfIndex(final Integer nodeid, final Integer ifIndex, final Character action) {
         // UPDATE datalinkinterface set status = ? WHERE (nodeid = ? and ifindex = ?) OR (nodeparentid = ? AND parentifindex = ?)
 
         final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);

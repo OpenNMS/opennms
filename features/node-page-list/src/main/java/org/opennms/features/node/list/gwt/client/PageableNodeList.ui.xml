@@ -6,45 +6,53 @@
 		.tabLayoutStyle{
 			
 		}
+		
+		.selectBox{
+		  margin-top: 3px;
+		}
 	</ui:style>
 	<g:TabLayoutPanel barUnit='EM' barHeight='1.25' ui:field="m_tabLayoutPanel" >
         <g:tab>
             <g:header size='5'>IP Interfaces</g:header>
             <g:LayoutPanel>
-                <g:layer bottom="48px" top="0px">
-                    <opennms:IpInterfaceTable ui:field="m_ipInterfaceTable"/>
+                <g:layer bottom="50px" top="0px" left="0" right="0">
+                    <g:FlowPanel>
+                        <opennms:IpInterfaceTable ui:field="m_ipInterfaceTable"/>
+                    </g:FlowPanel>
                 </g:layer>
-                <g:layer height="21px" bottom="2em" left="25%" right="25%">
+                <g:layer height="21px" bottom="27px" left="25%" right="20%">
                     <g:FlowPanel ui:field="m_ipTableDiv"/>
                 </g:layer>
-                <g:layer left="0%" right="70%" height="1.75em" bottom="0px">
-                    <g:ListBox ui:field="m_ipSearchList"/>
+                <g:layer left="0%" right="70%" height="25px" bottom="0px">
+                    <g:ListBox ui:field="m_ipSearchList" width="100%" height="20px" styleName="{style.selectBox}"/>
                 </g:layer>
-                <g:layer left="30%" right="30%" height="1.75em" bottom="0px">
-                    <g:TextBox ui:field="m_ipTextBox"/>
+                <g:layer left="30%" right="30%" height="25px" bottom="0px">
+                    <g:TextBox ui:field="m_ipTextBox" width="100%"/>
                 </g:layer>
-                <g:layer left="70%" right="0%" bottom="0px" height="1.75em">
-                    <g:Button ui:field="m_ipSearchBtn">Search</g:Button>
+                <g:layer left="70%" right="0%" bottom="0px" height="25px">
+                    <g:Button ui:field="m_ipSearchBtn" width="100%" height="25px">Search</g:Button>
                 </g:layer>
             </g:LayoutPanel>
         </g:tab>
         <g:tab>
             <g:header size='5' style="font-family: Lucida Grande, Verdana, sans-serif;">Physical Interfaces</g:header>
             <g:LayoutPanel>
-                <g:layer>
-                    <opennms:PhysicalInterfaceTable ui:field="m_physicalInterfaceTable"/>
+                <g:layer bottom="50px" top="0px" left="0" right="0">
+                    <g:FlowPanel>
+                        <opennms:PhysicalInterfaceTable ui:field="m_physicalInterfaceTable"/>
+                    </g:FlowPanel>
                 </g:layer>
-                <g:layer height="21px" bottom="1.75em" left="25%" right="25%">
+                <g:layer height="21px" bottom="27px" left="25%" right="20%">
                     <g:FlowPanel ui:field="m_physTableDiv"/>
                 </g:layer>
-                <g:layer left="0%" right="70%" height="1.75em" bottom="0px">
-                    <g:ListBox ui:field="m_physSearchList"/>
+                <g:layer left="0%" right="70%" height="25px" bottom="0px">
+                    <g:ListBox ui:field="m_physSearchList" width="100%" height="20px" styleName="{style.selectBox}"/>
                 </g:layer>
-                <g:layer left="30%" right="30%" height="1.75em" bottom="0px">
-                    <g:TextBox ui:field="m_physTextBox"/>
+                <g:layer left="30%" right="30%" height="25px" bottom="0px">
+                    <g:TextBox ui:field="m_physTextBox" width="100%"/>
                 </g:layer>
-                <g:layer left="70%" right="0%" bottom="0px" height="1.75em">
-                    <g:Button ui:field="m_physSearchBtn">Search</g:Button>
+                <g:layer left="70%" right="0%" bottom="0px" height="25px">
+                    <g:Button ui:field="m_physSearchBtn" width="100%" height="25px">Search</g:Button>
                 </g:layer>
             </g:LayoutPanel>
         </g:tab>
