@@ -254,6 +254,7 @@
   <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
   <monitor service="HTTP-8080" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
   <monitor service="HTTP-8000" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+  <monitor service="HTTP-8980" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
   <monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
   <monitor service="HypericAgent" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="HypericHQ" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor" />
