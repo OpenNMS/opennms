@@ -52,7 +52,7 @@ public class InstrumentationLogReaderPageTest {
     @Before
     public void setUp() throws ExpectedJavascriptAlertException {
         
-        BasicConfigurator.configure();
+        //BasicConfigurator.configure();
         
         web = new OpenNMSWebTester();
         web.setBaseUrl("http://localhost:8980/opennms");
@@ -185,7 +185,9 @@ public class InstrumentationLogReaderPageTest {
         web.clickLinkWithExactText("Dashboard");
         web.assertElementPresent("surveillanceView");
         
+        Thread.sleep(1000);
         web.clickLinkWithExactText("Events");
+        Thread.sleep(1000);
         web.assertTextPresent("Outstanding and acknowledged events");
         
         web.clickLinkWithExactText("Alarms");
