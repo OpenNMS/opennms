@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.hibernate.criterion.Restrictions;
-import org.junit.Before;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.LinkStateDao;
@@ -51,7 +50,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,11 +83,6 @@ public class DefaultNodeLinkService implements NodeLinkService {
     @Qualifier("transactionAware")
     private EventForwarder m_eventForwarder;
     
-    @Before
-    public void setUp() {
-        MockLogAppender.setupLogging();
-    }
-
     /** {@inheritDoc} */
     @Transactional
     public void saveLinkState(OnmsLinkState state) {
