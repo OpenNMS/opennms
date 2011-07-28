@@ -331,13 +331,14 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     
     /** {@inheritDoc} */
     public List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp) {
-        return findObjects(OnmsIpInterface.class, "from OnmsIpInterface ipInterface where ipInterface.node.id = ? and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
+    	// we exclude the primary interface from the obsolete list since the only way for them to be obsolete is when we have snmp
+        return findObjects(OnmsIpInterface.class, "from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
     }
 
     /** {@inheritDoc} */
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
-        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
-        getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface ipInterface where ipInterface.node.id = ? and (ipInterface.lastCapsdPoll is null or ipInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ? and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
     }
 
     /** {@inheritDoc} */
