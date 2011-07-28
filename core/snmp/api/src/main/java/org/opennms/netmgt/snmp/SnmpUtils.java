@@ -290,27 +290,27 @@ public class SnmpUtils {
 	}
 
 	public static SnmpValue parseMibValue(final String mibVal) {
-	    if (mibVal.startsWith("OID:"))
+	    if (mibVal.startsWith("OID:")) {
 	    	return getValueFactory().getObjectId(SnmpObjId.get(mibVal.substring("OID:".length()).trim()));
-	    else if (mibVal.startsWith("Timeticks:")) {
+	    } else if (mibVal.startsWith("Timeticks:")) {
 	    	String timeticks = mibVal.substring("Timeticks:".length()).trim();
 			if (timeticks.contains("(")) {
 				timeticks = timeticks.replaceAll("^.*\\((\\d*?)\\).*$", "$1");
 			}
 			return getValueFactory().getTimeTicks(Long.valueOf(timeticks));
-		} else if (mibVal.startsWith("STRING:"))
+		} else if (mibVal.startsWith("STRING:")) {
 			return getValueFactory().getOctetString(mibVal.substring("STRING:".length()).trim().getBytes());
-	    else if (mibVal.startsWith("INTEGER:"))
+		} else if (mibVal.startsWith("INTEGER:")) {
 			return getValueFactory().getInt32(Integer.valueOf(mibVal.substring("INTEGER:".length()).trim().replaceAll(" *.[Bb]ytes$", "")));
-	    else if (mibVal.startsWith("Gauge32:"))
+		} else if (mibVal.startsWith("Gauge32:")) {
 	    	return getValueFactory().getGauge32(Long.valueOf(mibVal.substring("Gauge32:".length()).trim()));
-	    else if (mibVal.startsWith("Counter32:"))
+		} else if (mibVal.startsWith("Counter32:")) {
 	    	return getValueFactory().getCounter32(Long.valueOf(mibVal.substring("Counter32:".length()).trim()));
-	    else if (mibVal.startsWith("Counter64:"))
+		} else if (mibVal.startsWith("Counter64:")) {
 	    	return getValueFactory().getCounter64(BigInteger.valueOf(Long.valueOf(mibVal.substring("Counter64:".length()).trim())));
-	    else if (mibVal.startsWith("IpAddress:"))
+		} else if (mibVal.startsWith("IpAddress:")) {
 	    	return getValueFactory().getIpAddress(InetAddressUtils.addr(mibVal.substring("IpAddress:".length()).trim()));
-	    else if (mibVal.startsWith("Hex-STRING:")) {
+		} else if (mibVal.startsWith("Hex-STRING:")) {
 			final String trimmed = mibVal.substring("Hex-STRING:".length()).trim();
 			final ByteBuffer bb = ByteBuffer.allocate(trimmed.length());
 			if (trimmed.matches("^.*[ :].*$")) {
@@ -324,20 +324,22 @@ public class SnmpUtils {
 				}
 				final Matcher m = HEX_CHUNK_PATTERN.matcher(trimmed);
 				while (m.find()) {
-					bb.put(Byte.valueOf(m.group(1), 16));
+                    short s = Short.valueOf(m.group(1), 16);
+                    bb.put((byte)(s & 0xFF));
 				}
 			}
 			final byte[] parsed = new byte[bb.position()];
 			bb.flip();
 			bb.get(parsed);
 			return getValueFactory().getOctetString(parsed);
-	    } else if (mibVal.startsWith("Network Address:"))
+	    } else if (mibVal.startsWith("Network Address:")) {
 			return getValueFactory().getOctetString(mibVal.substring("Network Address:".length()).trim().getBytes());
-	    else if (mibVal.startsWith("BITS:"))
-			return getValueFactory().getOctetString(mibVal.substring("BITS:".length()).trim().getBytes());
-	    else if (mibVal.equals("\"\""))
+	    } else if (mibVal.startsWith("BITS:")) {
+	        return getValueFactory().getOctetString(mibVal.substring("BITS:".length()).trim().getBytes());
+	    } else if (mibVal.equals("\"\"")) {
 	    	return getValueFactory().getNull();
-	
+	    }
+
 	    throw new IllegalArgumentException("Unknown Snmp Type: "+mibVal);
 	}
 

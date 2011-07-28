@@ -7,6 +7,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.mock.snmp.MockSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -33,12 +34,15 @@ public class PropertyOidContainer {
             if (value.contains("No Such Object available on this agent at this OID")) { continue; }
             if (value.contains("No more variables left in this MIB View")) { continue; }
 //          LogUtils.debugf(this, "%s = %s", key, value);
-            m_tree.put(SnmpObjId.get(key), SnmpUtils.parseMibValue(value));
+            try {
+                m_tree.put(SnmpObjId.get(key), SnmpUtils.parseMibValue(value));
+            } catch (final NumberFormatException nfe) {
+                LogUtils.debugf(this, "Unable to store '%s = %s', skipping. (%s)", key, value, nfe.getLocalizedMessage());
+            }
         }
     }
 
     public SnmpValue findValueForOid(final SnmpObjId oid) {
-//        LogUtils.debugf(this, "oid = %s", oid);
         final SnmpValue value = m_tree.get(oid);
         if (value == null) {
             if (oid.getLastSubId() == 0) {
