@@ -1387,6 +1387,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-web</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>drools-dependencies</artifactId>
         <version>${project.version}</version>
