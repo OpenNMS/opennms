@@ -16,6 +16,15 @@ SOURCEDIR="$ME/opennms-source"
 
 die() {
 	echo "exiting: $@"
+
+	for file in manager.log output.log; do
+		if [ -f "$OPENNMS_HOME/logs/daemon/$file" ]; then
+			echo "=== contents of $file ==="
+			cat "$OPENNMS_HOME/logs/daemon/$file"
+		else
+			echo "=== no $file file found ==="
+		fi
+	done
 	exit 1
 }
 
@@ -87,6 +96,7 @@ configure_opennms() {
 		find * -type f | sort -u | while read FILE; do
 			dir=`dirname "$FILE"`
 			mkdir -p "$dir"
+			mv "$OPENNMS_HOME/$FILE" "$OPENNMS_HOME/$FILE.bak"
 			install -c "$FILE" "$OPENNMS_HOME/$FILE"
 		done
 	popd
