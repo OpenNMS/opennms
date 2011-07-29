@@ -28,16 +28,23 @@
 
 package org.opennms.protocols.nsclient;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.netmgt.test.nsclient.AbstractNsclientTest;
 
-public class NSClientTest {
-    
-    NsclientManager m_nsclientManager;
+/**
+ * <p>JUnit Test Class for NsclientManager.</p>
+ *
+ * @author Alejandro Galue <agalue@opennms.org>
+ * @version $Id: $
+ */
+public class NSClientTest extends AbstractNsclientTest {
 
-    String[] counters = {
+    private NsclientManager m_nsclientManager;
+
+    private String[] counters = {
             "\\Processor(_Total)\\% Processor Time",
             "\\Processor(_Total)\\% Interrupt Time", 
             "\\Processor(_Total)\\% Privileged Time",
@@ -46,35 +53,44 @@ public class NSClientTest {
 
     @Before
     public void setUp() throws Exception {
-    	// Change this to your NSClient test server
-        m_nsclientManager = new NsclientManager("192.168.149.250", 12489);
+        super.setUp();
+        startServer("None&8&", "10");
+        m_nsclientManager = new NsclientManager(getServer().getInetAddress().getHostAddress(), getServer().getLocalPort());
     }
-    
+
+    @After
+    public void tearDown() throws Exception{
+        stopServer();
+        super.tearDown();
+    }
+
     @Test
-    @Ignore
     public void testGetCounters() throws Exception {
         for (String counter : counters) {
             m_nsclientManager.init();
             NsclientPacket result = getCounter(counter);
             m_nsclientManager.close();
-            System.err.println(counter + "=" + result.getResponse());
-            boolean isAvailable = (result.getResultCode() == NsclientPacket.RES_STATE_OK);
-            Assert.assertTrue(isAvailable);            
+            validatePacket(counter, result);
         }
     }
-    
+
     @Test
-    @Ignore
     public void testGetCountersWithSharedConnection() throws Exception {
         m_nsclientManager.init();
         for (String counter : counters) {
             NsclientPacket result = getCounter(counter);
-            System.err.println(counter + "=" + result.getResponse());
-            boolean isAvailable = (result.getResultCode() == NsclientPacket.RES_STATE_OK);
-            Assert.assertTrue(isAvailable);            
+            validatePacket(counter, result);
         }
         m_nsclientManager.close();
     }
+
+    private void validatePacket(String counter, NsclientPacket result) {
+        int value = Integer.parseInt(result.getResponse());
+        System.err.println(counter + "=" + value);
+        Assert.assertEquals(10, value);
+        boolean isAvailable = (result.getResultCode() == NsclientPacket.RES_STATE_OK);
+        Assert.assertTrue(isAvailable);
+    }    
 
     private NsclientPacket getCounter(String counter) throws NsclientException {
         NsclientCheckParams params = new NsclientCheckParams(counter);
