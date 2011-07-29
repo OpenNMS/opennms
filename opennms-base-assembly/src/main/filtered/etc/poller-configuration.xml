@@ -157,6 +157,7 @@
       <parameter key="rrd-base-name" value="pop3" />
       <parameter key="ds-name" value="pop3" />
     </service>
+    <!--
     <service name="NSClient" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2" />
       <parameter key="port" value="1248" />
@@ -167,6 +168,7 @@
       <parameter key="port" value="12489" />
       <parameter key="timeout" value="3000" />
     </service>
+    -->
     <service name="NRPE" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="3" />
       <parameter key="timeout" value="3000" />
@@ -259,10 +261,12 @@
   <monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor" />
   <monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor" />
   <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor" />
-  <monitor service="NSClient" class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor" />
   <monitor service="NRPE" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
   <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
-  <monitor service="NSClientpp" class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor" />
   <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
   <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
+  <!--
+  <monitor service="NSClient" class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor" />
+  <monitor service="NSClientpp" class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor" />
+  -->
 </poller-configuration>

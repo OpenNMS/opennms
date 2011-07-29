@@ -106,6 +106,7 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
     @Override
     public void onResourceItemSelected() {
         UrlBuilder urlBuilder = new UrlBuilder();
+        urlBuilder.setProtocol(Location.getProtocol());
         urlBuilder.setHost(Location.getHost());
         urlBuilder.setPath("opennms/graph/chooseresource.htm");
         urlBuilder.setParameter("reports", "all");

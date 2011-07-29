@@ -37,6 +37,7 @@ public class KscCustomReportListPresenter extends DefaultResourceListPresenter i
             @Override
             public void onClick(ClickEvent event) {
                 UrlBuilder urlBuilder = new UrlBuilder();
+                urlBuilder.setProtocol(Location.getProtocol());
                 urlBuilder.setHost(Location.getHost());
                 urlBuilder.setPath("opennms/KSC/formProcMain.htm");
                 

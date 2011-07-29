@@ -166,6 +166,10 @@ public class DefaultProvisionService implements ProvisionService {
         return System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true");
     }
 
+    public boolean isRequisitionedEntityDeletionEnabled() {
+        return System.getProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false").equalsIgnoreCase("true");
+    }
+
     /** {@inheritDoc} */
     @Transactional
     public void insertNode(final OnmsNode node) {
@@ -203,44 +207,153 @@ public class DefaultProvisionService implements ProvisionService {
         
     	final OnmsNode node = m_nodeDao.get(nodeId);
 
-    	if (node != null && (isDiscoveryEnabled() || node.getForeignSource() != null)) {
+    	if (node != null && shouldDelete(node)) {
             m_nodeDao.delete(node);
             node.visit(new DeleteEventVisitor(m_eventForwarder));
         }
         
     
     }
+
+	private boolean shouldDelete(final OnmsNode node) {
+		String foreignSource = node.getForeignSource();
+		
+		// only delete services that are on discovered nodes if discovery is enabled 
+		// meaning provisiond is managing discovered nodes rather than capsd
+		if (foreignSource == null) return isDiscoveryEnabled();
+		
+		// if we enable deletion of requisitioned entities then we can delete this 
+		if (isRequisitionedEntityDeletionEnabled()) return true;
+		
+		// otherwise only delete if it is not requistioned
+		return !isRequisitioned(node);
+
+	}
     
     /** {@inheritDoc} */
     @Transactional
     public void deleteInterface(final Integer nodeId, final String ipAddr) {
     	final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddr);
-        if (iface != null && (isDiscoveryEnabled() || iface.getNode().getForeignSource() != null)) {
+        if (iface != null && shouldDelete(iface)) {
             m_ipInterfaceDao.delete(iface);
             iface.visit(new DeleteEventVisitor(m_eventForwarder));
         }
         
     }
+
+	private boolean shouldDelete(final OnmsIpInterface iface) {
+		
+		String foreignSource = iface.getNode().getForeignSource();
+		
+		// only delete services that are on discovered nodes if discovery is enabled 
+		// meaning provisiond is managing discovered nodes rather than capsd
+		if (foreignSource == null) return isDiscoveryEnabled();
+		
+		// if we enable deletion of requisitioned entities then we can delete this 
+		if (isRequisitionedEntityDeletionEnabled()) return true;
+		
+		// otherwise only delete if it is not requistioned
+		return !isRequisitioned(iface);
+
+	}
     
     /** {@inheritDoc} */
     @Transactional
     public void deleteService(final Integer nodeId, final InetAddress addr, final String service) {
     	final OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, addr, service);
-        if (monSvc != null && (isDiscoveryEnabled() || monSvc.getIpInterface().getNode().getForeignSource() != null)) {
+        if (monSvc != null && shouldDelete(monSvc)) {
             m_monitoredServiceDao.delete(monSvc);
             monSvc.visit(new DeleteEventVisitor(m_eventForwarder));
         }
         
     }
-    
+
+	private boolean shouldDelete(final OnmsMonitoredService monSvc) {
+		String foreignSource = monSvc.getIpInterface().getNode().getForeignSource();
+		
+		// only delete services that are on discovered nodes if discovery is enabled 
+		// meaning provisiond is managing discovered nodes rather than capsd
+		if (foreignSource == null) return isDiscoveryEnabled();
+		
+		// if we enable deletion of requisitioned entities then we can delete this 
+		if (isRequisitionedEntityDeletionEnabled()) return true;
+		
+		// otherwise only delete if it is not requistioned
+		return !isRequisitioned(monSvc);
+		
+		
+	}
+	
+	public boolean isRequisitioned(OnmsNode node) {
+		String foreignSource = node.getForeignSource();
+		String foreignId = node.getForeignId();
+		
+		// is this a discovered node
+		if (foreignSource == null) return false;
+		
+		OnmsNode reqNode = getRequisitionedNode(foreignSource, foreignId);
+		if (reqNode == null) { 
+			// this is no requisition node?
+			LogUtils.errorf("No requistion exists for node with foreignSource %s and foreignId %s.  Treating node as unrequistioned", foreignSource, foreignId);
+			return false;
+		} else {
+			return true;
+		}
+		
+	}
+	
+	public boolean isRequisitioned(OnmsIpInterface ip) {
+		String foreignSource = ip.getNode().getForeignSource();
+		String foreignId = ip.getNode().getForeignId();
+		
+		// is this a discovered node
+		if (foreignSource == null) return false;
+		
+		OnmsNode reqNode = getRequisitionedNode(foreignSource, foreignId);
+		if (reqNode == null) { 
+			// this is no requisition node?
+			LogUtils.errorf("No requistion exists for node with foreignSource %s and foreignId %s.  Treating node as unrequistioned", foreignSource, foreignId);
+			return false;
+		}
+		
+		OnmsIpInterface reqIp = reqNode.getIpInterfaceByIpAddress(ip.getIpAddress());
+		// if we found the ip then its a requisitioned interface
+		return reqIp != null;
+		
+	}
+	
+	public boolean isRequisitioned(OnmsMonitoredService monSvc) {
+		String foreignSource = monSvc.getIpInterface().getNode().getForeignSource();
+		String foreignId = monSvc.getIpInterface().getNode().getForeignId();
+		
+		// is this a discovered node
+		if (foreignSource == null) return false;
+		
+		OnmsNode reqNode = getRequisitionedNode(foreignSource, foreignId);
+		if (reqNode == null) { 
+			// this is no requisition node?
+			LogUtils.errorf("No requistion exists for node with foreignSource %s and foreignId %s.  Treating node as unrequistioned", foreignSource, foreignId);
+			return false;
+		}
+		
+		OnmsIpInterface reqIp = reqNode.getIpInterfaceByIpAddress(monSvc.getIpAddress());
+		if (reqIp == null) {
+			// there is no matching requistion ip so the interface was discovered
+			return false;
+		}
+		
+		OnmsMonitoredService reqSvc =  reqIp.getMonitoredServiceByServiceType(monSvc.getServiceName());
+		
+		// if we found the service then its a requistion service
+		return reqSvc != null;
+	}
+	
     private void assertNotNull(final Object o, final String format, final Object... args) {
         if (o == null) {
             throw new IllegalArgumentException(String.format(format, args));
         }
     }
-    
-    
-    
+
     /** {@inheritDoc} */
     @Transactional
     public OnmsIpInterface updateIpInterfaceAttributes(final Integer nodeId, final OnmsIpInterface scannedIface) {

@@ -61,6 +61,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public interface ProvisionService {
     
+	
+    public boolean isRequisitionedEntityDeletionEnabled();
 
     /**
      * <p>isDiscoveryEnabled</p>

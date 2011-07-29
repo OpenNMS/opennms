@@ -47,6 +47,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+/**
+ * <p>JUnit Test Class for NsclientDetector.</p>
+ *
+ * @author Alejandro Galue <agalue@opennms.org>
+ * @version $Id: $
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class NsclientDetectorTest {

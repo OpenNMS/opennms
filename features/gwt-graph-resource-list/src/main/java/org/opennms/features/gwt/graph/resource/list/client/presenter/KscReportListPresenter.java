@@ -19,6 +19,7 @@ public class KscReportListPresenter extends DefaultResourceListPresenter {
     @Override
     public void onResourceItemSelected() {
         UrlBuilder urlBuilder = new UrlBuilder();
+        urlBuilder.setProtocol(Location.getProtocol());
         urlBuilder.setHost(Location.getHost());
         urlBuilder.setPath("opennms/KSC/customView.htm");
         urlBuilder.setParameter("type", getView().getSelectedResource().getType());
