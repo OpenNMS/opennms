@@ -72,7 +72,7 @@
       <parameter key="rrd-base-name" value="http-8080" />
       <parameter key="ds-name" value="http-8080" />
     </service>
-    <service name="HTTP-8980" interval="300000" user-defined="false" status="on">
+	<service name="HTTP-8980" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="1" />
       <parameter key="timeout" value="3000" />
       <parameter key="port" value="8980" />
