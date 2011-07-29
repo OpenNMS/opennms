@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.Test;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -43,21 +44,14 @@ import org.exolab.castor.xml.ValidationException;
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
  *
  */
-public class NSClientPeerFactoryTest extends TestCase {
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        NSClientPeerFactory.init();
-    }
+public class NSClientPeerFactoryTest {
 
     /**
      * @throws MarshalException
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public final void testOneSpecific() throws MarshalException, ValidationException, IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
@@ -87,6 +81,7 @@ public class NSClientPeerFactoryTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public final void testAddAdjacentSpecificToDef() throws MarshalException, ValidationException, IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
@@ -115,6 +110,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         assertEquals("192.168.0.6", factory.getConfig().getDefinition(0).getRange(0).getEnd());
     }
 
+    @Test
     public final void testAddAdjacentSpecificToDefIPv6() throws MarshalException, ValidationException, IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
@@ -143,6 +139,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedc", factory.getConfig().getDefinition(0).getRange(0).getEnd());
     }
 
+    @Test
     public final void testAddAdjacentSpecificToDefIPv6WithSameScopeId() throws MarshalException, ValidationException, IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
@@ -171,6 +168,7 @@ public class NSClientPeerFactoryTest extends TestCase {
         assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedc%5", factory.getConfig().getDefinition(0).getRange(0).getEnd());
     }
 
+    @Test
     public final void testAddAdjacentSpecificToDefIPv6WithDifferentScopeIds() throws MarshalException, ValidationException, IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
@@ -208,6 +206,7 @@ public class NSClientPeerFactoryTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testRecombineSpecificIntoRange() throws MarshalException, ValidationException, IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
@@ -247,6 +246,7 @@ public class NSClientPeerFactoryTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testRecombineSpecificIntoRangeWithDifferentScopeIds() throws MarshalException, ValidationException, IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
@@ -286,6 +286,7 @@ public class NSClientPeerFactoryTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public final void testNewSpecificSameAsBeginInOldDef() throws MarshalException, ValidationException, IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
@@ -322,6 +323,7 @@ public class NSClientPeerFactoryTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public final void testNewSpecificSameAsEndInOldDef() throws MarshalException, ValidationException, IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
@@ -358,6 +360,7 @@ public class NSClientPeerFactoryTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
+    @Test
     public void testOverlapsTwoRanges() throws MarshalException, ValidationException, IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
