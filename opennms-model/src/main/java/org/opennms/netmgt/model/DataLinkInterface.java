@@ -84,7 +84,7 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
      * @param status a {@link java.lang.String} object.
      * @param lastPollTime a {@link java.util.Date} object.
      */
-    public DataLinkInterface(final OnmsNode node, int ifIndex, int nodeParentId, int parentIfIndex, String status, Date lastPollTime) {
+    public DataLinkInterface(final OnmsNode node, final int ifIndex, final int nodeParentId, final int parentIfIndex, final String status, final Date lastPollTime) {
         m_node = node;
         m_ifIndex = ifIndex;
         m_nodeParentId = nodeParentId;

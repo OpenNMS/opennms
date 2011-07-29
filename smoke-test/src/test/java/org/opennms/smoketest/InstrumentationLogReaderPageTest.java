@@ -65,6 +65,7 @@ public class InstrumentationLogReaderPageTest extends SeleneseTestCase {
 		selenium.waitForPageToLoad("30000");
 	}
 
+
 	@After
 	public void tearDown() throws Exception {
 		selenium.stop();

@@ -15,6 +15,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -42,6 +43,7 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
             if(response.getStatusCode() == 200) {
                 updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(response.getText()));
             }else {
+                //updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(DefaultNodeService.SNMP_INTERFACES_TEST_RESPONSE));
                 showErrorDialogBox("Error attempting to get SnmpInterfaces");
             }
         }
@@ -61,7 +63,7 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
             if(response.getStatusCode() == 200) {
                 updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(response.getText()));
             } else {
-                updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(DefaultNodeService.IP_INTERFACES_TEST_RESPONSE));
+                //updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(DefaultNodeService.IP_INTERFACES_TEST_RESPONSE));
                 showErrorDialogBox("Error attempting to get IpInterfaces");
             }
         }
@@ -196,7 +198,7 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     }
 
     private void initializeTables() {
-        m_ipInterfaceTable.setWidth("100%");
+
         m_ipInterfaceTable.setPageSize(19);
         m_ipInterfaceTable.addSelectEventHandler(this);
         
@@ -210,7 +212,6 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
         m_ipTableDiv.add(ipSimplePager);
         
         
-        m_physicalInterfaceTable.setWidth("100%");
         m_physicalInterfaceTable.addSelectEventHandler(this);
         
         m_physicalIfaceDataProvider = new ListDataProvider<PhysicalInterface>();
@@ -252,13 +253,24 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
 
     @Override
     public void onPhysicalInterfaceSelected(PhysicalInterfaceSelectionEvent event) {
-        Location.assign("element/snmpinterface.jsp?node=" + getNodeId() + "&ifindex=" + event.getIfIndex());
+        UrlBuilder urlBuilder = new UrlBuilder();
+        urlBuilder.setHost(Location.getHost());
+        urlBuilder.setPath("opennms/element/snmpinterface.jsp");
+        urlBuilder.setParameter("node", "" + getNodeId());
+        urlBuilder.setParameter("ifIndex", event.getIfIndex());
+        
+        Location.assign(urlBuilder.buildString());
     }
 
 
     @Override
     public void onIpInterfaceSelection(IpInterfaceSelectionEvent event) {
-        Location.assign("element/interface.jsp?ipinterfaceid=" + event.getIpInterfaceId());
+        UrlBuilder urlBuilder = new UrlBuilder();
+        urlBuilder.setHost(Location.getHost());
+        urlBuilder.setPath("opennms/element/interface.jsp");
+        urlBuilder.setParameter("ipinterfaceid", event.getIpInterfaceId());
+        
+        Location.assign(urlBuilder.buildString());
     }
     
 

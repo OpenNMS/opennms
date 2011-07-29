@@ -45,12 +45,10 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
+import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.provision.adapters.link.LinkEventSendingStateTransition;
-import org.opennms.netmgt.provision.adapters.link.NodeLinkService;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -95,19 +93,20 @@ public class DefaultNodeLinkService implements NodeLinkService {
     
     /** {@inheritDoc} */
     @Transactional
-    public void createLink(int nodeParentId, int nodeId) {
+    public void createLink(final int nodeParentId, final int nodeId) {
         infof(this, "adding link between node: %d and node: %d", nodeParentId, nodeId);
-        OnmsNode parentNode = m_nodeDao.get(nodeParentId);
+        final OnmsNode parentNode = m_nodeDao.get(nodeParentId);
         Assert.notNull(parentNode, "node with id: " + nodeParentId + " does not exist");
         
-        OnmsNode node = m_nodeDao.get(nodeId);
+        final OnmsNode node = m_nodeDao.get(nodeId);
         Assert.notNull(node, "node with id: " + nodeId + " does not exist");
         
-        OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
-        criteria.add(Restrictions.eq("nodeId", nodeId));
+        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("nodeParentId", nodeParentId));
         
-        Collection<DataLinkInterface> dataLinkInterface = m_dataLinkDao.findMatching(criteria);
+        final Collection<DataLinkInterface> dataLinkInterface = m_dataLinkDao.findMatching(criteria);
         DataLinkInterface dli = null;
         
         if (dataLinkInterface.size() > 1) {
@@ -195,8 +194,9 @@ public class DefaultNodeLinkService implements NodeLinkService {
     @Transactional(readOnly=true)
     public Collection<DataLinkInterface> getLinkContainingNodeId(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.or(
-            Restrictions.eq("nodeId", nodeId),
+            Restrictions.eq("node.id", nodeId),
             Restrictions.eq("nodeParentId", nodeId)
         ));
         
@@ -213,7 +213,8 @@ public class DefaultNodeLinkService implements NodeLinkService {
     @Transactional
     public void updateLinkStatus(int nodeParentId, int nodeId, String status) {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
-        criteria.add(Restrictions.eq("nodeId", nodeId));
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("nodeParentId", nodeParentId));
         
         Collection<DataLinkInterface> dataLinkInterface = m_dataLinkDao.findMatching(criteria);

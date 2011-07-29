@@ -56,7 +56,7 @@ public class ErrorDialogBox extends PopupPanel {
         
         m_layoutPanel = new DockLayoutPanel(Unit.EM);
         m_layoutPanel.setWidth("100%");
-        m_layoutPanel.setHeight("100%");
+        m_layoutPanel.setHeight("125px");
         
         m_caption.getElement().getStyle().setBackgroundColor("#ebebeb");
         m_caption.setText("Error");

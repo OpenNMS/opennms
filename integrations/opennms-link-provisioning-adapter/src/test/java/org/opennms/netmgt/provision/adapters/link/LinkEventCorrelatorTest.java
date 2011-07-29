@@ -44,6 +44,7 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.OnmsNode;
@@ -52,6 +53,7 @@ import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointCo
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.mock.EasyMockUtils;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 
 public class LinkEventCorrelatorTest {
@@ -73,6 +75,7 @@ public class LinkEventCorrelatorTest {
 
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
         
         m_eventIpcManager = new MockEventIpcManager();
         m_anticipator = m_eventIpcManager.getEventAnticipator();
@@ -83,16 +86,15 @@ public class LinkEventCorrelatorTest {
 
         m_network = new MockNetwork();
         m_node1 = new MockNode(m_network, 1, "pittsboro-1");
-        m_node1.addInterface("192.168.0.1");
-        m_node1.getInterface("192.168.0.1").addService("EndPoint", 1);
+        m_node1.addInterface("192.168.0.1").addService("EndPoint", 1);
         m_node2 = new MockNode(m_network, 2, "pittsboro-2");
         m_node2.addInterface("192.168.0.2").addService("EndPoint", 1);
-        
+
         m_nodeLinkService = createMock(NodeLinkService.class);
 
-        final OnmsNode node = new OnmsNode();
+        final OnmsNode node = new OnmsNode(new OnmsDistPoller("localhost", "127.0.0.1"), "pittsboro-2");
         node.setId(2);
-        Collection<DataLinkInterface> dlis = new ArrayList<DataLinkInterface>();
+        final Collection<DataLinkInterface> dlis = new ArrayList<DataLinkInterface>();
         m_dataLinkInterface = new DataLinkInterface(node, 1, 1, 1, "U", new Date());
         dlis.add(m_dataLinkInterface);
         
@@ -152,7 +154,7 @@ public class LinkEventCorrelatorTest {
 
 
         m_anticipator.anticipateEvent(m_failedEvent);
-        m_nodeLinkService.saveLinkState(new OnmsLinkState( m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
+        m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
 
         replay();
         
@@ -167,7 +169,7 @@ public class LinkEventCorrelatorTest {
         int foundGood = 0;
         for (Parm p : parms) {
             if (p.getParmName().contentEquals(EventConstants.PARM_ENDPOINT1) || p.getParmName().contentEquals(EventConstants.PARM_ENDPOINT2)) {
-                if (p.getValue().getContent().equals("pittsboro-1") || p.getValue().getContent().equals("pittsboro-2")) {
+                if ("pittsboro-1".equals(p.getValue().getContent()) || "pittsboro-2".equals(p.getValue().getContent())) {
                     foundGood++;
                 }
             }
@@ -220,7 +222,7 @@ public class LinkEventCorrelatorTest {
         int foundGood = 0;
         for (Parm p : parms) {
             if (p.getParmName().contentEquals(EventConstants.PARM_ENDPOINT1) || p.getParmName().contentEquals(EventConstants.PARM_ENDPOINT2)) {
-                if (p.getValue().getContent().equals("pittsboro-1") || p.getValue().getContent().equals("pittsboro-2")) {
+                if ("pittsboro-1".equals(p.getValue().getContent()) || "pittsboro-2".equals(p.getValue().getContent())) {
                     foundGood++;
                 }
             }
@@ -267,7 +269,7 @@ public class LinkEventCorrelatorTest {
         int foundGood = 0;
         for (Parm p : parms) {
             if (p.getParmName().contentEquals(EventConstants.PARM_ENDPOINT1) || p.getParmName().contentEquals(EventConstants.PARM_ENDPOINT2)) {
-                if (p.getValue().getContent().equals("pittsboro-1") || p.getValue().getContent().equals("pittsboro-2")) {
+                if ("pittsboro-1".equals(p.getValue().getContent()) || "pittsboro-2".equals(p.getValue().getContent())) {
                     foundGood++;
                 }
             }

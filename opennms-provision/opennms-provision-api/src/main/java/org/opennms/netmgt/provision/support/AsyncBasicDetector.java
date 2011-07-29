@@ -44,11 +44,12 @@ import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
+import org.apache.mina.core.session.IoSession;
+import org.apache.mina.core.session.IoSessionInitializer;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.ssl.SslFilter;
-import org.apache.mina.transport.socket.SocketConnector;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectorMonitor;
@@ -72,8 +73,9 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     private AsyncClientConversation<Request, Response> m_conversation = new AsyncClientConversation<Request, Response>();
     private boolean useSSLFilter = false;
     
-    private ConnectorFactory s_connectorFactory = new ConnectorFactory();
-    private SocketConnector m_connector;
+   
+    private ConnectFuture m_connection;
+    private ConnectionFactory m_connectionFactory;
     
     /**
      * <p>Constructor for AsyncBasicDetector.</p>
@@ -107,30 +109,43 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     /** {@inheritDoc} */
     @Override
     public DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor) throws Exception {
-        m_connector = s_connectorFactory.getConnector();
+    	
+        final DetectFuture detectFuture = new DefaultDetectFuture(this);
         
-        final DetectFuture future = new DefaultDetectFuture(this);
+        // Set this up here because it can throw an Exception, which we want
+        // to throw now, not in initializeSession
+        final SSLContext c = createClientSSLContext();
         
-        // Set connect timeout.
-        m_connector.setConnectTimeoutMillis( getTimeout() );
-        m_connector.setHandler( createDetectorHandler(future) );
-        
-        if(isUseSSLFilter()) {
-            final SslFilter filter = new SslFilter(createClientSSLContext());
-            filter.setUseClientMode(true);
-            m_connector.getFilterChain().addFirst("SSL", filter);
-        }
-        
-        m_connector.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new LoggingFilter() );
-        m_connector.getFilterChain().addLast( "codec", getProtocolCodecFilter());
-        m_connector.getSessionConfig().setIdleTime( IdleStatus.READER_IDLE, getIdleTime() );
+        // Create an IoSessionInitializer that will configure this individual
+        // session. Previously, all this was done on a new Connector each time
+        // but that was leaking file handles all over the place. This way gives
+        // us per-connection settings without the overhead of creating new
+        // Connectors each time
+        IoSessionInitializer<ConnectFuture> init = new IoSessionInitializer<ConnectFuture>() {
 
-        // Start communication
-        final InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
-        final ConnectFuture cf = m_connector.connect( socketAddress );
-        cf.addListener(retryAttemptListener( m_connector, future, socketAddress, getRetries() ));
-        
-        return future;
+			public void initializeSession(IoSession session, ConnectFuture future) {
+				// Add filters to the session
+		        if(isUseSSLFilter()) {
+		            final SslFilter filter = new SslFilter(c);
+		            filter.setUseClientMode(true);
+		            session.getFilterChain().addFirst("SSL", filter);
+		        }			
+		        session.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new LoggingFilter() );
+		        session.getFilterChain().addLast( "codec", getProtocolCodecFilter());
+		        session.getConfig().setIdleTime(IdleStatus.READER_IDLE, getIdleTime());
+		        // Give the session an IoHandler that will get everything delegated to it
+		        // by the SessionDelegateIoHandler
+		        session.setAttribute( IoHandler.class, createDetectorHandler(detectFuture) );
+			}
+		};
+
+		// Start communication
+		final InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
+    	m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
+		final ConnectFuture cf = m_connectionFactory.connect(socketAddress, init);
+		cf.addListener(retryAttemptListener( m_connectionFactory, detectFuture, socketAddress, init, getRetries() ));
+ 
+        return detectFuture;
     }
     
     /**
@@ -138,8 +153,9 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      */
     public void dispose(){
         LogUtils.debugf(this, "calling dispose on detector %s", getServiceName());
-        s_connectorFactory.dispose(m_connector);
-        m_connector = null;
+        ConnectionFactory.dispose(m_connectionFactory, m_connection);
+        m_connectionFactory = null;
+        m_connection = null;
     }
     
     /**
@@ -164,7 +180,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param retryAttempt
      * @return IoFutureListener<ConnectFuture>
      */
-    private IoFutureListener<ConnectFuture> retryAttemptListener(final SocketConnector connector,final DetectFuture detectFuture, final InetSocketAddress address, final int retryAttempt) {
+    private IoFutureListener<ConnectFuture> retryAttemptListener(final ConnectionFactory connector, final DetectFuture detectFuture, final InetSocketAddress address, final IoSessionInitializer<ConnectFuture> init, final int retryAttempt) {
         return new IoFutureListener<ConnectFuture>() {
 
             public void operationComplete(ConnectFuture future) {
@@ -176,8 +192,9 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
                         detectFuture.setServiceDetected(false);
                     }else {
                         LogUtils.infof(this, "Connection exception occurred %s for service %s retrying attempt: ", cause, getServiceName());
-                        future = connector.connect(address);
-                        future.addListener(retryAttemptListener(connector, detectFuture, address, retryAttempt -1));
+                        // Connect without using a semaphore
+                        future = connector.reConnect(address, init);
+                        future.addListener(retryAttemptListener(connector, detectFuture, address, init, retryAttempt -1));
                     }
                 }else if(cause instanceof Throwable) {
                     LogUtils.infof(this, "Threw a Throwable and detection is false for service %s", getServiceName());
@@ -225,7 +242,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @return a {@link org.apache.mina.core.service.IoHandler} object.
      */
     protected IoHandler createDetectorHandler(final DetectFuture future) {
-        ((BaseDetectorHandler<Request, Response>) m_detectorHandler).setConversation(getConversation());
+        m_detectorHandler.setConversation(getConversation());
         m_detectorHandler.setFuture(future);
         return m_detectorHandler;
     }
