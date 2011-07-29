@@ -73,6 +73,7 @@ public class KscGraphResourceListPresenter extends DefaultResourceListPresenter 
                 ResourceListItem resource = getView().getSelectedResource();
                 if(resource != null) {
                     UrlBuilder urlBuilder = new UrlBuilder();
+                    urlBuilder.setProtocol(Location.getProtocol());
                     urlBuilder.setHost(Location.getHost());
                     urlBuilder.setPath("opennms/KSC/customGraphEditDetails.htm");
                     urlBuilder.setParameter("resourceId", resource.getId());

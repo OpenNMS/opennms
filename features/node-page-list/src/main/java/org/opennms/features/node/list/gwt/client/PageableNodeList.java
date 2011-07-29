@@ -257,7 +257,7 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
         urlBuilder.setHost(Location.getHost());
         urlBuilder.setPath("opennms/element/snmpinterface.jsp");
         urlBuilder.setParameter("node", "" + getNodeId());
-        urlBuilder.setParameter("ifIndex", event.getIfIndex());
+        urlBuilder.setParameter("ifindex", event.getIfIndex());
         
         Location.assign(urlBuilder.buildString());
     }
