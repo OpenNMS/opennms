@@ -135,6 +135,7 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />
     </protocol-plugin>    
+    <!--
     <protocol-plugin protocol="NSClient" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on">
         <property key="banner" value="*" />
         <property key="port" value="1248" />
@@ -147,6 +148,7 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />
     </protocol-plugin>
+    -->
     <protocol-plugin protocol="NRPE" class-name="org.opennms.netmgt.capsd.plugins.NrpePlugin" scan="on">
         <property key="banner" value="*" />
         <property key="port" value="5666" />

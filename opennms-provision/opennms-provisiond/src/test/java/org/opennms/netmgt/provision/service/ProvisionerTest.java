@@ -44,6 +44,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import org.joda.time.Duration;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -217,6 +218,9 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     public void setUp() throws Exception {
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
+        
+        // ensure this property is unset for tests and set it only in tests that need it
+        System.getProperties().remove("org.opennms.provisiond.enableDeletionOfRequisitionedEntities");
 
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
         
@@ -238,6 +242,12 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
         
         m_pausibleExecutor.pause();
+    }
+    
+    @After
+    public void tearDown() {
+    	// remove property set during tests
+        System.getProperties().remove("org.opennms.provisiond.enableDeletionOfRequisitionedEntities");
     }
 
     @Test(timeout=300000)
@@ -733,6 +743,11 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @Test
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDeleteService() throws Exception {
+    	
+    	System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
+    	
+    	assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
+    	
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
         
@@ -770,7 +785,57 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
     @Test
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
+    public void testDontDeleteRequisitionedService() throws Exception {
+    	
+    	assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
+    	
+        // This test assumes that discovery is disabled
+        assertFalse(m_provisionService.isDiscoveryEnabled());
+        
+        importFromResource("classpath:/deleteService.xml");
+        
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(4, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(6, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(2, getServiceTypeDao().countAll());
+
+        // Locate the service to be deleted
+        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
+        assertNotNull(node);
+        final int nodeid = node.getId();
+
+        
+        m_eventAnticipator.reset();
+
+        m_mockEventIpcManager.sendEventToListeners(deleteService(nodeid, "10.201.136.163", "HTTP"));
+        
+        // there is no event to wait for so make sure we don't get anything..
+        m_eventAnticipator.waitForAnticipated(5000);
+        m_eventAnticipator.verifyAnticipated();
+        
+        // Make sure the service is still there
+        assertEquals(6, getMonitoredServiceDao().countAll());
+
+    }
+
+    @Test
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDeleteInterface() throws Exception {
+    	
+    	System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
+    	assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
+
+    	
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
 
@@ -812,6 +877,11 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @Test
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDeleteNode() throws Exception {
+    	
+    	System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
+    	assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
+
+
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
 

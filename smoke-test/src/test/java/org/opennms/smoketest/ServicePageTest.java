@@ -1,222 +1,239 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
 package org.opennms.smoketest;
 
-
-
-import static org.junit.Assert.assertTrue;
-import net.sourceforge.jwebunit.exception.ExpectedJavascriptAlertException;
-import net.sourceforge.jwebunit.htmlunit.HtmlUnitTestingEngineImpl;
-import net.sourceforge.jwebunit.util.TestingEngineRegistry;
-
-import org.apache.log4j.BasicConfigurator;
-import org.junit.Assume;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverBackedSelenium;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.utils.LogUtils;
 
-import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
+import com.thoughtworks.selenium.SeleneseTestCase;
 
-
-/**
- * ServicePageTest
- *
- * @author brozow
- */
-public class ServicePageTest {
-    private static final String IP6_LOCAL_HOST = "0000:0000:0000:0000:0000:0000:0000:0001";
-    OpenNMSWebTester web;
-    
+@SuppressWarnings("deprecation")
+public class ServicePageTest extends SeleneseTestCase {
     @Before
-    public void setUp() throws ExpectedJavascriptAlertException {
-        
-        BasicConfigurator.configure();
-        
-        web = new OpenNMSWebTester();
-        web.setBaseUrl("http://localhost:8980/opennms");
-        
-        web.setTestingEngineKey(TestingEngineRegistry.TESTING_ENGINE_HTMLUNIT);
-        if (web.getTestingEngine() instanceof HtmlUnitTestingEngineImpl) {
-            HtmlUnitTestingEngineImpl engine = (HtmlUnitTestingEngineImpl)web.getTestingEngine();
-            engine.setRefreshHandler(new ThreadedRefreshHandler());
+    public void setUp() throws Exception {
+        WebDriver driver = new FirefoxDriver();
+        String baseUrl = "http://localhost:8980/";
+        selenium = new WebDriverBackedSelenium(driver, baseUrl);
+        //selenium.start();
+        selenium.open("/opennms/login.jsp");
+        selenium.type("name=j_username", "admin");
+        selenium.type("name=j_password", "admin");
+        selenium.click("name=Login");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Admin");
+        selenium.waitForPageToLoad("30000");
+    }
+
+    @Test
+    public void testServicePage() throws Exception {
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Manage Provisioning Groups");
+        selenium.waitForPageToLoad("30000");
+        selenium.type("css=form[name=takeAction] > input[name=groupName]", "SeleniumTestGroup");
+        selenium.click("css=input[type=submit]");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("//div[@id='content']/table/tbody/tr[2]/td[2]/a");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("css=h4 > input[type=button]");
+        selenium.waitForPageToLoad("30000");
+        selenium.type("id=formData.detectors13.name", "HTTP-8980");
+        selenium.select("id=formData.detectors13.pluginClass", "label=HTTP");
+        selenium.click("//input[@value='Save']");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("//form[@id='foreignSourceEditForm']/ul/li[14]/a[3]");
+        selenium.waitForPageToLoad("30000");
+        selenium.select("id=formData.detectors13.parameters0.key", "label=port");
+        selenium.type("id=formData.detectors13.parameters0.value", "8980");
+        selenium.click("css=li > input[type=button]");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("css=input[type=button]");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Edit");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("//input[@value='Add Node']");
+        selenium.waitForPageToLoad("30000");
+        selenium.type("id=formData.node0.nodeLabel", "localNode");
+        selenium.click("css=li > input[type=button]");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=[Add Interface]");
+        selenium.waitForPageToLoad("30000");
+        selenium.type("id=formData.node0.interface0.ipAddr", "::1");
+        selenium.click("css=li > input[type=button]");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("css=input[type=button]");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("//input[@value='Synchronize']");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Node List");
+        selenium.waitForPageToLoad("30000");
+        for (int second = 0;; second++) {
+            if (second >= 60) fail("timeout");
+            try { if ("localNode".equals(selenium.getText("link=localNode"))) break; } catch (Exception e) {}
+            Thread.sleep(1000);
+            selenium.refresh();
         }
+        selenium.click("link=localNode");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=HTTP-8980");
+        selenium.waitForPageToLoad("30000");
+        verifyTrue(selenium.isTextPresent("Polling Status 	Managed"));
+        verifyTrue(selenium.isTextPresent("Interface 	0000:0000:0000:0000:0000:0000:0000:0001"));
+        verifyTrue(selenium.isTextPresent("Node 	localNode"));
+        selenium.click("link=Admin");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Manage Provisioning Groups");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Edit");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("css=li > a > img");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("css=input[type=button]");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("//input[@value='Synchronize']");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("css=span > input[type=button]");
+        selenium.waitForPageToLoad("30000");
+        
+
+        selenium.click("link=Log out");
+        selenium.waitForPageToLoad("30000");
+        selenium.open("/opennms/login.jsp");
+        selenium.type("id=input_j_username", "admin");
+        selenium.type("name=j_password", "admin");
+        selenium.click("name=Login");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Admin");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Configure Users, Groups and Roles");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Configure Users");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Add New User");
+        selenium.waitForPageToLoad("30000");
+        selenium.type("id=userID", "SmokeTestUser");
+        selenium.type("id=pass1", "SmokeTestPassword");
+        selenium.type("id=pass2", "SmokeTestPassword");
+        selenium.click("id=doOK");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("id=saveUserButton");
+        selenium.waitForPageToLoad("30000");
+        verifyTrue(selenium.isElementPresent("id=users(SmokeTestUser).doDetails"));
+
+        selenium.click("link=Log out");
+        selenium.waitForPageToLoad("30000");
+        selenium.open("/opennms/login.jsp");
+        selenium.type("id=input_j_username", "admin");
+        selenium.type("name=j_password", "admin");
+        selenium.click("name=Login");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Admin");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Configure Users, Groups and Roles");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Configure Groups");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Add new group");
+        selenium.waitForPageToLoad("30000");
+        selenium.type("id=groupName", "SmokeTestGroup");
+        selenium.type("id=groupComment", "Test");
+        selenium.click("id=doOK");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("name=finish");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("//div[@id='content']/form/table/tbody/tr[4]/td[2]/a/img");
+        selenium.waitForPageToLoad("30000");
+        selenium.addSelection("name=availableUsers", "label=SmokeTestUser");
+        selenium.click("xpath=/html/body/div[2]/form/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/p/input[2]");
+        selenium.click("name=finish");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=SmokeTestGroup");
+        selenium.waitForPageToLoad("30000");
+        verifyTrue(selenium.isTextPresent("SmokeTestUser"));
+
+        selenium.click("link=Log out");
+        selenium.waitForPageToLoad("30000");
+        selenium.open("/opennms/login.jsp");
+        selenium.type("id=input_j_username", "admin");
+        selenium.type("name=j_password", "admin");
+        selenium.click("name=Login");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Node List");
+        selenium.waitForPageToLoad("30000");
+        verifyTrue(selenium.isTextPresent("Nodes"));
+        verifyTrue(selenium.isElementPresent("link=Show interfaces"));
+        selenium.click("link=Search");
+        selenium.waitForPageToLoad("30000");
+        verifyTrue(selenium.isTextPresent("Search for Nodes"));
+        verifyTrue(selenium.isTextPresent("Search Asset Information"));
+        verifyTrue(selenium.isTextPresent("Search Options"));
+        verifyTrue(selenium.isElementPresent("link=All nodes with asset info"));
+        selenium.click("link=Outages");
+        selenium.waitForPageToLoad("30000");
+        verifyTrue(selenium.isElementPresent("link=Current outages"));
+        verifyTrue(selenium.isTextPresent("Outages and Service Level Availability"));
+        verifyTrue(selenium.isTextPresent("All path outages"));
+        verifyTrue(selenium.isTextPresent("Critical Path Service"));
+        verifyTrue(selenium.isTextPresent("Alarms"));
+        verifyTrue(selenium.isTextPresent("Resource Graphs"));
+        verifyTrue(selenium.isTextPresent("Event Queries"));
+        verifyTrue(selenium.isTextPresent("Outstanding and acknowledged events"));
+        verifyTrue(selenium.isTextPresent("Alarm Queries"));
+        verifyTrue(selenium.isTextPresent("Outstanding and acknowledged alarms"));
+        verifyTrue(selenium.isTextPresent("Notification queries"));
+        verifyTrue(selenium.isTextPresent("Outstanding and Acknowledged Notices"));
+        verifyTrue(selenium.isTextPresent("Notification Escalation"));
+        verifyTrue(selenium.isTextPresent("Search Asset Information"));
+        verifyTrue(selenium.isTextPresent("Assets with asset numbers"));
+        verifyTrue(selenium.isTextPresent("Assets Inventory"));
+        verifyTrue(selenium.isTextPresent("Reports"));
+        verifyTrue(selenium.isTextPresent("Descriptions"));
+        verifyTrue(selenium.isElementPresent("css=img[alt=sample-bar-chart]"));
+        verifyTrue(selenium.isElementPresent("css=img[alt=sample-bar-chart2]"));
+        verifyTrue(selenium.isElementPresent("css=img[alt=sample-bar-chart3]"));
+        verifyTrue(selenium.isTextPresent("Nodes Down"));
+        verifyTrue(selenium.isTextPresent("TEST"));
+        verifyTrue(selenium.isTextPresent("Surveillance View: default"));
+        verifyTrue(selenium.isElementPresent("id=TabPanelGroup__0"));
+        verifyTrue(selenium.isTextPresent("Network Topology Maps"));
+        verifyTrue(selenium.isTextPresent("Node Quick-Add"));
+        verifyTrue(selenium.isTextPresent("will override"));
+        verifyTrue(selenium.isTextPresent("OpenNMS System"));
+        verifyTrue(selenium.isTextPresent("Operations"));
+        verifyTrue(selenium.isTextPresent("Nodes"));
+        verifyTrue(selenium.isTextPresent("Distributed Monitoring"));
+        verifyTrue(selenium.isTextPresent("Descriptions"));
+        verifyTrue(selenium.isTextPresent("Commercial Support"));
+        verifyTrue(selenium.isTextPresent("About"));
+        verifyTrue(selenium.isTextPresent("Other Support Options"));
+
+        selenium.click("link=Log out");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("css=strong");
+        selenium.waitForPageToLoad("30000");
+        selenium.type("id=input_j_username", "admin");
+        selenium.type("name=j_password", "admin");
+        selenium.click("name=Login");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Admin");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Configure Users, Groups and Roles");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Configure Groups");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("//div[@id='content']/form/table/tbody/tr[4]/td/a/img");
+        selenium.click("link=Users and Groups");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Configure Users");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("css=img[alt=Delete SmokeTestUser]");
+        selenium.click("link=Log out");
+        selenium.waitForPageToLoad("30000");
     }
 
-    @Test
-    public void testGetVersion() throws Exception {
-        web.login();
+    @After
+    public void tearDown() throws Exception {
 
-        final Double version = web.getVersionNumber();
-        assertTrue(version >= 1.8);
-        
-        web.logout();
     }
-    
-    @Test
-    public void provisionIPv6AddressAndVerifyElementPages() throws Exception {
-        web.login();
-
-        final Double version = web.getVersionNumber();
-        LogUtils.debugf(this, "version = %.1f", version);
-        Assume.assumeTrue(version >= 1.9);
-
-        String groupName = "JWebUnitServicePageTest";
-
-        web.createProvisiongGroup(groupName);
-
-        web.add8980DetectorToForeignSource(groupName);
-        
-        web.addIPv6LocalhostToGroup(groupName, "localNode-" + groupName);
-        
-        web.synchronizeGroup(groupName);
-        
-        verifyServiceManagedOnInterface("localNode-" + groupName, groupName, IP6_LOCAL_HOST);
-        
-        web.deleteProvisionedNodes(groupName);
-        
-        web.deleteProvisioningGroup(groupName);
-        
-        web.logout();
-    }
-    
-    @Test
-    public void addUser() throws Exception{
-        web.login();
-        
-        String userName = "smokeAddUser";
-        String password = "smokeAddUserPassword";
-        
-        web.createUser(userName, password);
-        web.logout();
-    }
-    
-    @Test
-    public void addUserToGroup() throws Exception{
-        web.login();
-        
-        String userName = "smokeAddUserToGroup";
-        String password = "smokeAddUserToGroupPassword";
-        String groupName = "smokeAddUserToGroupGroup";
-        
-        web.createUser(userName, password);
-        
-        web.createGroup(groupName);
-        
-        web.addUserToGroup(groupName, userName);
-        
-        web.logout();
-        
-    }
-    
-    @Test
-    public void testAllTopLevelLinks() throws Exception {
-        web.login();
-        web.assertTextPresent("Home");
-        
-        web.clickLinkWithExactText("Node List");
-        web.assertTextPresent("Nodes");
-        
-        web.clickLinkWithText("Search", 0);
-        web.assertTextPresent("Search for Nodes");
-        
-        web.clickLinkWithExactText("Outages");
-        web.assertTextPresent("Outages and Service Level Availability");
-        
-        web.clickLinkWithExactText("Path Outages");
-        web.assertTextPresent("All path outages");
-        
-        web.clickLinkWithExactText("Dashboard");
-        web.assertElementPresent("surveillanceView");
-        
-        web.clickLinkWithExactText("Events");
-        web.assertTextPresent("Outstanding and acknowledged events");
-        
-        web.clickLinkWithExactText("Alarms");
-        web.assertTextPresent("Outstanding and acknowledged alarms");
-        
-        web.clickLinkWithExactText("Notifications");
-        web.assertTextPresent("Outstanding and Acknowledged Notices");
-        
-        web.clickLinkWithExactText("Assets");
-        web.assertTextPresent("Search Asset Information");
-        
-        web.clickLinkWithExactText("Reports");
-        web.assertTextPresent("Database Reports");
-        
-        web.clickLinkWithExactText("Charts");
-        web.assertElementPresent("include-charts");
-        
-        web.clickLinkWithExactText("Surveillance");
-        web.assertElementPresent("content");
-        
-        web.clickLinkWithExactText("Distributed Status");
-        web.assertTextPresent("Distributed Status Summary");
-        
-        // Account for the distributed status refresh
-        Thread.sleep(3000);
-
-        web.clickLinkWithExactText("Map");
-        web.assertTextPresent("Network Topology Maps");
-        
-        web.clickLinkWithExactText("Add Node");
-        web.assertTextPresent("Node Quick-Add");
-        
-        web.clickLinkWithExactText("Admin");
-        web.assertTextPresent("OpenNMS System");
-        
-        web.clickLinkWithExactText("Support");
-        web.assertTextPresent("Commercial Support");
-        
-        web.logout();
-    }
-    
-    private void verifyServiceManagedOnInterface(String node, String foreignSource, String iface) {
-        web.gotoPage("element/nodeList.htm?listInterfaces=true&nodename="+ node);
-        
-        web.assertTextPresent("Node: " + node);
-        web.assertTextPresent("Foreign Source: " + foreignSource);
-        
-        web.clickLinkWithExactText(iface);
-        
-        web.assertTextPresent("Interface: "+iface);
-        web.assertTextPresent(node);
-        
-        web.clickLinkWithExactText("HTTP-8980");
-
-        web.assertTextPresent("HTTP-8980 service on " +iface);
-        
-        web.assertTableEquals("", new String[][] { 
-                { "Node", node },
-                { "Interface", iface },
-                { "Polling Status", "Managed" }
-        });
-        
-    }
-
 }

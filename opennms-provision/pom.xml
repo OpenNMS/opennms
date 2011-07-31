@@ -23,6 +23,7 @@
     <module>opennms-detector-jdbc</module>
     <module>opennms-detector-ssh</module>
     <module>opennms-detector-generic</module>
+    <module>opennms-detector-web</module>
   </modules>
   <dependencyManagement>
     <dependencies>
@@ -84,6 +85,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-ssh</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-web</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
