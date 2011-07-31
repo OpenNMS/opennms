@@ -234,6 +234,10 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-ssh</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-detector-web</artifactId>
+    </dependency>
     <!-- end provisiond dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>

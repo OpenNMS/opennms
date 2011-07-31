@@ -96,7 +96,9 @@ configure_opennms() {
 		find * -type f | sort -u | while read FILE; do
 			dir=`dirname "$FILE"`
 			mkdir -p "$dir"
-			mv "$OPENNMS_HOME/$FILE" "$OPENNMS_HOME/$FILE.bak"
+			if [ -f "$OPENNMS_HOME/$FILE" ]; then
+				mv "$OPENNMS_HOME/$FILE" "$OPENNMS_HOME/$FILE.bak"
+			fi
 			install -c "$FILE" "$OPENNMS_HOME/$FILE"
 		done
 	popd

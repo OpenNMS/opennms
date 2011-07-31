@@ -33,6 +33,12 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
+   	  <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.nsclient</artifactId>
+   	  <scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>org.opennms.features</groupId>
