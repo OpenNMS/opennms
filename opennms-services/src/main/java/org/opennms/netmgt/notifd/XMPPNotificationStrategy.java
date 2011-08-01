@@ -39,36 +39,12 @@ import org.opennms.netmgt.config.NotificationManager;
 /**
  * Implements NotificationStragey pattern used to send notifications using the
  * XMPP message protocol.
- * 
-/**
- *
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
  * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
- * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
- * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
- * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
- * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
- * @version $Id: $
  */
 public class XMPPNotificationStrategy implements NotificationStrategy {
 
