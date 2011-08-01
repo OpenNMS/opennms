@@ -41,6 +41,8 @@ public class KscComboboxViewImpl extends Composite implements KscComboboxView<Ks
                 public SafeHtml render(final KscReportDetail reportDetail) {
                     return new SafeHtml() {
 
+                        private static final long serialVersionUID = -5363136937302598352L;
+
                         @Override
                         public String asString() {
                             // TODO Auto-generated method stub
