@@ -142,6 +142,59 @@ public class JaxbUtilsTest {
 		LogUtils.debugf(this, "castor log = %s", log2);
 	}
 	
+    /**
+     * This test can be used to compare the performance of JAXB vs. Castor in XML unmarshalling speed.
+     * After running this test on my system when preparing for the OpenNMS 1.10 release, JAXB was
+     * roughly 30% faster than Castor.
+     */
+    @Test
+    @Ignore
+    public void testUnmarshalLogCastorVersusJaxb() throws Exception {
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            JaxbUtils.unmarshal(Log.class, m_logXml);
+        }
+        long jaxbTime = System.currentTimeMillis() - startTime;
+
+        final byte[] logBytes = m_logXml.getBytes();
+        startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            CastorUtils.unmarshal(Log.class, new ByteArrayInputStream(logBytes));
+        }
+        long castorTime = System.currentTimeMillis() - startTime;
+        
+        System.out.printf("JAXB unmarshal: %dms, Castor unmarshal: %dms\n", jaxbTime, castorTime);
+    }
+    
+    /**
+     * This test can be used to compare the performance of JAXB vs. Castor in XML marshalling speed.
+     * After running this test on my system when preparing for the OpenNMS 1.10 release, JAXB was
+     * roughly 8 times faster than Castor.
+     */
+    @Test
+    @Ignore
+    public void testMarshalLogCastorVersusJaxb() throws Exception {
+        Log log = JaxbUtils.unmarshal(Log.class, m_logXml);
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            JaxbUtils.marshal(log);
+            // If you want to see the marshalled XML output...
+            //System.out.println(JaxbUtils.marshal(log));
+        }
+        long jaxbTime = System.currentTimeMillis() - startTime;
+
+        log = CastorUtils.unmarshal(Log.class, new ByteArrayInputStream(m_logXml.getBytes()));
+        startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            CastorUtils.marshalWithTranslatedExceptions(log, new StringWriter());
+            // If you want to see the marshalled XML output...
+            //CastorUtils.marshalWithTranslatedExceptions(log, new OutputStreamWriter(System.out));
+        }
+        long castorTime = System.currentTimeMillis() - startTime;
+        
+        System.out.printf("JAXB marshal: %dms, Castor marshal: %dms\n", jaxbTime, castorTime);
+    }
+    
 	@Test
 	public void testUnmarshalLogNoNamespace() throws Exception {
 		final Log log = JaxbUtils.unmarshal(Log.class, m_logXmlWithoutNamespace);
