@@ -136,6 +136,7 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
         // UPDATE datalinkinterface set status = ? WHERE (nodeid = ? and ifindex = ?) OR (nodeparentid = ? AND parentifindex = ?)
 
         final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(
             Restrictions.or(
                 Restrictions.and(

@@ -142,7 +142,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 		System.err.println(String.format("TemporaryDatabaseExecutionListener.beforeTestMethod(%s)", testContext));
 
 		// FIXME: Is there a better way to inject the instance into the test class?
-		if (testContext.getTestInstance() instanceof TemporaryDatabaseAware) {
+		if (testContext.getTestInstance() instanceof TemporaryDatabaseAware<?>) {
 			System.err.println("injecting TemporaryDatabase into TemporaryDatabaseAware test: "
 							+ testContext.getTestInstance().getClass().getSimpleName() + "."
 							+ testContext.getTestMethod().getName());
@@ -150,7 +150,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	private void injectTemporaryDatabase(final TestContext testContext) {
 		((TemporaryDatabaseAware) testContext.getTestInstance()).setTemporaryDatabase(m_database);
 	}

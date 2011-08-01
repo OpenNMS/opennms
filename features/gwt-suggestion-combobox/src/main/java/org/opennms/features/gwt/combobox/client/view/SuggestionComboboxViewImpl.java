@@ -42,6 +42,8 @@ public class SuggestionComboboxViewImpl extends Composite implements SuggestionC
                     
                     return new SafeHtml() {
 
+                        private static final long serialVersionUID = 4989123499072122653L;
+
                         @Override
                         public String asString() {
                             return nodeDetail.getLabel();

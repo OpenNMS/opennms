@@ -71,16 +71,16 @@ import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.linkd.DbVlanEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.AggregateStatus;
@@ -1414,7 +1414,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     public List<LinkInterface> getDataLinksOnNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
-        criteria.add(Restrictions.eq("nodeId", nodeId));
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.ne("status", "D"));
         criteria.addOrder(Order.asc("ifIndex"));
 
@@ -1452,7 +1453,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     public List<LinkInterface> getDataLinksOnInterface(int nodeId, int ifIndex){
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
-        criteria.add(Restrictions.eq("nodeId", nodeId));
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("ifIndex", ifIndex));
         criteria.add(Restrictions.ne("status", "D"));
 
