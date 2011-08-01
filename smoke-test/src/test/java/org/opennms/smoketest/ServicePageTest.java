@@ -22,12 +22,12 @@ public class ServicePageTest extends SeleneseTestCase {
         selenium.type("name=j_password", "admin");
         selenium.click("name=Login");
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=Admin");
-        selenium.waitForPageToLoad("30000");
     }
 
     @Test
-    public void testServicePage() throws Exception {
+    public void testPrvoisioningGroupSetup() throws Exception {
+        selenium.click("link=Admin");
+        selenium.waitForPageToLoad("30000");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Manage Provisioning Groups");
         selenium.waitForPageToLoad("30000");
@@ -66,6 +66,12 @@ public class ServicePageTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         selenium.click("//input[@value='Synchronize']");
         selenium.waitForPageToLoad("30000");
+        selenium.click("link=Log out");
+        selenium.waitForPageToLoad("30000");
+    }
+    
+    @Test
+    public void testProvisioningGroupWasCreated() throws InterruptedException {
         selenium.click("link=Node List");
         selenium.waitForPageToLoad("30000");
         for (int second = 0;; second++) {
@@ -95,15 +101,12 @@ public class ServicePageTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         selenium.click("css=span > input[type=button]");
         selenium.waitForPageToLoad("30000");
-        
-
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
-        selenium.open("/opennms/login.jsp");
-        selenium.type("id=input_j_username", "admin");
-        selenium.type("name=j_password", "admin");
-        selenium.click("name=Login");
-        selenium.waitForPageToLoad("30000");
+    }
+    
+    @Test
+    public void testCreateUser() { 
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Configure Users, Groups and Roles");
@@ -120,14 +123,12 @@ public class ServicePageTest extends SeleneseTestCase {
         selenium.click("id=saveUserButton");
         selenium.waitForPageToLoad("30000");
         verifyTrue(selenium.isElementPresent("id=users(SmokeTestUser).doDetails"));
-
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
-        selenium.open("/opennms/login.jsp");
-        selenium.type("id=input_j_username", "admin");
-        selenium.type("name=j_password", "admin");
-        selenium.click("name=Login");
-        selenium.waitForPageToLoad("30000");
+    }
+    
+    @Test  
+    public void testCreateGroup() {
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Configure Users, Groups and Roles");
@@ -151,14 +152,10 @@ public class ServicePageTest extends SeleneseTestCase {
         selenium.click("link=SmokeTestGroup");
         selenium.waitForPageToLoad("30000");
         verifyTrue(selenium.isTextPresent("SmokeTestUser"));
+    }
 
-        selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
-        selenium.open("/opennms/login.jsp");
-        selenium.type("id=input_j_username", "admin");
-        selenium.type("name=j_password", "admin");
-        selenium.click("name=Login");
-        selenium.waitForPageToLoad("30000");
+    @Test
+    public void testAllTopLevelLinks () {
         selenium.click("link=Node List");
         selenium.waitForPageToLoad("30000");
         verifyTrue(selenium.isTextPresent("Nodes"));
@@ -207,14 +204,10 @@ public class ServicePageTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Commercial Support"));
         verifyTrue(selenium.isTextPresent("About"));
         verifyTrue(selenium.isTextPresent("Other Support Options"));
-
-        selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("css=strong");
-        selenium.waitForPageToLoad("30000");
-        selenium.type("id=input_j_username", "admin");
-        selenium.type("name=j_password", "admin");
-        selenium.click("name=Login");
+    }
+    
+    @Test
+    public void testDeleteUsersAndGroups() {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
@@ -234,6 +227,6 @@ public class ServicePageTest extends SeleneseTestCase {
 
     @After
     public void tearDown() throws Exception {
-
+        selenium.stop();
     }
 }

@@ -27,10 +27,14 @@ public class SupportPageTest extends SeleneseTestCase {
         }
 
 	@Test
-	public void testSupportPage() throws Exception {
+	public void testAllTextIsPresent() throws Exception {
 		verifyTrue(selenium.isTextPresent("Commercial Support"));
 		verifyTrue(selenium.isTextPresent("About"));
 		verifyTrue(selenium.isTextPresent("Other Support Options"));
+	}
+	
+	@Test
+	public void testAllLinksArePresent() {		
 		verifyTrue(selenium.isElementPresent("link=About the OpenNMS Web Console"));
 		verifyTrue(selenium.isElementPresent("link=Release Notes"));
 		verifyTrue(selenium.isElementPresent("link=Online Documentation"));
@@ -38,10 +42,16 @@ public class SupportPageTest extends SeleneseTestCase {
 		verifyTrue(selenium.isElementPresent("link=Open a Bug or Enhancement Request"));
 		verifyTrue(selenium.isElementPresent("link=Chat with Developers on IRC"));
 		verifyTrue(selenium.isElementPresent("link=the OpenNMS.com support page"));
+	}
+	@Test
+	public void testAllFormsArePresent() {
 		verifyTrue(selenium.isTextPresent("Username:"));
 		verifyTrue(selenium.isTextPresent("Password:"));
 		verifyTrue(selenium.isElementPresent("css=input[type=reset]"));
 		verifyEquals("Log In", selenium.getValue("css=input[type=submit]"));
+	}
+	@Test
+	public void testAllLinks() {
 		selenium.click("link=About the OpenNMS Web Console");
 		selenium.waitForPageToLoad("30000");
 		verifyTrue(selenium.isTextPresent("OpenNMS Web Console"));
