@@ -36,6 +36,7 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.regex.Pattern;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
@@ -50,6 +51,13 @@ import org.opennms.netmgt.protocols.InsufficientParametersException;
  */
 public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
     
+    private static final Pattern SSH_IOEXCEPTION_PATTERN = Pattern.compile("^.*java.io.IOException.*$");
+    private static final Pattern SSH_AUTHENTICATION_PATTERN = Pattern.compile("^.*Authentication:.*$");
+    private static final Pattern SSH_NOROUTETOHOST_PATTERN = Pattern.compile("^.*java.net.NoRouteToHostException.*$");
+    private static final Pattern SSH_SOCKETERROR_PATTERN = Pattern.compile("^.*(timeout: socket is not established|java.io.InterruptedIOException|java.net.SocketTimeoutException).*$");
+    private static final Pattern SSH_CONNECTIONERROR_PATTERN = Pattern.compile("^.*(connection is closed by foreign host|java.net.ConnectException).*$");
+    private static final Pattern SSH_NUMBERFORMAT_PATTERN = Pattern.compile("^.*NumberFormatException.*$");
+
     // SSH port is 22
     /** Constant <code>DEFAULT_PORT=22</code> */
     public static final int DEFAULT_PORT = 22;
@@ -80,7 +88,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
      *
      * @param address a {@link java.net.InetAddress} object.
      */
-    public Ssh(InetAddress address) {
+    public Ssh(final InetAddress address) {
         setAddress(address);
     }
     
@@ -90,7 +98,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
      * @param address a {@link java.net.InetAddress} object.
      * @param port a int.
      */
-    public Ssh(InetAddress address, int port) {
+    public Ssh(final InetAddress address, final int port) {
         setAddress(address);
         setPort(port);
     }
@@ -102,7 +110,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
      * @param port a int.
      * @param timeout a int.
      */
-    public Ssh(InetAddress address, int port, int timeout) {
+    public Ssh(final InetAddress address, final int port, final int timeout) {
         setAddress(address);
         setPort(port);
         setTimeout(timeout);
@@ -113,7 +121,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
      *
      * @param address the address
      */
-    public void setAddress(InetAddress address) {
+    public void setAddress(final InetAddress address) {
         m_address = address;
     }
  
@@ -131,7 +139,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
      *
      * @param port the port
      */
-    public void setPort(int port) {
+    public void setPort(final int port) {
         m_port = port;
     }
     
@@ -152,7 +160,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
      *
      * @param username the username
      */
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
         m_username = username;
     }
     
@@ -170,7 +178,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
      *
      * @param password the password
      */
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         m_password = password;
     }
 
@@ -188,7 +196,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
      *
      * @param banner the banner
      */
-    public void setClientBanner(String banner) {
+    public void setClientBanner(final String banner) {
         m_banner = banner;
     }
 
@@ -215,7 +223,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
      *
      * @param t a {@link java.lang.Throwable} object.
      */
-    protected void setError(Throwable t) {
+    protected void setError(final Throwable t) {
         m_error = t;
     }
     
@@ -259,15 +267,15 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
             disconnect();
 
             return true;
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             log().debug("unable to parse server version", e);
             setError(e);
             disconnect();
-        } catch (ConnectException e) {
+        } catch (final ConnectException e) {
             log().debug("connection failed: " + e.getMessage());
             setError(e);
             disconnect();
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             log().debug("connection failed", e);
             setError(e);
             disconnect();
@@ -282,53 +290,55 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
         if (m_writer != null) {
             try {
                 m_writer.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log().warn("error disconnecting output stream", e);
             }
         }
         if (m_reader != null) {
             try {
                 m_reader.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log().warn("error disconnecting input stream", e);
             }
         }
         if (m_socket != null) {
             try {
                 m_socket.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log().warn("error disconnecting socket", e);
             }
         }
     }
 
     /** {@inheritDoc} */
-    public PollStatus poll(TimeoutTracker tracker) throws InsufficientParametersException {
+    public PollStatus poll(final TimeoutTracker tracker) throws InsufficientParametersException {
         tracker.startAttempt();
-        boolean isAvailable = tryConnect();
-        double responseTime = tracker.elapsedTimeInMillis();
+        final boolean isAvailable = tryConnect();
+        final double responseTime = tracker.elapsedTimeInMillis();
 
         PollStatus ps = PollStatus.unavailable();
         
-        String errorMessage = "";
+        final String errorMessage;
         if (getError() != null) {
             errorMessage = getError().getMessage();
             ps.setReason(errorMessage);
+        } else {
+            errorMessage = "";
         }
 
         if (isAvailable) {
             ps = PollStatus.available(responseTime);
-        } else if (errorMessage.matches("^.*Authentication:.*$")) {
+        } else if (SSH_AUTHENTICATION_PATTERN.matcher(errorMessage).matches()) {
             ps = PollStatus.unavailable("authentication failed");
-        } else if (errorMessage.matches("^.*java.net.NoRouteToHostException.*$")) {
+        } else if (SSH_NOROUTETOHOST_PATTERN.matcher(errorMessage).matches()) {
             ps = PollStatus.unavailable("no route to host");
-        } else if (errorMessage.matches("^.*(timeout: socket is not established|java.io.InterruptedIOException|java.net.SocketTimeoutException).*$")) {
+        } else if (SSH_SOCKETERROR_PATTERN.matcher(errorMessage).matches()) {
             ps = PollStatus.unavailable("connection timed out");
-        } else if (errorMessage.matches("^.*(connection is closed by foreign host|java.net.ConnectException).*$")) {
+        } else if (SSH_CONNECTIONERROR_PATTERN.matcher(errorMessage).matches()) {
             ps = PollStatus.unavailable("connection exception");
-        } else if (errorMessage.matches("^.*NumberFormatException.*$")) {
+        } else if (SSH_NUMBERFORMAT_PATTERN.matcher(errorMessage).matches()) {
             ps = PollStatus.unavailable("an error occurred parsing the server version number");
-        } else if (errorMessage.matches("^.*java.io.IOException.*$")) {
+        } else if (SSH_IOEXCEPTION_PATTERN.matcher(errorMessage).matches()) {
             ps = PollStatus.unavailable("I/O exception");
         }
         

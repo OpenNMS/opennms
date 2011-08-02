@@ -569,8 +569,8 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
         return collectionGroupMap;
     }
 
-    private void validateResourceTypes(Set<String> allowedResourceTypes) {
-        String configuredString;
+    private void validateResourceTypes(final Set<String> allowedResourceTypes) {
+        final String configuredString;
         if (allowedResourceTypes.size() == 0) {
             configuredString = "(none)";
         } else {
@@ -584,7 +584,7 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
             if (groups != null) {
 				for (final Group group : groups.getGroupCollection()) {
 	                for (final MibObj mibObj : group.getMibObjCollection()) {
-	                    String instance = mibObj.getInstance();
+	                    final String instance = mibObj.getInstance();
 	                    if (instance == null) {
 	                        continue;
 	                    }
