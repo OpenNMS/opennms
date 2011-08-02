@@ -84,11 +84,11 @@ public class SupportPageTest extends SeleneseTestCase {
 		verifyTrue(selenium.isTextPresent("Choose which plugins to enable:"));
 		selenium.goBack();
 		selenium.waitForPageToLoad("30000");
-		selenium.click("link=Open a Bug or Enhancement Request");
-                selenium.waitForPageToLoad("30000");
-                assertEquals("System Dashboard - The OpenNMS Issue Tracker", selenium.getTitle());
-                selenium.goBack();
-                selenium.waitForPageToLoad("30000");
+//		selenium.click("link=Open a Bug or Enhancement Request");
+//                selenium.waitForPageToLoad("30000");
+//                assertEquals("System Dashboard - The OpenNMS Issue Tracker", selenium.getTitle());
+//                selenium.goBack();
+//                selenium.waitForPageToLoad("30000");
                 selenium.click("link=Log out");
                 selenium.waitForPageToLoad("30000");
 	}

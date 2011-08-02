@@ -76,9 +76,8 @@ public class ServicePageTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         for (int second = 0;; second++) {
             if (second >= 60) fail("timeout");
-            try { if ("localNode".equals(selenium.getText("link=localNode"))) break; } catch (Exception e) {}
+            try { if (selenium.isElementPresent("link=localNode")) break; } catch (Exception e) {}
             Thread.sleep(1000);
-            selenium.refresh();
         }
         selenium.click("link=localNode");
         selenium.waitForPageToLoad("30000");
