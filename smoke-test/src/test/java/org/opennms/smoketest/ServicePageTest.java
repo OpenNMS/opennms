@@ -7,10 +7,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.thoughtworks.selenium.SeleneseTestCase;
+import com.thoughtworks.selenium.SeleneseTestBase;
 
-@SuppressWarnings("deprecation")
-public class ServicePageTest extends SeleneseTestCase {
+
+public class ServicePageTest extends SeleneseTestBase{
     @Before
     public void setUp() throws Exception {
         WebDriver driver = new FirefoxDriver();
@@ -69,7 +69,7 @@ public class ServicePageTest extends SeleneseTestCase {
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
     }
-    
+
     @Test
     public void testProvisioningGroupWasCreated() throws InterruptedException {
         selenium.click("link=Node List");
@@ -78,7 +78,7 @@ public class ServicePageTest extends SeleneseTestCase {
             if (second >= 60){
                 fail("Timeout in testProvsioningGroupWasCreated(). Failed after: "+ second + " seconds" + "\nhtml source: " + 
                      selenium.getHtmlSource() + "\n" +
-                     		"Title: " + selenium.getTitle() + "\nurl: " + selenium.getLocation());
+                     "Title: " + selenium.getTitle() + "\nurl: " + selenium.getLocation());
             }
             if (selenium.isElementPresent("link=localNode")) {
                 break;
@@ -90,27 +90,23 @@ public class ServicePageTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=HTTP-8980");
         selenium.waitForPageToLoad("30000");
-        verifyTrue(selenium.isTextPresent("Polling Status 	Managed"));
-        verifyTrue(selenium.isTextPresent("Interface 	0000:0000:0000:0000:0000:0000:0000:0001"));
-        verifyTrue(selenium.isTextPresent("Node 	localNode"));
+        assertTrue(selenium.isTextPresent("Managed"));
+        assertTrue(selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
+        assertTrue(selenium.isTextPresent("localNode"));
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Manage Provisioning Groups");
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=Edit");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("css=li > a > img");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("css=input[type=button]");
+        selenium.click("//input[@value='Delete Nodes']");
         selenium.waitForPageToLoad("30000");
         selenium.click("//input[@value='Synchronize']");
         selenium.waitForPageToLoad("30000");
-        selenium.click("css=span > input[type=button]");
+        selenium.click("//input[@value='Delete Group']");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
     }
-    
+
     @Test
     public void testCreateUser() { 
         selenium.click("link=Admin");
@@ -128,11 +124,11 @@ public class ServicePageTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         selenium.click("id=saveUserButton");
         selenium.waitForPageToLoad("30000");
-        verifyTrue(selenium.isElementPresent("id=users(SmokeTestUser).doDetails"));
+        assertTrue(selenium.isElementPresent("id=users(SmokeTestUser).doDetails"));
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
     }
-    
+
     @Test  
     public void testCreateGroup() {
         selenium.click("link=Admin");
@@ -157,57 +153,92 @@ public class ServicePageTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=SmokeTestGroup");
         selenium.waitForPageToLoad("30000");
-        verifyTrue(selenium.isTextPresent("SmokeTestUser"));
+        assertTrue(selenium.isTextPresent("SmokeTestUser"));
     }
 
     @Test
-    public void testAllTopLevelLinks () {
+    public void testAllTopLevelLinks () throws InterruptedException {
         selenium.click("link=Node List");
         selenium.waitForPageToLoad("30000");
-        verifyTrue(selenium.isTextPresent("Nodes"));
-        verifyTrue(selenium.isElementPresent("link=Show interfaces"));
+        assertTrue(selenium.isTextPresent("Nodes"));
+        assertTrue(selenium.isElementPresent("link=Show interfaces"));
         selenium.click("link=Search");
         selenium.waitForPageToLoad("30000");
-        verifyTrue(selenium.isTextPresent("Search for Nodes"));
-        verifyTrue(selenium.isTextPresent("Search Asset Information"));
-        verifyTrue(selenium.isTextPresent("Search Options"));
-        verifyTrue(selenium.isElementPresent("link=All nodes with asset info"));
+        assertTrue(selenium.isTextPresent("Search for Nodes"));
+        assertTrue(selenium.isTextPresent("Search Asset Information"));
+        assertTrue(selenium.isTextPresent("Search Options"));
+        assertTrue(selenium.isElementPresent("link=All nodes with asset info"));
         selenium.click("link=Outages");
         selenium.waitForPageToLoad("30000");
-        verifyTrue(selenium.isElementPresent("link=Current outages"));
-        verifyTrue(selenium.isTextPresent("Outages and Service Level Availability"));
-        verifyTrue(selenium.isTextPresent("All path outages"));
-        verifyTrue(selenium.isTextPresent("Critical Path Service"));
-        verifyTrue(selenium.isTextPresent("Alarms"));
-        verifyTrue(selenium.isTextPresent("Resource Graphs"));
-        verifyTrue(selenium.isTextPresent("Event Queries"));
-        verifyTrue(selenium.isTextPresent("Outstanding and acknowledged events"));
-        verifyTrue(selenium.isTextPresent("Alarm Queries"));
-        verifyTrue(selenium.isTextPresent("Outstanding and acknowledged alarms"));
-        verifyTrue(selenium.isTextPresent("Notification queries"));
-        verifyTrue(selenium.isTextPresent("Outstanding and Acknowledged Notices"));
-        verifyTrue(selenium.isTextPresent("Notification Escalation"));
-        verifyTrue(selenium.isTextPresent("Search Asset Information"));
-        verifyTrue(selenium.isTextPresent("Assets with asset numbers"));
-        verifyTrue(selenium.isTextPresent("Assets Inventory"));
-        verifyTrue(selenium.isTextPresent("Reports"));
-        verifyTrue(selenium.isTextPresent("Descriptions"));
-        verifyTrue(selenium.isTextPresent("Nodes Down"));
-        verifyTrue(selenium.isTextPresent("TEST"));
-        verifyTrue(selenium.isTextPresent("Surveillance View: default"));
-        verifyTrue(selenium.isTextPresent("Network Topology Maps"));
-        verifyTrue(selenium.isTextPresent("Node Quick-Add"));
-        verifyTrue(selenium.isTextPresent("will override"));
-        verifyTrue(selenium.isTextPresent("OpenNMS System"));
-        verifyTrue(selenium.isTextPresent("Operations"));
-        verifyTrue(selenium.isTextPresent("Nodes"));
-        verifyTrue(selenium.isTextPresent("Distributed Monitoring"));
-        verifyTrue(selenium.isTextPresent("Descriptions"));
-        verifyTrue(selenium.isTextPresent("Commercial Support"));
-        verifyTrue(selenium.isTextPresent("About"));
-        verifyTrue(selenium.isTextPresent("Other Support Options"));
+        assertTrue(selenium.isElementPresent("link=Current outages"));
+        assertTrue(selenium.isTextPresent("Outages and Service Level Availability"));
+        assertTrue(selenium.isTextPresent("Outage Menu"));
+        selenium.click("link=Path Outages");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("All path outages"));
+        assertTrue(selenium.isTextPresent("Critical Path Service"));
+        selenium.click("link=Dashboard");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("Node Status"));
+        assertTrue(selenium.isTextPresent("24 Hour Availability"));
+        selenium.click("link=Alarms");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("Alarm Queries"));
+        assertTrue(selenium.isTextPresent("Outstanding and acknowledged alarms"));
+        assertTrue(selenium.isTextPresent("Alarm ID:"));
+        selenium.click("link=Events");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("Event Queries"));
+        assertTrue(selenium.isTextPresent("Outstanding and acknowledged events"));     
+        selenium.click("link=Notifications");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("Notification queries"));
+        assertTrue(selenium.isTextPresent("Outstanding and Acknowledged Notices"));
+        assertTrue(selenium.isTextPresent("Notification Escalation"));
+        selenium.click("link=Assets");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("Search Asset Information"));
+        assertTrue(selenium.isTextPresent("Assets with asset numbers"));
+        assertTrue(selenium.isTextPresent("Assets Inventory"));
+        selenium.click("link=Reports");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("Reports"));
+        assertTrue(selenium.isTextPresent("Descriptions"));
+        selenium.click("link=Charts");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Surveillance");
+        for (int second = 0 ;;  second++) {
+            if (second >= 60){
+                fail("timeout waiting for surveillance");
+            }
+            if (selenium.isTextPresent("Routers") && selenium.isTextPresent("Surveillance View: default")) {
+                break;
+            }
+            Thread.sleep(1000);
+        }
+        assertTrue(selenium.isTextPresent("Routers"));
+        assertTrue(selenium.isTextPresent("Surveillance View: default"));
+        selenium.click("link=Distributed Map");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isElementPresent("link=Applications"));
+        selenium.goBack();
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Map");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("Network Topology Maps"));
+        selenium.click("link=Add Node");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("Node Quick-Add"));
+        assertTrue(selenium.isTextPresent("CLI Authentication Parameters"));
+        selenium.click("link=Admin");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("OpenNMS System"));
+        assertTrue(selenium.isTextPresent("Operations"));
+        assertTrue(selenium.isTextPresent("Nodes"));
+        assertTrue(selenium.isTextPresent("Distributed Monitoring"));
+        assertTrue(selenium.isTextPresent("Descriptions"));
     }
-    
+
     @Test
     public void testDeleteUsersAndGroups() {
         selenium.waitForPageToLoad("30000");
