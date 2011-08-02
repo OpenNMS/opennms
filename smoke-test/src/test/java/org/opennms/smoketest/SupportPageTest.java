@@ -58,22 +58,10 @@ public class SupportPageTest extends SeleneseTestCase {
 		verifyTrue(selenium.isTextPresent("License and Copyright"));
 		verifyTrue(selenium.isTextPresent("OSI Certified Open Source Software"));
 		verifyTrue(selenium.isTextPresent("Version:"));
-		selenium.click("//div[@id='content']/div/h2/a[2]");
-		selenium.waitForPageToLoad("30000");
-		selenium.click("link=Release Notes");
-		selenium.waitForPageToLoad("30000");
-		verifyTrue(selenium.isTextPresent("OpenNMS Release Notes"));
-		verifyTrue(selenium.isTextPresent("OpenNMS Development Team"));
-		verifyTrue(selenium.isTextPresent("Copyright"));
 		selenium.goBack();
 		selenium.waitForPageToLoad("30000");
-		selenium.click("link=Online Documentation");
-		selenium.waitForPageToLoad("30000");
-		verifyTrue(selenium.isTextPresent("Welcome to OpenNMS"));
-		verifyTrue(selenium.isTextPresent("Try Out OpenNMS"));
-		verifyTrue(selenium.isElementPresent("link=exact:http://demo.opennms.org/opennms/"));
-		selenium.goBack();
-		selenium.waitForPageToLoad("30000");
+		verifyTrue(selenium.isElementPresent("//a[@href='http://www.opennms.org/documentation/ReleaseNotesStable.html#whats-new']"));
+		verifyTrue(selenium.isElementPresent("//a[@href='http://www.opennms.org/wiki/']"));
 		selenium.click("link=Generate a System Report");
 		selenium.waitForPageToLoad("30000");
 		verifyTrue(selenium.isTextPresent("Plugins"));
@@ -84,11 +72,8 @@ public class SupportPageTest extends SeleneseTestCase {
 		verifyTrue(selenium.isTextPresent("Choose which plugins to enable:"));
 		selenium.goBack();
 		selenium.waitForPageToLoad("30000");
-//		selenium.click("link=Open a Bug or Enhancement Request");
-//                selenium.waitForPageToLoad("30000");
-//                assertEquals("System Dashboard - The OpenNMS Issue Tracker", selenium.getTitle());
-//                selenium.goBack();
-//                selenium.waitForPageToLoad("30000");
+		verifyTrue(selenium.isElementPresent("//a[@href='http://issues.opennms.org/']"));
+		verifyTrue(selenium.isElementPresent("//a[@href='irc://irc.freenode.net/%23opennms']"));
                 selenium.click("link=Log out");
                 selenium.waitForPageToLoad("30000");
 	}

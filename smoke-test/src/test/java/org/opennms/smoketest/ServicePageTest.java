@@ -185,13 +185,9 @@ public class ServicePageTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Assets Inventory"));
         verifyTrue(selenium.isTextPresent("Reports"));
         verifyTrue(selenium.isTextPresent("Descriptions"));
-        verifyTrue(selenium.isElementPresent("css=img[alt=sample-bar-chart]"));
-        verifyTrue(selenium.isElementPresent("css=img[alt=sample-bar-chart2]"));
-        verifyTrue(selenium.isElementPresent("css=img[alt=sample-bar-chart3]"));
         verifyTrue(selenium.isTextPresent("Nodes Down"));
         verifyTrue(selenium.isTextPresent("TEST"));
         verifyTrue(selenium.isTextPresent("Surveillance View: default"));
-        verifyTrue(selenium.isElementPresent("id=TabPanelGroup__0"));
         verifyTrue(selenium.isTextPresent("Network Topology Maps"));
         verifyTrue(selenium.isTextPresent("Node Quick-Add"));
         verifyTrue(selenium.isTextPresent("will override"));
@@ -219,7 +215,7 @@ public class ServicePageTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Configure Users");
         selenium.waitForPageToLoad("30000");
-        selenium.click("css=img[alt=Delete SmokeTestUser]");
+        selenium.click("xpath=/html/body/div[2]/form/table/tbody/tr[4]/td/a/img");
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
     }
