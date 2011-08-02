@@ -45,13 +45,13 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
-import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.types.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
-import org.opennms.netmgt.config.datacollection.MibObj;
-import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.types.MibObj;
+import org.opennms.netmgt.config.datacollection.types.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.netmgt.config.datacollection.SystemDef;
-import org.opennms.netmgt.config.datacollection.SystemDefChoice;
+import org.opennms.netmgt.config.datacollection.types.SystemDef;
+import org.opennms.netmgt.config.datacollection.types.SystemDefChoice;
 import org.opennms.netmgt.config.datacollection.Systems;
 import org.opennms.netmgt.model.RrdRepository;
 

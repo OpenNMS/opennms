@@ -261,9 +261,9 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         Map<String, GenericIndexResourceType> resourceTypes;
         resourceTypes = new LinkedHashMap<String, GenericIndexResourceType>();
 
-        Map<String, org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
+        Map<String, org.opennms.netmgt.config.datacollection.types.ResourceType> configuredResourceTypes =
             m_dataCollectionConfig.getConfiguredResourceTypes();
-        for (org.opennms.netmgt.config.datacollection.ResourceType resourceType : configuredResourceTypes.values()) {
+        for (org.opennms.netmgt.config.datacollection.types.ResourceType resourceType : configuredResourceTypes.values()) {
             String className = resourceType.getStorageStrategy().getClazz();
             Class<?> cinst;
             try {

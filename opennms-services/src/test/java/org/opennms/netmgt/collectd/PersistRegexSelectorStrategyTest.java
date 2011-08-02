@@ -47,9 +47,9 @@ import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.config.datacollection.Parameter;
-import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
-import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.netmgt.config.datacollection.types.Parameter;
+import org.opennms.netmgt.config.datacollection.types.PersistenceSelectorStrategy;
+import org.opennms.netmgt.config.datacollection.types.StorageStrategy;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockPlatformTransactionManager;
 import org.opennms.netmgt.model.NetworkBuilder;
@@ -113,7 +113,7 @@ public class PersistRegexSelectorStrategyTest {
         CollectionAgent agent = DefaultCollectionAgent.create(1, ipInterfaceDao, ptm);
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, serviceParams);
 
-        org.opennms.netmgt.config.datacollection.ResourceType rt = new org.opennms.netmgt.config.datacollection.ResourceType();
+        org.opennms.netmgt.config.datacollection.types.ResourceType rt = new org.opennms.netmgt.config.datacollection.types.ResourceType();
         rt.setName("myResourceType");
         StorageStrategy storageStrategy = new StorageStrategy();
         storageStrategy.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
