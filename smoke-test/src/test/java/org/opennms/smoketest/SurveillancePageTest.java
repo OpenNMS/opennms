@@ -7,42 +7,42 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.thoughtworks.selenium.SeleneseTestCase;
+import com.thoughtworks.selenium.SeleneseTestBase;
 
-@SuppressWarnings("deprecation")
-public class SurveillancePageTest extends SeleneseTestCase {
-	@Before
-	public void setUp() throws Exception {
-	        WebDriver driver = new FirefoxDriver();
-	        String baseUrl = "http://localhost:8980/";
-	        selenium = new WebDriverBackedSelenium(driver, baseUrl);
-	        //selenium.start();
-	        selenium.open("/opennms/login.jsp");
-	        selenium.type("name=j_username", "admin");
-	        selenium.type("name=j_password", "admin");
-	        selenium.click("name=Login");
-	        selenium.waitForPageToLoad("30000");
-	        selenium.click("link=Surveillance");
-	        selenium.waitForPageToLoad("30000");
-	    }
 
-	@Test
-	public void testSurveillancePage() throws Exception {
-		for (int second = 0;; second++) {
-			if (second >= 60) fail("timeout");
-			try { if (selenium.isTextPresent("Surveillance View:")) break; } catch (Exception e) {}
-			Thread.sleep(1000);
-		}
+public class SurveillancePageTest extends SeleneseTestBase {
+    @Before
+    public void setUp() throws Exception {
+        WebDriver driver = new FirefoxDriver();
+        String baseUrl = "http://localhost:8980/";
+        selenium = new WebDriverBackedSelenium(driver, baseUrl);
+        //selenium.start();
+        selenium.open("/opennms/login.jsp");
+        selenium.type("name=j_username", "admin");
+        selenium.type("name=j_password", "admin");
+        selenium.click("name=Login");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Surveillance");
+        selenium.waitForPageToLoad("30000");
+    }
 
-		verifyTrue(selenium.isTextPresent("Routers"));
-		verifyTrue(selenium.isTextPresent("Nodes Down"));
-		verifyTrue(selenium.isTextPresent("DEV"));
-		selenium.click("link=Log out");
-		selenium.waitForPageToLoad("30000");
-	}
+    @Test
+    public void testSurveillancePage() throws Exception {
+        for (int second = 0;; second++) {
+            if (second >= 60) fail("timeout");
+            try { if (selenium.isTextPresent("Surveillance View:")) break; } catch (Exception e) {}
+            Thread.sleep(1000);
+        }
 
-	@After
-	public void tearDown() throws Exception {
-		selenium.stop();
-	}
+        assertTrue(selenium.isTextPresent("Routers"));
+        assertTrue(selenium.isTextPresent("Nodes Down"));
+        assertTrue(selenium.isTextPresent("DEV"));
+        selenium.click("link=Log out");
+        selenium.waitForPageToLoad("30000");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        selenium.stop();
+    }
 }

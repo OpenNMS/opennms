@@ -50,15 +50,15 @@ import org.exolab.castor.xml.ValidationContext;
 import org.exolab.castor.xml.Validator;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
-import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.groups.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.types.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
-import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.types.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.netmgt.config.datacollection.SystemDef;
+import org.opennms.netmgt.config.datacollection.types.SystemDef;
 import org.opennms.netmgt.config.datacollection.Systems;
-import org.opennms.netmgt.config.datacollection.descriptors.DatacollectionGroupDescriptor;
+import org.opennms.netmgt.config.datacollection.groups.descriptors.DatacollectionGroupDescriptor;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**

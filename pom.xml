@@ -1353,6 +1353,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-bsf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-datagram</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1432,7 +1437,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
-        <artifactId>org.opennms.core.jicmpv6</artifactId>
+        <artifactId>org.opennms.core.icmp-jna</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

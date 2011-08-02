@@ -35,7 +35,7 @@ import org.opennms.core.utils.ReplaceAllOperation;
 import org.opennms.core.utils.ReplaceFirstOperation;
 import org.opennms.core.utils.StringReplaceOperation;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.datacollection.Parameter;
+import org.opennms.netmgt.config.datacollection.types.Parameter;
 
 /**
  * <p>SiblingColumnStorageStrategy class.</p>

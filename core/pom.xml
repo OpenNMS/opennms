@@ -25,7 +25,7 @@
   <modules>
     <module>api</module>
     <module>build</module>
-    <module>jicmpv6</module>
+    <module>icmp-jna</module>
     <module>lib</module>
     <module>runtime</module>
     <module>schema</module>

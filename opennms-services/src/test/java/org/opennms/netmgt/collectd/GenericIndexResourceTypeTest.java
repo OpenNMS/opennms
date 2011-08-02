@@ -30,9 +30,8 @@ package org.opennms.netmgt.collectd;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
-import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.netmgt.config.datacollection.types.StorageStrategy;
+import org.opennms.netmgt.config.datacollection.types.PersistenceSelectorStrategy;
 import org.opennms.test.ThrowableAnticipator;
 
 /**
@@ -68,7 +67,7 @@ public class GenericIndexResourceTypeTest {
     }
 
     private GenericIndexResourceType instantiate() {
-        org.opennms.netmgt.config.datacollection.ResourceType rt = new org.opennms.netmgt.config.datacollection.ResourceType();
+        org.opennms.netmgt.config.datacollection.types.ResourceType rt = new org.opennms.netmgt.config.datacollection.types.ResourceType();
         
         PersistenceSelectorStrategy ps = new PersistenceSelectorStrategy();
         ps.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");

@@ -35,7 +35,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.StorageStrategyService;
 import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.datacollection.Parameter;
+import org.opennms.netmgt.config.datacollection.types.Parameter;
 
 public class IndexStorageStrategy implements StorageStrategy {
     private String m_resourceTypeName;

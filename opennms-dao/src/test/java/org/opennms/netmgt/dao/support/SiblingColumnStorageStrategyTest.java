@@ -37,7 +37,7 @@ import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.StorageStrategyService;
-import org.opennms.netmgt.config.datacollection.Parameter;
+import org.opennms.netmgt.config.datacollection.types.Parameter;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**

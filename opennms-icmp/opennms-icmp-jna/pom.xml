@@ -18,7 +18,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.jicmpv6</artifactId>
+      <artifactId>org.opennms.core.icmp-jna</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
