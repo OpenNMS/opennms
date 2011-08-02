@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
-  <artifactId>org.opennms.core.jicmpv6</artifactId>
+  <artifactId>org.opennms.core.icmp-jna</artifactId>
   <build>
     <plugins>
       <plugin>
