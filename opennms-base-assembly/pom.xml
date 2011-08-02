@@ -208,6 +208,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-detector-bsf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-datagram</artifactId>
     </dependency>
     <dependency>

@@ -24,6 +24,7 @@
     <module>opennms-detector-ssh</module>
     <module>opennms-detector-generic</module>
     <module>opennms-detector-web</module>
+    <module>opennms-detector-bsf</module>
   </modules>
   <dependencyManagement>
     <dependencies>
