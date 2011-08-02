@@ -74,10 +74,17 @@ public class ServicePageTest extends SeleneseTestCase {
     public void testProvisioningGroupWasCreated() throws InterruptedException {
         selenium.click("link=Node List");
         selenium.waitForPageToLoad("30000");
-        for (int second = 0;; second++) {
-            if (second >= 60) fail("timeout");
-            try { if (selenium.isElementPresent("link=localNode")) break; } catch (Exception e) {}
+        for (int second = 0 ;;  second++) {
+            if (second >= 60){
+                fail("Timeout in testProvsioningGroupWasCreated(). Failed after: "+ second + " seconds" + "\nhtml source: " + 
+                     selenium.getHtmlSource() + "\n" +
+                     		"Title: " + selenium.getTitle() + "\nurl: " + selenium.getLocation());
+            }
+            if (selenium.isElementPresent("link=localNode")) {
+                break;
+            }
             Thread.sleep(1000);
+            selenium.refresh();
         }
         selenium.click("link=localNode");
         selenium.waitForPageToLoad("30000");
