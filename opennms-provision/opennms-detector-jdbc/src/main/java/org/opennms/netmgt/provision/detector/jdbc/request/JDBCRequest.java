@@ -30,7 +30,9 @@ package org.opennms.netmgt.provision.detector.jdbc.request;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
 
@@ -50,6 +52,7 @@ public class JDBCRequest {
         }
     };
     
+    private String m_sqyQuery;
     private String m_storedProcedure;
     private String m_schema = "test";
     
@@ -75,6 +78,17 @@ public class JDBCRequest {
 
             JDBCResponse response = new JDBCResponse();
             response.setValidProcedureCall(cs.getBoolean(1));
+            return response;
+        }
+        if(getSqyQuery() != null) {
+            Statement st = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = st.executeQuery(getSqyQuery());
+            rs.first();
+            boolean validQuery = rs.getRow() == 1;
+            st.close();
+
+            JDBCResponse response = new JDBCResponse();
+            response.setValidQuery(validQuery);
             return response;
         }
         return null;
@@ -114,5 +128,23 @@ public class JDBCRequest {
      */
     public String getSchema() {
         return m_schema;
+    }
+
+    /**
+     * <p>setSqyQuery</p>
+     *
+     * @param sqyQuery a {@link java.lang.String} object.
+     */
+    public void setSqyQuery(String sqyQuery) {
+        m_sqyQuery = sqyQuery;
+    }
+
+    /**
+     * <p>getSqyQuery</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getSqyQuery() {
+        return m_sqyQuery;
     }
 }
