@@ -73,4 +73,5 @@
     </c:otherwise>
   </c:choose>
   <opennms:kscReportCombobox id="kscReportCombobox"></opennms:kscReportCombobox>
+  <div name="opennms-kscReportCombobox" id="kscReportCombobox-ie"></div>
 </div>

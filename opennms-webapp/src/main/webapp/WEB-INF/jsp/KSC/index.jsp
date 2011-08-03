@@ -107,6 +107,8 @@
 		
 	</script>
     <opennms:kscCustomReportList id="kscReportList" dataObject="customData"></opennms:kscCustomReportList>
+    <!-- For IE Only -->
+    <div name="opennms-kscCustomReportList" id="kscReportList-ie" dataObject="customData"></div>
   </div>
 
 <h3 class="o-box">Node SNMP Interface Reports</h3>
@@ -133,6 +135,7 @@
       </script>
       <div id="snmp-reports"></div>
       <opennms:nodeSnmpReportList id="nodeSnmpList" dataObject="nodeData"></opennms:nodeSnmpReportList>
+      <div name="opennms-nodeSnmpReportList" id="nodeSnmpList-ie" dataObject="nodeData"></div>
 </div>
 
 <h3 class="o-box">Domain SNMP Interface Reports</h3>
