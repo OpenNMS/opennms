@@ -43,7 +43,7 @@ public class SearchPageTest extends SeleneseTestBase {
             if (second >= 30){
                 fail("timeout waiting for \"Search/All Nodes\" Page");
             }
-            if (selenium.isTextPresent("Nodes") && selenium.isElementPresent("link=Show interfaces")) {
+            if (selenium.isTextPresent("Nodes")) {
                 break;
             }
             Thread.sleep(1000);
