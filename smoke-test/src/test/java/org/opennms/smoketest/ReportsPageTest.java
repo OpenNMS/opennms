@@ -46,12 +46,10 @@ public class ReportsPageTest extends SeleneseTestBase {
         assertTrue(selenium.isTextPresent("Performance Reports"));
         assertTrue(selenium.isTextPresent("Network Performance Data"));
         assertTrue(selenium.isTextPresent("The Standard Performance"));
-        assertTrue(selenium.isElementPresent("id=ext-gen110"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=KSC Performance, Nodes, Domains");
         selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.isElementPresent("id=ext-gen189"));
         assertTrue(selenium.isTextPresent("Customized Reports"));
         assertTrue(selenium.isTextPresent("Node SNMP Interface Reports"));
         assertTrue(selenium.isTextPresent("Descriptions"));

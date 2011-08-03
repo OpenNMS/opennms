@@ -160,8 +160,15 @@ public class ServicePageTest extends SeleneseTestBase{
     public void testAllTopLevelLinks () throws InterruptedException {
         selenium.click("link=Node List");
         selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.isTextPresent("Nodes"));
-        assertTrue(selenium.isElementPresent("link=Show interfaces"));
+        for (int second = 0 ;;  second++) {
+            if (second >= 30){
+                fail("timeout waiting for surveillance");
+            }
+            if (selenium.isTextPresent("Nodes") && selenium.isElementPresent("link=Show interfaces")) {
+                break;
+            }
+            Thread.sleep(1000);
+        }
         selenium.click("link=Search");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("Search for Nodes"));
@@ -208,7 +215,7 @@ public class ServicePageTest extends SeleneseTestBase{
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Surveillance");
         for (int second = 0 ;;  second++) {
-            if (second >= 60){
+            if (second >= 30){
                 fail("timeout waiting for surveillance");
             }
             if (selenium.isTextPresent("Routers") && selenium.isTextPresent("Surveillance View: default")) {
