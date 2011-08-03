@@ -153,6 +153,8 @@
 
 	</script>
 	<opennms:graphResourceList id="resourceList1" dataObject="standardResourceData"> </opennms:graphResourceList>
+	<!-- Div for IE -->
+	<div name="opennms-graphResourceList" id="resourceList-ie" dataObject="standardResourceData"></div>
   </div>
   
 
@@ -182,6 +184,7 @@
 		
 	</script>
 	<opennms:graphResourceList id="resourceList2" dataObject="customResources"> </opennms:graphResourceList>
+	<div name="opennms-graphResourceList" id="resourceList2-ie" dataObject="customResources"></div>
   </div>
 </div>
 

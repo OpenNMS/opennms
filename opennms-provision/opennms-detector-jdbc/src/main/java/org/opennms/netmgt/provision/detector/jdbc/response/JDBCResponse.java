@@ -45,6 +45,7 @@ public class JDBCResponse {
     
     private ResultSet m_result;
     private boolean m_isValidProcedureCall = false;
+    private boolean m_isValidQuery = false;
     
     /**
      * <p>receive</p>
@@ -114,6 +115,24 @@ public class JDBCResponse {
 
 
     /**
+     * <p>isValidQuery</p>
+     *
+     * @return a boolean.
+     */
+    public boolean isValidQuery() {
+        return m_isValidQuery;
+    }
+
+    /**
+     * <p>setValidQuery</p>
+     *
+     * @param isValidQuery a boolean.
+     */
+    public void setValidQuery(boolean isValidQuery) {
+        m_isValidQuery = isValidQuery;
+    }
+
+    /**
      * <p>log</p>
      *
      * @return a {@link org.opennms.core.utils.ThreadCategory} object.
@@ -121,4 +140,5 @@ public class JDBCResponse {
     public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
+
 }

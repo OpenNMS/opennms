@@ -360,6 +360,7 @@
   <div id="interface-panel-gwt">
     <h3 class="o-box">Node Interfaces</h3>
     <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
+    <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
   </div>
 	
   <!-- Vlan box if available -->

@@ -154,6 +154,8 @@
 	<br/>
 	
 	<opennms:snmpSelectList id="selectList"></opennms:snmpSelectList>
+	<!-- For IE -->
+	<div name="opennms-snmpSelectList" id="selectList-ie"></div>
 	<% if (interfaces.size() > 0) { %>
 	<%-- <table class="standardfirst">
 		<tr>

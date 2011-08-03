@@ -94,14 +94,14 @@ public class MSExchangeDetectorClient implements Client<LineOrientedRequest, MSE
                 return banner;
                 
             }catch(final Exception e) {
-                LogUtils.warnf(this, e, "An error occurred while connecting to %s:%d", InetAddressUtils.str(address), port);
+                LogUtils.debugf(this, e, "An error occurred while connecting to %s:%d", InetAddressUtils.str(address), port);
                 IOUtils.closeQuietly(lineRdr);
                 IOUtils.closeQuietly(isr);
                 if(socket != null) {
                     try {
                         socket.close();
                     } catch (final IOException e1) {
-                        LogUtils.warnf(this, e, "Additionally, an exception occurred while trying to close the socket.");
+                        LogUtils.debugf(this, e, "Additionally, an exception occurred while trying to close the socket.");
                     }
                 }
             }

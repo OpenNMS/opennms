@@ -105,7 +105,6 @@ public class AdminPageTest extends SeleneseTestBase {
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("Manage SNMP Data Collection per Interface"));
         assertTrue(selenium.isTextPresent("datacollection-config.xml file"));
-        assertTrue(selenium.isTextPresent("Node Label"));
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Manage and Unmanage Interfaces and Services");
@@ -197,11 +196,7 @@ public class AdminPageTest extends SeleneseTestBase {
 
     @Test
     public void testLinkGroupFive() throws Exception {
-        selenium.click("link=the OpenNMS wiki");
-        assertTrue(selenium.isTextPresent("Events"));
-        assertTrue(selenium.isTextPresent("license keys"));
-        assertTrue(selenium.isTextPresent("Stay Connected"));
-        // goBack
+        assertTrue(selenium.isElementPresent("//a[@href='http://www.opennms.org']"));
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
     }
