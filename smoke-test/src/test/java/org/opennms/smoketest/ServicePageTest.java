@@ -74,8 +74,13 @@ public class ServicePageTest extends SeleneseTestBase{
     public void testProvisioningGroupWasCreated() throws InterruptedException {
         selenium.click("link=Node List");
         selenium.waitForPageToLoad("30000");
-        while(!selenium.isElementPresent("link=localNode")){
+        long endTime = System.currentTimeMillis() + 60000;
+        while(System.currentTimeMillis() < endTime){
+            if(selenium.isElementPresent("link=localNode")){
+                break;
+            }
             selenium.refresh();
+            selenium.waitForPageToLoad("30000");
         }
         selenium.click("link=localNode");
         selenium.waitForPageToLoad("30000");
@@ -143,9 +148,9 @@ public class ServicePageTest extends SeleneseTestBase{
         while(System.currentTimeMillis() < endTime){
             if(selenium.isElementPresent("link=localNode")){
                 break;
-            }else
-                selenium.refresh();
-                selenium.waitForPageToLoad("30000");
+            }
+            selenium.refresh();
+            selenium.waitForPageToLoad("30000");
         }
         selenium.click("link=Search");
         selenium.waitForPageToLoad("30000");
