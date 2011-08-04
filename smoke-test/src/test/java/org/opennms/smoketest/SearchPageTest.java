@@ -44,6 +44,9 @@ public class SearchPageTest extends SeleneseTestBase {
             if(selenium.isTextPresent("Nodes")){
                 break;
             }
+            if(endTime - System.currentTimeMillis() < 5000){
+                fail ("25 second timeout trying to reach \"Search/All nodes\" Page");
+            }
         }
         selenium.click("//div[@id='content']/div/h2/a[2]");
         selenium.waitForPageToLoad("30000");

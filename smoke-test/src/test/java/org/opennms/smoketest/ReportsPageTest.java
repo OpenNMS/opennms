@@ -68,12 +68,7 @@ public class ReportsPageTest extends SeleneseTestBase {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Statistics Reports");
         selenium.waitForPageToLoad("30000");
-        long endTime = System.currentTimeMillis() + 30000;
-        while(System.currentTimeMillis() < endTime){
-            if(selenium.isTextPresent("Statistics Report List")){
-                break;
-            }
-        }
+        assertTrue(selenium.isTextPresent("Statistics Report List"));
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
         selenium.click("css=strong");

@@ -33,6 +33,9 @@ public class SurveillancePageTest extends SeleneseTestBase {
             if(selenium.isTextPresent("Surveillance View:")){
                 break;
             }
+            if(endTime - System.currentTimeMillis() < 5000){
+                fail ("25 second timeout trying to reach \"Surveillance\" Page");
+            }
         }
         assertTrue(selenium.isTextPresent("Routers"));
         assertTrue(selenium.isTextPresent("Nodes Down"));

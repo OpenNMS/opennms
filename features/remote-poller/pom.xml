@@ -137,6 +137,10 @@ groovy.compiler.output.path=target/classes
       <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.icmp-jna</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jna</artifactId>
     </dependency>
