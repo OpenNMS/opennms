@@ -59,7 +59,7 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -215,11 +215,11 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
         }
         log().debug("updateSnmpInterface: updating SNMP interface " + snmpInterface);
-        BeanWrapper wrapper = new BeanWrapperImpl(snmpInterface);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(snmpInterface);
         for(String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
                 String stringValue = params.getFirst(key);
-                Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+                Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                 wrapper.setPropertyValue(key, value);
             }
         }

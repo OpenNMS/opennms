@@ -46,8 +46,8 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -520,7 +520,7 @@ public class EventBuilder {
                 addParam(pair[0], pair[1].replaceFirst("[(]\\w+,\\w+[)]", ""));
             }
         } else {
-            final BeanWrapper w = new BeanWrapperImpl(m_event);
+            final BeanWrapper w = PropertyAccessorFactory.forBeanPropertyAccess(m_event);
             try {
                 w.setPropertyValue(name, val);
             } catch (final BeansException e) {

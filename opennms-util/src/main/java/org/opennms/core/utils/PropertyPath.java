@@ -29,9 +29,9 @@
 package org.opennms.core.utils;
 
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.PropertyAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.PropertyAccessorUtils;
 
 /**
@@ -122,7 +122,7 @@ public class PropertyPath {
      * @return a {@link java.lang.Object} object.
      */
     public Object getValue(Object root) throws InvalidPropertyException {
-        return getValue(new BeanWrapperImpl(root));
+        return getValue(PropertyAccessorFactory.forBeanPropertyAccess(root));
     }
     
     /**
