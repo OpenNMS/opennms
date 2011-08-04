@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -44,6 +44,7 @@ import javax.management.MBeanServerFactory;
 import org.apache.log4j.LogManager;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
+import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
 
 /**
@@ -210,7 +211,6 @@ public class Manager implements ManagerMBean {
      */
     public void doTestLoadLibraries() {
         setLogPrefix();
-
         testPinger();
         testGetLocalHost();
     }
@@ -224,7 +224,16 @@ public class Manager implements ManagerMBean {
     }
 
     private void testPinger() {
-        PingerFactory.getInstance();
+        final Pinger pinger = PingerFactory.getInstance();
+
+        final boolean v4 = pinger.isV4Available();
+        final boolean v6 = pinger.isV6Available();
+
+        log().debug(String.format("IPv4 available = %s, IPv6 available = %s, pinger class = %s", Boolean.valueOf(v4), Boolean.valueOf(v6), pinger.getClass().getName()));
+
+        if (!v4 && !v6) {
+            throw new IllegalStateException("Unable to initialize any ICMP support.  Bailing out.");
+        }
     }
 
     private void setLogPrefix() {

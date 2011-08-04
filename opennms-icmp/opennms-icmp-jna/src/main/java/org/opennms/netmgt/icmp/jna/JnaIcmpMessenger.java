@@ -33,7 +33,7 @@ import java.util.Queue;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.EchoPacket;
-import org.opennms.netmgt.icmp.IcmpMessengerException;
+import org.opennms.netmgt.icmp.IcmpMessengerIOException;
 import org.opennms.protocols.rt.Messenger;
 
 
@@ -47,34 +47,48 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
     private Queue<JnaPingReply> pendingReplies = null;
 
 	public JnaIcmpMessenger(final int pingerId) throws Exception {
-	    
+	    Throwable error = null;
 	    try {
 	        m_v4 = new V4Pinger(pingerId);
 	        m_v4.addPingReplyListener(this);
 	    } catch (final Throwable t) {
-	        LogUtils.warnf(this, t, "Unable to initialize IPv4 Pinger.");
+	        LogUtils.debugf(this, t, "Unable to initialize IPv4 Pinger.");
+	        error = t;
 	    }
 	    
 	    try {
 	        m_v6 = new V6Pinger(pingerId);
 	        m_v6.addPingReplyListener(this);
 	    } catch (final Throwable t) {
-	        LogUtils.warnf(this, t, "Unable to initialize IPv6 Pinger.");
+	        LogUtils.debugf(this, t, "Unable to initialize IPv6 Pinger.");
+	        if (error == null) error = t;
 	    }
 	    
 	    if (m_v4 == null && m_v6 == null) {
-	        final IcmpMessengerException exception = new IcmpMessengerException("IPv4 and IPv6 are not available.");
+	        final IcmpMessengerIOException exception = new IcmpMessengerIOException("IPv4 and IPv6 are not available.", error);
 	        LogUtils.warnf(this, exception, "Unable to initialize JNA ICMP messenger");
 	        throw exception;
 	    }
 	}
 	
-	@Override
+    public boolean isV4Available() {
+        if (m_v4 != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isV6Available() {
+        if (m_v6 != null) {
+            return true;
+        }
+        return false;
+    }
+
 	public void sendRequest(final JnaPingRequest request) {
 		request.send(m_v4, m_v6);
 	}
 
-	@Override
 	public void start(final Queue<JnaPingReply> replyQueue) {
         pendingReplies = replyQueue;
         m_v4.start();
@@ -84,4 +98,5 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	public void onPingReply(final InetAddress address, final EchoPacket packet) {
 		pendingReplies.offer(new JnaPingReply(address, packet));
 	}
+
 }
