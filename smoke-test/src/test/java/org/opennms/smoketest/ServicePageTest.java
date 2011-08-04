@@ -71,30 +71,6 @@ public class ServicePageTest extends SeleneseTestBase{
     }
 
     @Test
-    public void testProvisioningGroupWasCreated() throws InterruptedException {
-        selenium.click("link=Node List");
-        selenium.waitForPageToLoad("30000");
-        long endTime = System.currentTimeMillis() + 60000;
-        while(System.currentTimeMillis() < endTime){
-            if(selenium.isTextPresent("Availability") || selenium.isElementPresent("link=localNode")){
-                break;
-            }
-            selenium.refresh();
-            selenium.waitForPageToLoad("30000");
-            if(endTime - System.currentTimeMillis() < 5000){
-                fail ("55 second timeout trying to reach \"Node List/localNode\" Page");
-            }
-        }
-        selenium.click("link=localNode");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("link=HTTP-8980");
-        selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.isTextPresent("Managed"));
-        assertTrue(selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
-        assertTrue(selenium.isTextPresent("localNode"));
-    }
-
-    @Test
     public void testCreateUser() { 
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
@@ -141,6 +117,19 @@ public class ServicePageTest extends SeleneseTestBase{
         selenium.click("link=SmokeTestGroup");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("SmokeTestUser"));
+    }
+
+    @Test
+    public void testProvisioningGroupWasCreated() throws InterruptedException {
+        selenium.click("link=Node List");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=localNode");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=HTTP-8980");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("Managed"));
+        assertTrue(selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
+        assertTrue(selenium.isTextPresent("localNode"));
     }
 
     @Test
