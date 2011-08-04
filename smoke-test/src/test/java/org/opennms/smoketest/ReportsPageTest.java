@@ -73,6 +73,9 @@ public class ReportsPageTest extends SeleneseTestBase {
             if(selenium.isTextPresent("Statistics Report List")){
                 break;
             }
+            if(endTime - System.currentTimeMillis() < 5000){
+                fail ("25 second timeout trying to reach \"Admin/Delete Nodes\" Page");
+            }
         }
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");

@@ -81,6 +81,9 @@ public class ServicePageTest extends SeleneseTestBase{
             }
             selenium.refresh();
             selenium.waitForPageToLoad("30000");
+            if(endTime - System.currentTimeMillis() < 5000){
+                fail ("25 second timeout trying to reach \"Node List/localNode\" Page");
+            }
         }
         selenium.click("link=localNode");
         selenium.waitForPageToLoad("30000");
@@ -151,6 +154,9 @@ public class ServicePageTest extends SeleneseTestBase{
             }
             selenium.refresh();
             selenium.waitForPageToLoad("30000");
+            if(endTime - System.currentTimeMillis() < 5000){
+                fail ("25 second timeout trying to reach \"Node List/localNode\" Page");
+            }
         }
         selenium.click("link=Search");
         selenium.waitForPageToLoad("30000");
