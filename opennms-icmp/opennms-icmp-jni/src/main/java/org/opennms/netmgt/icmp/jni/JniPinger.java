@@ -134,6 +134,19 @@ public class JniPinger implements Pinger {
 	    s_pingTracker.start();
 	}
 
+	public boolean isV4Available() {
+	    try {
+	        initialize();
+	    } catch (final Exception e) {
+	    }
+	    if (s_pingTracker != null) return true;
+	    return false;
+	}
+
+	public boolean isV6Available() {
+	    return false;
+	}
+	
     /**
      * <p>ping</p>
      *

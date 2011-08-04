@@ -40,14 +40,14 @@ import java.util.List;
  */
 public interface Pinger {
     /**
-     * <p>ping</p>
+     * This method is used to ping a remote host to test for ICMP support.  Calls
+     * the callback method upon success or error.
      *
-     * @param host a {@link java.net.InetAddress} object.
-     * @param timeout a long.
-     * @param retries a int.
-     * @param sequenceId a short.
-     * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
-     * @throws java.lang.Exception if any.
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param timeout The time to wait between each retry.
+     * @param retries The number of times to retry.
+     * @param sequenceId an ID representing the ping
+     * @param cb the {@link org.opennms.netmgt.ping.PingResponseCallback} callback to call upon success or error
      */
     public void ping(InetAddress host, long timeout, int retries, int sequenceId, PingResponseCallback cb) throws Exception;
 
@@ -56,16 +56,10 @@ public interface Pinger {
      * the remote host responds within the specified period, defined by retries
      * and timeouts, then the response time is returned.
      *
-     * @param host
-     *            The address to poll.
-     * @param timeout
-     *            The time to wait between each retry.
-     * @param retries
-     *            The number of times to retry
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param timeout The time to wait between each retry.
+     * @param retries The number of times to retry.
      * @return The response time in microseconds if the host is reachable and has responded with an echo reply, otherwise a null value.
-     * @throws InterruptedException if any.
-     * @throws IOException if any.
-     * @throws java.lang.Exception if any.
      */
     public Number ping(InetAddress host, long timeout, int retries) throws Exception;
     
@@ -73,8 +67,8 @@ public interface Pinger {
 	/**
 	 * Ping a remote host, using the default number of retries and timeouts.
 	 *
-	 * @param host the host to ping
-	 * @return the round-trip time of the packet in microseconds or null if no reply
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @return The response time in microseconds if the host is reachable and has responded with an echo reply, otherwise a null value.
 	 * @throws IOException if any.
 	 * @throws InterruptedException if any.
 	 * @throws java.lang.Exception if any.
@@ -82,14 +76,27 @@ public interface Pinger {
 	public Number ping(InetAddress host) throws Exception;
 
 	/**
-	 * <p>parallelPing</p>
+	 * Ping a remote host, sending 1 or more packets at the given interval, and then
+	 * return the response times as a list.
 	 *
-	 * @param host a {@link java.net.InetAddress} object.
-	 * @param count a int.
-	 * @param timeout a long.
-	 * @param pingInterval a long.
-	 * @return a {@link java.util.List} object represening the round trip time in microseconds of each packet
-	 * @throws java.lang.Exception if any.
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param count The number of packets to send.
+     * @param timeout The time to wait between each retry.
+     * @param pingInterval The interval at which packets will be sent.
+	 * @return a {@link java.util.List} of response times in microseconds.
+	 *     If, for a given ping request, the host is reachable and has responded with an
+	 *     echo reply, it will contain a number, otherwise a null value.
 	 */
 	public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception;
+	
+	/**
+	 * Whether or not IPv4 is initialized and available for this implementation.
+	 */
+	public boolean isV4Available();
+	
+	/**
+	 * Whether or not IPv6 is initialized and available for this implementation.
+	 * @return
+	 */
+	public boolean isV6Available();
 }

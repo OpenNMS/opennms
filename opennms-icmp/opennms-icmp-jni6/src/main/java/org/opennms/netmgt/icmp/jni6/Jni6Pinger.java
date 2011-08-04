@@ -120,7 +120,6 @@ import org.opennms.protocols.rt.RequestTracker;
  */
 public class Jni6Pinger implements Pinger {
     
-    
     private final int m_pingerId = (int) (Math.random() * Short.MAX_VALUE);
     
     private JniPinger m_jniPinger;
@@ -140,6 +139,24 @@ public class Jni6Pinger implements Pinger {
 	    s_pingTracker.start();
 	}
 
+    public boolean isV4Available() {
+        try {
+            initialize4();
+        } catch (final Exception e) {
+        }
+        if (m_jniPinger != null) return true;
+        return false;
+    }
+    
+    public boolean isV6Available() {
+        try {
+            initialize6();
+        } catch (final Exception e) {
+        }
+        if (s_pingTracker != null) return true;
+        return false;
+    }
+    
     /**
      * <p>ping</p>
      *

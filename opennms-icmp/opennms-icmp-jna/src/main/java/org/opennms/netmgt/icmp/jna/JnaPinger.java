@@ -66,6 +66,24 @@ public class JnaPinger implements Pinger {
 		m_pingTracker.start();
 	}
 
+    public boolean isV4Available() {
+        try {
+            initialize();
+        } catch (final Exception e) {
+        }
+        if (m_messenger == null) return false;
+        return m_messenger.isV4Available();
+    }
+
+    public boolean isV6Available() {
+        try {
+            initialize();
+        } catch (final Exception e) {
+        }
+        if (m_messenger == null) return false;
+        return m_messenger.isV6Available();
+    }
+
 	/**
 	 * <p>ping</p>
 	 *
