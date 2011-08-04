@@ -39,14 +39,11 @@ public class SearchPageTest extends SeleneseTestBase {
         assertEquals("Search", selenium.getValue("css=input[type=submit]"));
         selenium.click("link=All nodes");
         selenium.waitForPageToLoad("30000");
-        for (int second = 0 ;;  second++) {
-            if (second >= 30){
-                fail("timeout waiting for \"Search/All Nodes\" Page");
-            }
-            if (selenium.isTextPresent("Nodes")) {
+        long endTime = System.currentTimeMillis() + 30000;
+        while(System.currentTimeMillis() < endTime){
+            if(selenium.isTextPresent("Nodes")){
                 break;
             }
-            Thread.sleep(1000);
         }
         selenium.click("//div[@id='content']/div/h2/a[2]");
         selenium.waitForPageToLoad("30000");
