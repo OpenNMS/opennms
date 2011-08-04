@@ -48,7 +48,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class PolicyCollection implements List<PluginConfig> {
     LinkedList<PluginConfig> m_list = null;
 
-	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 10L;
 
 	/**

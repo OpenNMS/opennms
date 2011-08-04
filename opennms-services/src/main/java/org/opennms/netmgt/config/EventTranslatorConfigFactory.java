@@ -65,8 +65,9 @@ import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.FatalBeanException;
+import org.springframework.beans.PropertyAccessorFactory;
 
 /**
  * This is the singleton class used to load the configuration from the
@@ -531,7 +532,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		
 		protected void setValue(Event targetEvent, String value) {
 			try {
-				BeanWrapperImpl bean = new BeanWrapperImpl(targetEvent);
+				BeanWrapper bean = PropertyAccessorFactory.forBeanPropertyAccess(targetEvent);
 				bean.setPropertyValue(getAttributeName(), value);
 			} catch(FatalBeanException e) {
 				log().error("Unable to set value for attribute "+getAttributeName()+"to value "+value+ " Exception:" +e);
@@ -836,7 +837,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
 		public String getAttributeValue(Event e) {
 			try {
-				BeanWrapperImpl bean = getBeanWrapper(e);
+				BeanWrapper bean = getBeanWrapper(e);
                 
 				return (String)bean.convertIfNecessary(bean.getPropertyValue(getAttributeName()), String.class);
 			} catch (FatalBeanException ex) {
@@ -845,8 +846,8 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			}
 		}
 
-        private BeanWrapperImpl getBeanWrapper(Event e) {
-            BeanWrapperImpl bean = new BeanWrapperImpl(e);
+        private BeanWrapper getBeanWrapper(Event e) {
+            BeanWrapper bean = PropertyAccessorFactory.forBeanPropertyAccess(e);
             bean.registerCustomEditor(String.class, new StringPropertyEditor());
             return bean;
         }

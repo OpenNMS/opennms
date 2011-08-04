@@ -46,11 +46,12 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
@@ -109,11 +110,11 @@ public class AssetRecordResource extends OnmsRestService {
             throwException(Status.BAD_REQUEST, "updateAssetRecord: Node " + node  + " could not update ");
         }
         log().debug("updateAssetRecord: updating category " + assetRecord);
-        BeanWrapper wrapper = new BeanWrapperImpl(assetRecord);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
         for(String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
                 String stringValue = params.getFirst(key);
-                Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+                Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                 wrapper.setPropertyValue(key, value);
             }
         }

@@ -98,6 +98,7 @@ final String baseHref = Util.calculateUrlBase( request );
   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css"/>
   <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=8"/>
 
   <!-- Set GWT property to get browsers locale -->
   <meta name="gwt:property" content="locale=<%=request.getLocale()%>">

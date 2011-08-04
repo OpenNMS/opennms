@@ -53,15 +53,34 @@ public class KscCustomReportListPresenter extends DefaultResourceListPresenter i
                     }else if(m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.DELETE)) {
                         urlBuilder.setParameter("report_action", "Delete");
                     }
-                }
-                
-                urlBuilder.setParameter("report", "" + getView().getSelectedResource().getId());
-                
-                if(m_selectionDisplay.getSelectAction() == null) {
-                    Location.assign(urlBuilder.buildString());
-                }else {
+                    
+                    if(getView().getSelectedResource() != null) {
+                        urlBuilder.setParameter("report", getView().getSelectedResource().getId());
+                        Location.assign(urlBuilder.buildString());
+                    } else if(getView().getSelectedResource() == null && m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.CREATE_NEW)) {
+                        Location.assign(urlBuilder.buildString());
+                    }else {
+                        getView().showWarning();
+                    }
+                } else {
                     getView().showWarning();
                 }
+
+//                if(getView().getSelectedResource() != null) {
+//                    urlBuilder.setParameter("report", "" + getView().getSelectedResource().getId());
+//                    
+//                    if(m_selectionDisplay.getSelectAction() != null) {
+//                        Location.assign(urlBuilder.buildString());
+//                    }else {
+//                        getView().showWarning();
+//                    }
+//                    
+//                }else {
+//                    getView().showWarning();
+//                }
+                
+                
+                
             }
         });
     }

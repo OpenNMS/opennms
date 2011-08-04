@@ -58,7 +58,7 @@ import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -198,11 +198,11 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
         }
 
         log().debug("updateService: updating service " + service);
-        BeanWrapper wrapper = new BeanWrapperImpl(service);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(service);
         for(String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
                 String stringValue = params.getFirst(key);
-                Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+                Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                 wrapper.setPropertyValue(key, value);
             }
         }

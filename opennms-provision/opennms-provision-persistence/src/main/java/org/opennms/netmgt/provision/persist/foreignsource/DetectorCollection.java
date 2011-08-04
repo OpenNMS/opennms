@@ -51,7 +51,6 @@ public class DetectorCollection implements List<PluginConfig> {
     /**
      * 
      */
-    @SuppressWarnings("unused")
     private static final long serialVersionUID = 10L;
 
     public DetectorCollection() {

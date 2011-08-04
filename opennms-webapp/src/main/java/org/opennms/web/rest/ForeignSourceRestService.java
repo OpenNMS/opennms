@@ -59,7 +59,7 @@ import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.foreignsource.PolicyCollection;
 import org.opennms.netmgt.provision.persist.foreignsource.PolicyWrapper;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -360,13 +360,13 @@ public class ForeignSourceRestService extends OnmsRestService {
     public Response updateForeignSource(@PathParam("foreignSource") String foreignSource, MultivaluedMapImpl params) {
         ForeignSource fs = getActiveForeignSource(foreignSource);
         log().debug("updateForeignSource: updating foreign source " + foreignSource);
-        BeanWrapper wrapper = new BeanWrapperImpl(fs);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fs);
         wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
         for(String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
                 Object value = null;
                 String stringValue = params.getFirst(key);
-                value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+                value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                 wrapper.setPropertyValue(key, value);
             }
         }

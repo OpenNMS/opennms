@@ -68,7 +68,7 @@ public class ReportsPageTest extends SeleneseTestBase {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Statistics Reports");
         selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.isTextPresent("Statistics Report List"));
+        assertEquals("Statistics Reports List | OpenNMS Web Console", selenium.getTitle());
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
         selenium.click("css=strong");

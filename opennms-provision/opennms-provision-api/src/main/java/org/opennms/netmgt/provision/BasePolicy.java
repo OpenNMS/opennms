@@ -37,9 +37,9 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.ConversionNotSupportedException;
+import org.springframework.beans.PropertyAccessorFactory;
 
 
 /**
@@ -179,7 +179,7 @@ public abstract class BasePolicy<T> {
     }
 
     private boolean matchAll(final T iface) {
-        final BeanWrapper bean = new BeanWrapperImpl(iface);
+        final BeanWrapper bean = PropertyAccessorFactory.forBeanPropertyAccess(iface);
 
         for(final Entry<String, String> term : getCriteria().entrySet()) {
             
@@ -198,7 +198,7 @@ public abstract class BasePolicy<T> {
 
 
     private boolean matchAny(final T iface) {
-        final BeanWrapper bean = new BeanWrapperImpl(iface);
+        final BeanWrapper bean = PropertyAccessorFactory.forBeanPropertyAccess(iface);
         
         for(final Entry<String, String> term : getCriteria().entrySet()) {
             

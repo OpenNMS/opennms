@@ -195,8 +195,8 @@
       </c:when>
       
       <c:otherwise>
-      	<opennms:kscChooseResourceList id="resourceList"></opennms:kscChooseResourceList>
-      	<div name="opennms-kscChooseResourceList" id="resourceList-ie"></div>
+      	<opennms:kscChooseResourceList id="resourceList" dataObject="data" ></opennms:kscChooseResourceList>
+      	<div name="opennms-kscChooseResourceList" id="resourceList-ie" dataObject="data" ></div>
         <%-- <form method="get" name="report" action="<%= org.opennms.web.api.Util.calculateUrlBase( request, "KSC/customGraphChooseResource.htm" ) %>" >
           <input type="hidden" name="selectedResourceId" value="${param.selectedResourceId}"/>
           <select name="resourceId" size="10">

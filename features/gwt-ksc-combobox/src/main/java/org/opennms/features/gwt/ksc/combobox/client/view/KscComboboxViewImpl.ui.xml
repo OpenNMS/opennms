@@ -11,7 +11,7 @@
 	       <g:TextBox ui:field="m_textBox" width="98%"/>
 	   </g:layer>
 	   <g:layer top="0" bottom="0" right="0" width="53px">
-	       <g:Button ui:field="m_searchButton" width="100%" >Search</g:Button>
+	       <g:Button ui:field="m_searchButton" width="100%" height="25px">Search</g:Button>
 	   </g:layer>
 	</g:LayoutPanel>
 </ui:UiBinder> 
