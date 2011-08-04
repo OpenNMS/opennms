@@ -83,6 +83,9 @@ public class ServicePageTest extends SeleneseTestBase{
             if (selenium.isElementPresent("link=localNode")) {
                 break;
             }
+            if (selenium.isTextPresent("Availability")){
+                break;
+            }
             Thread.sleep(1000);
             selenium.refresh();
         }
@@ -164,7 +167,7 @@ public class ServicePageTest extends SeleneseTestBase{
             if (second >= 30){
                 fail("timeout waiting for surveillance");
             }
-            if (selenium.isTextPresent("Nodes") && selenium.isElementPresent("link=Show interfaces")) {
+            if (selenium.isElementPresent("link=Show interfaces")) {
                 break;
             }
             Thread.sleep(1000);

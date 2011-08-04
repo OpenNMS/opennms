@@ -31,6 +31,8 @@ package org.opennms.netmgt.icmp.jna;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+
+import org.opennms.core.utils.LogUtils;
 import org.opennms.jicmp.ip.ICMPEchoPacket;
 import org.opennms.jicmp.ip.ICMPPacket;
 import org.opennms.jicmp.ip.IPPacket;
@@ -48,14 +50,14 @@ import com.sun.jna.Platform;
 public class V4Pinger extends AbstractPinger<Inet4Address> {
     
 
-    public V4Pinger(int pingerId) throws Exception {
+    public V4Pinger(final int pingerId) throws Exception {
         super(pingerId, NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, Platform.isMac() ? NativeDatagramSocket.SOCK_DGRAM : NativeDatagramSocket.SOCK_RAW, NativeDatagramSocket.IPPROTO_ICMP));
         
         // Windows requires at least one packet sent before a receive call can be made without error
         // so we send a packet here to make sure...  This one should not match the normal ping requests
         // since it does not contain the cookie so it won't interface.
         if (Platform.isWindows()) {
-            ICMPEchoPacket packet = new ICMPEchoPacket(64);
+            final ICMPEchoPacket packet = new ICMPEchoPacket(64);
             packet.setCode(0);
             packet.setType(Type.EchoRequest);
             packet.getContentBuffer().putLong(System.nanoTime());
@@ -64,40 +66,35 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
         }
     }
     
-//    @Override
-//    public void start() {
-//        throw new UnsupportedOperationException("Put socket initialization here rather than the constructor");
-//    }
-
     public void run() {
         try {
             final int pingerId = getPingerId();
-            NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
+            final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
             while (!isFinished()) {
                 getPingSocket().receive(datagram);
-                long received = System.nanoTime();
+                final long received = System.nanoTime();
     
-                ICMPPacket icmpPacket = new ICMPPacket(getIPPayload(datagram));
-                V4PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new V4PingReply(icmpPacket, received) : null;
+                final ICMPPacket icmpPacket = new ICMPPacket(getIPPayload(datagram));
+                final V4PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new V4PingReply(icmpPacket, received) : null;
             
                 if (echoReply != null && echoReply.getIdentifier() ==  pingerId && echoReply.isValid()) {
                     notifyPingListeners(datagram.getAddress(), echoReply);
                 }
             }
-        } catch(Throwable e) {
-            setThrowable(e);
-            e.printStackTrace();
+        } catch(final Throwable t) {
+            setThrowable(t);
+            LogUtils.debugf(this, t, "Error caught while processing ping packets: %s", t.getMessage());
         }
     }
 
-    private ByteBuffer getIPPayload(NativeDatagramPacket datagram) {
+    private ByteBuffer getIPPayload(final NativeDatagramPacket datagram) {
         return new IPPacket(datagram.getContent()).getPayload();
     }
     
-    public void ping(Inet4Address addr, int identifier, int sequenceNumber, long threadId, long count, long interval) throws InterruptedException {
-        NativeDatagramSocket socket = getPingSocket();
+    public void ping(final Inet4Address addr, final int identifier, final int sequenceNumber, final long threadId, final long count, final long interval) throws InterruptedException {
+        final NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
-            V4PingRequest request = new V4PingRequest(identifier, i, threadId);
+            final V4PingRequest request = new V4PingRequest(identifier, i, threadId);
             request.send(socket, addr);
             Thread.sleep(interval);
         }

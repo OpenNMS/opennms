@@ -68,10 +68,15 @@ public class ReportsPageTest extends SeleneseTestBase {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Statistics Reports");
         selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.isTextPresent("Statistics Report List"));
-        assertTrue(selenium.isElementPresent("css=img[alt=Filter]"));
-        assertTrue(selenium.isElementPresent("css=img[alt=Clear]"));
-        assertTrue(selenium.isElementPresent("name=reportList_f_duration"));
+        for (int second = 0 ;;  second++) {
+            if (second >= 60){
+                fail("timeout waiting for surveillance");
+            }
+            if (selenium.isTextPresent("Statistics Report List")) {
+                break;
+            }
+            Thread.sleep(1000);
+        }
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
         selenium.click("css=strong");

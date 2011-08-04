@@ -54,9 +54,6 @@ import org.springframework.security.providers.UsernamePasswordAuthenticationToke
  *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class Main {
     
@@ -83,6 +80,12 @@ public class Main {
         	}
         }
         initializeLogging();
+        
+        final String pingerClass = System.getProperty("org.opennms.netmgt.icmp.pingerClass");
+        if (pingerClass == null) {
+        	LogUtils.infof(this, "org.opennms.netmgt.icmp.pingerClass not set; using JnaPinger by default");
+        	System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
+        }
     }
 
     private void initializeLogging() throws Exception {
