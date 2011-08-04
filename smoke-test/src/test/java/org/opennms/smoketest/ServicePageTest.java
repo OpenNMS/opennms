@@ -76,13 +76,13 @@ public class ServicePageTest extends SeleneseTestBase{
         selenium.waitForPageToLoad("30000");
         long endTime = System.currentTimeMillis() + 60000;
         while(System.currentTimeMillis() < endTime){
-            if(selenium.isElementPresent("link=localNode")){
+            if(selenium.isTextPresent("Availability") || selenium.isElementPresent("link=localNode")){
                 break;
             }
             selenium.refresh();
             selenium.waitForPageToLoad("30000");
             if(endTime - System.currentTimeMillis() < 5000){
-                fail ("25 second timeout trying to reach \"Node List/localNode\" Page");
+                fail ("55 second timeout trying to reach \"Node List/localNode\" Page");
             }
         }
         selenium.click("link=localNode");
@@ -149,13 +149,13 @@ public class ServicePageTest extends SeleneseTestBase{
         selenium.waitForPageToLoad("30000");
         long endTime = System.currentTimeMillis() + 60000;
         while(System.currentTimeMillis() < endTime){
-            if(selenium.isElementPresent("link=localNode")){
+            if(selenium.isTextPresent("Availability") || selenium.isElementPresent("link=localNode")){
                 break;
             }
             selenium.refresh();
             selenium.waitForPageToLoad("30000");
             if(endTime - System.currentTimeMillis() < 5000){
-                fail ("25 second timeout trying to reach \"Node List/localNode\" Page");
+                fail ("55 second timeout trying to reach \"Node List/localNode\" Page");
             }
         }
         selenium.click("link=Search");
