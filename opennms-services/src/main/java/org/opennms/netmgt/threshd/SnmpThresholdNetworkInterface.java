@@ -38,6 +38,7 @@ package org.opennms.netmgt.threshd;
 
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -121,7 +122,7 @@ public class SnmpThresholdNetworkInterface {
      *
      * @return a boolean.
      */
-    public boolean isIPV4() {
+    public boolean isInet() {
         return getNetworkInterface().getType() == NetworkInterface.TYPE_INET;
     }
 
@@ -181,7 +182,7 @@ public class SnmpThresholdNetworkInterface {
         Map<String, Set<ThresholdEntity>> thresholdMap = getAllInterfaceMap().get(ifLabel);
         if (thresholdMap == null) {
             // Doesn't exist yet, go ahead and create it.  Must maintain a separate threshold map for each interface.
-            thresholdMap = SnmpThresholder.getAttributeMap(resourceType);
+            thresholdMap = SnmpThresholdNetworkInterface.getAttributeMap(resourceType);
 
             // Add the new threshold map for this interface to the all interfaces map.
             getAllInterfaceMap().put(ifLabel, thresholdMap);
@@ -190,4 +191,28 @@ public class SnmpThresholdNetworkInterface {
         return thresholdMap;
     }
 
+    /**
+     * <p>getAttributeMap</p>
+     *
+     * @param resourceType a {@link org.opennms.netmgt.threshd.ThresholdResourceType} object.
+     * @return a {@link java.util.Map} object.
+     */
+    protected static Map<String, Set<ThresholdEntity>> getAttributeMap(ThresholdResourceType resourceType) {
+        Map<String, Set<ThresholdEntity>> thresholdMap = new HashMap<String, Set<ThresholdEntity>>();
+
+        /*
+         * Iterate over base interface threshold map and clone each
+         * ThresholdEntity object and add it to the threshold map.
+         * for this interface.
+         */ 
+        for (Set<ThresholdEntity> entitySet : resourceType.getThresholdMap().values()) {
+            for (ThresholdEntity entity : entitySet) {
+                if (!thresholdMap.containsKey(entity.getDataSourceExpression())) {
+                    thresholdMap.put(entity.getDataSourceExpression(), new LinkedHashSet<ThresholdEntity>());
+                }
+                thresholdMap.get(entity.getDataSourceExpression()).add(entity.clone());
+            }
+        }
+        return thresholdMap;
+    }
 }

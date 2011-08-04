@@ -28,12 +28,15 @@ public class SurveillancePageTest extends SeleneseTestBase {
 
     @Test
     public void testSurveillancePage() throws Exception {
-        for (int second = 0;; second++) {
-            if (second >= 60) fail("timeout");
-            try { if (selenium.isTextPresent("Surveillance View:")) break; } catch (Exception e) {}
-            Thread.sleep(1000);
+        long endTime = System.currentTimeMillis() + 30000;
+        while(System.currentTimeMillis() < endTime){
+            if(selenium.isTextPresent("Surveillance View:")){
+                break;
+            }
+            if(endTime - System.currentTimeMillis() < 5000){
+                fail ("25 second timeout trying to reach \"Surveillance\" Page");
+            }
         }
-
         assertTrue(selenium.isTextPresent("Routers"));
         assertTrue(selenium.isTextPresent("Nodes Down"));
         assertTrue(selenium.isTextPresent("DEV"));

@@ -40,10 +40,6 @@
                 <exclude>includes/footer.jsp</exclude>
               </excludes>
             </overlay>
-            <overlay>
-              <groupId>org.opennms.features</groupId>
-              <artifactId>org.opennms.features.isoc-ipv6-gui</artifactId>
-            </overlay>
           </overlays>
         </configuration>
       </plugin>
@@ -80,13 +76,6 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.isoc-ipv6-gui</artifactId>
-      <version>1.9.90-SNAPSHOT</version>
-      <type>war</type>
-      <scope>runtime</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller-gwt</artifactId>

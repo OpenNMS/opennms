@@ -31,7 +31,9 @@ package org.opennms.netmgt.icmp.jna;
 import java.net.InetAddress;
 import java.util.Queue;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.EchoPacket;
+import org.opennms.netmgt.icmp.IcmpMessengerException;
 import org.opennms.protocols.rt.Messenger;
 
 
@@ -44,28 +46,42 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	private V6Pinger m_v6;
     private Queue<JnaPingReply> pendingReplies = null;
 
-	public JnaIcmpMessenger(int pingerId) throws Exception {
+	public JnaIcmpMessenger(final int pingerId) throws Exception {
 	    
-	    m_v4 = new V4Pinger(pingerId);
-		m_v4.addPingReplyListener(this);
-
-		m_v6 = new V6Pinger(pingerId);
-		m_v6.addPingReplyListener(this);
+	    try {
+	        m_v4 = new V4Pinger(pingerId);
+	        m_v4.addPingReplyListener(this);
+	    } catch (final Throwable t) {
+	        LogUtils.warnf(this, t, "Unable to initialize IPv4 Pinger.");
+	    }
+	    
+	    try {
+	        m_v6 = new V6Pinger(pingerId);
+	        m_v6.addPingReplyListener(this);
+	    } catch (final Throwable t) {
+	        LogUtils.warnf(this, t, "Unable to initialize IPv6 Pinger.");
+	    }
+	    
+	    if (m_v4 == null && m_v6 == null) {
+	        final IcmpMessengerException exception = new IcmpMessengerException("IPv4 and IPv6 are not available.");
+	        LogUtils.warnf(this, exception, "Unable to initialize JNA ICMP messenger");
+	        throw exception;
+	    }
 	}
 	
 	@Override
-	public void sendRequest(JnaPingRequest request) {
+	public void sendRequest(final JnaPingRequest request) {
 		request.send(m_v4, m_v6);
 	}
 
 	@Override
-	public void start(Queue<JnaPingReply> replyQueue) {
+	public void start(final Queue<JnaPingReply> replyQueue) {
         pendingReplies = replyQueue;
         m_v4.start();
         m_v6.start();
 	}
 
-	public void onPingReply(InetAddress address, EchoPacket packet) {
+	public void onPingReply(final InetAddress address, final EchoPacket packet) {
 		pendingReplies.offer(new JnaPingReply(address, packet));
 	}
 }

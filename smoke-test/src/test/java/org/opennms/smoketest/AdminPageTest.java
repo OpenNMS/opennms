@@ -170,8 +170,17 @@ public class AdminPageTest extends SeleneseTestBase {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Delete Nodes");
         selenium.waitForPageToLoad("30000");
+        long endTime = System.currentTimeMillis() + 30000;
+        while(System.currentTimeMillis() < endTime){
+            if("Delete Nodes | Admin | OpenNMS Web Console".equals(selenium.getTitle())){
+                break;
+            }
+            if(endTime - System.currentTimeMillis() < 5000){
+                fail ("25 second timeout trying to reach \"Admin/Delete Nodes\" Page");
+            }
+        }
         assertTrue(selenium.isTextPresent("Delete Nodes"));
-        assertTrue(selenium.isTextPresent("Node Label"));
+        assertEquals("Delete Nodes | Admin | OpenNMS Web Console", selenium.getTitle());
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
     }
