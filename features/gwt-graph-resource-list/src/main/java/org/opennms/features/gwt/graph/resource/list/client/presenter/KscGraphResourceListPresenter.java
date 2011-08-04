@@ -94,7 +94,7 @@ public class KscGraphResourceListPresenter extends DefaultResourceListPresenter 
                 if(resource != null){
                     UrlBuilder urlBuilder = new UrlBuilder();
                     urlBuilder.setHost(Location.getHost());
-                    urlBuilder.setPath("KSC/customGraphChooseResource.htm");
+                    urlBuilder.setPath("opennms/KSC/customGraphChooseResource.htm");
                     urlBuilder.setParameter("selectedResourceId", "");
                     urlBuilder.setParameter("resourceId", resource.getId());
                     
