@@ -68,14 +68,11 @@ public class ReportsPageTest extends SeleneseTestBase {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Statistics Reports");
         selenium.waitForPageToLoad("30000");
-        for (int second = 0 ;;  second++) {
-            if (second >= 60){
-                fail("timeout waiting for surveillance");
-            }
-            if (selenium.isTextPresent("Statistics Report List")) {
+        long endTime = System.currentTimeMillis() + 30000;
+        while(System.currentTimeMillis() < endTime){
+            if(selenium.isTextPresent("Statistics Report List")){
                 break;
             }
-            Thread.sleep(1000);
         }
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");

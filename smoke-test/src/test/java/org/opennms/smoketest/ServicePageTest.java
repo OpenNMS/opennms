@@ -74,19 +74,7 @@ public class ServicePageTest extends SeleneseTestBase{
     public void testProvisioningGroupWasCreated() throws InterruptedException {
         selenium.click("link=Node List");
         selenium.waitForPageToLoad("30000");
-        for (int second = 0 ;;  second++) {
-            if (second >= 60){
-                fail("Timeout in testProvsioningGroupWasCreated(). Failed after: "+ second + " seconds" + "\nhtml source: " + 
-                     selenium.getHtmlSource() + "\n" +
-                     "Title: " + selenium.getTitle() + "\nurl: " + selenium.getLocation());
-            }
-            if (selenium.isElementPresent("link=localNode")) {
-                break;
-            }
-            if (selenium.isTextPresent("Availability")){
-                break;
-            }
-            Thread.sleep(1000);
+        while(!selenium.isElementPresent("link=localNode")){
             selenium.refresh();
         }
         selenium.click("link=localNode");
@@ -96,18 +84,6 @@ public class ServicePageTest extends SeleneseTestBase{
         assertTrue(selenium.isTextPresent("Managed"));
         assertTrue(selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
         assertTrue(selenium.isTextPresent("localNode"));
-        selenium.click("link=Admin");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("link=Manage Provisioning Groups");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("//input[@value='Delete Nodes']");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("//input[@value='Synchronize']");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("//input[@value='Delete Group']");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
     }
 
     @Test
@@ -163,14 +139,13 @@ public class ServicePageTest extends SeleneseTestBase{
     public void testAllTopLevelLinks () throws InterruptedException {
         selenium.click("link=Node List");
         selenium.waitForPageToLoad("30000");
-        for (int second = 0 ;;  second++) {
-            if (second >= 30){
-                fail("timeout waiting for surveillance");
-            }
-            if (selenium.isElementPresent("link=Show interfaces")) {
+        long endTime = System.currentTimeMillis() + 60000;
+        while(System.currentTimeMillis() < endTime){
+            if(selenium.isElementPresent("link=localNode")){
                 break;
-            }
-            Thread.sleep(1000);
+            }else
+                selenium.refresh();
+                selenium.waitForPageToLoad("30000");
         }
         selenium.click("link=Search");
         selenium.waitForPageToLoad("30000");
@@ -217,14 +192,11 @@ public class ServicePageTest extends SeleneseTestBase{
         selenium.click("link=Charts");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Surveillance");
-        for (int second = 0 ;;  second++) {
-            if (second >= 30){
-                fail("timeout waiting for surveillance");
-            }
-            if (selenium.isTextPresent("Routers") && selenium.isTextPresent("Surveillance View: default")) {
+        endTime = System.currentTimeMillis() + 60000;
+        while(System.currentTimeMillis() < endTime){
+            if(selenium.isTextPresent("Surveillance View:")){
                 break;
             }
-            Thread.sleep(1000);
         }
         assertTrue(selenium.isTextPresent("Routers"));
         assertTrue(selenium.isTextPresent("Surveillance View: default"));
@@ -250,6 +222,21 @@ public class ServicePageTest extends SeleneseTestBase{
     }
 
     @Test
+    public void testDeleteProvisioningNodesAndGroups() {
+        selenium.click("link=Admin");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Manage Provisioning Groups");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("//input[@value='Delete Nodes']");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("//input[@value='Synchronize']");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("//input[@value='Delete Group']");
+        selenium.waitForPageToLoad("30000");
+        selenium.click("link=Log out");
+        selenium.waitForPageToLoad("30000");
+    }
+    @Test
     public void testDeleteUsersAndGroups() {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Admin");
@@ -263,7 +250,7 @@ public class ServicePageTest extends SeleneseTestBase{
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Configure Users");
         selenium.waitForPageToLoad("30000");
-        selenium.click("xpath=/html/body/div[2]/form/table/tbody/tr[4]/td/a/img");
+        selenium.click("xpath=//html/body/div[2]/form/table/tbody/tr[2]/td/a/img");  
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
     }
