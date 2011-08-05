@@ -245,7 +245,7 @@ public class EventTranslatorTest {
 
         // test null parms fails
         Event teWithNullParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
-        teWithNullParms.setParms(null);
+        teWithNullParms.setParmCollection(null);
         assertTrue(m_config.translateEvent(teWithNullParms).isEmpty());
         
         // test empty  parm list fails
@@ -292,12 +292,12 @@ public class EventTranslatorTest {
         List<Event> translatedEvents = m_config.translateEvent(createLinkDownEvent());
         assertNotNull(translatedEvents);
         assertEquals(1, translatedEvents.size());
-        assertEquals(3, translatedEvents.get(0).getParms().getParmCount());
-        assertEquals(".1.3.6.1.2.1.2.2.1.1.2", translatedEvents.get(0).getParms().getParm(0).getParmName());
-        assertEquals("ifName", translatedEvents.get(0).getParms().getParm(1).getParmName());
-        assertEquals("ifAlias", translatedEvents.get(0).getParms().getParm(2).getParmName());
-        assertEquals("david", translatedEvents.get(0).getParms().getParm(1).getValue().getContent());
-        assertEquals("p-brane", translatedEvents.get(0).getParms().getParm(2).getValue().getContent());
+        assertEquals(3, translatedEvents.get(0).getParmCollection().size());
+        assertEquals(".1.3.6.1.2.1.2.2.1.1.2", translatedEvents.get(0).getParmCollection().get(0).getParmName());
+        assertEquals("ifName", translatedEvents.get(0).getParmCollection().get(1).getParmName());
+        assertEquals("ifAlias", translatedEvents.get(0).getParmCollection().get(2).getParmName());
+        assertEquals("david", translatedEvents.get(0).getParmCollection().get(1).getValue().getContent());
+        assertEquals("p-brane", translatedEvents.get(0).getParmCollection().get(2).getValue().getContent());
     }
 
 	private String getLinkDownTranslation() {

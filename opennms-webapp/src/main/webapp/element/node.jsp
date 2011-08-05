@@ -356,7 +356,9 @@
 	<c:if test="${fn:length( model.intfs ) < 10}">
     <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
     </c:if> 
-	
+    <script type="text/javascript">
+        var nodeId = ${model.id}
+    </script>
   <div id="interface-panel-gwt">
     <h3 class="o-box">Node Interfaces</h3>
     <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>

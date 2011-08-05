@@ -394,7 +394,7 @@ public final class ThresholdEntity implements Cloneable {
                     Value v = new Value();
                     v.setContent("Configuration has been changed");
                     p.setValue(v);
-                    e.getParms().addParm(p);
+                    e.addParm(p);
                     log().info("sendRearmForTriggeredStates: sending rearm for " + e);
                     ThresholdingEventProxyFactory.getFactory().getProxy().add(e);
                     state.clearState();

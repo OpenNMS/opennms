@@ -47,6 +47,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -162,8 +163,8 @@ public class Event implements Serializable {
 	/**
 	 * The varbinds from the trap
 	 */
-	@XmlElement(name = "parms")
-	private Parms _parms;
+	@XmlElementWrapper(name="parms")
+	private List<Parm> _parms;
 
 	/**
 	 * The event description
@@ -367,10 +368,7 @@ public class Event implements Serializable {
 	}
 
 	public void addParm(final Parm parm) {
-	    if (this._parms == null) {
-	        this._parms = new Parms();
-	    }
-	    this._parms.addParm(parm);
+	    this._parms.add(parm);
 	}
 	
 	/**
@@ -855,22 +853,10 @@ public class Event implements Serializable {
 	}
 
 	/**
-	 * Returns the value of field 'parms'. The field 'parms' has the following
-	 * description: The varbinds from the trap
-	 * 
-	 * @deprecated Use {@link #getParmCollection()} instead
-	 * 
-	 * @return the value of field 'Parms'.
-	 */
-	public Parms getParms() {
-		return this._parms;
-	}
-	
-	/**
 	 * Returns the Collection of parms for this event
 	 */
     public List<Parm> getParmCollection() {
-        return getParms() == null ? Collections.<Parm>emptyList() : getParms().getParmCollection();
+        return _parms == null ? Collections.<Parm>emptyList() : _parms;
     }
 
 
@@ -1653,22 +1639,8 @@ public class Event implements Serializable {
 		this._operinstruct = operinstruct;
 	}
 
-	/**
-	 * Sets the value of field 'parms'. The field 'parms' has the following
-	 * description: The varbinds from the trap
-	 * 
-	 * @param parms
-	 *            the value of field 'parms'.
-	 */
-	public void setParms(final Parms parms) {
-		this._parms = parms;
-	}
-
 	public void setParmCollection(final List<Parm> parms) {
-	    if (this._parms == null) {
-	        this._parms = new Parms();
-	    }
-	    this._parms.setParmCollection(parms);
+	    _parms = parms;
 	}
 
 	/**
