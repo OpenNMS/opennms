@@ -33,7 +33,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collection;
 
 import org.hibernate.criterion.Restrictions;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;

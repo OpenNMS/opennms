@@ -31,7 +31,6 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
