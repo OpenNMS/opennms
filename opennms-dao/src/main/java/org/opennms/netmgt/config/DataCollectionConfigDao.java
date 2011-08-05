@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.RrdRepository;
 /**
  * <p>DataCollectionConfig interface.</p>
  */
-public interface DataCollectionConfig {
+public interface DataCollectionConfigDao {
     
     /** Constant <code>NODE_ATTRIBUTES=-1</code> */
     static final int NODE_ATTRIBUTES = -1;

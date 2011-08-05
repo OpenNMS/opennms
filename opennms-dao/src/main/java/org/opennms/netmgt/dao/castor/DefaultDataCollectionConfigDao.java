@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataCollectionConfig;
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.types.Group;
@@ -65,7 +65,7 @@ import org.opennms.netmgt.model.RrdRepository;
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
 public class DefaultDataCollectionConfigDao extends
-AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements DataCollectionConfig {
+AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements DataCollectionConfigDao {
 
     private static final Pattern s_digitsPattern = Pattern.compile("\\d+"); 
     
