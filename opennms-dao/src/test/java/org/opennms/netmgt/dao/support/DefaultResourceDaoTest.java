@@ -48,7 +48,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DataCollectionConfig;
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.types.ResourceType;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
@@ -72,7 +72,7 @@ public class DefaultResourceDaoTest extends TestCase {
     private NodeDao m_nodeDao;
     private LocationMonitorDao m_locationMonitorDao;
     private CollectdConfigFactory m_collectdConfig;
-    private DataCollectionConfig m_dataCollectionConfig;
+    private DataCollectionConfigDao m_dataCollectionConfigDao;
     private DefaultResourceDao m_resourceDao;
     
     private FileAnticipator m_fileAnticipator;
@@ -88,7 +88,7 @@ public class DefaultResourceDaoTest extends TestCase {
         m_easyMockUtils = new EasyMockUtils();
         m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
         m_locationMonitorDao = m_easyMockUtils.createMock(LocationMonitorDao.class);
-        m_dataCollectionConfig = m_easyMockUtils.createMock(DataCollectionConfig.class);
+        m_dataCollectionConfigDao = m_easyMockUtils.createMock(DataCollectionConfigDao.class);
         m_filterDao = m_easyMockUtils.createMock(FilterDao.class);
         
         FilterDaoFactory.setInstance(m_filterDao);
@@ -104,11 +104,11 @@ public class DefaultResourceDaoTest extends TestCase {
         m_resourceDao.setLocationMonitorDao(m_locationMonitorDao);
         m_resourceDao.setCollectdConfig(m_collectdConfig);
         m_resourceDao.setRrdDirectory(m_fileAnticipator.getTempDir());
-        m_resourceDao.setDataCollectionConfig(m_dataCollectionConfig);
+        m_resourceDao.setDataCollectionConfigDao(m_dataCollectionConfigDao);
         
         RrdTestUtils.initialize();
         
-        expect(m_dataCollectionConfig.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         
         m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
@@ -495,7 +495,7 @@ public class DefaultResourceDaoTest extends TestCase {
         File response = m_fileAnticipator.tempDir("response");
         File distributed = m_fileAnticipator.tempDir(response, "distributed");
         File locMonDir = m_fileAnticipator.tempDir(distributed, locMon.getId().toString());
-        File ipDir = m_fileAnticipator.tempDir(locMonDir, ip.getIpAddressAsString());
+        File ipDir = m_fileAnticipator.tempDir(locMonDir, InetAddressUtils.str(ip.getIpAddress()));
         m_fileAnticipator.tempFile(ipDir, "http" + RrdUtils.getExtension());
         
         ArrayList<LocationMonitorIpInterface> locationMonitorInterfaces = new ArrayList<LocationMonitorIpInterface>();

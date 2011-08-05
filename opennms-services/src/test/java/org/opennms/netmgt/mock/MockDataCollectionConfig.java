@@ -35,12 +35,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.collectd.SnmpCollector;
-import org.opennms.netmgt.config.DataCollectionConfig;
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.types.ResourceType;
 import org.opennms.netmgt.model.RrdRepository;
 
-public class MockDataCollectionConfig implements DataCollectionConfig {
+public class MockDataCollectionConfig implements DataCollectionConfigDao {
     
     public static final String initalMibObjects[][] = {
         {
