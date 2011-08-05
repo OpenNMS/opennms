@@ -44,7 +44,6 @@ import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -63,7 +62,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 
 // this is marked not distributable because it relies on a shared library
-@Distributable(DistributionContext.DAEMON)
+@Distributable
 final public class StrafePingMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_MULTI_PING_COUNT = 20;
     private static final long DEFAULT_PING_INTERVAL = 50;
