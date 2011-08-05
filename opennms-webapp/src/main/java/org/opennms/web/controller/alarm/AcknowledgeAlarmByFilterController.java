@@ -54,14 +54,9 @@ import org.springframework.web.servlet.view.RedirectView;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  * @since 1.8.1
  */
 public class AcknowledgeAlarmByFilterController extends AbstractController implements InitializingBean {
-    private static final long serialVersionUID = 2L;
-    
     private WebAlarmRepository m_webAlarmRepository;
     
     private String m_redirectView;

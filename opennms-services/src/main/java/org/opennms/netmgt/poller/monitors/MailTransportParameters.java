@@ -69,7 +69,7 @@ public class MailTransportParameters {
         m_transportTest = parseMailTransportTest(test);
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     static synchronized MailTransportParameters get(Map parameterMap) {
         MailTransportParameters parms = (MailTransportParameters)parameterMap.get(KEY);
         if (parms == null) {

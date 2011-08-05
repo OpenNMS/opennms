@@ -41,13 +41,12 @@ import java.util.Collection;
  * Example code from Nathan MA
  *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @version $Id: $
  * @since 1.8.1
  */
+@SuppressWarnings("rawtypes")
 public class DateProcessRowsCallback extends ProcessRowsCallback
 {
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     public Collection filterRows(TableModel model, Collection rows)
         throws Exception
     {

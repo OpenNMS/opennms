@@ -34,8 +34,7 @@ package org.opennms.web.map.config;
  * @author mmigliore
  * @since 1.8.1
  */
-@SuppressWarnings("unchecked")
-public class Avail implements Comparable{
+public class Avail implements Comparable<Avail> {
 	private int id;
 	private int min;
 	private String color;
@@ -59,10 +58,9 @@ public class Avail implements Comparable{
 	 *
 	 * Compares the Avail to another in input by min.
 	 */
-	public int compareTo(Object otherAvail){
-		Avail othAvail = (Avail) otherAvail;
-		if(this.min==othAvail.getMin()) return 0;
-		else if(this.min<othAvail.getMin()) return -1;
+	public int compareTo(final Avail otherAvail) {
+		if(this.min==otherAvail.getMin()) return 0;
+		else if(this.min<otherAvail.getMin()) return -1;
 		else  return 1;
 	}	
 	

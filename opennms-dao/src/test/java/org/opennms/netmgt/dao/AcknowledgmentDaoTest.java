@@ -84,14 +84,12 @@ public class AcknowledgmentDaoTest {
 	private DatabasePopulator m_databasePopulator;
 	
     private static boolean m_populated = false;
-    private static DatabasePopulator m_lastPopulator;
     
     @BeforeTransaction
     public void setUp() {
         try {
             if (!m_populated) {
                 m_databasePopulator.populateDatabase();
-                m_lastPopulator = m_databasePopulator;
             }
         } catch (Throwable e) {
             e.printStackTrace(System.err);
