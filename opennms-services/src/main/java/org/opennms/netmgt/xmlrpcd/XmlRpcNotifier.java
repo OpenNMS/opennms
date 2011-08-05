@@ -38,6 +38,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.xmlrpc.XmlRpcClient;
@@ -49,7 +50,6 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 import org.springframework.util.Assert;
@@ -491,12 +491,12 @@ public final class XmlRpcNotifier {
         }
 
         // process event parameters (if any)
-        final Parms eventParams = event.getParms();
+        final List<Parm> eventParams = event.getParmCollection();
         if (eventParams != null)
         {
-        	final int numParams = eventParams.getParmCount();
+        	final int numParams = eventParams.size();
             for (int i = 0; i < numParams; i++) {
-            	final Parm p = eventParams.getParm(i);
+            	final Parm p = eventParams.get(i);
             	final Value v = p.getValue();
 
                 table.put("param" + i + " name", p.getParmName());

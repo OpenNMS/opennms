@@ -30,7 +30,6 @@ package org.opennms.netmgt.threshd;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -43,7 +42,6 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
@@ -400,32 +398,27 @@ final class BroadcastEventProcessor implements EventListener {
         // event parms.
         //
         String oldPrimaryIfAddr = null;
+        @SuppressWarnings("unused")
         String newPrimaryIfAddr = null;
-        Parms parms = event.getParms();
-        if (parms != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
+        
+        for (final Parm parm : event.getParmCollection()) {
+            final String parmName = parm.getParmName();
+            final Value parmValue = parm.getValue();
+            final String parmContent;
+            if (parmValue == null) {
+                continue;
+            } else {
+                parmContent = parmValue.getContent();
+            }
 
-            Enumeration<Parm> parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-                Parm parm = parmEnum.nextElement();
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null)
-                    continue;
-                else
-                    parmContent = parmValue.getContent();
+            // old primary SNMP interface (optional parameter)
+            if (parmName.equals(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS)) {
+                oldPrimaryIfAddr = parmContent;
+            }
 
-                // old primary SNMP interface (optional parameter)
-                if (parmName.equals(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS)) {
-                    oldPrimaryIfAddr = parmContent;
-                }
-
-                // old primary SNMP interface (optional parameter)
-                else if (parmName.equals(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS)) {
-                    newPrimaryIfAddr = parmContent;
-                }
+            // new primary SNMP interface (optional parameter)
+            else if (parmName.equals(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS)) {
+                newPrimaryIfAddr = parmContent;
             }
         }
 

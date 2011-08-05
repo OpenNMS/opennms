@@ -80,14 +80,12 @@ public class AuthorizationTest implements InitializingBean {
     }
 
     private static boolean m_populated = false;
-    private static DatabasePopulator m_lastPopulator;
     
     @BeforeTransaction
     public void setUp() {
         try {
             if (!m_populated) {
                 m_populator.populateDatabase();
-                m_lastPopulator = m_populator;
             }
         } catch (Throwable e) {
             e.printStackTrace(System.err);

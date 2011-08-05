@@ -366,6 +366,13 @@ public class Event implements Serializable {
 		this._operactionList.add(vOperaction);
 	}
 
+	public void addParm(final Parm parm) {
+	    if (this._parms == null) {
+	        this._parms = new Parms();
+	    }
+	    this._parms.addParm(parm);
+	}
+	
 	/**
 	 * 
 	 * 
@@ -1655,6 +1662,13 @@ public class Event implements Serializable {
 	 */
 	public void setParms(final Parms parms) {
 		this._parms = parms;
+	}
+
+	public void setParmCollection(final List<Parm> parms) {
+	    if (this._parms == null) {
+	        this._parms = new Parms();
+	    }
+	    this._parms.setParmCollection(parms);
 	}
 
 	/**

@@ -64,7 +64,6 @@ import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -80,9 +79,6 @@ import org.springframework.beans.PropertyAccessorFactory;
  *
  * @author <a href="mailto:david@opennms.org">David Hustace </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class EventTranslatorConfigFactory implements EventTranslatorConfig {
     /**
@@ -548,18 +544,12 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		}
 
 		protected void setValue(Event targetEvent, String value) {
-			Parms parms = targetEvent.getParms();
-			if (parms == null) {
-				parms = new Parms();
-				targetEvent.setParms(parms);
-			}
-			
 			if (value == null) {
 			    log().debug("Value of parameter is null setting to blank");
 			    value="";
 			}
 
-			for (Parm parm : parms.getParmCollection()) {
+			for (final Parm parm : targetEvent.getParmCollection()) {
 				if (parm.getParmName().equals(getAttributeName())) {
 					org.opennms.netmgt.xml.event.Value val = parm.getValue();
 					if (val == null) {
@@ -576,7 +566,6 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			
 			// if we got here then we didn't find the existing parameter
 			Parm newParm = new Parm();
-			parms.addParm(newParm);
 			newParm.setParmName(getAttributeName());
 			org.opennms.netmgt.xml.event.Value val = new org.opennms.netmgt.xml.event.Value();
 			newParm.setValue(val);
@@ -584,6 +573,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			    log().debug("Setting value of parameter "+getAttributeName()+" to "+value);
 			}
 			val.setContent(value);
+			targetEvent.addParm(newParm);
 		}
 	}
 	

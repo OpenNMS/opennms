@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.model.events;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
@@ -41,16 +44,19 @@ import org.opennms.netmgt.xml.event.Value;
 public final class Parameter {
     /**
      * Format the list of event parameters
+     * @param event TODO
      *
-     * @param parms
-     *            the list
      * @return the formatted event parameters string
      */
-    public static String format(Parms parms) {
+    public static String format(final Event event) {
+        if (event == null || event.getParmCollection() == null || event.getParmCollection().size() == 0) {
+            return null;
+        }
+
         boolean first = true;
         StringBuffer parmbuf = new StringBuffer();
 
-        for (Parm parm : parms.getParmCollection()) {
+        for (final Parm parm : event.getParmCollection()) {
             if (parm.getParmName() != null && parm.getValue() != null && parm.getValue().getContent() != null) {
                 if (!first) {
                     parmbuf.append(Constants.MULTIPLE_VAL_DELIM);
@@ -105,12 +111,12 @@ public final class Parameter {
     /**
      * <p>decode</p>
      *
-     * @param eventparms a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.xml.event.Parms} object.
+     * @param eventparms an event parm string
+     * @return a list of parameters
      */
-    public static Parms decode(String eventparms) {
+    public static List<Parm> decode(final String eventparms) {
         if (eventparms == null ) return null;
-        Parms parms = new Parms();
+        final List<Parm> parms = new ArrayList<Parm>();
   
         String[] paramslistString = eventparms.split(Character.toString(Constants.MULTIPLE_VAL_DELIM));
         if (paramslistString != null) {
@@ -138,12 +144,11 @@ public final class Parameter {
                             }
                         }
                         parm.setValue(value);
-                        parms.addParm(parm);
+                        parms.add(parm);
                     }
                 }
         }
         return parms;
 
     }
-
 }

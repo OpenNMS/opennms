@@ -68,7 +68,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
@@ -78,10 +77,7 @@ import org.opennms.netmgt.xml.event.Value;
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @deprecated No longer used - see ThresholdingVisitor
- * @version $Id: $
  */
 public abstract class JMXThresholder implements ServiceThresholder {
     /**
@@ -688,9 +684,9 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 String ifAddr = ifDataMap.get("ipaddr");
                 event.setInterfaceAddress(InetAddressUtils.addr(ifAddr));
             }
-            
+
             // Add appropriate parms
-            Parms eventParms = event.getParms();
+            final List<Parm> eventParms = event.getParmCollection();
             
             Parm eventParm;
             Value parmValue;
@@ -701,7 +697,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 parmValue = new Value();
                 parmValue.setContent(ifDataMap.get("iflabel"));
                 eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+                eventParms.add(eventParm);
             }
     
             events.addEvent(event);
