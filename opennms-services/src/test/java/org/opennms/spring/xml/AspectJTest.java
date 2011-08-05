@@ -28,46 +28,46 @@
 
 package org.opennms.spring.xml;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
-public class AspectJTest extends AbstractDependencyInjectionSpringContextTests {
-    
 
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:/org/opennms/spring/xml/applicationContext-testAOP.xml"
-        };
-    }
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/org/opennms/spring/xml/applicationContext-testAOP.xml"
+})
+@JUnitConfigurationEnvironment
+@DirtiesContext
+public class AspectJTest {
     
-    @Override
-    protected void onSetUp() throws Exception {
+    @Autowired
+    private MockEventIpcManager m_eventIpcManager;
+    
+    @Autowired
+    private AspectJTestEventHandler m_handler;
+    
+    @Autowired
+    private AspectJTestEventHandlerInteceptor m_interceptor;
+
+    @Before
+    public void onSetUp() throws Exception {
         m_handler.reset();
         m_interceptor.reset();
     }
 
-
-
-    private MockEventIpcManager m_eventIpcManager;
-    private AspectJTestEventHandler m_handler;
-    private AspectJTestEventHandlerInteceptor m_interceptor;
-
-    public void setEventIpcManager(MockEventIpcManager eventIpcManager) {
-        m_eventIpcManager = eventIpcManager;
-    }
-
-    public void setHandler(AspectJTestEventHandler handler) {
-        m_handler = handler;
-    }
-    
-    public void setInterceptor(AspectJTestEventHandlerInteceptor interceptor) {
-        m_interceptor = interceptor;
-    }
-
+    @Test
     public void testAOPProxying() throws Throwable {
         
         assertEquals(0, m_handler.getHandlerCallCount());
@@ -82,6 +82,7 @@ public class AspectJTest extends AbstractDependencyInjectionSpringContextTests {
         
     }
     
+    @Test
     public void testEventAdapterOnProxy() {
         
         assertEquals(0, m_handler.getHandlerCallCount());
@@ -96,6 +97,7 @@ public class AspectJTest extends AbstractDependencyInjectionSpringContextTests {
         
     }
     
+    @Test
     public void testHandledException() {
         
         assertEquals(0, m_handler.getHandlerCallCount());
@@ -114,6 +116,7 @@ public class AspectJTest extends AbstractDependencyInjectionSpringContextTests {
         
     }
     
+    @Test
     public void testUnhandledException() {
         
         assertEquals(0, m_handler.getHandlerCallCount());
