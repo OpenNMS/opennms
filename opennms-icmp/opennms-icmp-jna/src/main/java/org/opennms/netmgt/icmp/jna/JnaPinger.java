@@ -69,7 +69,7 @@ public class JnaPinger implements Pinger {
     public boolean isV4Available() {
         try {
             initialize();
-        } catch (final Exception e) {
+        } catch (final Throwable t) {
         }
         if (m_messenger == null) return false;
         return m_messenger.isV4Available();
@@ -78,7 +78,7 @@ public class JnaPinger implements Pinger {
     public boolean isV6Available() {
         try {
             initialize();
-        } catch (final Exception e) {
+        } catch (final Throwable t) {
         }
         if (m_messenger == null) return false;
         return m_messenger.isV6Available();

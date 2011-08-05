@@ -137,7 +137,7 @@ public class JniPinger implements Pinger {
 	public boolean isV4Available() {
 	    try {
 	        initialize();
-	    } catch (final Exception e) {
+	    } catch (final Throwable t) {
 	    }
 	    if (s_pingTracker != null) return true;
 	    return false;
