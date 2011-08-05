@@ -56,9 +56,6 @@ import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 @Distributable(DistributionContext.DAEMON)
 final public class DhcpMonitor extends AbstractServiceMonitor {

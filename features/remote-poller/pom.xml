@@ -136,6 +136,7 @@ groovy.compiler.output.path=target/classes
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
+    <!-- pull in all ICMP APIs in case the user wants to use them -->
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.icmp-jna</artifactId>
@@ -143,6 +144,14 @@ groovy.compiler.output.path=target/classes
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jna</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni6</artifactId>
     </dependency>
 
     <!-- test dependencies -->

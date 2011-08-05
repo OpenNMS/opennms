@@ -123,13 +123,23 @@ public class ServicePageTest extends SeleneseTestBase{
     public void testProvisioningGroupWasCreated() throws InterruptedException {
         selenium.click("link=Node List");
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=localNode");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("link=HTTP-8980");
-        selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.isTextPresent("Managed"));
-        assertTrue(selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
-        assertTrue(selenium.isTextPresent("localNode"));
+        if(selenium.isElementPresent("link=localNode")) {
+            selenium.click("link=localNode");
+            selenium.waitForPageToLoad("30000");
+            selenium.click("link=HTTP-8980");
+            selenium.waitForPageToLoad("30000");
+            assertTrue(selenium.isTextPresent("Managed"));
+            assertTrue(selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
+            assertTrue(selenium.isTextPresent("localNode"));
+        }else if(selenium.isElementPresent("link=HTTP-8980")){
+            selenium.click("link=HTTP-8980");
+            selenium.waitForPageToLoad("30000");
+            assertTrue(selenium.isTextPresent("Managed"));
+            assertTrue(selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
+            assertTrue(selenium.isTextPresent("localNode"));
+        }else {
+            fail("Neither of the links were found. Printing page source: " + selenium.getHtmlSource());
+        }
     }
 
     @Test
