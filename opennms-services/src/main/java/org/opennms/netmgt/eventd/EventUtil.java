@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,7 +53,6 @@ import org.opennms.netmgt.capsd.DbSnmpInterfaceEntry;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Tticket;
 import org.opennms.netmgt.xml.event.Value;
@@ -690,9 +690,9 @@ public final class EventUtil {
      */
     private static String getNumParmName(String parm, Event event) {
         String retParmVal = null;
-        Parms eventParms = event.getParms();
+        final List<Parm> parms = event.getParmCollection();
         int end = parm.lastIndexOf(PARM_END_SUFFIX);
-        if (end != -1 && eventParms != null) {
+        if (end != -1 && parms != null && parms.size() > 0) {
         	// Get the string between the '#' and ']'
         	String parmSpec = parm.substring(PARM_NAME_NUMBERED_PREFIX_LENGTH, end);
             String eparmnum = null;
@@ -720,8 +720,8 @@ public final class EventUtil {
         		retParmVal = null;
         	}
     
-        	if (parmNum > 0 && parmNum <= eventParms.getParmCount()) {
-        		Parm evParm = eventParms.getParm(parmNum - 1);
+        	if (parmNum > 0 && parmNum <= parms.size()) {
+        	    final Parm evParm = parms.get(parmNum - 1);
     
         		// get parm name
         		String eparmname = evParm.getParmName();
@@ -793,9 +793,9 @@ public final class EventUtil {
      */
     private static String getNumParmValue(String parm, Event event) {
         String retParmVal = null;
-        Parms eventParms = event.getParms();
+        final List<Parm> parms = event.getParmCollection();
         int end = parm.lastIndexOf(PARM_END_SUFFIX);
-        if (end != -1 && eventParms != null) {
+        if (end != -1 && parms != null && parms.size() > 0) {
         	// Get the value between the '#' and ']'
         	String eparmname = parm.substring(PARM_NUM_PREFIX_LENGTH, end);
         	int parmNum = -1;
@@ -806,8 +806,8 @@ public final class EventUtil {
         		retParmVal = null;
         	}
 
-        	if (parmNum > 0 && parmNum <= eventParms.getParmCount()) {
-        		Parm evParm = eventParms.getParm(parmNum - 1);
+        	if (parmNum > 0 && parmNum <= parms.size()) {
+        	    final Parm evParm = parms.get(parmNum - 1);
 
         		// get parm value
         		Value eparmval = evParm.getValue();

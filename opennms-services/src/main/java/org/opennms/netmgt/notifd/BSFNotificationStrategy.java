@@ -188,6 +188,7 @@ public class BSFNotificationStrategy implements NotificationStrategy {
         }
     }
 
+    @SuppressWarnings("unused")
     private String getSwitchValue(String argSwitch) {
         String value = null;
         for (Argument arg : m_arguments) {

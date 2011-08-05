@@ -198,15 +198,8 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             // eventParms
 
             // Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE 
-            final String parametersString=(event.getParms() != null) ? Parameter.format(event.getParms()) : null;
+            final String parametersString=Parameter.format(event);
             set(insStmt, 11, Constants.format(parametersString, 0));
-
-            // grab the ifIndex out of the parms if it is defined   
-            if (event.hasIfIndex()) {
-                if (event.getParms() != null) {
-                    Parameter.format(event.getParms());
-                }
-            }
 
             // eventCreateTime
             final Timestamp eventCreateTime = new Timestamp(System.currentTimeMillis());

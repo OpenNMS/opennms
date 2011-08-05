@@ -58,7 +58,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
@@ -70,10 +69,7 @@ import org.springframework.util.Assert;
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @deprecated No longer used - see ThresholdingVisitor
- * @version $Id: $
  */
 public final class SnmpThresholder implements ServiceThresholder {
 
@@ -629,7 +625,7 @@ public final class SnmpThresholder implements ServiceThresholder {
             }
         
             // Add appropriate parms
-            Parms eventParms = event.getParms();
+            final List<Parm> eventParms = event.getParmCollection();
             
             Parm eventParm;
             Value parmValue;
@@ -641,7 +637,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                 parmValue = new Value();
                 parmValue.setContent(dsLabelValue);
                 eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+                eventParms.add(eventParm);
             }
     
             // Add interface parms if available
@@ -652,7 +648,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                 parmValue = new Value();
                 parmValue.setContent(ifDataMap.get("iflabel"));
                 eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+                eventParms.add(eventParm);
             }
     
             if (ifDataMap != null && ifDataMap.get("snmpifindex") != null) {
@@ -662,7 +658,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                 parmValue = new Value();
                 parmValue.setContent(ifDataMap.get("snmpifindex"));
                 eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+                eventParms.add(eventParm);
             }
 
             events.addEvent(event);

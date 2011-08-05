@@ -32,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -50,9 +49,6 @@ import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
@@ -68,25 +64,6 @@ public class HttpMonitorTest {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-    }
-
-    @Test
-    public void testParms() {
-        Parms eventParms = new Parms();
-        Parm eventParm = new Parm();
-        Value parmValue = new Value();
-
-        assertTrue(eventParms.getParmCount() == 0);
-
-        eventParm.setParmName("test");
-        parmValue.setContent("test value");
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        assertTrue(eventParms.getParmCount() == 1);
-        assertTrue(eventParms.getParm(0).getParmName() == "test");
-        assertTrue(eventParms.getParm(0).getValue().getContent() == "test value");
-
     }
 
     /*

@@ -42,7 +42,6 @@ import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.web.rest.support.TimeChunker;
-import org.opennms.web.rest.support.TimeChunker.TimeChunk;
 
 
 public class AvailCalculatorTest {
@@ -73,8 +72,7 @@ public class AvailCalculatorTest {
         
         calculator.onStatusChange(statusChange);
         
-        
-        TimeChunk chunk = chunker.getNextSegment();
+        chunker.getNextSegment();
         double uptimePercent = calculator.getAvailabilityFor(getServices(), 0);
         assertEquals(0.5, uptimePercent, 0.00);
     }

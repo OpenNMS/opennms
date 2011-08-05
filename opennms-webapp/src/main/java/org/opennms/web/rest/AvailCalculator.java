@@ -52,9 +52,6 @@ public class AvailCalculator {
         public static int count = 0;
         
         private TimeChunker m_timeChunker;
-        private int m_timeIndex = -1;
-        private TimeIntervalSequence[] m_upIntervals;
-        private OnmsLocationSpecificStatus m_lastChange;
         
         SortedSet<OnmsLocationSpecificStatus> m_statusChanges = new TreeSet<OnmsLocationSpecificStatus>(new Comparator<OnmsLocationSpecificStatus>(){
 

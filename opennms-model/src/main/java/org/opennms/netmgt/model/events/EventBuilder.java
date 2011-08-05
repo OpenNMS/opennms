@@ -31,6 +31,7 @@ package org.opennms.netmgt.model.events;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
@@ -42,7 +43,6 @@ import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 import org.springframework.beans.BeanWrapper;
@@ -253,13 +253,7 @@ public class EventBuilder {
 
     
     public EventBuilder addParam(final Parm parm) {
-
-        if (m_event.getParms() == null) {
-            final Parms parms = new Parms();
-            m_event.setParms(parms);
-        }
-
-        m_event.getParms().addParm(parm);
+        m_event.addParm(parm);
 
         return this;
     }
@@ -573,11 +567,11 @@ public class EventBuilder {
     /**
      * <p>setParms</p>
      *
-     * @param parms a {@link org.opennms.netmgt.xml.event.Parms} object.
-     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
+     * @param parms a list of parameters.
+     * @return the event builder
      */
-    public EventBuilder setParms(final Parms parms) {
-        m_event.setParms(parms);
+    public EventBuilder setParms(final List<Parm> parms) {
+        m_event.setParmCollection(parms);
         return this;
     }
 
