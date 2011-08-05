@@ -216,7 +216,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertNotNull("should have created an event", event);
         assertEquals("UEIs should be the same", EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
         
-        assertNotNull("event should have parms", event.getParms());
+        assertNotNull("event should have parms", event.getParmCollection());
         parmPresentAndValueNonNull(event, "instance");
         parmPresentWithValue(event, "value", "10.0");
         parmPresentWithValue(event, "previousValue", "8.0");
@@ -227,7 +227,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertNotNull("should have created an event", event);
         assertEquals("UEIs should be the same", EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
         
-        assertNotNull("event should have parms", event.getParms());
+        assertNotNull("event should have parms", event.getParmCollection());
         
         parmPresentWithValue(event, "instance", "testInstance");
         parmPresentWithValue(event, "value", "10.0");

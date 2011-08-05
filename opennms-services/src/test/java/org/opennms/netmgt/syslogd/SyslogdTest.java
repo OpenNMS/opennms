@@ -166,7 +166,7 @@ public class SyslogdTest {
     	final List<Event> receivedEvents = doMessageTest(testPDU, expectedHost, expectedUEI, expectedLogMsg);
 
         final Map<String,String> actualParms = new HashMap<String,String>();
-        for (final Parm actualParm : receivedEvents.get(0).getParms().getParmCollection()) {
+        for (final Parm actualParm : receivedEvents.get(0).getParmCollection()) {
             actualParms.put(actualParm.getParmName(), actualParm.getValue().getContent());
         }
 

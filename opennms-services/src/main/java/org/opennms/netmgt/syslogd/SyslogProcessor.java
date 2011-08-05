@@ -30,6 +30,8 @@ package org.opennms.netmgt.syslogd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.util.List;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -160,8 +162,7 @@ final class SyslogProcessor implements Runnable {
                                 + o.getEvent().getLogmsg().getContent());
                         log.trace("  Dst   = "
                                 + o.getEvent().getLogmsg().getDest());
-                        Parm[] parms = (o.getEvent().getParms() == null ? null
-                                : o.getEvent().getParms().getParm());
+                        List<Parm> parms = (o.getEvent().getParmCollection() == null ? null : o.getEvent().getParmCollection());
                         if (parms != null) {
                             log.trace("  parms {");
                             for (Parm parm : parms) {
