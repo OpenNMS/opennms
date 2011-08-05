@@ -296,7 +296,7 @@
     <property name="nodeDao" ref="nodeDao" />
     <property name="locationMonitorDao" ref="locationMonitorDao" />
     <property name="collectdConfig" ref="collectdConfig" />
-    <property name="dataCollectionConfig" ref="dataCollectionConfig" />
+    <property name="dataCollectionConfigDao" ref="dataCollectionConfig" />
     <property name="rrdDirectory" value="${rrd.base.dir}" />
   </bean>
 
