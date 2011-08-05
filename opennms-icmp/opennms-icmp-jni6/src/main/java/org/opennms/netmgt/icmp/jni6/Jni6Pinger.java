@@ -142,7 +142,7 @@ public class Jni6Pinger implements Pinger {
     public boolean isV4Available() {
         try {
             initialize4();
-        } catch (final Exception e) {
+        } catch (final Throwable t) {
         }
         if (m_jniPinger != null) return true;
         return false;
@@ -151,7 +151,7 @@ public class Jni6Pinger implements Pinger {
     public boolean isV6Available() {
         try {
             initialize6();
-        } catch (final Exception e) {
+        } catch (final Throwable t) {
         }
         if (s_pingTracker != null) return true;
         return false;
