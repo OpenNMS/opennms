@@ -36,7 +36,6 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.rrd.QueuingRrdStrategy;
-import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;

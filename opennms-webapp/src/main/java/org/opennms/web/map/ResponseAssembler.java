@@ -61,9 +61,8 @@ public class ResponseAssembler {
 	 * @param map a {@link org.opennms.web.map.view.VMap} object.
 	 * @return a {@link java.lang.String} object.
 	 */
-	@SuppressWarnings("unchecked")
     protected static String getRefreshResponse(VMap map){		
-		Map refreshResponseMap = new HashMap();
+		Map<String,Object> refreshResponseMap = new HashMap<String,Object>();
 		refreshResponseMap.put("elems",map.getElements().values());
 		refreshResponseMap.put("links", map.getLinks());
 		return JSONSerializer.toJSON(refreshResponseMap).toString();
@@ -77,9 +76,8 @@ public class ResponseAssembler {
      * @param links a {@link java.util.Collection} object.
      * @return a {@link java.lang.String} object.
      */
-    @SuppressWarnings("unchecked")
 	protected static String getAddElementResponse(List<Integer> mapsWithLoopInfo, Collection<VElement> elems, Collection<VLink> links){
-		Map addElementResponseMap = new HashMap();
+		Map<String,Object> addElementResponseMap = new HashMap<String,Object>();
         addElementResponseMap.put("mapsWithLoop",mapsWithLoopInfo);
         addElementResponseMap.put("elems",elems);
         addElementResponseMap.put("links", links);
@@ -132,9 +130,8 @@ public class ResponseAssembler {
 	 * @param map a {@link org.opennms.web.map.view.VMap} object.
 	 * @return a {@link java.lang.String} object.
 	 */
-	@SuppressWarnings("unchecked")
     protected static String getSaveMapResponse(VMap map){
-		Map saveMapResponse = new HashMap();
+		Map<String,Object> saveMapResponse = new HashMap<String,Object>();
 		saveMapResponse.put("id", map.getId());
 		saveMapResponse.put("accessMode",map.getAccessMode());
         saveMapResponse.put("owner",map.getOwner());

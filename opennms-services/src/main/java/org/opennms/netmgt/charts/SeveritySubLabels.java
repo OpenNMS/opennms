@@ -61,8 +61,7 @@ public class SeveritySubLabels extends ExtendedCategoryAxis {
      *
      * Adds a sublabel for a category.
      */
-    @SuppressWarnings("unchecked")
-    public void addSubLabel(Comparable category, String label) {
+    public void addSubLabel(@SuppressWarnings("rawtypes") Comparable category, String label) {
         super.addSubLabel(category, convertLabel(label));
     }
     

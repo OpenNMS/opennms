@@ -46,10 +46,9 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 /**
  * <p>AdminRancidUpdateController class.</p>
  *
- * @author ranger
- * @version $Id: $
  * @since 1.8.1
  */
+@SuppressWarnings("deprecation")
 public class AdminRancidUpdateController extends SimpleFormController {
 
     InventoryService m_inventoryService;

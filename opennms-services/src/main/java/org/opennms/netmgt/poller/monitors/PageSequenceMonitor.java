@@ -714,7 +714,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
     public static class PageSequenceMonitorParameters {
         public static final String KEY = PageSequenceMonitorParameters.class.getName();
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         static synchronized PageSequenceMonitorParameters get(Map paramterMap) {
             PageSequenceMonitorParameters parms = (PageSequenceMonitorParameters) paramterMap.get(KEY);
             if (parms == null) {
@@ -728,6 +728,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         private final HttpParams m_clientParams;
         private final HttpPageSequence m_pageSequence;
 
+        @SuppressWarnings("unchecked")
         PageSequenceMonitorParameters(Map<String, String> parameterMap) {
             m_parameterMap = parameterMap;
             String pageSequence = getStringParm("page-sequence", null);

@@ -57,14 +57,9 @@ import org.springframework.web.servlet.view.RedirectView;
  *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @version $Id: $
  * @since 1.8.1
  */
 public class AcknowledgeEventController extends AbstractController implements InitializingBean {
-    private static final long serialVersionUID = 2L;
-
     private WebEventRepository m_webEventRepository;
     
     private String m_redirectView;

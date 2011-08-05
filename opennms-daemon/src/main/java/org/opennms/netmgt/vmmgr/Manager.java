@@ -226,13 +226,30 @@ public class Manager implements ManagerMBean {
     private void testPinger() {
         final Pinger pinger = PingerFactory.getInstance();
 
-        final boolean v4 = pinger.isV4Available();
-        final boolean v6 = pinger.isV6Available();
+        final boolean hasV4 = pinger.isV4Available();
+        final boolean hasV6 = pinger.isV6Available();
 
-        log().debug(String.format("IPv4 available = %s, IPv6 available = %s, pinger class = %s", Boolean.valueOf(v4), Boolean.valueOf(v6), pinger.getClass().getName()));
+        log().info("Using ICMP implementation: " + pinger.getClass().getName());
+        log().info("IPv4 ICMP available? " + hasV4);
+        log().info("IPv6 ICMP available? " + hasV6);
 
-        if (!v4 && !v6) {
-            throw new IllegalStateException("Unable to initialize any ICMP support.  Bailing out.");
+        final String requireV4String = System.getProperty("org.opennms.netmgt.icmp.requireV4");
+        final String requireV6String = System.getProperty("org.opennms.netmgt.icmp.requireV6");
+        final Boolean requireV4 = Boolean.valueOf(requireV4String);
+        final Boolean requireV6 = Boolean.valueOf(requireV6String);
+
+        if (requireV4String == null && requireV6String == null) {
+            // If they don't specify any preference, start up as long as one available.
+            if (!hasV4 && !hasV6) {
+                throw new IllegalStateException("Unable to initialize any ICMP support.  Bailing out.");
+            }
+        } else {
+            if (requireV4 && !hasV4) {
+                throw new IllegalStateException("org.opennms.netmgt.icmp.requireV4 is set, but IPv4 ICMP could not be initialized.");
+            }
+            if (requireV6 && !hasV6) {
+                throw new IllegalStateException("org.opennms.netmgt.icmp.requireV6 is set, but IPv6 ICMP could not be initialized.");
+            }
         }
     }
 

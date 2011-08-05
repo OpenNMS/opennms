@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Properties;
@@ -70,7 +69,7 @@ public class MailTransportParameters {
         m_transportTest = parseMailTransportTest(test);
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     static synchronized MailTransportParameters get(Map parameterMap) {
         MailTransportParameters parms = (MailTransportParameters)parameterMap.get(KEY);
         if (parms == null) {
