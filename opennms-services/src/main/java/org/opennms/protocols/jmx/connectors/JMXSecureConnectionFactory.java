@@ -163,7 +163,7 @@ public class JMXSecureConnectionFactory
         public X509Certificate[] getAcceptedIssuers()
         {
             // since client authentication is not supported by this
-            // trust manager, there's no certicate authority trusted
+            // trust manager, there's no certificate authority trusted
             // for authenticating peers
             return new X509Certificate[0];
         }
