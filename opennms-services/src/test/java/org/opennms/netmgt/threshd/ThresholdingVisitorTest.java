@@ -211,8 +211,8 @@ public class ThresholdingVisitorTest {
                     retVal = compareStrings(e1.getService(), e2.getService());
                 }
                 if (retVal == 0) {
-                    List<Parm> anticipatedParms = e1.getParms().getParmCollection();
-                    List<Parm> receivedParms = e2.getParms().getParmCollection();
+                    List<Parm> anticipatedParms = e1.getParmCollection();
+                    List<Parm> receivedParms = e2.getParmCollection();
                     Collections.sort(anticipatedParms, m_parmComparator);
                     Collections.sort(receivedParms, m_parmComparator);
                     if (anticipatedParms.size() != receivedParms.size()) {
@@ -1651,7 +1651,7 @@ public class ThresholdingVisitorTest {
         assertEquals("NodeIDs must match", anticipated.getNodeid(), received.getNodeid());
         assertEquals("interfaces must match", anticipated.getInterface(), received.getInterface());
         assertEquals("services must match", anticipated.getService(), received.getService());
-        compareParms(anticipated.getParms().getParmCollection(), received.getParms().getParmCollection());
+        compareParms(anticipated.getParmCollection(), received.getParmCollection());
     }
 
     private void compareParms(List<Parm> anticipatedParms, List<Parm> receivedParms) {
