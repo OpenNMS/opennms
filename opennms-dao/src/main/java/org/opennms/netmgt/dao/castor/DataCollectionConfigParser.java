@@ -29,10 +29,7 @@
 package org.opennms.netmgt.dao.castor;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,20 +42,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.ValidationContext;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.datacollection.groups.DatacollectionGroup;
-import org.opennms.netmgt.config.datacollection.types.Group;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
-import org.opennms.netmgt.config.datacollection.types.ResourceType;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.netmgt.config.datacollection.types.SystemDef;
+import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.Systems;
-import org.opennms.netmgt.config.datacollection.groups.descriptors.DatacollectionGroupDescriptor;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
@@ -218,28 +212,13 @@ public class DataCollectionConfigParser {
         
         // Parse configuration files (populate external groups map)
         final CountDownLatch latch = new CountDownLatch(listOfFiles.length);
-        // Get a single validator that we can reuse for each unmarshalled object
-        final Validator validator = new DatacollectionGroupDescriptor();
-        // Get a single validation context that we can reuse for each unmarshalled object
-        final ValidationContext validationContext = new ValidationContext();
         int i = 0;
         for (final File file : listOfFiles) {
             Thread thread = new Thread("DataCollectionConfigParser-Thread-" + i++) {
                 public void run() {
-                    InputStream in = null;
-                    try {
-                        in = new FileInputStream(file);
-                    } catch (IOException e) {
-                        throwException("Could not get an input stream for resource '" + file + "'; nested exception: " + e.getMessage(), e);
-                    }
                     try {
                         log().debug("parseExternalResources: parsing " + file);
-                        DatacollectionGroup group = CastorUtils.unmarshalWithTranslatedExceptions(DatacollectionGroup.class, in);
-                        // Synchronize around the validation context in case it is not thread-safe.
-                        // The validators themselves are thread-safe since they have no local fields.
-                        synchronized(validationContext) {
-                            validator.validate(group, validationContext);
-                        }
+                        DatacollectionGroup group = JaxbUtils.unmarshal(DatacollectionGroup.class, new FileSystemResource(file));
                         // Synchronize around the map that holds the results
                         synchronized(externalGroupsMap) {
                             externalGroupsMap.put(group.getName(), group);
@@ -247,7 +226,6 @@ public class DataCollectionConfigParser {
                     } catch (Throwable e) {
                         throwException("Can't parse XML file " + file + "; nested exception: " + e.getMessage(), e);
                     } finally {
-                        IOUtils.closeQuietly(in);
                         latch.countDown();
                     }
                 }
