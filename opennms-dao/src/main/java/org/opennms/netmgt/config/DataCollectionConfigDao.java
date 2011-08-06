@@ -31,7 +31,7 @@ package org.opennms.netmgt.config;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.config.datacollection.types.ResourceType;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**

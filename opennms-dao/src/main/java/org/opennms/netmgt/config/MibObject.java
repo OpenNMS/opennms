@@ -31,7 +31,7 @@ package org.opennms.netmgt.config;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.netmgt.config.datacollection.types.ResourceType;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.ColumnTracker;
@@ -430,7 +430,7 @@ public class MibObject implements Collectable {
 	/**
 	 * <p>setResourceType</p>
 	 *
-	 * @param resourceType a {@link org.opennms.netmgt.config.datacollection.types.ResourceType} object.
+	 * @param resourceType a {@link org.opennms.netmgt.config.datacollection.ResourceType} object.
 	 */
 	public void setResourceType(ResourceType resourceType) {
 		m_resourceType = resourceType;
@@ -439,7 +439,7 @@ public class MibObject implements Collectable {
 	/**
 	 * <p>getResourceType</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.config.datacollection.types.ResourceType} object.
+	 * @return a {@link org.opennms.netmgt.config.datacollection.ResourceType} object.
 	 */
 	public ResourceType getResourceType() {
 		return m_resourceType;

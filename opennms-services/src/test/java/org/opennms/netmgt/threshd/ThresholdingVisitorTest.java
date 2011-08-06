@@ -1537,13 +1537,13 @@ public class ThresholdingVisitorTest {
     }
 
     private GenericIndexResourceType createGenericIndexResourceType(CollectionAgent agent, String resourceTypeName) {
-        org.opennms.netmgt.config.datacollection.types.ResourceType type = new org.opennms.netmgt.config.datacollection.types.ResourceType();
+        org.opennms.netmgt.config.datacollection.ResourceType type = new org.opennms.netmgt.config.datacollection.ResourceType();
         type.setName(resourceTypeName);
         type.setLabel(resourceTypeName);
-        org.opennms.netmgt.config.datacollection.types.StorageStrategy strategy = new org.opennms.netmgt.config.datacollection.types.StorageStrategy();
+        org.opennms.netmgt.config.datacollection.StorageStrategy strategy = new org.opennms.netmgt.config.datacollection.StorageStrategy();
         strategy.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
         type.setStorageStrategy(strategy);
-        org.opennms.netmgt.config.datacollection.types.PersistenceSelectorStrategy pstrategy = new org.opennms.netmgt.config.datacollection.types.PersistenceSelectorStrategy();
+        org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy pstrategy = new org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy();
         pstrategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
         type.setPersistenceSelectorStrategy(pstrategy);
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();

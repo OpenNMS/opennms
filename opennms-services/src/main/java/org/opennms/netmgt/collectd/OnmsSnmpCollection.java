@@ -464,10 +464,10 @@ public class OnmsSnmpCollection {
 
     private Map<String, ResourceType> getGenericIndexResourceTypeMap(CollectionAgent agent) {
         if (m_genericIndexResourceTypes == null) {
-            Collection<org.opennms.netmgt.config.datacollection.types.ResourceType> configuredResourceTypes =
+            Collection<org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
                 getDataCollectionConfigDao().getConfiguredResourceTypes().values();
             Map<String,ResourceType> resourceTypes = new HashMap<String,ResourceType>();
-            for (org.opennms.netmgt.config.datacollection.types.ResourceType configuredResourceType : configuredResourceTypes) {
+            for (org.opennms.netmgt.config.datacollection.ResourceType configuredResourceType : configuredResourceTypes) {
                 resourceTypes.put(configuredResourceType.getName(), new GenericIndexResourceType(agent, this, configuredResourceType));
             }
             m_genericIndexResourceTypes = resourceTypes;

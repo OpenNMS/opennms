@@ -33,7 +33,7 @@ import java.util.List;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.datacollection.types.Parameter;
+import org.opennms.netmgt.config.datacollection.Parameter;
 
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;

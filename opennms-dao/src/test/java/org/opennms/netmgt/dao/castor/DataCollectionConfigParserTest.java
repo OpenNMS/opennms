@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
-import org.opennms.netmgt.config.datacollection.groups.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;

@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.dao.castor.collector;
 
-import org.opennms.netmgt.config.datacollection.types.Collect;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
-import org.opennms.netmgt.config.datacollection.types.Group;
-import org.opennms.netmgt.config.datacollection.types.IpList;
-import org.opennms.netmgt.config.datacollection.types.MibObj;
+import org.opennms.netmgt.config.datacollection.Collect;
+import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.IpList;
+import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.netmgt.config.datacollection.types.SystemDef;
+import org.opennms.netmgt.config.datacollection.SystemDef;
 
 public interface DataCollectionVisitor {
 
@@ -98,14 +98,14 @@ public interface DataCollectionVisitor {
         /**
          * <p>visitSystemDef</p>
          *
-         * @param systemDef a {@link org.opennms.netmgt.config.datacollection.types.SystemDef} object.
+         * @param systemDef a {@link org.opennms.netmgt.config.datacollection.SystemDef} object.
          */
         public abstract void visitSystemDef(SystemDef systemDef);
 
         /**
          * <p>completeSystemDef</p>
          *
-         * @param systemDef a {@link org.opennms.netmgt.config.datacollection.types.SystemDef} object.
+         * @param systemDef a {@link org.opennms.netmgt.config.datacollection.SystemDef} object.
          */
         public abstract void completeSystemDef(SystemDef systemDef);
 
@@ -140,28 +140,28 @@ public interface DataCollectionVisitor {
         /**
          * <p>visitIpList</p>
          *
-         * @param ipList a {@link org.opennms.netmgt.config.datacollection.types.IpList} object.
+         * @param ipList a {@link org.opennms.netmgt.config.datacollection.IpList} object.
          */
         public abstract void visitIpList(IpList ipList);
 
         /**
          * <p>completeIpList</p>
          *
-         * @param ipList a {@link org.opennms.netmgt.config.datacollection.types.IpList} object.
+         * @param ipList a {@link org.opennms.netmgt.config.datacollection.IpList} object.
          */
         public abstract void completeIpList(IpList ipList);
 
         /**
          * <p>visitCollect</p>
          *
-         * @param collect a {@link org.opennms.netmgt.config.datacollection.types.Collect} object.
+         * @param collect a {@link org.opennms.netmgt.config.datacollection.Collect} object.
          */
         public abstract void visitCollect(Collect collect);
 
         /**
          * <p>completeCollect</p>
          *
-         * @param collect a {@link org.opennms.netmgt.config.datacollection.types.Collect} object.
+         * @param collect a {@link org.opennms.netmgt.config.datacollection.Collect} object.
          */
         public abstract void completeCollect(Collect collect);
 
@@ -210,14 +210,14 @@ public interface DataCollectionVisitor {
         /**
          * <p>visitMibObj</p>
          *
-         * @param mibObj a {@link org.opennms.netmgt.config.datacollection.types.MibObj} object.
+         * @param mibObj a {@link org.opennms.netmgt.config.datacollection.MibObj} object.
          */
         public abstract void visitMibObj(MibObj mibObj);
 
         /**
          * <p>completeMibObj</p>
          *
-         * @param mibObj a {@link org.opennms.netmgt.config.datacollection.types.MibObj} object.
+         * @param mibObj a {@link org.opennms.netmgt.config.datacollection.MibObj} object.
          */
         public abstract void completeMibObj(MibObj mibObj);
 
