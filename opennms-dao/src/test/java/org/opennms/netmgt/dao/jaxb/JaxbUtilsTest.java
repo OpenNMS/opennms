@@ -217,6 +217,7 @@ public class JaxbUtilsTest {
 		final EventBuilder eb = new EventBuilder("uei.opennms.org/test", "JaxbUtilsTest");
 		final Event e = eb
 			.setDescription("test")
+			.addParam("foo", "bar")
 			.getEvent();
 		return e;
 	}
