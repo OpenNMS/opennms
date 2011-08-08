@@ -43,6 +43,10 @@ public class InstrumentationLogReaderPageTest extends SeleneseTestBase {
         assertTrue(selenium.isElementPresent("link=Average Collection Time"));
         assertTrue(selenium.isElementPresent("link=Unsuccessful Percentage"));
         assertTrue(selenium.isElementPresent("link=Average Persistence Time"));
+    }
+    
+    @Test
+    public void testSortingLinks() {
         selenium.click("link=Collections");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isElementPresent("link=Collections ^"));

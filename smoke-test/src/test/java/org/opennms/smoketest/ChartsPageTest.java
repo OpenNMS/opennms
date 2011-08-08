@@ -28,6 +28,7 @@ public class ChartsPageTest extends SeleneseTestBase {
 
     @Test
     public void testChartsPage() throws Exception {
+        assertTrue(selenium.isTextPresent("Charts"));
         assertTrue(selenium.isElementPresent("css=img[alt=sample-bar-chart]"));
         assertTrue(selenium.isElementPresent("css=img[alt=sample-bar-chart2]"));
         assertTrue(selenium.isElementPresent("css=img[alt=sample-bar-chart3]"));

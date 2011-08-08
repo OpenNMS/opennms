@@ -27,12 +27,21 @@ public class EventsPageTest extends SeleneseTestBase {
     }
 
     @Test
-    public void testEventsPage() throws Exception {
+    public void testAllTextIsPresent() throws Exception {       
         assertTrue(selenium.isTextPresent("Event Queries"));
         assertTrue(selenium.isTextPresent("Outstanding and acknowledged events"));
         assertTrue(selenium.isTextPresent("hit [Enter]"));
         assertTrue(selenium.isTextPresent("Event ID:"));
+    }
+    
+    @Test
+    public void testAllLinksArePresent() {
         assertEquals("Get details", selenium.getValue("css=input[type=submit]"));
+        assertTrue(selenium.isElementPresent("link=All events"));
+        assertTrue(selenium.isElementPresent("link=Advanced Search"));
+    }
+    @Test 
+    public void testAllLinks() {
         selenium.click("link=All events");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("Ack"));

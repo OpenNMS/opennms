@@ -28,6 +28,9 @@ public class DistributedMapTest extends SeleneseTestBase {
 
     @Test
     public void testDistributedMap() throws Exception {
+        assertEquals("Applications", selenium.getTable("css=td > table.0.2"));
+        assertEquals("off", selenium.getValue("id=gwt-uid-6"));
+        assertEquals("on", selenium.getValue("id=gwt-uid-1"));
     }
 
     @After

@@ -27,14 +27,26 @@ public class OutagePageTest extends SeleneseTestBase {
     }
 
     @Test
-    public void testOutagePage() throws Exception {
+    public void testAllTextIsPresent() throws Exception {
         assertTrue(selenium.isTextPresent("Outage Menu"));
         assertTrue(selenium.isTextPresent("Outages and Service Level Availability"));
         assertTrue(selenium.isTextPresent("Outage ID"));
         assertTrue(selenium.isTextPresent("create notifications"));
-        assertEquals("Get details", selenium.getValue("css=input[type=submit]"));
+    }  
+
+    @Test
+    public void testAllLinksArePresent() {
         assertTrue(selenium.isElementPresent("link=Current outages"));
         assertTrue(selenium.isElementPresent("link=All outages"));
+    }
+
+    @Test
+    public void testAllFormsArePresent() {
+        assertEquals("Get details", selenium.getValue("css=input[type=submit]"));
+    }
+    
+    @Test
+    public void testAllLinks() {
         selenium.click("link=Current outages");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isElementPresent("name=outtype"));

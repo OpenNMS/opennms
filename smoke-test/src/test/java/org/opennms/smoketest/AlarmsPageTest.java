@@ -29,15 +29,23 @@ public class AlarmsPageTest extends SeleneseTestBase {
     }
 
     @Test
-    public void testAlarmsPage() throws Exception {
+    public void testAllTextIsPresent() {
         assertTrue(selenium.isTextPresent("Alarm Queries"));
         assertTrue(selenium.isTextPresent("Outstanding and acknowledged alarms"));
         assertTrue(selenium.isTextPresent("To view acknowledged alarms"));
         assertTrue(selenium.isElementPresent("css=input[type=submit]"));
         assertTrue(selenium.isTextPresent("Alarm ID:"));
+    }
+
+    @Test
+    public void testAllLinksArePresent() { 
         assertTrue(selenium.isElementPresent("link=All alarms (summary)"));
         assertTrue(selenium.isElementPresent("link=All alarms (detail)"));
         assertTrue(selenium.isElementPresent("link=Advanced Search"));
+    }
+
+    @Test
+    public void testAllLinks(){
         selenium.click("link=All alarms (summary)");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("alarm is outstanding"));
@@ -63,8 +71,6 @@ public class AlarmsPageTest extends SeleneseTestBase {
         assertTrue(selenium.isElementPresent("css=input[type=submit]"));
         assertTrue(selenium.isElementPresent("name=beforefirsteventtimemonth"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
     }
 

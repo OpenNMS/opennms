@@ -29,7 +29,20 @@ public class NodeListPageTest extends SeleneseTestBase {
     }
 
     @Test
-    public void testNodeListPage() throws Exception {
+    public void testAllTextIsPresent() throws Exception {
+        assertTrue(selenium.isTextPresent("Nodes"));
+    }
+    
+    @Test
+    public void testAllLinksArePresent() {
+        assertTrue(selenium.isElementPresent("//a[@href='element/nodeList.htm?listInterfaces=true']"));
+    }
+    
+    @Test
+    public void testAllLinks() {
+        selenium.click("link=Show interfaces");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.isTextPresent("interfaces"));
     }
 
     @After
