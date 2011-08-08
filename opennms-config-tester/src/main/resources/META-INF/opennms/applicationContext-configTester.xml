@@ -170,7 +170,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="databaseSchemaConfigFactory" class="org.opennms.netmgt.config.DatabaseSchemaConfigFactory" depends-on="databaseSchemaConfigFactory-init" factory-method="getInstance"/>
   
-  <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao">
+  <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.DefaultDataCollectionConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/datacollection-config.xml"/>
   </bean>
   

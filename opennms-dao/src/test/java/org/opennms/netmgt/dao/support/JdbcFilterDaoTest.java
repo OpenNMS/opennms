@@ -247,7 +247,6 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     public void testGetActiveIPListWithDeletedNode() throws Exception {
         m_transTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus status) {
-                List<InetAddress> list = m_dao.getIPAddressList("ipaddr == '192.168.1.1'");
                 final List<OnmsIpInterface> ifaces = m_interfaceDao.findByIpAddress("192.168.1.1");
                 
                 assertEquals("should be 1 interface", 1, ifaces.size());

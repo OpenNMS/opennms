@@ -11,7 +11,7 @@
       <constructor-arg value="classpath:/minimal-datacollection-config.xml" />
     </bean>
 
-    <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao">
+    <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.DefaultDataCollectionConfigDao">
       <property name="configResource" ref="dataCollectionConfResourceLocation" />
       <property name="configDirectory" value="src/test/resources/empty" />
     </bean>

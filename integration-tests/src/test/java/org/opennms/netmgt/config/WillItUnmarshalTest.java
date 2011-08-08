@@ -260,11 +260,11 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testDataCollectionConfiguration() throws Exception {
-        unmarshal("datacollection-config.xml", DatacollectionConfig.class);
+        unmarshalJaxb("datacollection-config.xml", DatacollectionConfig.class);
     }
     @Test
     public void testExampleOldDataCollectionConfiguration() throws Exception {
-        unmarshalExample("old-datacollection-config.xml", DatacollectionConfig.class);
+        unmarshalJaxbExample("old-datacollection-config.xml", DatacollectionConfig.class);
     }
     @Test
     public void testDestinationPaths() throws Exception {
@@ -700,10 +700,9 @@ public class WillItUnmarshalTest {
         for (File includedGroupFile : includedGroupFiles) {
             try {
                 // Be conservative about what we ship, so don't be lenient
-                LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
                 Resource resource = new FileSystemResource(includedGroupFile);
                 System.out.println("Unmarshalling: " + resource.getURI());
-                CastorUtils.unmarshal(DatacollectionGroup.class, resource);
+                JaxbUtils.unmarshal(DatacollectionGroup.class, resource);
             } catch (Throwable t) {
                 throw new RuntimeException("Failed to unmarshal " + includedGroupFile + ": " + t, t);
             }
