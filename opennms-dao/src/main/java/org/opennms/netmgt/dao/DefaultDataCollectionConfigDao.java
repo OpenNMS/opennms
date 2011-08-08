@@ -26,14 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,14 +45,16 @@ import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.Groups;
 import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
-import org.opennms.netmgt.config.datacollection.Groups;
-import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.Systems;
+import org.opennms.netmgt.dao.castor.DataCollectionConfigParser;
 import org.opennms.netmgt.model.RrdRepository;
+import org.springframework.core.io.Resource;
 
 /**
  * DefaultDataCollectionConfigDao
@@ -64,34 +65,45 @@ import org.opennms.netmgt.model.RrdRepository;
  *
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
-public class DefaultDataCollectionConfigDao extends
-AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements DataCollectionConfigDao {
+public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<DatacollectionConfig, DatacollectionConfig> implements DataCollectionConfigDao {
 
     private static final Pattern s_digitsPattern = Pattern.compile("\\d+"); 
     
     private String m_configDirectory;
-    
+
+    // have we validated the config since last reloading?
+    private boolean m_validated = false;
+    private RuntimeException m_validationException = null;
+
     public DefaultDataCollectionConfigDao() {
         super(DatacollectionConfig.class, "data-collection");
     }
 
     @Override
-    public DatacollectionConfig translateConfig(DatacollectionConfig castorConfig) {
-        DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
+    protected DatacollectionConfig loadConfig(final Resource resource) {
+        m_validated = false;
+        return super.loadConfig(resource);
+    }
+    
+    @Override
+    public DatacollectionConfig translateConfig(final DatacollectionConfig config) {
+        final DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
+
         // Updating Configured Collections
-        for (SnmpCollection collection : castorConfig.getSnmpCollectionCollection()) {
+        for (final SnmpCollection collection : config.getSnmpCollectionCollection()) {
             parser.parseCollection(collection);
         }
+
         // Create a special collection to hold all resource types, because they should be defined only once.
-        SnmpCollection resourceTypeCollection = new SnmpCollection();
+        final SnmpCollection resourceTypeCollection = new SnmpCollection();
         resourceTypeCollection.setName("__resource_type_collection");
-        for (ResourceType rt : parser.getAllResourceTypes()) {
+        for (final ResourceType rt : parser.getAllResourceTypes()) {
             resourceTypeCollection.addResourceType(rt);
         }
         resourceTypeCollection.setGroups(new Groups());
         resourceTypeCollection.setSystems(new Systems());
-        castorConfig.getSnmpCollectionCollection().add(0, resourceTypeCollection);
-        return castorConfig;
+        config.getSnmpCollectionCollection().add(0, resourceTypeCollection);
+        return config;
     }
 
     public void setConfigDirectory(String configDirectory) {
@@ -100,7 +112,7 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
 
     public String getConfigDirectory() {
         if (m_configDirectory == null) {
-            StringBuffer sb = new StringBuffer(ConfigFileConstants.getHome());
+            final StringBuffer sb = new StringBuffer(ConfigFileConstants.getHome());
             sb.append(File.separator);
             sb.append("etc");
             sb.append(File.separator);
@@ -111,25 +123,23 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
         return m_configDirectory;
     }
 
-    public String getSnmpStorageFlag(String collectionName) {
-        SnmpCollection collection = getSnmpCollection(collectionName);
+    public String getSnmpStorageFlag(final String collectionName) {
+        final SnmpCollection collection = getSnmpCollection(collectionName);
         return collection == null ? null : collection.getSnmpStorageFlag();
     }
 
-    public List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
-        if (log().isDebugEnabled())
-            log().debug("getMibObjectList: collection: " + cName + " sysoid: " + aSysoid + " address: " + anAddress + " ifType: " + ifType);
+    public List<MibObject> getMibObjectList(final String cName, final String aSysoid, final String anAddress, final int ifType) {
+        if (log().isDebugEnabled()) log().debug("getMibObjectList: collection: " + cName + " sysoid: " + aSysoid + " address: " + anAddress + " ifType: " + ifType);
 
         if (aSysoid == null) {
-            if (log().isDebugEnabled())
-                log().debug("getMibObjectList: aSysoid parameter is NULL...");
+            if (log().isDebugEnabled()) log().debug("getMibObjectList: aSysoid parameter is NULL...");
             return new ArrayList<MibObject>();
         }
 
         // Retrieve the appropriate Collection object
-        SnmpCollection collection = getSnmpCollection(cName);
+        final SnmpCollection collection = getSnmpCollection(cName);
         if (collection == null) {
-            return new ArrayList<MibObject>();
+            return Collections.emptyList();
         }
 
         // First build a list of SystemDef objects which "match" the passed
@@ -165,14 +175,10 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
         //
         // NOTE: A SystemDef object which contains an empty IP list and
         // an empty Mask list matches ALL IP addresses (default is INCLUDE).
-        //
-        List<SystemDef> systemList = new ArrayList<SystemDef>();
-        Enumeration<SystemDef> e = collection.getSystems().enumerateSystemDef();
 
-        SystemDef system = null;
-        while (e.hasMoreElements()) {
-            system = e.nextElement();
+        final List<SystemDef> systemList = new ArrayList<SystemDef>();
 
+        for (final SystemDef system : collection.getSystems().getSystemDefCollection()) {
             // Match on sysoid?
             boolean bMatchSysoid = false;
 
@@ -181,9 +187,9 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
             String currSysoid = null;
             SystemDefChoice sysChoice = system.getSystemDefChoice();
 
-            if (sysChoice.getSysoid() != null)
+            if (sysChoice.getSysoid() != null) {
                 currSysoid = sysChoice.getSysoid();
-            else if (sysChoice.getSysoidMask() != null) {
+            } else if (sysChoice.getSysoidMask() != null) {
                 currSysoid = sysChoice.getSysoidMask();
                 isMask = true;
             }
@@ -193,16 +199,14 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
                     // SystemDef's sysoid is a mask, 'aSysoid' need only
                     // start with the sysoid mask in order to match
                     if (aSysoid.startsWith(currSysoid)) {
-                        if (log().isDebugEnabled())
-                            log().debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
+                        if (log().isDebugEnabled()) log().debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
                         bMatchSysoid = true;
                     }
                 } else {
                     // System's sysoid is not a mask, 'aSysoid' must
                     // match the sysoid exactly.
                     if (aSysoid.equals(currSysoid)) {
-                        if (log().isDebugEnabled())
-                            log().debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
+                        if (log().isDebugEnabled()) log().debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
                         bMatchSysoid = true;
                     }
                 }
@@ -219,32 +223,27 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
                         maskList = system.getIpList().getIpAddrMaskCollection();
                     }
 
-                    // If either Address list or Mask list exist then
-                    // 'anAddress'
+                    // If either Address list or Mask list exist then 'anAddress'
                     // must be included by one of them
-                    if (addrList != null && addrList.size() > 0 || maskList != null && maskList.size() > 0)
+                    if (addrList != null && addrList.size() > 0 || maskList != null && maskList.size() > 0) {
                         bMatchIPAddress = false;
+                    }
 
                     // First see if address is in list of specific addresses
                     if (addrList != null && addrList.size() > 0) {
                         if (addrList.contains(anAddress)) {
-                            if (log().isDebugEnabled())
-                                log().debug("getMibObjectList: addrList exists and does include IP address " + anAddress + " for system <name>: " + system.getName());
+                            if (log().isDebugEnabled()) log().debug("getMibObjectList: addrList exists and does include IP address " + anAddress + " for system <name>: " + system.getName());
                             bMatchIPAddress = true;
                         }
                     }
 
-                    // If still no match, see if address matches any of the
-                    // masks
+                    // If still no match, see if address matches any of the masks
                     if (bMatchIPAddress == false) {
 
                         if (maskList != null && maskList.size() > 0) {
-                            Iterator<String> iter = maskList.iterator();
-                            while (iter.hasNext()) {
-                                String currMask = iter.next();
+                            for (final String currMask : maskList) {
                                 if (anAddress.indexOf(currMask) == 0) {
-                                    if (log().isDebugEnabled())
-                                        log().debug("getMibObjectList: anAddress '" + anAddress + "' matches mask '" + currMask + "'");
+                                    if (log().isDebugEnabled()) log().debug("getMibObjectList: anAddress '" + anAddress + "' matches mask '" + currMask + "'");
                                     bMatchIPAddress = true;
                                     break;
                                 }
@@ -255,26 +254,17 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
             }
 
             if (bMatchSysoid && bMatchIPAddress) {
-                if (log().isDebugEnabled())
-                    log().debug("getMibObjectList: MATCH!! adding system '" + system.getName() + "'");
+                if (log().isDebugEnabled()) log().debug("getMibObjectList: MATCH!! adding system '" + system.getName() + "'");
                 systemList.add(system);
             }
         }
 
-        // Next build list of Mib objects to collect from the list of matching
-        // SystemDefs
-        List<MibObject> mibObjectList = new ArrayList<MibObject>();
+        // Next build list of Mib objects to collect from the list of matching SystemDefs
+        final List<MibObject> mibObjectList = new ArrayList<MibObject>();
 
-        Iterator<SystemDef> i = systemList.iterator();
-        while (i.hasNext()) {
-            system = i.next();
-
+        for (final SystemDef system : systemList) {
             // Next process each of the SystemDef's groups
-            List<String> groupList = system.getCollect().getIncludeGroupCollection();
-            Iterator<String> j = groupList.iterator();
-            while (j.hasNext()) {
-                // Call processGroupName on each group within the SystemDef
-                String grpName = j.next();
+            for (final String grpName : system.getCollect().getIncludeGroupCollection()) {
                 processGroupName(cName, grpName, ifType, mibObjectList);
             }
         }
@@ -283,19 +273,34 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
     }
 
     public Map<String, ResourceType> getConfiguredResourceTypes() {
-        Map<String,ResourceType> map = new HashMap<String,ResourceType>();
-        Collection<SnmpCollection> snmpCollections = getContainer().getObject().getSnmpCollectionCollection();
-        for (SnmpCollection collection : snmpCollections) {
-            for (ResourceType resourceType : collection.getResourceTypeCollection()) {
+        final Map<String,ResourceType> map = new HashMap<String,ResourceType>();
+
+        final Collection<SnmpCollection> snmpCollections = getContainer().getObject().getSnmpCollectionCollection();
+        for (final SnmpCollection collection : snmpCollections) {
+            for (final ResourceType resourceType : collection.getResourceTypeCollection()) {
                 map.put(resourceType.getName(), resourceType);
             }
         }
-        validateResourceTypes(map.keySet());
+
+        // FIXME: I guarantee there's a cleaner way to do this, but I didn't want to refactor everything
+        // that calls this just to optimize out validation.
+        if (!m_validated) {
+            try {
+                validateResourceTypes(map.keySet());
+            } catch (final RuntimeException e) {
+                m_validationException = e;
+                throw e;
+            }
+        } else {
+            if (m_validationException != null) {
+                throw m_validationException;
+            }
+        }
         return map;
     }
 
-    public RrdRepository getRrdRepository(String collectionName) {
-        RrdRepository repo = new RrdRepository();
+    public RrdRepository getRrdRepository(final String collectionName) {
+        final RrdRepository repo = new RrdRepository();
         repo.setRrdBaseDir(new File(getRrdPath()));
         repo.setRraList(getRRAList(collectionName));
         repo.setStep(getStep(collectionName));
@@ -303,18 +308,18 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
         return repo;
     }
 
-    public int getStep(String collectionName) {
-        SnmpCollection collection = getSnmpCollection(collectionName);
+    public int getStep(final String collectionName) {
+        final SnmpCollection collection = getSnmpCollection(collectionName);
         return collection == null ? -1 : collection.getRrd().getStep();
     }
 
-    public List<String> getRRAList(String collectionName) {
-        SnmpCollection collection = getSnmpCollection(collectionName);
+    public List<String> getRRAList(final String collectionName) {
+        final SnmpCollection collection = getSnmpCollection(collectionName);
         return collection == null ? null : collection.getRrd().getRraCollection();
     }
 
     public String getRrdPath() {
-        String rrdPath = getContainer().getObject().getRrdRepository();
+        final String rrdPath = getContainer().getObject().getRrdRepository();
         if (rrdPath == null) {
             throw new RuntimeException("Configuration error, failed to retrieve path to RRD repository.");
         }
@@ -324,17 +329,16 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
          * File.separator char off of the end of the path.
          */
         if (rrdPath.endsWith(File.separator)) {
-            rrdPath = rrdPath.substring(0, (rrdPath.length() - File.separator.length()));
+            return rrdPath.substring(0, (rrdPath.length() - File.separator.length()));
         }
         return rrdPath;
     }
 
     /* Private Methods */
 
-    private SnmpCollection getSnmpCollection(String collectionName) {
-        for (SnmpCollection collection : getContainer().getObject().getSnmpCollection()) {
-            if (collection.getName().equals(collectionName))
-                return collection;
+    private SnmpCollection getSnmpCollection(final String collectionName) {
+        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollection()) {
+            if (collection.getName().equals(collectionName)) return collection;
         }
         return null;
     }
@@ -357,14 +361,14 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
      * @param mibObjectList
      *            List of MibObject objects being built.
      */
-    private void processGroupName(String cName, String groupName, int ifType, List<MibObject> mibObjectList) {
+    private void processGroupName(final String cName, final String groupName, final int ifType, final List<MibObject> mibObjectList) {
         ThreadCategory log = log();
 
         // Using the collector name retrieve the group map
-        Map<String, Group> groupMap = getCollectionGroupMap().get(cName);
+        final Map<String, Group> groupMap = getCollectionGroupMap().get(cName);
 
         // Next use the groupName to access the Group object
-        Group group = groupMap.get(groupName);
+        final Group group = groupMap.get(groupName);
 
         // Verify that we have a valid Group object...generate
         // warning message if not...
@@ -378,11 +382,8 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
         }
 
         // Process any sub-groups contained within this group
-        List<String> groupNameList = group.getIncludeGroupCollection();
-        Iterator<String> i = groupNameList.iterator();
-        while (i.hasNext()) {
-            // Recursive call to process sub-groups
-            processGroupName(cName, i.next(), ifType, mibObjectList);
+        for (final String includeGroup : group.getIncludeGroupCollection()) {
+            processGroupName(cName, includeGroup, ifType, mibObjectList);
         }
 
         // Add this group's objects to the object list provided
@@ -396,7 +397,7 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
         // the group's ifType value to verify that they match
         // (if group's ifType is "all" then the objects will
         // automatically be added.
-        String ifTypeStr = String.valueOf(ifType);
+        final String ifTypeStr = String.valueOf(ifType);
         String groupIfType = group.getIfType();
 
         boolean addGroupObjects = false;
@@ -407,7 +408,7 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
         } else {
             if (groupIfType.equals("all")) {
                 addGroupObjects = true;
-            } else if (groupIfType.equals("ignore")) {
+            } else if ("ignore".equals(groupIfType)) {
                 // Do nothing
             } else if (ifType == ALL_IF_ATTRIBUTES) {
                 addGroupObjects = true;
@@ -416,8 +417,7 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
                 // a single type value or a list of values. In the case
                 // of a list the ifType values will be delimited by commas.
                 boolean isList = false;
-                if (groupIfType.indexOf(',') != -1)
-                    isList = true;
+                if (groupIfType.indexOf(',') != -1) isList = true;
 
                 // Next compare the provided ifType parameter with the
                 // group's ifType value to determine if the group's OIDs
@@ -433,8 +433,7 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
                 // ifType parm must be extracted and compared until an
                 // EXACT match is found..
                 if (!isList) {
-                    if (ifTypeStr.equals(groupIfType))
-                        addGroupObjects = true;
+                    if (ifTypeStr.equals(groupIfType)) addGroupObjects = true;
                 } else {
                     int tmpIndex = groupIfType.indexOf(ifTypeStr);
                     while (tmpIndex != -1) {
@@ -443,7 +442,7 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
                         // get substring starting at tmpIndex to
                         // either the end of the groupIfType string
                         // or to the first comma after tmpIndex
-                        int nextComma = groupIfType.indexOf(',');
+                        final int nextComma = groupIfType.indexOf(',');
 
                         String parsedType = null;
                         if (nextComma == -1) // No comma, this is last type
@@ -461,8 +460,7 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
 
                         // No more commas indicates no more ifType values to
                         // compare...we're done
-                        if (nextComma == -1)
-                            break;
+                        if (nextComma == -1) break;
 
                         // Get next substring and reset tmpIndex to
                         // once again point to the first occurrence of
@@ -478,11 +476,9 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
             if (log.isDebugEnabled()) {
                 log.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are included for ifType: " + ifType);
             }
-            List<MibObj> objectList = group.getMibObjCollection();
-            processObjectList(groupName, groupIfType, objectList, mibObjectList);
+            processObjectList(groupName, groupIfType, group.getMibObjCollection(), mibObjectList);
         } else {
-            if (log.isDebugEnabled())
-                log.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are excluded for ifType: " + ifType);
+            if (log.isDebugEnabled()) log.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are excluded for ifType: " + ifType);
         }
     }
 
@@ -498,13 +494,10 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
      * @param mibObjectList
      *            List of MibObject objects currently being built
      */
-    private void processObjectList(String groupName, String groupIfType, List<MibObj> objectList, List<MibObject> mibObjectList) {
-        Iterator<MibObj> i = objectList.iterator();
-        while (i.hasNext()) {
-            MibObj mibObj = i.next();
-
+    private void processObjectList(final String groupName, final String groupIfType, final List<MibObj> objectList, final List<MibObject> mibObjectList) {
+        for (final MibObj mibObj : objectList) {
             // Create a MibObject from the castor MibObj
-            MibObject aMibObject = new MibObject();
+            final MibObject aMibObject = new MibObject();
             aMibObject.setGroupName(groupName);
             aMibObject.setGroupIfType(groupIfType);
             aMibObject.setOid(mibObj.getOid());
@@ -514,7 +507,7 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
             aMibObject.setMaxval(mibObj.getMaxval());
             aMibObject.setMinval(mibObj.getMinval());
 
-            ResourceType resourceType = getConfiguredResourceTypes().get(mibObj.getInstance());
+            final ResourceType resourceType = getConfiguredResourceTypes().get(mibObj.getInstance());
             if (resourceType != null) {
                 aMibObject.setResourceType(resourceType);
             }
@@ -547,22 +540,17 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
         // This is parsed and built at initialization for
         // faster processing at run-timne.
         // 
-        Map<String,Map<String,Group>> collectionGroupMap = new HashMap<String,Map<String,Group>>();
+        final Map<String,Map<String,Group>> collectionGroupMap = new HashMap<String,Map<String,Group>>();
 
-        Collection<SnmpCollection> collections = getContainer().getObject().getSnmpCollectionCollection();
-        Iterator<SnmpCollection> citer = collections.iterator();
-        while (citer.hasNext()) {
-            SnmpCollection collection = citer.next();
-
+        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollectionCollection()) {
             // Build group map for this collection
-            Map<String,Group> groupMap = new HashMap<String,Group>();
+            final Map<String,Group> groupMap = new HashMap<String,Group>();
 
-            Groups groups = collection.getGroups();
-            java.util.Collection<Group> groupList = groups.getGroupCollection();
-            Iterator<Group> giter = groupList.iterator();
-            while (giter.hasNext()) {
-                Group group = giter.next();
-                groupMap.put(group.getName(), group);
+            final Groups groups = collection.getGroups();
+            if (groups != null) {
+                for (final Group group : groups.getGroupCollection()) {
+                    groupMap.put(group.getName(), group);
+                }
             }
             collectionGroupMap.put(collection.getName(), groupMap);
         }
@@ -578,25 +566,17 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
         }
 
         final String allowableValues = "any positive number, 'ifIndex', or any of the configured resourceTypes: " + configuredString;
-        final Collection<SnmpCollection> snmpCollections = getContainer().getObject().getSnmpCollectionCollection();
-        for (final SnmpCollection collection : snmpCollections) {
+        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollectionCollection()) {
             final Groups groups = collection.getGroups();
             if (groups != null) {
 				for (final Group group : groups.getGroupCollection()) {
 	                for (final MibObj mibObj : group.getMibObjCollection()) {
 	                    final String instance = mibObj.getInstance();
-	                    if (instance == null) {
-	                        continue;
-	                    }
-	                    if (s_digitsPattern.matcher(instance).matches()) {
-	                        continue;
-	                    }
-	                    if (MibObject.INSTANCE_IFINDEX.equals(instance)) {
-	                        continue;
-	                    }
-	                    if (allowedResourceTypes.contains(instance)) {
-	                        continue;
-	                    }
+	                    if (instance == null)                            continue;
+	                    if (s_digitsPattern.matcher(instance).matches()) continue;
+	                    if (MibObject.INSTANCE_IFINDEX.equals(instance)) continue;
+	                    if (allowedResourceTypes.contains(instance))     continue;
+
 	                    // XXX this should be a better exception
 	                    throw new IllegalArgumentException("instance '" + instance + "' invalid in mibObj definition for OID '" + mibObj.getOid() + "' in collection '" + collection.getName() + "' for group '" + group.getName() + "'.  Allowable instance values: " + allowableValues);
 	                }

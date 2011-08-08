@@ -42,7 +42,7 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CollectorConfigDao;
-import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
+import org.opennms.netmgt.dao.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.test.ConfigurationTestUtils;
