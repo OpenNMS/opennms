@@ -66,8 +66,7 @@ import org.springframework.core.io.Resource;
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
 public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<DatacollectionConfig, DatacollectionConfig> implements DataCollectionConfigDao {
-
-    private static final Pattern s_digitsPattern = Pattern.compile("\\d+"); 
+    private static final Pattern s_digitsPattern = Pattern.compile("^.*?\\d+.*?$"); 
     
     private String m_configDirectory;
 
@@ -82,6 +81,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     @Override
     protected DatacollectionConfig loadConfig(final Resource resource) {
         m_validated = false;
+        m_validationException = null;
         return super.loadConfig(resource);
     }
     
@@ -573,9 +573,9 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 	                for (final MibObj mibObj : group.getMibObjCollection()) {
 	                    final String instance = mibObj.getInstance();
 	                    if (instance == null)                            continue;
+                        if (MibObject.INSTANCE_IFINDEX.equals(instance)) continue;
+                        if (allowedResourceTypes.contains(instance))     continue;
 	                    if (s_digitsPattern.matcher(instance).matches()) continue;
-	                    if (MibObject.INSTANCE_IFINDEX.equals(instance)) continue;
-	                    if (allowedResourceTypes.contains(instance))     continue;
 
 	                    // XXX this should be a better exception
 	                    throw new IllegalArgumentException("instance '" + instance + "' invalid in mibObj definition for OID '" + mibObj.getOid() + "' in collection '" + collection.getName() + "' for group '" + group.getName() + "'.  Allowable instance values: " + allowableValues);
