@@ -76,7 +76,8 @@ public class LatencyInterface {
 	    NetworkInterface<InetAddress> iface = getNetworkInterface();
 		// ThresholdEntity map attributes
 	    //
-	    Map<String, ThresholdEntity> thresholdMap = (Map<String, ThresholdEntity>) iface.getAttribute(LatencyThresholder.THRESHOLD_MAP_KEY);
+	    @SuppressWarnings("unchecked")
+        Map<String, ThresholdEntity> thresholdMap = (Map<String, ThresholdEntity>) iface.getAttribute(LatencyThresholder.THRESHOLD_MAP_KEY);
 	    return thresholdMap;
 	}
 

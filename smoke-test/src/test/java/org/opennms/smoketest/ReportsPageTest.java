@@ -27,17 +27,29 @@ public class ReportsPageTest extends SeleneseTestBase {
     }
 
     @Test
-    public void testReportsPage() throws Exception {
+    public void testAllTextIsPresent() throws Exception {
         assertTrue(selenium.isTextPresent("Reports"));
         assertTrue(selenium.isTextPresent("Descriptions"));
         assertTrue(selenium.isTextPresent("Key SNMP Customized"));
         assertTrue(selenium.isTextPresent("Name contains"));
-        assertTrue(selenium.isElementPresent("css=input[type=submit]"));
-        assertTrue(selenium.isElementPresent("//input[@value='KSC Reports']"));
+    }
+     
+    @Test
+    public void testAllLinksArePresent() {
         assertTrue(selenium.isElementPresent("link=Resource Graphs"));
         assertTrue(selenium.isElementPresent("link=KSC Performance, Nodes, Domains"));
         assertTrue(selenium.isElementPresent("link=Database Reports"));
         assertTrue(selenium.isElementPresent("link=Statistics Reports"));
+    }
+        
+     @Test
+     public void testAllFormsArePresent() {
+        assertTrue(selenium.isElementPresent("css=input[type=submit]"));
+        assertTrue(selenium.isElementPresent("//input[@value='KSC Reports']"));
+     }
+        
+      @Test
+      public void testAllLinks() {
         selenium.click("link=Resource Graphs");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("Standard Resource"));

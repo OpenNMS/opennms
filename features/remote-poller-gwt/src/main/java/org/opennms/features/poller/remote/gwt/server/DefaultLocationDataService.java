@@ -28,6 +28,8 @@
 
 package org.opennms.features.poller.remote.gwt.server;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -68,12 +70,12 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,10 +84,6 @@ import org.springframework.util.Assert;
 
 /**
  * <p>DefaultLocationDataService class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultLocationDataService implements LocationDataService, InitializingBean {
     /**
@@ -748,7 +746,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             if (ipi.getNode() != null) {
                 service.setNodeId(ipi.getNode().getId());
             }
-            service.setIpAddress(ipi.getIpAddressAsString());
+            service.setIpAddress(str(ipi.getIpAddress()));
             service.setHostname(ipi.getIpHostName());
             final OnmsSnmpInterface snmpi = ipi.getSnmpInterface();
             if (snmpi != null) {

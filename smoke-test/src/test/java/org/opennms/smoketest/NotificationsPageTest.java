@@ -28,7 +28,7 @@ public class NotificationsPageTest extends SeleneseTestBase {
     }
 
     @Test
-    public void testNotificationsPage() throws Exception {
+    public void testAllTextIsPresent() throws Exception {
         assertTrue(selenium.isTextPresent("Notification queries"));
         assertTrue(selenium.isTextPresent("Outstanding and Acknowledged Notices"));
         assertTrue(selenium.isTextPresent("Notification Escalation"));
@@ -36,11 +36,23 @@ public class NotificationsPageTest extends SeleneseTestBase {
         assertTrue(selenium.isTextPresent("Once a notice is sent"));
         assertTrue(selenium.isTextPresent("User:"));
         assertTrue(selenium.isTextPresent("Notice:"));
-        assertTrue(selenium.isElementPresent("css=input[type=submit]"));
-        assertTrue(selenium.isElementPresent("//input[@value='Get details']"));
+    }
+
+    @Test
+    public void testAllLinksArePresent() {
         assertTrue(selenium.isElementPresent("link=Your outstanding notices"));
         assertTrue(selenium.isElementPresent("link=All outstanding notices"));
         assertTrue(selenium.isElementPresent("link=All acknowledged notices"));
+    }
+
+    @Test 
+    public void testAllFormsArePresent() {
+        assertTrue(selenium.isElementPresent("css=input[type=submit]"));
+        assertTrue(selenium.isElementPresent("//input[@value='Get details']"));
+    }
+
+    @Test
+    public void testAllLinks() {
         selenium.click("link=Your outstanding notices");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("admin was notified"));

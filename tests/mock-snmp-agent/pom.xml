@@ -5,7 +5,6 @@
     <version>1.11.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms</groupId>
   <artifactId>mock-snmp-agent</artifactId>
   <name>Mock SNMP Agent</name>
   <dependencies>

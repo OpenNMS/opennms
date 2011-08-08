@@ -29,7 +29,6 @@
 package org.opennms.web.filter;
 
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
@@ -64,7 +63,7 @@ public abstract class NoSubstringFilter extends OneArgFilter<String> {
     /** {@inheritDoc} */
     @Override
     public Criterion getCriterion() {
-        return Expression.not(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE));
+        return Restrictions.not(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE));
     }
     
     /** {@inheritDoc} */

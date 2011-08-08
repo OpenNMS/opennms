@@ -28,19 +28,10 @@
 
 package org.opennms.web.element;
 
-/**
- * <p>Service class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 public class Service {
     private int m_id;
     
     private int m_nodeId;
-
-    private int m_ifIndex;
 
     private String m_ipAddr;
 
@@ -67,7 +58,6 @@ public class Service {
      *
      * @param id a int.
      * @param nodeid a int.
-     * @param ifindex a int.
      * @param ipaddr a {@link java.lang.String} object.
      * @param serviceid a int.
      * @param serviceName a {@link java.lang.String} object.

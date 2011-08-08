@@ -72,16 +72,8 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
  *
  * @author <A HREF="mailto:seth@opennms.org">Seth Leger </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:seth@opennms.org">Seth Leger </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public class Vulnscand extends AbstractServiceDaemon {
-    /**
-     * The log4j category used to log messages.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Vulnscand";
-
     /**
      * Singleton instance of the Vulnscand class
      */

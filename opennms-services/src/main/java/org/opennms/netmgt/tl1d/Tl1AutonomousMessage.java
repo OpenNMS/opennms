@@ -142,8 +142,8 @@ public class Tl1AutonomousMessage extends Tl1Message {
         private String m_alarmCode;
         private String m_alarmTag;
         private String m_verb;
-        private String m_verbModifier1;
-        private String m_verbModifier2;
+        // private String m_verbModifier1;
+        // private String m_verbModifier2;
         private String m_highestSeverity; //derived from alarmCode
        
         
@@ -197,7 +197,7 @@ public class Tl1AutonomousMessage extends Tl1Message {
         private String m_block;
         private String m_aid;
         private String m_ntfcncde;
-        private String m_severity;
+        // private String m_severity;
         private String m_additionalParams;
 
         public String getBlock() {

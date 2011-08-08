@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.mock;
 
-
-import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Snmp;
 
 public class SnmpWrapper {
 	Snmp m_snmp;
 	
-	public SnmpWrapper(Snmp snmp) {
+	public SnmpWrapper(final Snmp snmp) {
 		m_snmp = snmp;
 	}
 	
@@ -44,7 +43,6 @@ public class SnmpWrapper {
 	}
 	
 	public String toString() {
-        Snmp snmp = m_snmp;
-		return EventUtils.toString(snmp);
+        return EventUtils.toString(m_snmp);
 	}
 }

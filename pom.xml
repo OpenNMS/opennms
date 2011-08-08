@@ -1286,6 +1286,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-config</artifactId>
+        <version>${project.version}</version>
+        <classifier>xsds</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-config-tester</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1486,6 +1492,12 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-model</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-model</artifactId>
+        <version>${project.version}</version>
+        <classifier>xsds</classifier>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -2141,6 +2153,11 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
+        <version>1.5.11</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
         <version>1.5.11</version>
       </dependency>
       <dependency>

@@ -58,11 +58,6 @@ import org.springframework.util.Assert;
  */
 public class Capsd extends AbstractServiceDaemon {
     /**
-     * The log4j category used to log messages.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Capsd";
-
-    /**
      * Database synchronization lock for synchronizing write access to the
      * database between the SuspectEventProcessor and RescanProcessor thread
      * pools

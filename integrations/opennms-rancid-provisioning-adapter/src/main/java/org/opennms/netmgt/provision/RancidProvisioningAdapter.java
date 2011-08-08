@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -543,18 +545,19 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
             for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
                 log().debug("getSuitableIpForRancid: trying Interface with id: " + onmsIpInterface.getId());
-                if (onmsIpInterface.getIpAddressAsString() != null) 
-                    ipaddr = onmsIpInterface.getIpAddressAsString();
-                else 
+                if (onmsIpInterface.getIpAddress() != null) {
+                    ipaddr = str(onmsIpInterface.getIpAddress());
+                } else { 
                     log().debug("getSuitableIpForRancid: found null ip address on Interface with id: " + onmsIpInterface.getId());
-
+                }
             }
         } else {        
             log().debug("getSuitableIpForRancid: found SNMP Primary Interface");
-            if (primaryInterface.getIpAddressAsString() != null )
-                ipaddr = primaryInterface.getIpAddressAsString();
-            else 
+            if (primaryInterface.getIpAddress() != null ) {
+                ipaddr = str(primaryInterface.getIpAddress());
+            } else {
                 log().debug("getSuitableIpForRancid: found null ip address on Primary Interface");
+            }
         }
         return ipaddr;
     }

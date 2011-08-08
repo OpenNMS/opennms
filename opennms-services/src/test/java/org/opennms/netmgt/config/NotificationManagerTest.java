@@ -120,7 +120,6 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
         OnmsIpInterface ipInterface;
         OnmsMonitoredService service;
         OnmsServiceType serviceType;
-        OnmsCategory category;
 
         OnmsCategory category1 = new OnmsCategory("CategoryOne");
         m_categoryDao.save(category1);

@@ -76,8 +76,7 @@ final public class SshMonitor extends AbstractServiceMonitor {
      * to Provided that the interface's response is valid we mark the poll status
      * as available and return.
      */
-    @SuppressWarnings("unchecked")
-    public PollStatus poll(InetAddress address, Map parameters) {
+    public PollStatus poll(InetAddress address, Map<String,Object> parameters) {
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 

@@ -74,9 +74,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  */
 @Transactional
 public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon {
@@ -113,11 +110,6 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         public long getServerTime() {
             return m_serverTime;
         }
-        
-        public void setServerTime(long serverTime) {
-            m_serverTime = serverTime;
-        }
-
     }
     private LocationMonitorDao m_locMonDao;
     private MonitoredServiceDao m_monSvcDao;

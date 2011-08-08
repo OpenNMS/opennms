@@ -150,8 +150,8 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 		}
 	}
 
-	@SuppressWarnings({ "unchecked" })
-	private void injectTemporaryDatabase(final TestContext testContext) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+    private void injectTemporaryDatabase(final TestContext testContext) {
 		((TemporaryDatabaseAware) testContext.getTestInstance()).setTemporaryDatabase(m_database);
 	}
 

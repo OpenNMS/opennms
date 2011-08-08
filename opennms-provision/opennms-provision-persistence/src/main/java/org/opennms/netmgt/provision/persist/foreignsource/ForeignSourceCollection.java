@@ -52,8 +52,6 @@ import org.opennms.core.xml.ValidateUsing;
 public class ForeignSourceCollection implements List<ForeignSource> {
     private LinkedList<ForeignSource> m_list = null;
 
-	private static final long serialVersionUID = 10L;
-
 	/**
 	 * <p>Constructor for ForeignSourceCollection.</p>
 	 */

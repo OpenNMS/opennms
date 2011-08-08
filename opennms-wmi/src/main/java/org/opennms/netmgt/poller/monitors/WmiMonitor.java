@@ -81,9 +81,8 @@ public class WmiMonitor extends AbstractServiceMonitor {
 	 * we are talking to a valid service and we set the service status to
 	 * SERVICE_AVAILABLE and return.
 	 */
-	@SuppressWarnings("unchecked")
     @Override
-	public PollStatus poll(final MonitoredService svc, final Map parameters) {
+	public PollStatus poll(final MonitoredService svc, final Map<String,Object> parameters) {
 		// Holds the response reason.
 		String reason = null;
 		// Used to exit the retry loop early, if possible.
@@ -92,9 +91,9 @@ public class WmiMonitor extends AbstractServiceMonitor {
 		WmiResult response = null;
 		// Used to track how long the request took.
 		Double responseTime = null;
-		final NetworkInterface iface = svc.getNetInterface();
+		final NetworkInterface<InetAddress> iface = svc.getNetInterface();
 		// Get the address we're going to poll.
-		final InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+		final InetAddress ipv4Addr = iface.getAddress();
 		
 		// Validate the interface type.
 		if (iface.getType() != NetworkInterface.TYPE_INET) {

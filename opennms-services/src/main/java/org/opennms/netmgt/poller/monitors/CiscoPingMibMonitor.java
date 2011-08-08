@@ -76,7 +76,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 @Distributable(DistributionContext.DAEMON)
 public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 	
-	private class CiscoPingEntry {
+    @SuppressWarnings("unused")
+	private static final class CiscoPingEntry {
 		private int m_ciscoPingSerialNumber;
 		private int m_ciscoPingProtocol;
 		private InetAddress m_ciscoPingAddress;
@@ -94,7 +95,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		public void setCiscoPingSerialNumber(int ciscoPingSerialNumber) {
 			m_ciscoPingSerialNumber = ciscoPingSerialNumber;
 		}
-		public int getCiscoPingProtocol() {
+        public int getCiscoPingProtocol() {
 			return m_ciscoPingProtocol;
 		}
 		public void setCiscoPingProtocol(int ciscoPingProtocol) {
@@ -254,6 +255,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
                                                                                 // ciscoPingMIB / ciscoPingMIBObjects /
                                                                                 // ciscoPingTable / ciscoPingEntry
     
+    @SuppressWarnings("unused")
     private static final String PING_SERIAL = "1";
     private static final String PING_PROTOCOL = "2";
     private static final String PING_ADDRESS = "3";
@@ -271,10 +273,14 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     private static final String PING_ENTRY_STATUS = "16";
     private static final String PING_VRF_NAME = "17";
     
+    @SuppressWarnings("unused")
     private static final int ROWSTATUS_ACTIVE = 1;
+    @SuppressWarnings("unused")
     private static final int ROWSTATUS_NOT_IN_SERVICE = 2;
+    @SuppressWarnings("unused")
     private static final int ROWSTATUS_NOT_READY = 3;
     private static final int ROWSTATUS_CREATE_AND_GO = 4;
+    @SuppressWarnings("unused")
     private static final int ROWSTATUS_CREATE_WAIT = 5;
     private static final int ROWSTATUS_DESTROY = 6;
     
@@ -308,7 +314,9 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     /* Maximum age (in ms, but with 1s accuracy) of a ciscoPingEntry that will not be deleted.
      * Set to zero to disable cleanup of the ciscoPingTable.  Best to leave set to default.
      */
+    @SuppressWarnings("unused")
     private static final String PARM_CLEANUP_INTERVAL = "cleanup-interval";
+    @SuppressWarnings("unused")
     private static final int PARM_CLEANUP_INTERVAL_DEFAULT = 86400000;
     
     /* The node ID of the node that will act as our IOS ping proxy */
@@ -424,7 +432,8 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         
         int minSuccessPercent = ParameterMap.getKeyedInteger(parameters, PARM_SUCCESS_PERCENT, PARM_SUCCESS_PERCENT_DEFAULT);
         
-        int cleanupInterval = ParameterMap.getKeyedInteger(parameters, PARM_CLEANUP_INTERVAL, PARM_CLEANUP_INTERVAL_DEFAULT);
+        // FIXME: Should the cleanup stuff be fixed to actually use this? Not clear if it really matters.
+        // int cleanupInterval = ParameterMap.getKeyedInteger(parameters, PARM_CLEANUP_INTERVAL, PARM_CLEANUP_INTERVAL_DEFAULT);
         
         // Determine the node to use as our IOS ping proxy
         //
