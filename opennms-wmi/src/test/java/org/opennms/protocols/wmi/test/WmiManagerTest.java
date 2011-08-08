@@ -28,18 +28,23 @@
 
 package org.opennms.protocols.wmi.test;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
+import junit.framework.TestCase;
+
 import org.opennms.protocols.wmi.IWmiClient;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
 import org.opennms.protocols.wmi.WmiParams;
-import org.opennms.protocols.wmi.WmiResult;
-import org.opennms.protocols.wmi.test.stubs.OnmsWbemObjectSetBiosStub;
 import org.opennms.protocols.wmi.test.stubs.OnmsWbemObjectBiosStub;
-import org.opennms.protocols.wmi.test.stubs.OnmsWbemPropSetBiosStub;
+import org.opennms.protocols.wmi.test.stubs.OnmsWbemObjectSetBiosStub;
 import org.opennms.protocols.wmi.test.stubs.OnmsWbemPropBiosStub;
+import org.opennms.protocols.wmi.test.stubs.OnmsWbemPropSetBiosStub;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
-import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
@@ -390,7 +395,8 @@ public class WmiManagerTest extends TestCase {
 			wmiManager.init(m_WmiMock);
 
 			// Perform an operation.
-			WmiResult res = wmiManager.performOp(params);
+			// WmiResult res = 
+			        wmiManager.performOp(params);
             //assertTrue(res)
 
         } catch (WmiException e) {

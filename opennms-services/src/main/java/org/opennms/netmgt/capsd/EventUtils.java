@@ -54,7 +54,6 @@ import org.opennms.netmgt.xml.event.Value;
  * for dealing with Events
  *
  * @author brozow
- * @version $Id: $
  */
 public abstract class EventUtils {
 

@@ -468,15 +468,13 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
                 if ("https".equals(uri.getScheme())) {
                     if (Boolean.parseBoolean(m_page.getDisableSslVerification())) {
-                        SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
-                        Scheme https = registry.getScheme("https");
+                        final SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
+                        final Scheme https = registry.getScheme("https");
+
                         // Override the trust validation with a lenient implementation
-                        SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM));
+                        final SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
-                        // @see http://hc.apache.org/httpcomponents-client-4.0.1/tutorial/html/connmgmt.html
-                        factory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-                        Scheme lenient = new Scheme(https.getName(), factory, https.getDefaultPort());
+                        final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
                         // This will replace the existing "https" schema
                         registry.register(lenient);
                     }
@@ -486,8 +484,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     method.setQueryParameters(expandParms(svc));
                 }
 
-                if (m_page.getUserInfo() != null) {
-                    String userInfo = m_page.getUserInfo();
+                if (getUserInfo() != null) {
+                    String userInfo = getUserInfo();
                     String[] streetCred = userInfo.split(":", 2);
                     if (streetCred.length == 2) {
                         client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(streetCred[0], streetCred[1]));

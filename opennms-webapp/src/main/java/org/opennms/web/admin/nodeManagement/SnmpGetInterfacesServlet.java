@@ -112,7 +112,6 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
     private List<SnmpManagedInterface> getNodeInterfaces(HttpSession userSession, int nodeid) throws SQLException {
         Connection connection = null;
         List<SnmpManagedInterface> nodeInterfaces = new ArrayList<SnmpManagedInterface>();
-        int lineCount = 0;
 
         final DBUtils d = new DBUtils(getClass());
         try {
@@ -128,7 +127,6 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
 
             if (interfaceSet != null) {
                 while (interfaceSet.next()) {
-                    lineCount++;
                     SnmpManagedInterface newInterface = new SnmpManagedInterface();
                     nodeInterfaces.add(newInterface);
                     newInterface.setNodeid(interfaceSet.getInt(1));

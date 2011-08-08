@@ -45,13 +45,6 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
-/**
- * <p>ProvisioningGroupsController class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 public class ProvisioningGroupsController extends SimpleFormController {
 
     private ManualProvisioningService m_provisioningService;
@@ -177,9 +170,8 @@ public class ProvisioningGroupsController extends SimpleFormController {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
-    protected Map referenceData(HttpServletRequest request) throws Exception {
+    protected Map<String,Object> referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> refData = new HashMap<String, Object>();
 
         Set<String>               names          = new TreeSet<String>();
