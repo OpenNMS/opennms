@@ -448,6 +448,8 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
              */ 
             clonedEvent.setAlarmData(null);
             clonedEvent.setSeverity(null);
+            /* the reasoning for alarmData and severity also applies to description (see NMS-4038). */
+            clonedEvent.setDescr(null);
             return clonedEvent;
         }
 
