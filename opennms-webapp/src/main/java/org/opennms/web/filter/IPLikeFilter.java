@@ -31,20 +31,12 @@ package org.opennms.web.filter;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.type.StringType;
-import org.hibernate.type.Type;
 
 
 /**
  * Encapsulates all interface filtering functionality.
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
 public abstract class IPLikeFilter extends OneArgFilter<String> {
-
-    private static final Type STRING_TYPE = new StringType();
 
     /**
      * <p>Constructor for IPLikeFilter.</p>
@@ -54,14 +46,14 @@ public abstract class IPLikeFilter extends OneArgFilter<String> {
      * @param propertyName a {@link java.lang.String} object.
      * @param ipLikePattern a {@link java.lang.String} object.
      */
-    public IPLikeFilter(String filterType, String fieldName, String propertyName, String ipLikePattern) {
+    public IPLikeFilter(final String filterType, final String fieldName, final String propertyName, final String ipLikePattern) {
         super(filterType, SQLType.STRING, fieldName, propertyName, ipLikePattern);
     }
 
     /** {@inheritDoc} */
     @Override
     public String getSQLTemplate() {
-        return " IPLIKE("+getSQLFieldName()+", %s) ";
+        return " IPLIKE(" + getSQLFieldName() + ", %s) ";
     }
 
     /** {@inheritDoc} */

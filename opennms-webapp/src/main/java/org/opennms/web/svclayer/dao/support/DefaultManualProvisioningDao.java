@@ -29,24 +29,15 @@
 package org.opennms.web.svclayer.dao.support;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.dao.ManualProvisioningDao;
 import org.springframework.core.io.FileSystemResource;
@@ -64,6 +55,7 @@ import org.springframework.util.Assert;
  */
 public class DefaultManualProvisioningDao implements ManualProvisioningDao {
     
+    private static final Pattern XML_FILE_PATTERN = Pattern.compile("^(.*)\\.xml$");
     private File m_importFileDir;
 
     /**
@@ -71,7 +63,7 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
      *
      * @param importFileDir a {@link java.io.File} object.
      */
-    public void setImportFileDirectory(File importFileDir) {
+    public void setImportFileDirectory(final File importFileDir) {
         m_importFileDir = importFileDir;
         if (!m_importFileDir.exists()) {
             if (!m_importFileDir.mkdirs()) {
@@ -81,10 +73,10 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
     }
 
     /** {@inheritDoc} */
-    public Requisition get(String name) {
+    public Requisition get(final String name) {
         checkGroupName(name);
         
-        File importFile = getImportFile(name);
+        final File importFile = getImportFile(name);
         
         if (!importFile.exists()) {
             return null;
@@ -97,7 +89,7 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         return CastorUtils.unmarshalWithTranslatedExceptions(Requisition.class, new FileSystemResource(importFile));
     }
 
-    private void checkGroupName(String name) {
+    private void checkGroupName(final String name) {
         Assert.hasLength(name, "Group name must not be null or the empty string");
     }
 
@@ -108,9 +100,9 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
      */
     public Collection<String> getProvisioningGroupNames() {
         
-        String[] importFiles = m_importFileDir.list(getImportFilenameFilter());
+        final String[] importFiles = m_importFileDir.list(getImportFilenameFilter());
         
-        String[] groupNames = new String[importFiles.length];
+        final String[] groupNames = new String[importFiles.length];
         for (int i = 0; i < importFiles.length; i++) {
             groupNames[i] = getGroupNameForImportFileName(importFiles[i]);
         }
@@ -119,46 +111,29 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
     }
 
     /** {@inheritDoc} */
-    public void save(String groupName, Requisition group) {
+    public void save(final String groupName, final Requisition group) {
         checkGroupName(groupName);
         
-        File importFile = getImportFile(groupName);
+        final File importFile = getImportFile(groupName);
         
         if (importFile.exists()) {
-            Requisition currentData = get(groupName);
+            final Requisition currentData = get(groupName);
             if (currentData.getDateStamp().compare(group.getDateStamp()) > 0) {
                 throw new OptimisticLockingFailureException("Data in file "+importFile+" is newer than data to be saved!");
             }
         }
-        
-        
-        Writer w = null;
-        try {
-            // write to a string to check constraints
-            StringWriter strWriter = new StringWriter();
-            group.updateDateStamp();
-            Marshaller.marshal(group, strWriter);
-            
-            // if we successfully get here then the file is correct
-            w = new OutputStreamWriter(new FileOutputStream(importFile), "UTF-8");
-            w.write(strWriter.toString());
-            
-        } catch (IOException e) {
-            throw new PermissionDeniedDataAccessException("Unable to write file "+importFile, e);
-        } catch (MarshalException e) {
-            throw new MarshallingResourceFailureException("Unable to marshall import data to file "+importFile, e);
-        } catch (ValidationException e) {
-            throw new MarshallingResourceFailureException("Invalid data for group "+groupName, e);
-        } finally {
-            if (w != null) {
-                IOUtils.closeQuietly(w);
-            }
-        }
-        
 
+        final FileWriter writer;
+        try {
+            writer = new FileWriter(importFile);
+        } catch (final IOException e) {
+            throw new PermissionDeniedDataAccessException("Unable to write file "+importFile, e);
+        }
+        group.updateDateStamp();
+        CastorUtils.marshalWithTranslatedExceptions(group, writer);
     }
 
-    private File getImportFile(String groupName) {
+    private File getImportFile(final String groupName) {
         checkGroupName(groupName);
         return new File(m_importFileDir, groupName+".xml");
     }
@@ -170,42 +145,33 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
      */
     public FilenameFilter getImportFilenameFilter() {
         return new FilenameFilter() {
-
-            public boolean accept(File dir, String name) {
-                return name.matches(".*\\.xml");
+            public boolean accept(final File dir, final String name) {
+                final Matcher matcher = XML_FILE_PATTERN.matcher(name);
+                return matcher.matches();
             }
             
         };
     }
     
-    private String getGroupNameForImportFileName(String filename) {
-        Matcher matcher = Pattern.compile("^(.*)\\.xml$").matcher(filename);
+    private String getGroupNameForImportFileName(final String filename) {
+        final Matcher matcher = XML_FILE_PATTERN.matcher(filename);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Invalid import gorup file name "+filename+", doesn't match form *.xml");
         }
-        
         return matcher.group(1);
-        
     }
 
 
 
     /** {@inheritDoc} */
-    public String getUrlForGroup(String groupName) {
+    public String getUrlForGroup(final String groupName) {
         checkGroupName(groupName);
-        File groupFile = getImportFile(groupName);
-        try {
-            return groupFile.toURL().toString();
-        } catch (MalformedURLException e) {
-            // can this really happen?
-            throw new IllegalArgumentException("Unable to find URL for group "+groupName, e);
-        }
+        return getImportFile(groupName).toURI().toString();
     }
 
     /** {@inheritDoc} */
-    public void delete(String groupName) {
-        File groupFile = getImportFile(groupName);
-        groupFile.delete();
+    public void delete(final String groupName) {
+        getImportFile(groupName).delete();
     }
 
 }

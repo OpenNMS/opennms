@@ -29,6 +29,8 @@
 
 package org.opennms.web.outage;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -156,9 +158,11 @@ public class DaoWebOutageRepository implements WebOutageRepository {
     private Outage mapOnmsOutageToOutage(OnmsOutage onmsOutage) {
         if(onmsOutage != null){
             Outage outage = new Outage();    
+            final String outageAddress = str(onmsOutage.getIpAddress());
+
             outage.outageId = onmsOutage.getId();
-            outage.ipAddress = onmsOutage.getIpAddressAsString();
-            outage.hostname = onmsOutage.getIpAddressAsString();
+            outage.ipAddress = outageAddress;
+            outage.hostname = outageAddress;
             outage.lostServiceEventId = onmsOutage.getServiceLostEvent() != null ? onmsOutage.getServiceLostEvent().getId() : 0;
             //outage.lostServiceNotificationAcknowledgedBy = 
             outage.lostServiceTime = onmsOutage.getIfLostService();

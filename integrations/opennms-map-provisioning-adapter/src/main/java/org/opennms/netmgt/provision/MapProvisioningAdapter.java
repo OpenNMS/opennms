@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -816,11 +818,11 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         if (primaryInterface == null) {
             final Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
             for (final OnmsIpInterface onmsIpInterface : ipInterfaces) {
-                    return onmsIpInterface.getIpAddressAsString();
+                    return str(onmsIpInterface.getIpAddress());
             }
             return "0.0.0.0";
         }
-        return primaryInterface.getIpAddressAsString();
+        return str(primaryInterface.getIpAddress());
     }
     
     private String getLabel(final String FQDN) {

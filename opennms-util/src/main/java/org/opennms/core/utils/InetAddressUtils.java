@@ -59,7 +59,7 @@ abstract public class InetAddressUtils {
             // so it should almost never be pingable unless the network has an
             // oddball link-local IPv4 setup.
             UNPINGABLE_ADDRESS = InetAddress.getByAddress(new byte[] {(byte)169, (byte)254, (byte)254, (byte)254});
-        } catch (UnknownHostException e) {
+        } catch (final UnknownHostException e) {
             throw new IllegalStateException(e);
         }
     }
@@ -97,8 +97,7 @@ abstract public class InetAddressUtils {
     }
 
     public static byte[] incr(final byte[] address) throws UnknownHostException {
-    	final BigInteger addr = new BigInteger(1, address)
-    		.add(BigInteger.ONE);
+    	final BigInteger addr = new BigInteger(1, address).add(BigInteger.ONE);
         return convertBigIntegerIntoInetAddress(addr).getAddress();
     }
 
@@ -107,8 +106,7 @@ abstract public class InetAddressUtils {
     }
 
     public static byte[] decr(final byte[] address) throws UnknownHostException {
-    	final BigInteger addr = new BigInteger(1, address)
-    		.subtract(BigInteger.ONE);
+    	final BigInteger addr = new BigInteger(1, address).subtract(BigInteger.ONE);
         return convertBigIntegerIntoInetAddress(addr).getAddress();
     }
 
@@ -197,18 +195,18 @@ abstract public class InetAddressUtils {
                 } else {
                     //throw new UnknownHostException("No IPv4 addresses found via A record DNS lookup of host: " + hostname);
                 }
-            } catch (TextParseException e) {
-                UnknownHostException ex = new UnknownHostException("Could not perform A record lookup for host: " + hostname);
+            } catch (final TextParseException e) {
+                final UnknownHostException ex = new UnknownHostException("Could not perform A record lookup for host: " + hostname);
                 ex.initCause(e);
                 throw ex;
             }
 
-            List<InetAddress> v6Addresses = new ArrayList<InetAddress>();
+            final List<InetAddress> v6Addresses = new ArrayList<InetAddress>();
             try {
-                Record[] quadARecs = new Lookup(hostname, Type.AAAA).run();
+                final Record[] quadARecs = new Lookup(hostname, Type.AAAA).run();
                 if (quadARecs != null) {
-                    for (Record quadARec : quadARecs) {
-                        InetAddress addr = ((AAAARecord)quadARec).getAddress();
+                    for (final Record quadARec : quadARecs) {
+                        final InetAddress addr = ((AAAARecord)quadARec).getAddress();
                         if (addr instanceof Inet6Address) {
                             v6Addresses.add(addr);
                         } else {
@@ -219,13 +217,13 @@ abstract public class InetAddressUtils {
                 } else {
                     // throw new UnknownHostException("No IPv6 addresses found via AAAA record DNS lookup of host: " + hostname);
                 }
-            } catch (TextParseException e) {
-                UnknownHostException ex = new UnknownHostException("Could not perform AAAA record lookup for host: " + hostname);
+            } catch (final TextParseException e) {
+                final UnknownHostException ex = new UnknownHostException("Could not perform AAAA record lookup for host: " + hostname);
                 ex.initCause(e);
                 throw ex;
             }
 
-            List<InetAddress> addresses = new ArrayList<InetAddress>();
+            final List<InetAddress> addresses = new ArrayList<InetAddress>();
             if (preferInet6Address) {
                 addresses.addAll(v6Addresses);
                 addresses.addAll(v4Addresses);
@@ -234,7 +232,7 @@ abstract public class InetAddressUtils {
                 addresses.addAll(v6Addresses);
             }
 
-            for (InetAddress address : addresses) {
+            for (final InetAddress address : addresses) {
                 retval = address;
                 if (!preferInet6Address && retval instanceof Inet4Address) break;
                 if (preferInet6Address && retval instanceof Inet6Address) break;
@@ -242,7 +240,7 @@ abstract public class InetAddressUtils {
             if (preferInet6Address && !(retval instanceof Inet6Address)) {
                 throw new UnknownHostException("No IPv6 address could be found for the hostname: " + hostname);
             }
-        } catch (UnknownHostException e) {
+        } catch (final UnknownHostException e) {
             if (throwException) {
                 throw e;
             } else {
@@ -323,7 +321,7 @@ abstract public class InetAddressUtils {
                                  addr[13],
                                  addr[14],
                                  addr[15]
-            );
+            ).intern();
         } else {
             throw new IllegalArgumentException("IP address has an illegal number of bytes: " + addr.length);
         }
@@ -505,7 +503,7 @@ abstract public class InetAddressUtils {
 			return str(addr);
 		} else if (addr instanceof Inet6Address) {
 			// This is horribly inefficient, I'm sure, but good enough for now.
-			byte[] buf = addr.getAddress();
+		    final byte[] buf = addr.getAddress();
 			final StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < buf.length; i++) {
 				sb.append(buf[i] & 0xff);

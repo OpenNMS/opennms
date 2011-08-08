@@ -36,6 +36,7 @@ import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.util.Collections;
 import java.util.Date;
@@ -122,7 +123,7 @@ public class PollerTest {
         node.setId(1);
         OnmsIpInterface iface = new OnmsIpInterface("::1", node);
         // Make sure that the address is being converted into fully-qualified format
-        assertEquals("0000:0000:0000:0000:0000:0000:0000:0001", iface.getIpAddressAsString());
+        assertEquals("0000:0000:0000:0000:0000:0000:0000:0001", str(iface.getIpAddress()));
         OnmsServiceType svcType = new OnmsServiceType("HTTP");
         OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
         return svc;

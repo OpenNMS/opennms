@@ -652,32 +652,28 @@ public final class EventUtil {
      * @param event
      * @return All event parameter values as a String
      */
-    private static String getAllParamValues(Event event) {
-        String retParmVal = null;
+    private static String getAllParamValues(final Event event) {
         if (event.getParmCollection().size() < 1) {
             return null;
         } else {
-            StringBuffer ret = new StringBuffer();
+            final StringBuffer ret = new StringBuffer();
 
-            for (Parm evParm : event.getParmCollection()) {
-                String parmName = evParm.getParmName();
-                if (parmName == null)
-                    continue;
+            for (final Parm evParm : event.getParmCollection()) {
+                final String parmName = evParm.getParmName();
+                if (parmName == null) continue;
 
-                Value parmValue = evParm.getValue();
-                if (parmValue == null)
-                    continue;
+                final Value parmValue = evParm.getValue();
+                if (parmValue == null) continue;
 
-                String parmValueStr = getValueAsString(parmValue);
+                final String parmValueStr = getValueAsString(parmValue);
                 if (ret.length() != 0) {
                     ret.append(SPACE_DELIM);
                 }
 
-                ret.append(parmName.trim() + NAME_VAL_DELIM + "\""
-                           + parmValueStr + "\"");
+                ret.append(parmName.trim()).append(NAME_VAL_DELIM).append("\"").append(parmValueStr).append("\"");
             }
 
-            return ret.toString();
+            return ret.toString().intern();
         }
     }
 
