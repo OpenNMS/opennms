@@ -54,6 +54,7 @@
 			<title>Enhancement</title>
 
 			<itemizedlist>
+				<listitem><para>Create a poller monitor to "proxy" pings via the CISCO-PING-MIB (Issue <ulink url='http://issues.opennms.org/browse/NMS-4668'>NMS-4668</ulink>)</para></listitem>
 				<listitem><para>Add alarm-data annotation for Powerware upsDischarged trap event (Issue <ulink url='http://issues.opennms.org/browse/NMS-4679'>NMS-4679</ulink>)</para></listitem>
 				<listitem><para>Better provisiond debugging (Issue <ulink url='http://issues.opennms.org/browse/NMS-4694'>NMS-4694</ulink>)</para></listitem>
 				<listitem><para>Add the possibility to modify eventparms (as text) from Vacuumd (Issue <ulink url='http://issues.opennms.org/browse/NMS-4712'>NMS-4712</ulink>)</para></listitem>
