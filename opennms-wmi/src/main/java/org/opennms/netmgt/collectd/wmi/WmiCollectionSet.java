@@ -109,7 +109,6 @@ public class WmiCollectionSet implements CollectionSet {
         return false;
     }
     
-	@Override
 	public Date getCollectionTimestamp() {
 		return m_timestamp;
 	}
