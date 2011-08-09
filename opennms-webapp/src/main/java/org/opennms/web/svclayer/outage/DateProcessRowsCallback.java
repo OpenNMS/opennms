@@ -43,7 +43,7 @@ import java.util.Collection;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @since 1.8.1
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings("unchecked")
 public class DateProcessRowsCallback extends ProcessRowsCallback
 {
     /** {@inheritDoc} */

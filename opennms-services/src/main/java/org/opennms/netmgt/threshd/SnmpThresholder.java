@@ -102,7 +102,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
-    public void initialize(@SuppressWarnings("rawtypes") Map parameters) {
+    public void initialize(@SuppressWarnings("unchecked") Map parameters) {
 
         m_serviceName = (String)parameters.get("svcName");
         
@@ -153,7 +153,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
      */
-    public void initialize(ThresholdNetworkInterface netIface, @SuppressWarnings("rawtypes") Map parms) {
+    public void initialize(ThresholdNetworkInterface netIface, @SuppressWarnings("unchecked") Map parms) {
         SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = new SnmpThresholdNetworkInterface(m_thresholdsDao, netIface, parms);
         m_snmpThresholdNetworkInterfaces.put(netIface, snmpThresholdNetworkInterface);
 
@@ -210,7 +210,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      *
      * Perform threshold checking.
      */
-    public int check(ThresholdNetworkInterface netIface, EventProxy eproxy, @SuppressWarnings("rawtypes") Map parms) {
+    public int check(ThresholdNetworkInterface netIface, EventProxy eproxy, @SuppressWarnings("unchecked") Map parms) {
         SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = m_snmpThresholdNetworkInterfaces.get(netIface);
         if (snmpThresholdNetworkInterface == null) {
             log().warn("check: interface has not been initialized in this thresholder: " + netIface);

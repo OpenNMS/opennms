@@ -262,7 +262,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                                 return new SimpleSurveillanceStatus((Number)tuple[0], (Number)tuple[1], (Number)tuple[2]);
                             }
 
-                            @SuppressWarnings("rawtypes")
+                            @SuppressWarnings("unchecked")
                             public List transformList(List collection) {
                                 return collection;
                             }

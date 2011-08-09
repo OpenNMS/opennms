@@ -344,7 +344,7 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> map) {
         InetAddress ipaddr = (InetAddress) agent.getAddress();
-        JMXNodeInfo nodeInfo = (JMXNodeInfo) agent.getAttribute(NODE_INFO_KEY);
+        JMXNodeInfo nodeInfo = agent.getAttribute(NODE_INFO_KEY);
         Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();
         String collDir = serviceName;
         

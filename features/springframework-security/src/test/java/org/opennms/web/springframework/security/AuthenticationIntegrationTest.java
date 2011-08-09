@@ -28,32 +28,29 @@
 
 package org.opennms.web.springframework.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.test.ThrowableAnticipator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.Authentication;
 import org.springframework.security.BadCredentialsException;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.providers.dao.DaoAuthenticationProvider;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration
+public class AuthenticationIntegrationTest {
 
-public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSpringContextTests {
+	@Autowired
 	private DaoAuthenticationProvider m_provider; 
 
-	@Override
-	protected String[] getConfigLocations() {
-		return new String[] {
-                "org/opennms/web/springframework/security/applicationContext-authenticationIntegrationTest.xml"
-        		};
-	}
-	
-	public void setDaoAuthenticationProvider(DaoAuthenticationProvider provider) {
-		m_provider = provider;
-	}
-	public DaoAuthenticationProvider getDaoAuthenticationProvider() {
-		return m_provider;
-	}
-	
+	@Test
 	public void testAuthenticateAdmin() {
 	    Authentication authentication = new UsernamePasswordAuthenticationToken("admin", "admin");
 		Authentication authenticated = m_provider.authenticate(authentication);
@@ -65,6 +62,7 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 		assertEquals("GrantedAuthorities two name", "ROLE_ADMIN", authorities[1].getAuthority());
 	}
 	
+	@Test
 	public void testAuthenticateRtc() {
 		Authentication authentication = new UsernamePasswordAuthenticationToken("rtc", "rtc");
 		Authentication authenticated = m_provider.authenticate(authentication);
@@ -75,6 +73,7 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 		assertEquals("GrantedAuthorities one name", "ROLE_RTC", authorities[0].getAuthority());
 	}
 	
+	@Test
 	public void testAuthenticateTempUser() {
 		Authentication authentication = new UsernamePasswordAuthenticationToken("tempuser", "mike");
 		Authentication authenticated = m_provider.authenticate(authentication);
@@ -85,6 +84,7 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 		assertEquals("GrantedAuthorities zero role", "ROLE_USER", authorities[0].getAuthority());
 	}
 	
+	@Test
 	public void testAuthenticateBadUsername() {
 		Authentication authentication = new UsernamePasswordAuthenticationToken("badUsername", "admin");
 		
@@ -98,6 +98,7 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 		ta.verifyAnticipated();
 	}
 	
+	@Test
 	public void testAuthenticateBadPassword() {
 		Authentication authentication = new UsernamePasswordAuthenticationToken("admin", "badPassword");
 
