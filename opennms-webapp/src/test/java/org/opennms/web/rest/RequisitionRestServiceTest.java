@@ -32,8 +32,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import javax.xml.ws.WebServiceException;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,7 +73,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
 
         try {
         	sendPost("/requisitions", req, 400);
-        } catch (final WebServiceException e) {
+        } catch (final Exception e) {
         	assertTrue("exception should say 'c' has duplicates", e.getMessage().contains("Duplicate nodes found on foreign source test: c (2 found)"));
         }
     }
