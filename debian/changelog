@@ -58,6 +58,14 @@ opennms (1.9.0-1) unstable; urgency=low
 
  -- Benjamin Reed <ranger@opennms.org>  Tue, 10 Aug 2010 11:42:00 -0500
 
+opennms (1.8.13-1) unstable; urgency=high
+
+  * New upstream release.  Note that this release fixes two important bugs: a
+  filehandle leak that can be triggered by Provisiond scanning, and a memory leak
+  in the logging infrastructure.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 09 Aug 2011 15:41:00 -0400
+
 opennms (1.8.12-1) unstable; urgency=medium
 
   * New upstream release.
