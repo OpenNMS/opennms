@@ -37,8 +37,8 @@ import javax.xml.ws.WebServiceException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
 
@@ -74,7 +74,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
             "</model-import>";
 
         try {
-        	sendPost("/requisitions", req);
+        	sendPost("/requisitions", req, 400);
         } catch (final WebServiceException e) {
         	assertTrue("exception should say 'c' has duplicates", e.getMessage().contains("Duplicate nodes found on foreign source test: c (2 found)"));
         }
