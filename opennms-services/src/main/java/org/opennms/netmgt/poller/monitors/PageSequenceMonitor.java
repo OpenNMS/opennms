@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -750,14 +750,15 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return m_pageSequence;
         }
 
-        @SuppressWarnings("deprecation")
         PageSequence parsePageSequence(String sequenceString) {
             try {
-                return CastorUtils.unmarshal(PageSequence.class, new StringReader(sequenceString));
+                return CastorUtils.unmarshal(PageSequence.class, new ByteArrayInputStream(sequenceString.getBytes("UTF-8")));
             } catch (MarshalException e) {
                 throw new IllegalArgumentException("Unable to parse page-sequence for HttpMonitor: " + e + "\nConfig: " + sequenceString, e);
             } catch (ValidationException e) {
                 throw new IllegalArgumentException("Unable to validate page-sequence for HttpMonitor: " + e + "\nConfig: " + sequenceString, e);
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalArgumentException("UTF-8 encoding not supported", e);
             }
 
         }

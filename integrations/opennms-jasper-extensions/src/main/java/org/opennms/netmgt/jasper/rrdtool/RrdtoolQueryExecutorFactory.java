@@ -37,6 +37,8 @@ import net.sf.jasperreports.engine.query.JRQueryExecuterFactory;
 
 public class RrdtoolQueryExecutorFactory implements JRQueryExecuterFactory {
 
+    @Override
+    @SuppressWarnings("unchecked")
     public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map parameters)throws JRException {
         return new RrdtoolQueryExecutor(dataset, parameters);
     }

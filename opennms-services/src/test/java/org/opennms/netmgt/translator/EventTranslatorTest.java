@@ -33,8 +33,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -89,7 +90,6 @@ public class EventTranslatorTest {
     private OutageAnticipator m_outageAnticipator;
     private EventTranslatorConfigFactory m_config;
 
-    @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
 //        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
@@ -105,7 +105,7 @@ public class EventTranslatorTest {
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(true);
 
-        Reader rdr = new StringReader(m_passiveStatusConfiguration);
+        InputStream rdr = new ByteArrayInputStream(m_passiveStatusConfiguration.getBytes("UTF-8"));
         m_config = new EventTranslatorConfigFactory(rdr, m_db);
         EventTranslatorConfigFactory.setInstance(m_config);
         
@@ -270,10 +270,9 @@ public class EventTranslatorTest {
         assertTrue(m_config.translateEvent(te3).isEmpty());
     }
     
-    @SuppressWarnings("deprecation")
     @Test
-    public void testTranslateLinkDown() throws MarshalException, ValidationException, SQLException {
-        Reader rdr = new StringReader(getLinkDownTranslation());
+    public void testTranslateLinkDown() throws MarshalException, ValidationException, SQLException, UnsupportedEncodingException {
+        InputStream rdr = new ByteArrayInputStream(getLinkDownTranslation().getBytes("UTF-8"));
         m_config = new EventTranslatorConfigFactory(rdr, m_db);
         EventTranslatorConfigFactory.setInstance(m_config);
         
