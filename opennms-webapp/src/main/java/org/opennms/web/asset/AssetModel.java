@@ -32,7 +32,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,12 +44,8 @@ import org.springframework.util.Assert;
 
 /**
  * <p>AssetModel class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
-public class AssetModel extends Object {
+public class AssetModel {
 
     /**
      * <p>getAsset</p>
@@ -64,8 +59,9 @@ public class AssetModel extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM ASSETS WHERE NODEID=" + nodeId);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ASSETS WHERE NODEID=?");
+            stmt.setInt(1, nodeId);
+            ResultSet rs = stmt.executeQuery();
 
             Asset[] assets = rs2Assets(rs);
 
@@ -96,9 +92,9 @@ public class AssetModel extends Object {
         try {
             Connection conn = Vault.getDbConnection();
             d.watch(conn);
-            Statement stmt = conn.createStatement();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ASSETS");
             d.watch(stmt);
-            ResultSet rs = stmt.executeQuery("SELECT * FROM ASSETS");
+            ResultSet rs = stmt.executeQuery();
             d.watch(rs);
 
             assets = rs2Assets(rs);
