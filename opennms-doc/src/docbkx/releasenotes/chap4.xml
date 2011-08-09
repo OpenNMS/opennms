@@ -53,7 +53,7 @@
 		<listitem><para>Solaris 10 (X86 and SPARC)</para></listitem>
 		<listitem>
 			<formalpara>
-				<title>MacOSX 10.4 (Tiger), 10.5 (Leopard)</title>
+				<title>MacOSX 10.4 and Higher</title>
 				<para>On MacOSX, the Fink distribution <ulink
 				url="http://pdb.finkproject.org/pdb/package.php/opennms">packages of OpenNMS</ulink>
 				are supported. See <ulink url="http://www.finkproject.org/">the Fink web

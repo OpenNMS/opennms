@@ -16,7 +16,7 @@
 	<section id="issues-1.8.5">
 		<title>OpenNMS 1.8.5</title>
 		<para>
-			When upgrading OpenNMS to version 1.8.5, it is important to upgrade your
+			When upgrading OpenNMS to version 1.8.5 or later, it is important to upgrade your
 			remote pollers to 1.8.5 as well.  The remote poller wire protocol has changed
 			since 1.8.4.
 		</para>
