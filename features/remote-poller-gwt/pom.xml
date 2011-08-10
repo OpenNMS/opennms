@@ -192,7 +192,7 @@
     <dependency>
       <groupId>com.google.gwt.google-apis</groupId>
       <artifactId>gwt-maps</artifactId>
-      <version>1.1.0</version>
+      <version>1.1.0-GWT23</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.gwt</groupId>

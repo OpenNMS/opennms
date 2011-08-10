@@ -420,6 +420,65 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="opennms-1.8.13">
+		<title>Changes in OpenNMS 1.8.13</title>
+
+		<section id="opennms-1.8.13-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>service not being marked up after interfaceUp event. (Issue <ulink url='http://issues.opennms.org/browse/NMS-1316'>NMS-1316</ulink>)</para></listitem>
+				<listitem><para>Trapd is not able to process SNMPv3 traps (Issue <ulink url='http://issues.opennms.org/browse/NMS-2995'>NMS-2995</ulink>)</para></listitem>
+				<listitem><para>SNAPSHOT installer scripts are faulty (Issue <ulink url='http://issues.opennms.org/browse/NMS-4034'>NMS-4034</ulink>)</para></listitem>
+				<listitem><para>translated events are displayed like the original event (Issue <ulink url='http://issues.opennms.org/browse/NMS-4038'>NMS-4038</ulink>)</para></listitem>
+				<listitem><para>Win32ServiceDetector fails to detect services (Issue <ulink url='http://issues.opennms.org/browse/NMS-4047'>NMS-4047</ulink>)</para></listitem>
+				<listitem><para>We need a WmiDetector (Issue <ulink url='http://issues.opennms.org/browse/NMS-4106'>NMS-4106</ulink>)</para></listitem>
+				<listitem><para>Thresholdvalue in scientific notation not displayed/stored correctly (Issue <ulink url='http://issues.opennms.org/browse/NMS-4126'>NMS-4126</ulink>)</para></listitem>
+				<listitem><para>threshd process wrong counter-type SNMP data after SNMP data collection failed or restored (Issue <ulink url='http://issues.opennms.org/browse/NMS-4244'>NMS-4244</ulink>)</para></listitem>
+				<listitem><para>In-line thresholder ignores scheduled outages (Issue <ulink url='http://issues.opennms.org/browse/NMS-4261'>NMS-4261</ulink>)</para></listitem>
+				<listitem><para>Update Copyright Notice to include 2011 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4339'>NMS-4339</ulink>)</para></listitem>
+				<listitem><para>jetty allows directory listings (Issue <ulink url='http://issues.opennms.org/browse/NMS-4375'>NMS-4375</ulink>)</para></listitem>
+				<listitem><para>UI exception when deleting a service from an interface (Issue <ulink url='http://issues.opennms.org/browse/NMS-4472'>NMS-4472</ulink>)</para></listitem>
+				<listitem><para>Services drop down list not alphabatized (Issue <ulink url='http://issues.opennms.org/browse/NMS-4483'>NMS-4483</ulink>)</para></listitem>
+				<listitem><para>Importer doesn&#39;t log to correct log4j category (Issue <ulink url='http://issues.opennms.org/browse/NMS-4545'>NMS-4545</ulink>)</para></listitem>
+				<listitem><para>Node label changes ourside requisition editor on nodes with a foreign-source ID (Issue <ulink url='http://issues.opennms.org/browse/NMS-4590'>NMS-4590</ulink>)</para></listitem>
+				<listitem><para>Provision Groups do not synchronize on startup (Issue <ulink url='http://issues.opennms.org/browse/NMS-4623'>NMS-4623</ulink>)</para></listitem>
+				<listitem><para>Outstanding notice page not aligning correctly (Issue <ulink url='http://issues.opennms.org/browse/NMS-4657'>NMS-4657</ulink>)</para></listitem>
+				<listitem><para>Brocade resource-type and fcTable collection could be nicer (Issue <ulink url='http://issues.opennms.org/browse/NMS-4661'>NMS-4661</ulink>)</para></listitem>
+				<listitem><para>Default JDBC data collection config does not work (Issue <ulink url='http://issues.opennms.org/browse/NMS-4662'>NMS-4662</ulink>)</para></listitem>
+				<listitem><para>Capsd may reparent duplicate interfaces from requisitioned nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-4663'>NMS-4663</ulink>)</para></listitem>
+				<listitem><para>Permissions on multiple files/directories are poor (allow world-write, have setuid) (Issue <ulink url='http://issues.opennms.org/browse/NMS-4682'>NMS-4682</ulink>)</para></listitem>
+				<listitem><para>Email Notifications are not properly encoded when the message contains non us-ascii characters. (Issue <ulink url='http://issues.opennms.org/browse/NMS-4692'>NMS-4692</ulink>)</para></listitem>
+				<listitem><para>Provisiond allows duplicate nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-4695'>NMS-4695</ulink>)</para></listitem>
+				<listitem><para>Path not filtered correctly during build, etc/response-graph.properties (Issue <ulink url='http://issues.opennms.org/browse/NMS-4697'>NMS-4697</ulink>)</para></listitem>
+				<listitem><para>snmpStorageFlag=&quot;all&quot; is being ignored by the threshold procesing (Issue <ulink url='http://issues.opennms.org/browse/NMS-4700'>NMS-4700</ulink>)</para></listitem>
+				<listitem><para>Erroneous text on a node resource graph selection page (Issue <ulink url='http://issues.opennms.org/browse/NMS-4710'>NMS-4710</ulink>)</para></listitem>
+				<listitem><para>When using the GoogleMaps remote poller interface, unchecked markers are visible on initialization (Issue <ulink url='http://issues.opennms.org/browse/NMS-4734'>NMS-4734</ulink>)</para></listitem>
+				<listitem><para>Event Analysis report is missing in default configuration (Issue <ulink url='http://issues.opennms.org/browse/NMS-4753'>NMS-4753</ulink>)</para></listitem>
+				<listitem><para>Traffic Report for last month returns data from the current month (Issue <ulink url='http://issues.opennms.org/browse/NMS-4770'>NMS-4770</ulink>)</para></listitem>
+				<listitem><para>Word spelled wrong on log message (Issue <ulink url='http://issues.opennms.org/browse/NMS-4804'>NMS-4804</ulink>)</para></listitem>
+				<listitem><para>SELECT tag not closed in asset/modify.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-4819'>NMS-4819</ulink>)</para></listitem>
+				<listitem><para>Reportd JavaMailDeliveryService always copies address in sendmail-message &quot;to&quot; attribute or root@localhost (Issue <ulink url='http://issues.opennms.org/browse/NMS-4820'>NMS-4820</ulink>)</para></listitem>
+				<listitem><para>Trapd node-matching should prefer SNMP primary ifaces (Issue <ulink url='http://issues.opennms.org/browse/NMS-4822'>NMS-4822</ulink>)</para></listitem>
+				<listitem><para>Upgraded to 1.8.12 and I started to recieve an error when I try to see node information (Issue <ulink url='http://issues.opennms.org/browse/NMS-4847'>NMS-4847</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.13-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Create a poller monitor to "proxy" pings via the CISCO-PING-MIB (Issue <ulink url='http://issues.opennms.org/browse/NMS-4668'>NMS-4668</ulink>)</para></listitem>
+				<listitem><para>Add alarm-data annotation for Powerware upsDischarged trap event (Issue <ulink url='http://issues.opennms.org/browse/NMS-4679'>NMS-4679</ulink>)</para></listitem>
+				<listitem><para>Better provisiond debugging (Issue <ulink url='http://issues.opennms.org/browse/NMS-4694'>NMS-4694</ulink>)</para></listitem>
+				<listitem><para>Add the possibility to modify eventparms (as text) from Vacuumd (Issue <ulink url='http://issues.opennms.org/browse/NMS-4712'>NMS-4712</ulink>)</para></listitem>
+				<listitem><para>Add Label to thresholds for display on &quot;Edit Group&quot; page (Issue <ulink url='http://issues.opennms.org/browse/NMS-4742'>NMS-4742</ulink>)</para></listitem>
+				<listitem><para>Event Analysis Report should be usable on postgres older than 8.4 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4752'>NMS-4752</ulink>)</para></listitem>
+				<listitem><para>Alphabetize group names in the Users/Groups list (Issue <ulink url='http://issues.opennms.org/browse/NMS-4776'>NMS-4776</ulink>)</para></listitem>
+				<listitem><para>Standardize the time zone format reports (Issue <ulink url='http://issues.opennms.org/browse/NMS-4785'>NMS-4785</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.8.12">
 		<title>Changes in OpenNMS 1.8.12</title>
 

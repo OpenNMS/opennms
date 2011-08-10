@@ -28,6 +28,17 @@
   text-shadow: none;
 }
 
+.cellTableSortableHeader{
+    
+}
+
+.cellTableSortedHeaderAscending{
+    
+}
+
+.cellTableSortedHeaderDescending{
+    
+}
 
 .cellTableCell {
   padding: 2px 15px;
