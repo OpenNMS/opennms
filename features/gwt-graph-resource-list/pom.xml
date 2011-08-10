@@ -29,6 +29,12 @@
     </dependency>
     
     <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt.tableresources</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.7</version>

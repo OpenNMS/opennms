@@ -1,5 +1,7 @@
 package org.opennms.features.gwt.graph.resource.list.client.view;
 
+import org.opennms.features.gwt.tableresources.client.OnmsTableResources;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.TextColumn;
