@@ -53,6 +53,7 @@
       <sequence>
         <element name="cron-schedule" minOccurs="1" maxOccurs="1" type="string" />
         <element name="recipient" minOccurs="0" maxOccurs="unbounded" type="string" />
+        <element name="mailer" minOccurs="0" maxOccurs="1" type="string" />
         <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter"/>
       </sequence>
       <attribute name="report-template" type="string" use="required" />
