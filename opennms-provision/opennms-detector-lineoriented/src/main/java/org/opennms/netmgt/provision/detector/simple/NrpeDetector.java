@@ -58,6 +58,7 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     
     private boolean m_useSsl = DEFAULT_USE_SSL;
     private int m_padding = 2;
+    private String m_command = NrpePacket.HELLO_COMMAND;
 
     /**
      * Default constructor
@@ -79,7 +80,7 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        send(request(NrpePacket.HELLO_COMMAND), resultCodeEquals(0));
+        send(request(m_command), resultCodeEquals(0));
     }
     
     private ResponseValidator<NrpePacket> resultCodeEquals(final int desiredResultCode){
@@ -148,6 +149,24 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
      */
     public int getPadding() {
         return m_padding;
+    }
+
+    /**
+     * <p>setCommand</p>
+     *
+     * @param command a String.
+     */
+    public void setCommand(final String command) {
+        this.m_command = command;
+    }
+
+    /**
+     * <p>getCommand</p>
+     *
+     * @return a String.
+     */
+    public String getCommand() {
+        return m_command;
     }
 
 }

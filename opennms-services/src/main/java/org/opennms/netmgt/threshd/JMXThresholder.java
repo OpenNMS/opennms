@@ -398,18 +398,18 @@ public abstract class JMXThresholder implements ServiceThresholder {
         }
 
         // RRD Repository attribute
-        String repository = (String) iface.getAttribute(RRD_REPOSITORY_KEY);
+        String repository = iface.getAttribute(RRD_REPOSITORY_KEY);
         if (log.isDebugEnabled()) {
             log.debug("check: rrd repository=" + repository);
         }
 
         // Nodeid attribute
-        Integer nodeId = (Integer) iface.getAttribute(NODE_ID_KEY);
+        Integer nodeId = iface.getAttribute(NODE_ID_KEY);
 
         // node and interface ThresholdEntity map attributes
-        Map<Object,ThresholdEntity> nodeMap   = (Map<Object,ThresholdEntity>) iface.getAttribute(NODE_THRESHOLD_MAP_KEY);
-        Map<String,ThresholdEntity> baseIfMap = (Map<String,ThresholdEntity>) iface.getAttribute(BASE_IF_THRESHOLD_MAP_KEY);
-        Map<String,Map<String,ThresholdEntity>> allIfMap  = (Map<String, Map<String, ThresholdEntity>>)iface.getAttribute(ALL_IF_THRESHOLD_MAP_KEY);
+        Map<Object,ThresholdEntity> nodeMap   = iface.getAttribute(NODE_THRESHOLD_MAP_KEY);
+        Map<String,ThresholdEntity> baseIfMap = iface.getAttribute(BASE_IF_THRESHOLD_MAP_KEY);
+        Map<String,Map<String,ThresholdEntity>> allIfMap  = iface.getAttribute(ALL_IF_THRESHOLD_MAP_KEY);
 
         // -----------------------------------------------------------
         // 

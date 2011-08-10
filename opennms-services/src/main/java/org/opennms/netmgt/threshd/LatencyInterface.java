@@ -76,8 +76,7 @@ public class LatencyInterface {
 	    NetworkInterface<InetAddress> iface = getNetworkInterface();
 		// ThresholdEntity map attributes
 	    //
-	    @SuppressWarnings("unchecked")
-        Map<String, ThresholdEntity> thresholdMap = (Map<String, ThresholdEntity>) iface.getAttribute(LatencyThresholder.THRESHOLD_MAP_KEY);
+	    Map<String, ThresholdEntity> thresholdMap = iface.getAttribute(LatencyThresholder.THRESHOLD_MAP_KEY);
 	    return thresholdMap;
 	}
 
@@ -99,7 +98,7 @@ public class LatencyInterface {
 	    NetworkInterface<InetAddress> iface = getNetworkInterface();
 	
 		int nodeId = -1;
-	    Integer tmp = (Integer) iface.getAttribute(LatencyThresholder.NODE_ID_KEY);
+	    Integer tmp = iface.getAttribute(LatencyThresholder.NODE_ID_KEY);
 	    if (tmp != null)
 	        nodeId = tmp.intValue();
 	    if (nodeId == -1) {
@@ -118,7 +117,7 @@ public class LatencyInterface {
 	}
 
 	File getLatencyDir() throws ThresholdingException {
-		String repository = (String) getNetworkInterface().getAttribute(LatencyThresholder.RRD_REPOSITORY_KEY);
+		String repository = getNetworkInterface().getAttribute(LatencyThresholder.RRD_REPOSITORY_KEY);
 	    if (log().isDebugEnabled())
 	        log().debug("check: rrd repository=" + repository);
 	    // Get File object representing the

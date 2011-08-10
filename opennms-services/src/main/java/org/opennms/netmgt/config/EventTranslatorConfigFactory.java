@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,7 +100,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     /**
      * connection factory for use with sql-value
      */
-	private DataSource m_dbConnFactory;
+	private DataSource m_dbConnFactory = null;
 
     
     /**
@@ -119,7 +118,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         InputStream stream = null;
         try {
             stream = new FileInputStream(configFile);
-            marshall(stream, dbConnFactory);
+            unmarshall(stream, dbConnFactory);
         } finally {
             if (stream != null) {
                 IOUtils.closeQuietly(stream);
@@ -135,24 +134,17 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @Deprecated
-    public EventTranslatorConfigFactory(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
-        marshall(rdr, dbConnFactory);
+    public EventTranslatorConfigFactory(InputStream rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
+        unmarshall(rdr, dbConnFactory);
     }
 
-    private synchronized void marshall(InputStream stream, DataSource dbConnFactory) throws MarshalException, ValidationException {
+    private synchronized void unmarshall(InputStream stream, DataSource dbConnFactory) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, stream);
         m_dbConnFactory = dbConnFactory;
     }
     
-    @Deprecated
-    private synchronized void marshall(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, rdr);
-        m_dbConnFactory = dbConnFactory;
-    }
-    
-    private synchronized void marshall(InputStream stream) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, stream);
+    private synchronized void unmarshall(InputStream stream) throws MarshalException, ValidationException {
+        unmarshall(stream, null);
     }
 
     /**
@@ -169,7 +161,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             
             try {
                 stream = new FileInputStream(cfgFile);
-                marshall(stream);
+                unmarshall(stream);
             } finally {
                 if (stream != null) {
                     IOUtils.closeQuietly(stream);
@@ -440,6 +432,8 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
              */ 
             clonedEvent.setAlarmData(null);
             clonedEvent.setSeverity(null);
+            /* the reasoning for alarmData and severity also applies to description (see NMS-4038). */
+            clonedEvent.setDescr(null);
             return clonedEvent;
         }
 

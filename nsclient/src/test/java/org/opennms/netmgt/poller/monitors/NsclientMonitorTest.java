@@ -111,7 +111,7 @@ public class NsclientMonitorTest extends AbstractNsclientTest {
                         return address;
                     }
                     @Override
-                    public Object getAttribute(String property) {
+                    public <V> V getAttribute(String property) {
                         return null;
                     }
                     @Override

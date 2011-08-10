@@ -68,7 +68,6 @@ public class JMXSecureConnectionFactory
      * @param address a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.protocols.jmx.connectors.Jsr160ConnectionWrapper} object.
      */
-    @SuppressWarnings("restriction")
     public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<?,?> propertiesMap, InetAddress address)
     {
         Jsr160ConnectionWrapper connectionWrapper = null;
