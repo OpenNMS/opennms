@@ -1991,6 +1991,35 @@
         <artifactId>extremecomponents</artifactId>
         <version>1.0.1</version>
       </dependency>
+      <!--
+
+      JMesa is the latest version of the extremecomponents library. We
+      should eventually migrate our code to use it.
+
+      <dependency>
+        <groupId>org.jmesa</groupId>
+        <artifactId>jmesa</artifactId>
+        <version>3.0.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc-portlet</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      -->
       <dependency>
         <groupId>com.caucho</groupId>
         <artifactId>hessian</artifactId>

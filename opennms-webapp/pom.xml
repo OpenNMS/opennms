@@ -309,6 +309,16 @@
       <groupId>org.extremecomponents</groupId>
       <artifactId>extremecomponents</artifactId>
     </dependency>
+    <!--
+
+      JMesa is the latest version of the extremecomponents library. We
+      should eventually migrate our code to use it.
+
+    <dependency>
+      <groupId>org.jmesa</groupId>
+      <artifactId>jmesa</artifactId>
+    </dependency>
+    -->
     <dependency>
       <groupId>com.google.collections</groupId>
       <artifactId>google-collections</artifactId>
