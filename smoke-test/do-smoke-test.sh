@@ -119,7 +119,7 @@ run_tests() {
 	local RETVAL=0
 	rm -rf ~/.m2/repository/org/opennms
 	pushd "$SOURCEDIR/smoke-test"
-		../bamboo.pl -t -Denable.snapshots=true test
+		../bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
 		RETVAL=$?
 	popd
 	return $RETVAL
