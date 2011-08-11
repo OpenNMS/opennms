@@ -197,7 +197,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
     }
 
     public void anticipateNotifyReceivedEvent(XmlrpcAnticipator anticipator) {
-        anticipator.anticipateCall("notifyReceivedEvent", "0", "uei.opennms.org/internal/capsd/xmlrpcNotification", "test connection");
+        anticipator.anticipateCall("notifyReceivedEvent", "0", EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI, "test connection");
     }
 
     public void testDoNothing() {
@@ -224,14 +224,14 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
 
-        Event nodeOneEvent = svcEvent("uei.opennms.org/nodes/nodeLostService", 1, "192.168.1.1", "ICMP", date);
+        Event nodeOneEvent = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 1, "192.168.1.1", "ICMP", date);
         getEventIpcManager().sendNow(nodeOneEvent);
 
         Thread.sleep(1000);
         m_anticipator1.verifyAnticipated();
         m_anticipator1.shutdown();
 
-        Event nodeTwoEvent = svcEvent("uei.opennms.org/nodes/nodeLostService", 2, "192.168.1.2", "SNMP", date);
+        Event nodeTwoEvent = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 2, "192.168.1.2", "SNMP", date);
         getEventIpcManager().sendNow(nodeTwoEvent);
         
         Thread.sleep(1000);
@@ -307,7 +307,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
      
-        Event nodeOneEvent = svcEvent("uei.opennms.org/nodes/nodeLostService", 1, "192.168.1.1", "ICMP", date);
+        Event nodeOneEvent = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 1, "192.168.1.1", "ICMP", date);
         getEventIpcManager().sendNow(nodeOneEvent);
 
         Thread.sleep(1000);
@@ -317,7 +317,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         
         anticipateServerServiceCall(m_anticipator2, "sendServiceDownEvent", date);
 
-        Event nodeTwoEvent = svcEvent("uei.opennms.org/nodes/nodeLostService", 2, "192.168.1.2", "SNMP", date);
+        Event nodeTwoEvent = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 2, "192.168.1.2", "SNMP", date);
         getEventIpcManager().sendNow(nodeTwoEvent);
         
         Thread.sleep(1000);
@@ -375,7 +375,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
         
-        Event nodeOneEvent = svcEvent("uei.opennms.org/nodes/nodeLostService", 1, "192.168.1.1", "ICMP", date);
+        Event nodeOneEvent = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 1, "192.168.1.1", "ICMP", date);
         getEventIpcManager().sendNow(nodeOneEvent);
 
         Thread.sleep(1500);
@@ -385,7 +385,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         
         anticipateServerServiceCall(m_anticipator2, "sendServiceDownEvent", date);
 
-        Event nodeTwoEvent = svcEvent("uei.opennms.org/nodes/nodeLostService", 2, "192.168.1.2", "SNMP", date);
+        Event nodeTwoEvent = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 2, "192.168.1.2", "SNMP", date);
         getEventIpcManager().sendNow(nodeTwoEvent);
         
         Thread.sleep(1500);
@@ -398,7 +398,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         m_anticipator1.anticipateCall("sendServiceDownEvent", "Firewall", "192.168.1.3", "Telnet", "Not Available", "null", EventConstants.formatToString(date));
 
-        Event nodeThreeEvent = svcEvent("uei.opennms.org/nodes/nodeLostService", 3, "192.168.1.3", "Telnet", date);
+        Event nodeThreeEvent = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 3, "192.168.1.3", "Telnet", date);
         getEventIpcManager().sendNow(nodeThreeEvent);
         
         Thread.sleep(1500);
@@ -462,7 +462,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
         anticipateRouterServiceCall(m_anticipator2, "sendServiceDownEvent", date);
 
-        Event e = svcEvent("uei.opennms.org/nodes/nodeLostService", 1, "192.168.1.1", "ICMP", date);
+        Event e = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 1, "192.168.1.1", "ICMP", date);
         getEventIpcManager().sendNow(e);
 
         Thread.sleep(1000);
@@ -484,12 +484,12 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
 
-        Event lostEvent = svcEvent("uei.opennms.org/nodes/nodeLostService", 1, "192.168.1.1", "ICMP", date);
+        Event lostEvent = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 1, "192.168.1.1", "ICMP", date);
         getEventIpcManager().sendNow(lostEvent);
 
         anticipateServerServiceCall(m_anticipator2, "sendServiceUpEvent", date);
 
-        Event regainedEvent = svcEvent("uei.opennms.org/nodes/nodeRegainedService", 2, "192.168.1.2", "SNMP", date);
+        Event regainedEvent = svcEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, 2, "192.168.1.2", "SNMP", date);
         getEventIpcManager().sendNow(regainedEvent);
 
         Thread.sleep(1000);
@@ -514,7 +514,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         t.put("interface", "192.168.1.1");
         t.put("nodeLabel", "Router");
         t.put("service", "ICMP");
-        t.put("uei", "uei.opennms.org/nodes/nodeLostService");
+        t.put("uei", EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
         t.put("description", "\n"
                 + "      <p>A ICMP outage was identified on interface\n"
                 + "      192.168.1.1.</p> <p>A new Outage record has been\n"
@@ -524,7 +524,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         t.put("severity", "Minor");
         m_anticipator1.anticipateCall("sendEvent", t);
         
-        Event e = svcEvent("uei.opennms.org/nodes/nodeLostService", 1, "192.168.1.1", "ICMP", date);
+        Event e = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 1, "192.168.1.1", "ICMP", date);
         getEventIpcManager().sendNow(e);
         
         Thread.sleep(1000);
@@ -600,7 +600,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
         
-        Event e = svcEvent("uei.opennms.org/nodes/nodeLostService", 1, "192.168.1.1", "ICMP", date);
+        Event e = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 1, "192.168.1.1", "ICMP", date);
         getEventIpcManager().sendNow(e);
 
         Thread.sleep(1000);
@@ -618,7 +618,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         anticipateRouterServiceCall(m_anticipator1, "sendServiceUpEvent", date);
         
-        Event e = svcEvent("uei.opennms.org/nodes/nodeRegainedService", 1, "192.168.1.1", "ICMP", date);
+        Event e = svcEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "ICMP", date);
         getEventIpcManager().sendNow(e);
 
         Thread.sleep(1000);
@@ -636,7 +636,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         m_anticipator1.anticipateCall("sendInterfaceDownEvent", "Router", "192.168.1.1", "null", EventConstants.formatToString(date));
         
-        Event e = ifEvent("uei.opennms.org/nodes/interfaceDown", 1, "192.168.1.1", date);
+        Event e = ifEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, 1, "192.168.1.1", date);
         getEventIpcManager().sendNow(e);
 
         Thread.sleep(1000);
@@ -654,7 +654,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         m_anticipator1.anticipateCall("sendInterfaceUpEvent", "Router", "192.168.1.1", "null", "null", EventConstants.formatToString(date));
         
-        Event e = ifEvent("uei.opennms.org/nodes/interfaceUp", 1, "192.168.1.1", date);
+        Event e = ifEvent(EventConstants.INTERFACE_UP_EVENT_UEI, 1, "192.168.1.1", date);
         getEventIpcManager().sendNow(e);
 
         Thread.sleep(1000);
@@ -672,7 +672,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         m_anticipator1.anticipateCall("sendNodeDownEvent", "Router", "bar", EventConstants.formatToString(date));
         
-        Event e = nodeEvent("uei.opennms.org/nodes/nodeDown", 1, date);
+        Event e = nodeEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, date);
         getEventIpcManager().sendNow(e);
 
         Thread.sleep(1000);
@@ -690,7 +690,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         m_anticipator1.anticipateCall("sendNodeUpEvent", "Router", "bar", EventConstants.formatToString(date));
         
-        Event e = nodeEvent("uei.opennms.org/nodes/nodeUp", 1, date);
+        Event e = nodeEvent(EventConstants.NODE_UP_EVENT_UEI, 1, date);
         getEventIpcManager().sendNow(e);
 
         Thread.sleep(1000);

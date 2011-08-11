@@ -51,6 +51,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
@@ -185,7 +186,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         DataSourceFactory.setInstance(db);
         Vault.setDataSource(db);
 
-        EventBuilder bldr = new EventBuilder("uei.opennms.org/threshold/highThresholdExceeded", "LatencyStoringServiceMonitorAdaptorTest");
+        EventBuilder bldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "LatencyStoringServiceMonitorAdaptorTest");
         bldr.setNodeid(1);
         bldr.setInterface(addr("127.0.0.1"));
         bldr.setService("ICMP");

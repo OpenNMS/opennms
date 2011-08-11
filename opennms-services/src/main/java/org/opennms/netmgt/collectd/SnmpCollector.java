@@ -38,6 +38,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -92,7 +93,7 @@ public class SnmpCollector implements ServiceCollector {
     static final String SQL_GET_LATEST_FORCED_RESCAN_EVENTID = "SELECT eventid "
         + "FROM events "
         + "WHERE (nodeid=? OR ipaddr=?) "
-        + "AND eventuei='uei.opennms.org/internal/capsd/forceRescan' "
+        + "AND eventuei='" + EventConstants.FORCE_RESCAN_EVENT_UEI + "' "
         + "ORDER BY eventid DESC " + "LIMIT 1";
 
     /**
@@ -102,7 +103,7 @@ public class SnmpCollector implements ServiceCollector {
     static final String SQL_GET_LATEST_RESCAN_COMPLETED_EVENTID = "SELECT eventid "
         + "FROM events "
         + "WHERE nodeid=? "
-        + "AND eventuei='uei.opennms.org/internal/capsd/rescanCompleted' "
+        + "AND eventuei='" + EventConstants.RESCAN_COMPLETED_EVENT_UEI + "' "
         + "ORDER BY eventid DESC " + "LIMIT 1";
 
     /**

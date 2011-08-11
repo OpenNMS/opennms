@@ -58,6 +58,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -558,10 +559,10 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 		String s = event.getUei();
 		if (s==null) return;
 
-		if (    "uei.opennms.org/nodes/nodeAdded".equals(s) ||
-				"uei.opennms.org/nodes/nodeLabelChanged".equals(s) ||
-				"uei.opennms.org/nodes/nodeDeleted".equals(s) ||
-				"uei.opennms.org/nodes/assetInfoChanged".equals(s) ) {
+		if (    EventConstants.NODE_ADDED_EVENT_UEI.equals(s) ||
+				EventConstants.NODE_LABEL_CHANGED_EVENT_UEI.equals(s) ||
+				EventConstants.NODE_DELETED_EVENT_UEI.equals(s) ||
+				EventConstants.ASSET_INFO_CHANGED_EVENT_UEI.equals(s) ) {
 			try {
 				if (log.isDebugEnabled()) log.debug("QosD.onEvent Event causing update to node list");
 				openNMSEventHandlerThread.updateNodeCache();

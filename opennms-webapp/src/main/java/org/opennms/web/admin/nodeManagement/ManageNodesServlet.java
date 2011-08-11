@@ -52,6 +52,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -187,7 +188,7 @@ public class ManageNodesServlet extends HttpServlet {
                             this.log("DEBUG: executing manage service update for " + curInterface.getAddress() + " " + curService.getName());
                             stmt.executeUpdate();
                         } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
-                            EventBuilder bldr = new EventBuilder("uei.opennms.org/nodes/serviceUnmanaged", "web ui");
+                            EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, "web ui");
                             bldr.setNodeid(curInterface.getNodeid());
                             bldr.setInterface(addr(curInterface.getAddress()));
                             bldr.setService(curService.getName());

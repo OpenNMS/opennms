@@ -103,7 +103,7 @@ public class EventUtilTest {
     @Test
     public void testGetValueOfParm() {
         String testString = EventUtil.getValueOfParm(EventUtil.TAG_UEI, m_svcLostEvent);
-        assertEquals("uei.opennms.org/nodes/nodeLostService", testString);
+        assertEquals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, testString);
         
         m_svcLostEvent.setSeverity(OnmsSeverity.MINOR.getLabel());
         testString = EventUtil.getValueOfParm(EventUtil.TAG_SEVERITY, m_svcLostEvent);
@@ -121,7 +121,7 @@ public class EventUtilTest {
         String testString = "%uei%:%dpname%:%nodeid%:%interface%:%service%";
         
         String newString = EventUtil.expandParms(testString, m_svcLostEvent);
-        assertEquals("uei.opennms.org/nodes/nodeLostService::1:192.168.1.1:SMTP", newString);
+        assertEquals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI + "::1:192.168.1.1:SMTP", newString);
 
     }
     

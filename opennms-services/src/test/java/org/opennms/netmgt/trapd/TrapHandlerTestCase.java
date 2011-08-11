@@ -436,8 +436,7 @@ public class TrapHandlerTestCase implements InitializingBean {
                     m_ip, nodeId);
         m_eventMgr.sendNow(event);
 
-        anticipateEvent("uei.opennms.org/internal/discovery/newSuspect",
-                m_ip, nodeId);
+        anticipateEvent(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, m_ip, nodeId);
 
         try {
             Thread.sleep(100);
@@ -486,8 +485,7 @@ public class TrapHandlerTestCase implements InitializingBean {
 
         if (newSuspectOnTrap) {
             // Note: the nodeId will be zero because the node is not known
-            anticipateEvent("uei.opennms.org/internal/discovery/newSuspect",
-                    m_ip, 0);
+            anticipateEvent(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, m_ip, 0);
         }
 
         if (event != null) {

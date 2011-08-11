@@ -62,10 +62,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DeleteNodesServlet extends HttpServlet {
     private static final long serialVersionUID = 573510937493956121L;
@@ -169,7 +165,7 @@ public class DeleteNodesServlet extends HttpServlet {
     }
 
     private void sendDeleteNodeEvent(int node) throws ServletException {
-        EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/capsd/deleteNode", "web ui");
+        EventBuilder bldr = new EventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, "web ui");
         bldr.setNodeid(node);
         
         bldr.addParam(EventConstants.PARM_TRANSACTION_NO, "webUI");

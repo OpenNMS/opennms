@@ -89,7 +89,7 @@ public class NotifdTest extends NotificationsTestCase {
         long finished = anticipateNotificationsForGroup("High loadavg5 Threshold exceeded", "High loadavg5 Threshold exceeded on 192.168.1.1, loadavg5 with ", "InitialGroup", date, 0);
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
-        EventBuilder e = MockEventUtil.createInterfaceEventBuilder("test", "uei.opennms.org/threshold/highThresholdExceeded", iface);
+        EventBuilder e = MockEventUtil.createInterfaceEventBuilder("test", EventConstants.HIGH_THRESHOLD_EVENT_UEI, iface);
         e.setTime(date);
         e.addParam("ds", "loadavg5");
         m_eventMgr.sendEventToListeners(e.getEvent());
@@ -119,7 +119,7 @@ public class NotifdTest extends NotificationsTestCase {
         
         long finished = anticipateNotificationsForGroup("A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "InitialGroup", date, 0);
 
-        EventBuilder e = MockEventUtil.createNewSuspectEventBuilder("test", "uei.opennms.org/internal/discovery/newSuspect", "10.1.1.1");
+        EventBuilder e = MockEventUtil.createNewSuspectEventBuilder("test", EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "10.1.1.1");
         e.setTime(date);
         m_eventMgr.sendEventToListeners(e.getEvent());
         
