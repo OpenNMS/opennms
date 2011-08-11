@@ -1,3 +1,11 @@
+opennms (1.9.90-1) unstable; urgency=high
+
+  * New upstream release.  Note that this release fixes two important bugs: a
+  filehandle leak that can be triggered by Provisiond scanning, and a memory leak
+  in the logging infrastructure.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Aug 2011 17:09:00 -0400
+
 opennms (1.9.8-1) unstable; urgency=medium
 
   * New upstream release.

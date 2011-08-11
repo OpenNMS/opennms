@@ -6,6 +6,20 @@
 
 	<!-- Start 1.9 -->
 
+
+	<section id="introduction-1.9.90">
+		<title>Release 1.9.90</title>
+
+		<para>
+			Release 1.9.90 is the latest in a series of development releases of OpenNMS.  This
+			represents what will eventually become OpenNMS 1.10.0 when it is blessed as the
+			next stable release.
+		</para>
+		<para>
+			The codename for 1.9.90 is <emphasis>Balafon</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.9.8">
 		<title>Release 1.9.8</title>
 
@@ -15,7 +29,7 @@
 			feature-complete and stable.
 		</para>
 		<para>
-				  The codename for 1.9.8 is <emphasis>Pulalu</emphasis>
+			The codename for 1.9.8 is <emphasis>Pulalu</emphasis>
 		</para>
 	</section>
 
@@ -28,7 +42,7 @@
 			feature-complete and stable.
 		</para>
 		<para>
-				  The codename for 1.9.7 is <emphasis>Naqara</emphasis>
+			The codename for 1.9.7 is <emphasis>Naqara</emphasis>
 		</para>
 	</section>
 
@@ -41,7 +55,7 @@
 			feature-complete and stable.
 		</para>
 		<para>
-				  The codename for 1.9.6 is <emphasis>Barbat</emphasis>
+			The codename for 1.9.6 is <emphasis>Barbat</emphasis>
 		</para>
 	</section>
 
