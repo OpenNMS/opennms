@@ -56,7 +56,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>tomcat-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <configuration>
           <path>/${project.artifactId}</path>
           <port>${web.port}</port>
@@ -254,6 +254,14 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- FIXME: Does this even need to be here? I had to switch it from provided
+         to runtime or it interfered with GWT. -->
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
+      <scope>runtime</scope>
+    </dependency> 
+
     <!-- direct dependencies that should be in WEB-INF/lib -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -273,33 +281,8 @@
       <artifactId>opennms-rrd-tcp</artifactId>
     </dependency> 
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.system-report</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.availability</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
-    </dependency> 
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-reporting</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>rancid-dependencies</artifactId>
-      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
