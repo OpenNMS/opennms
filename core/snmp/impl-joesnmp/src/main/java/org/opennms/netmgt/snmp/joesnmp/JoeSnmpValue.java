@@ -35,7 +35,6 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.snmp4j.Snmp4JValue;
 import org.opennms.protocols.snmp.SnmpCounter32;
 import org.opennms.protocols.snmp.SnmpCounter64;
 import org.opennms.protocols.snmp.SnmpEndOfMibView;
