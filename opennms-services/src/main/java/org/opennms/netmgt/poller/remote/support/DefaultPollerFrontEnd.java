@@ -537,13 +537,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
             }
         }
 
-        try {
-            final InetAddress us = InetAddress.getLocalHost();
-            details.put("org.opennms.netmgt.poller.remote.hostAddress", InetAddressUtils.str(us));
-            details.put("org.opennms.netmgt.poller.remote.hostName", us.getHostName());
-        } catch (final UnknownHostException e) {
-            LogUtils.tracef(this, e, "Unable to determine localhost.");
-        }
+        final InetAddress us = InetAddressUtils.getLocalHostAddress();
+        details.put("org.opennms.netmgt.poller.remote.hostAddress", InetAddressUtils.str(us));
+        details.put("org.opennms.netmgt.poller.remote.hostName", us.getHostName());
 
         return details;
     }
