@@ -67,6 +67,14 @@ CREATE TRIGGER setIpInterfaceKeysOnUpdateTrigger
    ON ifServices FOR EACH ROW
    EXECUTE PROCEDURE setIpInterfaceKeysOnUpdate();
 </createProcedure>
+
+<rollback>
+  <sql>
+    DROP TRIGGER IF EXISTS setIpInterfaceKeysOnUpdateTrigger ON ifServices;
+    DROP FUNCTION IF EXISTS setIpInterfaceKeysOnUpdate();
+  </sql>
+</rollback>
+
 </changeSet>
 
 </databaseChangeLog>

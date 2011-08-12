@@ -36,6 +36,11 @@ import java.io.PrintStream;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.util.StringUtils;
 
+/**
+ * @deprecated Use an annotation-based temporary database with {@link JUnitTemporaryDatabase} and autowire a 
+ * DatabasePopulator to insert a standard set of content into the database. The context that contains the 
+ * DatabasePopulator is <code>classpath:/META-INF/opennms/applicationContext-databasePopulator.xml</code>.
+ */
 public class PopulatedTemporaryDatabaseTestCase extends
         TemporaryDatabaseTestCase {
     

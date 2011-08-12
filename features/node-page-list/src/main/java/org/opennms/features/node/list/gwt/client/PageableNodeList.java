@@ -43,8 +43,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
             if(response.getStatusCode() == 200) {
                 updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(response.getText()));
             }else {
-                //updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(DefaultNodeService.SNMP_INTERFACES_TEST_RESPONSE));
-                showErrorDialogBox("Error attempting to get SnmpInterfaces");
+                updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(DefaultNodeService.SNMP_INTERFACES_TEST_RESPONSE));
+                //showErrorDialogBox("Error attempting to get SnmpInterfaces");
             }
         }
 
@@ -63,8 +63,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
             if(response.getStatusCode() == 200) {
                 updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(response.getText()));
             } else {
-                //updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(DefaultNodeService.IP_INTERFACES_TEST_RESPONSE));
-                showErrorDialogBox("Error attempting to get IpInterfaces");
+                updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(DefaultNodeService.IP_INTERFACES_TEST_RESPONSE));
+                //showErrorDialogBox("Error attempting to get IpInterfaces");
             }
         }
 
@@ -254,6 +254,7 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     @Override
     public void onPhysicalInterfaceSelected(PhysicalInterfaceSelectionEvent event) {
         UrlBuilder urlBuilder = new UrlBuilder();
+        urlBuilder.setProtocol(Location.getProtocol());
         urlBuilder.setHost(Location.getHost());
         urlBuilder.setPath("opennms/element/snmpinterface.jsp");
         urlBuilder.setParameter("node", "" + getNodeId());
@@ -266,6 +267,7 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     @Override
     public void onIpInterfaceSelection(IpInterfaceSelectionEvent event) {
         UrlBuilder urlBuilder = new UrlBuilder();
+        urlBuilder.setProtocol(Location.getProtocol());
         urlBuilder.setHost(Location.getHost());
         urlBuilder.setPath("opennms/element/interface.jsp");
         urlBuilder.setParameter("ipinterfaceid", event.getIpInterfaceId());

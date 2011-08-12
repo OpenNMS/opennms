@@ -51,6 +51,8 @@
 	</changeSet>
 
 	<changeSet author="rangerrick" id="1.6.0-distPoller-data" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM distpoller WHERE dpname='localhost' AND dpip='127.0.0.1'</sqlCheck>
 		</preConditions> 

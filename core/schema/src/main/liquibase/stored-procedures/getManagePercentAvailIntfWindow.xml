@@ -43,6 +43,10 @@ CREATE OR REPLACE FUNCTION getManagePercentAvailIntfWindow(integer,varchar(16), 
    END;
 ' LANGUAGE 'plpgsql';
 </createProcedure>
+
+<rollback>
+  <sql>DROP FUNCTION IF EXISTS getManagePercentAvailIntfWindow(integer,varchar(16), timestamp without time zone, timestamp without time zone);</sql>
+</rollback>
 </changeSet>
 
 </databaseChangeLog>

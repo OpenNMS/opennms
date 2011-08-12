@@ -48,6 +48,7 @@ public class KscComboboxPresenter implements Presenter, KscComboboxView.Presente
     @Override
     public void onKscReportSelected() {
         UrlBuilder urlBuilder = new UrlBuilder();
+        urlBuilder.setProtocol(Location.getProtocol());
         urlBuilder.setHost(Location.getHost());
         urlBuilder.setPath("opennms/KSC/customView.htm");
         urlBuilder.setParameter("type", "custom");

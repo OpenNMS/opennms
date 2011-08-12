@@ -91,6 +91,7 @@ public class SuggestionComboboxPresenter implements Presenter, SuggestionCombobo
     @Override
     public void onNodeSelected() {
         UrlBuilder builder = new UrlBuilder();
+        builder.setProtocol(Location.getProtocol());
         builder.setHost(Location.getHost());
         builder.setPath("opennms/graph/chooseresource.htm");
         builder.setParameter("reports", "all");

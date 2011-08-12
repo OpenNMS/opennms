@@ -21,12 +21,12 @@
     </changeSet>
 
     <changeSet author="rangerrick" id="1.9.90-add-ids-to-linkd-vlan">
+    	<validCheckSum>ANY</validCheckSum>
         <addColumn tableName="vlan">
-            <column name="id" type="integer">
-                <constraints nullable="false" unique="true" />
+            <column name="id" type="integer" defaultValueComputed="NEXTVAL('opennmsnxtid')">
+                <constraints nullable="false" />
             </column>
         </addColumn>
-        <ext:addAutoIncrement tableName="vlan" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
 
         <rollback>
             <dropColumn tableName="vlan" columnName="id" />
@@ -34,12 +34,12 @@
     </changeSet>
 
     <changeSet author="rangerrick" id="1.9.90-add-ids-to-linkd-stpNode">
+    	<validCheckSum>ANY</validCheckSum>
         <addColumn tableName="stpnode">
-            <column name="id" type="integer">
-                <constraints nullable="false" unique="true" />
+            <column name="id" type="integer" defaultValueComputed="NEXTVAL('opennmsnxtid')">
+                <constraints nullable="false" />
             </column>
         </addColumn>
-        <ext:addAutoIncrement tableName="stpnode" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
 
         <rollback>
             <dropColumn tableName="stpnode" columnName="id" />
@@ -47,12 +47,12 @@
     </changeSet>
 
     <changeSet author="rangerrick" id="1.9.90-add-ids-to-linkd-stpInterface">
+    	<validCheckSum>ANY</validCheckSum>
         <addColumn tableName="stpinterface">
-            <column name="id" type="integer">
-                <constraints nullable="false" unique="true" />
+            <column name="id" type="integer" defaultValueComputed="NEXTVAL('opennmsnxtid')">
+                <constraints nullable="false" />
             </column>
         </addColumn>
-        <ext:addAutoIncrement tableName="stpinterface" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
 
         <rollback>
             <dropColumn tableName="stpinterface" columnName="id" />
@@ -60,12 +60,12 @@
     </changeSet>
 
     <changeSet author="rangerrick" id="1.9.90-add-ids-to-linkd-ipRouteInterface">
+    	<validCheckSum>ANY</validCheckSum>
         <addColumn tableName="iprouteinterface">
-            <column name="id" type="integer">
-                <constraints nullable="false" unique="true" />
+            <column name="id" type="integer" defaultValueComputed="NEXTVAL('opennmsnxtid')">
+                <constraints nullable="false" />
             </column>
         </addColumn>
-        <ext:addAutoIncrement tableName="iprouteinterface" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
 
         <rollback>
             <dropColumn tableName="iprouteinterface" columnName="id" />
