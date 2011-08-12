@@ -32,6 +32,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -51,45 +52,39 @@ import org.snmp4j.smi.Variable;
 class Snmp4JValue implements SnmpValue {
     Variable m_value;
     
-    Snmp4JValue(Variable value) {
+    Snmp4JValue(final Variable value) {
         if (value == null) {
             throw new NullPointerException("value attribute cannot be null");
         }
         m_value = value;
     }
     
-    Snmp4JValue(int syntax, byte[] bytes) {
+    Snmp4JValue(final int syntax, final byte[] bytes) {
         switch (syntax) {
         case SMIConstants.SYNTAX_INTEGER: {
-            BigInteger val = new BigInteger(bytes);
-            m_value = new Integer32(val.intValue());
+            m_value = new Integer32(new BigInteger(bytes).intValue());
             break;
         }
         case SMIConstants.SYNTAX_COUNTER32: {
-            BigInteger val = new BigInteger(bytes);
-            m_value = new Counter32(val.longValue());
+            m_value = new Counter32(new BigInteger(bytes).longValue());
             break;
         }
         case SMIConstants.SYNTAX_COUNTER64: {
-            BigInteger val = new BigInteger(bytes);
-            m_value = new Counter64(val.longValue());
+            m_value = new Counter64(new BigInteger(bytes).longValue());
             break;
         }
         case SMIConstants.SYNTAX_TIMETICKS: {
-            BigInteger val = new BigInteger(bytes);
-            m_value = new TimeTicks(val.longValue());
+            m_value = new TimeTicks(new BigInteger(bytes).longValue());
             break;
         }
         case SMIConstants.SYNTAX_UNSIGNED_INTEGER32: {
-            BigInteger val = new BigInteger(bytes);
-            m_value = new UnsignedInteger32(val.longValue());
+            m_value = new UnsignedInteger32(new BigInteger(bytes).longValue());
             break;
         }
         case SMIConstants.SYNTAX_IPADDRESS: {
             try {
-                InetAddress addr = InetAddress.getByAddress(bytes);
-                m_value = new IpAddress(addr);
-            } catch (UnknownHostException e) {
+                m_value = new IpAddress(InetAddress.getByAddress(bytes));
+            } catch (final UnknownHostException e) {
                 throw new IllegalArgumentException("unable to create InetAddress from bytes: "+e.getMessage());
             }
             break;
@@ -212,8 +207,8 @@ class Snmp4JValue implements SnmpValue {
         }
     }
 
-    private String toStringDottingCntrlChars(byte[] value) {
-        byte[] results = new byte[value.length];
+    private String toStringDottingCntrlChars(final byte[] value) {
+        final byte[] results = new byte[value.length];
         for (int i = 0; i < value.length; i++) {
             results[i] = Character.isISOControl((char)value[i]) ? (byte)'.' : value[i];
         }
@@ -245,7 +240,7 @@ class Snmp4JValue implements SnmpValue {
     public BigInteger toBigInteger() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_COUNTER64:
-            Counter64 cnt = (Counter64)m_value;
+            final Counter64 cnt = (Counter64)m_value;
             if (cnt.getValue() > 0) {
                 return BigInteger.valueOf(cnt.getValue());
             } else {
@@ -306,5 +301,21 @@ class Snmp4JValue implements SnmpValue {
         
     }
 
+    @Override
+    public int hashCode() {
+        if (m_value == null) return 5231;
+    	return m_value.hashCode();
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+    	   if (obj == null) return false;
+    	   if (obj == this) return true;
+    	   if (obj.getClass() != getClass()) return false;
 
+    	   final Snmp4JValue that = (Snmp4JValue)obj;
+    	   return new EqualsBuilder()
+    	   	.append(this.m_value, that.m_value)
+    	   	.isEquals();
+    }
 }

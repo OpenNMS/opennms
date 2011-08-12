@@ -31,9 +31,11 @@ package org.opennms.netmgt.snmp.joesnmp;
 import java.math.BigInteger;
 import java.net.InetAddress;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.snmp4j.Snmp4JValue;
 import org.opennms.protocols.snmp.SnmpCounter32;
 import org.opennms.protocols.snmp.SnmpCounter64;
 import org.opennms.protocols.snmp.SnmpEndOfMibView;
@@ -51,35 +53,30 @@ import org.opennms.protocols.snmp.SnmpUInt32;
 class JoeSnmpValue implements SnmpValue {
     SnmpSyntax m_value;
     
-    JoeSnmpValue(SnmpSyntax value) {
+    JoeSnmpValue(final SnmpSyntax value) {
         m_value = value;
     }
     
-    JoeSnmpValue(int typeId, byte[] bytes) {
+    JoeSnmpValue(final int typeId, final byte[] bytes) {
         switch(typeId) {
         case SnmpSMI.SMI_COUNTER64: {
-            BigInteger val = new BigInteger(bytes);
-            m_value = new SnmpCounter64(val);
+            m_value = new SnmpCounter64(new BigInteger(bytes));
             break;
         }
         case SnmpSMI.SMI_INTEGER: {
-            BigInteger val = new BigInteger(bytes);
-            m_value = new SnmpInt32(val.intValue());
+            m_value = new SnmpInt32(new BigInteger(bytes).intValue());
             break;
         }
         case SnmpSMI.SMI_COUNTER32: {
-            BigInteger val = new BigInteger(bytes);
-            m_value = new SnmpCounter32(val.longValue());
+            m_value = new SnmpCounter32(new BigInteger(bytes).longValue());
             break;
         }
         case SnmpSMI.SMI_TIMETICKS: {
-            BigInteger val = new BigInteger(bytes);
-            m_value = new SnmpTimeTicks(val.longValue());
+            m_value = new SnmpTimeTicks(new BigInteger(bytes).longValue());
             break;
         }
         case SnmpSMI.SMI_UNSIGNED32: {
-            BigInteger val = new BigInteger(bytes);
-            m_value = new SnmpUInt32(val.longValue());
+            m_value = new SnmpUInt32(new BigInteger(bytes).longValue());
             break;
         }
         case SnmpSMI.SMI_IPADDRESS: {
@@ -280,6 +277,22 @@ class JoeSnmpValue implements SnmpValue {
         return m_value;
     }
     
+    @Override
+    public int hashCode() {
+        if (m_value == null) return 2677;
+        return m_value.hashCode();
+    }
     
+    @Override
+    public boolean equals(final Object obj) {
+           if (obj == null) return false;
+           if (obj == this) return true;
+           if (obj.getClass() != getClass()) return false;
+
+           final JoeSnmpValue that = (JoeSnmpValue)obj;
+           return new EqualsBuilder()
+               .append(m_value, that.m_value)
+               .isEquals();
+    }
     
 }
