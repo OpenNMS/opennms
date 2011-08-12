@@ -22,6 +22,8 @@
   </changeSet>
 
  <changeSet author="rssntn67" id="1.7.5-fixMapPkConstraint" context="repair">
+	<validCheckSum>ANY</validCheckSum>
+
 	<preConditions onFail="MARK_RAN">
 			<and>
 				<not><primaryKeyExists tableName="map" primaryKeyName="pk_mapid" /></not>
