@@ -467,14 +467,18 @@ public class HttpMonitor extends AbstractServiceMonitor {
         
         private int parseHttpResponse() {
             final StringTokenizer t = new StringTokenizer(m_currentLine);
-            t.nextToken();
+            if (t.hasMoreTokens()) {
+                t.nextToken();
+            }
 
             int serverResponse = -1;
-            try {
-                serverResponse = Integer.parseInt(t.nextToken());
-            } catch (final NumberFormatException nfE) {
-                if (log().isInfoEnabled()) {
-                    log().info("Error converting response code from host = " + (m_iface.getAddress()) + ", response = " + m_currentLine);
+            if (t.hasMoreTokens()) {
+                try {
+                    serverResponse = Integer.parseInt(t.nextToken());
+                } catch (final NumberFormatException nfE) {
+                    if (log().isInfoEnabled()) {
+                        log().info("Error converting response code from host = " + (m_iface.getAddress()) + ", response = " + m_currentLine);
+                    }
                 }
             }
             return serverResponse;

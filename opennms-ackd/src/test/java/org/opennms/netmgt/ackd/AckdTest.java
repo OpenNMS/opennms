@@ -289,7 +289,7 @@ public class AckdTest implements InitializingBean {
     public void testHandelEvent() throws InterruptedException {
         
         VerificationObject vo = createAckStructure();
-        EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/ackd/Acknowledge", "AckdTest");
+        EventBuilder bldr = new EventBuilder(EventConstants.ACKNOWLEDGE_EVENT_UEI, "AckdTest");
         bldr.addParam("ackType", String.valueOf(AckType.ALARM));
         bldr.addParam("refId", vo.m_alarmId);
         final String user = "ackd-test-user";

@@ -36,6 +36,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -439,7 +440,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
      *    at java.lang.Thread.run(Thread.java:613)
      */
     public void testNoDateDate() throws InterruptedException {
-        EventBuilder bldr = new EventBuilder("uei.opennms.org/nodes/nodeLostService", "the one true event source");
+        EventBuilder bldr = new EventBuilder(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, "the one true event source");
         bldr.setNodeid(1);
         bldr.setInterface(addr("192.168.1.1"));
         bldr.setService("ICMP");

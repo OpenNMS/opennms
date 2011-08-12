@@ -44,6 +44,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
 import org.opennms.netmgt.config.xmlrpcd.Subscription;
@@ -224,15 +225,15 @@ public final class XmlrpcdConfigFactory {
             }
             if (! foundUnnamedSubscription) {
                 String[] ueis = {
-                        "uei.opennms.org/nodes/nodeLostService",
-                        "uei.opennms.org/nodes/nodeRegainedService",
-                        "uei.opennms.org/nodes/nodeUp",
-                        "uei.opennms.org/nodes/nodeDown",
-                        "uei.opennms.org/nodes/interfaceUp",
-                        "uei.opennms.org/nodes/interfaceDown",
-                        "uei.opennms.org/internal/capsd/updateServer",
-                        "uei.opennms.org/internal/capsd/updateService",
-                        "uei.opennms.org/internal/capsd/xmlrpcNotification"
+                        EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
+                        EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI,
+                        EventConstants.NODE_UP_EVENT_UEI,
+                        EventConstants.NODE_DOWN_EVENT_UEI,
+                        EventConstants.INTERFACE_UP_EVENT_UEI,
+                        EventConstants.INTERFACE_DOWN_EVENT_UEI,
+                        EventConstants.UPDATE_SERVER_EVENT_UEI,
+                        EventConstants.UPDATE_SERVICE_EVENT_UEI,
+                        EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI
                 };
                 Subscription subscription = new Subscription();
                 subscription.setName(generatedSubscriptionName);
