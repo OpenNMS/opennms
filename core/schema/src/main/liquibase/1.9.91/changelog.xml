@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rangerrick" id="1.9.91-make-vlan-id-unique">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists tableName="vlan" indexName="vlan_id_key" /></not>
+		</preConditions> 
+
+		<createIndex tableName="vlan" indexName="vlan_id_key" unique="true">
+			<column name="id" />
+		</createIndex>
+
+        <rollback>
+        	<dropIndex tableName="vlan" indexName="vlan_id_key" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.9.91-make-stpnode-id-unique">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists tableName="stpnode" indexName="stpnode_id_key" /></not>
+		</preConditions> 
+
+		<createIndex tableName="stpnode" indexName="stpnode_id_key" unique="true">
+			<column name="id" />
+		</createIndex>
+
+        <rollback>
+        	<dropIndex tableName="stpnode" indexName="stpnode_id_key" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.9.91-make-stpinterface-id-unique">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists tableName="stpinterface" indexName="stpinterface_id_key" /></not>
+		</preConditions> 
+
+		<createIndex tableName="stpinterface" indexName="stpinterface_id_key" unique="true">
+			<column name="id" />
+		</createIndex>
+
+        <rollback>
+        	<dropIndex tableName="stpinterface" indexName="stpinterface_id_key" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.9.91-make-iprouteinterface-id-unique">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists tableName="iprouteinterface" indexName="iprouteinterface_id_key" /></not>
+		</preConditions> 
+
+		<createIndex tableName="iprouteinterface" indexName="iprouteinterface_id_key" unique="true">
+			<column name="id" />
+		</createIndex>
+
+        <rollback>
+        	<dropIndex tableName="iprouteinterface" indexName="iprouteinterface_id_key" />
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
