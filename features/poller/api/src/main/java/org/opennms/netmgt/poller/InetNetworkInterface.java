@@ -136,7 +136,10 @@ public class InetNetworkInterface implements NetworkInterface<InetAddress>, Seri
         if (m_properties != null)
             rc = m_properties.get(property);
 
-        return (V)rc;
+        // Can't avoid this unchecked cast
+        @SuppressWarnings("unchecked")
+        V retval = (V)rc;
+        return retval;
     }
 
     /**

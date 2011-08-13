@@ -60,7 +60,7 @@ public class RrdSummaryController extends AbstractFormController implements Init
 			return "text/xml";
 		}
 
-		public void render(Map model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 			Assert.notNull(model.get("summary"), "summary must not be null.. unable to marshall xml");
 			Marshaller.marshal(model.get("summary"), response.getWriter());
 		}
