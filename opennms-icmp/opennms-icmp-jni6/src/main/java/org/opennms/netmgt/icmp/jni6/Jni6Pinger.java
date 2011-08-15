@@ -119,24 +119,47 @@ import org.opennms.protocols.rt.RequestTracker;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class Jni6Pinger implements Pinger {
-    
+
     private final int m_pingerId = (int) (Math.random() * Short.MAX_VALUE);
-    
+
     private JniPinger m_jniPinger;
-    
     private RequestTracker<Jni6PingRequest, Jni6PingResponse> s_pingTracker;
-    
+
+    private Throwable m_v4Error = null;
+    private Throwable m_v6Error = null;
+
     public Jni6Pinger() {}
 
     private synchronized void initialize4() throws IOException {
         if (m_jniPinger != null) return;
-        m_jniPinger = new JniPinger();
+        try {
+            m_jniPinger = new JniPinger();
+            m_jniPinger.initialize();
+        } catch (final IOException ioe) {
+            m_v4Error = ioe;
+            throw ioe;
+        } catch (final RuntimeException rte) {
+            m_v4Error = rte;
+            throw rte;
+        }
     }
 
     private synchronized void initialize6() throws IOException {
 	    if (s_pingTracker != null) return;
-	    s_pingTracker = new RequestTracker<Jni6PingRequest, Jni6PingResponse>("JNI-ICMPv6-"+m_pingerId, new Jni6IcmpMessenger(m_pingerId), new IDBasedRequestLocator<Jni6PingRequestId, Jni6PingRequest, Jni6PingResponse>());
-	    s_pingTracker.start();
+
+	    final String name = "JNI-ICMPv6-"+m_pingerId;
+	    final IDBasedRequestLocator<Jni6PingRequestId, Jni6PingRequest, Jni6PingResponse> requestLocator = new IDBasedRequestLocator<Jni6PingRequestId, Jni6PingRequest, Jni6PingResponse>();
+
+	    try {
+            s_pingTracker = new RequestTracker<Jni6PingRequest, Jni6PingResponse>(name, new Jni6IcmpMessenger(m_pingerId), requestLocator);
+            s_pingTracker.start();
+	    } catch (final IOException ioe) {
+	        m_v6Error = ioe;
+	        throw ioe;
+	    } catch (final RuntimeException rte) {
+	        m_v6Error = rte;
+	        throw rte;
+	    }
 	}
 
     public boolean isV4Available() {
@@ -144,7 +167,7 @@ public class Jni6Pinger implements Pinger {
             initialize4();
         } catch (final Throwable t) {
         }
-        if (m_jniPinger != null) return true;
+        if (m_jniPinger != null && m_v4Error == null) return m_jniPinger.isV4Available();
         return false;
     }
     
@@ -153,7 +176,7 @@ public class Jni6Pinger implements Pinger {
             initialize6();
         } catch (final Throwable t) {
         }
-        if (s_pingTracker != null) return true;
+        if (s_pingTracker != null && m_v6Error == null) return true;
         return false;
     }
     
