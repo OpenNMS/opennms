@@ -233,22 +233,20 @@ public class Manager implements ManagerMBean {
         log().info("IPv4 ICMP available? " + hasV4);
         log().info("IPv6 ICMP available? " + hasV6);
 
-        final String requireV4String = System.getProperty("org.opennms.netmgt.icmp.requireV4");
-        final String requireV6String = System.getProperty("org.opennms.netmgt.icmp.requireV6");
-        final Boolean requireV4 = Boolean.valueOf(requireV4String);
-        final Boolean requireV6 = Boolean.valueOf(requireV6String);
-
-        if (requireV4String == null && requireV6String == null) {
-            // If they don't specify any preference, start up as long as one available.
+        final String requireV4String = System.getProperty("org.opennms.netmgt.icmp.requireV4", "detect");
+        final String requireV6String = System.getProperty("org.opennms.netmgt.icmp.requireV6", "detect");
+        
+        if ("true".equalsIgnoreCase(requireV4String) && !hasV4) {
+            throw new IllegalStateException("org.opennms.netmgt.icmp.requireV4 is true, but IPv4 ICMP could not be initialized.");
+        }
+        if ("true".equalsIgnoreCase(requireV6String) && !hasV6) {
+            throw new IllegalStateException("org.opennms.netmgt.icmp.requireV6 is true, but IPv6 ICMP could not be initialized.");
+        }
+        
+        // If they don't specify any preference, start up as long as one available.
+        if ("detect".equals(requireV4String) || "detect".equals(requireV6String)) {
             if (!hasV4 && !hasV6) {
                 throw new IllegalStateException("Unable to initialize any ICMP support.  Bailing out.");
-            }
-        } else {
-            if (requireV4 && !hasV4) {
-                throw new IllegalStateException("org.opennms.netmgt.icmp.requireV4 is set, but IPv4 ICMP could not be initialized.");
-            }
-            if (requireV6 && !hasV6) {
-                throw new IllegalStateException("org.opennms.netmgt.icmp.requireV6 is set, but IPv6 ICMP could not be initialized.");
             }
         }
     }
