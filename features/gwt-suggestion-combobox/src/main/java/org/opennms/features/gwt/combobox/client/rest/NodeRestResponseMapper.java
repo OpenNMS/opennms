@@ -27,7 +27,9 @@ public class NodeRestResponseMapper {
                 JSONArray jArray = jsonObject.get("node").isArray();
                 JsArray<NodeDetail> nodedetails = createNodeDetailsArray(jArray.getJavaScriptObject());
                 for(int i = 0; i < nodedetails.length(); i++) {
-                    nodeDetails.add(nodedetails.get(i));
+                    if(!nodedetails.get(i).getNodeType().equals("D")) {
+                        nodeDetails.add(nodedetails.get(i));
+                    }
                 }
             }
         }
