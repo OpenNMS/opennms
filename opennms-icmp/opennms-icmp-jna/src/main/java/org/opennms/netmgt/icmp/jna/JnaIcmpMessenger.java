@@ -54,6 +54,7 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	    } catch (final Throwable t) {
 	        LogUtils.debugf(this, t, "Unable to initialize IPv4 Pinger.");
 	        error = t;
+	        m_v4 = null;
 	    }
 	    
 	    try {
@@ -62,6 +63,7 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	    } catch (final Throwable t) {
 	        LogUtils.debugf(this, t, "Unable to initialize IPv6 Pinger.");
 	        if (error == null) error = t;
+	        m_v6 = null;
 	    }
 	    
 	    if (m_v4 == null && m_v6 == null) {

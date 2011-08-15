@@ -120,6 +120,7 @@ public class JniPinger implements Pinger {
     private final int m_pingerId = (int) (Math.random() * Short.MAX_VALUE);
     
     private RequestTracker<JniPingRequest, JniPingResponse> s_pingTracker;
+    private Throwable m_error = null;
     
     public JniPinger() {}
 
@@ -130,8 +131,18 @@ public class JniPinger implements Pinger {
 	 */
 	public synchronized void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
-	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP-"+m_pingerId, new JniIcmpMessenger(m_pingerId), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
-	    s_pingTracker.start();
+	    try {
+    	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP-"+m_pingerId, new JniIcmpMessenger(m_pingerId), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
+    	    s_pingTracker.start();
+	    } catch (final IOException ioe) {
+	        m_error = ioe;
+	        s_pingTracker = null;
+	        throw ioe;
+	    } catch (final RuntimeException rte) {
+	        m_error = rte;
+	        s_pingTracker = null;
+	        throw rte;
+	    }
 	}
 
 	public boolean isV4Available() {
@@ -139,7 +150,7 @@ public class JniPinger implements Pinger {
 	        initialize();
 	    } catch (final Throwable t) {
 	    }
-	    if (s_pingTracker != null) return true;
+	    if (s_pingTracker != null && m_error == null) return true;
 	    return false;
 	}
 
