@@ -57,7 +57,7 @@ reset_opennms() {
 
 	/etc/init.d/opennms stop
 
-	rpm -qa | grep -E '^opennms-reop-' | xargs yum -y remove
+	rpm -qa | grep -E '^opennms-repo-' | xargs yum -y remove
 	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-bleeding-rhel5.noarch.rpm
 	yum -y remove opennms-core
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms

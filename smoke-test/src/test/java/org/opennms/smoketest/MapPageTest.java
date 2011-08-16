@@ -1,6 +1,9 @@
 package org.opennms.smoketest;
 
-import org.openqa.selenium.firefox.FirefoxDriver;
+import java.net.URL;
+
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.junit.After;
@@ -14,8 +17,8 @@ import com.thoughtworks.selenium.SeleneseTestBase;
 public class MapPageTest extends SeleneseTestBase {
     @Before
     public void setUp() throws Exception {
-        WebDriver driver = new FirefoxDriver();
-        String baseUrl = "http://localhost:8980/";
+        DesiredCapabilities capability = DesiredCapabilities.firefox();
+        WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);        String baseUrl = "http://localhost:8980/";
         selenium = new WebDriverBackedSelenium(driver, baseUrl);
         //selenium.start();
         selenium.open("/opennms/login.jsp");

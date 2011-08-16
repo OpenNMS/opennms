@@ -43,7 +43,7 @@ public class DefaultNodeService implements NodeService {
     		  "\"labelSource\" : \"U\"," +
     		  "\"lastCapsdPoll\" : \"2011-06-05T07:31:51.910-04:00\"" +
     		"}, {" +
-    		  "\"@type\" : \"A\"," +
+    		  "\"@type\" : \"D\"," +
     		  "\"@id\" : \"51\"," +
     		  "\"@label\" : \"www.me.com\"," +
     		  "\"@foreignSource\" : \"mobileMe\"," +

@@ -1,6 +1,9 @@
 package org.opennms.smoketest;
 
-import org.openqa.selenium.firefox.FirefoxDriver;
+import java.net.URL;
+
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.junit.After;
@@ -13,7 +16,8 @@ import com.thoughtworks.selenium.SeleneseTestBase;
 public class ServicePageTest extends SeleneseTestBase{
     @Before
     public void setUp() throws Exception {
-        WebDriver driver = new FirefoxDriver();
+        DesiredCapabilities capability = DesiredCapabilities.firefox();
+        WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
         String baseUrl = "http://localhost:8980/";
         selenium = new WebDriverBackedSelenium(driver, baseUrl);
         //selenium.start();
@@ -128,15 +132,15 @@ public class ServicePageTest extends SeleneseTestBase{
             selenium.waitForPageToLoad("30000");
             selenium.click("link=HTTP-8980");
             selenium.waitForPageToLoad("30000");
-            assertTrue(selenium.isTextPresent("Managed"));
-            assertTrue(selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
-            assertTrue(selenium.isTextPresent("localNode"));
+            assertTrue("Managed text not found",selenium.isTextPresent("Managed"));
+            assertTrue("IP text not found",selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
+            assertTrue("localNode text not found", selenium.isTextPresent("localNode"));
         }else if(selenium.isElementPresent("link=HTTP-8980")){
             selenium.click("link=HTTP-8980");
             selenium.waitForPageToLoad("30000");
-            assertTrue(selenium.isTextPresent("Managed"));
-            assertTrue(selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
-            assertTrue(selenium.isTextPresent("localNode"));
+            assertTrue("Managed text not found", selenium.isTextPresent("Managed"));
+            assertTrue("IP text not found", selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
+            assertTrue("localNode text not found", selenium.isTextPresent("localNode"));
         }else {
             fail("Neither of the links were found. Printing page source: " + selenium.getHtmlSource());
         }

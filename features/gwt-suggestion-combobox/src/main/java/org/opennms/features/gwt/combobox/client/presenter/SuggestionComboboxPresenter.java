@@ -52,7 +52,8 @@ public class SuggestionComboboxPresenter implements Presenter, SuggestionCombobo
                 if(response.getStatusCode() == 200) {
                     m_view.setData(NodeRestResponseMapper.mapNodeJSONtoNodeDetail(response.getText()));
                 }else {
-                    m_view.setData(NodeRestResponseMapper.mapNodeJSONtoNodeDetail(DefaultNodeService.TEST_RESPONSE));
+                    //m_view.setData(NodeRestResponseMapper.mapNodeJSONtoNodeDetail(DefaultNodeService.TEST_RESPONSE));
+                    Window.alert("Error Occurred Retreiving Nodes");
                 }
             }
             
