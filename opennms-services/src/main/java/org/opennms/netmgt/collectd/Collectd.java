@@ -1082,10 +1082,12 @@ public class Collectd extends AbstractServiceDaemon implements
             }
             EventBuilder ebldr = null;
             try {
-                if (targetFile.equals(thresholdsFile))
+                if (targetFile.equals(thresholdsFile)) {
                     ThresholdingConfigFactory.reload();
-                if (targetFile.equals(threshdFile))
+                }
+                if (targetFile.equals(threshdFile)) {
                     ThreshdConfigFactory.reload();
+                }
                 ebldr = new EventBuilder(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI, "Collectd");
                 getEventIpcManager().sendNow(ebldr.getEvent());
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
