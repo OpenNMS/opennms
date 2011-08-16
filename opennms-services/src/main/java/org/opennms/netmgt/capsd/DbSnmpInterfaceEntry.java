@@ -261,6 +261,12 @@ public final class DbSnmpInterfaceEntry {
             // Run the insert
             int rc = stmt.executeUpdate();
             log.debug("DbSnmpInterfaceEntry.insert: SQL update result = " + rc);
+        } catch (SQLException e) {
+            log.error(String.format("Insertion of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            throw e;
+        } catch (RuntimeException e) {
+            log.error(String.format("Insertion of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            throw e;
         } finally {
             d.cleanUp();
         }
@@ -448,6 +454,12 @@ public final class DbSnmpInterfaceEntry {
             // Run the update
             int rc = stmt.executeUpdate();
             log.debug("DbSnmpInterfaceEntry.update: update result = " + rc);
+        } catch (SQLException e) {
+            log.error(String.format("Update of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            throw e;
+        } catch (RuntimeException e) {
+            log.error(String.format("Update of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            throw e;
         } finally {
             d.cleanUp();
         }
