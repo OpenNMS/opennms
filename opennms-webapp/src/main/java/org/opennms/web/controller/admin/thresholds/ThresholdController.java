@@ -131,6 +131,7 @@ public class ThresholdController extends AbstractController implements Initializ
         String newExpression = request.getParameter("newExpression");
         String finishExpressionEdit = request.getParameter("finishExpressionEdit");
         String groupName=request.getParameter("groupName");
+        String reloadThreshdConfig=request.getParameter("reloadThreshdConfig");
        
         if(editGroup!=null) {
             modelAndView=gotoGroupEdit(groupName);
@@ -154,6 +155,8 @@ public class ThresholdController extends AbstractController implements Initializ
               modelAndView=deleteExpression(expressionIndexString, groupName);
           } else if (finishExpressionEdit != null) {
               modelAndView=finishExpressionEdit(request);
+          } else if (reloadThreshdConfig != null) {
+              modelAndView=reloadThreshdConfig();
          
          } else {
              modelAndView=gotoGroupList();
@@ -515,7 +518,19 @@ public class ThresholdController extends AbstractController implements Initializ
         saveChanges();
         return modelAndView;
     }
-    
+
+    private ModelAndView reloadThreshdConfig()  throws ServletException {
+        try {
+            EventBuilder ebldr = createEventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Threshd");
+            ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, "threshd-configuration.xml");
+            sendNotifEvent(ebldr.getEvent());
+        } catch (Throwable e) {
+            throw new ServletException("Could not reload threshd-configuration.xml because "+e.getMessage(),e);
+        }
+        return gotoGroupList();
+    }
+
     private ModelAndView deleteExpression(String expressionIndexString, String groupName) throws ServletException {
         ThresholdingConfigFactory configFactory=ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
@@ -600,7 +615,7 @@ public class ThresholdController extends AbstractController implements Initializ
             throw new ServletException("thresholdIndex parameter required to delete a threshold");
         }
         int thresholdIndex=WebSecurityUtils.safeParseInt(thresholdIndexString);
-        Threshold threshold=group.getThreshold(thresholdIndex);
+        Threshold threshold=group.getThreshold(thresholdIndex); // TODO: NMS-4249, maybe a try/catch and add default on exception?
         
         if(SAVE_BUTTON_TITLE.equals(submitAction)) {
             this.commonFinishEdit(request, threshold);

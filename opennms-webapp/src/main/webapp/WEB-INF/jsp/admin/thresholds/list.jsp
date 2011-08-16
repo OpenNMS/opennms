@@ -63,5 +63,12 @@
         </c:forEach>
 </table>
 </form>
-
+<script type="text/javascript">
+function doReload() {
+    if (confirm("Are you sure you want to do this?")) {
+        document.location = "admin/thresholds/index.htm?reloadThreshdConfig";
+    }
+}
+</script>
+<input type="button" onclick="doReload()" value="Request a reload threshold packages configuration"/>
 <jsp:include page="/includes/footer.jsp" flush="false" />

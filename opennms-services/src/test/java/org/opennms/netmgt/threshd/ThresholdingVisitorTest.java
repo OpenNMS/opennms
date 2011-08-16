@@ -33,6 +33,7 @@ package org.opennms.netmgt.threshd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -128,7 +129,6 @@ public class ThresholdingVisitorTest {
     @Before
     public void setUp() throws Exception {
         // Resets Counters Cache Data
-        System.setProperty("org.opennms.thresholds.filtersReloadEnabled", "false");
         CollectionResourceWrapper.s_cache.clear();
         
         m_defaultErrorLevelToCheck = Level.WARN;
@@ -377,7 +377,7 @@ public class ThresholdingVisitorTest {
      * - test-thresholds-2.xml
      */
     @Test
-    public void testReloadConfiguration() throws Exception {
+    public void testReloadThresholdsConfig() throws Exception {
         ThresholdingVisitor visitor = createVisitor();
         
         // Step 1: No events
@@ -394,6 +394,118 @@ public class ThresholdingVisitorTest {
         addHighThresholdEvent(1, 4000, 2000, 4500, "Unknown", null, "freeMem", null, null);
         runGaugeDataTest(visitor, 4500);
         verifyEvents(0);
+    }
+
+    /*
+     * Use case A:
+     * 
+     * I have 5 nodes. The current threshd-config matches 2 of them. The new threshd-config will match the other 2, by
+     * adding a new threshold package. For example: n1 y n2 belongs to category CAT1, n2, n3 y n4 belongs to category CAT2.
+     * The initial configuration is related with CAT1 and the new package is related with CAT2. In both cases, n5 should
+     * never match any threshold package.
+     * 
+     * Use case B:
+     * 
+     * I have a package with SNMP thresholds. Then update the package by adding HTTP thresholds. The test node should
+     * support both services.
+     * 
+     * IMPORTANT:
+     *     The reload should be do it first, then notify all visitors (I think this is the current behavior)
+     *     The reload should not be executed inside the visitor because every collector thread has their own visitor.
+     */
+    @Test
+    public void testReloadThreshdConfig() throws Exception {
+        m_defaultErrorLevelToCheck = Level.ERROR;
+        String baseIpAddress = "10.0.0.";
+
+        // Initialize Mock Network
+        MockNetwork network = new MockNetwork();
+        network.setCriticalService("ICMP");
+        for (int i=1; i<=5; i++) {
+            String ipAddress = baseIpAddress + i;
+            network.addNode(i, "testNode-" + ipAddress);
+            network.addInterface(ipAddress);
+            network.setIfAlias("eth0");
+            network.addService("ICMP");
+            network.addService("SNMP");
+            if (i == 5) {
+                network.addService("HTTP"); // Adding HTTP on node 5
+            }
+        }
+        MockDatabase db = new MockDatabase();
+        db.populate(network);
+        db.update("insert into categories (categoryid, categoryname) values (?, ?)", 10, "CAT1");
+        db.update("insert into categories (categoryid, categoryname) values (?, ?)", 11, "CAT2");
+        for (int i=1; i<=5; i++) {
+            db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", i);
+            db.update("update node set nodesysoid=? where nodeid=?", ".1.3.6.1.4.1.9.1.222", i);
+        }
+        for (int i=1; i<=2; i++) {
+            db.update("insert into category_node values (?, ?)", 10, i);
+        }
+        for (int i=3; i<=5; i++) {
+            db.update("insert into category_node values (?, ?)", 11, i);
+        }
+        DataSourceFactory.setInstance(db);
+
+        // Initialize Filter DAO
+        System.setProperty("opennms.home", "src/test/resources");
+        DatabaseSchemaConfigFactory.init();
+        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+        jdbcFilterDao.setDataSource(db);
+        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+        jdbcFilterDao.afterPropertiesSet();
+        FilterDaoFactory.setInstance(jdbcFilterDao);
+
+        // Initialize Factories
+        initFactories("/threshd-configuration-reload-use-case-a.xml","/test-thresholds-reload-use-cases.xml");
+
+        // Initialize Thresholding Visitors
+        System.err.println("-----------------------------------------------------------------------------------");
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("thresholding-enabled", "true");
+        List<ThresholdingVisitor> visitors = new ArrayList<ThresholdingVisitor>();
+        for (int i=1; i<=5; i++) {
+            String ipAddress = baseIpAddress + i;
+            ThresholdingVisitor visitor = ThresholdingVisitor.create(i, ipAddress, "SNMP", getRepository(), params);
+            assertNotNull(visitor);
+            visitors.add(visitor);
+            if (i == 5) {
+                ThresholdingVisitor httpVisitor = ThresholdingVisitor.create(i, ipAddress, "HTTP", getRepository(), params);
+                assertNotNull(httpVisitor);
+                visitors.add(httpVisitor);
+            }
+        }
+        System.err.println("-----------------------------------------------------------------------------------");
+
+        // Check Visitors
+        for (int i=0; i<2; i++) { // Nodes n1 and n2 has thresholds defined on one threshold group.
+            assertTrue(visitors.get(i).hasThresholds());
+            assertEquals(1, visitors.get(i).getThresholdGroups().size());
+        }
+        for (int i=2; i<6; i++) { // Nodes n3, n4 and n5 should not have thresholds defined.
+            assertFalse(visitors.get(i).hasThresholds());
+            assertEquals(0, visitors.get(i).getThresholdGroups().size());
+        }
+
+        // Re-Initialize Factories
+        initFactories("/threshd-configuration-reload-use-case-b.xml","/test-thresholds-reload-use-cases.xml");
+
+        // Reload state on each visitor
+        System.err.println("-----------------------------------------------------------------------------------");
+        for (ThresholdingVisitor visitor : visitors) {
+            visitor.reload();
+        }
+        System.err.println("-----------------------------------------------------------------------------------");
+
+        // Check Visitors
+        for (int i=0; i<6; i++) {
+            assertTrue(visitors.get(i).hasThresholds());
+            assertEquals(1, visitors.get(i).getThresholdGroups().size());
+            if (i == 5) {
+                assertEquals("web-services", visitors.get(i).getThresholdGroups().get(0).getName());
+            }
+        }
     }
 
     /*
@@ -841,28 +953,19 @@ public class ThresholdingVisitorTest {
      */
     @Test
     public void testBug3720() throws Exception {
-        System.setProperty("org.opennms.thresholds.filtersReloadEnabled", "true");
         runTestForBug3554();
         
         // Validate FilterDao Calls
-        int numOfPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage().length;
-        int expectedCalls = numOfPackages * 26; // Not sure why is 5^2+1
+        HashSet<String> filters = new HashSet<String>();
+        for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
+            filters.add(pkg.getFilter().getContent());
+        }
+        int expectedCalls = filters.size(); // The number of different filter rules defined across all threshold packages.
         LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
         int count = 0;
         String expectedMsgHeader = "createPackageIpMap: package ";
         for (LoggingEvent e : events) {
             if (e.getMessage().toString().startsWith(expectedMsgHeader))
-                count++;
-        }
-        assertEquals("expecting " + expectedCalls + " events", expectedCalls, count);
-        
-        // Validate number of re-initializations
-        expectedCalls = 25; // 5 nodes => 5^2 times
-        events = MockLogAppender.getEventsGreaterOrEqual(Level.INFO);
-        count = 0;
-        expectedMsgHeader = "getThresholdGroupNames: re-initializing filters.";
-        for (LoggingEvent e : events) {
-            if (e.getMessage().toString().equals(expectedMsgHeader))
                 count++;
         }
         assertEquals("expecting " + expectedCalls + " events", expectedCalls, count);
