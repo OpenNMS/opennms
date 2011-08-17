@@ -31,6 +31,7 @@ package org.opennms.web.controller.ksc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
@@ -54,6 +55,11 @@ public class IndexController extends AbstractController implements InitializingB
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String reloadConfig = request.getParameter("reloadConfig");
+        if (reloadConfig != null && Boolean.parseBoolean(reloadConfig)) {
+            KSC_PerformanceReportFactory.getInstance().reload();
+        }
+
         ModelAndView modelAndView = new ModelAndView("KSC/index");
 
         modelAndView.addObject("kscReadOnly", ( (!request.isUserInRole( Authentication.ROLE_ADMIN )) || request.isUserInRole(Authentication.ROLE_READONLY)) || (request.getRemoteUser() == null));
