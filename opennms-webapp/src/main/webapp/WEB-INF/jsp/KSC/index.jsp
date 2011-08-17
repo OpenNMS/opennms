@@ -234,5 +234,13 @@
     </p>
   </div>
 </div>
+<script type="text/javascript">
+function doReload() {
+    if (confirm("Are you sure you want to do this?")) {
+        document.location = "KSC/index.htm?reloadConfig=true";
+    }
+}
+</script>
+<input type="button" onclick="doReload()" value="Request a Reload of KSC Reports Configuration"/>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>
