@@ -45,7 +45,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * <p>
  * Once loaded or create, the class tracks any changes and will write those
  * changes to the database whenever the <code>store</code> method is invoked.
- * If a database conneciton is not passed to the store method, then a temporary
+ * If a database connection is not passed to the store method, then a temporary
  * one is allocated to write the results.
  * </p>
  *
