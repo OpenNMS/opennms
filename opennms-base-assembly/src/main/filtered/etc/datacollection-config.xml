@@ -2075,7 +2075,7 @@
       <group name="ucd-sysstat-raw-more" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.2021.11.61" instance="0" alias="CpuRawSoftIRQ" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.2021.11.62" instance="0" alias="RawBlksSwapIn" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2021.11.63" instance="0" alias="RawBlksSwapIn" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.63" instance="0" alias="RawBlksSwapOut" type="counter" />
       </group>
 
       <group name="ucd-diskio" ifType="all">
