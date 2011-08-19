@@ -296,13 +296,13 @@
 
   <!-- Default: reload datacollection config every 10 minutes -->
   <bean id="dataCollectionConfigReloadInterval" class="java.lang.Long">
-    <constructor-arg value="600" />
+    <constructor-arg value="0" />
   </bean>
 
   <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.DefaultDataCollectionConfigDao">
     <property name="configResource" ref="dataCollectionConfigResourceLocation" />
     <property name="configDirectory" ref="dataCollectionConfigDirectoryLocation" />
-    <property name="reloadCheckInterval" value="600" />
+    <property name="reloadCheckInterval" ref="dataCollectionConfigReloadInterval" />
   </bean>
 
   <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

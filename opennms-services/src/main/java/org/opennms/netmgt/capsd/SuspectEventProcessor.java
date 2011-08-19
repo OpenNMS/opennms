@@ -807,7 +807,7 @@ final class SuspectEventProcessor implements Runnable {
                 DbSnmpInterfaceEntry.create(nodeId, xifIndex);
 
             if (addrs == null) {
-                // No IP associeated with the interface
+                // No IP associated with the interface
                 snmpEntry.setCollect("N");
 
             } else {
