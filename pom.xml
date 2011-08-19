@@ -1802,15 +1802,17 @@
         <artifactId>antlr</artifactId>
         <version>2.7.6</version>
       </dependency>
+      <!-- This must match the version used in spring -->
       <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjrt</artifactId>
-        <version>1.6.2</version>
+        <version>1.6.8</version>
       </dependency>
+      <!-- This must match the version used in spring -->
       <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjweaver</artifactId>
-        <version>1.6.2</version>
+        <version>1.6.8</version>
       </dependency>
       <dependency>
         <groupId>axis</groupId>
