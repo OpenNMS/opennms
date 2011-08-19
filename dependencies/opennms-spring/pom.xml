@@ -141,6 +141,17 @@
         <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+      <version>${aspectjVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>${aspectjVersion}</version>
+    </dependency>
+
 
     <!-- Spring Dependencies -->
 
