@@ -138,8 +138,8 @@ public class ServicePageTest extends SeleneseTestBase{
         }else if(selenium.isElementPresent("link=HTTP-8980")){
             selenium.click("link=HTTP-8980");
             selenium.waitForPageToLoad("30000");
-            assertTrue("Managed text not found", selenium.isTextPresent("Managed"));
-            assertTrue("IP text not found", selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
+            assertTrue("Managed text not found", selenium.isTextPresent("regexp:(Managed|Not Monitored)"));
+            assertTrue("IP text not found", selenium.isTextPresent("0:0:0:0:0:0:0:1"));
             assertTrue("localNode text not found", selenium.isTextPresent("localNode"));
         }else {
             fail("Neither of the links were found. Printing page source: " + selenium.getHtmlSource());
