@@ -29,7 +29,6 @@
 
 package org.opennms.mock.snmp;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -164,8 +163,10 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	                //newVar = new OctetString(moValStr);
                     throw new IllegalArgumentException("Unrecognized SNMP Type "+moTypeStr);
 	            }
-	        } catch (Throwable t) {
-	            throw new UndeclaredThrowableException(t, "Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr);
+	        } catch (RuntimeException t) {
+	            throw new IllegalStateException("Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr, t);
+	        } catch (Error t) {
+	            throw new IllegalStateException("Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr, t);
 	        }
 	    }
         return newVar;
