@@ -56,8 +56,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 /**
  * EventWriter loads the information in each 'Event' into the database.
  *
- * While loading mutiple values of the same element into a single DB column, the
- * mutiple values are delimited by MULTIPLE_VAL_DELIM.
+ * While loading multiple values of the same element into a single DB column, the
+ * multiple values are delimited by MULTIPLE_VAL_DELIM.
  *
  * When an element and its attribute are loaded into a single DB column, the
  * value and the attribute are separated by a DB_ATTRIB_DELIM.
