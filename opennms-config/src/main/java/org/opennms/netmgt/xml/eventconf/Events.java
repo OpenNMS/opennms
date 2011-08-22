@@ -33,13 +33,16 @@ import org.exolab.castor.xml.Unmarshaller;
  */
 @XmlRootElement(name="events")
 @XmlAccessorType(XmlAccessType.FIELD)
-@SuppressWarnings("serial")
 public class Events implements java.io.Serializable {
-
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6134329533420532982L;
 
     /**
      * Global settings for this configuration
