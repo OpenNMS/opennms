@@ -42,20 +42,13 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * @author ranger
  * @version $Id: $
  */
-public class EventconfFactory {
+public abstract class EventconfFactory {
     /**
      * The static singleton instance of the EventConfDao.
      * Is null if the init() method has not been called.
      */
     private static EventConfDao s_instance;
 
-    /**
-     * No constructors, only static methods.  Thank you, drive through.
-     */
-    private EventconfFactory() {
-        
-    }
-    
     /**
      * <p>init</p>
      *

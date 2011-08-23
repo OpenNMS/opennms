@@ -2034,6 +2034,6 @@ for this event in eventconf.xml.&lt;/p&gt;
                         xupsAlarmDescr=%parm[#2]%
                         xupsTrapMessage=%parm[#3]%&lt;/p&gt;
                 </logmsg>
-        <severity>Indeterminant</severity>
+        <severity>Indeterminate</severity>
 </event>
 </events>
