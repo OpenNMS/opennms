@@ -70,7 +70,7 @@
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
-		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["ReportCategory"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date(
@@ -113,7 +113,8 @@ ON
 	(categories.categoryid = category_node.categoryid)
 WHERE
 	(snmpinterface.snmpcollect = 'C' OR snmpinterface.snmpcollect = 'UC') AND
-	node.nodetype = 'A'
+	node.nodetype = 'A' AND
+	categories.categoryname = $P{SURVEILLANCE_CATEGORY}
 ORDER BY
 	categories.categoryname,
 	node.nodelabel]]>
