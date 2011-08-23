@@ -150,12 +150,12 @@ public class DatabaseChecker {
                 final Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUserName(), dataSource.getPassword());
                 connection.close();
             } catch (final Throwable t) {
-                final String errorMessage = "Unable to connect to data source '%s' with username '%s', check opennms-datasources.xml and your database permissions.";
+                final String errorMessage = "Unable to connect to data source '%s' at URL '%s' with username '%s', check opennms-datasources.xml and your database permissions.";
                 if (m_required.contains(name)) {
-                    LogUtils.errorf(this, errorMessage, name, dataSource.getUserName());
+                    LogUtils.errorf(this, errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
                     throw new InvalidDataSourceException("Data source '" + name + "' failed.", t);
                 } else {
-                    LogUtils.warnf(this, errorMessage, name, dataSource.getUserName());
+                    LogUtils.warnf(this, errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
                 }
             }
         }
