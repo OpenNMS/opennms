@@ -318,6 +318,12 @@
 
   <bean id="dataCollectionConfig" class="org.opennms.netmgt.config.DataCollectionConfigFactory" depends-on="dataCollectionConfig-init" factory-method="getInstance" />
 
+  <bean id="init-pollOutagesConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="pollOutagesConfig" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="init-pollOutagesConfig-factory" factory-method="getInstance"/>
+
   <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
     <property name="nodeDao" ref="nodeDao" />
     <property name="locationMonitorDao" ref="locationMonitorDao" />
