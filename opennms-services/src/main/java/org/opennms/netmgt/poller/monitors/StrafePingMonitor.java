@@ -60,8 +60,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
-
-// this is marked not distributable because it relies on a shared library
 @Distributable
 final public class StrafePingMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_MULTI_PING_COUNT = 20;

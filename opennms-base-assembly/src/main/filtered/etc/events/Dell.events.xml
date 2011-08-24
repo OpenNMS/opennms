@@ -343,7 +343,7 @@
 			alertPreviousStatus=%parm[#5]% 
 			alertData=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-	<severity>Clared</severity>
+	<severity>Cleared</severity>
 </event>
 <event>
 	<mask>
@@ -11269,7 +11269,7 @@ firmware to this enclosure again to correct this condition.&lt;/p&gt;&lt;table&g
 			pv660fEvent_FMTHEAT_OK trap received 
 			controllerNameEv=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>?Cleared</severity>
+	<severity>Cleared</severity>
 </event>
 <event>
 	<mask>
@@ -13934,7 +13934,7 @@ firmware to this enclosure again to correct this condition.&lt;/p&gt;&lt;table&g
 			pv660fEvent_LOG_EMPTY trap received 
 			controllerNameEv=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Norma?l</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
@@ -18136,7 +18136,7 @@ There is no global status change associated with this trap.&lt;/p&gt;&lt;table&g
 			currentStatusEvent=%parm[#7]% 
 			previousStatusEvent=%parm[#8]%&lt;/p&gt;
 		</logmsg>
-	<severity>Normal?</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
