@@ -2063,6 +2063,7 @@
   <event-file>events/Aedilis.events.xml</event-file>
   <event-file>events/AirDefense.events.xml</event-file>
   <event-file>events/AIX.events.xml</event-file>
+  <event-file>events/AKCP.events.xml</event-file>
   <event-file>events/AlcatelLucent.OmniSwitch.events.xml</event-file>
   <event-file>events/AlcatelLucent.SMSBrick.events.xml</event-file>
   <event-file>events/Allot.NetXplorer.events.xml</event-file>
