@@ -141,47 +141,47 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      * @return True if server, false if not.
      */
     private boolean isRadius(final InetAddress host, final int authport, final int acctport, final String authType,
-    		final String user, final String password, final String secret, final String nasid, final int retry, final int timeout) {
+            final String user, final String password, final String secret, final String nasid, final int retry, final int timeout) {
 
         boolean isRadiusServer = false;
 
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
-        final RadiusClient rc = new RadiusClient(host, secret, authport, acctport, timeout);
+        try {
+            final RadiusClient rc = new RadiusClient(host, secret, authport, acctport, timeout);
 
-    	final AttributeList attributes = new AttributeList();
-    	attributes.add(new Attr_UserName(user));
-    	attributes.add(new Attr_NASIdentifier(nasid));
+            final AttributeList attributes = new AttributeList();
+            attributes.add(new Attr_UserName(user));
+            attributes.add(new Attr_NASIdentifier(nasid));
 
-    	final AccessRequest accessRequest = new AccessRequest(rc, attributes);
-    	final RadiusAuthenticator auth;
-    	if (authType.equalsIgnoreCase("chap")) {
-    		auth = new CHAPAuthenticator();
-    	} else if (authType.equalsIgnoreCase("pap")) {
-    		auth = new PAPAuthenticator();
-    	} else if (authType.equalsIgnoreCase("mschapv1")) {
-    		auth = new MSCHAPv1Authenticator();
-    	} else if (authType.equalsIgnoreCase("mschapv2")) {
-    		auth = new MSCHAPv2Authenticator();
-    	} else if (authType.equalsIgnoreCase("eapmd5")) {
-    		auth = new EAPMD5Authenticator();
-    	} else if (authType.equalsIgnoreCase("eapmschapv2")) {
-    		auth = new EAPMSCHAPv2Authenticator();
-    	} else {
-    		LogUtils.warnf(this, "Unknown authenticator type '%s'", authType);
-    		return isRadiusServer;
-    	}
+            final AccessRequest accessRequest = new AccessRequest(rc, attributes);
+            final RadiusAuthenticator auth;
+            if (authType.equalsIgnoreCase("chap")) {
+                auth = new CHAPAuthenticator();
+            } else if (authType.equalsIgnoreCase("pap")) {
+                auth = new PAPAuthenticator();
+            } else if (authType.equalsIgnoreCase("mschapv1")) {
+                auth = new MSCHAPv1Authenticator();
+            } else if (authType.equalsIgnoreCase("mschapv2")) {
+                auth = new MSCHAPv2Authenticator();
+            } else if (authType.equalsIgnoreCase("eapmd5")) {
+                auth = new EAPMD5Authenticator();
+            } else if (authType.equalsIgnoreCase("eapmschapv2")) {
+                auth = new EAPMSCHAPv2Authenticator();
+            } else {
+                LogUtils.warnf(this, "Unknown authenticator type '%s'", authType);
+                return isRadiusServer;
+            }
 
-    	RadiusPacket reply;
-		try {
-			reply = rc.authenticate(accessRequest, auth, retry);
-	    	isRadiusServer = (reply != null);
-	    	LogUtils.debugf(this, "Discovered RADIUS service on %s", host.getCanonicalHostName());
-		} catch (final Exception e) {
-			LogUtils.debugf(this, e, "Error while attempting to discover RADIUS service on %s", host.getCanonicalHostName());
-			isRadiusServer = false;
-		}
-		
-		return isRadiusServer;
+            RadiusPacket reply;
+            reply = rc.authenticate(accessRequest, auth, retry);
+            isRadiusServer = (reply != null);
+            LogUtils.debugf(this, "Discovered RADIUS service on %s", host.getCanonicalHostName());
+        } catch (final Throwable e) {
+            LogUtils.debugf(this, e, "Error while attempting to discover RADIUS service on %s", host.getCanonicalHostName());
+            isRadiusServer = false;
+        }
+
+        return isRadiusServer;
     }
 
     /**

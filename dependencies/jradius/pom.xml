@@ -18,12 +18,12 @@
     <dependency>
       <groupId>net.jradius</groupId>
       <artifactId>jradius-core</artifactId>
-      <version>1.0.0-20080911</version>
+      <version>1.1.4</version>
     </dependency>
     <dependency>
       <groupId>net.jradius</groupId>
       <artifactId>jradius-dictionary</artifactId>
-      <version>1.0.0-20080911</version>
+      <version>1.1.4</version>
     </dependency>
     <dependency>
       <groupId>org.gnu</groupId>
@@ -38,6 +38,11 @@
       <id>opennms-repo</id>
       <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+    <repository>
+      <id>coova</id>
+      <name>Coova Repository</name>
+      <url>http://coova-dev.s3.amazonaws.com/mvn</url>
     </repository>
   </repositories>
 </project>
