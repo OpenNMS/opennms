@@ -52,7 +52,7 @@ import junit.framework.TestCase;
  */
 public class SshTest extends TestCase {
     private static final String GOOD_HOST = "www.opennms.org";
-    private static final String BAD_HOST = "1.1.1.1";
+    private static final String BAD_HOST = "169.254.254.254";
     private static final int PORT = 22;
     private static final int TIMEOUT = 2000;
     private TimeoutTracker tt;
