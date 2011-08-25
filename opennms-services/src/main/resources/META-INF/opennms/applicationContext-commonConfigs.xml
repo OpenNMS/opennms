@@ -8,7 +8,13 @@
 	</bean>
 
 	<bean id="onmsServerConfig" class="org.opennms.netmgt.config.OpennmsServerConfigFactory" depends-on="init-onmsServerConfig-factory" factory-method="getInstance"/>
-	
+
+    <bean id="init-pollOutagesConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+            <property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="pollOutagesConfig" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="init-pollOutagesConfig-factory" factory-method="getInstance"/>
+
 	<bean id="init-pollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.init</value></property>
 	</bean>
