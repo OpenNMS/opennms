@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.filter.Table;
@@ -214,7 +215,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
     /** {@inheritDoc} */
     public Map<InetAddress, Set<String>> getIPAddressServiceMap(final String rule) throws FilterParseException {
-    	final Map<InetAddress, Set<String>> ipServices = new TreeMap<InetAddress, Set<String>>();
+        final Map<InetAddress, Set<String>> ipServices = new TreeMap<InetAddress, Set<String>>(new InetAddressComparator());
         String sqlString;
 
         LogUtils.debugf(this, "Filter.getIPAddressServiceMap(%s)", rule);
