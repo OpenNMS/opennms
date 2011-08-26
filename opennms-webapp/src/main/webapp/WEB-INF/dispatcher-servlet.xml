@@ -91,6 +91,7 @@
   <bean name="/admin/categories.htm"
   		class="org.opennms.web.controller.CategoryController">
   	<property name="adminCategoryService" ref="adminCategoryService"/>
+  	<property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao"/>
   </bean>
   
   <bean name="/admin/userGroupView/groups/list.htm"

@@ -41,7 +41,33 @@
 </jsp:include>
 
 <h3>Surveillance Categories</h3>
+<script type="text/javascript">
 
+   var surveillanceCategories = {
+		   <c:set var="first" value="true"/>
+		   <c:forEach var="surveillanceCat" items="${surveillanceCategories}" varStatus="count">
+		     <c:choose>
+		       <c:when test="${first == true}">
+		         <c:set var="first" value="false" />
+		         ${surveillanceCat}:"${surveillanceCat}"
+		       </c:when>
+		       <c:otherwise>
+		         ,${surveillanceCat}:"${surveillanceCat}"
+		       </c:otherwise>
+		     </c:choose>
+		   </c:forEach>
+   };
+
+   function deleteCategory(categoryName, categoryId){
+	   if(surveillanceCategories.hasOwnProperty(categoryName)){
+           if(confirm("This Surveillance Category is also in your surveillance-views.xml config.\nPlease edit surveillance-views.xml to reflect changes.")){
+               location = "admin/categories.htm?removeCategoryId=" + categoryId;
+           }
+       }else{
+           location = "admin/categories.htm?removeCategoryId=" + categoryId;
+       }
+   }
+</script>
 <table>
   <tr>
     <th>Delete</th>
@@ -50,7 +76,7 @@
   </tr>
   <c:forEach items="${categories}" var="category">
 	  <tr>
-	    <td><a href="admin/categories.htm?removeCategoryId=${category.id}"><img src="images/trash.gif" alt="Delete Category"/></a></td>
+	    <td><a onclick="deleteCategory('${fn:escapeXml(category.name)}', ${category.id})" ><img src="images/trash.gif" alt="Delete Category"/></a></td>
 	    <td><a href="admin/categories.htm?categoryid=${category.id}&edit"><img src="images/modify.gif" alt="Edit Category"/></a></td>
 	    <td><a href="admin/categories.htm?categoryid=${category.id}">${fn:escapeXml(category.name)}</a></td> 
   	  </tr>
