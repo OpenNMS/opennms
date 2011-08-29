@@ -28,7 +28,6 @@
 
 package org.opennms.web.springframework.security;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Iterator;
 
@@ -206,19 +205,14 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         AttributeList attributeList = new AttributeList();
         attributeList.add(new Attr_UserName(username));
         attributeList.add(new Attr_UserPassword(password));
+        RadiusClient radiusClient = new RadiusClient(serverIP, secret, port, port+1, timeout);
+        AccessRequest request = new AccessRequest(radiusClient, attributeList);
+
         RadiusPacket reply;
         try {
-            RadiusClient radiusClient = new RadiusClient(serverIP, secret, port, port+1, timeout);
-            AccessRequest request = new AccessRequest(radiusClient, attributeList);
-
             logger.debug("Sending AccessRequest message to "+InetAddressUtils.str(serverIP)+":"+port+" using "+authTypeClass.getAuthName()+" protocol with timeout = "+timeout+", retries = "+retries+", attributes:\n"+attributeList.toString());
             reply = radiusClient.authenticate(request, authTypeClass, retries);
         } catch (RadiusException e) {
-            logger.error("Error connecting to radius server "+server+" : "+e);
-            throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
-                new Object[] {e},
-                "Error connecting to radius server: "+e));
-        } catch (IOException e) {
             logger.error("Error connecting to radius server "+server+" : "+e);
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
                 new Object[] {e},
@@ -241,6 +235,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
             logger.debug("rolesAttribute not set, using default roles ("+defaultRoles+") for user "+username);
             roles = new String(defaultRoles);
         } else {
+            @SuppressWarnings("unchecked")
             Iterator<RadiusAttribute> attributes = reply.getAttributes().getAttributeList().iterator();
             while (attributes.hasNext()) {
                 RadiusAttribute attribute = attributes.next();

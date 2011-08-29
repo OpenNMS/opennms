@@ -171,53 +171,53 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
 
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
         int timeout = convertTimeoutToSeconds(ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT));
-        try {
-            final RadiusClient rc = new RadiusClient(addr, secret, authport, acctport, timeout);
+		final RadiusClient rc = new RadiusClient(addr, secret, authport, acctport, timeout);
 
-            for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
-                final AttributeList attributes = new AttributeList();
-                attributes.add(new Attr_UserName(user));
-                attributes.add(new Attr_NASIdentifier(nasid));
-                attributes.add(new Attr_UserPassword(password));
+        for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
+	    	final AttributeList attributes = new AttributeList();
+	    	attributes.add(new Attr_UserName(user));
+	    	attributes.add(new Attr_NASIdentifier(nasid));
+	    	attributes.add(new Attr_UserPassword(password));
+	
+	    	final AccessRequest accessRequest = new AccessRequest(rc, attributes);
+	    	final RadiusAuthenticator auth;
+	    	if (authType.equalsIgnoreCase("chap")) {
+	    		auth = new CHAPAuthenticator();
+	    	} else if (authType.equalsIgnoreCase("pap")) {
+	    		auth = new PAPAuthenticator();
+	    	} else if (authType.equalsIgnoreCase("mschapv1")) {
+	    		auth = new MSCHAPv1Authenticator();
+	    	} else if (authType.equalsIgnoreCase("mschapv2")) {
+	    		auth = new MSCHAPv2Authenticator();
+	    	} else if (authType.equalsIgnoreCase("eapmd5") || authType.equalsIgnoreCase("eap-md5")) {
+	    		auth = new EAPMD5Authenticator();
+	    	} else if (authType.equalsIgnoreCase("eapmschapv2") || authType.equalsIgnoreCase("eap-mschapv2")) {
+	    		auth = new EAPMSCHAPv2Authenticator();
+	    	} else {
+	    		return logDown(Level.ERROR, "Unknown authenticator type '" + authType + "'");
+	    	}
+	
+        	tracker.startAttempt();
 
-                final AccessRequest accessRequest = new AccessRequest(rc, attributes);
-                final RadiusAuthenticator auth;
-                if (authType.equalsIgnoreCase("chap")) {
-                    auth = new CHAPAuthenticator();
-                } else if (authType.equalsIgnoreCase("pap")) {
-                    auth = new PAPAuthenticator();
-                } else if (authType.equalsIgnoreCase("mschapv1")) {
-                    auth = new MSCHAPv1Authenticator();
-                } else if (authType.equalsIgnoreCase("mschapv2")) {
-                    auth = new MSCHAPv2Authenticator();
-                } else if (authType.equalsIgnoreCase("eapmd5") || authType.equalsIgnoreCase("eap-md5")) {
-                    auth = new EAPMD5Authenticator();
-                } else if (authType.equalsIgnoreCase("eapmschapv2") || authType.equalsIgnoreCase("eap-mschapv2")) {
-                    auth = new EAPMSCHAPv2Authenticator();
-                } else {
-                    return logDown(Level.ERROR, "Unknown authenticator type '" + authType + "'");
-                }
-
-                tracker.startAttempt();
-
-                RadiusPacket reply;
-                // Set authenticate retries to default of 0, timeout tracker handles retries.
-                reply = rc.authenticate(accessRequest, auth, DEFAULT_RETRY);
-                if (reply instanceof AccessAccept) {
+	    	RadiusPacket reply;
+			try {
+				// Set authenticate retries to default of 0, timeout tracker handles retries.
+				reply = rc.authenticate(accessRequest, auth, DEFAULT_RETRY);
+				if (reply instanceof AccessAccept) {
                     double responseTime = tracker.elapsedTimeInMillis();
                     status = PollStatus.available(responseTime);
                     LogUtils.debugf(this, "Radius service is AVAILABLE on: %s", addr.getCanonicalHostName());
                     LogUtils.debugf(this, "poll: responseTime= %fms", responseTime);
                     break;
-                } else if (reply != null) {
-                    LogUtils.debugf(this, "response returned, but request was not accepted: %s", reply);
-                }
-                status = logDown(Level.ERROR, "Invalid RADIUS reply: " + reply);
-            }
-        } catch (final Throwable e) {
-            status = logDown(Level.ERROR, "Error while attempting to connect to the RADIUS service on " + addr.getCanonicalHostName(), e);
+				} else if (reply != null) {
+					LogUtils.debugf(this, "response returned, but request was not accepted: %s", reply);
+				}
+				status = logDown(Level.ERROR, "Invalid RADIUS reply: " + reply);
+			} catch (final Exception e) {
+				status = logDown(Level.ERROR, "Error while attempting to connect to the RADIUS service on " + addr.getCanonicalHostName(), e);
+			}
+	
         }
-
         return status;
     }
 
