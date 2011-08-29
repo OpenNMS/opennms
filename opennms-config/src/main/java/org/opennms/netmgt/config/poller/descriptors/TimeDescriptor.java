@@ -191,7 +191,7 @@ import org.opennms.netmgt.config.poller.Time;
             org.exolab.castor.xml.validators.StringValidator typeValidator;
             typeValidator = new org.exolab.castor.xml.validators.StringValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.addPattern("((^[0-9]{2}-[A-Za-z]{3}-[12][0-9]{3}[ ]+([0-9]{2}:){2}[0-9]{2})|(^([0-9]{2}:){2}[0-9]{2}))");
+            typeValidator.addPattern("(([0-9]{2}-[A-Za-z]{3}-[12][0-9]{3}[ ]+([0-9]{2}:){2}[0-9]{2})|(([0-9]{2}:){2}[0-9]{2}))");
             typeValidator.setWhiteSpace("preserve");
         }
         desc.setValidator(fieldValidator);
@@ -236,7 +236,7 @@ import org.opennms.netmgt.config.poller.Time;
             org.exolab.castor.xml.validators.StringValidator typeValidator;
             typeValidator = new org.exolab.castor.xml.validators.StringValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.addPattern("((^[0-9]{2}-[A-Za-z]{3}-[12][0-9]{3}[ ]+([0-9]{2}:){2}[0-9]{2})|(^([0-9]{2}:){2}[0-9]{2}))");
+            typeValidator.addPattern("(([0-9]{2}-[A-Za-z]{3}-[12][0-9]{3}[ ]+([0-9]{2}:){2}[0-9]{2})|(([0-9]{2}:){2}[0-9]{2}))");
             typeValidator.setWhiteSpace("preserve");
         }
         desc.setValidator(fieldValidator);
