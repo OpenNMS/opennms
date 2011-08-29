@@ -10,13 +10,18 @@
 		.selectBox{
 		  margin-top: 3px;
 		}
+		
+		.tableDiv{
+		   width: 300px;
+		   
+		}
 	</ui:style>
 	<g:TabLayoutPanel barUnit='EM' barHeight='1.25' ui:field="m_tabLayoutPanel" >
         <g:tab>
             <g:header size='5'>IP Interfaces</g:header>
             <g:LayoutPanel>
                 <g:layer bottom="50px" top="0px" left="0" right="0">
-                    <g:FlowPanel>
+                    <g:FlowPanel ui:field="m_ipInterfaceTableDiv">
                         <opennms:IpInterfaceTable ui:field="m_ipInterfaceTable"/>
                     </g:FlowPanel>
                 </g:layer>
@@ -38,7 +43,7 @@
             <g:header size='5' style="font-family: Lucida Grande, Verdana, sans-serif;">Physical Interfaces</g:header>
             <g:LayoutPanel>
                 <g:layer bottom="50px" top="0px" left="0" right="0">
-                    <g:FlowPanel>
+                    <g:FlowPanel ui:field="m_physicalTableDiv">
                         <opennms:PhysicalInterfaceTable ui:field="m_physicalInterfaceTable"/>
                     </g:FlowPanel>
                 </g:layer>
