@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -39,6 +40,9 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
     @UiField
     Button m_searchButton;
     
+    @UiField
+    Button m_graphAllButton;
+    
     ReportSelectListCellTree m_reportCellTree;
     
     private List<ResourceListItem> m_dataList;
@@ -68,6 +72,7 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
         initWidget(uiBinder.createAndBindUi(this));
         
         m_layoutPanel.setSize("100%", "500px");
+        m_layoutPanel.getElement().getStyle().setOverflow(Overflow.AUTO);
         m_treeContainer.add(makeCellTree(m_dataList));
         
     }
@@ -89,6 +94,11 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
     @UiHandler("m_searchButton")
     public void onSearchButtonClick(ClickEvent event) {
         m_presenter.onSearchButtonClick();
+    }
+    
+    @UiHandler("m_graphAllButton")
+    public void onGraphAllClick(ClickEvent event) {
+        m_presenter.onGraphAllButtonClick();
     }
     
     @Override
@@ -126,6 +136,11 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
     public Widget searchPopupTarget() {
         GWT.log("treeContainer height: " + m_treeContainer.getOffsetHeight());
         return m_treeContainer.asWidget();
+    }
+
+    @Override
+    public List<ResourceListItem> getAllReports() {
+        return m_dataList;
     }
 
 

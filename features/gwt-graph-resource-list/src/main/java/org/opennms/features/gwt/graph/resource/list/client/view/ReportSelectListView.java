@@ -10,6 +10,7 @@ public interface ReportSelectListView<T> {
         void onGraphButtonClick();
         void onClearSelectionButtonClick();
         void onSearchButtonClick();
+        void onGraphAllButtonClick();
     }
     
     List<ResourceListItem> getSelectedReports();
@@ -20,4 +21,5 @@ public interface ReportSelectListView<T> {
     void showWarning();
     List<ResourceListItem> getDataList();
     Widget searchPopupTarget();
+    List<ResourceListItem> getAllReports();
 }
