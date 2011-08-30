@@ -29,8 +29,10 @@
 
 package org.opennms.dashboard.client;
 
+import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HTML;
 
 
 /**
@@ -41,6 +43,7 @@ import com.google.gwt.user.client.ui.Label;
 class AlarmView extends PageableTableView {
     
     private Alarm[] m_alarms;
+    private RegExp m_regex = RegExp.compile("<(.|\n)*?>", "g");
     
     AlarmView(Dashlet dashlet) {
 		super(dashlet, 5, new String[] { "Node", "Description", "Count", "First Time", "Last Time" });
@@ -65,8 +68,10 @@ class AlarmView extends PageableTableView {
     	} else {
             table.setHTML(row, 0, "<a href=\"element/node.jsp?node=" + alarm.getNodeId() + "\">" + alarm.getNodeLabel() + "</a>");
     	}
-        Label label = new Label(alarm.getLogMsg());
-        label.setTitle(alarm.getDescrption());
+    	
+        HTML label = new HTML();
+        label.setTitle(stripHtmlTags(alarm.getDescrption()));
+        label.setHTML(SafeHtmlUtils.fromTrustedString(alarm.getLogMsg()));
         table.setWidget(row, 1, label);
         table.setText(row, 2, ""+alarm.getCount());
         table.setText(row, 3, alarm.getFirstEventTime().toString());
@@ -74,6 +79,10 @@ class AlarmView extends PageableTableView {
         table.getRowFormatter().setStyleName(row, alarm.getSeverity());
     }
     
+    private String stripHtmlTags(String description) {
+        return m_regex.replace(description, "");
+    }
+
     /**
      * <p>getElementCount</p>
      *

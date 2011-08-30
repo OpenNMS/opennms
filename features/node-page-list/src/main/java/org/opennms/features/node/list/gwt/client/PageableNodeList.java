@@ -10,6 +10,7 @@ import org.opennms.features.node.list.gwt.client.events.PhysicalInterfaceSelecti
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.http.client.Request;
@@ -113,6 +114,12 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     
     @UiField
     TextBox m_physTextBox;
+    
+    @UiField
+    FlowPanel m_ipInterfaceTableDiv;
+
+    @UiField
+    FlowPanel m_physicalTableDiv;
     
     ErrorDialogBox m_errorDialog;
     
@@ -222,6 +229,10 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
         physicalSimplePager.setDisplay(m_physicalInterfaceTable);
         physicalSimplePager.startLoading();
         m_physTableDiv.add(physicalSimplePager);
+        
+        m_ipInterfaceTableDiv.getElement().getStyle().setOverflow(Overflow.AUTO);
+        m_physicalTableDiv.getElement().getStyle().setOverflow(Overflow.AUTO);
+        
     }
 
     private void initializeTabBar() {
