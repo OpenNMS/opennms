@@ -71,26 +71,31 @@ public class ReportSelectListPresenter implements Presenter, ReportSelectListVie
     public void onGraphButtonClick() {
         List<ResourceListItem> reports = getView().getSelectedReports();
         if(reports != null) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(Location.getProtocol() + "//" + Location.getHost() + "/opennms/graph/results.htm?reports=all&resourceId=");
-            
-            
-            boolean first = true;
-            for(ResourceListItem item : reports) {
-                if(!first) {
-                    
-                    sb.append("&resourceId=");
-                }
-                sb.append(item.getId());
-                first = false;
-            }
-            
-            Location.assign(sb.toString());
+            buildUrlAndGoToGraphPage(reports);
         } else {
             getView().showWarning();
         }
         
         
+    }
+
+
+    private void buildUrlAndGoToGraphPage(List<ResourceListItem> reports) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(Location.getProtocol() + "//" + Location.getHost() + "/opennms/graph/results.htm?reports=all&resourceId=");
+        
+        
+        boolean first = true;
+        for(ResourceListItem item : reports) {
+            if(!first) {
+                
+                sb.append("&resourceId=");
+            }
+            sb.append(item.getId());
+            first = false;
+        }
+        
+        Location.assign(sb.toString());
     }
 
 
@@ -124,6 +129,12 @@ public class ReportSelectListPresenter implements Presenter, ReportSelectListVie
 
     public ReportSelectListView<ResourceListItem> getView() {
         return m_view;
+    }
+
+
+    @Override
+    public void onGraphAllButtonClick() {
+        
     }
 
 }

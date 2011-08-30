@@ -7,16 +7,20 @@
 			height: 460px;
 		}
 		
+		.layoutContainer{
+		    overflow: auto;
+		}
 	</ui:style>
 	<g:LayoutPanel ui:field="m_layoutPanel">
 	   <g:layer top="0" right="0" bottom="40px" left="0" >
 	       <g:FlowPanel ui:field="m_treeContainer" styleName="{style.divContainer}">
            </g:FlowPanel>
-	   </g:layer>
-	   <g:layer height="40px" left="0" right="0" bottom="0" minWidth="350px">
-	       <g:HorizontalPanel styleName="onms-table-no-borders-margin" horizontalAlignment="center">
+	   </g:layer> 
+	   <g:layer height="40px" left="0" right="0" bottom="0" minWidth="500px">
+	       <g:HorizontalPanel ui:field="m_buttonDiv" styleName="onms-table-no-borders-margin" horizontalAlignment="center" >
 	           <g:Button ui:field="m_removeButton" width="150px" >Clear Selection</g:Button>
 	           <g:Button ui:field="m_graphButton" width="150px">Graph Selection</g:Button>
+	           <g:Button ui:field="m_graphAllButton" width="150px">Graph All</g:Button>
 	           <g:Button ui:field="m_searchButton" width="150px">Search</g:Button>
 	       </g:HorizontalPanel>
 	   </g:layer>

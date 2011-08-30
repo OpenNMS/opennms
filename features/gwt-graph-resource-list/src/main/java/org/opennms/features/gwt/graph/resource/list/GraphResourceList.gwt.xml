@@ -4,6 +4,7 @@
   <inherits name='com.google.gwt.user.User'/>
 
   <inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/>
+  <inherits name='org.opennms.features.gwt.tableresources.OnmsTableResources'/>
   
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.opennms.features.gwt.graph.resource.list.client.GraphResourceList'/>
