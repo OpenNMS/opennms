@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.BindException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -41,9 +42,11 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.log4j.BasicConfigurator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.snmp4j.MessageDispatcherImpl;
@@ -218,6 +221,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String[] args) {
+    	BasicConfigurator.configure();
         AgentConfigData agentConfig = parseCli(args);
         if (agentConfig == null) {
             System.err.println("Could not parse configuration.");
@@ -241,7 +245,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     public static AgentConfigData parseCli(String[] args) {
         Options opts = new Options();
         opts.addOption("d", "dump-file", true, "Pathname or URL of file containing MIB dump");
-        opts.addOption("l", "listen-addr", true, "IP address to bind to (default: 127.0.0.1)");
+        opts.addOption("l", "listen-addr", true, "IP address to bind to (default: all interfaces)");
         opts.addOption("p", "port", true, "UDP port to listen on (default: 1691)");
         
         String dumpFile = "";
@@ -281,7 +285,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     
     private static void usage(String why, Options opts) {
         System.err.println(why);
-        System.err.println(opts.toString());
+        new HelpFormatter().printHelp("java -jar mock-snmp-agent-jar-with-dependencies.jar -d dump-file [other options]", opts);
+        //System.err.println(opts.toString());
         System.exit(1);
     }
     
