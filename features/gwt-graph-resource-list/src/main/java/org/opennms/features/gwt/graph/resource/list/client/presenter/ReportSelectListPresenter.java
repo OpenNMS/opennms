@@ -134,7 +134,8 @@ public class ReportSelectListPresenter implements Presenter, ReportSelectListVie
 
     @Override
     public void onGraphAllButtonClick() {
-        
+        List<ResourceListItem> reports = getView().getAllReports();
+        buildUrlAndGoToGraphPage(reports);
     }
 
 }

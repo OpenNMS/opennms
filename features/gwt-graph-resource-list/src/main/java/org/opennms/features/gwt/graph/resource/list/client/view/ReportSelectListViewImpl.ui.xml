@@ -20,8 +20,8 @@
 	       <g:HorizontalPanel ui:field="m_buttonDiv" styleName="onms-table-no-borders-margin" horizontalAlignment="center" >
 	           <g:Button ui:field="m_removeButton" width="150px" >Clear Selection</g:Button>
 	           <g:Button ui:field="m_graphButton" width="150px">Graph Selection</g:Button>
-	           <g:Button ui:field="m_graphAllButton" width="150px">Graph All</g:Button>
 	           <g:Button ui:field="m_searchButton" width="150px">Search</g:Button>
+	           <g:Button ui:field="m_graphAllButton" width="150px">Graph All</g:Button>
 	       </g:HorizontalPanel>
 	   </g:layer>
 	</g:LayoutPanel>
