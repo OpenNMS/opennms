@@ -480,12 +480,12 @@ abstract public class InetAddressUtils {
     }
     
     public static InetAddress addr(final String ipAddrString) {
-        return ipAddrString == null ? null : getInetAddress(ipAddrString);
+        return ipAddrString == null ? null : getInetAddress(ipAddrString.trim());
     }
     
     // FIXME: do we lose 
     public static String normalize(final String ipAddrString) {
-    	return ipAddrString == null? null : toIpAddrString(addr(ipAddrString));
+    	return ipAddrString == null? null : toIpAddrString(addr(ipAddrString.trim()));
     }
     
 	public static String str(final InetAddress addr) {
