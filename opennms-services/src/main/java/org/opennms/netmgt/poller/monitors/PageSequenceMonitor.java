@@ -165,10 +165,10 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
     }
 
-    private static final class EmptyKeyRelaxedTrustProvider extends Provider {
+    public static final class EmptyKeyRelaxedTrustProvider extends Provider {
         private static final long serialVersionUID = -543349021655585769L;
 
-        protected EmptyKeyRelaxedTrustProvider() {
+        public EmptyKeyRelaxedTrustProvider() {
             super(EmptyKeyRelaxedTrustSSLContext.ALGORITHM + "Provider", 1.0, null);
             put(
                 "SSLContext." + EmptyKeyRelaxedTrustSSLContext.ALGORITHM,

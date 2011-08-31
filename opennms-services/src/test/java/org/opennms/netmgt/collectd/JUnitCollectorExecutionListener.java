@@ -90,12 +90,12 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         testContext.setAttribute("rrdDirectory", m_snmpRrdDirectory);
 
         // set up the collection configuration factory
-        if (config.datacollectionType().equalsIgnoreCase("http")) {
+        if ("http".equalsIgnoreCase(config.datacollectionType()) || "https".equalsIgnoreCase(config.datacollectionType())) {
         	is = ConfigurationTestUtils.getInputStreamForResourceWithReplacements(testContext.getTestInstance(), config.datacollectionConfig(), new String[] { "%rrdRepository%", m_snmpRrdDirectory.getAbsolutePath() });
             HttpCollectionConfigFactory factory = new HttpCollectionConfigFactory(is);
             HttpCollectionConfigFactory.setInstance(factory);
             HttpCollectionConfigFactory.init();
-        } else if (config.datacollectionType().equalsIgnoreCase("snmp")) {
+        } else if ("snmp".equalsIgnoreCase(config.datacollectionType())) {
             Resource r = ConfigurationTestUtils.getSpringResourceForResourceWithReplacements(testContext.getTestInstance(), config.datacollectionConfig(), new String[] { "%rrdRepository%", m_snmpRrdDirectory.getAbsolutePath() });
             DefaultDataCollectionConfigDao dataCollectionDao = new DefaultDataCollectionConfigDao();
             dataCollectionDao.setConfigResource(r);
