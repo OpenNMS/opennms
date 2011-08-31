@@ -110,6 +110,10 @@ groovy.compiler.output.path=target/classes
       <artifactId>opennms-services</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-wmi</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
