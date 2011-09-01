@@ -41,6 +41,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.regex.Matcher;
+
 
 import junit.framework.Assert;
 
@@ -214,7 +216,10 @@ public class ConfigurationTestUtils extends Assert {
     
         String newConfig = buffer.toString();
         for (String[] replacement : replacements) {
-            newConfig = newConfig.replaceAll(replacement[0], replacement[1]);
+            // The quoting around the replacement is necessary for file paths to work
+            // correctly on Windows.
+            // @see http://issues.opennms.org/browse/NMS-4853
+            newConfig = newConfig.replaceAll(replacement[0], Matcher.quoteReplacement(replacement[1]));
         }
     
         return newConfig;

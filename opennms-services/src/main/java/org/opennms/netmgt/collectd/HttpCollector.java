@@ -36,6 +36,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -48,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -64,6 +67,9 @@ import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.message.BasicNameValuePair;
@@ -96,6 +102,7 @@ import org.opennms.netmgt.config.httpdatacollection.Parameter;
 import org.opennms.netmgt.config.httpdatacollection.Uri;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.poller.monitors.PageSequenceMonitor;
 
 /**
  * Collect data via URI
@@ -126,6 +133,10 @@ public class HttpCollector implements ServiceCollector {
         RRD_FORMATTER.setMinimumIntegerDigits(1);
         RRD_FORMATTER.setMaximumIntegerDigits(Integer.MAX_VALUE);
         RRD_FORMATTER.setGroupingUsed(false);
+
+        // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
+        // is available to JSSE
+        java.security.Security.addProvider(new PageSequenceMonitor.EmptyKeyRelaxedTrustProvider());
     }
 
     /** {@inheritDoc} */
@@ -261,6 +272,18 @@ public class HttpCollector implements ServiceCollector {
         try {
             HttpParams params = buildParams(collectionSet);
             client = new DefaultHttpClient(params);
+            if ("https".equals(collectionSet.getUriDef().getUrl().getScheme())) {
+                final SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
+                final Scheme https = registry.getScheme("https");
+
+                // Override the trust validation with a lenient implementation
+                final SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(PageSequenceMonitor.EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+                final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
+                // This will replace the existing "https" schema
+                registry.register(lenient);
+            }
+
             String key = "retry";
             if (collectionSet.getParameters().containsKey("retries")) {
                 key = "retries";
@@ -280,6 +303,8 @@ public class HttpCollector implements ServiceCollector {
             throw new HttpCollectorException("Error building HttpClient URI");
         } catch (IOException e) {
             throw new HttpCollectorException("IO Error retrieving page");
+        } catch (NoSuchAlgorithmException e) {
+            throw new HttpCollectorException("Could not find EmptyKeyRelaxedTrustSSLContext to allow connection to untrusted HTTPS hosts");
         } finally {
             // Do we need to do any cleanup?
             // if (method != null) method.releaseConnection();

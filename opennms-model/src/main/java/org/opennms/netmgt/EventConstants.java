@@ -673,7 +673,7 @@ public class EventConstants {
 
     /**
      * This parameter is set to true if a critical path outage has resulted in the
-     * supression of a notification
+     * suppression of a notification
      */
     public final static String PARM_CRITICAL_PATH_NOTICE_SUPRESSED = "noticeSupressed";
     

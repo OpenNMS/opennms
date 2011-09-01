@@ -73,7 +73,7 @@ public class SurveillanceTable {
         
     }
     
-    // FIXME: Can we get rid of the the supress warnings?
+    // FIXME: Can we get rid of the the @SuppressWarnings?
     /**
      * <p>Constructor for SurveillanceTable.</p>
      *

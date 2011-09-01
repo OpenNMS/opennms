@@ -153,12 +153,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
     }
 
     private static String stripExtraQuotes(String string) {
-        String retString = "";
-        if(string.startsWith("\"")){
-            String temp = StringUtils.stripFront(string, '"');
-            retString = StringUtils.stripBack(temp, '"');
-        }
-        return retString;
+        return StringUtils.stripFrontBack(string, "\"", "\"");
     }
 
     /**
