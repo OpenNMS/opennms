@@ -19,6 +19,12 @@ shuTearDown()
     rm -rf /tmp/provisionTest.data.*
 }
 
+shuAssertStringEquals()
+{
+    test "x${1}" = "x${2}"
+    shuAssert "Expected '${1}' but was '${2}'" $? 
+}
+
 shuAssertRequisitionExists()
 {
     local result=/tmp/provisionTest.data.assertReqExists.$$
@@ -248,6 +254,73 @@ TestSyncRequisition()
 
 }
 
-. ./shUnit
+shuAssertCommunityEquals()
+{
+    local config=$1
+    local expectedCommunity=$2
+
+    local community=$(perl xpath.pl ${config} "/snmp-info/community" | sed 's: *<community>\(.*\)</community>:\1:')
+    shuAssert "Unable to find community string in configuration" $?
+    
+    shuAssertStringEquals "$community" "$expectedCommunity"
+}
+
+shuAssertTimeoutEquals()
+{
+    local config=$1
+    local expectedTimeout=$2
+
+    local timeout=$(perl xpath.pl ${config} "/snmp-info/timeout" | sed 's: *<timeout>\(.*\)</timeout>:\1:')
+    shuAssert "Unable to find port in configuration" $?
+
+    shuAssertStringEquals "$timeout" "$expectedTimeout"
+}    
+
+TestGetSnmpConfig()
+{
+    local config=/tmp/provisionTest.data.req.$$
+    local ip=192.168.39.1
+    local expectedCommunity=public
+    local expectedTimeout=1800
+
+    getSnmpConfig ${BASE_URL} ${ip}  > ${config}
+    shuAssert "Unexpected failure getting snmp config data for ${ip}" $?
+
+    shuAssertCommunityEquals ${config} ${expectedCommunity}
+    shuAssertTimeoutEquals ${config} ${expectedTimeout}
+
+}
+
+
+TestSetSnmpConfig()
+{
+    local config=/tmp/provisionTest.data.req.$$
+    local ip=192.168.39.1
+    local expectedCommunity=newcommunity
+    local expectedTimeout=1999
+
+    setSnmpConfig ${BASE_URL} ${ip} community=${expectedCommunity} timeout=${expectedTimeout}
+    shuAssert "Unexpected failure seting snmp config data for ${ip}" $?
+
+    getSnmpConfig ${BASE_URL} ${ip}  > ${config}
+    shuAssert "Unexpected failure getting snmp config data for ${ip}" $?
+
+    shuAssertCommunityEquals ${config} ${expectedCommunity}
+    shuAssertTimeoutEquals ${config} ${expectedTimeout}
+
+    setSnmpConfig ${BASE_URL} ${ip} community=public timeout=1800
+    shuAssert "Unexpected failure resetting snmp config data for ${ip}" $?
+
+    getSnmpConfig ${BASE_URL} ${ip}  > ${config}
+    shuAssert "Unexpected failure getting snmp config data for ${ip}" $?
+
+    shuAssertCommunityEquals ${config} public
+    shuAssertTimeoutEquals ${config} 1800
+
+}
+
+
+
+. ./shunit
 shuStart
 

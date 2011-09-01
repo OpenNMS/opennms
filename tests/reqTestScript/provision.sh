@@ -100,3 +100,29 @@ synchRequisition()
     curl --user admin:admin -sSf -X PUT "${baseUrl}/requisitions/${foreignSource}/import" -o /dev/null
 
 }
+
+getSnmpConfig()
+{
+    local baseUrl=$1
+    local ip=$2
+
+    curl --user admin:admin -sSf -X GET "${baseUrl}/snmpConfig/${ip}"
+}
+
+setSnmpConfig()
+{
+    local baseUrl=$1
+    local ip=$2
+    shift
+    shift
+
+    # This remaings args are expected to be of the parm=value
+    # valid parms are community, timeout, version, port, retries
+    local form_parms=""
+    for parm in "$@"; do
+	form_parms="${form_parms} -d ${parm}"
+    done
+
+    curl --user admin:admin -sSf -X PUT $form_parms "${baseUrl}/snmpConfig/${ip}"
+    
+}

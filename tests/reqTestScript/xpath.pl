@@ -45,9 +45,7 @@ if (@results == 0) {
 }
 
 for (my $i = 0; $i < @results; $i++) {
-	print "result $i:\n";
 	$results[$i]->print;
-	print "\n\n";
 }
 
 #print Dumper(\@results) . "\n";
