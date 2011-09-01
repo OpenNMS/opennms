@@ -81,4 +81,10 @@ public class HostResourceSWRunDetectorTest {
         m_detector.setServiceToDetect("Omnitek XR.exe");
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
+
+    @Test
+    public void testDetectCronSuccess() throws UnknownHostException{
+        m_detector.setServiceToDetect("cron");
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+    }
 }
