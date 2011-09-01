@@ -218,7 +218,7 @@ public abstract class NotificationManager {
             return null;
         } else if (event.getLogmsg() != null && !(event.getLogmsg().getNotify())) {
             if (log.isDebugEnabled())
-                log.debug("Event " + event.getUei() + " is configured to supress notifications.");
+                log.debug("Event " + event.getUei() + " is configured to suppress notifications.");
             return null;
         }
     
