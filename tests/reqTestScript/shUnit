@@ -1,0 +1,242 @@
+################################################################################
+# shUnit 
+# original by Vera Peeters & Rik Tytgat
+# $Source: /cvsroot/shunit/ShUnit/shUnit,v $
+# $Id: shUnit,v 1.32 2008/09/19 11:39:41 lacton Exp $
+################################################################################
+#
+# Refer to the README file for basic explanations.
+#
+
+#
+# Global Constants
+#
+
+SHU_TRUE=0
+SHU_FALSE=1
+SHU_ERROR_EXIT_CODE=127
+
+#
+# Public Function Declarations
+#
+
+shuAssert() {
+# Assert that a predicate is true.
+#   [ 4 -eq `expr 2 + 2` ]
+#   shuAssert 'Two plus two equals four' $?
+  strMessage="${1:-}"
+  boolResult="${2:-${SHU_FALSE}}"
+
+  if [ ${boolResult} -ne ${SHU_TRUE} ]
+  then
+    shuTestFailure "${strMessage}"
+    SHU_TEST_SUCCEEDED=${SHU_FALSE}
+  else
+    shuTestSuccess
+  fi
+}
+
+shuDeny() {
+# Assert that a predicate is false.
+#   [ 5 -eq `expr 2 + 2` ]
+#   shuDeny 'Two plus two should not be equal to 5' $?
+  strMessage="${1:-}"
+  boolResult="${2:-${SHU_TRUE}}"
+
+  [ ${boolResult} -ne ${SHU_TRUE} ]
+  shuAssert "${strMessage}" $?
+}
+
+shuRegTest() {
+# If you do not use the automatic detection of test function, you have to
+# register each of them.
+#   Suite() {
+#     shuRegTest FirstTestFunction
+#     shuRegTest SecondTestFunction
+#   }
+  strFunction=${1}
+
+  SHU_STR_ALL_TESTS="${SHU_STR_ALL_TESTS} ${strFunction}"
+}
+
+shuStart() {
+# Runs all tests.
+#
+# If called with no argument, it will try to detect all declared functions
+# starting with 'Test'.
+#
+# If called with a function name as an argument, it will delegate to this
+# function the test functions' registration.
+#   Suite() {
+#     shuRegTest FirstTestFunction
+#     shuRegTest SecondTestFunction
+#   }
+#   shuStart Suite
+  strInitFunction="${1}"
+
+  if [ $# -eq 0 ]
+  then
+    for test_function in `shuGetDeclaredFunctions | grep "^Test"`
+    do
+      shuRegTest "$test_function"
+    done
+  elif [ $# -eq 1 ]
+  then
+    eval ${strInitFunction}
+  else
+    echo "shuStart: invalid number of arguments -- $#" >&2
+    return 1
+  fi
+
+  SHU_TOTAL_NR_OF_TESTS=`echo ${SHU_STR_ALL_TESTS} | wc -w | sed -e 's/ *//'`
+  
+  if [ "$SHU_TOTAL_NR_OF_TESTS" -eq 0 ]
+  then
+    echo 'shUnit: No tests to run' >&2
+    return $SHU_ERROR_EXIT_CODE
+  fi
+  
+  shuSuiteStart ${SHU_TOTAL_NR_OF_TESTS}
+
+  SHU_TOTAL_NR_SUCCEEDED=0
+  shuTestNbr=0
+  for STR_TEST in ${SHU_STR_ALL_TESTS}
+  do
+    SHU_STR_FAILED=""
+    shuTestNbr=`expr ${shuTestNbr} + 1`
+    shuTestStart ${shuTestNbr} "${STR_TEST}"
+    shuRunOneTest ${STR_TEST}
+    shuTestEnd
+
+    if test -n "${SHU_STR_FAILED}"
+    then 
+
+      OLD_IFS="${IFS}"
+      IFS="^"
+      set -- ${SHU_STR_FAILED}
+      IFS="${OLD_IFS}"
+      while [ ${#} -gt 0 ]
+      do
+        printf "      \"%s\" failed.\n" "${1}" 
+        shift 
+      done
+    fi
+  done
+
+  shuFailedTestCount=`expr ${shuTestNbr} - ${SHU_TOTAL_NR_SUCCEEDED}`
+  shuSuiteEnd $shuFailedTestCount
+  
+  if [ $shuFailedTestCount -lt $SHU_ERROR_EXIT_CODE ]
+  then
+    return $shuFailedTestCount
+  else
+    return `expr $SHU_ERROR_EXIT_CODE - 1`
+  fi
+}
+
+#
+# Private Function Declarations
+#
+
+shuGetDeclaredFunctions() {
+  declarations="`declare -F 2>/dev/null || typeset +f 2>/dev/null`"
+  if [ -z "$declarations" ]
+  then
+    echo "ShUnit did not detect any function. Use the shuRegTest function to register all test functions." >&2
+  fi
+
+  echo "$declarations" | sed 's/declare -f //' | sed 's/^\([^ ]*\)() .*$/\1/'
+}
+
+shuRunOneTest() {
+  strTestToRun=${1}
+  SHU_TEST_SUCCEEDED=${SHU_TRUE}
+
+  if type shuSetUp > /dev/null 2>&1
+  then
+      shuSetUp
+  fi
+
+  if type ${strTestToRun} > /dev/null 2>&1
+  then
+    ${strTestToRun}
+    if [ ${SHU_TEST_SUCCEEDED} -eq ${SHU_TRUE} ]
+    then
+      SHU_TOTAL_NR_SUCCEEDED=`expr $SHU_TOTAL_NR_SUCCEEDED + 1`
+    fi
+  else
+    SHU_TEST_SUCCEEDED=${SHU_FALSE}
+    printf "  ERROR: \"%s\" not found.\n" "${strTestToRun}"  # TODO This should be in a shuTestError function.
+  fi
+
+  if type shuTearDown > /dev/null 2>&1
+  then
+      shuTearDown
+  fi
+}
+
+shuFmtNbrTests() {
+    n="${1}"
+    if [ ${n} -eq 0 ] 
+    then
+        shuRetFmtNbrTests="No tests"
+    elif [ ${n} -eq 1 ] 
+    then
+        shuRetFmtNbrTests="1 test" 
+    else
+        shuRetFmtNbrTests="${n} tests" 
+    fi
+}
+
+shuRegisterFailedTest() {
+    msg="${1}"
+    if [ -z "${SHU_STR_FAILED}" ]
+    then
+        SHU_STR_FAILED="${msg}"
+    else
+        SHU_STR_FAILED="${SHU_STR_FAILED}^${msg}"
+    fi
+}
+
+#
+# Text formatter
+#
+
+shuSuiteStart() {
+  testCount=$1
+  printf "\n****** `basename ${0}` ******\n"
+  shuFmtNbrTests $testCount
+  printf "%s to run:\n" "$shuRetFmtNbrTests"
+}
+
+shuTestStart() {
+  testIndex=$1
+  testName=$2
+  printf "    Test %i: %s    " ${testIndex} "${testName}"
+}
+
+shuTestFailure() {
+  failureMessage="$1"
+  printf "E"
+  shuRegisterFailedTest "$failureMessage"
+}
+
+shuTestSuccess() {
+  printf "."
+}
+
+shuTestEnd() {
+  printf "\n"
+}
+
+shuSuiteEnd() {
+  shuFailedTestCount=$1
+  shuFmtNbrTests "${shuTestNbr}"
+  printf "\n%s run.\n" "${shuRetFmtNbrTests}"
+
+  shuFmtNbrTests "${SHU_TOTAL_NR_SUCCEEDED}"
+  printf "  %s succeeded.\n" "${shuRetFmtNbrTests}"
+
+  shuFmtNbrTests $shuFailedTestCount
+  printf "  %s failed.\n\n" "${shuRetFmtNbrTests}"
+}
