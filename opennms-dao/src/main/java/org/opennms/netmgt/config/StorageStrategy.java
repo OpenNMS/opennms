@@ -80,6 +80,6 @@ public interface StorageStrategy {
      *
      * @param parameterCollection a {@link java.util.List} object.
      */
-    public void setParameters(List<Parameter> parameterCollection);
+    public void setParameters(List<Parameter> parameterCollection) throws IllegalArgumentException;
 
 }

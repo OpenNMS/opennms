@@ -468,7 +468,11 @@ public class OnmsSnmpCollection {
                 getDataCollectionConfigDao().getConfiguredResourceTypes().values();
             Map<String,ResourceType> resourceTypes = new HashMap<String,ResourceType>();
             for (org.opennms.netmgt.config.datacollection.ResourceType configuredResourceType : configuredResourceTypes) {
-                resourceTypes.put(configuredResourceType.getName(), new GenericIndexResourceType(agent, this, configuredResourceType));
+                try {
+                    resourceTypes.put(configuredResourceType.getName(), new GenericIndexResourceType(agent, this, configuredResourceType));
+                } catch (IllegalArgumentException e) {
+                    log().warn("Ignoring resource type " + configuredResourceType.getLabel() + " (" + configuredResourceType.getName() + ") because it is not properly configured.");
+                }
             }
             m_genericIndexResourceTypes = resourceTypes;
         }
