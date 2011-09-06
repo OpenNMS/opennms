@@ -34,6 +34,8 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.StorageStrategyService;
@@ -42,22 +44,35 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SiblingColumnStorageStrategyTest {
 
-    @Test
-    public void testStrategy() throws Exception {
+    private StorageStrategyService service;
+    private SiblingColumnStorageStrategy strategy;
+
+    @Before
+    public void setUp() throws Exception {
         // Create Mocks
-        StorageStrategyService service = EasyMock.createMock(StorageStrategyService.class);
+        service = EasyMock.createMock(StorageStrategyService.class);
         SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddressUtils.addr("127.0.0.1"));
         agentConfig.setPort(1161);
         EasyMock.expect(service.getAgentConfig()).andReturn(agentConfig).anyTimes();
         EasyMock.replay(service);
 
         // Create Strategy and set for hrStorageTable
-        SiblingColumnStorageStrategy strategy = new SiblingColumnStorageStrategy();
-        strategy.setResourceTypeName("hrStorageIndex");
+        strategy = new SiblingColumnStorageStrategy();
         strategy.setStorageStrategyService(service);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        EasyMock.verify(service);
+    }
+
+    @Test
+    public void testStrategy() throws Exception {
+        strategy.setResourceTypeName("hrStorageIndex");
 
         // Create parameters for the strategy -- hrStorageTable
         List<Parameter> params = new ArrayList<Parameter>();
@@ -84,7 +99,22 @@ public class SiblingColumnStorageStrategyTest {
 
         // Test RelativePath - hrStorageTable
         Assert.assertEquals("1/hrStorageIndex/_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
-        EasyMock.verify(service);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testBadParameters() throws Exception {
+        strategy.setResourceTypeName("hrStorageIndex");
+
+        // Create parameters for the strategy -- hrStorageTable
+        List<Parameter> params = new ArrayList<Parameter>();
+        params.add(createParameter("sibling-column-oid", ".1.3.6.1.2.1.25.2.3.1.3"));
+        params.add(createParameter("replace-first", "s/^-$/_root_fs/"));
+        params.add(createParameter("replace-first", "s/^-//"));
+        params.add(createParameter("replace-all", "s/\\s//"));
+        params.add(createParameter("replace-all", "s/:\\\\.*//"));
+
+        // Set the list of parameters into the strategy -- hrStorageTable
+        strategy.setParameters(params);
     }
 
     private Parameter createParameter(String key, String value) {

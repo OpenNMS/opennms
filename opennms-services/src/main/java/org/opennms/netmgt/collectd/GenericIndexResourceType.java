@@ -57,7 +57,7 @@ public class GenericIndexResourceType extends ResourceType {
      * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
      * @param resourceType a {@link org.opennms.netmgt.config.datacollection.ResourceType} object.
      */
-    public GenericIndexResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection, org.opennms.netmgt.config.datacollection.ResourceType resourceType) {
+    public GenericIndexResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection, org.opennms.netmgt.config.datacollection.ResourceType resourceType) throws IllegalArgumentException {
         super(agent, snmpCollection);
 
         Assert.notNull(resourceType, "resourceType argument must not be null");
