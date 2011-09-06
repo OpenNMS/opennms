@@ -483,7 +483,12 @@ abstract public class InetAddressUtils {
         return ipAddrString == null ? null : getInetAddress(ipAddrString.trim());
     }
     
-    // FIXME: do we lose 
+    /**
+     * This function is used to ensure that an IP address string is in fully-qualified
+     * format without any "::" segments for an IPv6 address.
+     * 
+     * FIXME: do we lose
+     */
     public static String normalize(final String ipAddrString) {
     	return ipAddrString == null? null : toIpAddrString(addr(ipAddrString.trim()));
     }
