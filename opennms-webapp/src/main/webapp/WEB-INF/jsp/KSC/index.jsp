@@ -35,7 +35,10 @@
   import="
   org.opennms.web.api.Util,
   org.opennms.web.XssRequestWrapper,
-  org.opennms.web.controller.ksc.CustomViewController
+  org.opennms.web.controller.ksc.CustomViewController,
+  org.opennms.web.svclayer.ResourceService,
+  org.springframework.web.context.WebApplicationContext,
+  org.springframework.web.context.support.WebApplicationContextUtils
   "
 %>
 
@@ -45,8 +48,18 @@
 <%
     final HttpServletRequest req = new XssRequestWrapper(request);
     final String match = req.getParameter("match");
+    pageContext.setAttribute("topLevelResources", m_resourceService.findTopLevelResources());
     pageContext.setAttribute("match", match);
     final String baseHref = Util.calculateUrlBase(request);
+%>
+    
+<%!
+    public ResourceService m_resourceService;
+    
+    public void init() throws ServletException {
+      WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+      m_resourceService = (ResourceService) m_webAppContext.getBean("resourceService", ResourceService.class);
+    }
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -57,28 +70,6 @@
   <jsp:param name="breadcrumb" value="<a href='${baseHref}report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="KSC Reports" />
 </jsp:include>
-
-<!-- A script for validating Node ID Selection Form before submittal -->
-<script type="text/javascript" >
-  function validateDomain()
-  {
-      var isChecked = false
-      for( i = 0; i < document.choose_domain.domain.length; i++ )
-      {
-         //make sure something is checked before proceeding
-         if (document.choose_domain.domain[i].selected)
-         {
-            isChecked=true;
-         }
-      }
-
-      if (!isChecked)
-      {
-          alert("Please check the domain that you would like to report on.");
-      }
-      return isChecked;
-  }
-</script>
 
 <div class="TwoColLeft">
  
@@ -111,87 +102,30 @@
     <div name="opennms-kscCustomReportList" id="kscReportList-ie" dataObject="customData"></div>
   </div>
 
-<h3 class="o-box">Node SNMP Interface Reports</h3>
-<div class="boxWrapper">
-      <p>Select node for desired performance report</p>
-      <c:set var="totalNodeResources" value="${fn:length(nodeResources)}"/>
-      <script type="text/javascript">
-      	var nodeData = {total:"${totalNodeResources}", records:[
+  <h3 class="o-box">Node & Domain Interface Reports</h3>
+  <div class="boxWrapper">
+  <p>Select resource for desired performance report</p>
+    <script type="text/javascript">
+      var standardResourceData = {total:"${fn:length(topLevelResources)}", records:[
 												<c:set var="first" value="true"/>
-												<c:forEach var="resource" items="${nodeResources}">
+												<c:forEach var="resource" items="${topLevelResources}" varStatus="resourceCount">
 												  <c:if test="${match == null || match == '' || fn:containsIgnoreCase(resource.label,match)}">
 												    <c:choose>
 												      <c:when test="${first == true}">
-													<c:set var="first" value="false"/>
-													{id:"${resource.name}", value:"${resource.label}", type:"node"}
+													    <c:set var="first" value="false"/>
+													    {id:"${resource.name}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.name}"}
 												      </c:when>
 												      <c:otherwise>
-													,{id:"${resource.name}", value:"${resource.label}", type:"node"}
+													    ,{id:"${resource.name}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.name}"}
 												      </c:otherwise>
 												    </c:choose>
 												  </c:if>
 												</c:forEach>
       	                                  	]};
-      </script>
-      <div id="snmp-reports"></div>
-      <opennms:nodeSnmpReportList id="nodeSnmpList" dataObject="nodeData"></opennms:nodeSnmpReportList>
-      <div name="opennms-nodeSnmpReportList" id="nodeSnmpList-ie" dataObject="nodeData"></div>
-</div>
-
-<h3 class="o-box">Domain SNMP Interface Reports</h3>
-<div class="boxWrapper">
-      <c:choose>
-        <c:when test="${empty domainResources}">
-          <p>No data has been collected by domain</p>
-        </c:when>
-
-        <c:otherwise>
-          <p>Select domain for desired performance report</p>
-          <script type="text/javascript">
-          		var domainData = {total:"${fn:length(domainResources)}", records:[
-														<c:set var="first" value="true"/>
-														<c:forEach var="resource" items="${domainResources}">
-												  		  <c:if test="${match == null || match == '' || fn:containsIgnoreCase(resource.label,match)}">}">
-														    <c:choose>
-														      <c:when test="${first == true}">
-															<c:set var="first" value="false"/>
-															{id:"${resource.name}", value:"${resource.label}", type:"domain"}
-														      </c:when>
-														      <c:otherwise>
-															,{id:"${resource.name}", value:"${resource.label}", type:"domain"}
-														      </c:otherwise>
-														    </c:choose>
-														  </c:if>
-														</c:forEach>	
-          		                                		]}
-          </script>
-          <form method="get" name="choose_domain" action="<%= Util.calculateUrlBase(request, "KSC/customView.htm") %>" onsubmit="return validateDomain();">
-            <input type="hidden" name="<%=CustomViewController.Parameters.type%>" value="domain">
-
-                  <select style="width: 100%;" name="<%=CustomViewController.Parameters.domain%>" size="10">
-                    <c:forEach var="resource" items="${domainResources}">
-
-
-                      <c:choose>
-                        <c:when test="${match == null || match == ''}">
-                          <option value="${resource.name}">${resource.label}</option>
-                        </c:when>
-                        <c:otherwise>
-                          <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
-                            <option value="${resource.name}">${resource.label}</option>
-                          </c:if>
-                        </c:otherwise>
-                      </c:choose>
-
-
-
-                    </c:forEach>
-                  </select>
-
-                  <input type="submit" value="Submit" alt="Initiates Generation of Domain Report"/>
-          </form>
-        </c:otherwise>
-      </c:choose>
+    </script>
+    <div id="snmp-reports"></div>
+    <opennms:nodeSnmpReportList id="nodeSnmpList" dataObject="standardResourceData"></opennms:nodeSnmpReportList>
+    <div name="opennms-nodeSnmpReportList" id="nodeSnmpList-ie" dataObject="standardResourceData"></div>
   </div>
 
 </div>
@@ -204,30 +138,30 @@
       <b>Customized Reports</b>
       <c:choose>
         <c:when test="${kscReadOnly == false }">
-          allows users to create, view, and edit customized reports containing
+          allow users to create, view, and edit customized reports containing
           any number of prefabricated reports from any available graphable
           resource.
         </c:when>
         <c:otherwise>
-          allows users to view customized reports containing any number of
+          allow users to view customized reports containing any number of
           prefabricated reports from any available graphable resource.
         </c:otherwise>
       </c:choose>
     </p>
 
     <p>
-      <b>Node and Domain Reports</b>
+      <b>Node and Domain Interface Reports</b>
       <c:choose>
         <c:when test="${kscReadOnly == false }">
-          allows users to view automatically generated reports for any node or
-          domain.  These reports can be further edited and saved just like other
-          customized reports.  These reports list only the SNMP interfaces on
-          the selected node or domain, but they can be customized to include
+          allow users to view automatically generated reports for interfaces on
+          any node or domain.These reports can be further edited and saved just
+          like other customized reports.These reports list only the interfaces
+          on the selected node or domain, but they can be customized to include
           any graphable resource.
         </c:when>
         <c:otherwise>
-          allows users to view automatically generated reports for any node or
-          domain.  
+          allow users to view automatically generated reports for interfaces on
+          any node or domain.  
         </c:otherwise>
       </c:choose>
 

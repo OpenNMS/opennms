@@ -76,7 +76,6 @@ public class CustomViewController extends AbstractController implements Initiali
 
     public enum Parameters {
         report,
-        domain,
         type,
         timespan,
         graphtype
@@ -93,21 +92,21 @@ public class CustomViewController extends AbstractController implements Initiali
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String[] requiredParameters = new String[] { "report or domain", "type" };
+        String[] requiredParameters = new String[] { "report", "type" };
       
         // Get Form Variable
+        int reportId = -1;
         String reportType = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.type.toString()));
+        String reportIdString = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.report.toString()));
         if (reportType == null) {
             throw new MissingParameterException(Parameters.type.toString(), requiredParameters);
         }
+        if (reportIdString == null) {
+            throw new MissingParameterException(Parameters.report.toString(), requiredParameters);
+        }
       
-        String reportIdString = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.report.toString()));
-        String domain = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.domain.toString()));
-        int reportId = 0;
-        if (reportIdString != null) {
+        if (reportType.equals("node") || reportType.equals("custom")) {
             reportId = WebSecurityUtils.safeParseInt(reportIdString);
-        } else if (domain == null) {
-            throw new MissingParameterException("report or domain", requiredParameters);
         }
       
         String overrideTimespan = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.timespan.toString()));
@@ -123,10 +122,13 @@ public class CustomViewController extends AbstractController implements Initiali
         // Load report to view 
         Report report = null;
         if ("node".equals(reportType)) {
+            log().debug("handleRequestInternal: buildNodeReport(reportId) " + reportId);
             report = getKscReportService().buildNodeReport(reportId);
         } else if ("domain".equals(reportType)) {
-            report = getKscReportService().buildDomainReport(domain);
+            log().debug("handleRequestInternal: buildDomainReport(reportIdString) " + reportIdString);
+            report = getKscReportService().buildDomainReport(reportIdString);
         } else if ("custom".equals(reportType)) {
+            log().debug("handleRequestInternal: getReportByIndex(reportId) " + reportId);
             report = m_kscReportFactory.getReportByIndex(reportId);
             if (report == null) {
                 throw new ServletException("Report could not be found in config file for index '" + reportId + "'");
@@ -233,9 +235,6 @@ public class CustomViewController extends AbstractController implements Initiali
         modelAndView.addObject("reportType", reportType);
         if (report != null) {
             modelAndView.addObject("report", reportIdString);
-        }
-        if (domain != null) {
-            modelAndView.addObject("domain", domain);
         }
         
         modelAndView.addObject("title", report.getTitle());
