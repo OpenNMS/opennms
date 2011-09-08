@@ -319,9 +319,8 @@ public final class EventUtil {
 		if (encoding.equals(EventConstants.XML_ENCODING_TEXT)) {
 			result = pvalue.getContent();
 		} else if (encoding.equals(EventConstants.XML_ENCODING_BASE64)) {
-			// This probably doesn't work; not all binary data will be convertible into
-			// a valid String value.
-			result = new String(Base64.decodeBase64(pvalue.getContent().toCharArray()));
+			byte[] bytes = Base64.decodeBase64(pvalue.getContent().toCharArray());
+			result = "0x"+toHexString(bytes);
 		} else if (encoding.equals(EventConstants.XML_ENCODING_MAC_ADDRESS)) {
 			result = pvalue.getContent();
 		} else {
@@ -329,6 +328,16 @@ public final class EventUtil {
 		}
 		
 		return result.trim();
+	}
+	
+	public static String toHexString(byte[] data) {
+		final StringBuffer b = new StringBuffer();
+		for (int i = 0; i < data.length; ++i) {
+			final int x = (int) data[i] & 0xff;
+			if (x < 16) b.append("0");
+			b.append(Integer.toString(x, 16).toLowerCase());
+		}
+		return b.toString();
 	}
 
 	/**
