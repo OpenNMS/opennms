@@ -871,7 +871,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             
             service.setId(rs.getInt("id"));
             service.setNodeId(rs.getInt("nodeid"));
-            service.setIpAddress(rs.getString("ipaddr"));
+            service.setIpAddress(InetAddressUtils.normalize(rs.getString("ipaddr")));
 
             element = rs.getTimestamp("lastgood");
             if (element != null) {

@@ -83,6 +83,11 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         if (host != null) {
             connector.setHost(host);
         }
+        
+        Integer requestHeaderSize = Integer.getInteger("org.opennms.netmgt.jetty.requestHeaderSize");
+        if(requestHeaderSize != null) {
+            connector.setRequestHeaderSize(requestHeaderSize);
+        }
 
         m_server.addConnector(connector);
 

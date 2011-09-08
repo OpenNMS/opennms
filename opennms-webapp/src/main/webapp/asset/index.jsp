@@ -40,11 +40,9 @@
 
 <%!
     protected AssetModel model;
-    protected String[][] columns;
 
     public void init() throws ServletException {
         this.model = new AssetModel();
-        this.columns = this.model.getColumns();
     }
 %>
 
@@ -86,7 +84,7 @@
         <input type="submit" value="Search" />
       </form>
       <ul class="plain">
-        <li><a href="asset/nodelist.jsp?column=<%=this.columns[0][1]%>&searchvalue=">All nodes with asset info</a></li>
+        <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
       </ul>
     </div>
   </div>

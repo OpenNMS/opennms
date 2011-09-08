@@ -29,15 +29,18 @@
 package org.opennms.netmgt.dao.support;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.HashSet;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.RrdDataSource;
+import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
@@ -123,5 +126,48 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
         
         assertNotNull("value should not be null", value);
         assertEquals("value", 1.0, value);
+    }
+    
+    public void xxxTestNMS4861() throws Exception
+    {
+    	long endTime = 1312839000L;
+    	long startTime = endTime - 86400L;
+    	String command = "/sw/bin/rrdtool graph -" +
+    			" --imgformat PNG" +
+    			" --font DEFAULT:7" +
+    			" --font TITLE:10" +
+    			" --start " + startTime +
+    			" --end " + endTime +
+    			" --title=\"Netscreen Memory Utilization\"" +
+    			" --units-exponent=0 " + 
+    			" --lower-limit=0" + 
+    			" DEF:value1=netscreen-host-resources.jrb:NetScrnMemAlloc:AVERAGE" + 
+    			" DEF:value1min=netscreen-host-resources.jrb:NetScrnMemAlloc:MIN" + 
+    			" DEF:value1max=netscreen-host-resources.jrb:NetScrnMemAlloc:MAX" + 
+    			" DEF:value2=netscreen-host-resources.jrb:NetScrnMemLeft:AVERAGE" + 
+    			" DEF:value2min=netscreen-host-resources.jrb:NetScrnMemLeft:MIN" + 
+    			" DEF:value2max=netscreen-host-resources.jrb:NetScrnMemLeft:MAX" + 
+    			" DEF:value3=netscreen-host-resources.jrb:NetScrnMemFrag:AVERAGE" + 
+    			" DEF:value3min=netscreen-host-resources.jrb:NetScrnMemFrag:MIN" + 
+    			" DEF:value3max=netscreen-host-resources.jrb:NetScrnMemFrag:MAX" + 
+    			" LINE2:value1#0000ff:\"1  minute\"" + 
+    			" GPRINT:value1:AVERAGE:\"Avg \\: %10.2lf\"" + 
+    			" GPRINT:value1:MIN:\"Min \\: %10.2lf\"" + 
+    			" GPRINT:value1:MAX:\"Max \\: %10.2lf\\n\"" + 
+    			" LINE2:value2#00ff00:\"5  minute\"" + 
+    			" GPRINT:value2:AVERAGE:\"Avg \\: %10.2lf\"" + 
+    			" GPRINT:value2:MIN:\"Min \\: %10.2lf\"" + 
+    			" GPRINT:value2:MAX:\"Max \\: %10.2lf\\n\"" + 
+    			" LINE2:value3#ff0000:\"15 minute\"" + 
+    			" GPRINT:value3:AVERAGE:\"Avg \\: %10.2lf\"" + 
+    			" GPRINT:value3:MIN:\"Min \\: %10.2lf\"" + 
+    			" GPRINT:value3:MAX:\"Max \\: %10.2lf\\n\"" + 
+    			"";
+    	
+    	File workDir = new File("src/test/resources");
+    	RrdGraphDetails details = m_rrdStrategy.createGraphReturnDetails(command, workDir);
+    	IOUtils.copy(details.getInputStream(), new FileOutputStream("/tmp/img.png"));
+    	
+    	
     }
 }
