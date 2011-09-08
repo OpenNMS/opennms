@@ -83,10 +83,10 @@ public class EventUtilTest {
     @Test
     public void testGetValueAsString() {
         Value v = new Value();
-        v.setContent(String.valueOf(Base64.encodeBase64((new String("test")).getBytes())));
+        v.setContent(String.valueOf(Base64.encodeBase64((new String("abcd")).getBytes())));
         v.setEncoding("base64");
         
-        assertEquals("test", EventUtil.getValueAsString(v));
+        assertEquals("0x61626364", EventUtil.getValueAsString(v));
     }
 
     /*

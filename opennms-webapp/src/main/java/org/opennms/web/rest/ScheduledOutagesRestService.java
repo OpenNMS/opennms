@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -39,6 +40,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
@@ -59,7 +61,30 @@ import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * <p>ScheduledOutagesRestService class.</p>
- *
+ * 
+ * <ul>
+ * <li><b>GET /sched-outages</b><br>to get a list of configured scheduled outages.</li>
+ * <li><b>POST /sched-outages</b><br>to add a new outage (or update an existing one).</li>
+ * <li><b>GET /sched-outages/{outageName}</b><br>to get the details of a specific outage.</li>
+ * <li><b>DELETE /sched-outages/{outageName}</b><br>to delete a specific outage.</li>
+ * <li><b>PUT /sched-outages/{outageName}/collectd/{package}</b><br>to add a specific outage to a collectd's package.</li>
+ * <li><b>PUT /sched-outages/{outageName}/pollerd/{package}</b><br>to add a specific outage to a pollerd's package.</li>
+ * <li><b>PUT /sched-outages/{outageName}/threshd/{package}</b><br>to add a specific outage to a threshd's package.</li>
+ * <li><b>PUT /sched-outages/{outageName}/notifd</b><br>to add a specific outage to the notifications.</li>
+ * <li><b>DELETE /sched-outages/{outageName}/collectd/{package}</b><br>to remove a specific outage from a collectd's package.</li>
+ * <li><b>DELETE /sched-outages/{outageName}/pollerd/{package}</b><br>to remove a specific outage from a pollerd's package.</li>
+ * <li><b>DELETE /sched-outages/{outageName}/threshd/{package}</b><br>to remove a specific outage from a threshd's package.</li>
+ * <li><b>DELETE /sched-outages/{outageName}/notifd</b><br>to remove a specific outage from the notifications.</li>
+ * </ul>
+ * 
+ * <p>Node and Interface status (the requests return true or false):</p>
+ * <ul>
+ * <li><b>GET /sched-outages/{outageName}/nodeInOutage/{nodeId}</b><br>to check if a node (with a specific nodeId) is currently on outage for a specific scheduled outage calendar.</li>
+ * <li><b>GET /sched-outages/{outageName}/interfaceInOutage/{ipAddr}</b><br>to check if an interface (with a specific IP address) is currently on outage for a specific scheduled outage calendar.</li>
+ * <li><b>GET /sched-outages/nodeInOutage/{nodeId}</b><br>to check if a node (with a specific nodeId) is currently in outage.</li>
+ * <li><b>GET /sched-outages/interfaceInOutage/{ipAddr}</b><br>to check if an interface (with a specific IP address) is currently on outage.</li>
+ * </ul>
+ * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
 @Component
@@ -96,7 +121,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     }
 
     @POST
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response saveOrUpdateOutage(Outage newOutage) {
         if (newOutage == null) {
             throwException(Status.BAD_REQUEST, "Outage object can't be null");
@@ -120,7 +145,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @DELETE
     @Path("{outageName}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response deleteOutage(@PathParam("outageName") String outageName) {
         try {
             log().debug("deleteOutage: deleting outage " + outageName);
@@ -199,6 +223,61 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         updateNotifd(ConfigAction.REMOVE, outageName);
         sendConfigChangedEvent();
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("{outageName}/nodeInOutage/{nodeId}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String isNodeInOutage(@PathParam("outageName") String outageName, @PathParam("nodeId") Integer nodeId) {
+        Outage outage = getOutage(outageName);
+        Boolean inOutage = m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage);
+        return inOutage.toString();
+    }
+
+    @GET
+    @Path("nodeInOutage/{nodeId}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String isNodeInOutage(@PathParam("nodeId") Integer nodeId) {
+        for (Outage outage : m_configFactory.getOutages()) {
+            if (m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage)) {
+                return Boolean.TRUE.toString();
+            }
+        }
+        return Boolean.FALSE.toString();
+    }
+
+    @GET
+    @Path("{outageName}/interfaceInOutage/{ipAddr}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String isInterfaceInOutage(@PathParam("outageName") String outageName, @PathParam("ipAddr") String ipAddr) {
+        validateAddress(ipAddr);
+        Outage outage = getOutage(outageName);
+        Boolean inOutage = m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage);
+        return inOutage.toString();
+    }
+
+    @GET
+    @Path("interfaceInOutage/{ipAddr}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String isInterfaceInOutage(@PathParam("ipAddr") String ipAddr) {
+        for (Outage outage : m_configFactory.getOutages()) {
+            if (m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage)) {
+                return Boolean.TRUE.toString();
+            }
+        }
+        return Boolean.FALSE.toString();
+    }
+
+    private void validateAddress(String ipAddress) {
+        boolean valid = false;
+        try {
+            valid = InetAddressUtils.addr(ipAddress) != null;
+        } catch (Exception e) {
+            valid = false;
+        }
+        if (!valid) {
+            throwException(Status.BAD_REQUEST, "Malformed IP Address " + ipAddress);
+        }
     }
 
     private void updateCollectd(ConfigAction action, String outageName, String packageName) {
