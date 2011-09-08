@@ -58,6 +58,7 @@ import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -190,9 +191,12 @@ public class HttpMonitor extends IPv4Monitor {
                     log().warn("checkStatus: No route to host exception for address " + (iface.getAddress()), e);
                     portIndex = determinePorts(httpClient.getParameters()).length; // Will cause outer for(;;) to terminate
                     httpClient.setReason("No route to host exception");
-                } catch (InterruptedIOException e) {
-                    log().info("checkStatus: did not connect to host with " + httpClient.getTimeoutTracker().toString(), e);
+                } catch (SocketTimeoutException e) {
+                    log().info("checkStatus: HTTP socket connection timed out with " + httpClient.getTimeoutTracker().toString());
                     httpClient.setReason("HTTP connection timeout");
+                } catch (InterruptedIOException e) {
+                    log().info(String.format("checkStatus: HTTP connection interrupted after %d bytes transferred with %s", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
+                    httpClient.setReason(String.format("HTTP connection interrupted, %d bytes transferred", e.bytesTransferred));
                 } catch (ConnectException e) {
                     log().warn("Connection exception for " + (iface.getAddress()) + ":" + determinePorts(httpClient.getParameters())[portIndex], e);
                     httpClient.setReason("HTTP connection exception on port: "+determinePorts(httpClient.getParameters())[portIndex]+": "+e.getMessage());
