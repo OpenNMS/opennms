@@ -37,15 +37,8 @@
 	"
 %>
 
-<%!
-    AssetModel model;
-
-    public void init() throws ServletException {
-        this.model = new AssetModel();
-    }
-%>
-
 <%
+    final String ALL_NON_EMPTY = "_allNonEmpty";
     String column = request.getParameter("column");
     String search = request.getParameter("searchvalue");
     String requiredParameters[] = new String[] { "column", "searchvalue" };
@@ -54,11 +47,11 @@
         throw new MissingParameterException("column", requiredParameters);
     }
 
-    if( search == null ) {
+    if( search == null && ! column.equals(ALL_NON_EMPTY)) {
         throw new MissingParameterException("searchvalue", requiredParameters);
     }
 
-    AssetModel.MatchingAsset[] assets = model.searchAssets(column, search);
+    AssetModel.MatchingAsset[] assets = column.equals(ALL_NON_EMPTY) ? AssetModel.searchNodesWithAssets() : AssetModel.searchAssets(column, search);
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
