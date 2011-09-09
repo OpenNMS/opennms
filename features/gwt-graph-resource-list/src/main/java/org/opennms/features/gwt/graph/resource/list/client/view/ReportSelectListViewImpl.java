@@ -35,6 +35,9 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
     Button m_removeButton;
     
     @UiField
+    Button m_selectAllButton;
+    
+    @UiField
     Button m_graphButton;
     
     @UiField
@@ -91,6 +94,13 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
         m_presenter.onClearSelectionButtonClick();
     }
     
+    @UiHandler("m_selectAllButton")
+    public void onSelectAllButtonClick(ClickEvent event) {
+        for(ResourceListItem item : m_dataList) {
+            m_selectionModel.setSelected(item, true);
+        }
+    }
+    
     @UiHandler("m_searchButton")
     public void onSearchButtonClick(ClickEvent event) {
         m_presenter.onSearchButtonClick();
@@ -134,7 +144,6 @@ public class ReportSelectListViewImpl extends Composite implements ReportSelectL
 
     @Override
     public Widget searchPopupTarget() {
-        GWT.log("treeContainer height: " + m_treeContainer.getOffsetHeight());
         return m_treeContainer.asWidget();
     }
 
