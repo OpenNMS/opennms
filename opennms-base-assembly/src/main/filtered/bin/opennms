@@ -208,9 +208,27 @@ END
 	return 0
 }
 
+checkLogDirs(){
+	local LOGDIR=$OPENNMS_HOME/logs
+
+	for dir in controller daemon webapp; do
+		if [ -f "$LOGDIR/$dir" ]; then
+			printf -- "ERROR: not sure what to do... $LOGDIR/$dir is a file, but it should be a directory or symlink.  Expect problems.  :)"
+			return 152
+		else
+			if [ ! -e "$LOGDIR/$dir" ]; then
+				mkdir -p "$LOGDIR/$dir"
+			fi
+		fi
+	done
+
+	return 0
+}
+
 doStart(){
 	checkXmlFiles || return $?
 	checkRpmFiles || return $?
+	checkLogDirs  || return $?
 
 	doStatus
 	status=$?

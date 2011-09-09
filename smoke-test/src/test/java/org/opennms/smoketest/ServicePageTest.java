@@ -2,8 +2,14 @@ package org.opennms.smoketest;
 
 import java.net.URL;
 
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.internal.seleniumemulation.WaitForCondition;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.junit.After;
@@ -16,8 +22,11 @@ import com.thoughtworks.selenium.SeleneseTestBase;
 public class ServicePageTest extends SeleneseTestBase{
     @Before
     public void setUp() throws Exception {
-        DesiredCapabilities capability = DesiredCapabilities.firefox();
-        WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+//        DesiredCapabilities capability = DesiredCapabilities.firefox();
+//        WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+        
+        WebDriver driver = new FirefoxDriver();
+        
         String baseUrl = "http://localhost:8980/";
         selenium = new WebDriverBackedSelenium(driver, baseUrl);
         //selenium.start();
@@ -236,7 +245,7 @@ public class ServicePageTest extends SeleneseTestBase{
     }
 
     @Test
-    public void testDeleteProvisioningNodesAndGroups() {
+    public void testDeleteProvisioningNodesAndGroups() throws Exception {
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Manage Provisioning Groups");
@@ -245,12 +254,31 @@ public class ServicePageTest extends SeleneseTestBase{
         selenium.waitForPageToLoad("30000");
         selenium.click("//input[@value='Synchronize']");
         selenium.waitForPageToLoad("30000");
+        /*
+         *  we need to reload this page several times if the 'Delete Group' button doesn't exist
+         *  in case the ndoes hadn't been deleted by the time the page was reloaded
+         */
+
+        long end = System.currentTimeMillis() + 300000;
+        while (!selenium.isElementPresent("//input[@value='Delete Group']") && System.currentTimeMillis() < end) {
+        	
+        	Thread.sleep(10000);
+        	
+        	if (System.currentTimeMillis() >= end) {
+        		throw new NoSuchElementException("Could not find the 'Delete Group' button after refreshing for 5 minutes");
+        	} else {
+        		selenium.refresh();
+        		selenium.waitForPageToLoad("30000");
+        	}
+        }        
+
         selenium.click("//input[@value='Delete Group']");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
     }
-    @Test
+
+	@Test
     public void testDeleteUsersAndGroups() {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Admin");
@@ -268,7 +296,7 @@ public class ServicePageTest extends SeleneseTestBase{
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
     }
-
+    
     @After
     public void tearDown() throws Exception {
         selenium.stop();
