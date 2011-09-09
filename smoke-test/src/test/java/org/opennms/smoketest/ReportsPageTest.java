@@ -67,7 +67,7 @@ public class ReportsPageTest extends SeleneseTestBase {
         selenium.click("link=KSC Performance, Nodes, Domains");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("Customized Reports"));
-        assertTrue(selenium.isTextPresent("Node SNMP Interface Reports"));
+        assertTrue(selenium.isTextPresent("Node & Domain Interface Reports"));
         assertTrue(selenium.isTextPresent("Descriptions"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
         selenium.waitForPageToLoad("30000");
