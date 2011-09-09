@@ -128,9 +128,11 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
         assertEquals("value", 1.0, value);
     }
     
-    public void xxxTestNMS4861() throws Exception
+    public void testNMS4861() throws Exception
     {
-    	long endTime = 1312839000L;
+    	//long endTime = 1312775700L;
+    	//long endTime = 1312838400L;
+    	long endTime = 1312839213L;
     	long startTime = endTime - 86400L;
     	String command = "/sw/bin/rrdtool graph -" +
     			" --imgformat PNG" +

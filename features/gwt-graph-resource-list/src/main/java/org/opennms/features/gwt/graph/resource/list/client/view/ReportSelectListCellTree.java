@@ -17,6 +17,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.CellTree;
+import com.google.gwt.user.cellview.client.TreeNode;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -139,6 +140,7 @@ public class ReportSelectListCellTree extends CellTree {
                 
                 
             };
+            
         }
 
         private void organizeList(List<ResourceListItem> resourceList) {
@@ -200,6 +202,11 @@ public class ReportSelectListCellTree extends CellTree {
     
     public ReportSelectListCellTree(List<ResourceListItem> resourceList, MultiSelectionModel<ResourceListItem> selectionModel) {
         super(new CustomTreeModel(resourceList, selectionModel), null, (CellTree.Resources)GWT.create(CustomCellTreeResource.class));
+        
+        TreeNode treeNode = getRootTreeNode();
+        for(int i = 0; i < treeNode.getChildCount(); i++) {
+            treeNode.setChildOpen(i, true);
+        }
     }
 
 
