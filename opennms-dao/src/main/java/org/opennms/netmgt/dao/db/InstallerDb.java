@@ -72,11 +72,8 @@ public class InstallerDb {
 
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
-    /** Constant <code>POSTGRES_MIN_VERSION=7.4f</code> */
     public static final float POSTGRES_MIN_VERSION = 7.4f;
-    
-    /** Constant <code>POSTGRES_MAX_VERSION_PLUS_ONE=9.1f</code> */
-    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.1f;
+    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.2f;
 
     private static final int s_fetch_size = 1024;
     
