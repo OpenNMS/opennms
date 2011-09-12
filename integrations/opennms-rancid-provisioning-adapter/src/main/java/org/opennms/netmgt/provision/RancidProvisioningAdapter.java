@@ -609,10 +609,18 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     private RancidNodeAuthentication getSuitableRancidNodeAuthentication(OnmsNode node) {
-        // RancidAutentication
+        // RancidAuthentication
         RancidNodeAuthentication r_auth_node = new RancidNodeAuthentication();
         r_auth_node.setDeviceName(node.getLabel());
         OnmsAssetRecord asset_node = node.getAssetRecord();
+
+        // Seth 2011-09-12: Is this possible? I added this as defensive code against issue NMS-4475
+        //
+        // http://issues.opennms.org/browse/NMS-4475
+        //
+        if (asset_node == null) {
+            return r_auth_node;
+        }
 
         if (asset_node.getUsername() != null) {
             r_auth_node.setUser(asset_node.getUsername());
