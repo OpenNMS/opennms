@@ -46,6 +46,7 @@ import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +68,7 @@ import org.springframework.util.Assert;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DnsProvisioningAdapterIntegrationTest {
+public class DnsProvisioningAdapterIntegrationTest implements InitializingBean {
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -80,7 +81,14 @@ public class DnsProvisioningAdapterIntegrationTest {
 
     @Autowired
     private DnsProvisioningAdapter m_adapter; 
-    
+
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(m_nodeDao, "Autowiring failed, node dao is null");
+        Assert.notNull(m_mockEventIpcManager, "Autowiring failed, ipc manager is null");
+        Assert.notNull(m_populator, "Autowiring failed, db populater is null");
+        Assert.notNull(m_adapter, "Autowiring failed, adapter is null");
+    }
+
     @Before
     public void setUp() throws Exception {
         Properties props = new Properties();
@@ -88,11 +96,6 @@ public class DnsProvisioningAdapterIntegrationTest {
         props.setProperty("log4j.logger.org.springframework", "INFO");
         props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
         
-        Assert.notNull(m_nodeDao, "Autowiring failed, node dao is null");
-        Assert.notNull(m_mockEventIpcManager, "Autowiring failed, ipc manager is null");
-        Assert.notNull(m_populator, "Autowiring failed, db populater is null");
-        Assert.notNull(m_adapter, "Autowiring failed, adapter is null");
-
         m_populator.populateDatabase();
     }
     
