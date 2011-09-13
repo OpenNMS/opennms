@@ -7,6 +7,30 @@
 	<!-- Start 1.8 -->
 
 
+	<section id="opennms-1.8.14">
+		<title>Changes in OpenNMS 1.8.14</title>
+
+		<section id="opennms-1.8.14-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>reload of Threshold configuration does not work - only after restart OpenNMS new threshold are applied (Issue <ulink url='http://issues.opennms.org/browse/NMS-3905'>NMS-3905</ulink>)</para></listitem>
+				<listitem><para>[patch] Show correct values in net-snmp CPU Usage graph (Issue <ulink url='http://issues.opennms.org/browse/NMS-4502'>NMS-4502</ulink>)</para></listitem>
+				<listitem><para>Null (\0) characters in logmsg field of events causes org.postgresql.util.PSQLException: ERROR: invalid byte sequence for encoding &quot;UTF8&quot;: 0x00 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4817'>NMS-4817</ulink>)</para></listitem>
+				<listitem><para>Typo in datacollection-config.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-4877'>NMS-4877</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.14-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Poorly used INFO log message (Issue <ulink url='http://issues.opennms.org/browse/NMS-4833'>NMS-4833</ulink>)</para></listitem>
+				<listitem><para>Add PostgreSQL 9.1 support (Issue <ulink url='http://issues.opennms.org/browse/NMS-4923'>NMS-4923</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
+
 	<section id="opennms-1.8.13">
 		<title>Changes in OpenNMS 1.8.13</title>
 
