@@ -46,6 +46,20 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
         
         anticipate( createInitializedEvent( 1, 1 ) );
         
+    	EventBuilder bldr = new EventBuilder( "impactedService", "Drools" );
+    	bldr.setNodeid( 1 );
+    	bldr.setInterface( addr( "10.1.1.1" ) );
+    	bldr.setService( "HTTP" );
+    	bldr.addParam("CAUSE", 17 );
+
+    	anticipate( bldr.getEvent() );
+    	
+    	bldr = new EventBuilder( "impactedApplication", "Drools" );
+    	bldr.addParam("APP", "e-commerce" );
+    	bldr.addParam("CAUSE", 17 );
+    	
+    	anticipate( bldr.getEvent() );
+        
         DroolsCorrelationEngine engine = findEngineByName("dependencyRules");
 
         Event event = createNodeLostServiceEvent( 1, "10.1.1.1", "ICMP" );
@@ -53,8 +67,8 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
 		engine.correlate( event );
 
         // event + initialized
-        m_anticipatedMemorySize = 16;
-        
+        m_anticipatedMemorySize = 18;
+        	
         m_mocks.verifyAll();
 
         verify(engine);
