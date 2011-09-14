@@ -19,7 +19,7 @@
       <plugin>
         <groupId>org.opennms.core.build</groupId>
         <artifactId>castor-maven-plugin</artifactId>
-        <version>1.9.91-SNAPSHOT</version>
+        <version>1.9.91</version>
         <executions>
           <execution>
             <goals>
