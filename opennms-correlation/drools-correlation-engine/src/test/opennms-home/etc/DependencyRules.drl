@@ -1,0 +1,210 @@
+package org.opennms.netmgt.correlation.drools;
+
+import function org.opennms.core.utils.InetAddressUtils.addr;
+import function org.opennms.core.utils.InetAddressUtils.str;
+
+import java.util.Date;
+import java.net.InetAddress;
+
+
+import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
+import org.drools.spi.KnowledgeHelper;
+
+global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+
+declare Initialized
+	initialized : boolean
+end
+
+declare Service
+	node : Long @key @position(0)
+	addr : InetAddress @key @position(1)
+	svc  : String @key @position(2)
+end
+
+declare Application
+	name : String @key
+end
+
+declare DependsOn
+	a : Object @key
+	b : Object @key
+end
+
+declare Impacted
+	target : Object 
+	cause  : Object 
+end
+
+
+rule "init"
+	salience 10000 // set this very large so this rule has highest priority
+when
+	not Initialized()
+then
+	println( "Initializing Knowledgedbase!!!" );
+	
+	// Set up nodes and edges for dependency graph
+	
+	// node1 services
+	insert( svc( 1, "10.1.1.1", "ICMP" ) );
+	
+	Service http = svc( 1, "10.1.1.1", "HTTP" );
+	insert( http );
+	
+	// node2 services
+	insert( svc( 2, "10.1.1.2", "ICMP" ) );
+	
+	Service dns = svc( 2, "10.1.1.2", "DNS" ); 
+	insert( dns );
+	
+	// node3 services
+	insert( svc( 3, "10.1.1.3", "ICMP" ) );
+	
+	Service db = svc( 3, "10.1.1.3", "DB" ); 
+	insert( db );
+
+	// insert the app
+	Application eCommerce = new Application( "e-commerce" ); 		
+	insert( eCommerce );
+		
+	// dependencies
+	// Note: Service Depends on ICMP is a separate rule
+	insert( new DependsOn( http, eCommerce ) );
+	insert( new DependsOn( dns, eCommerce ) );
+	insert( new DependsOn( db, eCommerce ) ); 
+	
+	insert( new Initialized() );
+		
+	sendInitEvent( engine );
+end
+
+rule "services depends on icmp"
+	salience 10000 // set this very large so this rule has highest priority
+when
+    // select ... from service as svc1 join service as svc2 on svc1.node = svc2.node and svc1.addr = svc2.addr where svc1.svcName != 'ICMP' and svc2.svcName = 'ICMP'
+	$svc : Service( $n : node, $a : addr, svc != "ICMP" )
+	$icmp : Service( node == $n, addr == $a, svc == "ICMP" ) 
+then
+	insert( new DependsOn( $icmp, $svc ) );
+end	
+
+rule "service down"
+	salience 500
+when
+	$e : Event( $uei : uei matches ".*nodeLostService", $nodeid : nodeid, $addr : interfaceAddress, $svc : service == "ICMP" )
+	$s : Service( node == $nodeid, addr == $addr, svc == $svc ) 
+//	not ( Impacted( target == $s ) )
+then
+	println( "Service " + $s + " is down!" );
+	Impacted i = new Impacted();
+	i.setTarget( $s );
+	i.setCause( $e );
+	insert( i );
+end
+
+rule "debug services"
+	salience 600
+when
+	$s : Service()
+then
+	println( "Service: " + $s );
+end
+
+rule "dependencies"
+	salience 500
+when
+	$d : DependsOn()
+then
+	println( "DependsOn: " + $d );
+end
+
+rule "debug impacts"
+	salience 500
+when
+	$i : Impacted()
+then
+	println( "Impacted: " + $i );
+end
+
+rule "impacted service"
+	salience 400
+when
+	$a : Service( $node : node, $addr : addr, $svcName : svc )
+	$e : Event( $id : dbid, $uei : uei )
+	DependsOn( a == $a, $b : b )
+	Impacted( target == $b, cause == $e )
+then
+	println( "Service " + $a + " depends on impacted service " + $b + " with cause " + $uei  + " with id " + $id );
+	Impacted i = new Impacted();
+	i.setTarget( $a );
+	i.setCause( $e );
+	insert( i );
+	sendImpactedServiceEvent( engine, $node, $addr, $svcName, $id );
+end	
+
+rule "impacted app"
+	salience 300
+when
+	$a : Application( $name : name )
+	$e : Event( $id : dbid, $uei : uei )
+	Impacted( $b : target, cause == $e )
+	DependsOn( a == $a, b == $b )
+then
+	println( "Application " + $a + " depends on impacted service " + $b + " with cause " + $uei  + " with id " + $id );
+	Impacted i = new Impacted();
+	i.setTarget( $a );
+	i.setCause( $e );
+	insert( i );
+	sendImpactedApplicationEvent( engine, $name, $id );
+end	
+
+
+function Service svc( long nodeId, String addr, String svc )
+{
+	Service service = new Service();
+	service.setNode( nodeId );
+	service.setAddr( addr( addr ) );
+	service.setSvc( svc );
+	return service;
+}
+
+function String svcStr( Long nodeId, InetAddress addr, String svcName )
+{
+	return "Service " + nodeId + ":" + str( addr ) + ":" + svcName;
+}
+
+function void println(Object msg)
+{
+	System.err.println(new Date() + " : " + msg);
+}
+
+function void sendInitEvent( DroolsCorrelationEngine engine )
+{
+	EventBuilder bldr = new EventBuilder( "initialized", "Drools" );
+	engine.sendEvent(bldr.getEvent());
+}
+
+function void sendImpactedServiceEvent( DroolsCorrelationEngine engine, Long nodeid, InetAddress ipAddr, String svcName, int eventId )
+{
+	EventBuilder bldr = new EventBuilder( "impactedService", "Drools" );
+	bldr.setNodeid( nodeid );
+	bldr.setInterface( ipAddr );
+	bldr.setService( svcName );
+	bldr.addParam("CAUSE", eventId );
+	engine.sendEvent(bldr.getEvent());
+}
+
+function void sendImpactedApplicationEvent( DroolsCorrelationEngine engine, String appName, int eventId )
+{
+	EventBuilder bldr = new EventBuilder( "impactedApplication", "Drools" );
+	bldr.addParam("APP", appName );
+	bldr.addParam("CAUSE", eventId );
+	engine.sendEvent(bldr.getEvent());
+}
+
+

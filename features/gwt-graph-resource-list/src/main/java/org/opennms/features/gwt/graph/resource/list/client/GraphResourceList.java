@@ -40,7 +40,6 @@ public class GraphResourceList implements EntryPoint {
             }
             
         }else {
-            
             NodeList<Element> kscChooseResourceList = RootPanel.getBodyElement().getElementsByTagName("opennms:kscChooseResourceList");
             if(kscChooseResourceList.getLength() > 0) {
                 for(int i = 0; i < kscChooseResourceList.getLength(); i++) {
@@ -85,31 +84,31 @@ public class GraphResourceList implements EntryPoint {
 
 
     private void createReportSelectView(Element element) {
-        ReportSelectListAppController reportSelectListAppController = new ReportSelectListAppController(getResourceListData(getDataObjectAttribute(element)));
+        ReportSelectListAppController reportSelectListAppController = new ReportSelectListAppController(getResourceListData(getDataObjectAttribute(element)), getBaseUrl());
         reportSelectListAppController.go(RootPanel.get(element.getId()));
     }
     
     
     private void createKscCustomReportView(Element element) {
-        KscCustomReportAppController kscCustomReportList = new KscCustomReportAppController(getResourceListData(getDataObjectAttribute(element)));
+        KscCustomReportAppController kscCustomReportList = new KscCustomReportAppController(getResourceListData(getDataObjectAttribute(element)), getBaseUrl());
         kscCustomReportList.go(RootPanel.get(element.getId()));
     }
     
     
     private void createKscReportListView(Element element) {
-        KscReportListAppController nodeSnmpReportList = new KscReportListAppController(getResourceListData(getDataObjectAttribute(element)));
+        KscReportListAppController nodeSnmpReportList = new KscReportListAppController(getResourceListData(getDataObjectAttribute(element)), getBaseUrl());
         nodeSnmpReportList.go(RootPanel.get(element.getId()));
     }
     
     
     private void createGraphResourceView(Element element) {
-        ResourceListAppController resourceListView = new ResourceListAppController(getResourceListData(getDataObjectAttribute(element)));
+        ResourceListAppController resourceListView = new ResourceListAppController(getResourceListData(getDataObjectAttribute(element)), getBaseUrl());
         resourceListView.go(RootPanel.get(element.getId()));
     }
     
     
     private void createKscChooseResourceView(Element elem) {
-        KscChooseResourceAppController appView = new KscChooseResourceAppController(getResourceListData(getDataObjectAttribute(elem)));
+        KscChooseResourceAppController appView = new KscChooseResourceAppController(getResourceListData(getDataObjectAttribute(elem)), getBaseUrl());
         appView.go(RootPanel.get(elem.getId()));
     }
 
@@ -118,8 +117,17 @@ public class GraphResourceList implements EntryPoint {
         return elem.getAttribute("dataObject") != null ? elem.getAttribute("dataObject") : "data";
     }
     
+    public final native String getBaseUrl() /*-{
+        try{
+            return $wnd.getBaseHref();
+        }catch(err){
+            return "";
+        }
+        
+    }-*/;
     
     public final native JsArray<ResourceListItem> getResourceListData(String dataObject) /*-{
         return $wnd[dataObject].records;
     }-*/;
+    
 }

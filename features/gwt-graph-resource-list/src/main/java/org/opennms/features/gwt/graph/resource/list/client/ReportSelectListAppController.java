@@ -16,14 +16,16 @@ public class ReportSelectListAppController implements Presenter {
 
     
     private List<ResourceListItem> m_resourceList;
+    private String m_baseUrl;
 
-    public ReportSelectListAppController(JsArray<ResourceListItem> resourceListData) {
+    public ReportSelectListAppController(JsArray<ResourceListItem> resourceListData, String baseUrl) {
         m_resourceList = convertJsArrayToList(resourceListData);
+        m_baseUrl = baseUrl;
     }
 
     @Override
     public void go(HasWidgets container) {
-        new ReportSelectListPresenter(new ReportSelectListViewImpl(m_resourceList), new SearchPopup()).go(container);
+        new ReportSelectListPresenter(new ReportSelectListViewImpl(m_resourceList), new SearchPopup(), m_baseUrl).go(container);
     }
     
     private List<ResourceListItem> convertJsArrayToList(JsArray<ResourceListItem> resourceList) {

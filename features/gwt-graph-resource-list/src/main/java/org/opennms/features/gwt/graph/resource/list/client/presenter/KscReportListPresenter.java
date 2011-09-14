@@ -5,27 +5,24 @@ import org.opennms.features.gwt.graph.resource.list.client.view.ResourceListItem
 import org.opennms.features.gwt.graph.resource.list.client.view.SearchPopup;
 
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.user.client.Window.Location;
 
 public class KscReportListPresenter extends DefaultResourceListPresenter {
 
 
-    public KscReportListPresenter(DefaultResourceListView<ResourceListItem> view, SearchPopup searchPopup, JsArray<ResourceListItem> dataList) {
-        super(view, searchPopup, dataList);
+    public KscReportListPresenter(DefaultResourceListView<ResourceListItem> view, SearchPopup searchPopup, JsArray<ResourceListItem> dataList, String baseUrl) {
+        super(view, searchPopup, dataList, baseUrl);
     }
     
 
     @Override
     public void onResourceItemSelected() {
-        UrlBuilder urlBuilder = new UrlBuilder();
-        urlBuilder.setProtocol(Location.getProtocol());
-        urlBuilder.setHost(Location.getHost());
-        urlBuilder.setPath("opennms/KSC/customView.htm");
-        urlBuilder.setParameter("type", getView().getSelectedResource().getType());
-        urlBuilder.setParameter("report", "" + getView().getSelectedResource().getId());
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append(getBaseUrl() + "/KSC/customView.htm");
+        urlBuilder.append("?type=" + getView().getSelectedResource().getType());
+        urlBuilder.append("&report=" + getView().getSelectedResource().getId());
         
-        Location.assign(urlBuilder.buildString());
+        Location.assign(urlBuilder.toString());
     }
     
 

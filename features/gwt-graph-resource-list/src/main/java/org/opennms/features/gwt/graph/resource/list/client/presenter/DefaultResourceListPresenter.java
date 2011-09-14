@@ -14,7 +14,6 @@ import com.google.gwt.event.dom.client.HasKeyPressHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -36,8 +35,9 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
     private DefaultResourceListView<ResourceListItem> m_view;
     private SearchPopupDisplay m_searchPopup;
     private List<ResourceListItem> m_dataList;
+    private String m_baseUrl;
 
-    public DefaultResourceListPresenter(DefaultResourceListView<ResourceListItem> view, SearchPopupDisplay searchPopup, JsArray<ResourceListItem> dataList) {
+    public DefaultResourceListPresenter(DefaultResourceListView<ResourceListItem> view, SearchPopupDisplay searchPopup, JsArray<ResourceListItem> dataList, String baseUrl) {
         setView(view);
         getView().setPresenter(this);
         
@@ -45,6 +45,8 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
         
         m_dataList = convertJsArrayToList(dataList);
         getView().setDataList(m_dataList);
+        
+        setBaseUrl(baseUrl);
     }
     
     private List<ResourceListItem> convertJsArrayToList(JsArray<ResourceListItem> resourceList) {
@@ -105,14 +107,12 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
 
     @Override
     public void onResourceItemSelected() {
-        UrlBuilder urlBuilder = new UrlBuilder();
-        urlBuilder.setProtocol(Location.getProtocol());
-        urlBuilder.setHost(Location.getHost());
-        urlBuilder.setPath("opennms/graph/chooseresource.htm");
-        urlBuilder.setParameter("reports", "all");
-        urlBuilder.setParameter("parentResourceId", getView().getSelectedResource().getId());
+        StringBuilder url = new StringBuilder(getBaseUrl());
+        url.append("graph/chooseresource.htm");
+        url.append("?reports=all");
+        url.append("&parentResourceId=" + getView().getSelectedResource().getId());
         
-        Location.assign(urlBuilder.buildString());
+        Location.assign(url.toString());
     }
 
     @Override
@@ -126,6 +126,14 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
 
     public DefaultResourceListView<ResourceListItem> getView() {
         return m_view;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        m_baseUrl = baseUrl;
+    }
+
+    public String getBaseUrl() {
+        return m_baseUrl;
     }
 
     

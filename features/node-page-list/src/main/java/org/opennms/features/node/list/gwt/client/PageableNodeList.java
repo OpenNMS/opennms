@@ -16,7 +16,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -265,27 +264,31 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
 
     @Override
     public void onPhysicalInterfaceSelected(PhysicalInterfaceSelectionEvent event) {
-        UrlBuilder urlBuilder = new UrlBuilder();
-        urlBuilder.setProtocol(Location.getProtocol());
-        urlBuilder.setHost(Location.getHost());
-        urlBuilder.setPath("opennms/element/snmpinterface.jsp");
-        urlBuilder.setParameter("node", "" + getNodeId());
-        urlBuilder.setParameter("ifindex", event.getIfIndex());
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append(getBaseHref() + "element/snmpinterface.jsp");
+        urlBuilder.append("?node" + getNodeId());
+        urlBuilder.append("&ifindex" + event.getIfIndex());
         
-        Location.assign(urlBuilder.buildString());
+        Location.assign(urlBuilder.toString());
     }
 
 
     @Override
     public void onIpInterfaceSelection(IpInterfaceSelectionEvent event) {
-        UrlBuilder urlBuilder = new UrlBuilder();
-        urlBuilder.setProtocol(Location.getProtocol());
-        urlBuilder.setHost(Location.getHost());
-        urlBuilder.setPath("opennms/element/interface.jsp");
-        urlBuilder.setParameter("ipinterfaceid", event.getIpInterfaceId());
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append(getBaseHref() + "element/interface.jsp");
+        urlBuilder.append("?ipinterfaceid=" + event.getIpInterfaceId());
         
-        Location.assign(urlBuilder.buildString());
+        Location.assign(urlBuilder.toString());
     }
+    
+    public native final String getBaseHref() /*-{
+        try{
+            return $wnd.getBaseHref();
+        }catch(err){
+            return "";
+        }
+    }-*/;
     
 
 }

@@ -8,7 +8,6 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -24,8 +23,8 @@ public class KscCustomReportListPresenter extends DefaultResourceListPresenter i
 
     private SelectionDisplay m_selectionDisplay;
     
-    public KscCustomReportListPresenter(DefaultResourceListView<ResourceListItem> view, SearchPopupDisplay searchPopup, JsArray<ResourceListItem> dataList, SelectionDisplay selectionDisplay) {
-        super(view, searchPopup, dataList);
+    public KscCustomReportListPresenter(DefaultResourceListView<ResourceListItem> view, SearchPopupDisplay searchPopup, JsArray<ResourceListItem> dataList, SelectionDisplay selectionDisplay, String baseUrl) {
+        super(view, searchPopup, dataList, baseUrl);
         initializeSelectionDisplay(selectionDisplay);
     }
 
@@ -36,29 +35,27 @@ public class KscCustomReportListPresenter extends DefaultResourceListPresenter i
             
             @Override
             public void onClick(ClickEvent event) {
-                UrlBuilder urlBuilder = new UrlBuilder();
-                urlBuilder.setProtocol(Location.getProtocol());
-                urlBuilder.setHost(Location.getHost());
-                urlBuilder.setPath("opennms/KSC/formProcMain.htm");
+                StringBuilder urlBuilder = new StringBuilder();
+                urlBuilder.append(getBaseUrl() + "/KSC/formProcMain.htm");
                 
                 if(m_selectionDisplay.getSelectAction() != null) {
                     if(m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.VIEW)) {
-                        urlBuilder.setParameter("report_action", "View");
+                        urlBuilder.append("?report_action=View");
                     }else if(m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.CUSTOMIZE)) {
-                        urlBuilder.setParameter("report_action", "Customize");
+                        urlBuilder.append("?report_action=Customize");
                     }else if(m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.CREATE_NEW)) {
-                        urlBuilder.setParameter("report_action", "Create");
+                        urlBuilder.append("?report_action=Create");
                     }else if(m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.CREATE_NEW_FROM_EXISTING)) {
-                        urlBuilder.setParameter("report_action", "CreateFrom");
+                        urlBuilder.append("?report_action=CreateFrom");
                     }else if(m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.DELETE)) {
-                        urlBuilder.setParameter("report_action", "Delete");
+                        urlBuilder.append("?report_action=Delete");
                     }
                     
                     if(getView().getSelectedResource() != null) {
-                        urlBuilder.setParameter("report", getView().getSelectedResource().getId());
-                        Location.assign(urlBuilder.buildString());
+                        urlBuilder.append("&report" +  getView().getSelectedResource().getId());
+                        Location.assign(urlBuilder.toString());
                     } else if(getView().getSelectedResource() == null && m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.CREATE_NEW)) {
-                        Location.assign(urlBuilder.buildString());
+                        Location.assign(urlBuilder.toString());
                     }else {
                         getView().showWarning();
                     }
