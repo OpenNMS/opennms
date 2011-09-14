@@ -153,7 +153,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      */
     private String[] getServices() {
         // TODO validate services against service table of database
-        String[] services = "ICMP,SNMP".split(",");
+        String[] services = new String[] { "ICMP", "SNMP" };
         if (getArgs() != null && getArgs().get(SERVICES_ARG) != null) {
             services = getArgs().get(SERVICES_ARG).split(",");
         }

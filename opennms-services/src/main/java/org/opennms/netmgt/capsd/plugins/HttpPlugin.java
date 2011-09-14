@@ -89,19 +89,6 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @version 1.1.1.1
  */
 public class HttpPlugin extends AbstractTcpPlugin {
 

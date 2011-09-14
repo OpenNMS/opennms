@@ -456,18 +456,21 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         Set<String> responseTimeInterfaces = findChildrenMatchingFilter(new File(getRrdDirectory(), RESPONSE_DIRECTORY), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
         Set<String> distributedResponseTimeInterfaces = findChildrenChildrenMatchingFilter(new File(new File(getRrdDirectory(), RESPONSE_DIRECTORY), "distributed"), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
 
-        List<OnmsNode> nodes = m_nodeDao.findAll();
+        // Only returns non-deleted nodes to fix NMS-2977
+        // http://issues.opennms.org/browse/NMS-2977
+        Collection<Integer> nodeIds = m_nodeDao.getNodeIds();
         IntSet nodesFound = new IntSet();
-        for (OnmsNode node : nodes) {
-            if (nodesFound.contains(node.getId())) {
+        for (Integer nodeId : nodeIds) {
+            if (nodesFound.contains(nodeId.intValue())) {
                 continue;
             }
 
             boolean found = false;
-            if (snmpNodes.contains(node.getId())) {
+            OnmsNode node = m_nodeDao.get(nodeId);
+            if (snmpNodes.contains(nodeId)) {
                 found = true;
             } else if (responseTimeInterfaces.size() > 0 || distributedResponseTimeInterfaces.size() > 0) {
-                for (final OnmsIpInterface ip : node.getIpInterfaces()) {
+                for (final OnmsIpInterface ip : m_nodeDao.get(nodeId).getIpInterfaces()) {
                     final String addr = InetAddressUtils.str(ip.getIpAddress());
 					if (responseTimeInterfaces.contains(addr) || distributedResponseTimeInterfaces.contains(addr)) {
                         found = true;
@@ -478,7 +481,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
             if (found) {
                 resources.add(m_nodeResourceType.createChildResource(node));
-                nodesFound.add(node.getId());
+                nodesFound.add(nodeId);
             }
         }
 
