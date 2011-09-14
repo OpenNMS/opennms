@@ -6,6 +6,70 @@
 
 	<!-- Start 1.9 -->
 
+	<section id="opennms-1.9.91">
+		<title>Changes in OpenNMS 1.9.91</title>
+
+		<section id="opennms-1.9.91-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>HTTP monitor nits (Issue <ulink url='http://issues.opennms.org/browse/NMS-1802'>NMS-1802</ulink>)</para></listitem>
+				<listitem><para>When running the database checker rethrow any exceptions with details (e.g.: database URL) (Issue <ulink url='http://issues.opennms.org/browse/NMS-2374'>NMS-2374</ulink>)</para></listitem>
+				<listitem><para>Make the severity element in event configuration an enumeration and fix our default config files (Issue <ulink url='http://issues.opennms.org/browse/NMS-2375'>NMS-2375</ulink>)</para></listitem>
+				<listitem><para>Node when deleted remains in performance report list (Issue <ulink url='http://issues.opennms.org/browse/NMS-2893'>NMS-2893</ulink>)</para></listitem>
+				<listitem><para>GUI error if we remove Switches from Surveillance (Issue <ulink url='http://issues.opennms.org/browse/NMS-3143'>NMS-3143</ulink>)</para></listitem>
+				<listitem><para>Reporting is truncated by URL length limitation (Issue <ulink url='http://issues.opennms.org/browse/NMS-3194'>NMS-3194</ulink>)</para></listitem>
+				<listitem><para>Broken paged grid in Select SNMP Interfaces (Issue <ulink url='http://issues.opennms.org/browse/NMS-3515'>NMS-3515</ulink>)</para></listitem>
+				<listitem><para>WMI/WQL Poller - Wrong text in event (Issue <ulink url='http://issues.opennms.org/browse/NMS-3606'>NMS-3606</ulink>)</para></listitem>
+				<listitem><para>Create detectors for all protocol plugins (Issue <ulink url='http://issues.opennms.org/browse/NMS-3651'>NMS-3651</ulink>)</para></listitem>
+				<listitem><para>reload of Threshold configuration does not work - only after restart OpenNMS new threshold are applied (Issue <ulink url='http://issues.opennms.org/browse/NMS-3905'>NMS-3905</ulink>)</para></listitem>
+				<listitem><para>Alarm Description in Dashboard not formatted (Issue <ulink url='http://issues.opennms.org/browse/NMS-3912'>NMS-3912</ulink>)</para></listitem>
+				<listitem><para>SNMPPoller is the cause of loss of snmpinterfaces during the re-import / synchronization Provision Groups. (Issue <ulink url='http://issues.opennms.org/browse/NMS-4040'>NMS-4040</ulink>)</para></listitem>
+				<listitem><para>Can&#39;t provision a node with one IP address and a policy to avoid all IP address (Issue <ulink url='http://issues.opennms.org/browse/NMS-4049'>NMS-4049</ulink>)</para></listitem>
+				<listitem><para>spring/beanfactory issue Java 1.7.0 - pointcut issues (Issue <ulink url='http://issues.opennms.org/browse/NMS-4350'>NMS-4350</ulink>)</para></listitem>
+				<listitem><para>Provisiond fails with a Unable to return specified BeanFactory instance exception at startup (Issue <ulink url='http://issues.opennms.org/browse/NMS-4475'>NMS-4475</ulink>)</para></listitem>
+				<listitem><para>[patch] Show correct values in net-snmp CPU Usage graph (Issue <ulink url='http://issues.opennms.org/browse/NMS-4502'>NMS-4502</ulink>)</para></listitem>
+				<listitem><para>Remote Poller implodes with lack of WMI classes (Issue <ulink url='http://issues.opennms.org/browse/NMS-4526'>NMS-4526</ulink>)</para></listitem>
+				<listitem><para>Provisiond HOST-RESOURCES process detector  (Issue <ulink url='http://issues.opennms.org/browse/NMS-4544'>NMS-4544</ulink>)</para></listitem>
+				<listitem><para>Report Issue - Surveillance Category Not Correctly Chosen (Issue <ulink url='http://issues.opennms.org/browse/NMS-4593'>NMS-4593</ulink>)</para></listitem>
+				<listitem><para>Resource Graph Resources - limited to 55 Resources or less (Issue <ulink url='http://issues.opennms.org/browse/NMS-4675'>NMS-4675</ulink>)</para></listitem>
+				<listitem><para>Various linkd issues (Issue <ulink url='http://issues.opennms.org/browse/NMS-4684'>NMS-4684</ulink>)</para></listitem>
+				<listitem><para>LDAP authorization fails - group to role mapping does not work (Issue <ulink url='http://issues.opennms.org/browse/NMS-4725'>NMS-4725</ulink>)</para></listitem>
+				<listitem><para>Events generated from trapd are not associated with any node (Issue <ulink url='http://issues.opennms.org/browse/NMS-4799'>NMS-4799</ulink>)</para></listitem>
+				<listitem><para>Node.jsp - double clicking physical interfaces goes to interface.jsp instead of snmpinterface.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-4800'>NMS-4800</ulink>)</para></listitem>
+				<listitem><para>Null (\0) characters in logmsg field of events causes org.postgresql.util.PSQLException: ERROR: invalid byte sequence for encoding &quot;UTF8&quot;: 0x00 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4817'>NMS-4817</ulink>)</para></listitem>
+				<listitem><para>RrdUtils.createRRD log message is unclear (Issue <ulink url='http://issues.opennms.org/browse/NMS-4845'>NMS-4845</ulink>)</para></listitem>
+				<listitem><para>Notification not being sent event if status=&quot;on&quot;, looks like notifd is not using the status in the config file properly (Issue <ulink url='http://issues.opennms.org/browse/NMS-4851'>NMS-4851</ulink>)</para></listitem>
+				<listitem><para>unit tests on windows creates directories outside of temp directory (Issue <ulink url='http://issues.opennms.org/browse/NMS-4853'>NMS-4853</ulink>)</para></listitem>
+				<listitem><para>StorageStrategy documentation does not match API in code (Issue <ulink url='http://issues.opennms.org/browse/NMS-4857'>NMS-4857</ulink>)</para></listitem>
+				<listitem><para>Runaway threads consuming CPU when rendering certain graphs (Issue <ulink url='http://issues.opennms.org/browse/NMS-4861'>NMS-4861</ulink>)</para></listitem>
+				<listitem><para>With Jetty + HTTPS, certain Web UI actions prompt browser to &quot;Save As&quot; JSP and HTML files (Issue <ulink url='http://issues.opennms.org/browse/NMS-4871'>NMS-4871</ulink>)</para></listitem>
+				<listitem><para>Show all nodes with asset info not working (Issue <ulink url='http://issues.opennms.org/browse/NMS-4872'>NMS-4872</ulink>)</para></listitem>
+				<listitem><para>Upgrade bug when Linkd tables contain data (Issue <ulink url='http://issues.opennms.org/browse/NMS-4873'>NMS-4873</ulink>)</para></listitem>
+				<listitem><para>Typo in datacollection-config.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-4877'>NMS-4877</ulink>)</para></listitem>
+				<listitem><para>java.lang.ClassCastException when building an event notification with a category filter (Issue <ulink url='http://issues.opennms.org/browse/NMS-4880'>NMS-4880</ulink>)</para></listitem>
+				<listitem><para>IP address formatting does not match (Issue <ulink url='http://issues.opennms.org/browse/NMS-4882'>NMS-4882</ulink>)</para></listitem>
+				<listitem><para>1.9.90 newer graphics display inconsistency - node.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-4895'>NMS-4895</ulink>)</para></listitem>
+				<listitem><para>notifd DEBUG message &quot;supress&quot; mispelling (Issue <ulink url='http://issues.opennms.org/browse/NMS-4899'>NMS-4899</ulink>)</para></listitem>
+				<listitem><para>Change StorageStrategy to throw an IllegalArgumentException when the arguments (or parameters) are not properly configured on datacollection-config.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-4913'>NMS-4913</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.9.91-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Allow HttpCollector and PageSequenceMonitor to accept all SSL certificates (Issue <ulink url='http://issues.opennms.org/browse/NMS-3622'>NMS-3622</ulink>)</para></listitem>
+				<listitem><para>Configure scheduling outages via RESTful Web Service (Issue <ulink url='http://issues.opennms.org/browse/NMS-4232'>NMS-4232</ulink>)</para></listitem>
+				<listitem><para>Make Jetty headerBufferSize property configurable (Issue <ulink url='http://issues.opennms.org/browse/NMS-4815'>NMS-4815</ulink>)</para></listitem>
+				<listitem><para>notifd.log - Info if message was send (Issue <ulink url='http://issues.opennms.org/browse/NMS-4831'>NMS-4831</ulink>)</para></listitem>
+				<listitem><para>Poorly used INFO log message (Issue <ulink url='http://issues.opennms.org/browse/NMS-4833'>NMS-4833</ulink>)</para></listitem>
+				<listitem><para>jmx collector does direct db lookup of nodeid (Issue <ulink url='http://issues.opennms.org/browse/NMS-4838'>NMS-4838</ulink>)</para></listitem>
+				<listitem><para>Check if a node is currently covered by a scheduled outage using Rest (Issue <ulink url='http://issues.opennms.org/browse/NMS-4839'>NMS-4839</ulink>)</para></listitem>
+				<listitem><para>Add PostgreSQL 9.1 support (Issue <ulink url='http://issues.opennms.org/browse/NMS-4923'>NMS-4923</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.9.90">
 		<title>Changes in OpenNMS 1.9.90</title>
 
