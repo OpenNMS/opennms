@@ -10,7 +10,6 @@ import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -91,15 +90,21 @@ public class SuggestionComboboxPresenter implements Presenter, SuggestionCombobo
 
     @Override
     public void onNodeSelected() {
-        UrlBuilder builder = new UrlBuilder();
-        builder.setProtocol(Location.getProtocol());
-        builder.setHost(Location.getHost());
-        builder.setPath("opennms/graph/chooseresource.htm");
-        builder.setParameter("reports", "all");
-        builder.setParameter("parentResourceType", "node");
-        builder.setParameter("parentResource", "" + m_view.getSelectedNode().getId());
+        StringBuilder builder = new StringBuilder();
+        builder.append(getBaseHref() + "graph/chooseresource.htm");
+        builder.append("?reports=all");
+        builder.append("&parentResourceType=node");
+        builder.append("&parentResource" + m_view.getSelectedNode().getId());
 
-        Location.assign(builder.buildString());
+        Location.assign(builder.toString());
     }
+    
+    public native final String getBaseHref()/*-{
+        try{
+            return $wnd.getBaseHref();
+        }catch(err){
+            return "";
+        }
+    }-*/;
 
 }

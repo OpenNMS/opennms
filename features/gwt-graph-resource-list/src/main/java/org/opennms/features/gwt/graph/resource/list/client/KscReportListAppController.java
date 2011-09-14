@@ -13,14 +13,16 @@ public class KscReportListAppController implements Presenter {
 
     
     private JsArray<ResourceListItem> m_resourceList;
+    private String m_baseUrl;
 
-    public KscReportListAppController(JsArray<ResourceListItem> resourceListData) {
+    public KscReportListAppController(JsArray<ResourceListItem> resourceListData, String baseUrl) {
         m_resourceList = resourceListData;
+        m_baseUrl = baseUrl;
     }
 
     @Override
     public void go(HasWidgets container) {
-        new KscReportListPresenter(new DefaultResourceListViewImpl(), new SearchPopup(), m_resourceList).go(container);
+        new KscReportListPresenter(new DefaultResourceListViewImpl(), new SearchPopup(), m_resourceList, m_baseUrl).go(container);
 
     }
 

@@ -19,11 +19,13 @@ public class ReportSelectListPresenter implements Presenter, ReportSelectListVie
 
     private ReportSelectListView<ResourceListItem> m_view;
     private SearchPopupDisplay m_searchPopup;
+    private String m_baseUrl;
 
-    public ReportSelectListPresenter(ReportSelectListView<ResourceListItem> view, SearchPopupDisplay searchView) {
+    public ReportSelectListPresenter(ReportSelectListView<ResourceListItem> view, SearchPopupDisplay searchView, String baseUrl) {
         setView(view);
         getView().setPresenter(this);
         initializeSearchPopup(searchView);
+        m_baseUrl = baseUrl;
     }
     
     
@@ -82,7 +84,7 @@ public class ReportSelectListPresenter implements Presenter, ReportSelectListVie
 
     private void buildUrlAndGoToGraphPage(List<ResourceListItem> reports) {
         StringBuilder sb = new StringBuilder();
-        sb.append(Location.getProtocol() + "//" + Location.getHost() + "/opennms/graph/results.htm?reports=all&resourceId=");
+        sb.append(m_baseUrl + "graph/results.htm?reports=all&resourceId=");
         
         
         boolean first = true;

@@ -38,7 +38,6 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -55,8 +54,8 @@ public class KscGraphResourceListPresenter extends DefaultResourceListPresenter 
     List<ResourceListItem> m_dataList;
     private ViewChoiceDisplay m_viewChoiceDisplay;
     
-    public KscGraphResourceListPresenter(DefaultResourceListView<ResourceListItem> view, SearchPopupDisplay searchPopupView, JsArray<ResourceListItem> resourceList, ViewChoiceDisplay viewChoiceDisplay) {
-        super(view, searchPopupView, resourceList);
+    public KscGraphResourceListPresenter(DefaultResourceListView<ResourceListItem> view, SearchPopupDisplay searchPopupView, JsArray<ResourceListItem> resourceList, ViewChoiceDisplay viewChoiceDisplay, String baseUrl) {
+        super(view, searchPopupView, resourceList, baseUrl);
         
         initializeViewChoiceDisplay(viewChoiceDisplay);
     }
@@ -72,13 +71,11 @@ public class KscGraphResourceListPresenter extends DefaultResourceListPresenter 
             public void onClick(ClickEvent event) {
                 ResourceListItem resource = getView().getSelectedResource();
                 if(resource != null) {
-                    UrlBuilder urlBuilder = new UrlBuilder();
-                    urlBuilder.setProtocol(Location.getProtocol());
-                    urlBuilder.setHost(Location.getHost());
-                    urlBuilder.setPath("opennms/KSC/customGraphEditDetails.htm");
-                    urlBuilder.setParameter("resourceId", resource.getId());
+                    StringBuilder urlBuilder = new StringBuilder();
+                    urlBuilder.append( getBaseUrl() + "/KSC/customGraphEditDetails.htm");
+                    urlBuilder.append("?resourceId=" + resource.getId());
                     
-                    Location.assign(urlBuilder.buildString());
+                    Location.assign(urlBuilder.toString());
                 }else {
                     getView().showWarning();
                 }
@@ -92,14 +89,12 @@ public class KscGraphResourceListPresenter extends DefaultResourceListPresenter 
             public void onClick(ClickEvent event) {
                 ResourceListItem resource = getView().getSelectedResource();
                 if(resource != null){
-                    UrlBuilder urlBuilder = new UrlBuilder();
-                    urlBuilder.setProtocol(Location.getProtocol());
-                    urlBuilder.setHost(Location.getHost());
-                    urlBuilder.setPath("opennms/KSC/customGraphChooseResource.htm");
-                    urlBuilder.setParameter("selectedResourceId", "");
-                    urlBuilder.setParameter("resourceId", resource.getId());
+                    StringBuilder urlBuilder = new StringBuilder();
+                    urlBuilder.append(getBaseUrl() + "KSC/customGraphChooseResource.htm");
+                    urlBuilder.append("?selectedResourceId=");
+                    urlBuilder.append("&resourceId=" +  resource.getId());
                     
-                    Location.assign(urlBuilder.buildString());
+                    Location.assign(urlBuilder.toString());
                 }else{
                     getView().showWarning();
                 }

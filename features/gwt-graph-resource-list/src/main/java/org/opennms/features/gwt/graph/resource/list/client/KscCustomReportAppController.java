@@ -13,14 +13,16 @@ import com.google.gwt.user.client.ui.HasWidgets;
 public class KscCustomReportAppController implements Presenter {
 
     private JsArray<ResourceListItem> m_resourceList;
+    private String m_baseUrl;
 
-    public KscCustomReportAppController(JsArray<ResourceListItem> resourceList) {
+    public KscCustomReportAppController(JsArray<ResourceListItem> resourceList, String baseUrl) {
         m_resourceList = resourceList;
+        m_baseUrl = baseUrl;
     }
 
     @Override
     public void go(HasWidgets container) {
-        new KscCustomReportListPresenter(new DefaultResourceListViewImpl(), new SearchPopup(), m_resourceList, new KscCustomSelectionView()).go(container);
+        new KscCustomReportListPresenter(new DefaultResourceListViewImpl(), new SearchPopup(), m_resourceList, new KscCustomSelectionView(), m_baseUrl).go(container);
 
     }
 
