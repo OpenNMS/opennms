@@ -200,9 +200,8 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
 
                 tracker.startAttempt();
 
-                RadiusPacket reply;
-                // Set authenticate retries to default of 0, timeout tracker handles retries.
-                reply = rc.authenticate(accessRequest, auth, DEFAULT_RETRY);
+                // The retry should be handled by the RadiusClient because otherwise it will thrown an exception.
+                RadiusPacket reply = rc.authenticate(accessRequest, auth, ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY));
                 if (reply instanceof AccessAccept) {
                     double responseTime = tracker.elapsedTimeInMillis();
                     status = PollStatus.available(responseTime);
