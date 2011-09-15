@@ -41,6 +41,8 @@ import net.jradius.client.auth.PAPAuthenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
 import net.jradius.dictionary.Attr_NASIdentifier;
 import net.jradius.dictionary.Attr_UserName;
+import net.jradius.dictionary.Attr_UserPassword;
+import net.jradius.packet.AccessAccept;
 import net.jradius.packet.AccessRequest;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
@@ -147,11 +149,12 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
 
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
         try {
-            final RadiusClient rc = new RadiusClient(host, secret, authport, acctport, timeout);
+            final RadiusClient rc = new RadiusClient(host, secret, authport, acctport, convertTimeoutToSeconds(timeout));
 
             final AttributeList attributes = new AttributeList();
             attributes.add(new Attr_UserName(user));
             attributes.add(new Attr_NASIdentifier(nasid));
+            attributes.add(new Attr_UserPassword(password));
 
             final AccessRequest accessRequest = new AccessRequest(rc, attributes);
             final RadiusAuthenticator auth;
@@ -172,9 +175,8 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
                 return isRadiusServer;
             }
 
-            RadiusPacket reply;
-            reply = rc.authenticate(accessRequest, auth, retry);
-            isRadiusServer = (reply != null);
+            RadiusPacket reply = rc.authenticate(accessRequest, auth, retry);
+            isRadiusServer = reply instanceof AccessAccept;
             LogUtils.debugf(this, "Discovered RADIUS service on %s", host.getCanonicalHostName());
         } catch (final Throwable e) {
             LogUtils.debugf(this, e, "Error while attempting to discover RADIUS service on %s", host.getCanonicalHostName());
@@ -247,5 +249,9 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
         }
 
         return isRadius(address, authport, acctport, authType, user, password, secret, nasid, retry, timeout);
+    }
+
+    private int convertTimeoutToSeconds(int timeout) {
+        return timeout/1000 > 0 ? timeout/1000 : 1;
     }
 }
