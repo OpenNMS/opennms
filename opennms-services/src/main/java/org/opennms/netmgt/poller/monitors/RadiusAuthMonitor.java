@@ -39,17 +39,26 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.util.Map;
 
-import net.sourceforge.jradiusclient.RadiusAttribute;
-import net.sourceforge.jradiusclient.RadiusAttributeValues;
-import net.sourceforge.jradiusclient.RadiusClient;
-import net.sourceforge.jradiusclient.RadiusPacket;
-import net.sourceforge.jradiusclient.exception.InvalidParameterException;
-import net.sourceforge.jradiusclient.exception.RadiusException;
-import net.sourceforge.jradiusclient.util.ChapUtil;
+import net.jradius.client.RadiusClient;
+import net.jradius.client.auth.CHAPAuthenticator;
+import net.jradius.client.auth.EAPMD5Authenticator;
+import net.jradius.client.auth.EAPMSCHAPv2Authenticator;
+import net.jradius.client.auth.MSCHAPv1Authenticator;
+import net.jradius.client.auth.MSCHAPv2Authenticator;
+import net.jradius.client.auth.PAPAuthenticator;
+import net.jradius.client.auth.RadiusAuthenticator;
+import net.jradius.dictionary.Attr_NASIdentifier;
+import net.jradius.dictionary.Attr_UserName;
+import net.jradius.dictionary.Attr_UserPassword;
+import net.jradius.packet.AccessAccept;
+import net.jradius.packet.AccessRequest;
+import net.jradius.packet.RadiusPacket;
+import net.jradius.packet.attribute.AttributeFactory;
+import net.jradius.packet.attribute.AttributeList;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -65,16 +74,14 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * then the Radius service is considered available.
  *
  * @author <A HREF="mailto:jonathan@opennms.org">Jonathan Sartin</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jonathan@opennms.org">Jonathan Sartin</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 @Distributable
 final public class RadiusAuthMonitor extends IPv4Monitor {
     /**
-     * Number of miliseconds to wait before timing out a radius AUTH request
+     * Number of milliseconds to wait before timing out a radius AUTH request
      */
     public static final int DEFAULT_TIMEOUT = 5000;
 
@@ -116,7 +123,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
     /**
      * Default NAS-ID
      */
-    
+
     public static final String DEFAULT_NASID ="opennms";
 
     /**
@@ -127,8 +134,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
      * @throws java.lang.IllegalAccessException if any.
      */
     public RadiusAuthMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        log.info(getClass().getName() + ": RadiusAuthMonitor class loaded");
+        LogUtils.infof(this, "RadiusAuthMonitor class loaded");
     }
 
 
@@ -154,21 +160,19 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-
-        // Asume that the service is down
+        // Assume that the service is down
         PollStatus status = PollStatus.unavailable();
 
         if (iface.getType() != NetworkInterface.TYPE_IPV4) {
-            log.error(getClass().getName() + ": Unsupported interface type, only TYPE_IPV4 currently supported");
+            LogUtils.errorf(this, getClass().getName() + ": Unsupported interface type, only TYPE_IPV4 currently supported");
             throw new NetworkInterfaceNotSupportedException(getClass().getName() + ": Unsupported interface type, only TYPE_IPV4 currently supported");
         }
 
         if (parameters == null) {
             throw new NullPointerException();
         }
-        
-        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+
+        final TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         int authport = ParameterMap.getKeyedInteger(parameters, "authport", DEFAULT_AUTH_PORT);
         int acctport = ParameterMap.getKeyedInteger(parameters, "acctport", DEFAULT_ACCT_PORT);
@@ -177,86 +181,61 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
         String secret = ParameterMap.getKeyedString(parameters, "secret", DEFAULT_SECRET);
         String authType = ParameterMap.getKeyedString(parameters, "authtype", DEFAULT_AUTH_TYPE);
         String nasid = ParameterMap.getKeyedString(parameters, "nasid", DEFAULT_NASID);
-	InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress addr = (InetAddress) iface.getAddress();
 
-
-        RadiusClient rc = null;
+        AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
+        int timeout = convertTimeoutToSeconds(ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT));
         try {
-            rc = new RadiusClient(ipv4Addr.getCanonicalHostName(), authport ,acctport, secret, convertToSeconds(tracker.getConnectionTimeout()));
-        } catch(RadiusException rex) {
-        	return logDown(Level.ERROR, "Radius Exception: " + rex.getMessage());
-        } catch(InvalidParameterException ivpex) {
-        	return logDown(Level.ERROR, "Radius parameter exception: " + ivpex.getMessage());
-        }
-       
+            final RadiusClient rc = new RadiusClient(addr, secret, authport, acctport, timeout);
 
-        for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
-            try {
-                tracker.startAttempt();
-                
-                ChapUtil chapUtil = new ChapUtil();
-                RadiusPacket accessRequest = new RadiusPacket(RadiusPacket.ACCESS_REQUEST);
-                RadiusAttribute userNameAttribute;
-                RadiusAttribute nasIdAttribute;
-                nasIdAttribute = new RadiusAttribute(RadiusAttributeValues.NAS_IDENTIFIER,nasid.getBytes());
-                userNameAttribute = new RadiusAttribute(RadiusAttributeValues.USER_NAME,user.getBytes());
-                log.debug(getClass().getName() + ": attempting Radius auth with authType: " + authType);
-                accessRequest.setAttribute(userNameAttribute);
-                accessRequest.setAttribute(nasIdAttribute);
-                if(authType.equalsIgnoreCase("chap")){
-                    byte[] chapChallenge = chapUtil.getNextChapChallenge(16);
-                    accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.CHAP_PASSWORD, chapEncrypt(password, chapChallenge, chapUtil)));
-                    accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.CHAP_CHALLENGE, chapChallenge));
-                }else{
-                    accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.USER_PASSWORD,password.getBytes()));
+            for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
+                final AttributeList attributes = new AttributeList();
+                attributes.add(new Attr_UserName(user));
+                attributes.add(new Attr_NASIdentifier(nasid));
+                attributes.add(new Attr_UserPassword(password));
+
+                final AccessRequest accessRequest = new AccessRequest(rc, attributes);
+                final RadiusAuthenticator auth;
+                if (authType.equalsIgnoreCase("chap")) {
+                    auth = new CHAPAuthenticator();
+                } else if (authType.equalsIgnoreCase("pap")) {
+                    auth = new PAPAuthenticator();
+                } else if (authType.equalsIgnoreCase("mschapv1")) {
+                    auth = new MSCHAPv1Authenticator();
+                } else if (authType.equalsIgnoreCase("mschapv2")) {
+                    auth = new MSCHAPv2Authenticator();
+                } else if (authType.equalsIgnoreCase("eapmd5") || authType.equalsIgnoreCase("eap-md5")) {
+                    auth = new EAPMD5Authenticator();
+                } else if (authType.equalsIgnoreCase("eapmschapv2") || authType.equalsIgnoreCase("eap-mschapv2")) {
+                    auth = new EAPMSCHAPv2Authenticator();
+                } else {
+                    return logDown(Level.ERROR, "Unknown authenticator type '" + authType + "'");
                 }
-                // Authenticate takes 0 retries. Tracker will handle retries.
-                RadiusPacket accessResponse = rc.authenticate(accessRequest, DEFAULT_RETRY);
-                
-                if ( accessResponse.getPacketType() == RadiusPacket.ACCESS_ACCEPT ){
+
+                tracker.startAttempt();
+
+                // The retry should be handled by the RadiusClient because otherwise it will thrown an exception.
+                RadiusPacket reply = rc.authenticate(accessRequest, auth, ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY));
+                if (reply instanceof AccessAccept) {
                     double responseTime = tracker.elapsedTimeInMillis();
                     status = PollStatus.available(responseTime);
-                    if (log.isDebugEnabled()) {
-                        log.debug(getClass().getName() + ": Radius service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());
-                        log.debug("poll: responseTime= " + responseTime + "ms");
-                    }
+                    LogUtils.debugf(this, "Radius service is AVAILABLE on: %s", addr.getCanonicalHostName());
+                    LogUtils.debugf(this, "poll: responseTime= %fms", responseTime);
                     break;
+                } else if (reply != null) {
+                    LogUtils.debugf(this, "response returned, but request was not accepted: %s", reply);
                 }
-            } catch (InvalidParameterException ivpex){
-            	status = logDown(Level.ERROR, "Invalid Radius Parameter: " + ivpex);
-            } catch (RadiusException radex){
-            	status = logDown(Level.ERROR, "Radius Exception : " + radex);
-	    }
+                status = logDown(Level.ERROR, "Invalid RADIUS reply: " + reply);
+            }
+        } catch (final Throwable e) {
+            status = logDown(Level.ERROR, "Error while attempting to connect to the RADIUS service on " + addr.getCanonicalHostName(), e);
         }
+
         return status;
     }
 
-    private int convertToSeconds(int connectionTimeout) {
-		return connectionTimeout/1000  > 0 ? connectionTimeout/1000 : 1;
-	}
-
-
-	/**
-     * Encrypt password using chap challenge
-     *
-     * @param plainText
-     *          plain text password
-     * @param chapChallenge
-     *          chap challenge
-     * @param chapUtil
-     *          ref ChapUtil
-     *
-     * @return encrypted chap password
-     */
-    private static byte[] chapEncrypt(final String plainText,
-                                      final byte[] chapChallenge,
-                                      final ChapUtil chapUtil){
-        byte chapIdentifier = chapUtil.getNextChapIdentifier();
-        byte[] chapPassword = new byte[17];
-        chapPassword[0] = chapIdentifier;
-        System.arraycopy(ChapUtil.chapEncrypt(chapIdentifier, plainText.getBytes(),chapChallenge),
-                         0, chapPassword, 1, 16);
-        return chapPassword;
+    private int convertTimeoutToSeconds(int timeout) {
+        return timeout/1000 > 0 ? timeout/1000 : 1;
     }
 
 } 
