@@ -84,8 +84,8 @@ FROM
 		END AS
 			outage_counter
 	FROM
-		(SELECT
-			outages.nodeid,
+		(SELECT DISTINCT
+			outages.nodeid, outages.svclosteventid,
 			least(('$P!{DS_START_TIME_STRING}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL), outages.ifregainedservice) as ifregainedservice,
 			greatest('$P!{DS_START_TIME_STRING}'::TIMESTAMP,outages.iflostservice) as iflostservice
 		FROM
