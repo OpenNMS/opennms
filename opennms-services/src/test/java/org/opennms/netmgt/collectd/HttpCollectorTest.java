@@ -45,11 +45,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.netmgt.config.CollectdPackage;
+import org.opennms.netmgt.config.collectd.Filter;
+import org.opennms.netmgt.config.collectd.Package;
+import org.opennms.netmgt.config.collectd.Parameter;
+import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
@@ -174,6 +181,11 @@ public class HttpCollectorTest {
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
     }
 
+    @After
+    public void tearDown() {
+        MockLogAppender.noWarningsOrHigherLogged();
+    }
+
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#collect(
      *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, java.util.Map)}.
@@ -226,6 +238,58 @@ public class HttpCollectorTest {
         assertEquals("greatAnswer", Double.valueOf(42.0), RrdUtils.fetchLastValueInRange(greatAnswerRrdFile.getAbsolutePath(), "greatAnswer", stepSizeInMillis, stepSizeInMillis));
         
         m_collectionSpecification.release(m_collectionAgent);
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
+    @JUnitCollector(datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-config-NMS4886.xml", datacollectionType="http",
+                    anticipateRrds={ "1/documentCount", "1/greatAnswer", "1/someNumber" }, anticipateFiles={ "1/strings.properties" })
+    public final void testNMS4886withHttp() throws Exception {
+        doTestNMS4886("HTTP");
+    }
+
+    /* Ignoring this test for now, because I'm not sure how to configure HTTPS on 1.8 */
+    @Test
+    @Ignore
+    @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"}, https=true)
+    @JUnitCollector(datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-config-NMS4886-https.xml", datacollectionType="http",
+                    anticipateRrds={ "1/documentCount", "1/greatAnswer", "1/someNumber" }, anticipateFiles={ "1/strings.properties" })
+    public final void testNMS4886withHttps() throws Exception {
+        doTestNMS4886("HTTPS");
+    }
+
+    public final void doTestNMS4886(String svcName) throws Exception {
+        HttpCollector collector = new HttpCollector();
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("http-collection", "default");
+        parameters.put("port", "10342");
+        collector.initialize(parameters);
+
+        Package pkg = new Package();
+        Filter filter = new Filter();
+        filter.setContent("IPADDR IPLIKE *.*.*.*");
+        pkg.setFilter(filter);
+        Service service = new Service();
+        service.setName(svcName);
+        Parameter collectionParm = new Parameter();
+        collectionParm.setKey("http-collection");
+        collectionParm.setValue("default");
+        service.addParameter(collectionParm);
+        Parameter portParm = new Parameter();
+        portParm.setKey("port");
+        portParm.setValue("10342");
+        service.addParameter(portParm);
+        pkg.addService(service);
+
+        CollectdPackage wpkg = new CollectdPackage(pkg, "default", false);
+        CollectionSpecification collectionSpecification = new CollectionSpecification(wpkg, svcName, collector);
+        collectionSpecification.initialize(m_collectionAgent);
+
+        CollectionSet collectionSet = collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        CollectorTestUtils.persistCollectionSet(collectionSpecification, collectionSet);
+
+        collectionSpecification.release(m_collectionAgent);
     }
 
 }
