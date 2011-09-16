@@ -54,6 +54,20 @@ shuAssertNodeInRequisition()
     shuAssert "Node ${foreignId} not in requisistion ${foreignSource}" $?
 }
 
+shuAssertRequisitionNodeCount()
+{
+    local result=/tmp/provisionTest.data.assertRequisitionNodeCount.$$
+    local foreignSource=$1
+    local expectedCount=$2
+
+    curl --user admin:admin -sSf -X GET ${BASE_URL}/requisitions/${foreignSource}/nodes > ${result}
+    shuAssert "Failed to get current requisitions" $?
+
+    perl xpath.pl ${result} "//nodes[@count='${expectedCount}']" > /dev/null
+    shuAssert "Unexpected count of nodes in requisition ${foreignSource}" $?
+
+}
+
 shuDenyNodeInRequisition()
 {
     local result=/tmp/provisionTest.data.assertNodeNotInRequisition.$$
@@ -197,6 +211,31 @@ TestAddNodeToRequisition()
     
 }
 
+TestAddNodeWithDuplicatedForeignIdToRequisition()
+{
+    local req=/tmp/provisionTest.data.req.$$
+    local result=/tmp/provionTest.data.result.$$
+    local foreignSource=$PROV_GROUP
+    local foreignId=19
+    local nodeLabel=uzbekistan
+    local ip=192.168.39.1
+
+    createRequisitionWithOneNode ${BASE_URL} ${foreignSource} ${foreignId} ${nodeLabel} ${ip}
+    shuAssert "Unexpected failure creating requistion" $?
+
+    shuAssertRequisitionExists $foreignSource
+
+    shuAssertNodeInRequisition $foreignSource $foreignId
+
+    shuAssertRequisitionNodeCount $foreignSource 1
+
+    # add a node
+    addNodeToRequisition ${BASE_URL} ${foreignSource} ${foreignId} node1 1.1.1.1
+    shuAssert "Unexpected failure adding node1 to requisition" $?
+
+    shuAssertRequisitionNodeCount $foreignSource 1
+}
+
 TestDeleteNodeFromRequisition()
 {
     local req=/tmp/provisionTest.data.req.$$
@@ -319,8 +358,20 @@ TestSetSnmpConfig()
 
 }
 
-
+PassedInTestSuite()
+{
+    for t in "$@"
+    do
+	shuRegTest "$t"
+    done
+}
 
 . ./shunit
-shuStart
 
+TESTS=""
+if [ $# -ne 0 ]
+then
+    TESTS="PassedInTestSuite $@"
+fi
+
+shuStart "$TESTS"
