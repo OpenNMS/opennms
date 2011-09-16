@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -71,6 +72,7 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
@@ -99,6 +101,7 @@ import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -224,6 +227,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
         
+        //((TransactionAwareEventForwarder)m_provisioner.getEventForwarder()).setEventForwarder(m_mockEventIpcManager);
         m_provisioner.start();
         
         m_foreignSource = new ForeignSource();
@@ -1193,44 +1197,72 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertEquals(getNodeDao().countAll(), m_provisioner.getScheduleLength());
         
     }
-    
+
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @Transactional
     public void testSaveCategoriesOnUpdateNodeAttributes() throws Exception {
         final String TEST_CATEGORY = "TEST_CATEGORY";
-        final String LABEL = "apknd";
-        
+        final String OLD_LABEL = "apknd";
+        final String NEW_LABEL = "apknd-new";
+
         importFromResource("classpath:/tec_dump.xml.smalltest");
-        
-        final Collection<OnmsNode> nodes = m_nodeDao.findByLabel(LABEL);
+
+        final Collection<OnmsNode> nodes = m_nodeDao.findByLabel(OLD_LABEL);
         assertNotNull(nodes);
         assertEquals(1, nodes.size());
-        
+
         OnmsNode node = nodes.iterator().next();
         assertNotNull(node);
-        assertEquals(LABEL, node.getLabel());
+
+        OnmsNode nodeCopy = new OnmsNode();
+        nodeCopy.setId(node.getId());
+        nodeCopy.setLabel(OLD_LABEL);
+        // TODO: Replace with constant
+        nodeCopy.setLabelSource("U");
+
+        assertNotSame(node, nodeCopy);
+        assertEquals(OLD_LABEL, node.getLabel());
         assertFalse(node.hasCategory(TEST_CATEGORY));
 
+        // Create a policy that will apply the category to the node
         final NodeCategorySettingPolicy policy = new NodeCategorySettingPolicy();
         policy.setCategory(TEST_CATEGORY);
-        policy.setLabel(LABEL);
-        
-        node = policy.apply(node);
-        
-        assertTrue(node.hasCategory(TEST_CATEGORY));
-        
-        m_provisionService.updateNodeAttributes(node);
-        
-        // flush here to force a write so we are sure that the OnmsCategories are correctly created
+        policy.setLabel(OLD_LABEL);
+
+        // Apply the policy
+        nodeCopy = policy.apply(nodeCopy);
+        assertTrue(nodeCopy.hasCategory(TEST_CATEGORY));
+
+        // Change the label of the node so that we can trigger a NODE_LABEL_CHANGED_EVENT_UEI event
+        nodeCopy.setLabel(NEW_LABEL);
+        // TODO: Replace with constant
+        nodeCopy.setLabelSource("U");
+
+        assertFalse(node.getLabel().equals(nodeCopy.getLabel()));
+
+        m_provisionService.updateNodeAttributes(nodeCopy);
+
+        // Flush here to force a write so we are sure that the OnmsCategories are correctly created
         m_nodeDao.flush();
 
-        final OnmsNode node2 = m_nodeDao.findByLabel(LABEL).iterator().next();
+        // Query by the new node label
+        final OnmsNode node2 = m_nodeDao.findByLabel(NEW_LABEL).iterator().next();
         assertTrue(node2.hasCategory(TEST_CATEGORY));
-        
 
+        // Iterate over the events in the TransactionAwareEventForwarder to make
+        // sure that the NODE_LABEL_CHANGED_EVENT_UEI event was sent
+        boolean foundEvent = false;
+        for (Log eventLog : ((TransactionAwareEventForwarder)m_provisioner.getEventForwarder()).requestPendingEventsList()) {
+            for (Event event : eventLog.getEvents().getEventCollection()) {
+                if (EventConstants.NODE_LABEL_CHANGED_EVENT_UEI.equals(event.getUei())) {
+                    foundEvent = true;
+                }
+            }
+        }
+        assertTrue(String.format("Did not find anticipated %s event", EventConstants.NODE_LABEL_CHANGED_EVENT_UEI), foundEvent);
     }
-    
+
     private static Event nodeDeleted(int nodeid) {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
