@@ -368,10 +368,10 @@ PassedInTestSuite()
 
 . ./shunit
 
-TESTS=""
 if [ $# -ne 0 ]
 then
-    TESTS="PassedInTestSuite $@"
+    shuStart "PassedInTestSuite $@"
+else
+    shuStart
 fi
 
-shuStart "$TESTS"
