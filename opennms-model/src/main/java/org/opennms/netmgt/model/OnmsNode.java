@@ -1015,8 +1015,27 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    public void mergeNodeAttributes(OnmsNode scannedNode) {
+    public void mergeNodeAttributes(OnmsNode scannedNode, EventForwarder eventForwarder) {
         if (hasNewValue(scannedNode.getLabel(), getLabel())) {
+            // Create a NODE_LABEL_CHANGED_EVENT_UEI event
+            EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
+
+            bldr.setNodeid(scannedNode.getId());
+            bldr.setHost("host");
+
+            if (getLabel() != null) {
+                bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, getLabel());
+                bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE, getLabelSource());
+            }
+
+            if (scannedNode.getLabel() != null) {
+                bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL, scannedNode.getLabel());
+                bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, scannedNode.getLabelSource());
+            }
+
+            eventForwarder.sendNow(bldr.getEvent());
+
+            // Update the node label value
             setLabel(scannedNode.getLabel());
         }
     
@@ -1219,7 +1238,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      */
     public void mergeNode(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {
         
-        mergeNodeAttributes(scannedNode);
+        mergeNodeAttributes(scannedNode, eventForwarder);
     
     	mergeSnmpInterfaces(scannedNode, deleteMissing);
         
