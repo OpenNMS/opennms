@@ -249,6 +249,20 @@ public class HttpCollector implements ServiceCollector {
 		public void setCollectionTimestamp(Date timestamp) {
 			this.m_timestamp = timestamp;
 		}
+
+	public int getPort() { // This method has been created to deal with NMS-4886
+	    int port = getUriDef().getUrl().getPort();
+	    // Check for service assigned port if UriDef port is not supplied (i.e., is equal to the default port 80)
+	    if (port == 80 && m_parameters.containsKey("port")) {
+	        try {
+	            port = Integer.parseInt(m_parameters.get("port").toString());
+	            log().debug("getPort: using service provided HTTP port " + port);
+	        } catch (Exception e) {
+	            log().warn("Malformed HTTP port on service definition.");
+	        }
+	    }
+	    return port;
+	}
     }
 
 
@@ -540,7 +554,7 @@ public class HttpCollector implements ServiceCollector {
         if (virtualHost != null) {
             params.setParameter(
                                 ClientPNames.VIRTUAL_HOST, 
-                                new HttpHost(virtualHost, collectionSet.getUriDef().getUrl().getPort())
+                                new HttpHost(virtualHost, collectionSet.getPort())
             );
         }
 
@@ -627,7 +641,7 @@ public class HttpCollector implements ServiceCollector {
 
         return URIUtils.createURI(collectionSet.getUriDef().getUrl().getScheme(),
                        substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getHost(), "getHost"),
-                       collectionSet.getUriDef().getUrl().getPort(),
+                       collectionSet.getPort(),
                        substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getPath(), "getURL"),
                        substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery(), "getQuery"),
                        substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getFragment(), "getFragment"));
