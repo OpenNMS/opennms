@@ -520,7 +520,7 @@ Comparable<OnmsMonitoredService> {
             setQualifier(scanned.getQualifier());
         }
 
-        if (hasNewValue(scanned.getStatus(), getStatus())) {
+        if (hasNewStatusValue(scanned.getStatus(), getStatus())) {
             setStatus(scanned.getStatus());
         }
         
@@ -533,4 +533,13 @@ Comparable<OnmsMonitoredService> {
         }
 
     }
+
+	private boolean hasNewStatusValue(String newStatus, String oldStatus) 
+	{
+		/*
+		 * Don't overwrite the 'Not Monitored' in the database when provisioning the
+		 * node.  The Poller will update it when scheduling it packages.
+		 */
+		return !"N".equals(oldStatus) && newStatus != null && !newStatus.equals(oldStatus);
+	}
 }
