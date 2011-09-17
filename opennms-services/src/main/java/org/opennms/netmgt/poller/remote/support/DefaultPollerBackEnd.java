@@ -391,7 +391,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             return;
         }
 
-        mon.setStatus(MonitorStatus.STOPPED);
+        if (mon.getStatus() != MonitorStatus.PAUSED)
+        {
+        	mon.setStatus(MonitorStatus.STOPPED);
+        }
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
         m_locMonDao.update(mon);
 
