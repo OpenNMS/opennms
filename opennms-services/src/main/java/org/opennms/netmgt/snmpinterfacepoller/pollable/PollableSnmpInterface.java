@@ -433,7 +433,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
     }
     
     private ThreadCategory log() {
-        return ThreadCategory.getInstance(PollableService.class);
+        return ThreadCategory.getInstance(PollableSnmpInterface.class);
     }
 
 	/**
