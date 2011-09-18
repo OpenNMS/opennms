@@ -67,8 +67,6 @@ public class PollableSnmpInterface implements ReadyRunnable {
         
     private SnmpAgentConfig m_agentConfig;
     
-    private int maxInterfacePerPdu = 0;
-        
     public class SnmpMinimalPollInterface {
         
         final static int IF_UP=1;
@@ -480,17 +478,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
 	 * @return a int.
 	 */
 	public int getMaxInterfacePerPdu() {
-		return maxInterfacePerPdu;
+		return getAgentConfig().getMaxVarsPerPdu();
 	}
-
-	/**
-	 * <p>Setter for the field <code>maxInterfacePerPdu</code>.</p>
-	 *
-	 * @param maxInterfacePerPdu a int.
-	 */
-	public void setMaxInterfacePerPdu(int maxInterfacePerPdu) {
-		this.maxInterfacePerPdu = maxInterfacePerPdu;
-	}
-
 }
 
