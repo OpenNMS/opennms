@@ -82,7 +82,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
     public RadiusAuthenticationProvider(String server, String secret) {
         Assert.hasLength(server, "A server must be specified");
         this.server = server;
-        Assert.hasLength(server, "A shared secret must be specified");
+        Assert.hasLength(secret, "A shared secret must be specified");
         this.secret = secret;
     }
 
