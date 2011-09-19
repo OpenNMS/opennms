@@ -294,7 +294,7 @@ function doDelete() {
                 <th>Interface Index</th>
                 <td>
                   <% if( ifIndex != -1 ) {  %>
-                    <%=ifIndex%>
+                    <a href="element/snmpinterface.jsp?node=<%=intf_db.getNodeId()%>&ifindex=<%=ifIndex%>"><%=ifIndex%></a>
                   <% } else { %>
                     &nbsp;
                   <% } %>
@@ -303,23 +303,7 @@ function doDelete() {
               <tr> 
                 <th>Last Service Scan</th>
                 <td><%=intf_db.getLastCapsdPoll()%></td>
-              </tr>
-			  <tr>
-	            <th>Snmp Polling Status</th>
-	            <td><%=ElementUtil.getSnmpInterfaceStatusString(intf_db)%></td>
-	          </tr>  
-       <% if(request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
-              <tr>
-                <th>Snmp Polling Package</th>
-                <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 
-                snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId))%></td>
-              </tr>
-	   <% } %>
-              <tr> 
-                <th>Last Snmp Poll</th>
-    	        <td><%=(intf_db.getSnmpLastSnmpPoll() == null) ? "&nbsp;" : intf_db.getSnmpLastSnmpPoll()%></td>
-        	  </tr>
-              
+              </tr>              
             </table>
             
             <!-- Node Link box -->

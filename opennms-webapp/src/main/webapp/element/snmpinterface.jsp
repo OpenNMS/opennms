@@ -209,7 +209,7 @@ function doDelete() {
                 <tr>
                   <th>IP Address</th>
                   <td>
-                    <%=ipAddr%>
+                    <a href="element/interface.jsp?node=<%=intf_db.getNodeId()%>&intf=<%=ipAddr%>"><%=ipAddr%></a>
                   </td>
                 </tr>
               <% } %>

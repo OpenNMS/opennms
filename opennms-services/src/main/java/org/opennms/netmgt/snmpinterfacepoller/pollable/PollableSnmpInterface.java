@@ -44,7 +44,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -72,8 +71,6 @@ public class PollableSnmpInterface implements ReadyRunnable {
         
     private SnmpAgentConfig m_agentConfig;
     
-    private int maxInterfacePerPdu = 0;
-        
     public class SnmpMinimalPollInterface {
         
         final static int IF_UP=1;
@@ -155,8 +152,21 @@ public class PollableSnmpInterface implements ReadyRunnable {
      * @param snmpinterfaces a {@link java.util.List} object.
      */
     public void setSnmpinterfaces(List<OnmsSnmpInterface> snmpinterfaces) {
-        for (OnmsSnmpInterface value: snmpinterfaces) {
-            m_snmpinterfaces.put(value.getIfIndex(), value);            
+    	if (snmpinterfaces == null) {
+    		log().debug("setting snmpinterfaces: got null, thread instantiated but at moment no interface found");
+    		return;
+    	}
+    	m_snmpinterfaces.clear();
+        for (OnmsSnmpInterface iface: snmpinterfaces) {
+        	log().debug("setting snmpinterface:" + iface.toString());
+        	if (iface != null && iface.getIfIndex() != null && iface.getIfIndex() > 0) {
+                m_snmpinterfaces.put(iface.getIfIndex(), iface);            
+        		if (iface.getIfAdminStatus() != null &&
+        				iface.getIfAdminStatus().equals(SnmpMinimalPollInterface.IF_UP) && 
+        				iface.getIfOperStatus() != null &&
+        				iface.getIfOperStatus().equals(SnmpMinimalPollInterface.IF_DOWN)) 
+        				sendOperDownEvent(iface);
+        	}
         }
     }
 
@@ -260,7 +270,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
      */
     public void run() {        
         if (getParent().polling()) {
-            log().info("run: polling snmp interfaces on package/interface " + getParent().getPackageName()+ "/" + getName() + "on primary address: " + getParent().getIpaddress());
+            log().info("run: polling SNMP interfaces on package/interface " + getParent().getPackageName()+ "/" + getName() + "on primary address: " + getParent().getIpaddress());
             if (m_snmpinterfaces == null || m_snmpinterfaces.isEmpty()) {
                 log().debug("No Interface found. Doing nothing");
             } else {
@@ -341,19 +351,18 @@ public class PollableSnmpInterface implements ReadyRunnable {
 
                     iface.setIfAdminStatus(new Integer(miface.getAdminstatus()));
                     iface.setIfOperStatus(new Integer(miface.getOperstatus()));
-                    iface.setPoll("P");
                     iface.setLastSnmpPoll(now);
                                     
                     
                     // Save Data to Database
                     try {
                         update(iface);
-                    } catch (Exception e) {
-                        log().warn("Error updating Interface" + iface.getIfName()+" " + e.getLocalizedMessage());
+                    } catch (Throwable e) {
+                        log().warn("Failing updating Interface" + iface.getIfName()+" " + e.getLocalizedMessage());
                         refresh = true;
                     }
                 } else {
-                    log().warn("run: " + getContext().getServiceName() + " not available, doing nothing.....");
+                    log().debug("No "+ getContext().getServiceName() + " data available for interface.");
                 } //End if status OK
             } //end while on interface
             
@@ -438,7 +447,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
     }
     
     private ThreadCategory log() {
-        return ThreadCategory.getInstance(PollableService.class);
+        return ThreadCategory.getInstance(PollableSnmpInterface.class);
     }
 
 	/**
@@ -483,16 +492,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
 	 * @return a int.
 	 */
 	public int getMaxInterfacePerPdu() {
-		return maxInterfacePerPdu;
-	}
-
-	/**
-	 * <p>Setter for the field <code>maxInterfacePerPdu</code>.</p>
-	 *
-	 * @param maxInterfacePerPdu a int.
-	 */
-	public void setMaxInterfacePerPdu(int maxInterfacePerPdu) {
-		this.maxInterfacePerPdu = maxInterfacePerPdu;
+		return getAgentConfig().getMaxVarsPerPdu();
 	}
 
 }
