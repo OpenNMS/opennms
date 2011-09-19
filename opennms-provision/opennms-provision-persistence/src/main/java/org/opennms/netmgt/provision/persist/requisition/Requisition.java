@@ -186,6 +186,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      * @param node a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
      */
     public void insertNode(final RequisitionNode node) {
+        updateNodeCacheIfNecessary();
         if (m_nodeReqs.containsKey(node.getForeignId())) {
         	final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
             m_nodes.remove(n);
@@ -200,6 +201,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      * @param node a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
      */
     public void putNode(final RequisitionNode node) {
+        updateNodeCacheIfNecessary();
         if (m_nodeReqs.containsKey(node.getForeignId())) {
         	final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
             m_nodes.remove(n);
@@ -317,15 +319,19 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         }
     }
     
+	private void updateNodeCacheIfNecessary() {
+		if (m_nodes != null && m_nodeReqs.size() != m_nodes.size()) {
+            updateNodeCache();
+        }
+	}
+
     /**
      * <p>visit</p>
      *
      * @param visitor a {@link org.opennms.netmgt.provision.persist.RequisitionVisitor} object.
      */
     public void visit(final RequisitionVisitor visitor) {
-        if (m_nodeReqs.size() == 0 && m_nodes != null && m_nodes.size() > 0) {
-            updateNodeCache();
-        }
+        updateNodeCacheIfNecessary();
 
         if (visitor == null) {
             LogUtils.warnf(this, "no visitor specified!");
@@ -348,9 +354,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      * @return a {@link org.opennms.netmgt.provision.persist.OnmsNodeRequisition} object.
      */
     public OnmsNodeRequisition getNodeRequistion(final String foreignId) {
-        if (m_nodeReqs.size() == 0 && m_nodes != null && m_nodes.size() > 0) {
-            updateNodeCache();
-        }
+        updateNodeCacheIfNecessary();
         return m_nodeReqs.get(foreignId);
     }
     
