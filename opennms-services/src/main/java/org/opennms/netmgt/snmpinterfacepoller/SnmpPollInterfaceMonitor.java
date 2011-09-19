@@ -68,73 +68,99 @@ public class SnmpPollInterfaceMonitor {
      * @param mifaces a {@link java.util.List} object.
      * @return a {@link java.util.List} object.
      */
-    public List<SnmpMinimalPollInterface> poll(SnmpAgentConfig agentConfig, List<SnmpMinimalPollInterface> mifaces) {
+	public List<SnmpMinimalPollInterface> poll(SnmpAgentConfig agentConfig,
+			List<SnmpMinimalPollInterface> mifaces) {
 
-        if (mifaces == null ) {
-            log().error("Null Interfaces passed to Monitor, exiting");
-            return null;
-        }
-        
-        log().debug("Got " + mifaces.size() + " interfaces to poll");
-        
-        // Retrieve this interface's SNMP peer object
-        //
-        if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available");
+		if (mifaces == null) {
+			log().error("Null Interfaces passed to Monitor, exiting");
+			return null;
+		}
 
-        SnmpObjId[] adminoids = new SnmpObjId[mifaces.size()];
-        SnmpObjId[] operooids = new SnmpObjId[mifaces.size()];
-       
-        for (int i=0;i < mifaces.size(); i++) {
-            SnmpMinimalPollInterface miface = mifaces.get(i);
-            adminoids[i] = SnmpObjId.get(IF_ADMIN_STATUS_OID + miface.getIfindex());
-            operooids[i] = SnmpObjId.get(IF_OPER_STATUS_OID + miface.getIfindex());
-            log().debug("Adding Admin/Oper oids: " + adminoids[i] + "/" +operooids[i]);
-        }
+		log().debug("Got " + mifaces.size() + " interfaces to poll");
 
-		log().debug("try to get admin statuses");
+		// Retrieve this interface's SNMP peer object
+		//
+		if (agentConfig == null)
+			throw new RuntimeException("SnmpAgentConfig object not available");
+
+		SnmpObjId[] adminoids = new SnmpObjId[mifaces.size()];
+		SnmpObjId[] operooids = new SnmpObjId[mifaces.size()];
+
+		for (int i = 0; i < mifaces.size(); i++) {
+			SnmpMinimalPollInterface miface = mifaces.get(i);
+			miface.setStatus(PollStatus.unavailable());
+			adminoids[i] = SnmpObjId.get(IF_ADMIN_STATUS_OID
+					+ miface.getIfindex());
+			operooids[i] = SnmpObjId.get(IF_OPER_STATUS_OID
+					+ miface.getIfindex());
+			log().debug(
+					"Adding Admin/Oper oids: " + adminoids[i] + "/"
+							+ operooids[i]);
+		}
 
 		SnmpValue[] adminresults = new SnmpValue[mifaces.size()];
 		SnmpValue[] operoresults = new SnmpValue[mifaces.size()];
-		
-        try {
-        	adminresults = SnmpUtils.get(agentConfig, adminoids);
-    		log().debug("got admin status " + adminresults.length +" SnmpValues");
-        
-    		operoresults = SnmpUtils.get(agentConfig, operooids);
-    		log().debug("got operational status " + operoresults.length +" SnmpValues");
-        } catch (NumberFormatException e) {
-            log().error("Number operator used on a non-number " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            log().error("Invalid SNMP Criteria: " + e.getMessage());
-        } catch (Throwable t) {
-            log().error("Unexpected exception during SNMP poll of interface " + agentConfig, t);
-        }
-        
-        for (int i=0; i< mifaces.size(); i++) {
-            SnmpMinimalPollInterface miface = mifaces.get(i);
-        	
-            if (adminresults[i] != null && operoresults[i] != null ) {
-                log().debug("SNMP Value is "+ adminresults[i].toInt() + " for oid: " + adminoids[i]);
-                log().debug("SNMP Value is "+ operoresults[i].toInt() + " for oid: " + operooids[i]);
-                miface.setStatus(PollStatus.up());
-                miface.setAdminstatus(adminresults[i].toInt());
-                miface.setOperstatus(operoresults[i].toInt());
-            } else {
-                miface.setStatus(PollStatus.unavailable());
-                log().info("SNMP Value is null for oid: " + adminoids[i]+"/"+operooids[i]);
-            }
-        }
 
-        return mifaces;
-    }
-    
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+		log().debug("try to get admin statuses");
+		adminresults = SnmpUtils.get(agentConfig, adminoids);
+		log().debug("got admin status " + adminresults.length + " SnmpValues");
+		if (adminresults.length != mifaces.size()) {
+			log().warn("Snmp Interface Admin statuses collection failed");
+			return mifaces;
+		}
+
+		log().debug("try to get operational statuses");
+		operoresults = SnmpUtils.get(agentConfig, operooids);
+		log().debug(
+				"got operational status " + operoresults.length + " SnmpValues");
+		if (operoresults.length != mifaces.size()) {
+			log().warn("Snmp Interface Operational statuses collection failed");
+			return mifaces;
+		}
+
+		for (int i = 0; i < mifaces.size(); i++) {
+			SnmpMinimalPollInterface miface = mifaces.get(i);
+
+			if (adminresults[i] != null && operoresults[i] != null) {
+				try {
+					miface.setAdminstatus(adminresults[i].toInt());
+					miface.setOperstatus(operoresults[i].toInt());
+					miface.setStatus(PollStatus.up());
+					log().debug(
+							"SNMP Value is " + adminresults[i].toInt()
+									+ " for oid: " + adminoids[i]);
+					log().debug(
+							"SNMP Value is " + operoresults[i].toInt()
+									+ " for oid: " + operooids[i]);
+				} catch (Exception e) {
+					log().warn(
+							"SNMP Value is "
+									+ adminresults[i].toDisplayString()
+									+ " for oid: " + adminoids[i]);
+					log().warn(
+							"SNMP Value is "
+									+ operoresults[i].toDisplayString()
+									+ " for oid: " + operooids[i]);
+				}
+			} else {
+				log().info(
+						"SNMP Value is null for oid: " + adminoids[i] + "/"
+								+ operooids[i]);
+			}
+		}
+
+		return mifaces;
+	}
+
+	/**
+	 * <p>
+	 * log
+	 * </p>
+	 * 
+	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+	 */
+	protected ThreadCategory log() {
+		return ThreadCategory.getInstance(getClass());
+	}
 
 }
