@@ -202,11 +202,13 @@ public class ReportSelectListCellTree extends CellTree {
     
     public ReportSelectListCellTree(List<ResourceListItem> resourceList, MultiSelectionModel<ResourceListItem> selectionModel) {
         super(new CustomTreeModel(resourceList, selectionModel), null, (CellTree.Resources)GWT.create(CustomCellTreeResource.class));
+        setDefaultNodeSize(10000);
         
         TreeNode treeNode = getRootTreeNode();
         for(int i = 0; i < treeNode.getChildCount(); i++) {
             treeNode.setChildOpen(i, true);
         }
+        
     }
 
 

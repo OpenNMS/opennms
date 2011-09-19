@@ -52,7 +52,7 @@ public class KscCustomReportListPresenter extends DefaultResourceListPresenter i
                     }
                     
                     if(getView().getSelectedResource() != null) {
-                        urlBuilder.append("&report" +  getView().getSelectedResource().getId());
+                        urlBuilder.append("&report=" +  getView().getSelectedResource().getId());
                         Location.assign(urlBuilder.toString());
                     } else if(getView().getSelectedResource() == null && m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.CREATE_NEW)) {
                         Location.assign(urlBuilder.toString());
