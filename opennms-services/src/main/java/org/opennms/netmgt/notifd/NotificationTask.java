@@ -58,19 +58,6 @@ import org.opennms.netmgt.config.users.User;
  * Modification to pick an ExecuteStrategy based on the "binary" flag in
  * notificationCommands.xml by:
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- *
- * Modification to pick an ExecuteStrategy based on the "binary" flag in
- * notificationCommands.xml by:
- * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- *
- * Modification to pick an ExecuteStrategy based on the "binary" flag in
- * notificationCommands.xml by:
- * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
- * @version $Id: $
  */
 public class NotificationTask extends Thread {
     /**
@@ -242,37 +229,40 @@ public class NotificationTask extends Thread {
         if (outstanding) {
             try {
                 if (getUserManager().isUserOnDuty(m_user.getUserId(), Calendar.getInstance())) {
-                    // send the notice
 
-                    ExecutorStrategy command = null;
+                    // send the notice
+                    ExecutorStrategy strategy = null;
                     String cntct = "";
 
-                    for (int i = 0; i < m_commands.length; i++) {
-                        
-                        cntct = getContactInfo(m_commands[i].getName());
+                    for (Command command : m_commands) {
                         try {
-                            getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), cntct, m_autoNotify);
-                        } catch (Throwable e) {
-                            log().error("Could not insert notice info into database, aborting send notice", e);
-                            continue;
-                        }
-                        String binaryCommand = m_commands[i].getBinary();
-                        if (binaryCommand == null) {
-                            log().error("binary flag not set for command: " + m_commands[i].getExecute() + ".  Guessing false.");
-                            binaryCommand = "false";
-                        }
-                        if (binaryCommand.equals("true")) {
-                            command = new CommandExecutor();
-                        } else {
-                            command = new ClassExecutor();
-                        }
-                        if (log().isDebugEnabled()) {
-                            log().debug("Class created is: " + command.getClass());
-                        }
+                            cntct = getContactInfo(command.getName());
+                            try {
+                                getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, command.getName(), cntct, m_autoNotify);
+                            } catch (Throwable e) {
+                                log().error("Could not insert notice info into database, aborting send notice", e);
+                                continue;
+                            }
+                            String binaryCommand = command.getBinary();
+                            if (binaryCommand == null) {
+                                log().error("binary flag not set for command: " + command.getExecute() + ".  Guessing false.");
+                                binaryCommand = "false";
+                            }
+                            if (binaryCommand.equals("true")) {
+                                strategy = new CommandExecutor();
+                            } else {
+                                strategy = new ClassExecutor();
+                            }
+                            if (log().isDebugEnabled()) {
+                                log().debug("Class created is: " + command.getClass());
+                            }
 
-                        int returnCode = command.execute(m_commands[i].getExecute(), getArgumentList(m_commands[i]));
-                        if (log().isDebugEnabled()) {
-                            log().debug("command " + m_commands[i].getName() + " return code = " + returnCode);
+                            int returnCode = strategy.execute(command.getExecute(), getArgumentList(command));
+                            if (log().isDebugEnabled()) {
+                                log().debug("command " + command.getName() + " return code = " + returnCode);
+                            }
+                        } catch (Throwable e) {
+                            log().warn("Notification command failed: " + command.getName(), e);
                         }
                     }
                 } else {
@@ -292,9 +282,9 @@ public class NotificationTask extends Thread {
             //for (int i = 0; i < m_siblings.size(); i++) {
             //    NotificationTask task = (NotificationTask) m_siblings.get(i);
 
-                // FIXME: Reported on discuss list and not found to ever
-                // be initialized anywhere.
-                // m_notifTree.remove(task);
+            // FIXME: Reported on discuss list and not found to ever
+            // be initialized anywhere.
+            // m_notifTree.remove(task);
             //}
         }
     }
