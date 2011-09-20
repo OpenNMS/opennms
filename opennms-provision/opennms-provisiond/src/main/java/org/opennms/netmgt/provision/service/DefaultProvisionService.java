@@ -981,7 +981,7 @@ public class DefaultProvisionService implements ProvisionService {
         for(final PluginConfig config : configs) {
             final T plugin = m_pluginRegistry.getPluginInstance(pluginClass, config);
             if (plugin == null) {
-				infof(this, "Configured plugin is not appropropriate for policy class %s: %s", pluginClass, config);
+				debugf(this, "Configured plugin is not appropropriate for policy class %s: %s", pluginClass, config);
             } else {
                 plugins.add(plugin);
             }
