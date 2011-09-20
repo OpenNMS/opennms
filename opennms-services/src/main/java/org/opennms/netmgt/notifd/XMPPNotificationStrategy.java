@@ -101,6 +101,17 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 		try {
 
 			String[] parsedArgs = this.parseArguments(arguments);
+			if (parsedArgs[XMPP_TO] == null || "".equals(parsedArgs[XMPP_TO])) {
+			    StringBuffer argumentString = new StringBuffer();
+			    boolean first = true;
+			    for (Argument argument : arguments) {
+			        if (!first) argumentString.append(", ");
+			        first = false;
+			        argumentString.append(argument == null ? "[null]" : "\"" + argument.toString() + "\"");
+			    }
+			    ThreadCategory.getInstance(getClass()).warn("Blank XMPP address on notification: " + argumentString.toString());
+			    return 1;
+			} 
 
 			XMPPNotificationManager xmppManager = XMPPNotificationManager.getInstance();
 
