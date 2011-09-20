@@ -49,7 +49,7 @@ public class KscComboboxPresenter implements Presenter, KscComboboxView.Presente
         StringBuilder urlBuilder = new StringBuilder();
         urlBuilder.append(getBaseHref() + "KSC/customView.htm");
         urlBuilder.append("?type=custom");
-        urlBuilder.append("?report=" + m_view.getSelectedReport().getId());
+        urlBuilder.append("&report=" + m_view.getSelectedReport().getId());
         Location.assign(urlBuilder.toString());
     }
 

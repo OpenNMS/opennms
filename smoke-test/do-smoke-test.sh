@@ -57,6 +57,7 @@ reset_opennms() {
 
 	/etc/init.d/opennms stop
 
+	yum clean all || :
 	rpm -qa | grep -E '^opennms-repo-' | xargs yum -y remove
 	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-bleeding-rhel5.noarch.rpm
 	yum -y remove opennms-core
@@ -131,7 +132,9 @@ stop_opennms() {
 	banner "Stopping OpenNMS"
 
 	/etc/init.d/opennms stop
+	yum clean all || :
 }
+
 
 # DO IT!
 reset_opennms
