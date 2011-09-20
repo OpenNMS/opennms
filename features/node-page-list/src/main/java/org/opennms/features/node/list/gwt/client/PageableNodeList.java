@@ -217,9 +217,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
         ipSimplePager.startLoading();
         m_ipTableDiv.add(ipSimplePager);
         
-        m_physicalInterfaceTable.setPageSize(15);
+        m_physicalInterfaceTable.setPageSize(20);
         m_physicalInterfaceTable.addSelectEventHandler(this);
-        m_physicalInterfaceTable.setHeight("406px");
         
         m_physicalIfaceDataProvider = new ListDataProvider<PhysicalInterface>();
         m_physicalIfaceDataProvider.addDataDisplay(m_physicalInterfaceTable);
