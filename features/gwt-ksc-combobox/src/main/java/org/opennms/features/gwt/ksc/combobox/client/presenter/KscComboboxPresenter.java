@@ -31,7 +31,7 @@ public class KscComboboxPresenter implements Presenter, KscComboboxView.Presente
     private List<KscReportDetail> filterResultsByName(String searchText) {
         List<KscReportDetail> list = new ArrayList<KscReportDetail>();
         for(KscReportDetail detail : m_kscReportDetails) {
-            if(detail.getLabel().contains(searchText)) {
+            if(detail.getLabel().toLowerCase().contains(searchText.toLowerCase())) {
                 list.add(detail);
             }
         }
