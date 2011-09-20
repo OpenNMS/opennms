@@ -55,10 +55,9 @@ abstract public class InetAddressUtils {
 
     static {
         try {
-            // This address (169.254.254.254) is within the link-local IPv4 range
-            // so it should almost never be pingable unless the network has an
-            // oddball link-local IPv4 setup.
-            UNPINGABLE_ADDRESS = InetAddress.getByAddress(new byte[] {(byte)169, (byte)254, (byte)254, (byte)254});
+            // This address (102.0.2.123) is within a range of TEST IPS that
+            // that is guaranteed to be non-routed.
+            UNPINGABLE_ADDRESS = InetAddress.getByAddress(new byte[] {(byte)192, (byte)0, (byte)2, (byte)123});
         } catch (final UnknownHostException e) {
             throw new IllegalStateException(e);
         }
