@@ -43,8 +43,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
             if(response.getStatusCode() == 200) {
                 updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(response.getText()));
             }else {
-                updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(DefaultNodeService.SNMP_INTERFACES_TEST_RESPONSE));
-                //showErrorDialogBox("Error attempting to get SnmpInterfaces");
+                //updatePhysicalInterfaceList(NodeRestResponseMapper.createSnmpInterfaceData(DefaultNodeService.SNMP_INTERFACES_TEST_RESPONSE));
+                showErrorDialogBox("Error attempting to get SnmpInterfaces");
             }
         }
 
@@ -63,8 +63,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
             if(response.getStatusCode() == 200) {
                 updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(response.getText()));
             } else {
-                updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(DefaultNodeService.IP_INTERFACES_TEST_RESPONSE));
-                //showErrorDialogBox("Error attempting to get IpInterfaces");
+                //updateIpInterfaceList(NodeRestResponseMapper.createIpInterfaceData(DefaultNodeService.IP_INTERFACES_TEST_RESPONSE));
+                showErrorDialogBox("Error attempting to get IpInterfaces");
             }
         }
 
@@ -217,9 +217,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
         ipSimplePager.startLoading();
         m_ipTableDiv.add(ipSimplePager);
         
-        m_physicalInterfaceTable.setPageSize(15);
+        m_physicalInterfaceTable.setPageSize(20);
         m_physicalInterfaceTable.addSelectEventHandler(this);
-        m_physicalInterfaceTable.setHeight("406px");
         
         m_physicalIfaceDataProvider = new ListDataProvider<PhysicalInterface>();
         m_physicalIfaceDataProvider.addDataDisplay(m_physicalInterfaceTable);

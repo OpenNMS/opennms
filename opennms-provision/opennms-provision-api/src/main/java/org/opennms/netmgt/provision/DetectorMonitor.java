@@ -72,7 +72,7 @@ public interface DetectorMonitor {
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    public void info(ServiceDetector detector, Exception e, String format, Object... args);
+    public void info(ServiceDetector detector, Throwable e, String format, Object... args);
 
     /**
      * <p>error</p>

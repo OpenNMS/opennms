@@ -83,7 +83,7 @@ public class NullDetectorMonitor implements DetectorMonitor{
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    public void info(final ServiceDetector detector, final Exception e, final String format, final Object... args) {
+    public void info(final ServiceDetector detector, final Throwable e, final String format, final Object... args) {
         LogUtils.infof(this, format, args);
     }
 

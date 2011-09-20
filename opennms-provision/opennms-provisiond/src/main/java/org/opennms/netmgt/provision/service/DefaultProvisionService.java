@@ -397,8 +397,8 @@ public class DefaultProvisionService implements ProvisionService {
                 // setNode only sets the node in the interface
                 scannedIface.setNode(dbNode);
                 saveOrUpdate(scannedIface);
-//                final AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
-//                scannedIface.visit(visitor);
+                final AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
+                scannedIface.visit(visitor);
                 m_ipInterfaceDao.flush();
                 return scannedIface;
             }
