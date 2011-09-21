@@ -62,21 +62,6 @@ public class KscCustomReportListPresenter extends DefaultResourceListPresenter i
                 } else {
                     getView().showWarning();
                 }
-
-//                if(getView().getSelectedResource() != null) {
-//                    urlBuilder.setParameter("report", "" + getView().getSelectedResource().getId());
-//                    
-//                    if(m_selectionDisplay.getSelectAction() != null) {
-//                        Location.assign(urlBuilder.buildString());
-//                    }else {
-//                        getView().showWarning();
-//                    }
-//                    
-//                }else {
-//                    getView().showWarning();
-//                }
-                
-                
                 
             }
         });
