@@ -116,7 +116,7 @@ public class ReportSelectListPresenter implements Presenter, ReportSelectListVie
     private List<ResourceListItem> filterList(String searchText, List<ResourceListItem> dataList) {
         List<ResourceListItem> list = new ArrayList<ResourceListItem>();
         for(ResourceListItem item : dataList) {
-            if(item.getValue().contains(searchText)) {
+            if(item.getValue().toLowerCase().contains(searchText.toLowerCase())) {
                 list.add(item);
             }
         }

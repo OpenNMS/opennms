@@ -92,7 +92,7 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
     private List<ResourceListItem> filterList(String searchText) {
         List<ResourceListItem> list = new ArrayList<ResourceListItem>();
         for(ResourceListItem item : m_dataList) {
-            if(item.getValue().contains(searchText)) {
+            if(item.getValue().toLowerCase().contains(searchText.toLowerCase())) {
                 list.add(item);
             }
         }
