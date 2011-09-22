@@ -19,4 +19,5 @@
         <report id="AssetMangementMaintExpired" template="AssetManagementMaintExpired.jrxml" engine="jdbc" />
         <report id="AssetMangementMaintStrategy" template="AssetManagementMaintStrategy.jrxml" engine="jdbc" />
         <report id="Event-Analysis" template="EventAnalysis.jrxml" engine="jdbc" />
+	<report id="DiskUsageForCTX" template="DiskUsageForCTX.jrxml" engine="jdbc" /> 
 </jasper-reports>
