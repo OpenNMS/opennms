@@ -7,6 +7,19 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>smoke-test</artifactId>
   <name>OpenNMS Smoke Test</name>
+  <build>
+    <plugins>
+       <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-resources-plugin</artifactId>
+         <version>2.5</version>
+         <configuration>
+            <encoding>UTF-8</encoding>
+            <escapeString>\</escapeString>
+         </configuration>
+       </plugin>
+    </plugins>
+  </build>
   <dependencies>
       <dependency>
 	<groupId>org.seleniumhq.selenium</groupId>
