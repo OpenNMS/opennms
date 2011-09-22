@@ -1,20 +1,12 @@
 package org.opennms.smoketest;
 
-import java.net.URL;
-
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.internal.seleniumemulation.WaitForCondition;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverBackedSelenium;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverBackedSelenium;
+import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.thoughtworks.selenium.SeleneseTestBase;
 
@@ -72,7 +64,7 @@ public class ServicePageTest extends SeleneseTestBase{
         selenium.waitForPageToLoad("30000");
         selenium.click("link=[Add Interface]");
         selenium.waitForPageToLoad("30000");
-        selenium.type("id=formData.node0.interface0.ipAddr", "::1");
+        selenium.type("id=formData.node0.interface0.ipAddr", "127.0.0.1");
         selenium.click("css=li > input[type=button]");
         selenium.waitForPageToLoad("30000");
         selenium.click("css=input[type=button]");
@@ -142,13 +134,13 @@ public class ServicePageTest extends SeleneseTestBase{
             selenium.click("link=HTTP-8980");
             selenium.waitForPageToLoad("30000");
             assertTrue("Managed text not found",selenium.isTextPresent("Managed"));
-            assertTrue("IP text not found",selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
+            assertTrue("IP text not found",selenium.isTextPresent("127.0.0.1"));
             assertTrue("localNode text not found", selenium.isTextPresent("localNode"));
         }else if(selenium.isElementPresent("link=HTTP-8980")){
             selenium.click("link=HTTP-8980");
             selenium.waitForPageToLoad("30000");
             assertTrue("Managed text not found", selenium.isTextPresent("regexp:(Managed|Not Monitored)"));
-            assertTrue("IP text not found", selenium.isTextPresent("regexp:0+\\:0+\\:0+\\:0+\\:0+\\:0+\\:0+\\:0*1"));
+            assertTrue("IP text not found", selenium.isTextPresent("regexp:127.0.0.1"));
             assertTrue("localNode text not found", selenium.isTextPresent("localNode"));
         }else {
             fail("Neither of the links were found. Printing page source: " + selenium.getHtmlSource());
