@@ -39,4 +39,6 @@
                 report-service="jasperReportService" description="Asset management report focused on maintenance strategy.Forecast and overview for 12 month and informations about age of nodes and maintenance contracts" />
         <report id="Event-Analysis" display-name="Event Analysis report" online="true" 
                 report-service="jasperReportService" description="Analyse events based on events source and quantity by nodes." />
+<!--	<report id="DiskUsageForCTX" display-name="C: Disk Usage for CTX servers" online="true" 
+	report-service="jasperReportService" description="C: Disk Usage for CTX servers" />-->
 </database-reports>

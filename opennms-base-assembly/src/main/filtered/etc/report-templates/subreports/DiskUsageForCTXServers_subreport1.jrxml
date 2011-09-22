@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<style name="Table_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Body" hAlign="Center" vAlign="Middle" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="startDate" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="endDate" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="hrStoragePath_PATH" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{rrdDir}+$P{nodeid}.toString()+"/hrStorageIndex/C/mib2-host-resources-storage.jrb"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="jrobin">
+		<![CDATA[--start $P{startDate} --end $P{endDate}
+ DEF:total=$P{hrStoragePath_PATH}:hrStorageSize:AVERAGE
+ DEF:used=$P{hrStoragePath_PATH}:hrStorageUsed:AVERAGE
+ DEF:units=$P{hrStoragePath_PATH}:hrStorageAllocUnits:AVERAGE
+ CDEF:totalBytes=total,units,*
+ CDEF:usedBytes=used,units,*
+ XPORT:totalBytes:dskTotal
+ XPORT:usedBytes:dskUsed
+ XPORT:units:dskUnits]]>
+	</queryString>
+	<field name="Timestamp" class="java.util.Date">
+		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+	</field>
+	<field name="Step" class="java.lang.Long"/>
+	<field name="dskTotal" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="dskUsed" class="java.lang.Double"/>
+	<field name="dskUnits" class="java.lang.Double"/>
+	<variable name="used_AVG" class="java.lang.Double" calculation="Average">
+		<variableExpression><![CDATA[$F{dskUsed}]]></variableExpression>
+	</variable>
+	<variable name="total_AVG" class="java.lang.Double" calculation="Average">
+		<variableExpression><![CDATA[$F{dskTotal}]]></variableExpression>
+	</variable>
+	<variable name="free_AVG" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{dskTotal}-$F{dskUsed}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="32" splitType="Stretch">
+			<textField pattern="###0.00">
+				<reportElement style="Table_Body" x="36" y="16" width="150" height="16"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($V{used_AVG} > 1000000000 ? String.format("%10.2f", $V{used_AVG}/new Double("1073741824.0")) + " GB" : ($V{used_AVG} > 1000000 ? String.format("%10.2f", $V{used_AVG}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{used_AVG}/new Double("1024.0")) + " KB"))
++ " / " +
+($V{total_AVG} > 1000000000 ? String.format("%10.2f", $V{total_AVG}/new Double("1073741824.0")) + " GB" : ($V{total_AVG} > 1000000 ? String.format("%10.2f", $V{total_AVG}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{total_AVG}/new Double("1024.0")) + " KB"))]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement style="Table_Body" x="186" y="16" width="73" height="16"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[String.format("%3.2f",($F{dskUsed}/$F{dskTotal} * 100))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Table_Header" x="36" y="0" width="150" height="16"/>
+				<textElement/>
+				<text><![CDATA[Used / Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="186" y="0" width="73" height="16"/>
+				<textElement/>
+				<text><![CDATA[% Used]]></text>
+			</staticText>
+			<stackedBarChart>
+				<chart isShowLegend="false">
+					<reportElement stretchType="RelativeToBandHeight" x="259" y="16" width="250" height="16"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["% Used"]]></categoryExpression>
+						<valueExpression><![CDATA[($F{dskUsed}/$F{dskTotal})*100]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot isShowTickLabels="false">
+					<plot orientation="Horizontal">
+						<seriesColor seriesOrder="0" color="#FDB543"/>
+					</plot>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+					<categoryAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat verticalTickLabels="false">
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+					<rangeAxisMinValueExpression><![CDATA[0]]></rangeAxisMinValueExpression>
+					<rangeAxisMaxValueExpression><![CDATA[100]]></rangeAxisMaxValueExpression>
+				</barPlot>
+			</stackedBarChart>
+		</band>
+	</summary>
+	<noData>
+		<band height="50">
+			<staticText>
+				<reportElement x="149" y="22" width="226" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[No Data For this Disk]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>
