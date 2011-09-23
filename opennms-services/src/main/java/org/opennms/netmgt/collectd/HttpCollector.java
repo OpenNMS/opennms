@@ -662,8 +662,9 @@ public class HttpCollector implements ServiceCollector {
     }
 
 
-    /** {@inheritDoc} */
-    public void initialize(Map<String, String> parameters) {
+    /** {@inheritDoc} 
+     * @throws CollectionInitializationException */
+    public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
 
         log().debug("initialize: Initializing HttpCollector.");
 
@@ -692,12 +693,12 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private static void initializeRrdRepository() {
+    private static void initializeRrdRepository() throws CollectionInitializationException {
         log().debug("initializeRrdRepository: Initializing RRD repo from HttpCollector...");
         initializeRrdDirs();
     }
 
-    private static void initializeRrdDirs() {
+    private static void initializeRrdDirs() throws CollectionInitializationException {
         /*
          * If the RRD file repository directory does NOT already exist, create
          * it.
@@ -710,7 +711,7 @@ public class HttpCollector implements ServiceCollector {
                 sb.append("initializeRrdDirs: Unable to create RRD file repository.  Path doesn't already exist and could not make directory: ");
                 sb.append(HttpCollectionConfigFactory.getInstance().getRrdPath());
                 log().error(sb.toString());
-                throw new RuntimeException(sb.toString());
+                throw new CollectionInitializationException(sb.toString());
             }
         }
     }
