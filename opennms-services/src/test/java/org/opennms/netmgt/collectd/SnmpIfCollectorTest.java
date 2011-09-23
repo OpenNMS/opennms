@@ -141,7 +141,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         assertInterfaceMibObjectsPresent(collector.getCollectionSet(), 1);
     }
 
-    private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException {
+    private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException, CollectionInitializationException {
         initializeAgent();
         
         SnmpIfCollector collector = new SnmpIfCollector(InetAddress.getLocalHost(), getCollectionSet().getCombinedIndexedAttributes(), getCollectionSet());
