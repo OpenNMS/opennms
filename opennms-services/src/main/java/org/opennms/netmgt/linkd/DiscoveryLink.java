@@ -210,7 +210,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 			for (final LinkableNode curNode : m_cdpNodes) {
 				int curCdpNodeId = curNode.getNodeId();
-				final String curCdpIpAddr = curNode.getSnmpPrimaryIpAddr();
+				final InetAddress curCdpIpAddr = curNode.getSnmpPrimaryIpAddr();
 
 				LogUtils.debugf(this, "DiscoveryLink.run: parsing nodeid %d ip address %s with %d Cdp interfaces.", curCdpNodeId, curCdpIpAddr, curNode.getCdpInterfaces().size());
 
@@ -227,7 +227,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 					final InetAddress targetIpAddr = cdpIface.getCdpTargetIpAddr();
 					final String hostAddress = InetAddressUtils.str(targetIpAddr);
 
-					if (!m_linkd.isInterfaceInPackage(hostAddress, getPackageName())) 
+					if (!m_linkd.isInterfaceInPackage(targetIpAddr, getPackageName())) 
 					{
 					    LogUtils.warnf(this, "DiscoveryLink.run: ip address %s Not in package: %s.  Skipping.", hostAddress, getPackageName());
 					    continue;
@@ -292,7 +292,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 			for (final LinkableNode curNode : m_bridgeNodes.values()) {
 			    final int curNodeId = curNode.getNodeId();
-			    final String cupIpAddr = curNode.getSnmpPrimaryIpAddr();
+			    final InetAddress cupIpAddr = curNode.getSnmpPrimaryIpAddr();
 
 				LogUtils.debugf(this, "DiscoveryLink.run: parsing bridge nodeid %d ip address %s", curNodeId, cupIpAddr);
 
@@ -535,7 +535,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 			for (final LinkableNode curNode : m_routerNodes) {
 			    final int curNodeId = curNode.getNodeId();
-				String curIpAddr = curNode.getSnmpPrimaryIpAddr();
+				InetAddress curIpAddr = curNode.getSnmpPrimaryIpAddr();
 				LogUtils.debugf(this, "DiscoveryLink.run: parsing router nodeid %d ip address %s", curNodeId, curIpAddr);
 
 				final List<RouterInterface> routeInterfaces = curNode.getRouteInterfaces();
@@ -592,7 +592,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 						continue;
 					}
 
-					if (!m_linkd.isInterfaceInPackage(hostAddress, getPackageName())) {
+					if (!m_linkd.isInterfaceInPackage(nexthop, getPackageName())) {
 					    LogUtils.infof(this, "DiscoveryLink.run: nexthop address is not in package %s/%s. Skipping", hostAddress, getPackageName());
 						continue;
 					}
@@ -659,7 +659,7 @@ public final class DiscoveryLink implements ReadyRunnable {
         		final String ipaddr = at.getIpAddress();
         		final String macAddress = at.getMacAddress();
         		LogUtils.debugf(this, "Parsing AtInterface nodeid/ipaddr/macaddr: %d/%s/%s", nodeid, ipaddr, macAddress);
-        		if (!m_linkd.isInterfaceInPackage(at.getIpAddress(), getPackageName())) {
+        		if (!m_linkd.isInterfaceInPackage(InetAddressUtils.addr(at.getIpAddress()), getPackageName())) {
                     LogUtils.infof(this, "DiscoveryLink.run: at interface: %s does not belong to package: %s! Not adding to discoverable atinterface.", ipaddr, getPackageName());
         			macsExcluded.add(macAddress);
         			continue;
@@ -1319,7 +1319,7 @@ public final class DiscoveryLink implements ReadyRunnable {
     				className = linkdConfig.getVlanClassName(curNode.getSysoid());
     			}
     
-				final InetAddress addr = InetAddressUtils.addr(curNode.getSnmpPrimaryIpAddr());
+				final InetAddress addr = curNode.getSnmpPrimaryIpAddr();
 				if (addr == null) {
     			    LogUtils.errorf(this, "parseBridgeNodes: Failed to load SNMP parameter from SNMP configuration file.");
     				return;

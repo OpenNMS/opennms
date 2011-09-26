@@ -52,7 +52,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * This class is designed to collect the necessary SNMP information from the
  * target address and store the collected information. When the class is
  * initially constructed no information is collected. The SNMP Session creating
- * and colletion occurs in the main run method of the instance. This allows the
+ * and collection occurs in the main run method of the instance. This allows the
  * collection to occur in a thread if necessary.
  */
 public final class SnmpCollection implements ReadyRunnable {
@@ -162,7 +162,6 @@ public final class SnmpCollection implements ReadyRunnable {
 	 */
 	public CdpCacheTable m_CdpCache;
 
-	/** * */
 	/**
 	 * The VLAN Table information
 	 */
@@ -171,26 +170,22 @@ public final class SnmpCollection implements ReadyRunnable {
 	/**
 	 * The list of VLAN SNMP collection object
 	 */
-
 	public java.util.Map<OnmsVlan,SnmpVlanCollection> m_snmpVlanCollection; 
 
 	/**
 	 * The scheduler object
 	 * 
 	 */
-
 	private Scheduler m_scheduler;
 
 	/**
-	 * The interval default value 5 min
+	 * The interval, default value 30 minutes
 	 */
-
 	private long poll_interval = 1800000;
 
 	/**
-	 * The initial sleep time default value 5 min
+	 * The initial sleep time, default value 5 minutes
 	 */
-
 	private long initial_sleep_time = 600000;
 
 	private boolean suspendCollection = false;
@@ -328,7 +323,7 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	/**
 	 * <p>
-	 * Performs the collection for the targeted internet address. The success or
+	 * Performs the collection for the targeted IP address. The success or
 	 * failure of the collection should be tested via the <code>failed</code>
 	 * method.
 	 * </p>
@@ -703,7 +698,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	}
 
 	/**
-	 * Returns the target address that the collection occured for.
+	 * Returns the target address that the collection occurred for.
 	 *
 	 * @return a {@link java.net.InetAddress} object.
 	 */

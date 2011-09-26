@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
@@ -270,7 +271,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
 	        final OnmsAtInterface atInterface = atInterfaces.iterator().next();
 	        
-	        if (!m_linkd.isInterfaceInPackage(atInterface.getIpAddress(), discoveryLink.getPackageName())) {
+	        if (!m_linkd.isInterfaceInPackage(addr(atInterface.getIpAddress()), discoveryLink.getPackageName())) {
 	            LogUtils.debugf(this, "storeDiscoveryLink: IP address %s not found on link.  Skipping.", atInterface.getIpAddress());
 	            continue;
 	        }

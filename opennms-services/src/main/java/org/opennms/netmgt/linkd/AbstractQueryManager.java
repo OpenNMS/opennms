@@ -72,7 +72,7 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void sendNewSuspectEvent(final InetAddress ipaddress, final InetAddress ipowner, final String name) {
-        getLinkd().sendNewSuspectEvent(InetAddressUtils.str(ipaddress), InetAddressUtils.str(ipowner), name);
+        getLinkd().sendNewSuspectEvent(ipaddress, ipowner, name);
     }
 
     public abstract NodeDao getNodeDao();

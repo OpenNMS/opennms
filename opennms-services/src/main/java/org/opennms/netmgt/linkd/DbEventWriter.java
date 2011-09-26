@@ -197,7 +197,7 @@ public class DbEventWriter extends AbstractQueryManager {
                 MacToNodeLink lkm = linkmacs[i];
                 String macaddr = lkm.getMacAddress();
     
-                LogUtils.debugf(this, "storelink: finding nodeid,ifindex on DB using mac address: " + macaddr);
+                LogUtils.debugf(this, "storelink: finding nodeid,ifindex on DB using MAC address: " + macaddr);
     
                 stmt = dbConn.prepareStatement(SQL_GET_NODEID_IFINDEX);
                 d.watch(stmt);
@@ -207,10 +207,10 @@ public class DbEventWriter extends AbstractQueryManager {
                 rs = stmt.executeQuery();
                 d.watch(rs);
     
-                LogUtils.debugf(this, "storelink: finding nodeid,ifindex on DB. Sql Statement " + SQL_GET_NODEID_IFINDEX + " with mac address " + macaddr);
+                LogUtils.debugf(this, "storelink: finding nodeid,ifindex on DB, SQL statement: " + SQL_GET_NODEID_IFINDEX + " with MAC address " + macaddr);
     
                 if (!rs.next()) {
-                    LogUtils.debugf(this, "storelink: no nodeid found on DB for mac address " + macaddr + " on link. .... Skipping");
+                    LogUtils.debugf(this, "storelink: no nodeid found on DB for MAC address " + macaddr + " on link. .... Skipping");
                     continue;
                 }
     
@@ -220,16 +220,17 @@ public class DbEventWriter extends AbstractQueryManager {
     
                 int nodeid = rs.getInt(ndx++);
                 if (rs.wasNull()) {
-                    LogUtils.debugf(this, "storelink: no nodeid found on DB for mac address " + macaddr + " on link. .... Skipping");
+                    LogUtils.debugf(this, "storelink: no nodeid found on DB for MAC address " + macaddr + " on link. .... Skipping");
                     continue;
                 }
     
-                String ipaddr = rs.getString(ndx++);
+                String ipaddrString = rs.getString(ndx++);
                 if (rs.wasNull()) {
-                    LogUtils.debugf(this, "storelink: no ipaddr found on DB for mac address " + macaddr + " on link. .... Skipping");
+                    LogUtils.debugf(this, "storelink: no ipaddr found on DB for MAC address " + macaddr + " on link. .... Skipping");
                     continue;
                 }
     
+                InetAddress ipaddr = addr(ipaddrString);
                 if (!m_linkd.isInterfaceInPackage(ipaddr, discovery.getPackageName())) {
                     LogUtils.debugf(this, "storelink: not in package ipaddr found: " + ipaddr + " on link. .... Skipping");
                     continue;
@@ -237,7 +238,7 @@ public class DbEventWriter extends AbstractQueryManager {
                 }
                 int ifindex = rs.getInt(ndx++);
                 if (rs.wasNull()) {
-                    LogUtils.debugf(this, "storelink: no ifindex found on DB for mac address " + macaddr + " on link.");
+                    LogUtils.debugf(this, "storelink: no ifindex found on DB for MAC address " + macaddr + " on link.");
                     ifindex = -1;
                 }
     
@@ -468,7 +469,7 @@ public class DbEventWriter extends AbstractQueryManager {
             d.watch(stmt);
             stmt.setString(1, hostAddress);
     
-            LogUtils.debugf(this, "getNodeidFromIp: executing query " + SQL_GET_NODEID + " with ip address=" + hostAddress);
+            LogUtils.debugf(this, "getNodeidFromIp: executing query " + SQL_GET_NODEID + " with IP address=" + hostAddress);
     
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
@@ -511,7 +512,7 @@ public class DbEventWriter extends AbstractQueryManager {
             d.watch(stmt);
             stmt.setString(1, hostAddress);
     
-            LogUtils.debugf(this, "getNodeidMaskFromIp: executing query " + SQL_GET_NODEID__IFINDEX_MASK + " with ip address=" + hostAddress);
+            LogUtils.debugf(this, "getNodeidMaskFromIp: executing query " + SQL_GET_NODEID__IFINDEX_MASK + " with IP address=" + hostAddress);
     
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
@@ -565,7 +566,7 @@ public class DbEventWriter extends AbstractQueryManager {
             d.watch(stmt);
             stmt.setString(1, hostAddress);
     
-            LogUtils.debugf(this, "getNodeFromIp: executing query " + SQL_GET_NODEID + " with ip address=" + hostAddress);
+            LogUtils.debugf(this, "getNodeFromIp: executing query " + SQL_GET_NODEID + " with IP address=" + hostAddress);
     
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
@@ -611,7 +612,7 @@ public class DbEventWriter extends AbstractQueryManager {
     		stmt = dbConn.prepareStatement(ipQuery);
             d.watch(stmt);
             stmt.setString(1, hostAddress);
-            LogUtils.debugf(this, "getAtInterfaceForAddress: executing SQL Statement " + ipQuery + " with ip address=" + hostAddress);
+            LogUtils.debugf(this, "getAtInterfaceForAddress: executing SQL Statement " + ipQuery + " with IP address=" + hostAddress);
 
         	final ResultSet rs = stmt.executeQuery();
             d.watch(rs);
@@ -1063,7 +1064,7 @@ public class DbEventWriter extends AbstractQueryManager {
     protected List<String> getPhysAddrs(final int nodeId, final DBUtils d, final Connection dbConn) throws SQLException {
         final List<String> physaddrs = new ArrayList<String>();
 
-        // now adding bridge identifier mac addresses of switch from snmpinterface
+        // now adding bridge identifier MAC addresses of switch from snmpinterface
         final PreparedStatement stmt = dbConn.prepareStatement("SELECT snmpphysaddr FROM snmpinterface WHERE nodeid = ? AND  snmpphysaddr <> ''");
         d.watch(stmt);
         stmt.setInt(1, nodeId);
