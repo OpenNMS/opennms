@@ -58,9 +58,9 @@ reset_opennms() {
 	/etc/init.d/opennms stop
 
 	yum clean all || :
-	rpm -qa | grep -E '^opennms-repo-' | xargs yum -y remove
+	rpm -qa | grep -E '^opennms-.*repo-' | xargs yum -y remove
 	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-bleeding-rhel5.noarch.rpm
-	yum -y remove opennms-core
+	yum -y remove opennms-core opennms-lts-core
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms
 	yum -y install opennms || die "Unable to install OpenNMS."
 }
