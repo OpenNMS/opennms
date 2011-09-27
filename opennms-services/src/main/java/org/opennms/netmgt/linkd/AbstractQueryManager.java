@@ -40,7 +40,7 @@ import java.util.List;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
@@ -72,7 +72,7 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void sendNewSuspectEvent(final InetAddress ipaddress, final InetAddress ipowner, final String name) {
-        getLinkd().sendNewSuspectEvent(InetAddressUtils.str(ipaddress), InetAddressUtils.str(ipowner), name);
+        getLinkd().sendNewSuspectEvent(ipaddress, ipowner, name);
     }
 
     public abstract NodeDao getNodeDao();
@@ -263,7 +263,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         LogUtils.debugf(this, "processRouteTable: Starting route table processing.");
 
-        for (final SnmpTableEntry ent : snmpcoll.getIpRouteTable().getEntries()) {
+        for (final SnmpStore ent : snmpcoll.getIpRouteTable().getEntries()) {
             final Integer ifindex = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_IFINDEX);
 
             if (ifindex == null || ifindex < 0) {
@@ -385,7 +385,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         final List<OnmsVlan> vlans = new ArrayList<OnmsVlan>();
 
-        for (final SnmpTableEntry ent : snmpcoll.getVlanTable().getEntries()) {
+        for (final SnmpStore ent : snmpcoll.getVlanTable().getEntries()) {
             final Integer vlanIndex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 
             if (vlanIndex == null || vlanIndex < 0) {

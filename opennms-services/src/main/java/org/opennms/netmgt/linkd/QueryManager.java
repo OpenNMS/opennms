@@ -165,13 +165,6 @@ public interface QueryManager {
      */
     public void updateForInterface(int nodeid, String ipAddr, int ifIndex, char action) throws SQLException;
     
-    /**
-     * <p>setJdbcTemplate</p>
-     *
-     * @param jdbcTemplate a {@link org.springframework.jdbc.core.JdbcTemplate} object.
-     */
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate);
-
     public Linkd getLinkd();
 	public void setLinkd(final Linkd linkd);
 

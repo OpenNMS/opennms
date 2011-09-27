@@ -26,26 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.capsd.snmp;
+package org.opennms.netmgt.collectd;
 
+public class CollectionInitializationException extends Exception {
 
+    private static final long serialVersionUID = -8181677826055143390L;
 
-
-/**
- * <p>Abstract SnmpTableEntry class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public abstract class SnmpTableEntry extends SnmpStore {
-    
-    /**
-     * <p>Constructor for SnmpTableEntry.</p>
-     *
-     * @param list an array of {@link org.opennms.netmgt.capsd.snmp.NamedSnmpVar} objects.
-     */
-    protected SnmpTableEntry(NamedSnmpVar[] list) {
-        super(list);
+    public CollectionInitializationException(String string) {
+        super(string);
     }
 
 }

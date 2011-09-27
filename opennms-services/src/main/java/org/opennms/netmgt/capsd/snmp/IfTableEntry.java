@@ -41,10 +41,10 @@ import org.opennms.netmgt.snmp.AbstractSnmpStore;
  *
  * <P>
  * Once an instance is created and its data set either via the constructor or
- * from the update method, the actual elements can be retreived using the
+ * from the update method, the actual elements can be retrieved using the
  * instance names. The names include: <EM>ifIndex</EM>,<EM>ifDescr</EM>,
- * <EM>ifSpeed</EM>,<EM>etc al</EM>. The information can also be accessed
- * by using the complete object identifer for the entry.
+ * <EM>ifSpeed</EM>,<EM>etc</EM>. The information can also be accessed
+ * by using the complete object identifier for the entry.
  * </P>
  *
  * <P>
@@ -56,19 +56,9 @@ import org.opennms.netmgt.snmp.AbstractSnmpStore;
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A>Jon Whetzel </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
- * @version $Id: $
  */
-public final class IfTableEntry extends SnmpTableEntry {
+public final class IfTableEntry extends SnmpStore {
     //
     // Lookup strings for specific table entries
     //
@@ -139,54 +129,30 @@ public final class IfTableEntry extends SnmpTableEntry {
     public final static String IF_SPECIFIC = "ifSpecific";
     
     /** Constant <code>ms_elemList</code> */
-    public static NamedSnmpVar[] ms_elemList = null;
-
-    /**
-     * <P>
-     * Initialize the element list for the class. This is class wide data, but
-     * will be used by each instance.
-     * </P>
-     */
-    static {
-        ms_elemList = new NamedSnmpVar[9];
-        int ndx = 0;
-
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_INDEX, ".1.3.6.1.2.1.2.2.1.1", 1);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, IF_DESCR, ".1.3.6.1.2.1.2.2.1.2", 2);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_TYPE, ".1.3.6.1.2.1.2.2.1.3", 3);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_MTU, ".1.3.6.1.2.1.2.2.1.4", 4);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32, IF_SPEED, ".1.3.6.1.2.1.2.2.1.5", 5);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, IF_PHYS_ADDR, ".1.3.6.1.2.1.2.2.1.6", 6);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_ADMIN_STATUS, ".1.3.6.1.2.1.2.2.1.7", 7);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_OPER_STATUS, ".1.3.6.1.2.1.2.2.1.8", 8);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS, IF_LAST_CHANGE, ".1.3.6.1.2.1.2.2.1.9", 9);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-        // IF_IN_OCTETS, ".1.3.6.1.2.1.2.2.1.10", 10);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-        // IF_IN_UCAST, ".1.3.6.1.2.1.2.2.1.11", 11);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-        // IF_IN_NUCAST, ".1.3.6.1.2.1.2.2.1.12", 12);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-        // IF_IN_DISCARDS, ".1.3.6.1.2.1.2.2.1.13", 13);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-        // IF_IN_ERRORS, ".1.3.6.1.2.1.2.2.1.14", 14);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-        // IF_IN_UKNOWN_PROTOS, ".1.3.6.1.2.1.2.2.1.15", 15);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-        // IF_OUT_OCTETS, ".1.3.6.1.2.1.2.2.1.16", 16);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-        // IF_OUT_UCAST, ".1.3.6.1.2.1.2.2.1.17", 17);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-        // IF_OUT_NUCAST, ".1.3.6.1.2.1.2.2.1.18", 18);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-        // IF_OUT_DISCARDS, ".1.3.6.1.2.1.2.2.1.19", 19);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-        // IF_OUT_ERRORS, ".1.3.6.1.2.1.2.2.1.20", 20);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32,
-        // IF_OUT_QLEN, ".1.3.6.1.2.1.2.2.1.21", 21);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID,
-        // IF_SPECIFIC, ".1.3.6.1.2.1.2.2.1.22", 22);
-    }
+    public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
+        new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_INDEX, ".1.3.6.1.2.1.2.2.1.1", 1),
+        new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, IF_DESCR, ".1.3.6.1.2.1.2.2.1.2", 2),
+        new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_TYPE, ".1.3.6.1.2.1.2.2.1.3", 3),
+        new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_MTU, ".1.3.6.1.2.1.2.2.1.4", 4),
+        new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32, IF_SPEED, ".1.3.6.1.2.1.2.2.1.5", 5),
+        new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, IF_PHYS_ADDR, ".1.3.6.1.2.1.2.2.1.6", 6),
+        new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_ADMIN_STATUS, ".1.3.6.1.2.1.2.2.1.7", 7),
+        new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_OPER_STATUS, ".1.3.6.1.2.1.2.2.1.8", 8),
+        new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS, IF_LAST_CHANGE, ".1.3.6.1.2.1.2.2.1.9", 9)
+        // new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_IN_OCTETS, ".1.3.6.1.2.1.2.2.1.10", 10),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_IN_UCAST, ".1.3.6.1.2.1.2.2.1.11", 11),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_IN_NUCAST, ".1.3.6.1.2.1.2.2.1.12", 12),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_IN_DISCARDS, ".1.3.6.1.2.1.2.2.1.13", 13),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_IN_ERRORS, ".1.3.6.1.2.1.2.2.1.14", 14),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_IN_UKNOWN_PROTOS, ".1.3.6.1.2.1.2.2.1.15", 15),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_OUT_OCTETS, ".1.3.6.1.2.1.2.2.1.16", 16),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_OUT_UCAST, ".1.3.6.1.2.1.2.2.1.17", 17),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_OUT_NUCAST, ".1.3.6.1.2.1.2.2.1.18", 18),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_OUT_DISCARDS, ".1.3.6.1.2.1.2.2.1.19", 19),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_OUT_ERRORS, ".1.3.6.1.2.1.2.2.1.20", 20),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32, IF_OUT_QLEN, ".1.3.6.1.2.1.2.2.1.21", 21),
+        // new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, IF_SPECIFIC, ".1.3.6.1.2.1.2.2.1.22", 22)
+    };
 
     /**
      * <P>

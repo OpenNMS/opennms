@@ -38,7 +38,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 /**
  * <P>InetCidrRouteTable uses a SnmpSession to collect the ipRouteTable entries
  * It implements the SnmpHandler to receive notifications when a reply is 
- * received/error occurs in the SnmpSession used to send requests /recieve 
+ * received/error occurs in the SnmpSession used to send requests/receive 
  * replies.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo</A>

@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsVlan;
@@ -54,7 +53,7 @@ public class LinkableNode extends Object {
 
     private int m_nodeId;
 
-    private String m_snmpprimaryaddr;
+    private final InetAddress m_snmpprimaryaddr;
 	
     private String m_sysoid;
 
@@ -95,19 +94,12 @@ public class LinkableNode extends Object {
 	 * <p>Constructor for LinkableNode.</p>
 	 *
 	 * @param nodeId a int.
-	 * @param snmprimaryaddr a {@link java.lang.String} object.
+	 * @param snmprimaryaddr a {@link java.net.InetAddress} object.
 	 * @param sysoid a {@link java.lang.String} object.
-	 * @deprecated Use the InetAddress form instead.
 	 */
-	public LinkableNode(final int nodeId, final String snmprimaryaddr, final String sysoid) {
-		m_nodeId = nodeId;
-		m_snmpprimaryaddr = snmprimaryaddr;
-		m_sysoid = sysoid;
-	}
-
 	public LinkableNode(final int nodeId, final InetAddress snmpPrimaryAddr, final String sysoid) {
 		m_nodeId = nodeId;
-		m_snmpprimaryaddr = InetAddressUtils.str(snmpPrimaryAddr);
+		m_snmpprimaryaddr = snmpPrimaryAddr;
 		m_sysoid = sysoid;
 	}
 	/**
@@ -137,7 +129,7 @@ public class LinkableNode extends Object {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-	public String getSnmpPrimaryIpAddr() {
+	public InetAddress getSnmpPrimaryIpAddr() {
 		return m_snmpprimaryaddr;
 	}
 

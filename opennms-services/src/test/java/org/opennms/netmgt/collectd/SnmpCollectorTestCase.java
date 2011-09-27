@@ -283,7 +283,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         
     }
     
-    protected void initializeAgent() {
+    protected void initializeAgent() throws CollectionInitializationException {
         ServiceParameters params = new ServiceParameters(new HashMap<String, Object>());
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(m_agent, params);
         m_collectionSet = snmpCollection.createCollectionSet(m_agent);

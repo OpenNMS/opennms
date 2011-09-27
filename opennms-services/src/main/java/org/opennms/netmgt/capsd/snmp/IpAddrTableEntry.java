@@ -51,7 +51,7 @@ import java.net.InetAddress;
  * @see IpAddrTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class IpAddrTableEntry extends SnmpTableEntry {
+public final class IpAddrTableEntry extends SnmpStore {
     // Lookup strings for specific table entries
     //
     /** Constant <code>IP_ADDR_ENT_ADDR="ipAdEntAddr"</code> */
@@ -67,29 +67,19 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
     public final static String IP_ADDR_ENT_BCASTADDR = "ipAdEntBcastAddr";
 
     /** Constant <code>ms_elemList</code> */
-    public static NamedSnmpVar[] ms_elemList = null;
-
-    /**
-     * <P>
-     * Initialize the element list for the class. This is class wide data, but
-     * will be used by each instance.
-     * </P>
-     */
-    static {
+    public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
+        new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS, IP_ADDR_ENT_ADDR, ".1.3.6.1.2.1.4.20.1.1", 1),
+        new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ADDR_IF_INDEX, ".1.3.6.1.2.1.4.20.1.2", 2),
+        new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS, IP_ADDR_ENT_NETMASK, ".1.3.6.1.2.1.4.20.1.3", 3),
+        new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ADDR_ENT_BCASTADDR, ".1.3.6.1.2.1.4.20.1.4", 4)
+        
         // Array size has changed from 5 to 4...no longer going after
         // ipAdEntReasmMaxSize variable because we aren't currently using
         // it and not all agents implement it which causes the collection
         // of the ipAddrTable to fail
-        IpAddrTableEntry.ms_elemList = new NamedSnmpVar[4];
-        int ndx = 0;
-
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS, IP_ADDR_ENT_ADDR, ".1.3.6.1.2.1.4.20.1.1", 1);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ADDR_IF_INDEX, ".1.3.6.1.2.1.4.20.1.2", 2);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS, IP_ADDR_ENT_NETMASK, ".1.3.6.1.2.1.4.20.1.3", 3);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ADDR_ENT_BCASTADDR, ".1.3.6.1.2.1.4.20.1.4", 4);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-        // IP_ADDR_ENT_REASM_MAXSIZE, ".1.3.6.1.2.1.4.20.1.5", 5);
-    }
+        //
+        // new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ADDR_ENT_REASM_MAXSIZE, ".1.3.6.1.2.1.4.20.1.5", 5)
+    };
 
     /**
      * <P>

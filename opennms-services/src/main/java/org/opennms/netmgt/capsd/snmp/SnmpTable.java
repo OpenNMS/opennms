@@ -47,7 +47,7 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * @author ranger
  * @version $Id: $
  */
-abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTracker {
+abstract public class SnmpTable<T extends SnmpStore> extends AggregateTracker {
     
     private Map<SnmpInstId, T> m_results = new TreeMap<SnmpInstId, T>();
     private InetAddress m_address;

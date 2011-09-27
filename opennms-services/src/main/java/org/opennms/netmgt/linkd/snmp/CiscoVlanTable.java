@@ -36,9 +36,9 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
  * <P>
- * CiscoVlanTable uses a SnmpSession to collect the Cisco VTP specific MIB Vlan table
+ * CiscoVlanTable uses a SnmpSession to collect the Cisco VTP specific MIB VLAN table
  * entries. It implements the SnmpHandler to receive notifications when a reply
- * is received/error occurs in the SnmpSession used to send requests /recieve
+ * is received/error occurs in the SnmpSession used to send requests/receive
  * replies.
  * </P>
  *

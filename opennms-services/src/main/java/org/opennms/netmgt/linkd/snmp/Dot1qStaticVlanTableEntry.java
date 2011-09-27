@@ -29,7 +29,7 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -39,7 +39,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * information for one entry in the
  * .iso.org.dod.internet.mgmt.mib-2.
  * dot1dBridge.qBridgeMIB.qBridgeMIBObjects.dot1qVlan.dot1qVlanCurrentTable
- * <P>This object is used by the Dot1qStaticVlanTable to hold infomation
+ * <P>This object is used by the Dot1qStaticVlanTable to hold information
  * single entries in the table. See the Dot1qStaticVlanTable documentation
  * form more information.</P>
  *
@@ -48,7 +48,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class Dot1qStaticVlanTableEntry extends SnmpTableEntry
+public final class Dot1qStaticVlanTableEntry extends SnmpStore
 implements VlanCollectorEntry {
 
 	// Lookup strings for specific table entries
@@ -72,36 +72,14 @@ implements VlanCollectorEntry {
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[] hpVlan_elemList = null;
-
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static {
-		hpVlan_elemList = new NamedSnmpVar[6];
-		int ndx = 0;
-
-		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_INDEX,VLAN_INDEX_OID,1);
-
-		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_NAME,VLAN_NAME_OID,2);
-
-		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_STATICEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.2", 4);
-		
-		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_FORBIDDENEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.3", 5);
-		
-		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_STATICUNTAGGEDPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.4", 6);
-		
-		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_STATUS, ".1.3.6.1.2.1.17.7.1.4.3.1.5", 5);
-
-
-	}
+	public static final NamedSnmpVar[] hpVlan_elemList = new NamedSnmpVar[] {
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_INDEX,VLAN_INDEX_OID,1),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_NAME,VLAN_NAME_OID,2),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_STATICEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.2", 4),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_FORBIDDENEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.3", 5),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_STATICUNTAGGEDPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.4", 6),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_STATUS, ".1.3.6.1.2.1.17.7.1.4.3.1.5", 5)
+	};
 
 	/**
 	 * <P>The TABLE_OID is the object identifier that represents

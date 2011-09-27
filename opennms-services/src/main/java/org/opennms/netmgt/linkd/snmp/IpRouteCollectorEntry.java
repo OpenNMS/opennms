@@ -29,9 +29,9 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 
-public abstract class IpRouteCollectorEntry extends SnmpTableEntry {
+public abstract class IpRouteCollectorEntry extends SnmpStore {
 
     protected IpRouteCollectorEntry(NamedSnmpVar[] list) {
         super(list);

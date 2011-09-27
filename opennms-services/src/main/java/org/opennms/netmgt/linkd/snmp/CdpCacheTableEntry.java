@@ -32,7 +32,7 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -42,7 +42,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * information for one entry in the
  * .iso.org.dod.internet.private.enterprises.cisco.ciscoMgmt.
  * ciscoCdpMIB.ciscoCdpMIBObjects.cdpCache.cdpCacheTable.cdpCacheEntry </P>
- * <P>This object is used by the CdpCacheTable  to hold infomation
+ * <P>This object is used by the CdpCacheTable  to hold information
  * single entries in the table. See the CdpCacheTable documentation
  * form more information.</P>
  *
@@ -51,7 +51,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class CdpCacheTableEntry extends SnmpTableEntry {
+public final class CdpCacheTableEntry extends SnmpStore {
 
 	// Lookup strings for specific table entries
 	//
@@ -104,6 +104,11 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 	/** Constant <code>CDP_LASTCHANGE="cdpCacheLastChange"</code> */
 	public final static String CDP_LASTCHANGE = "cdpCacheLastChange";
 
+	private boolean hasIfIndex = false;
+
+	private final static String CDP_IFINDEX_OID = ".1.3.6.1.4.1.9.9.23.1.2.1.1.1";
+
+
 	/**
 	 * <P>The keys that will be supported by default from the 
 	 * TreeMap base class. Each of the elements in the list
@@ -111,20 +116,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[] cdpCache_elemList = null;
-
-	private boolean hasIfIndex = false;
-
-	private final static String CDP_IFINDEX_OID = ".1.3.6.1.4.1.9.9.23.1.2.1.1.1";
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static {
-		cdpCache_elemList = new NamedSnmpVar[7];
-
-		int ndx = 0;
-
+	public static final NamedSnmpVar[] cdpCache_elemList = new NamedSnmpVar[] {
 		/**
 		 * <P>Normally, the ifIndex value of the local interface.
 		 * For 802.3 Repeaters for which the repeater ports do not
@@ -134,25 +126,19 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 * this case, is given by the corresponding value of
 		 * cdpInterfacePort.</P>
 		 */
-
-		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				CDP_IFINDEX, CDP_IFINDEX_OID, 1);
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, CDP_IFINDEX, CDP_IFINDEX_OID, 1),
 
 		/**
 		 * <P>A unique value for each device from which CDP messages
 		 * are being received.</P>
 		 */
-
-		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				CDP_DEVICEINDEX, ".1.3.6.1.4.1.9.9.23.1.2.1.1.2", 2);
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, CDP_DEVICEINDEX, ".1.3.6.1.4.1.9.9.23.1.2.1.1.2", 2),
 
 		/**
 		 * <P>An indication of the type of address contained in the
 		 *  corresponding instance of cdpCacheAddress.</P>
 		 */
-
-		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				CDP_ADDRESS_TYPE, ".1.3.6.1.4.1.9.9.23.1.2.1.1.3", 3);
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, CDP_ADDRESS_TYPE, ".1.3.6.1.4.1.9.9.23.1.2.1.1.3", 3),
 
 		/**
 		 * <P>The (first) network-layer address of the device's
@@ -161,19 +147,15 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  instance of cacheAddressType had the value 'ip(1)', then
 		 *  this object would be an IP-address.</P>
 		 */
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_ADDRESS, ".1.3.6.1.4.1.9.9.23.1.2.1.1.4", 4),
 
-		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				CDP_ADDRESS, ".1.3.6.1.4.1.9.9.23.1.2.1.1.4", 4);
-		
 		/**
 		 * <P>The Version string as reported in the most recent CDP
 		 *  message. The zero-length string indicates no Version
 		 *  field (TLV) was reported in the most recent CDP
 		 *  message.</P>
 		 */
-
-		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				CDP_VERSION, ".1.3.6.1.4.1.9.9.23.1.2.1.1.5", 5);
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_VERSION, ".1.3.6.1.4.1.9.9.23.1.2.1.1.5", 5),
 
 		/**
 		 * <P>The Device-ID string as reported in the most recent CDP
@@ -181,9 +163,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  field (TLV) was reported in the most recent CDP
 		 *  message.</P>
 		 */
-
-		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				CDP_DEVICEID, ".1.3.6.1.4.1.9.9.23.1.2.1.1.6", 6);
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_DEVICEID, ".1.3.6.1.4.1.9.9.23.1.2.1.1.6", 6),
 
 		/**
 		 * <P>The Port-ID string as reported in the most recent CDP
@@ -192,9 +172,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  indicates no Port-ID field (TLV) was reported in the
 		 *  most recent CDP message.</P>
 		 */
-
-		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				CDP_DEVICEPORT, ".1.3.6.1.4.1.9.9.23.1.2.1.1.7", 7);
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_DEVICEPORT, ".1.3.6.1.4.1.9.9.23.1.2.1.1.7", 7)
 
 		/**
 		 * <P>The Device's Hardware Platform as reported in the most
@@ -202,9 +180,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  that no Platform field (TLV) was reported in the most
 		 *  recent CDP message.</P>
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-//				CDP_PLATFORM, ".1.3.6.1.4.1.9.9.23.1.2.1.1.8", 8);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_PLATFORM, ".1.3.6.1.4.1.9.9.23.1.2.1.1.8", 8),
 
 		/**
 		 * <P>The Device's Functional Capabilities as reported in the
@@ -213,9 +189,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  The zero-length string indicates no Capabilities field
 		 *  (TLV) was reported in the most recent CDP message.</P>
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-//				CDP_CAPS, ".1.3.6.1.4.1.9.9.23.1.2.1.1.9", 9);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_CAPS, ".1.3.6.1.4.1.9.9.23.1.2.1.1.9", 9),
 
 		/**
 		 * <P>The VTP Management Domain for the remote device's interface,
@@ -223,9 +197,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  This object is not instantiated if no VTP Management Domain field
 		 *  (TLV) was reported in the most recently received CDP message.</P>
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-//				CDP_VTP_MGMTDOMAIN, ".1.3.6.1.4.1.9.9.23.1.2.1.1.10", 10);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_VTP_MGMTDOMAIN, ".1.3.6.1.4.1.9.9.23.1.2.1.1.10", 10),
 
 		/**
 		 * <P>The remote device's interface's native VLAN, as reported in the
@@ -233,9 +205,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  no native VLAN field (TLV) was reported in the most
 		 *  recent CDP message.</P>
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-//				CDP_NATIVEVLAN, ".1.3.6.1.4.1.9.9.23.1.2.1.1.11", 11);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPINT32, CDP_NATIVEVLAN, ".1.3.6.1.4.1.9.9.23.1.2.1.1.11", 11),
 
 		/**
 		 * <P>The remote device's interface's duplex mode, as reported in the 
@@ -247,9 +217,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 * halfduplex (2)
 		 * fullduplex (3) </P> 
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-//				CDP_DUPLEX, ".1.3.6.1.4.1.9.9.23.1.2.1.1.12", 12);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPINT32, CDP_DUPLEX, ".1.3.6.1.4.1.9.9.23.1.2.1.1.12", 12),
 
 		/**
 		 * <P>The remote device's Appliance ID, as reported in the
@@ -258,9 +226,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  recently received CDP message.</P>
 		 *  
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32,
-//				CDP_APPLIANCEID, ".1.3.6.1.4.1.9.9.23.1.2.1.1.13", 13);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32, CDP_APPLIANCEID, ".1.3.6.1.4.1.9.9.23.1.2.1.1.13", 13),
 
 		/**
 		 * <P>The remote device's VoIP VLAN ID, as reported in the
@@ -269,9 +235,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  recently received CDP message.</P>
 		 *  
 		 */
-
-	//	cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32,
-		//		CDP_VLANID, ".1.3.6.1.4.1.9.9.23.1.2.1.1.14", 14);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32, CDP_VLANID, ".1.3.6.1.4.1.9.9.23.1.2.1.1.14", 14),
 
 		/**
 		 * <P>The amount of power consumed by remote device, as reported
@@ -280,9 +244,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  recently received CDP message.</P>
 		 *  
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32,
-//				CDP_POWERCONS, ".1.3.6.1.4.1.9.9.23.1.2.1.1.15", 15);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32, CDP_POWERCONS, ".1.3.6.1.4.1.9.9.23.1.2.1.1.15", 15),
 
 		/**
 		 * <P>Indicates the size of the largest datagram that can be
@@ -291,9 +253,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  (TLV) was reported in the most recently received CDP message.</P>
 		 *  
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32,
-//				CDP_POWERCONS, ".1.3.6.1.4.1.9.9.23.1.2.1.1.16", 16);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32, CDP_POWERCONS, ".1.3.6.1.4.1.9.9.23.1.2.1.1.16", 16),
 
 		/**
 		 * <P>Indicates the value of the remote device's sysName MIB object.
@@ -302,9 +262,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  reported in the most recently received CDP message.</P>
 		 *  
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-//				CDP_SYSNAME, ".1.3.6.1.4.1.9.9.23.1.2.1.1.17", 17);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_SYSNAME, ".1.3.6.1.4.1.9.9.23.1.2.1.1.17", 17),
 
 		/**
 		 * <P>Indicates the value of the remote device's sysObjectID MIB
@@ -312,18 +270,14 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  (TLV) was reported in the most recently received CDP message.</P>
 		 *  
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID,
-//				CDP_SYSOBJID, ".1.3.6.1.4.1.9.9.23.1.2.1.1.18", 18);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, CDP_SYSOBJID, ".1.3.6.1.4.1.9.9.23.1.2.1.1.18", 18),
 
 		/**
 		 * <P>An indication of the type of address contained in the
 		 *  corresponding instance of cdpCachePrimaryMgmtAddress.</P>
 		 *  
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-//				CDP_PRIMARYMGMTADDR_TYPE, ".1.3.6.1.4.1.9.9.23.1.2.1.1.19", 19);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPINT32, CDP_PRIMARYMGMTADDR_TYPE, ".1.3.6.1.4.1.9.9.23.1.2.1.1.19", 19),
 
 		/**
 		 * <P>This object indicates the (first) network layer address at
@@ -338,18 +292,14 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  SNMP messages, then this object is not instanstiated.</P>
 		 *  
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-//				CDP_PRIMARYMGMTADDR, ".1.3.6.1.4.1.9.9.23.1.2.1.1.20", 20);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_PRIMARYMGMTADDR, ".1.3.6.1.4.1.9.9.23.1.2.1.1.20", 20),
 
 		/**
 		 * <P>An indication of the type of address contained in the
 		 *  corresponding instance of cdpCacheSecondryMgmtAddress.</P>
 		 *  
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-//				CDP_SECONDARYMGMTADDR_TYPE, ".1.3.6.1.4.1.9.9.23.1.2.1.1.21", 21);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPINT32, CDP_SECONDARYMGMTADDR_TYPE, ".1.3.6.1.4.1.9.9.23.1.2.1.1.21", 21),
 
 		/**
 		 * <P>This object indicates the alternate network layer address
@@ -362,9 +312,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  layer address, then this object is not instanstiated.</P>
 		 *  
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-//				CDP_SECONDARYMGMTADDR, ".1.3.6.1.4.1.9.9.23.1.2.1.1.22", 22);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_SECONDARYMGMTADDR, ".1.3.6.1.4.1.9.9.23.1.2.1.1.22", 22),
 
 		/**
 		 * <P>Indicates the physical location, as reported by the most recent
@@ -375,9 +323,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  message.</P>
 		 *  
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-//				CDP_PHYSLOC, ".1.3.6.1.4.1.9.9.23.1.2.1.1.23", 23);
+		// new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_PHYSLOC, ".1.3.6.1.4.1.9.9.23.1.2.1.1.23", 23),
 
 		/**
 		 * <P>Indicates the time when this cache entry was last changed.
@@ -387,11 +333,8 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  modified.</P>
 		 *  
 		 */
-
-//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS,
-//				CDP_LASTCHANGE, ".1.3.6.1.4.1.9.9.23.1.2.1.1.24", 24);
-
-	}
+		// new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS, CDP_LASTCHANGE, ".1.3.6.1.4.1.9.9.23.1.2.1.1.24", 24)
+	};
 
 	/**
 	 * <P>The TABLE_OID is the object identifier that represents

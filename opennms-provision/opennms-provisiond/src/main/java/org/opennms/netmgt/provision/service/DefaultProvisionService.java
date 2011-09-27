@@ -50,6 +50,7 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -72,6 +73,7 @@ import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
@@ -485,6 +487,52 @@ public class DefaultProvisionService implements ProvisionService {
     	final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
         assertNotNull(iface, "could not find interface with nodeid %d and ipAddr %s", nodeId, ipAddress);
         return addMonitoredService(iface, svcName);
+    }
+
+    @Transactional
+    public OnmsMonitoredService updateMonitoredServiceState(final Integer nodeId, final String ipAddress, final String svcName) {
+        final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
+        assertNotNull(iface, "could not find interface with nodeid %d and ipAddr %s", nodeId, ipAddress);
+
+        return new UpsertTemplate<OnmsMonitoredService, MonitoredServiceDao>(m_transactionManager, m_monitoredServiceDao) {
+
+            @Override
+            protected OnmsMonitoredService query() {
+                return iface.getMonitoredServiceByServiceType(svcName);
+            }
+
+            @Override
+            protected OnmsMonitoredService doUpdate(OnmsMonitoredService dbObj) { // NMS-3906
+                debugf(this, "current status of service %s on node with IP %s is %s ", dbObj.getServiceName(), dbObj.getIpAddress().getHostAddress(), dbObj.getStatus());
+                if ("S".equals(dbObj.getStatus())) {
+                    debugf(this, "suspending polling for service %s on node with IP %s", dbObj.getServiceName(), dbObj.getIpAddress().getHostAddress());
+                    dbObj.setStatus("F");
+                    m_monitoredServiceDao.update(dbObj);
+                    sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, dbObj);
+                }
+                if ("R".equals(dbObj.getStatus())) {
+                    debugf(this, "resume polling for service %s on node with IP %s", dbObj.getServiceName(), dbObj.getIpAddress().getHostAddress());
+                    dbObj.setStatus("A");
+                    m_monitoredServiceDao.update(dbObj);
+                    sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, dbObj);
+                }
+                return dbObj;
+            }
+
+            @Override
+            protected OnmsMonitoredService doInsert() {
+                return null;
+            }
+
+            private void sendEvent(String eventUEI, OnmsMonitoredService dbObj) {
+                final EventBuilder bldr = new EventBuilder(eventUEI, "ProvisionService");
+                bldr.setNodeid(dbObj.getNodeId());
+                bldr.setInterface(dbObj.getIpAddress());
+                bldr.setService(dbObj.getServiceName());
+                m_eventForwarder.sendNow(bldr.getEvent());
+            }
+
+        }.execute();
     }
 
     /**
@@ -933,7 +981,7 @@ public class DefaultProvisionService implements ProvisionService {
         for(final PluginConfig config : configs) {
             final T plugin = m_pluginRegistry.getPluginInstance(pluginClass, config);
             if (plugin == null) {
-				infof(this, "Configured plugin is not appropropriate for policy class %s: %s", pluginClass, config);
+				debugf(this, "Configured plugin is not appropropriate for policy class %s: %s", pluginClass, config);
             } else {
                 plugins.add(plugin);
             }

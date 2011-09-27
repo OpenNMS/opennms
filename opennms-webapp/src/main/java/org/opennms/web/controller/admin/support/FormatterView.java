@@ -54,7 +54,7 @@ public final class FormatterView implements View {
         m_formatter = formatter;
         
         if (m_formatter == null || !m_formatter.needsOutputStream() || m_formatter.getContentType() == null) {
-            m_view = new InternalResourceView("admin/support/systemReport");
+            m_view = new InternalResourceView("systemReport.htm");
         }
         
         LogUtils.debugf(this, "formatter = %s, view = %s", m_formatter, m_view);

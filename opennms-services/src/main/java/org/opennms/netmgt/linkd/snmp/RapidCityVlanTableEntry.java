@@ -29,14 +29,14 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 
 /**
  *<P>The RapidCityVlanTableEntry class is designed to hold all the MIB
  * information for one entry in the:
  * .1.3.6.1.4.1.2272.1.3.2.1
  *
- * <P>This object is used by the IntelVlanTable  to hold infomation
+ * <P>This object is used by the IntelVlanTable  to hold information
  * single entries in the table. See the IntelVlanTable documentation
  * form more information.</P>
  *
@@ -45,7 +45,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class RapidCityVlanTableEntry extends SnmpTableEntry
+public final class RapidCityVlanTableEntry extends SnmpStore
 implements VlanCollectorEntry {
 
 	// Lookup strings for specific table entries
@@ -61,24 +61,10 @@ implements VlanCollectorEntry {
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[] rcVlan_elemList = null;
-
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static {
-		rcVlan_elemList = new NamedSnmpVar[2];
-
-		int ndx = 0;
-
-		rcVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_INDEX, VLAN_INDEX_OID, 1);
-		
-		rcVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_NAME, VLAN_NAME_OID, 2);
-		
-	}
+	public static NamedSnmpVar[] rcVlan_elemList = new NamedSnmpVar[] {
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_INDEX, VLAN_INDEX_OID, 1),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_NAME, VLAN_NAME_OID, 2)
+	};
 
 	/**
 	 * <P>The TABLE_OID is the object identifier that represents
