@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -450,7 +449,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 			}
 
 			// finding links using mac address on ports
-			LogUtils.debugf(this, "DiscoveryLink.run: try to found links using Mac Address Forwarding Table");
+			LogUtils.debugf(this, "DiscoveryLink.run: try to found links using MAC Address Forwarding Table");
 
 			for (final LinkableNode curNode : m_bridgeNodes.values()) {
 			    final int curNodeId = curNode.getNodeId();
@@ -527,8 +526,8 @@ public final class DiscoveryLink implements ReadyRunnable {
 				}
 			}
 
-			// fourth find inter router links,
-			// this part could have several special function to get inter router
+			// fourth find inter-router links,
+			// this part could have several special function to get inter-router
 			// links, but at the moment we worked much on switches.
 			// In future we can try to extend this part.
 			LogUtils.debugf(this, "DiscoveryLink.run: try to found not ethernet links on Router nodes");
@@ -689,9 +688,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 		if (!parentnode.hasRouteInterfaces())
 			return -1;
-		Iterator<RouterInterface> ite = parentnode.getRouteInterfaces().iterator();
-		while (ite.hasNext()) {
-			RouterInterface curIface = ite.next();
+		for (RouterInterface curIface : parentnode.getRouteInterfaces()) {
 
 			if (curIface.getMetric() == -1) {
 				continue;
@@ -742,10 +739,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 	 */
 
 	boolean isCdpNode(int nodeid) {
-
-		Iterator<LinkableNode> ite = m_cdpNodes.iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
+		for (LinkableNode curNode : m_cdpNodes) {
 			if (nodeid == curNode.getNodeId())
 				return true;
 		}
@@ -1138,9 +1132,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 				return;
 		}
 		if (!m_links.isEmpty()) {
-			Iterator<NodeToNodeLink> ite = m_links.iterator();
-			while (ite.hasNext()) {
-				NodeToNodeLink curNnLink = ite.next();
+			for (NodeToNodeLink curNnLink : m_links) {
 				if (curNnLink.equals(nnlink)) {
 				    LogUtils.infof(this, "addNodetoNodeLink: link %s exists, not adding", nnlink.toString());
 					return;
@@ -1154,13 +1146,9 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 	private void addLinks(Set<String> macs,int nodeid,int ifindex) { 
 		if (macs == null || macs.isEmpty()) {
-		    LogUtils.debugf(this, "addLinks: mac's list on link is empty.");
+		    LogUtils.debugf(this, "addLinks: MAC address list on link is empty.");
 		} else {
-			Iterator<String> mac_ite = macs.iterator();
-
-			while (mac_ite.hasNext()) {
-				String curMacAddress = mac_ite
-						.next();
+			for (String curMacAddress : macs) {
 				if (m_macsParsed.contains(curMacAddress)) {
 				    LogUtils.warnf(this, "addLinks: mac address "
 									+ curMacAddress
@@ -1177,9 +1165,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 				
 				if (m_macToAtinterface.containsKey(curMacAddress)) {
 					List<OnmsAtInterface> ats = m_macToAtinterface.get(curMacAddress);
-					Iterator<OnmsAtInterface> ite = ats.iterator();
-					while (ite.hasNext()) {
-						OnmsAtInterface at = ite.next();
+					for (OnmsAtInterface at : ats) {
 						NodeToNodeLink lNode = new NodeToNodeLink(at.getNode().getId(),at.getIfIndex());
 						lNode.setNodeparentid(nodeid);
 						lNode.setParentifindex(ifindex);
@@ -1291,9 +1277,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 	    LogUtils.debugf(this, "parseBridgeNodes: searching bridge port for bridge identifier not yet already found. Iterating on bridge nodes.");
 		
 		List<LinkableNode> bridgenodeschanged = new ArrayList<LinkableNode>();
-		Iterator<LinkableNode> ite = m_bridgeNodes.values().iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
+		for (LinkableNode curNode : m_bridgeNodes.values()) {
 			LogUtils.debugf(this, "parseBridgeNodes: parsing bridge: %d/%s", curNode.getNodeId(), curNode.getSnmpPrimaryIpAddr());
 
 			// get macs
@@ -1333,9 +1317,7 @@ public final class DiscoveryLink implements ReadyRunnable {
     
     				if (className != null && (className.equals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable") 
     						|| className.equals("org.opennms.netmgt.linkd.snmp.IntelVlanTable"))){
-    					Iterator<OnmsVlan> vlan_ite = curNode.getVlans().iterator();
-    					while (vlan_ite.hasNext()) {
-    						OnmsVlan vlan = vlan_ite.next();
+    					for (OnmsVlan vlan : curNode.getVlans()) {
     						if (vlan.getVlanStatus() != VlanCollectorEntry.VLAN_STATUS_OPERATIONAL || vlan.getVlanType() != VlanCollectorEntry.VLAN_TYPE_ETHERNET) {
     						    LogUtils.debugf(this, "parseBridgeNodes: skipping vlan: %s", vlan.getVlanName());
     							continue;
@@ -1356,9 +1338,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 			}
 		}
 		
-		ite = bridgenodeschanged.iterator();
-		while (ite.hasNext()) {
-			LinkableNode node = ite.next();
+		for (LinkableNode node : bridgenodeschanged) {
 			m_bridgeNodes.put(node.getNodeId(), node);
 		}
 
@@ -1386,13 +1366,9 @@ public final class DiscoveryLink implements ReadyRunnable {
 	private List<String> getNotAlreadyFoundMacsOnNode(LinkableNode node){
 	    LogUtils.debugf(this, "Searching Not Yet Found Bridge Identifier Occurrence on Node: %d", node.getNodeId());
 		List<String> macs = new ArrayList<String>();
-		Iterator<LinkableNode> ite = m_bridgeNodes.values().iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
+		for (LinkableNode curNode : m_bridgeNodes.values()) {
 			if (node.getNodeId() == curNode.getNodeId()) continue;
-			Iterator<String> mac_ite =curNode.getBridgeIdentifiers().iterator();
-			while (mac_ite.hasNext()) {
-				String curMac = mac_ite.next();
+			for (String curMac : curNode.getBridgeIdentifiers()) {
 				if (node.hasMacAddress(curMac)) continue;
 				if (macs.contains(curMac)) continue;
 				LogUtils.debugf(this, "Found a node/Bridge Identifier %d/%s that was not found in bridge forwarding table for bridge node: %d", curNode.getNodeId(), curMac, node.getNodeId());
@@ -1400,14 +1376,12 @@ public final class DiscoveryLink implements ReadyRunnable {
 			}
 		}
 
-		LogUtils.debugf(this, "Searching Not Yet Found Mac Address Occurrence on Node: %d", node.getNodeId());
+		LogUtils.debugf(this, "Searching Not Yet Found MAC Address Occurrence on Node: %d", node.getNodeId());
 
-		Iterator<String> mac_ite = m_macToAtinterface.keySet().iterator();
-		while (mac_ite.hasNext()) {
-			String curMac = mac_ite.next();
+		for (String curMac : m_macToAtinterface.keySet()) {
 			if (node.hasMacAddress(curMac)) continue;
 			if (macs.contains(curMac)) continue;
-			LogUtils.debugf(this, "Found a Mac Address %s that was not found in bridge forwarding table for bridge node: %d", curMac, node.getNodeId());
+			LogUtils.debugf(this, "Found a MAC Address %s that was not found in bridge forwarding table for bridge node: %d", curMac, node.getNodeId());
 			macs.add(curMac);
 		}
 		

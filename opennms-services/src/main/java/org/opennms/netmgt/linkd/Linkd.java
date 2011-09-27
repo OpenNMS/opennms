@@ -358,8 +358,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 * @return a boolean.
 	 */
 	public boolean isInterfaceInPackage(InetAddress ipaddr, String pkg) {
-		if (m_linkdConfig.isInterfaceInPackage(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
-		return false;
+		return m_linkdConfig.isInterfaceInPackage(ipaddr, m_linkdConfig.getPackage(pkg));
 	}
 
 	/**
@@ -370,8 +369,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 * @return a boolean.
 	 */
 	public boolean isInterfaceInPackageRange(InetAddress ipaddr, String pkg) {
-		if (m_linkdConfig.isInterfaceInPackageRange(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
-		return false;
+		return m_linkdConfig.isInterfaceInPackageRange(ipaddr, m_linkdConfig.getPackage(pkg));
 	}
 
 	public boolean scheduleNodeCollection(int nodeid) {
