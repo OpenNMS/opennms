@@ -101,18 +101,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	private static NamedSnmpVar[] ms_elemList = null;
-
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static {
-		// Array size 14 elements 
-		//
-		ms_elemList = new NamedSnmpVar[14];
-		int ndx = 0;
-
+	private static final NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
 		/**
 		 * <P>An indication of what version of the Spanning
 		 *  Tree Protocol is being run. The value
@@ -123,8 +112,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
 		 *  are released that are incompatible with the
 		 *  current version a new value will be defined.</P>
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_PROTOCOL_SPEC, ".1.3.6.1.2.1.17.2.1");
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PROTOCOL_SPEC, ".1.3.6.1.2.1.17.2.1"),
 
 		/**
 		 * <P> The value of the write-able portion of the Bridge
@@ -134,24 +122,21 @@ public final class Dot1dStpGroup extends AggregateTracker {
 		 *  dot1dBaseBridgeAddress.</P>
 		 * 
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_PRIORITY, ".1.3.6.1.2.1.17.2.2");
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PRIORITY, ".1.3.6.1.2.1.17.2.2"),
 
 		/**
 		 * <P>The time (in hundredths of a second) since the
 		 *  last time a topology change was detected by the
 		 * bridge entity</P>.
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS,
-				STP_TIME_LASTTOPCH, ".1.3.6.1.2.1.17.2.3");
+		new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS, STP_TIME_LASTTOPCH, ".1.3.6.1.2.1.17.2.3"),
 
 		/**
 		 * <P>The total number of topology changes detected by
 		 *  this bridge since the management entity was last
 		 *  reset or initialized.</P>
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-				STP_TOP_CHANGES, ".1.3.6.1.2.1.17.2.4");
+		new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, STP_TOP_CHANGES, ".1.3.6.1.2.1.17.2.4"),
 	
 		/**
 		 * <P>The bridge identifier of the root of the spanning
@@ -160,16 +145,14 @@ public final class Dot1dStpGroup extends AggregateTracker {
 		 *  the Root Identifier parameter in all Configuration
 		 *  Bridge PDUs originated by this node.</P>
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				STP_DESIGNATED_ROOT, ".1.3.6.1.2.1.17.2.5");
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, STP_DESIGNATED_ROOT, ".1.3.6.1.2.1.17.2.5"),
 	
 		/**
 		 * <P>The cost of the path to the root as seen from
          * this bridge.</P>
 		 * 
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_ROOT_COST, ".1.3.6.1.2.1.17.2.6");
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_ROOT_COST, ".1.3.6.1.2.1.17.2.6"),
 	
 		/**
 		 * <P>The port number of the port which offers the
@@ -177,8 +160,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * bridge.</P>
 		 * 
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_ROOT_PORT, ".1.3.6.1.2.1.17.2.7");
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_ROOT_PORT, ".1.3.6.1.2.1.17.2.7"),
 
 		/**
 		 * <P>The maximum age of Spanning Tree Protocol
@@ -188,8 +170,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
 		 * bridge is currently using.</P>
 		 * 
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_MAX_AGE, ".1.3.6.1.2.1.17.2.8");
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_MAX_AGE, ".1.3.6.1.2.1.17.2.8"),
 
 		/**
 		 * <P>The amount of time between the transmission of
@@ -200,8 +181,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * currently using.</P>
 		 * 
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_HELLO_TIME, ".1.3.6.1.2.1.17.2.9");
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_HELLO_TIME, ".1.3.6.1.2.1.17.2.9"),
 		
 		/**
 		 * <P>This time value determines the interval length
@@ -210,8 +190,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * of hundredths of a second.</P>
 		 * 
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_HOLD_TIME, ".1.3.6.1.2.1.17.2.10");
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_HOLD_TIME, ".1.3.6.1.2.1.17.2.10"),
 
 		/**
 		 * <P>This time value, measured in units of hundredths
@@ -230,8 +209,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * if/when this bridge were to become the root.]</P>
 		 * 
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_FORW_DELAY, ".1.3.6.1.2.1.17.2.11");
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_FORW_DELAY, ".1.3.6.1.2.1.17.2.11"),
 
 		/**
 		 * <P>The value that all bridges use for MaxAge when
@@ -245,8 +223,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * of seconds.</P>
 		 * 
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_BRDG_MAX_AGE, ".1.3.6.1.2.1.17.2.12");
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_BRDG_MAX_AGE, ".1.3.6.1.2.1.17.2.12"),
 
 		/**
 		 * <P>The value that all bridges use for HelloTime when
@@ -257,8 +234,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * which is not a whole number of seconds.</P>
 		 * 
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_BRDG_HELLO_TIME, ".1.3.6.1.2.1.17.2.13");
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_BRDG_HELLO_TIME, ".1.3.6.1.2.1.17.2.13"),
 		
 		/**
 		 * <P>The value that all bridges use for ForwardDelay
@@ -272,16 +248,13 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * of seconds.</P>
 		 * 
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_BRDG_FORW_DELAY, ".1.3.6.1.2.1.17.2.14");
-		
-
-	}
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_BRDG_FORW_DELAY, ".1.3.6.1.2.1.17.2.14")
+	};
 
 	/**
 	 * <P>The SYSTEM_OID is the object identifier that represents the
 	 * root of the system information in the MIB forest. Each of the
-	 * system elements can be retreived by adding their specific index
+	 * system elements can be retrieved by adding their specific index
 	 * to the string, and an additional Zero(0) to signify the single 
 	 * instance item.</P>
 	 */

@@ -29,7 +29,7 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -37,7 +37,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 /**
  *<P>The IntelVlanTableEntry class is designed to hold all the MIB
  * information for one entry in the table .1.3.6.1.4.1.343.6.11.1.9.1
- * <P>This object is used by the IntelVlanTable  to hold infomation
+ * <P>This object is used by the IntelVlanTable  to hold information
  * single entries in the table. See the IntelVlanTable documentation
  * form more information.</P>
  *
@@ -46,7 +46,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class IntelVlanTableEntry extends SnmpTableEntry
+public final class IntelVlanTableEntry extends SnmpStore
 implements VlanCollectorEntry {
 
 	// Lookup strings for specific table entries
@@ -56,8 +56,8 @@ implements VlanCollectorEntry {
 	/** Constant <code>VLAN_DELETEOBJ="policyVlanDeleteObj"</code> */
 	public final static String VLAN_DELETEOBJ = "policyVlanDeleteObj";
 
-	private static String VLAN_INDEX_OID=".1.3.6.1.4.1.343.6.11.1.9.1.1";
-	private static String VLAN_NAME_OID=".1.3.6.1.4.1.343.6.11.1.9.1.2";
+	private final static String VLAN_INDEX_OID=".1.3.6.1.4.1.343.6.11.1.9.1.1";
+	private final static String VLAN_NAME_OID=".1.3.6.1.4.1.343.6.11.1.9.1.2";
 	
 	private boolean hasVlanIndex = false;
 
@@ -68,29 +68,12 @@ implements VlanCollectorEntry {
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[] intelVlan_elemList = null;
-
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static {
-		intelVlan_elemList = new NamedSnmpVar[4];
-
-		int ndx = 0;
-
-		intelVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_INDEX, ".1.3.6.1.4.1.343.6.11.1.9.1.1", 1);
-		
-		intelVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_NAME, ".1.3.6.1.4.1.343.6.11.1.9.1.2", 2);
-		
-		intelVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_CREATEOBJ, ".1.3.6.1.4.1.343.6.11.1.9.1.3", 3);
-
-		intelVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_DELETEOBJ, ".1.3.6.1.4.1.343.6.11.1.9.1.4", 4);
-	}
+	public static final NamedSnmpVar[] intelVlan_elemList = new NamedSnmpVar[] {
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_INDEX, ".1.3.6.1.4.1.343.6.11.1.9.1.1", 1),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_NAME, ".1.3.6.1.4.1.343.6.11.1.9.1.2", 2),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_CREATEOBJ, ".1.3.6.1.4.1.343.6.11.1.9.1.3", 3),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_DELETEOBJ, ".1.3.6.1.4.1.343.6.11.1.9.1.4", 4)
+	};
 
 	/**
 	 * <P>The TABLE_OID is the object identifier that represents

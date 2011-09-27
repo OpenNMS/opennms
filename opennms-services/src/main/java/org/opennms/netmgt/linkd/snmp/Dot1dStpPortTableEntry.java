@@ -29,15 +29,15 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 
 /**
  *<P>The Dot1dStpPortTableEntry class is designed to hold all the MIB-II
  * information for one entry in the MIB II dot1dBridge.dot1dStp.dot1dStpPortTable.
  * The table effectively contains a list of these entries, each entry having information
- * about Stp Protocol on sdecific Port.</P>
+ * about STP Protocol on specific Port.</P>
  *
- * <P>This object is used by the Dot1dStpPortTable to hold infomation
+ * <P>This object is used by the Dot1dStpPortTable to hold information
  * single entries in the table. See the Dot1dStpPortTable documentation
  * form more information.</P>
  *
@@ -46,7 +46,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class Dot1dStpPortTableEntry extends SnmpTableEntry {
+public final class Dot1dStpPortTableEntry extends SnmpStore {
 	// Lookup strings for specific table entries
 	//
 
@@ -87,104 +87,84 @@ public final class Dot1dStpPortTableEntry extends SnmpTableEntry {
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[] stpport_elemList = null;
-
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static {
-		stpport_elemList = new NamedSnmpVar[10];
-		int ndx = 0;
-
+	public static final NamedSnmpVar[] stpport_elemList = new NamedSnmpVar[] {
 		/**
 		 * The port number of the port for which this entry
- 		 * contains Spanning Tree Protocol management
- 		 * information.
+		 * contains Spanning Tree Protocol management
+		 * information.
 		 */
-		stpport_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_PORT, ".1.3.6.1.2.1.17.2.15.1.1", 1);
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PORT, ".1.3.6.1.2.1.17.2.15.1.1", 1),
 		
 		/**
 		 * The value of the priority field which is
- 		 * contained in the first (in network byte order)
- 		 * octet of the (2 octet long) Port ID. The other
- 		 * octet of the Port ID is given by the value of
- 		 * dot1dStpPort.
+		 * contained in the first (in network byte order)
+		 * octet of the (2 octet long) Port ID. The other
+		 * octet of the Port ID is given by the value of
+		 * dot1dStpPort.
 		 */
-		stpport_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_PORT_PRIORITY, ".1.3.6.1.2.1.17.2.15.1.2", 2);
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PORT_PRIORITY, ".1.3.6.1.2.1.17.2.15.1.2", 2),
 		
 		/**
 		 * The port's current state as defined by
 		 * application of the Spanning Tree Protocol. This
- 		 * state controls what action a port takes on
- 		 * reception of a frame. If the bridge has detected
- 		 * a port that is malfunctioning it will place that
- 		 * port into the broken(6) state. For ports which
- 		 * are disabled (see dot1dStpPortEnable), this object
- 		 * will have a value of disabled(1).
+		 * state controls what action a port takes on
+		 * reception of a frame. If the bridge has detected
+		 * a port that is malfunctioning it will place that
+		 * port into the broken(6) state. For ports which
+		 * are disabled (see dot1dStpPortEnable), this object
+		 * will have a value of disabled(1).
 		 */
-		stpport_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_PORT_STATE, ".1.3.6.1.2.1.17.2.15.1.3", 3);
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PORT_STATE, ".1.3.6.1.2.1.17.2.15.1.3", 3),
 		
 		/**
 		 * The enabled/disabled status of the port.
 		 */
-		stpport_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_PORT_ENABLE, ".1.3.6.1.2.1.17.2.15.1.4", 4);
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PORT_ENABLE, ".1.3.6.1.2.1.17.2.15.1.4", 4),
 		
 		/**
 		 * The contribution of this port to the path cost of
- 		 * paths towards the spanning tree root which include
- 		 * this port. 802.1D-1990 recommends that the
- 		 * default value of this parameter be in inverse
- 		 * proportion to the speed of the attached LAN.
+		 * paths towards the spanning tree root which include
+		 * this port. 802.1D-1990 recommends that the
+		 * default value of this parameter be in inverse
+		 * proportion to the speed of the attached LAN.
 		 */
-		stpport_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_PORT_PATH_COST, ".1.3.6.1.2.1.17.2.15.1.5", 5);
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PORT_PATH_COST, ".1.3.6.1.2.1.17.2.15.1.5", 5),
 		
 		/**
 		 * The unique Bridge Identifier of the Bridge
- 		 * recorded as the Root in the Configuration BPDUs
- 		 * transmitted by the Designated Bridge for the
- 		 * segment to which the port is attached.
+		 * recorded as the Root in the Configuration BPDUs
+		 * transmitted by the Designated Bridge for the
+		 * segment to which the port is attached.
 		 */
-		stpport_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				STP_PORT_DESIGNATED_ROOT, ".1.3.6.1.2.1.17.2.15.1.6", 6);
-		
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, STP_PORT_DESIGNATED_ROOT, ".1.3.6.1.2.1.17.2.15.1.6", 6),
 		
 		/**
 		 * The path cost of the Designated Port of the
- 		 * segment connected to this port. This value is
- 		 * compared to the Root Path Cost field in received
- 		 * bridge PDUs.
+		 * segment connected to this port. This value is
+		 * compared to the Root Path Cost field in received
+		 * bridge PDUs.
 		 */
-		stpport_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				STP_PORT_DESIGNATED_COST, ".1.3.6.1.2.1.17.2.15.1.7", 7);
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PORT_DESIGNATED_COST, ".1.3.6.1.2.1.17.2.15.1.7", 7),
 		
 		/**
 		 * The Bridge Identifier of the bridge which this
 		 * port considers to be the Designated Bridge for
- 		 * this port's segment.
+		 * this port's segment.
 		 */
-		stpport_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				STP_PORT_DESIGNATED_BRIDGE, ".1.3.6.1.2.1.17.2.15.1.8", 8);
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, STP_PORT_DESIGNATED_BRIDGE, ".1.3.6.1.2.1.17.2.15.1.8", 8),
 		
 		/**
 		 * The Port Identifier of the port on the Designated
 		 * Bridge for this port's segment.
 		 */
-		stpport_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				STP_PORT_DESIGNATED_PORT, ".1.3.6.1.2.1.17.2.15.1.9", 9);
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, STP_PORT_DESIGNATED_PORT, ".1.3.6.1.2.1.17.2.15.1.9", 9),
 		
 		/**
 		 * The number of times this port has transitioned
- 		 * from the Learning state to the Forwarding state.
+		 * from the Learning state to the Forwarding state.
 		 */
-		stpport_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-				STP_PORT_FORW_TRANS, ".1.3.6.1.2.1.17.2.15.1.10", 10);
-	}
+		new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, STP_PORT_FORW_TRANS, ".1.3.6.1.2.1.17.2.15.1.10", 10)
+	};
 
 	/**
 	 * <P>The TABLE_OID is the object identifier that represents

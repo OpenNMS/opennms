@@ -29,7 +29,7 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -39,7 +39,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * for one entry in the:
  * iso.org.dod.internet.private.enterprises.cisco.ciscoMgmt.ciscoVtpMIB.vtpMIBObjects.vlanInfo.vtpVlanTable</P>
  *
- * <P>This object is used by the CiscoVlanTable  to hold infomation
+ * <P>This object is used by the CiscoVlanTable  to hold information
  * single entries in the table. See the CiscoVlanPortTable documentation
  * form more information.</P>
  *
@@ -47,7 +47,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * @see CiscoVlanTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  */
-public final class CiscoVlanTableEntry extends SnmpTableEntry implements VlanCollectorEntry {
+public final class CiscoVlanTableEntry extends SnmpStore implements VlanCollectorEntry {
 
 	// Lookup strings for specific table entries
 	//

@@ -35,8 +35,8 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.capsd.snmp.SnmpTable;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTable;
@@ -155,7 +155,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	/**
 	 * The ipRoute table information
 	 */
-	public SnmpTable<SnmpTableEntry> m_ipRoute;
+	public SnmpTable<SnmpStore> m_ipRoute;
 
 	/**
 	 * The CdpCache table information
@@ -165,7 +165,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	/**
 	 * The VLAN Table information
 	 */
-	public SnmpTable<SnmpTableEntry> m_vlanTable;
+	public SnmpTable<SnmpStore> m_vlanTable;
 
 	/**
 	 * The list of VLAN SNMP collection object
@@ -248,7 +248,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	/**
 	 * Returns the collected ip route table.
 	 */
-	SnmpTable<SnmpTableEntry> getIpRouteTable() {
+	SnmpTable<SnmpStore> getIpRouteTable() {
 		return m_ipRoute;
 	}
 
@@ -276,7 +276,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	/**
 	 * Returns the collected VLAN table.
 	 */
-	SnmpTable<SnmpTableEntry> getVlanTable() {
+	SnmpTable<SnmpStore> getVlanTable() {
 		return m_vlanTable;
 	}
 
@@ -288,7 +288,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	 */
 	public String getVlanName(int m_vlan) {
 		if (this.hasVlanTable()) {
-		    for (final SnmpTableEntry ent : this.getVlanTable().getEntries()) {
+		    for (final SnmpStore ent : this.getVlanTable().getEntries()) {
 				int vlanIndex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 				if (vlanIndex == m_vlan) {
 					return ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
@@ -306,7 +306,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	 */
 	public int getVlanIndex(String m_vlanname) {
 		if (this.hasVlanTable()) {
-		    for (final SnmpTableEntry ent : this.getVlanTable().getEntries()) {
+		    for (final SnmpStore ent : this.getVlanTable().getEntries()) {
 				String vlanName = ent
 						.getDisplayString(VlanCollectorEntry.VLAN_NAME);
 				if (vlanName.equals(m_vlanname)) {
@@ -370,7 +370,7 @@ public final class SnmpCollection implements ReadyRunnable {
                 }
                 Object[] argum = { m_address };
                 try {
-                        m_ipRoute = (SnmpTable<SnmpTableEntry>) constr.newInstance(argum);
+                        m_ipRoute = (SnmpTable<SnmpStore>) constr.newInstance(argum);
                 } catch (Throwable e) {
                         LogUtils.errorf(this, e, "SnmpCollection.run: " + m_ipRouteClass + " unable to invoke class.");
                         collectIpRouteTable = false;
@@ -400,7 +400,7 @@ public final class SnmpCollection implements ReadyRunnable {
 				}
 				Object[] argum = { m_address };
 				try {
-					m_vlanTable = (SnmpTable<SnmpTableEntry>) constr.newInstance(argum);
+					m_vlanTable = (SnmpTable<SnmpStore>) constr.newInstance(argum);
 				} catch (Throwable e) {
 				    LogUtils.warnf(this, e, "SnmpCollection.run: unable to instantiate class %s", m_vlanClass);
                     collectVlanTable = false;
@@ -478,7 +478,7 @@ public final class SnmpCollection implements ReadyRunnable {
 				} else {
 				    LogUtils.debugf(this, "SnmpCollection.run: start collection for %d VLAN entries", getVlanTable().getEntries().size());
 
-					for (final SnmpTableEntry ent : m_vlanTable.getEntries()) {
+					for (final SnmpStore ent : m_vlanTable.getEntries()) {
 		 				int vlanindex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 						if (vlanindex == -1) {
 						    LogUtils.debugf(this, "SnmpCollection.run: found null value for vlan.");

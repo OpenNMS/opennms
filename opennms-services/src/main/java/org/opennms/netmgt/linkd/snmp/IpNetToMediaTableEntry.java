@@ -31,16 +31,16 @@ package org.opennms.netmgt.linkd.snmp;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 
 /**
  *<P>The IpNetToMediaTableEntry class is designed to hold all the MIB-II
  * information for one entry in the ipNetToMediaTable. The table effectively
  * contains a list of these entries, each entry having information
- * about one physical address. The entry contains the ifindex binding, the mac address,
+ * about one physical address. The entry contains the ifindex binding, the MAC address,
  * ip address and entry type.</P>
  *
- * <P>This object is used by the IpNetToMediaTable to hold infomation
+ * <P>This object is used by the IpNetToMediaTable to hold information
  * single entries in the table. See the IpNetToMediaTable documentation
  * form more information.</P>
  *
@@ -49,7 +49,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class IpNetToMediaTableEntry extends SnmpTableEntry
+public final class IpNetToMediaTableEntry extends SnmpStore
 {
 	// Lookup strings for specific table entries
 	//
@@ -119,10 +119,10 @@ public final class IpNetToMediaTableEntry extends SnmpTableEntry
 	 * <P>Creates a default instance of the ipNetToMedia
 	 * table entry map. The map represents a singular
 	 * instance of the mac address table. Each column in
-	 * the table for the loaded instance may be retreived
+	 * the table for the loaded instance may be retrieved
 	 * either through its name or object identifier.</P>
 	 *
-	 * <P>The initial table is constructied with zero
+	 * <P>The initial table is constructed with zero
 	 * elements in the map.</P>
 	 */
 	public IpNetToMediaTableEntry( )
