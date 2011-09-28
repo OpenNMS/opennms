@@ -51,11 +51,11 @@ import org.springframework.util.Assert;
  */
 public class LinkableNode extends Object {
 
-    private int m_nodeId;
+    private final int m_nodeId;
 
     private final InetAddress m_snmpprimaryaddr;
 	
-    private String m_sysoid;
+    private final String m_sysoid;
 
     private List<CdpInterface> m_cdpinterfaces = new ArrayList<CdpInterface>();
 	
@@ -84,11 +84,6 @@ public class LinkableNode extends Object {
 	private Map<String,String> m_macsVlan = new HashMap<String,String>();
 	private Map<String,String> m_vlanStpRoot = new HashMap<String,String>();
 	private Map<Integer,Integer> m_bridgePortIfindex = new HashMap<Integer,Integer>();
-
-	LinkableNode() {
-		throw new UnsupportedOperationException(
-		"default constructor not supported");
-	}
 
 	/**
 	 * <p>Constructor for LinkableNode.</p>
@@ -434,15 +429,6 @@ public class LinkableNode extends Object {
 	 */
 	public String getSysoid() {
 		return m_sysoid;
-	}
-
-	/**
-	 * <p>setSysoid</p>
-	 *
-	 * @param m_sysoid a {@link java.lang.String} object.
-	 */
-	public void setSysoid(final String sysoid) {
-		m_sysoid = sysoid;
 	}
 
 	/**

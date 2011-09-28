@@ -29,6 +29,9 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -74,12 +77,12 @@ public final class DbAtInterfaceEntry {
 	/**
 	 * The node identifier
 	 */
-	int m_nodeId;
+	private final int m_nodeId;
 
 	/**
 	 * The ip address 
 	 */
-	String m_ipaddr;
+	private final InetAddress m_ipaddr;
 
 	/**
 	 * The mac address  
@@ -200,7 +203,7 @@ public final class DbAtInterfaceEntry {
 
             int ndx = 1;
             stmt.setInt(ndx++, m_nodeId);
-            stmt.setString(ndx++, m_ipaddr);
+            stmt.setString(ndx++, str(m_ipaddr));
 
             if ((m_changed & CHANGED_PHYSADDR) == CHANGED_PHYSADDR)
             	stmt.setString(ndx++, m_physaddr);
@@ -307,7 +310,7 @@ public final class DbAtInterfaceEntry {
             }
 
             stmt.setInt(ndx++, m_nodeId);
-            stmt.setString(ndx++, m_ipaddr);
+            stmt.setString(ndx++, str(m_ipaddr));
 
             // Run the insert
             //
@@ -350,7 +353,7 @@ public final class DbAtInterfaceEntry {
             stmt = c.prepareStatement(SQL_LOAD_ATINTERFACE);
             d.watch(stmt);
             stmt.setInt(1, m_nodeId);
-            stmt.setString(2, m_ipaddr);
+            stmt.setString(2, str(m_ipaddr));
 
             rset = stmt.executeQuery();
             d.watch(rset);
@@ -402,16 +405,7 @@ public final class DbAtInterfaceEntry {
 		return true;
 	}
 
-	/**
-	 * Default constructor. 
-	 *
-	 */
-	DbAtInterfaceEntry() {
-		throw new UnsupportedOperationException(
-				"Default constructor not supported!");
-	}
-
-	private DbAtInterfaceEntry(int nodeId, String ipaddr, boolean exists) {
+	private DbAtInterfaceEntry(int nodeId, InetAddress ipaddr, boolean exists) {
 		m_nodeId = nodeId;
 		m_fromDb = exists;
 		m_sourcenodeid = -1;
@@ -420,7 +414,7 @@ public final class DbAtInterfaceEntry {
 		m_physaddr = null;
 	}
 
-	static DbAtInterfaceEntry create(int nodeid, String ipaddr) {
+	static DbAtInterfaceEntry create(int nodeid, InetAddress ipaddr) {
 		return new DbAtInterfaceEntry(nodeid, ipaddr, false);
 	}
 
@@ -434,14 +428,13 @@ public final class DbAtInterfaceEntry {
 	/**
 	 * @return
 	 */
-	protected String get_ipaddr() {
+	protected InetAddress get_ipaddr() {
 		return m_ipaddr;
 	}
 
 	/**
 	 * @return
 	 */
-
 	protected String get_physaddr() {
 		return m_physaddr;
 	}
@@ -465,10 +458,6 @@ public final class DbAtInterfaceEntry {
 		} else
 			return false;
 	}
-
-	/**
-	 * @return
-	 */
 
 	protected int get_sourcenodeid() {
 		return m_sourcenodeid;
@@ -660,7 +649,7 @@ public final class DbAtInterfaceEntry {
 	 * @return The loaded entry or null if one could not be found.
 	 *
 	 */
-	static DbAtInterfaceEntry get(int nid, String ipaddr) throws SQLException {
+	static DbAtInterfaceEntry get(int nid, InetAddress ipaddr) throws SQLException {
 		Connection db = null;
 		try {
 			db = DataSourceFactory.getInstance().getConnection();
@@ -676,18 +665,18 @@ public final class DbAtInterfaceEntry {
 	}
 
 	/**
-	 * Retreives a current record from the database based upon the
+	 * Retrieves a current record from the database based upon the
 	 * key fields of <em>nodeID</em> and <em>ipaddr</em>. If the
-	 * record cannot be found then a null reference is returnd.
+	 * record cannot be found then a null reference is returned.
 	 *
-	 * @param db	The databse connection used to load the entry.
+	 * @param db	The database connection used to load the entry.
 	 * @param nid	The node id key
 	 * @param ipaddr The ipaddress
 	 *
 	 * @return The loaded entry or null if one could not be found.
 	 *
 	 */
-	static DbAtInterfaceEntry get(Connection db, int nid, String ipaddr)
+	static DbAtInterfaceEntry get(Connection db, int nid, InetAddress ipaddr)
 			throws SQLException {
 		DbAtInterfaceEntry entry = new DbAtInterfaceEntry(nid, ipaddr,true);
 		if (!entry.load(db))

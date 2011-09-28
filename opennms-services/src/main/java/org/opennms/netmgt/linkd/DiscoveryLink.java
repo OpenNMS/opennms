@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,10 +83,10 @@ public final class DiscoveryLink implements ReadyRunnable {
 	
 	private List<LinkableNode> m_atNodes = new ArrayList<LinkableNode>();
 
-	// this is the list of mac address just parsed by discovery process
+	// this is the list of MAC address just parsed by discovery process
 	private List<String> m_macsParsed = new ArrayList<String>();
 	
-	// this is the list of mac address excluded by discovery process
+	// this is the list of MAC address excluded by discovery process
 	private List<String> macsExcluded = new ArrayList<String>();
 
 	// this is the list of atinterfaces for which to be discovery link
@@ -448,7 +450,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 				}
 			}
 
-			// finding links using mac address on ports
+			// finding links using MAC address on ports
 			LogUtils.debugf(this, "DiscoveryLink.run: try to found links using MAC Address Forwarding Table");
 
 			for (final LinkableNode curNode : m_bridgeNodes.values()) {
@@ -456,7 +458,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 				LogUtils.debugf(this, "DiscoveryLink.run: parsing node bridge %d", curNodeId);
 
 				for (final Integer curBridgePort : curNode.getPortMacs().keySet()) {
-					LogUtils.debugf(this, "DiscoveryLink.run: parsing bridge port %d with mac address %s", curBridgePort, curNode.getMacAddressesOnBridgePort(curBridgePort).toString());
+					LogUtils.debugf(this, "DiscoveryLink.run: parsing bridge port %d with MAC address %s", curBridgePort, curNode.getMacAddressesOnBridgePort(curBridgePort).toString());
 
 					if (curNode.isBackBoneBridgePort(curBridgePort)) {
 					    LogUtils.debugf(this, "DiscoveryLink.run: Port %d is a backbone bridge port.  Skipping.", curBridgePort);
@@ -468,18 +470,18 @@ public final class DiscoveryLink implements ReadyRunnable {
 					    LogUtils.warnf(this, "DiscoveryLink.run: got invalid ifIndex on bridge port %d", curBridgePort);
 						continue;
 					}
-					// First get the mac addresses on bridge port
+					// First get the MAC addresses on bridge port
 
 					final Set<String> macs = curNode.getMacAddressesOnBridgePort(curBridgePort);
 
-					// Then find the bridges whose mac addresses are learned on bridge port
+					// Then find the bridges whose MAC addresses are learned on bridge port
 					final List<LinkableNode> bridgesOnPort = getBridgesFromMacs(macs);
 					
 					if (bridgesOnPort.isEmpty()) {
 					    LogUtils.debugf(this, "DiscoveryLink.run: no bridge info found on port %d.  Saving MACs.", curBridgePort);
 						addLinks(macs, curNodeId, curIfIndex);
 					} else {
-						// a bridge mac address was found on port so you should analyze what happens
+						// a bridge MAC address was found on port so you should analyze what happens
 					    LogUtils.debugf(this, "DiscoveryLink.run: bridge info found on port %d.  Finding nearest.", curBridgePort);
 					    
                         // one among these bridges should be the node more close to the curnode, curport
@@ -655,11 +657,10 @@ public final class DiscoveryLink implements ReadyRunnable {
         for (final LinkableNode curNode : m_atNodes) {
             for (final OnmsAtInterface at : curNode.getAtInterfaces()) {
         		int nodeid = at.getNode().getId();
-        		final String ipaddr = at.getIpAddress();
         		final String macAddress = at.getMacAddress();
-        		LogUtils.debugf(this, "Parsing AtInterface nodeid/ipaddr/macaddr: %d/%s/%s", nodeid, ipaddr, macAddress);
-        		if (!m_linkd.isInterfaceInPackage(InetAddressUtils.addr(at.getIpAddress()), getPackageName())) {
-                    LogUtils.infof(this, "DiscoveryLink.run: at interface: %s does not belong to package: %s! Not adding to discoverable atinterface.", ipaddr, getPackageName());
+        		LogUtils.debugf(this, "Parsing AtInterface nodeid/ipaddr/macaddr: %d/%s/%s", nodeid, str(at.getIpAddress()), macAddress);
+        		if (!m_linkd.isInterfaceInPackage(at.getIpAddress(), getPackageName())) {
+                    LogUtils.infof(this, "DiscoveryLink.run: at interface: %s does not belong to package: %s! Not adding to discoverable atinterface.", str(at.getIpAddress()), getPackageName());
         			macsExcluded.add(macAddress);
         			continue;
         		}
@@ -775,13 +776,13 @@ public final class DiscoveryLink implements ReadyRunnable {
 			return false;
 
 		for (final String curMacOnBridge1 : macsOnBridge1) {
-			// if mac address is bridge identifier of bridge 2 continue
+			// if MAC address is bridge identifier of bridge 2 continue
 			
 			if (bridge2.isBridgeIdentifier(curMacOnBridge1)) {
 				hasbridge2forwardingRule = true;
 				continue;
 			}
-			// if mac address is itself identifier of bridge1 continue
+			// if MAC address is itself identifier of bridge1 continue
 			if (bridge1.isBridgeIdentifier(curMacOnBridge1))
 				continue;
 			// then no identifier of bridge one no identifier of bridge 2
@@ -875,7 +876,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 											+ " . .....Skipping");
 						continue;
 					}
-					LogUtils.debugf(this, "run: using mac address table found bridge port "
+					LogUtils.debugf(this, "run: using MAC address table found bridge port "
 										+ port
 										+ " on node "
 										+ endBridge.getNodeId());
@@ -1150,14 +1151,14 @@ public final class DiscoveryLink implements ReadyRunnable {
 		} else {
 			for (String curMacAddress : macs) {
 				if (m_macsParsed.contains(curMacAddress)) {
-				    LogUtils.warnf(this, "addLinks: mac address "
+				    LogUtils.warnf(this, "addLinks: MAC address "
 									+ curMacAddress
 									+ " just found on other bridge port! Skipping...");
 					continue;
 				}
 				
 				if (macsExcluded.contains(curMacAddress)) {
-				    LogUtils.warnf(this, "addLinks: mac address "
+				    LogUtils.warnf(this, "addLinks: MAC address "
 									+ curMacAddress
 									+ " is excluded from discovery package! Skipping...");
 					continue;
@@ -1172,7 +1173,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 						addNodetoNodeLink(lNode);
 					}
 				} else {
-				    LogUtils.debugf(this, "addLinks: not find nodeid for ethernet mac address %s found on node/ifindex %d/%d", curMacAddress, nodeid, ifindex);
+				    LogUtils.debugf(this, "addLinks: not find nodeid for ethernet MAC address %s found on node/ifindex %d/%d", curMacAddress, nodeid, ifindex);
 					MacToNodeLink lMac = new MacToNodeLink(curMacAddress);
 					lMac.setNodeparentid(nodeid);
 					lMac.setParentifindex(ifindex);
@@ -1346,18 +1347,18 @@ public final class DiscoveryLink implements ReadyRunnable {
 	
 	private LinkableNode collectMacAddress(SnmpAgentConfig agentConfig, LinkableNode node,String mac,int vlan) {
 		FdbTableGet coll = new FdbTableGet(agentConfig,mac);
-		LogUtils.infof(this, "collectMacAddress: finding entry in bridge forwarding table for mac on node: %s/%d", mac, node.getNodeId());
+		LogUtils.infof(this, "collectMacAddress: finding entry in bridge forwarding table for MAC on node: %s/%d", mac, node.getNodeId());
 		int bridgeport = coll.getBridgePort();
 		if (bridgeport > 0 && coll.getBridgePortStatus() == QueryManager.SNMP_DOT1D_FDB_STATUS_LEARNED) {
 			node.addMacAddress(bridgeport, mac, Integer.toString(vlan));
-			LogUtils.infof(this, "collectMacAddress: found mac on bridge port: %d", bridgeport);
+			LogUtils.infof(this, "collectMacAddress: found MAC on bridge port: %d", bridgeport);
 		} else {
 			bridgeport = coll.getQBridgePort();
 			if (bridgeport > 0 && coll.getQBridgePortStatus() == QueryManager.SNMP_DOT1D_FDB_STATUS_LEARNED) {
 				node.addMacAddress(bridgeport, mac, Integer.toString(vlan));
-				LogUtils.infof(this, "collectMacAddress: found mac on bridge port: %d", bridgeport);
+				LogUtils.infof(this, "collectMacAddress: found MAC on bridge port: %d", bridgeport);
 			} else {
-			    LogUtils.infof(this, "collectMacAddress: mac not found: %d", bridgeport);
+			    LogUtils.infof(this, "collectMacAddress: MAC not found: %d", bridgeport);
 			}
 		}
 		return node;
