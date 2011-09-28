@@ -46,7 +46,7 @@ import org.opennms.netmgt.xml.event.Parm;
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  * @version $Id: $
  */
-public class EventUtils {
+public abstract class EventUtils {
 
     /**
      * Make the given listener object a listener for the list of events

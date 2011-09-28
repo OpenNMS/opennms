@@ -84,7 +84,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	/**
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */
-	private SnmpAgentConfig m_agentConfig;
+	private final SnmpAgentConfig m_agentConfig;
 
 	/**
 	 * The IP address to used to collect the SNMP information
@@ -170,7 +170,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	/**
 	 * The list of VLAN SNMP collection object
 	 */
-	public java.util.Map<OnmsVlan,SnmpVlanCollection> m_snmpVlanCollection; 
+	public final java.util.Map<OnmsVlan,SnmpVlanCollection> m_snmpVlanCollection = new HashMap<OnmsVlan,SnmpVlanCollection>();
 
 	/**
 	 * The scheduler object
@@ -212,7 +212,6 @@ public final class SnmpCollection implements ReadyRunnable {
 		m_ipRoute = null;
 		m_vlanTable = null;
 		m_CdpCache = null;
-		m_snmpVlanCollection = new HashMap<OnmsVlan,SnmpVlanCollection>();
 	}
 
 	/**
