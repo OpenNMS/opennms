@@ -49,7 +49,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * This class is designed to collect the necessary SNMP information from the
  * target address and store the collected information. When the class is
  * initially constructed no information is collected. The SNMP Session creating
- * and colletion occurs in the main run method of the instance. This allows the
+ * and collection occurs in the main run method of the instance. This allows the
  * collection to occur in a thread if necessary.
  * 
  * @author <a href="mailto:weave@oculan.com">Weave </a>
@@ -60,7 +60,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	/**
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */
-	private SnmpAgentConfig m_agentConfig;
+	private final SnmpAgentConfig m_agentConfig;
 
 	/**
 	 * The IP address to used to collect the SNMP information

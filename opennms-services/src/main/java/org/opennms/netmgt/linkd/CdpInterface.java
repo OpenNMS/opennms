@@ -47,7 +47,7 @@ public class CdpInterface {
 	 * the ip address 
 	 */
 	
-	int  cdpIfIndex; 
+	private final int cdpIfIndex; 
 	
 	InetAddress cdpTargetIpAddr;
 	

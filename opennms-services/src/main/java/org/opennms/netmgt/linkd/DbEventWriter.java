@@ -612,7 +612,7 @@ public class DbEventWriter extends AbstractQueryManager {
     		stmt = dbConn.prepareStatement(ipQuery);
             d.watch(stmt);
             stmt.setString(1, hostAddress);
-            LogUtils.debugf(this, "getAtInterfaceForAddress: executing SQL Statement " + ipQuery + " with IP address=" + hostAddress);
+            LogUtils.debugf(this, "getAtInterfaceForAddress: executing SQL Statement " + ipQuery + " with IP address=" + str(ipaddr));
 
         	final ResultSet rs = stmt.executeQuery();
             d.watch(rs);
@@ -625,7 +625,7 @@ public class DbEventWriter extends AbstractQueryManager {
             if (rs.wasNull()) { return null; }
             // save info for DiscoveryLink
             final OnmsNode onmsNode = m_nodeDao.get(atnodeid);
-            ati = new OnmsAtInterface(onmsNode, hostAddress);
+            ati = new OnmsAtInterface(onmsNode, ipaddr);
     
             // get ifindex if exists
             atifindex = rs.getInt("ifindex");

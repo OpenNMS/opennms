@@ -29,6 +29,7 @@
 
 package org.opennms.netmgt.model;
 
+import java.net.InetAddress;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -50,8 +51,11 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Type;
+import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 
 /**
  * <p>AtInterface class.</p>
@@ -65,7 +69,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class OnmsAtInterface {
 	private Integer m_id;
 	private OnmsNode m_node;
-	private String m_ipAddress;
+	private InetAddress m_ipAddress;
 	private String m_macAddress;
 	private Character m_status;
 	private Integer m_sourceNodeId;
@@ -81,7 +85,7 @@ public class OnmsAtInterface {
 	 * @param ipAddress a {@link java.lang.String} object.
 	 * @param macAddress a {@link java.lang.String} object.
 	 */
-	public OnmsAtInterface(final OnmsNode node, final String ipAddress, final String macAddress) {
+	public OnmsAtInterface(final OnmsNode node, final InetAddress ipAddress, final String macAddress) {
 	    m_node = node;
 		m_macAddress = macAddress;
 		m_ipAddress = ipAddress;
@@ -93,7 +97,7 @@ public class OnmsAtInterface {
 	 * @param node TODO
 	 * @param ipAddress a {@link java.lang.String} object.
 	 */
-	public OnmsAtInterface(final OnmsNode node, final String ipAddress) {
+	public OnmsAtInterface(final OnmsNode node, final InetAddress ipAddress) {
 	    m_node = node;
 		m_macAddress = "";
 		m_ipAddress = ipAddress;
@@ -153,13 +157,15 @@ public class OnmsAtInterface {
 	 *
 	 * @return Returns the ipAddress.
 	 */
-	@XmlElement
 	@Column(name="ipAddr", nullable=false)
-	public String getIpAddress() {
+	@XmlElement(name="ipAddress")
+	@Type(type="org.opennms.netmgt.model.InetAddressUserType")
+	@XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+	public InetAddress getIpAddress() {
 		return m_ipAddress;
 	}
 
-	public void setIpAddress(final String ipAddress) {
+	public void setIpAddress(final InetAddress ipAddress) {
 		m_ipAddress = ipAddress;
 	}
 

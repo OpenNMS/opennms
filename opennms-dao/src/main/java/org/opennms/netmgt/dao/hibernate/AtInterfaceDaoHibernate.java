@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
@@ -125,7 +126,7 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
     }
 
     @Override
-    public OnmsAtInterface findByNodeAndAddress(final Integer nodeId, final String ipAddress, final String macAddress) {
+    public OnmsAtInterface findByNodeAndAddress(final Integer nodeId, final InetAddress ipAddress, final String macAddress) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeId));
