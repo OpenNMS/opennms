@@ -124,7 +124,7 @@ run_tests() {
 		./compile.pl -N -Denable.snapshots=true -DupdatePolicy=always install
 	popd
 	pushd "$SOURCEDIR/core"
-		./compile.pl -Denable.snapshots=true -DupdatePolicy=always install
+		../compile.pl -Denable.snapshots=true -DupdatePolicy=always install
 	popd
 	pushd "$SOURCEDIR/smoke-test"
 		../bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
