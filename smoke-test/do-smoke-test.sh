@@ -120,6 +120,12 @@ run_tests() {
 
 	local RETVAL=0
 	rm -rf ~/.m2/repository/org/opennms
+	pushd "$SOURCEDIR"
+		./compile.pl -N -Denable.snapshots=true -DupdatePolicy=always install
+	popd
+	pushd "$SOURCEDIR/core"
+		./compile.pl -Denable.snapshots=true -DupdatePolicy=always install
+	popd
 	pushd "$SOURCEDIR/smoke-test"
 		../bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
 		RETVAL=$?
