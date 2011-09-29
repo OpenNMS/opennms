@@ -55,7 +55,7 @@ abstract public class InetAddressUtils {
 
     static {
         try {
-            // This address (102.0.2.123) is within a range of TEST IPS that
+            // This address (192.0.2.123) is within a range of TEST IPS that
             // that is guaranteed to be non-routed.
             UNPINGABLE_ADDRESS = InetAddress.getByAddress(new byte[] {(byte)192, (byte)0, (byte)2, (byte)123});
         } catch (final UnknownHostException e) {
@@ -521,4 +521,51 @@ abstract public class InetAddressUtils {
 			return null;
 		}
 	}
+
+    public static byte[] macAddressStringToBytes(String macAddress) {
+        byte[] contents = new byte[6];
+        String[] digits = macAddress.split(":");
+        if (digits.length != 6) {
+            // If the MAC address is 12 hex digits long
+            if (macAddress.length() == 12) {
+                digits = new String[] {
+                    macAddress.substring(0, 2),
+                    macAddress.substring(2, 4),
+                    macAddress.substring(4, 6),
+                    macAddress.substring(6, 8),
+                    macAddress.substring(8, 10),
+                    macAddress.substring(10)
+                };
+            } else {
+                throw new IllegalArgumentException("Cannot decode MAC address: " + macAddress);
+            }
+        }
+        // Decode each MAC address digit into a hexadecimal byte value
+        for (int i = 0; i < 6; i++) {
+            // Prefix the value with "0x" so that Integer.decode() knows which base to use
+            contents[i] = Integer.decode("0x" + digits[i]).byteValue();
+        }
+        return contents;
+    }
+    
+    public static String macAddressBytesToString(byte[] macAddress) {
+        if (macAddress.length != 6) {
+            throw new IllegalArgumentException("Cannot decode MAC address: " + macAddress);
+        }
+        
+        return String.format(
+            //"%02X:%02X:%02X:%02X:%02X:%02X", 
+            "%02x%02x%02x%02x%02x%02x", 
+            macAddress[0],
+            macAddress[1],
+            macAddress[2],
+            macAddress[3],
+            macAddress[4],
+            macAddress[5]
+        );
+    }
+
+    public static String normalizeMacAddress(String macAddress) {
+        return macAddressBytesToString(macAddressStringToBytes(macAddress));
+    }
 }

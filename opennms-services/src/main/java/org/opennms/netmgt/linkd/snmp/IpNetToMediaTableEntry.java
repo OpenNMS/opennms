@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
+import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
+
 import java.net.InetAddress;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
 
@@ -147,7 +150,12 @@ public final class IpNetToMediaTableEntry extends SnmpStore
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String getIpNetToMediaPhysAddress(){
-		return getHexString(IpNetToMediaTableEntry.INTM_PHYSADDR);
+	    try {
+	        return normalizeMacAddress(getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR));
+	    } catch (IllegalArgumentException e) {
+	        LogUtils.warnf(this, e, e.getMessage());
+	        return getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR);
+	    }
 	}
 	
 	/**
