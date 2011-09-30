@@ -101,6 +101,12 @@ input.textBox {
 	vertical-align: middle;
 }
 
+input.passBox {
+	border: none;
+	background-color: #eee;
+	vertical-align: middle;
+}
+
 input.dateBox {
 	border: none;
 	vertical-align: middle;
@@ -139,6 +145,10 @@ table.FieldSet-changed select {
 }
 
 .FieldSet-error input.textBox {
+	background-color: #d94242;
+}
+
+.FieldSet-error input.passBox {
 	background-color: #d94242;
 }
 
