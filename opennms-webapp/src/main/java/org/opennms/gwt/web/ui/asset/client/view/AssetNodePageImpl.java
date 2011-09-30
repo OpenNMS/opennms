@@ -37,6 +37,7 @@ import org.opennms.gwt.web.ui.asset.client.tools.DisclosurePanelCookie;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSet;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetDateBox;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetListBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetPasswordBox;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetSuggestBox;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextArea;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextBox;
@@ -198,9 +199,9 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
 	@UiField
 	FieldSetTextBox sUserName;
 	@UiField
-	FieldSetTextBox sPassword;
+	FieldSetPasswordBox sPassword;
 	@UiField
-	FieldSetTextBox sEnablePassword;
+	FieldSetPasswordBox sEnablePassword;
 	@UiField
 	FieldSetListBox sConnection;
 	@UiField
