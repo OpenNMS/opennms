@@ -135,21 +135,40 @@ table.FieldSet-changed select {
 }
 
 
-
 .FieldSet-changed .textArea {
 	background-color: #b4c598;
+}
+
+.FieldSet-error input.textArea {
+	background-color: #d94242;
+}
+
+.FieldSet-warning input.textArea {
+	background-color: #ffF5cd;
 }
 
 .FieldSet-error input.suggBox {
 	background-color: #d94242;
 }
 
+.FieldSet-warning input.suggBox {
+	background-color: #ffF5cd;
+}
+
 .FieldSet-error input.textBox {
 	background-color: #d94242;
 }
 
+.FieldSet-warning input.textBox {
+	background-color: #ffF5cd;
+}
+
 .FieldSet-error input.passBox {
 	background-color: #d94242;
+}
+
+.FieldSet-warning input.passBox {
+	background-color: #ffF5cd;
 }
 
 .FieldSet-error input.dateBox {
