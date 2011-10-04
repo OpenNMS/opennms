@@ -608,6 +608,18 @@ public interface AssetPageConstants extends com.google.gwt.i18n.client.Constants
 	@Key("stringToLongError")
 	String stringToLongError();
 
+	@DefaultStringValue("Please just use A-Z a-z 0-9 or - and _ to avoid configuration problems")
+	@Key("stringBasicValidationError")
+	String stringBasicValidationError();
+	
+	@DefaultStringValue("The text contains whitespaces; please remove them")
+    @Key("stringContainsWhiteSpacesError")
+    String stringContainsWhiteSpacesError();
+	
+	@DefaultStringValue("The text dosen't maches the ergexp; ")
+    @Key("stringNotMatchingRegexpError")
+    String stringNotMatchingRegexpError();
+	
 	@DefaultStringValue("System Contact")
 	@Key("systemContact")
 	String systemContact();
