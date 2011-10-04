@@ -43,6 +43,7 @@ import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextArea;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextBox;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextDisplay;
 import org.opennms.gwt.web.ui.asset.client.tools.validation.StringAsIntegerValidator;
+import org.opennms.gwt.web.ui.asset.client.tools.validation.StringBasicValidator;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
 
@@ -250,6 +251,14 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
 
 	public AssetNodePageImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
+		
+		//avoid whitespaces and umlauts at categroiefields to prevent config-file problems
+		sDisplayCat.addWarningValidator(new StringBasicValidator());
+		sNotificationCat.addWarningValidator(new StringBasicValidator());
+		sThresholdCat.addWarningValidator(new StringBasicValidator());
+		sPollerCat.addWarningValidator(new StringBasicValidator());
+		sAssetCategory.addWarningValidator(new StringBasicValidator());
+		
 		sRackUnitHight.addErrorValidator(new StringAsIntegerValidator());
 		sNumpowersupplies.addErrorValidator(new StringAsIntegerValidator());
 		sInputpower.addErrorValidator(new StringAsIntegerValidator());
