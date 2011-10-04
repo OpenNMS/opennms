@@ -117,7 +117,7 @@ final class CollectableService implements ReadyRunnable {
      * @param schedulingCompletedFlag a {@link org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      */
-    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr) throws CollectionInitializationException {
+    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr) {
         m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
@@ -442,7 +442,7 @@ final class CollectableService implements ReadyRunnable {
                     reinitialize(newIface);
                     if (log().isDebugEnabled())
                         log().debug("Completed reinitializing "+this.getServiceName()+" collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
-                } catch (CollectionInitializationException rE) {
+                } catch (RuntimeException rE) {
                     log().warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
                     log().error("Uncaught exception, failed to intialize interface " + getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
@@ -549,7 +549,7 @@ final class CollectableService implements ReadyRunnable {
                     reinitialize(m_updates.getUpdatedInterface());
                     if (log().isDebugEnabled())
                         log().debug("Completed reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
-                } catch (CollectionInitializationException rE) {
+                } catch (RuntimeException rE) {
                     log().warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
                     log().error("Uncaught exception, failed to initialize interface " + getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
@@ -568,7 +568,7 @@ final class CollectableService implements ReadyRunnable {
     	return ThreadCategory.getInstance(getClass());
     }
 
-    private void reinitialize(OnmsIpInterface newIface) throws CollectionInitializationException {
+    private void reinitialize(OnmsIpInterface newIface) {
         m_spec.release(m_agent);
         m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao,
                                                 m_transMgr);

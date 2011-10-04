@@ -508,21 +508,17 @@ public class Collectd extends AbstractServiceDaemon implements
                     sb.append(" collection, scheduled");
                     log().debug(sb.toString());
                 }
-            } catch (CollectionInitializationException e) {
+            } catch (RuntimeException rE) {
                 sb = new StringBuffer();
                 sb.append("scheduleInterface: Unable to schedule ");
                 sb.append(iface);
                 sb.append('/');
                 sb.append(svcName);
                 sb.append(", reason: ");
-                sb.append(e.getMessage());
-
-                // Only log the stack trace if TRACE level logging is enabled.
-                // Fixes bug NMS-3324.
-                // http://issues.opennms.org/browse/NMS-3324
-                if (log().isTraceEnabled()) {
-                    log().trace(sb.toString(), e);
-                } else {
+                sb.append(rE.getMessage());
+                if (log().isDebugEnabled()) {
+                    log().debug(sb.toString(), rE);
+                } else if (log().isInfoEnabled()) {
                     log().info(sb.toString());
                 }
             } catch (Throwable t) {
@@ -535,7 +531,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 sb.append(t);
                 log().error(sb.toString(), t);
             }
-        } // end while more specifications exist
+        } // end while more specifications  exist
         
         } finally {
             instrumentation().endScheduleInterface(iface.getNode().getId(), ipAddress, svcName);

@@ -64,7 +64,7 @@ public interface ServiceCollector {
      *
      * @param parameters a {@link java.util.Map} object.
      */
-    void initialize(Map<String, String> parameters) throws CollectionInitializationException;
+    void initialize(Map<String, String> parameters);
 
     /**
      * <p>release</p>
@@ -77,7 +77,7 @@ public interface ServiceCollector {
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      * @param parameters a {@link java.util.Map} object.
      */
-    void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException;
+    void initialize(CollectionAgent agent, Map<String, Object> parameters);
 
     /**
      * <p>release</p>

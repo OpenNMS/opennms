@@ -231,7 +231,7 @@ public class CollectionSpecification {
      *
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      */
-    public void initialize(CollectionAgent agent) throws CollectionInitializationException {
+    public void initialize(CollectionAgent agent) {
         Collectd.instrumentation().beginCollectorInitialize(agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
             m_collector.initialize(agent, getPropertyMap());

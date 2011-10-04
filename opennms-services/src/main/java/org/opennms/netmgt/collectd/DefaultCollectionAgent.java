@@ -193,9 +193,9 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
         );
     }
 
-    private void validateSysObjId() throws CollectionInitializationException {
+    private void validateSysObjId() {
         if (getSysObjectId() == null) {
-            throw new CollectionInitializationException("System Object ID for interface "
+            throw new RuntimeException("System Object ID for interface "
                                        + getHostAddress()
                                        + " does not exist in the database.");
         }
@@ -211,9 +211,9 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
         );
     }
 
-    private void validateIsSnmpPrimary() throws CollectionInitializationException {
+    private void validateIsSnmpPrimary() {
         if (!PrimaryType.PRIMARY.equals(getIsSnmpPrimary())) {
-            throw new CollectionInitializationException("Interface "
+            throw new RuntimeException("Interface "
                                        + getHostAddress()
                                        + " is not the primary SNMP interface for nodeid "
                                        + getNodeId());
@@ -234,9 +234,8 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      */
     /**
      * <p>validateAgent</p>
-     * @throws CollectionInitializationException 
      */
-    public void validateAgent() throws CollectionInitializationException {
+    public void validateAgent() {
         logCollectionParms();
         validateIsSnmpPrimary();
         validatePrimaryIfIndex();
