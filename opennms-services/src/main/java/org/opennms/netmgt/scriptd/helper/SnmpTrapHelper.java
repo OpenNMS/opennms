@@ -191,16 +191,7 @@ public class SnmpTrapHelper {
             } else if (EventConstants.XML_ENCODING_BASE64.equals(encoding)) {
                 contents = Base64.decodeBase64(value.toCharArray());
             } else if (EventConstants.XML_ENCODING_MAC_ADDRESS.equals(encoding)) {
-                String[] digits = value.split(":");
-                if (digits.length != 6) {
-                    throw new SnmpTrapHelperException("Cannot decode MAC address: " + value);
-                }
-                contents = new byte[6];
-                // Decode each MAC address digit into a hexadecimal byte value
-                for (int i = 0; i < 6; i++) {
-                    // Prefix the value with "0x" so that Byte.decode() knows which base to use
-                    contents[i] = Byte.decode("0x" + digits[i]);
-                }
+                contents = InetAddressUtils.macAddressStringToBytes(value);
             } else {
                 throw new SnmpTrapHelperException("Encoding " + encoding + "is invalid for SnmpOctetString");
             }

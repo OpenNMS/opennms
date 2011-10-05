@@ -257,8 +257,8 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testVisit() throws Exception {
-    	final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/NewFile2.xml"));
-    	final CountingVisitor visitor = new CountingVisitor();
+        final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/NewFile2.xml"));
+        final CountingVisitor visitor = new CountingVisitor();
         requisition.visit(visitor);
         verifyBasicImportCounts(visitor);
     }
@@ -306,6 +306,47 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         
     }
     
+    @Test(timeout=300000)
+    @JUnitTemporaryDatabase
+    // 192.0.2.0/24 reserved by IANA for testing purposes
+    @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:lameForce10.properties")
+    public void testLameForce10Agent() throws Exception {
+        importFromResource("classpath:/lameForce10.xml");
+
+        OnmsNode node = getNodeDao().findByForeignId("walk", "123");
+        
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(1, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(3, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+        
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        runScan(scan);
+   
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(4, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(3, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(6, getSnmpInterfaceDao().countAll());
+        
+    }
     /**
      * We have to ignore this test until there is a DNS service available in the test harness
      * 
@@ -315,25 +356,25 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @JUnitDNSServer(port=9153, zones={
-    		@DNSZone(name="opennms.com.", v4address="1.2.3.4", entries={
-    				@DNSEntry(hostname="www", address="1.2.3.4")
-    				// V6 support is only in master right now
-    				// @DNSEntry(hostname="www", address="::1:2:3:4", ipv6=true)
-    		})
+            @DNSZone(name="opennms.com.", v4address="1.2.3.4", entries={
+                    @DNSEntry(hostname="www", address="1.2.3.4")
+                    // V6 support is only in master right now
+                    // @DNSEntry(hostname="www", address="::1:2:3:4", ipv6=true)
+            })
     })
     public void testDnsVisit() throws ForeignSourceRepositoryException, MalformedURLException {
-    	final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost:9153/opennms.com"));
+        final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost:9153/opennms.com"));
         final CountingVisitor visitor = new CountingVisitor() {
-			public void visitNode(final OnmsNodeRequisition req) {
-        		LogUtils.debugf(this, "visitNode: %s/%s %s", req.getForeignSource(), req.getForeignId(), req.getNodeLabel());
-        		m_nodes.add(req);
-        		m_nodeCount++;
-        	}
-        	public void visitInterface(final OnmsIpInterfaceRequisition req) {
-        		LogUtils.debugf(this, "visitInterface: %s", req.getIpAddr());
-        		m_ifaces.add(req);
-        		m_ifaceCount++;
-        	}
+            public void visitNode(final OnmsNodeRequisition req) {
+                LogUtils.debugf(this, "visitNode: %s/%s %s", req.getForeignSource(), req.getForeignId(), req.getNodeLabel());
+                m_nodes.add(req);
+                m_nodeCount++;
+            }
+            public void visitInterface(final OnmsIpInterfaceRequisition req) {
+                LogUtils.debugf(this, "visitInterface: %s", req.getIpAddr());
+                m_ifaces.add(req);
+                m_ifaceCount++;
+            }
         };
         requisition.visit(visitor);
 
@@ -575,12 +616,12 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     })
     @Transactional
     public void testPopulateWithIpv6SnmpAndNodeScan() throws Exception {
-    	final ForeignSource fs = new ForeignSource();
-    	fs.setName("matt:");
-    	fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
-    	m_foreignSourceRepository.putDefaultForeignSource(fs);
-    	
-    	importFromResource("classpath:/requisition_then_scanv6.xml");
+        final ForeignSource fs = new ForeignSource();
+        fs.setName("matt:");
+        fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+        m_foreignSourceRepository.putDefaultForeignSource(fs);
+
+        importFromResource("classpath:/requisition_then_scanv6.xml");
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -747,28 +788,28 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @Test
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDeleteService() throws Exception {
-    	
-    	System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
-    	
-    	assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
-    	
+
+        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
+
+        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
+
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
-        
+
         importFromResource("classpath:/deleteService.xml");
-        
+
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(4, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(6, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(2, getServiceTypeDao().countAll());
 
@@ -781,7 +822,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.201.136.163", "HTTP"));
 
         m_mockEventIpcManager.sendEventToListeners(deleteService(nodeid, "10.201.136.163", "HTTP"));
-        
+
         // this only waits until all the anticipated events are received so it is fast unless there is a bug
         m_eventAnticipator.waitForAnticipated(10000);
         m_eventAnticipator.verifyAnticipated();
@@ -881,9 +922,9 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @Test
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testDeleteNode() throws Exception {
-    	
-    	System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
-    	assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
+
+        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
+        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
 
         // This test assumes that discovery is disabled
@@ -1010,7 +1051,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         // \u00f1 is unicode for n~ 
         final OnmsNode onmsNode = getNodeDao().get(1);
         LogUtils.debugf(this, "node = %s", onmsNode);
-		assertEquals("\u00f1ode2", onmsNode.getLabel());
+        assertEquals("\u00f1ode2", onmsNode.getLabel());
         
     }
     
@@ -1049,12 +1090,12 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
-    	final List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
-    	final int nodeCount = getNodeDao().countAll();
-    	LogUtils.debugf(this, "NodeCount: %d", nodeCount);
+        final List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+        final int nodeCount = getNodeDao().countAll();
+        LogUtils.debugf(this, "NodeCount: %d", nodeCount);
 
-    	assertEquals(nodeCount, schedulesForNode.size());
-    	assertEquals(nodeCount, m_provisioner.getScheduleLength());
+        assertEquals(nodeCount, schedulesForNode.size());
+        assertEquals(nodeCount, m_provisioner.getScheduleLength());
     }
     
     @Test(timeout=300000)
@@ -1371,13 +1412,13 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         protected List<OnmsNodeRequisition> m_nodes = new ArrayList<OnmsNodeRequisition>();
         protected List<OnmsIpInterfaceRequisition> m_ifaces = new ArrayList<OnmsIpInterfaceRequisition>();
 
-		public List<OnmsNodeRequisition> getNodes() {
-			return m_nodes;
-		}
+        public List<OnmsNodeRequisition> getNodes() {
+            return m_nodes;
+        }
 
-		public List<OnmsIpInterfaceRequisition> getInterfaces() {
-			return m_ifaces;
-		}
+        public List<OnmsIpInterfaceRequisition> getInterfaces() {
+            return m_ifaces;
+        }
 
         public int getModelImportCount() {
             return m_modelImportCount;
@@ -1513,8 +1554,8 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         }
     }
 
-	@Override
-	public void setMockSnmpDataProvider(final MockSnmpDataProvider provider) {
-		m_mockSnmpDataProvider = provider;
-	}
+    @Override
+    public void setMockSnmpDataProvider(final MockSnmpDataProvider provider) {
+        m_mockSnmpDataProvider = provider;
+    }
 }

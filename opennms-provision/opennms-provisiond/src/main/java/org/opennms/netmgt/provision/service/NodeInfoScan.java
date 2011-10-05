@@ -32,6 +32,7 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.LogUtils.debugf;
+import static org.opennms.core.utils.LogUtils.infof;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -159,6 +160,7 @@ final class NodeInfoScan implements RunInBatch {
             }
             for(NodePolicy policy : nodePolicies) {
                 if (node != null) {
+                    infof(this, "Applying NodePolicy %s(%s) to %s", policy.getClass(), policy, node.getLabel());
                     node = policy.apply(node);
                 }
             }
