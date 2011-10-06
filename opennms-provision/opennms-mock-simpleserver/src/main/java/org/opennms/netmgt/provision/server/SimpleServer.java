@@ -157,6 +157,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      */
     public void startServer() throws Exception {
         setServerThread(new Thread(getRunnable(), this.getClass().getSimpleName()));
+        getServerThread().setDaemon(true);
         getServerThread().start();
     }
     
