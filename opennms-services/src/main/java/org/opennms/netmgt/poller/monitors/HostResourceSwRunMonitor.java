@@ -217,10 +217,12 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
             Map<SnmpInstId, SnmpValue> statusResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSwRunMonitor", SnmpObjId.get(serviceStatusOid));
 
             // Iterate over the list of running services
+            int matches = 0;
             for(SnmpInstId nameInstance : nameResults.keySet()) {
 
                 // See if the service name is in the list of running services
-                if (nameResults.get(nameInstance).toString().equals(serviceName)) {
+                if (match(serviceName, nameResults.get(nameInstance).toString())) {
+                    matches++;
                     log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + ipaddr.getHostAddress() + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
                     if (meetsCriteria(statusResults.get(nameInstance), "<=", runLevel)) {
@@ -236,6 +238,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                     }
                 }
             }
+            log().debug("poll: HostResourceSwRunMonitor the number of matches found for " + serviceName + " was " + matches);
 
         } catch (NumberFormatException e) {
             status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
@@ -251,4 +254,10 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         return status;
     }
 
+    private boolean match(String expectedText, String currentText) {
+        if (expectedText.startsWith("~")) {
+            return currentText.matches(expectedText.replaceFirst("~", ""));
+        }
+        return currentText.equals(expectedText);
+    }
 }
