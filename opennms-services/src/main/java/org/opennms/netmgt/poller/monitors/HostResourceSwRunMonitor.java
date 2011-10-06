@@ -200,10 +200,12 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
             Map<SnmpInstId, SnmpValue> statusResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSwRunMonitor", SnmpObjId.get(serviceStatusOid));
 
             // Iterate over the list of running services
+            int matches = 0;
             for(SnmpInstId nameInstance : nameResults.keySet()) {
 
                 // See if the service name is in the list of running services
-                if (stripExtraQuotes(nameResults.get(nameInstance).toString()).equalsIgnoreCase(serviceName)) {
+                if (match(serviceName, stripExtraQuotes(nameResults.get(nameInstance).toString()))) {
+                    matches++;
                     log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
                     if (meetsCriteria(statusResults.get(nameInstance), "<=", runLevel)) {
@@ -219,6 +221,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                     }
                 }
             }
+            log().debug("poll: HostResourceSwRunMonitor the number of matches found for " + serviceName + " was " + matches);
 
         } catch (NumberFormatException e) {
             status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
@@ -234,13 +237,15 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         return status;
     }
 
-    private static String stripExtraQuotes(String string) {
-        String retString = "";
-        if(string.startsWith("\"")){
-            String temp = StringUtils.stripFront(string, '"');
-            retString = StringUtils.stripBack(temp, '"');
+    private boolean match(String expectedText, String currentText) {
+        if (expectedText.startsWith("~")) {
+            return currentText.matches(expectedText.replaceFirst("~", ""));
         }
-        return retString;
+        return currentText.equalsIgnoreCase(expectedText);
+    }
+
+    private static String stripExtraQuotes(String string) {
+        return StringUtils.stripFrontBack(string, "\"", "\"");
     }
 
 }
