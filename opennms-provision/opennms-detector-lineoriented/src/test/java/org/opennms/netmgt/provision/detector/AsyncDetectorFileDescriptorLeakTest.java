@@ -70,7 +70,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
             
         };
 
-        m_server.setTimeout(10000);
+        m_server.setTimeout(0);
         m_server.init();
         m_server.startServer();
     }
