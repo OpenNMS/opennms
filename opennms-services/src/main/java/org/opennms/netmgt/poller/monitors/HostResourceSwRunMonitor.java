@@ -174,10 +174,9 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         // This represents the maximum run-level, i.e. 2 means either running(1) or runnable(2) pass.
         String runLevel = ParameterMap.getKeyedString(parameters, "run-level", "2");
         // If "match-all" is true, there can be an optional "min-services" and "max-services" parameters that can define a range. The service is up if:
-        // services_count >= min-services and services_count <= max-services
-        // a) either one is not defined, then only one has to pass.
-        // b) neither are defined, the monitor acts just like it used to - checking all instances to see if they are all running.
-        // c) both are defined, then the count should stay inside the defined range.
+        // a) services_count >= min-services and services_count <= max-services
+        // b) either one is not defined, then only one has to pass.
+        // c) neither are defined, the monitor acts just like it used to - checking all instances to see if they are all running.
         // It is assumed that all services would have to pass the minimum run state test, no matter what the count.
         int minServices = ParameterMap.getKeyedInteger(parameters, "min-services", -1);
         int maxServices = ParameterMap.getKeyedInteger(parameters, "max-services", -1);
