@@ -145,7 +145,6 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
-        PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
 
         // Retrieve this interface's SNMP peer object
@@ -174,6 +173,14 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         //
         // This represents the maximum run-level, i.e. 2 means either running(1) or runnable(2) pass.
         String runLevel = ParameterMap.getKeyedString(parameters, "run-level", "2");
+        // If "match-all" is true, there can be an optional "min-services" and "max-services" parameters that can define a range. The service is up if:
+        // services_count >= min-services and services_count <= max-services
+        // a) either one is not defined, then only one has to pass.
+        // b) neither are defined, the monitor acts just like it used to - checking all instances to see if they are all running.
+        // c) both are defined, then the count should stay inside the defined range.
+        // It is assumed that all services would have to pass the minimum run state test, no matter what the count.
+        int minServices = ParameterMap.getKeyedInteger(parameters, "min-services", -1);
+        int maxServices = ParameterMap.getKeyedInteger(parameters, "max-services", -1);
 
         // set timeout and retries on SNMP peer object
         //
@@ -182,17 +189,27 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
         if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
+        PollStatus status = PollStatus.unavailable("HostResourceSwRunMonitor service not found, addr=" + hostAddress + ", service-name=" + serviceName);
 
         // Establish SNMP session with interface
         //
+        int matches = 0;
         try {
             if (log().isDebugEnabled()) {
                 log().debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
 
             if (serviceName == null) {
+                status.setReason("HostResourceSwRunMonitor no service-name defined, addr=" + hostAddress);
                 log().warn("HostResourceSwRunMonitor.poll: No Service Name Defined! ");
 		return status;
+            }
+
+            if (minServices > 0 && maxServices > 0 && minServices >= maxServices) {
+                String reason = "min-services(" + minServices + ") should be less than max-services(" + maxServices + ")";
+                status.setReason("HostResourceSwRunMonitor " + reason + ", addr=" + hostAddress+ ", service-name=" + serviceName);
+                log().warn("HostResourceSwRunMonitor.poll: " + reason + ".");
+                return status;
             }
 
             // This returns two maps: one of instance and service name, and one of instance and status.
@@ -200,13 +217,12 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
             Map<SnmpInstId, SnmpValue> statusResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSwRunMonitor", SnmpObjId.get(serviceStatusOid));
 
             // Iterate over the list of running services
-            int matches = 0;
             for(SnmpInstId nameInstance : nameResults.keySet()) {
 
                 // See if the service name is in the list of running services
                 if (match(serviceName, stripExtraQuotes(nameResults.get(nameInstance).toString()))) {
                     matches++;
-                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
+                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + ", service-name=" + serviceName + ", value=" + nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
                     if (meetsCriteria(statusResults.get(nameInstance), "<=", runLevel)) {
                         status = PollStatus.available();
@@ -216,7 +232,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                         }
                     // if we get here, that means the meetsCriteria test failed. 
                     } else {
-                        status = logDown(Level.DEBUG, "HostResourceSwRunMonitor poll failed, addr=" + hostAddress + " service name= " + serviceName + " status= " + statusResults.get(nameInstance) );
+                        status = logDown(Level.DEBUG, "HostResourceSwRunMonitor poll failed, addr=" + hostAddress + ", service-name=" + serviceName + ", status=" + statusResults.get(nameInstance));
                         return status;
                     }
                 }
@@ -229,6 +245,18 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
             status = logDown(Level.ERROR, "Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
+        }
+        // This will be executed only if match-all=true
+        boolean minOk = minServices > 0 ? matches >= minServices : true;
+        boolean maxOk = maxServices > 0 ? matches <= maxServices : true;
+        if (!minOk && maxServices < 0) { // failed min-services only
+            status = logDown(Level.DEBUG, "HostResourceSwRunMonitor poll failed: service-count(" + matches + ") >= min-services(" + minServices + "), addr=" + hostAddress + ", service-name=" + serviceName);
+        }
+        if (!maxOk && minServices < 0) { // failed max-services only
+            status = logDown(Level.DEBUG, "HostResourceSwRunMonitor poll failed: service-count(" + matches + ") <= max-services(" + maxServices + "), addr=" + hostAddress + ", service-name=" + serviceName);
+        }
+        if ((!minOk || !maxOk) && minServices > 0 && maxServices > 0) { // failed both (bad range)
+            status = logDown(Level.DEBUG, "HostResourceSwRunMonitor poll failed: min-services(" + minServices + ") >= service-count(" + matches + ") <= max-services(" + maxServices + "), addr=" + hostAddress + ", service-name=" + serviceName);
         }
 
         // If matchAll is set to true, then the status is set to available above with a single match.
