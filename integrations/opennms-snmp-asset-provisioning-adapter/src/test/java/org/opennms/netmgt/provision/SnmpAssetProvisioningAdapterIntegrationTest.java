@@ -126,23 +126,28 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 	public void testAddNode() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		OnmsNode node = m_nodeDao.get(NODE_ID);
-		assertNotNull(node);
-		int firstNodeId = node.getId();
-
-		m_adapter.addNode(firstNodeId);
-
-		assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
-		assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
-		assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
-		assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
-
-		node = m_nodeDao.get(firstNodeId);
-		assertNotNull(node);
-		System.out.println("ID: " + node.getAssetRecord().getId());
-		System.out.println("Comment: " + node.getAssetRecord().getComment());
-		assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
-		assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+		
+		try {
+			OnmsNode node = m_nodeDao.get(NODE_ID);
+			assertNotNull(node);
+			int firstNodeId = node.getId();
+	
+			m_adapter.addNode(firstNodeId);
+	
+			assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
+			assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
+			assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
+			assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
+	
+			node = m_nodeDao.get(firstNodeId);
+			assertNotNull(node);
+			System.out.println("ID: " + node.getAssetRecord().getId());
+			System.out.println("Comment: " + node.getAssetRecord().getComment());
+			assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
+			assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+		} finally {
+			m_adapter.getOperationQueue().removeListener(verifyOperations);
+		}
 	}
 
 	@Test
@@ -166,25 +171,30 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 	public void testAddSameOperationTwice() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(2);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		OnmsNode node = m_nodeDao.get(NODE_ID);
-		assertNotNull(node);
-		int firstNodeId = node.getId();
-
-		m_adapter.addNode(firstNodeId);
-		m_adapter.addNode(firstNodeId); // should get deduplicated
-		m_adapter.updateNode(firstNodeId);
-
-		assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
-		assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
-		assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
-		assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
-
-		node = m_nodeDao.get(firstNodeId);
-		assertNotNull(node);
-		System.out.println("ID: " + node.getAssetRecord().getId());
-		System.out.println("Comment: " + node.getAssetRecord().getComment());
-		assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
-		assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+		
+		try {
+			OnmsNode node = m_nodeDao.get(NODE_ID);
+			assertNotNull(node);
+			int firstNodeId = node.getId();
+	
+			m_adapter.addNode(firstNodeId);
+			m_adapter.addNode(firstNodeId); // should get deduplicated
+			m_adapter.updateNode(firstNodeId);
+	
+			assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
+			assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
+			assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
+			assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
+	
+			node = m_nodeDao.get(firstNodeId);
+			assertNotNull(node);
+			System.out.println("ID: " + node.getAssetRecord().getId());
+			System.out.println("Comment: " + node.getAssetRecord().getComment());
+			assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
+			assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+		} finally {
+			m_adapter.getOperationQueue().removeListener(verifyOperations);
+		}
 	}
 
 	@Test
@@ -192,25 +202,30 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 	public void testUpdateNode() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(2);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		OnmsNode node = m_nodeDao.get(NODE_ID);
-		assertNotNull(node);
-		int firstNodeId = node.getId();
-
-		assertNull(node.getAssetRecord().getComment());
-		m_adapter.addNode(firstNodeId);
-		m_adapter.updateNode(firstNodeId);
-
-		assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
-		assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
-		assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
-		assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
-
-		node = m_nodeDao.get(firstNodeId);
-		assertNotNull(node);
-		System.out.println("ID: " + node.getAssetRecord().getId());
-		System.out.println("Comment: " + node.getAssetRecord().getComment());
-		assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
-		assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+		
+		try {
+			OnmsNode node = m_nodeDao.get(NODE_ID);
+			assertNotNull(node);
+			int firstNodeId = node.getId();
+	
+			assertNull(node.getAssetRecord().getComment());
+			m_adapter.addNode(firstNodeId);
+			m_adapter.updateNode(firstNodeId);
+	
+			assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
+			assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
+			assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
+			assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
+	
+			node = m_nodeDao.get(firstNodeId);
+			assertNotNull(node);
+			System.out.println("ID: " + node.getAssetRecord().getId());
+			System.out.println("Comment: " + node.getAssetRecord().getComment());
+			assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
+			assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+		} finally {
+			m_adapter.getOperationQueue().removeListener(verifyOperations);
+		}
 	}
 
 	@Test
@@ -218,11 +233,16 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 	public void testNodeConfigChanged() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		OnmsNode node = m_nodeDao.get(NODE_ID);
-		assertNotNull(node);
-		int firstNodeId = node.getId();
-
-		m_adapter.nodeConfigChanged(firstNodeId);
+		
+		try {
+			OnmsNode node = m_nodeDao.get(NODE_ID);
+			assertNotNull(node);
+			int firstNodeId = node.getId();
+	
+			m_adapter.nodeConfigChanged(firstNodeId);
+		} finally {
+			m_adapter.getOperationQueue().removeListener(verifyOperations);
+		}
 	}
 
 	@Test
@@ -230,15 +250,20 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 	public void testDeleteNode() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		OnmsNode node = m_nodeDao.get(NODE_ID);
-		assertNotNull(node);
-		int firstNodeId = node.getId();
-
-		m_adapter.deleteNode(firstNodeId);
-
-		assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
-		assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
-		assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
-		assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
+		
+		try {
+			OnmsNode node = m_nodeDao.get(NODE_ID);
+			assertNotNull(node);
+			int firstNodeId = node.getId();
+	
+			m_adapter.deleteNode(firstNodeId);
+	
+			assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
+			assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
+			assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
+			assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
+		} finally {
+			m_adapter.getOperationQueue().removeListener(verifyOperations);
+		}
 	}
 }
