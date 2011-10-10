@@ -315,36 +315,35 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
 	// SELECT node.nodeid,ipinterface.ifindex FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
 	@Override
-	protected OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress address, final LinkableNode node) {
-        final String addressString = str(address);
+	protected OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress address) {
+	    final String addressString = str(address);
 
-        // See if we have an existing version of this OnmsAtInterface first
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.type", "A"));
-		criteria.add(Restrictions.eq("ipAddress", addressString));
-        List<OnmsAtInterface> interfaces = m_atInterfaceDao.findMatching(criteria);
+	    // See if we have an existing version of this OnmsAtInterface first
+	    final OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
+	    criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+	    criteria.add(Restrictions.eq("node.type", "A"));
+	    criteria.add(Restrictions.eq("ipAddress", addressString));
+	    List<OnmsAtInterface> interfaces = m_atInterfaceDao.findMatching(criteria);
 
-        if (!interfaces.isEmpty()) {
-        	if (interfaces.size() > 1) {
-        		LogUtils.debugf(this, "More than one AtInterface matched address %s!", addressString);
-        	}
-        	return interfaces.get(0);
-        }
-
-        // If not, fall back to creating one if the IP address is in the database
-        OnmsIpInterface iface;
-    	final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(addressString);
-    	if (ifaces.isEmpty()) {
-    		return null;
-    	} else {
-    		if (ifaces.size() > 1) {
-    			LogUtils.debugf(this, "More than one IpInterface matched address %s!", addressString);
-    		}
-    		iface = ifaces.get(0);
-    	}
-        
-        return new OnmsAtInterface(iface.getNode(), iface.getIpAddress());
+	    if (interfaces.isEmpty()) {
+	        // Create a new OnmsAtInterface if the IP address is in the database
+	        OnmsIpInterface iface;
+	        final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(addressString);
+	        if (ifaces.isEmpty()) {
+	            return null;
+	        } else {
+	            if (ifaces.size() > 1) {
+	                LogUtils.debugf(this, "More than one IpInterface matched address %s!", addressString);
+	            }
+	            iface = ifaces.get(0);
+	            return new OnmsAtInterface(iface.getNode(), iface.getIpAddress());
+	        }
+	    } else {
+	        if (interfaces.size() > 1) {
+	            LogUtils.debugf(this, "More than one AtInterface matched address %s!", addressString);
+	        }
+	        return interfaces.get(0);
+	    }
 	}
 
 	// SELECT snmpifindex FROM snmpinterface WHERE nodeid = ? AND (snmpifname = ? OR snmpifdescr = ?)

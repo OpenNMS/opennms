@@ -593,7 +593,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     }
 
-    protected OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress ipaddr, final LinkableNode node) throws SQLException {
+    protected OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress ipaddr) throws SQLException {
 
         final String hostAddress = str(ipaddr);
 		if (ipaddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) return null;

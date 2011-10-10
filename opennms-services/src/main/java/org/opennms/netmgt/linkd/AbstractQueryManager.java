@@ -97,7 +97,7 @@ public abstract class AbstractQueryManager implements QueryManager {
      * @return an {@link OnmsAtInterface}
      * @throws SQLException
      */
-    protected abstract OnmsAtInterface getAtInterfaceForAddress(Connection dbConn, InetAddress ipaddress, LinkableNode node) throws SQLException;
+    protected abstract OnmsAtInterface getAtInterfaceForAddress(Connection dbConn, InetAddress ipaddress) throws SQLException;
 
     protected abstract void saveAtInterface(Connection dbConn, OnmsAtInterface at)
             throws SQLException;
@@ -155,8 +155,8 @@ public abstract class AbstractQueryManager implements QueryManager {
 
             LogUtils.debugf(this, "processIpNetToMediaTable: trying save ipNetToMedia info: IP address %s, MAC address %s, ifIndex %d", hostAddress, physAddr, ifindex);
 
-            // get an At interface but without setting mac address
-            final OnmsAtInterface at = getAtInterfaceForAddress(dbConn, ipaddress, node);
+            // get an At interface but without setting MAC address
+            final OnmsAtInterface at = getAtInterfaceForAddress(dbConn, ipaddress);
             if (at == null) {
                 LogUtils.warnf(this, "processIpNetToMediaTable: no node found for IP address %s.", hostAddress);
                 sendNewSuspectEvent(ipaddress, snmpcoll.getTarget(), snmpcoll.getPackageName());
