@@ -6,7 +6,6 @@
 
 	<!-- Start 1.8 -->
 
-
 	<section id="opennms-1.8.15">
 		<title>Changes in OpenNMS 1.8.15</title>
 
@@ -20,6 +19,13 @@
 				<listitem><para>after upgrade to 1.8.13 RadiusAuthMonitor gives exception &quot;The RADIUS Server returned the wrong Identifier&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-4921'>NMS-4921</ulink>)</para></listitem>
 				<listitem><para>Availability Miscalculated in NodeAvailabilityReport.jrxml (and others) (Issue <ulink url='http://issues.opennms.org/browse/NMS-4931'>NMS-4931</ulink>)</para></listitem>
 				<listitem><para>1.8 do not compile (Issue <ulink url='http://issues.opennms.org/browse/NMS-4936'>NMS-4936</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.15-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>HostResourceSwRunMonitor: define the service-name parameter as a regular expression (Issue <ulink url='http://issues.opennms.org/browse/NMS-4978'>NMS-4978</ulink>)</para></listitem>
 			</itemizedlist>
 		</section>
 		<section id="opennms-1.8.15-task">
@@ -53,7 +59,6 @@
 			</itemizedlist>
 		</section>
 	</section>
-
 
 	<section id="opennms-1.8.13">
 		<title>Changes in OpenNMS 1.8.13</title>
