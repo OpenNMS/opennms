@@ -306,7 +306,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 					if (curNode.hasStpRoot(vlan)) {
 						designatedRoot = curNode.getStpRoot(vlan);
 					} else {
-					    LogUtils.debugf(this, "DiscoveryLink.run: desigated root bridge identifier not found. Skipping %s", curBaseBridgeAddress);
+					    LogUtils.debugf(this, "DiscoveryLink.run: designated root bridge identifier not found. Skipping %s", curBaseBridgeAddress);
 						continue;
 					}
 
