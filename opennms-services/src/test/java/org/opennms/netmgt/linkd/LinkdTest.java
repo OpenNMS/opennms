@@ -131,8 +131,15 @@ public class LinkdTest {
 
         nb.addNode("cisco1700").setForeignSource("linkd").setForeignId("cisco1700").setSysObjectId(".1.3.6.1.4.1.9.1.200").setType("A");
         nb.addInterface("10.1.5.2").setIsSnmpPrimary("P").setIsManaged("M")
-            .addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c00297a60000");
+            .addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("d00297a60000");
         m_nodeDao.save(nb.getCurrentNode());
+
+        /*
+        nb.addNode("cisco1700b").setForeignSource("linkd").setForeignId("cisco1700b").setSysObjectId(".1.3.6.1.4.1.9.1.200").setType("A");
+        nb.addInterface("10.1.5.1").setIsSnmpPrimary("P").setIsManaged("M")
+            .addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c00397a70000");
+        m_nodeDao.save(nb.getCurrentNode());
+        */
 
         nb.addNode("cisco3600").setForeignSource("linkd").setForeignId("cisco3600").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType("A");
         nb.addInterface("10.1.6.2").setIsSnmpPrimary("P").setIsManaged("M")

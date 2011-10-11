@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config;
 
 import static org.opennms.core.utils.InetAddressUtils.isInetAddressInRange;
+import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.IOException;
@@ -179,7 +180,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 				filterPassed = ipList.contains(iface);
             }
         
-            LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", iface, pkg.getName(), (filterPassed? "True":"False"));
+            LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", str(iface), pkg.getName(), (filterPassed? "True":"False"));
         
             if (!filterPassed) return false;
     
