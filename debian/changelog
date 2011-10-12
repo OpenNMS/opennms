@@ -1,3 +1,9 @@
+opennms (1.9.92-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 12 Oct 2011 13:45:00 -0400
+
 opennms (1.9.91-2) unstable; urgency=low
 
   * Fix dependency issue in opennms-db.
