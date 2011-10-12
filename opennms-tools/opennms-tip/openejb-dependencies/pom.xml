@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-tip</artifactId>
-    <version>1.9.92-SNAPSHOT</version>
+    <version>1.9.92</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.tip</groupId>
