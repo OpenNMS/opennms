@@ -63,10 +63,12 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected Linkd m_linkd;
 
+    @Override
     public void setLinkd(final Linkd linkd) {
         m_linkd = linkd;
     }
 
+    @Override
     public Linkd getLinkd() {
         return m_linkd;
     }
@@ -120,7 +122,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected abstract void markOldDataInactive(final Connection dbConn, final Timestamp now, final int nodeid) throws SQLException;
 
-    public OnmsNode getNode(Integer nodeId) throws SQLException {
+    protected OnmsNode getNode(Integer nodeId) throws SQLException {
         return getNodeDao().get(nodeId);
     }
 
