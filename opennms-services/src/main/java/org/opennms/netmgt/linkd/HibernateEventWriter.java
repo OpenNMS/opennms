@@ -181,12 +181,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
     
 	@Override
-	public String getSnmpPrimaryIp(final int nodeid) throws SQLException {
-		// SELECT ipaddr FROM ipinterface WHERE nodeid = ? AND issnmpprimary = 'P'
-		return str(m_ipInterfaceDao.findPrimaryInterfaceByNodeId(nodeid).getIpAddress());
-	}
-
-	@Override
 	public LinkableNode storeSnmpCollection(final LinkableNode node, final SnmpCollection snmpColl) throws SQLException {
 		final Timestamp scanTime = new Timestamp(System.currentTimeMillis());
         if (snmpColl.hasIpNetToMediaTable()) {
@@ -451,21 +445,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	@Override
 	protected int getSnmpIfType(final Connection dbConn, final int nodeId, final Integer ifIndex) throws SQLException {
 	    LogUtils.debugf(this, "getSnmpIfType(%d, %s)", nodeId, ifIndex);
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.eq("ifIndex", ifIndex));
-        final List<OnmsSnmpInterface> interfaces = m_snmpInterfaceDao.findMatching(criteria);
-        
-        if (interfaces.isEmpty()) {
-        	return -1;
-        } else {
-        	if (interfaces.size() > 1) {
-        		LogUtils.debugf(this, "More than one SNMP interface matches nodeId %d and ifIndex %s", nodeId, ifIndex);
-        	}
-        	final OnmsSnmpInterface snmpInterface = interfaces.get(0);
-        	return snmpInterface.getIfType();
-        }
+	    OnmsSnmpInterface snmpInterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, ifIndex);
+	    if (snmpInterface == null) {
+	        return -1;
+	    } else {
+	        return snmpInterface.getIfType();
+	    }
 	}
 
     @Override

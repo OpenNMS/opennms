@@ -62,7 +62,7 @@ public class SnmpInterfaceDaoHibernate extends
         Assert.notNull(foreignSource, "foreignSource may not be null");
         Assert.notNull(foreignId, "foreignId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
-        return findUnique("select distinct snmpIf from OnmsSnmpInterface as snmpIf join snmpIf.node as node where node.foreignSource = ? and node.foreignId = ? and snmpIf.ifIndex = ?", 
+        return findUnique("select distinct snmpIf from OnmsSnmpInterface as snmpIf join snmpIf.node as node where node.foreignSource = ? and node.foreignId = ? and node.type = 'A' and snmpIf.ifIndex = ?", 
                           foreignSource, 
                           foreignId, 
                           ifIndex);
