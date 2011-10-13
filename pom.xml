@@ -93,11 +93,11 @@
     <module>core</module>
     <module>features</module>
     <module>integrations</module>
+    <module>protocols</module>
     <module>tests</module>
     <module>integration-tests</module>
 
     <!-- old structure -->
-    <module>nsclient</module>
     <module>opennms-test</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
@@ -125,10 +125,6 @@
     <module>opennms-webapp</module>
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
-    <module>opennms-xmp</module>
-
-    <!-- extra modules -->
-    <module>dhcp</module>
   </modules>
   <build>
   <extensions>
