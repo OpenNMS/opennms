@@ -120,6 +120,7 @@
 	<collector service="JBoss4"       class-name="org.opennms.netmgt.collectd.JBossCollector"/>
 	<collector service="JBoss32"      class-name="org.opennms.netmgt.collectd.JBossCollector"/>
 	<collector service="JVM"          class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+	<collector service="JVM"          class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
 	<collector service="SNMP"         class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
 	<collector service="HttpDocCount" class-name="org.opennms.netmgt.collectd.HttpCollector" />
 	<collector service="WMI"  class-name="org.opennms.netmgt.collectd.WmiCollector"/>

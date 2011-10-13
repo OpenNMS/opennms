@@ -1,0 +1,28 @@
+<component>
+  <dependencySets>
+    <!-- jar files -->
+    <dependencySet>
+      <unpack>false</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+        <include>org.opennms:opennms-xmp:jar:${project.version}</include>
+      </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+    <!-- configuration files -->
+    <dependencySet>
+      <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>org.opennms:opennms-xmp:tar.gz:etc:${project.version}</include>
+      </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+  </dependencySets>
+</component>
