@@ -47,6 +47,7 @@ import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.test.ConfigurationTestUtils;
@@ -532,11 +533,13 @@ public class ConfigTesterTest {
     }
 
 	@Test
+	@Ignore
     public void testXmpConfig() {
         testConfigFile("xmp-config.xml");
     }
 
 	@Test
+	@Ignore
     public void testXmpDatacollectionConfig() {
         testConfigFile("xmp-datacollection-config.xml");
     }
