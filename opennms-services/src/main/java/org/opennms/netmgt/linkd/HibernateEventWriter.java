@@ -327,14 +327,14 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	            return null;
 	        } else {
 	            if (ifaces.size() > 1) {
-	                LogUtils.debugf(this, "More than one IpInterface matched address %s!", addressString);
+	                LogUtils.debugf(this, "getAtInterfaceForAddress: More than one IpInterface matched address %s!", addressString);
 	            }
 	            iface = ifaces.get(0);
 	            return new OnmsAtInterface(iface.getNode(), iface.getIpAddress());
 	        }
 	    } else {
 	        if (interfaces.size() > 1) {
-	            LogUtils.debugf(this, "More than one AtInterface matched address %s!", addressString);
+	            LogUtils.debugf(this, "getAtInterfaceForAddress: More than one AtInterface matched address %s!", addressString);
 	        }
 	        return interfaces.get(0);
 	    }
@@ -353,7 +353,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         	return -1;
         } else {
         	if (interfaces.size() > 1) {
-        		LogUtils.debugf(this, "More than one SnmpInterface matches nodeId %d and snmpIfName/snmpIfDescr %s", targetCdpNodeId, cdpTargetDevicePort);
+        		LogUtils.debugf(this, "getIfIndexByName: More than one SnmpInterface matches nodeId %d and snmpIfName/snmpIfDescr %s", targetCdpNodeId, cdpTargetDevicePort);
         	}
         	return interfaces.get(0).getIfIndex();
         }
@@ -372,7 +372,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         	return -1;
         } else {
         	if (interfaces.size() > 1) {
-        		LogUtils.debugf(this, "More than one node matches ipAddress %s", str(cdpTargetIpAddr));
+        		LogUtils.debugf(this, "getNodeidFromIp: More than one node matches ipAddress %s", str(cdpTargetIpAddr));
         	}
         	final OnmsNode node = interfaces.get(0).getNode();
         	if (node == null) return -1;
@@ -394,14 +394,20 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         	return null;
         } else {
         	if (interfaces.size() > 1) {
-        		LogUtils.debugf(this, "More than one IP Interface matches ipAddress %s", str(nexthop));
+        		LogUtils.debugf(this, "getNodeidMaskFromIp: More than one IP Interface matches ipAddress %s", str(nexthop));
         	}
         	final OnmsIpInterface ipInterface = interfaces.get(0);
         	final OnmsNode node = ipInterface.getNode();
 			final OnmsSnmpInterface snmpInterface = ipInterface.getSnmpInterface();
 
-			if (node == null) return null;
-			if (snmpInterface == null) return null;
+			if (node == null) {
+			    LogUtils.warnf(this, "getNodeidMaskFromIp: No node associated with OnmsIpInterface: %s", ipInterface);
+			    return null;
+			}
+			if (snmpInterface == null) {
+			    LogUtils.warnf(this, "getNodeidMaskFromIp: No SNMP interface associated with OnmsIpInterface: %s", ipInterface);
+			    return null;
+			}
 
 			return new RouterInterface(node.getId(), snmpInterface.getIfIndex(), snmpInterface.getNetMask());
         }
@@ -420,12 +426,15 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         	return null;
         } else {
         	if (interfaces.size() > 1) {
-        		LogUtils.debugf(this, "More than one IP Interface matches ipAddress %s", str(nexthop));
+        		LogUtils.debugf(this, "getNodeFromIp: More than one IP Interface matches ipAddress %s", str(nexthop));
         	}
         	final OnmsIpInterface ipInterface = interfaces.get(0);
         	final OnmsNode node = ipInterface.getNode();
 
-			if (node == null) return null;
+			if (node == null) {
+			    LogUtils.warnf(this, "getNodeFromIp: No node associated with OnmsIpInterface: %s", ipInterface);
+			    return null;
+			}
 
 			int ifIndex = -1;
 
@@ -571,7 +580,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         Assert.notNull(m_stpInterfaceDao);
         Assert.notNull(m_stpNodeDao);
         Assert.notNull(m_vlanDao);
-        LogUtils.debugf(this, "Initialized QueryManager.");
+        LogUtils.debugf(this, "Initialized %s", this.getClass().getSimpleName());
     }
 
     @Override
