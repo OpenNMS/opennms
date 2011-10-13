@@ -119,8 +119,6 @@ import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
-import org.opennms.netmgt.config.xmpConfig.XmpConfig;
-import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
@@ -573,14 +571,6 @@ public class WillItUnmarshalTest {
     @Test
     public void testExampleRancidAdapterConfiguration() throws Exception {
         unmarshalExample("rancid-configuration.xml", RancidConfiguration.class);
-    }
-    @Test
-    public void testXmpConfig() throws Exception {
-        unmarshal("xmp-config.xml", XmpConfig.class);
-    }
-    @Test
-    public void testXmpDatacollectionConfig() throws Exception {
-        unmarshal("xmp-datacollection-config.xml", XmpDatacollectionConfig.class);
     }
     @Test
     public void testMicroblogConfiguration() throws Exception {
