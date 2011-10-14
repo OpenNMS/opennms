@@ -27,6 +27,7 @@
 		<groupId>org.opennms</groupId>
     	<artifactId>opennms-services</artifactId>
     	<version>${project.version}</version>
+    	<scope>provided</scope>
     </dependency>
     
     <dependency>
