@@ -75,8 +75,6 @@ public class DbEventWriter extends AbstractQueryManager {
      */
     private static final String SQL_SELECT_SNMP_NODE = "SELECT nodesysoid, ipaddr FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE node.nodeid = ? AND nodetype = 'A' AND issnmpprimary = 'P'";
 
-    private static final String SQL_SELECT_SNMP_IP_ADDR = "SELECT ipaddr FROM ipinterface WHERE nodeid = ? AND issnmpprimary = 'P'";
-
     private static final String SQL_GET_NODEID = "SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?";
 
     private static final String SQL_GET_NODEID__IFINDEX_MASK = "SELECT node.nodeid,snmpinterface.snmpifindex,snmpinterface.snmpipadentnetmask FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid LEFT JOIN snmpinterface ON ipinterface.snmpinterfaceid = snmpinterface.id WHERE node.nodetype = 'A' AND ipinterface.ipaddr = ?";
@@ -145,6 +143,7 @@ public class DbEventWriter extends AbstractQueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void storeDiscoveryLink(final DiscoveryLink discovery) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -270,6 +269,7 @@ public class DbEventWriter extends AbstractQueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public LinkableNode storeSnmpCollection(LinkableNode node, SnmpCollection snmpcoll) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -319,6 +319,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     }
 
+    @Override
 	protected void saveAtInterface(Connection dbConn,
 			OnmsAtInterface at)
 			throws SQLException {
@@ -340,6 +341,7 @@ public class DbEventWriter extends AbstractQueryManager {
 		atInterfaceEntry.store(dbConn);
 	}
 
+    @Override
     protected void markOldDataInactive(final Connection dbConn, final Timestamp now, final int nodeid) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -393,6 +395,7 @@ public class DbEventWriter extends AbstractQueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void update(int nodeid, char status) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -458,6 +461,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     }
 
+    @Override
     protected int getNodeidFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
 
         int nodeid = -1;
@@ -496,6 +500,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     }
 
+    @Override
     protected RouterInterface getNodeidMaskFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
         final String hostAddress = str(ipaddr);
 		if (ipaddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) return null;
@@ -551,6 +556,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     }
 
+    @Override
     protected RouterInterface getNodeFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
         final String hostAddress = str(ipaddr);
 		if (ipaddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) return null;
@@ -593,7 +599,8 @@ public class DbEventWriter extends AbstractQueryManager {
 
     }
 
-    protected OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress ipaddr, final LinkableNode node) throws SQLException {
+    @Override
+    protected OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress ipaddr) throws SQLException {
 
         final String hostAddress = str(ipaddr);
 		if (ipaddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) return null;
@@ -643,6 +650,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     }
 
+    @Override
     protected int getSnmpIfType(Connection dbConn, int nodeid, Integer ifindex) throws SQLException {
 
         int snmpiftype = -1;
@@ -683,6 +691,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     }
 
+    @Override
     protected int getIfIndexByName(Connection dbConn, int nodeid, String ifName) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -726,6 +735,7 @@ public class DbEventWriter extends AbstractQueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public LinkableNode getSnmpNode(int nodeid) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -765,6 +775,7 @@ public class DbEventWriter extends AbstractQueryManager {
      * @return a {@link java.util.List} object.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public List<LinkableNode> getSnmpNodeList() throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -806,6 +817,7 @@ public class DbEventWriter extends AbstractQueryManager {
      *
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public void updateDeletedNodes() throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -857,6 +869,7 @@ public class DbEventWriter extends AbstractQueryManager {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void updateForInterface(int nodeId, String ipAddr, int ifIndex, char status) throws SQLException {
         final DBUtils d = new DBUtils(getClass());
         try {
@@ -923,41 +936,7 @@ public class DbEventWriter extends AbstractQueryManager {
         }
     }
     
-    /** {@inheritDoc} */
-    public String getSnmpPrimaryIp(int nodeid) throws SQLException {
-
-        final DBUtils d = new DBUtils(getClass());
-        try {
-
-            Connection dbConn = getConnection();
-            d.watch(dbConn);
-
-            /**
-             * Query to select info for specific node
-             */
-    
-            String ipaddr = null;
-            PreparedStatement stmt = dbConn.prepareStatement(SQL_SELECT_SNMP_IP_ADDR);
-            d.watch(stmt);
-            stmt.setInt(1, nodeid);
-            LogUtils.debugf(this, "getSnmpPrimaryIp: SQL statement = " + stmt.toString());
-    
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-    
-            while (rs.next()) {
-                ipaddr = rs.getString("ipaddr");
-                if (ipaddr == null) return null;
-                LogUtils.debugf(this, "getSnmpPrimaryIp: found node element: nodeid " + nodeid + " ipaddr " + ipaddr);
-    
-            }
-            return ipaddr;
-        } finally {
-            d.cleanUp();
-        }
-
-    }
-
+    @Override
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
@@ -971,6 +950,7 @@ public class DbEventWriter extends AbstractQueryManager {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
 	protected void saveIpRouteInterface(final Connection dbConn, OnmsIpRouteInterface ipRouteInterface) throws SQLException {
 		DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry.get(dbConn, ipRouteInterface.getNode().getId(), ipRouteInterface.getRouteDest());
 		if (iprouteInterfaceEntry == null) {
@@ -997,6 +977,7 @@ public class DbEventWriter extends AbstractQueryManager {
 		iprouteInterfaceEntry.store(dbConn);
 	}
 
+    @Override
 	protected void saveVlan(final Connection dbConn, final OnmsVlan vlan) throws SQLException {
 		// always save info to DB
 		DbVlanEntry vlanEntry = DbVlanEntry.get(dbConn, vlan.getNode().getId(), vlan.getVlanId());
@@ -1019,6 +1000,7 @@ public class DbEventWriter extends AbstractQueryManager {
 		vlanEntry.store(dbConn);
 	}
 
+    @Override
 	protected void saveStpNode(final Connection dbConn, final OnmsStpNode stpNode) throws SQLException {
 		DbStpNodeEntry dbStpNodeEntry = DbStpNodeEntry.get(dbConn, stpNode.getNode().getId(), stpNode.getBaseVlan());
 		if (dbStpNodeEntry == null) {
@@ -1039,6 +1021,7 @@ public class DbEventWriter extends AbstractQueryManager {
 		dbStpNodeEntry.store(dbConn);
 	}
 
+    @Override
     protected void saveStpInterface(final Connection dbConn, final OnmsStpInterface stpInterface) throws SQLException {
         DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry.get(dbConn, stpInterface.getNode().getId(), stpInterface.getBridgePort(), stpInterface.getVlan());
         if (dbStpIntEntry == null) {
@@ -1061,6 +1044,7 @@ public class DbEventWriter extends AbstractQueryManager {
         dbStpIntEntry.store(dbConn);
     }
 
+    @Override
     protected List<String> getPhysAddrs(final int nodeId, final DBUtils d, final Connection dbConn) throws SQLException {
         final List<String> physaddrs = new ArrayList<String>();
 

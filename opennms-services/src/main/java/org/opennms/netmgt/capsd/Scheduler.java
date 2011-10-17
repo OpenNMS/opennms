@@ -378,15 +378,14 @@ final class Scheduler implements Runnable, PausableFiber {
      *             Thrown if the fiber is already running.
      */
     public synchronized void start() {
-        if (m_worker != null)
-            throw new IllegalStateException("The fiber has already run or is running");
+        if (m_worker != null) throw new IllegalStateException("The fiber has already run or is running");
 
         m_worker = new Thread(this, getName());
+        m_worker.setDaemon(true);
         m_worker.start();
         m_status = STARTING;
 
-        if (log().isDebugEnabled())
-            log().debug("Scheduler.start: scheduler started");
+        if (log().isDebugEnabled()) log().debug("Scheduler.start: scheduler started");
     }
 
     /**

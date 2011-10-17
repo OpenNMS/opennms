@@ -117,15 +117,6 @@ public interface QueryManager {
     void updateDeletedNodes() throws SQLException;
 
     /**
-     * <p>getSnmpPrimaryIp</p>
-     *
-     * @param nodeid a int.
-     * @return a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     */
-    String getSnmpPrimaryIp(int nodeid) throws SQLException;
-    
-    /**
      * <p>storeSnmpCollection</p>
      *
      * @param node a {@link org.opennms.netmgt.linkd.LinkableNode} object.

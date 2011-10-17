@@ -83,7 +83,9 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
@@ -665,6 +667,14 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         //Verify snmpInterface count
         assertEquals("Unexpected number of SNMP interfaces found: " + getSnmpInterfaceDao().findAll(), 6, getSnmpInterfaceDao().countAll());
+        
+        // Ensure that collection is on for all ip interfaces
+        for(OnmsIpInterface iface : getInterfaceDao().findAll()) {
+        	OnmsSnmpInterface snmpIface = iface.getSnmpInterface();
+			assertNotNull("Expected an snmp interface associated with "+iface.getIpAddress(), snmpIface);
+        	assertTrue("Expected snmp interface associated with "+iface.getIpAddress()+" to have collection enabled.", snmpIface.isCollectionEnabled());
+        	
+        }
     }
 
     // fail if we take more than five minutes

@@ -2025,6 +2025,7 @@
   <event-file>events/Junos.events.xml</event-file>
   <event-file>events/JunosV1.events.xml</event-file>
   <event-file>events/K5Systems.events.xml</event-file>
+  <event-file>events/LLDP.events.xml</event-file>
   <event-file>events/Liebert.events.xml</event-file>
   <event-file>events/Liebert.600SM.events.xml</event-file>
   <event-file>events/Linksys.events.xml</event-file>

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.9.92-SNAPSHOT</version>
+    <version>1.9.93-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>org.opennms</groupId>
@@ -286,6 +286,18 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rancid-provisioning-adapter</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-xmp</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-xmp</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>etc</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

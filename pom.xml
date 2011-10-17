@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.9.92-SNAPSHOT</version>
+  <version>1.9.93-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org</url>
@@ -93,11 +93,11 @@
     <module>core</module>
     <module>features</module>
     <module>integrations</module>
+    <module>protocols</module>
     <module>tests</module>
     <module>integration-tests</module>
 
     <!-- old structure -->
-    <module>nsclient</module>
     <module>opennms-test</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
@@ -125,10 +125,6 @@
     <module>opennms-webapp</module>
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
-    <module>opennms-xmp</module>
-
-    <!-- extra modules -->
-    <module>dhcp</module>
   </modules>
   <build>
   <extensions>

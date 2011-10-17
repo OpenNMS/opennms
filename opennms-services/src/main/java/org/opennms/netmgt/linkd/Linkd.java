@@ -610,10 +610,10 @@ public class Linkd extends AbstractServiceDaemon {
 	void sendNewSuspectEvent(InetAddress ipaddress, InetAddress ipowner, String pkgName) {
 
 		if (m_newSuspectEventsIpAddr.contains(ipaddress) ) {
-		    LogUtils.infof(this, "sendNewSuspectEvent: nothing to send, suspect event previously sent for IP address: %s", ipaddress);
+		    LogUtils.infof(this, "sendNewSuspectEvent: nothing to send, suspect event previously sent for IP address: %s", str(ipaddress));
 			return;
 		} else if (!isInterfaceInPackageRange(ipaddress, pkgName)) {
-		    LogUtils.infof(this, "sendNewSuspectEvent: nothing to send for IP address: %s, not in package: %s", ipaddress, pkgName);
+		    LogUtils.infof(this, "sendNewSuspectEvent: nothing to send for IP address: %s, not in package: %s", str(ipaddress), pkgName);
 			return;
 		}
 

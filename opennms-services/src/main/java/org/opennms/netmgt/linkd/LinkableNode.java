@@ -29,6 +29,8 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,7 +107,7 @@ public class LinkableNode extends Object {
 	public String toString() {
 	    return new ToStringBuilder(this)
 	        .append("nodeId", m_nodeId)
-	        .append("snmpPrimaryAddr", m_snmpprimaryaddr)
+	        .append("snmpPrimaryAddr", str(m_snmpprimaryaddr))
 	        .append("sysOid", m_sysoid)
 	        .toString();
 	}

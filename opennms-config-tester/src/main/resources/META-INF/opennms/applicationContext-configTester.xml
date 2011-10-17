@@ -88,7 +88,7 @@
         <entry key="wmi-config.xml" value="wmiPeerFactory"/>
         <entry key="wmi-datacollection-config.xml" value="wmiDataCollectionConfigFactory"/>
         <entry key="xmlrpcd-configuration.xml" value="xmlrpcdConfigFactory"/>
-        <entry key="xmp-config.xml" value="xmpConfigFactory"/>
+        <!-- <entry key="xmp-config.xml" value="xmpConfigFactory"/> --><!-- Not part of standard build -->
         <entry key="xmp-datacollection-config.xml" value="xmpCollectionFactory"/>
         <!-- <entry key="xmpp-configuration.properties" value="unknown"/> --><!-- config code not in its own class -->
       </map>

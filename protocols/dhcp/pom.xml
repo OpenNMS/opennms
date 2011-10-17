@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.protocols</artifactId>
+    <version>1.9.93-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>org.opennms.dhcp</artifactId>
+  <packaging>jar</packaging>
+  <name>OpenNMS DHCP Monitoring</name>
+  <description>
+    This module provides DHCP discovery and monitoring to opennms.
+  </description>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/etc.xml</descriptor>
+            <descriptor>src/assembly/xsds.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- NOTE: JDHCP is licensed as GPL and should be kept separate from other libraries -->
+    <dependency>
+      <groupId>org.dhcp.jdhcp</groupId>
+      <artifactId>jdhcp</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-api</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-daemon</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-config</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-config-utils</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-dao</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-test</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-util</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-services</artifactId>
+    </dependency>
+
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-mock-simpleserver</artifactId>
+	<scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+  </repositories>
+</project>

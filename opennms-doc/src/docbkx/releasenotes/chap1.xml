@@ -6,6 +6,19 @@
 
 	<!-- Start 1.9 -->
 
+	<section id="introduction-1.9.92">
+		<title>Release 1.9.92</title>
+
+		<para>
+			Release 1.9.92 is the latest in a series of development releases of OpenNMS.  This
+			represents what will eventually become OpenNMS 1.10.0 when it is blessed as the
+			next stable release.
+		</para>
+		<para>
+			The codename for 1.9.92 is <emphasis>Superbone</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.9.91">
 		<title>Release 1.9.91</title>
 
@@ -158,6 +171,21 @@
 	</section>
 
 	<!-- Start 1.8 -->
+
+	<section id="introduction-1.8.15">
+		<title>Release 1.8.15</title>
+
+		<para>
+			Release 1.8.15 is the latest in the 1.8 series of production-ready OpenNMS releases.
+		</para>
+		<para>
+			Since 1.8.14, <ulink url="http://issues.opennms.org/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project+%3D+NMS+AND+fixVersion+%3D+%221.8.15%22">a
+			number of small changes</ulink> were made.
+		</para>
+		<para>
+			The codename for 1.8.15 is <emphasis>Band-rumped Storm-Petrel</emphasis>
+		</para>
+	</section>
 
 	<section id="introduction-1.8.14">
 		<title>Release 1.8.14</title>

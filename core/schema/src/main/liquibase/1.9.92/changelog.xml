@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Change the type of interfaceid field in notifications to 'text' so that they can
+        handle IPv6 addresses of arbitrary length (39 characters plus scope ID)
+    -->
+    <changeSet author="brozow" id="1.9.92-changeInterfaeIDForIPV6">
+        <modifyDataType tableName="notifications"   columnName="interfaceid" newDataType="text" />
+        <rollback>
+	  <modifyDataType tableName="notifications" columnName="interfaceid" newDataType="varchar(16)" />
+        </rollback>
+    </changeSet>
+
+
+</databaseChangeLog>

@@ -6,6 +6,76 @@
 
 	<!-- Start 1.9 -->
 
+
+	<section id="opennms-1.9.92">
+		<title>Changes in OpenNMS 1.9.92</title>
+
+		<section id="opennms-1.9.92-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Selected more than 56 things in an add hoc resource graph returns no data (Issue <ulink url='http://issues.opennms.org/browse/NMS-2205'>NMS-2205</ulink>)</para></listitem>
+				<listitem><para>Statsd Database Deadlock (Issue <ulink url='http://issues.opennms.org/browse/NMS-2390'>NMS-2390</ulink>)</para></listitem>
+				<listitem><para>normalize radius code (Issue <ulink url='http://issues.opennms.org/browse/NMS-2812'>NMS-2812</ulink>)</para></listitem>
+				<listitem><para>Deleted node appear in KSC report creation (Issue <ulink url='http://issues.opennms.org/browse/NMS-2977'>NMS-2977</ulink>)</para></listitem>
+				<listitem><para>Provisioning issues with Primary Interface (Issue <ulink url='http://issues.opennms.org/browse/NMS-3324'>NMS-3324</ulink>)</para></listitem>
+				<listitem><para>Unable provisioned node when SNMP Agent is down (Issue <ulink url='http://issues.opennms.org/browse/NMS-3470'>NMS-3470</ulink>)</para></listitem>
+				<listitem><para>provisiond does not create nodelabelchanged event (Issue <ulink url='http://issues.opennms.org/browse/NMS-3594'>NMS-3594</ulink>)</para></listitem>
+				<listitem><para>webUI shows 100% availability although service is not monitored (Issue <ulink url='http://issues.opennms.org/browse/NMS-3887'>NMS-3887</ulink>)</para></listitem>
+				<listitem><para>WebUI shows &quot;rescan to suspend&quot; for &quot;forced unmanaged&quot; services (Issue <ulink url='http://issues.opennms.org/browse/NMS-3906'>NMS-3906</ulink>)</para></listitem>
+				<listitem><para>Thresholding - Absolutechange stored as floating-point value (Issue <ulink url='http://issues.opennms.org/browse/NMS-4028'>NMS-4028</ulink>)</para></listitem>
+				<listitem><para>Poll failure reasons pooched in 1.9.1 Snapshot again (Issue <ulink url='http://issues.opennms.org/browse/NMS-4073'>NMS-4073</ulink>)</para></listitem>
+				<listitem><para>XMPP Failure on empty XMPP addresses (Issue <ulink url='http://issues.opennms.org/browse/NMS-4123'>NMS-4123</ulink>)</para></listitem>
+				<listitem><para>No nodeid found for next hop ip/0.0.0.0 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4185'>NMS-4185</ulink>)</para></listitem>
+				<listitem><para>Sending notifications causes exception in javamailer if user is missing smtp adress (Issue <ulink url='http://issues.opennms.org/browse/NMS-4367'>NMS-4367</ulink>)</para></listitem>
+				<listitem><para>When an IP is configured on an interface, the interface name is no longer visible in Node Link Detailed Info (Issue <ulink url='http://issues.opennms.org/browse/NMS-4412'>NMS-4412</ulink>)</para></listitem>
+				<listitem><para>Provisiond NodeCategorySettingPolicy. Nodes lose categorization in subsequent Synchronizations (Issue <ulink url='http://issues.opennms.org/browse/NMS-4423'>NMS-4423</ulink>)</para></listitem>
+				<listitem><para>404 NOT_FOUND after generating a system report using FTP (Issue <ulink url='http://issues.opennms.org/browse/NMS-4674'>NMS-4674</ulink>)</para></listitem>
+				<listitem><para>Provisiond allows duplicate nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-4695'>NMS-4695</ulink>)</para></listitem>
+				<listitem><para>Service monitored with 100% availability instead of Not Monitored (Issue <ulink url='http://issues.opennms.org/browse/NMS-4704'>NMS-4704</ulink>)</para></listitem>
+				<listitem><para>Requisition REST Service allows duplicate nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-4749'>NMS-4749</ulink>)</para></listitem>
+				<listitem><para>WMI datacollection stops after changes in Schedules Outages (Issue <ulink url='http://issues.opennms.org/browse/NMS-4830'>NMS-4830</ulink>)</para></listitem>
+				<listitem><para>Remote Poller state changes from Paused to Running (Issue <ulink url='http://issues.opennms.org/browse/NMS-4834'>NMS-4834</ulink>)</para></listitem>
+				<listitem><para>InterfaceFilter does not normalize IP addresses (Issue <ulink url='http://issues.opennms.org/browse/NMS-4881'>NMS-4881</ulink>)</para></listitem>
+				<listitem><para>HttpCollector ignores &quot;port&quot; parameter from Collectd config (Issue <ulink url='http://issues.opennms.org/browse/NMS-4886'>NMS-4886</ulink>)</para></listitem>
+				<listitem><para>base-url not used when viewing resource graphs (Issue <ulink url='http://issues.opennms.org/browse/NMS-4903'>NMS-4903</ulink>)</para></listitem>
+				<listitem><para>Provisiond NodeScan aborted scanning IP address tables (Issue <ulink url='http://issues.opennms.org/browse/NMS-4904'>NMS-4904</ulink>)</para></listitem>
+				<listitem><para>wrong implementation of org.opennms.netmgt.correlation.Correlator$EngineAdapter.getName() ? (Issue <ulink url='http://issues.opennms.org/browse/NMS-4914'>NMS-4914</ulink>)</para></listitem>
+				<listitem><para>Resource Graphs selector  - doesn&#39;t indicate stale graph data (Issue <ulink url='http://issues.opennms.org/browse/NMS-4918'>NMS-4918</ulink>)</para></listitem>
+				<listitem><para>Resource Graphs selector - &quot;Show more&quot; to infinity and beyond! and other quirks (Issue <ulink url='http://issues.opennms.org/browse/NMS-4919'>NMS-4919</ulink>)</para></listitem>
+				<listitem><para>KSC Reports search box on home page is case sensitive (Issue <ulink url='http://issues.opennms.org/browse/NMS-4922'>NMS-4922</ulink>)</para></listitem>
+				<listitem><para>RadiusAuthenticationProvider.java Tests against wrong variable. (Issue <ulink url='http://issues.opennms.org/browse/NMS-4928'>NMS-4928</ulink>)</para></listitem>
+				<listitem><para>Availability Miscalculated in NodeAvailabilityReport.jrxml (and others) (Issue <ulink url='http://issues.opennms.org/browse/NMS-4931'>NMS-4931</ulink>)</para></listitem>
+				<listitem><para>KSC Reports fails due to  Missing Parameter: report (Issue <ulink url='http://issues.opennms.org/browse/NMS-4934'>NMS-4934</ulink>)</para></listitem>
+				<listitem><para>The Snmp Poller does not follow the maxVarBindPerPDU statement (Issue <ulink url='http://issues.opennms.org/browse/NMS-4935'>NMS-4935</ulink>)</para></listitem>
+				<listitem><para>Hung threads causing 100% CPU usage (possibly Jetty + HTTPS/SSL related) (Issue <ulink url='http://issues.opennms.org/browse/NMS-4940'>NMS-4940</ulink>)</para></listitem>
+				<listitem><para>All SNMP Interfaces marked as &quot;no collect&quot; by default on any provisioned node (Issue <ulink url='http://issues.opennms.org/browse/NMS-4965'>NMS-4965</ulink>)</para></listitem>
+				<listitem><para>ReinitializePrimarySNMPInterface event causes SNMP interfaces manually marked as &quot;Collect&quot; to revert to &quot;No collect&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-4967'>NMS-4967</ulink>)</para></listitem>
+				<listitem><para>Exception with ldapAuthoritiesPopulator with LDAP and / or Radius integration (Issue <ulink url='http://issues.opennms.org/browse/NMS-4975'>NMS-4975</ulink>)</para></listitem>
+				<listitem><para>Notifications Fail with IPv6 Addresses (Issue <ulink url='http://issues.opennms.org/browse/NMS-4977'>NMS-4977</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.9.92-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>DELL DRAC/CMC power stats collection and graphs (Issue <ulink url='http://issues.opennms.org/browse/NMS-3299'>NMS-3299</ulink>)</para></listitem>
+				<listitem><para>Default support AKCP SecurityProbe x20 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4156'>NMS-4156</ulink>)</para></listitem>
+				<listitem><para>New Cisco OIDs for linkd (Issue <ulink url='http://issues.opennms.org/browse/NMS-4670'>NMS-4670</ulink>)</para></listitem>
+				<listitem><para>Report on Windows Servers disk usage (Issue <ulink url='http://issues.opennms.org/browse/NMS-4948'>NMS-4948</ulink>)</para></listitem>
+				<listitem><para>Asset-page categorie fields validation. (Issue <ulink url='http://issues.opennms.org/browse/NMS-4963'>NMS-4963</ulink>)</para></listitem>
+				<listitem><para>HostResourceSwRunMonitor: define the service-name parameter as a regular expression (Issue <ulink url='http://issues.opennms.org/browse/NMS-4978'>NMS-4978</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.9.92-task">
+			<title>Task</title>
+
+			<itemizedlist>
+				<listitem><para>Make sure we add -XX:+HeapDumpOnOutOfMemoryError to default runtime arguments (Issue <ulink url='http://issues.opennms.org/browse/NMS-4953'>NMS-4953</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.9.91">
 		<title>Changes in OpenNMS 1.9.91</title>
 
@@ -579,6 +649,37 @@
 	</section>
 
 	<!-- Start 1.8 -->
+
+	<section id="opennms-1.8.15">
+		<title>Changes in OpenNMS 1.8.15</title>
+
+		<section id="opennms-1.8.15-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Bad link in breadcrumb &#39;KSC Reports&#39; on ..../opennms/KSC/customView.htm?type=custom&amp;report=1 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4740'>NMS-4740</ulink>)</para></listitem>
+				<listitem><para>WMI datacollection stops after changes in Schedules Outages (Issue <ulink url='http://issues.opennms.org/browse/NMS-4830'>NMS-4830</ulink>)</para></listitem>
+				<listitem><para>HttpCollector ignores &quot;port&quot; parameter from Collectd config (Issue <ulink url='http://issues.opennms.org/browse/NMS-4886'>NMS-4886</ulink>)</para></listitem>
+				<listitem><para>after upgrade to 1.8.13 RadiusAuthMonitor gives exception &quot;The RADIUS Server returned the wrong Identifier&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-4921'>NMS-4921</ulink>)</para></listitem>
+				<listitem><para>Availability Miscalculated in NodeAvailabilityReport.jrxml (and others) (Issue <ulink url='http://issues.opennms.org/browse/NMS-4931'>NMS-4931</ulink>)</para></listitem>
+				<listitem><para>1.8 do not compile (Issue <ulink url='http://issues.opennms.org/browse/NMS-4936'>NMS-4936</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.15-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>HostResourceSwRunMonitor: define the service-name parameter as a regular expression (Issue <ulink url='http://issues.opennms.org/browse/NMS-4978'>NMS-4978</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.15-task">
+			<title>Task</title>
+
+			<itemizedlist>
+				<listitem><para>Make sure we add -XX:+HeapDumpOnOutOfMemoryError to default runtime arguments (Issue <ulink url='http://issues.opennms.org/browse/NMS-4953'>NMS-4953</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.8.14">
 		<title>Changes in OpenNMS 1.8.14</title>

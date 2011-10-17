@@ -229,10 +229,10 @@
 					<onms_fs:FieldSetTextBox ui:field="sUserName"
 						name="{con.username}" value="" helpText="{con.usernameHelp}"
 						maxLength="32" />
-					<onms_fs:FieldSetTextBox ui:field="sPassword"
+					<onms_fs:FieldSetPasswordBox ui:field="sPassword"
 						name="{con.password}" value="" helpText="{con.passwordHelp}"
 						maxLength="32" />
-					<onms_fs:FieldSetTextBox ui:field="sEnablePassword"
+					<onms_fs:FieldSetPasswordBox ui:field="sEnablePassword"
 						name="{con.enablePassword}" value="" helpText="{con.enablePasswordHelp}"
 						maxLength="32" />
 					<onms_fs:FieldSetListBox ui:field="sConnection"
