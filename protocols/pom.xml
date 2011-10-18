@@ -13,5 +13,6 @@
     <module>dhcp</module>
     <module>nsclient</module>
     <module>xmp</module>
+    <module>selenium-monitor</module>
   </modules>
 </project>

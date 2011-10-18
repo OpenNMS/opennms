@@ -31,7 +31,6 @@
     <module>gwt-graph-resource-list</module>
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>
-    <module>ajax-page-monitor</module>
   </modules>
 
   <profiles>

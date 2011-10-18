@@ -1,4 +1,4 @@
-package groovy;
+package selenium.test.groovy;
 
 import static org.junit.Assert.*
 

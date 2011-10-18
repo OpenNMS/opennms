@@ -47,13 +47,14 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
 		TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_SEQUENCE_RETRY, DEFAULT_TIMEOUT);
 	    
 		for(tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
+		    String seleniumTestFilename = getGroovyFilename( parameters );
     		try {
     	        
                 Map<String, Number> responseTimes = new HashMap<String, Number>();
                 responseTimes.put("response-time", Double.NaN);
                 
                 tracker.startAttempt();
-                Result result = runTest( getBaseUrl(parameters, svc), createGroovyClass( getGroovyFilename( parameters ) ) );
+                Result result = runTest( getBaseUrl(parameters, svc), createGroovyClass( seleniumTestFilename ) );
                 double responseTime = tracker.elapsedTimeInMillis();
                 responseTimes.put("response-time", responseTime);
                 
@@ -64,11 +65,11 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
                     serviceStatus = PollStatus.unavailable( getFailureMessage( result, svc ));
                 }
             } catch (CompilationFailedException e) {
-                serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on:" + svc.getIpAddr() + " failed : " + e.getMessage());
+                serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on:" + svc.getIpAddr() + " failed : selenium-test compilation error " + e.getMessage());
             } catch (IOException e) {
-                serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on " + svc.getIpAddr() + " failed: " + e.getMessage());
+                serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on " + svc.getIpAddr() + " failed: IOException occurred, failed to find selenium-test: " + seleniumTestFilename);
             } catch (Exception e) {
-                serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on " + svc.getIpAddr() + " failed: " + e.getMessage());
+                serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on " + svc.getIpAddr() + " failed:\n" + e.getMessage());
             }
 		}
 	    
@@ -120,11 +121,12 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
         
     }
 
-    private Class<?> createGroovyClass(String string) throws CompilationFailedException, IOException 
+    private Class<?> createGroovyClass(String filename) throws CompilationFailedException, IOException 
     {
         GroovyClassLoader gcl = new GroovyClassLoader();
         
-        return gcl.parseClass( new File( string ) );
+        String file = System.getProperty("opennms.selenium.test.dir") + "/selenium/test/groovy/" + filename;
+        return gcl.parseClass( new File( file ) );
     }
 
 }

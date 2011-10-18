@@ -16,10 +16,11 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.monitors.AjaxPageSequenceMonitor;
+import org.opennms.netmgt.poller.monitors.SeleniumMonitor;
+import org.opennms.netmgt.poller.monitors.SeleniumMonitor.BaseUrlUtils;
 
 
-public class AjaxPageSequenceMonitorTest {
+public class SeleniumMonitorTest {
 	
 	
 	public static class MockMonService implements MonitoredService{
@@ -77,20 +78,18 @@ public class AjaxPageSequenceMonitorTest {
 	
 	@Before
 	public void setup() throws Exception{
-		
+		System.setProperty("opennms.selenium.test.dir", "src/test/resources");
 	}
 	
 	@Test
 	public void testPollStatusNotNull() throws UnknownHostException{
 	    MonitoredService monSvc = new MockMonService(1, "papajohns", InetAddress.getByName("http://www.papajohns.co.uk"), "PapaJohnsSite");
 	    
-	    System.out.println("monSvc.getSvcUrl: " + monSvc.getSvcUrl());
-	    
 	    Map<String, Object> params = new HashMap<String, Object>();
-	    params.put("selenium-test", "src/main/resources/groovy/SeleniumGroovyTest.groovy");
+	    params.put("selenium-test", "SeleniumGroovyTest.groovy");
 	    params.put("base-url", "${ipAddr}");
 	    
-		AjaxPageSequenceMonitor ajaxPSM = new AjaxPageSequenceMonitor();
+		SeleniumMonitor ajaxPSM = new SeleniumMonitor();
 		PollStatus pollStatus = ajaxPSM.poll(monSvc, params);
 		
 		assertNotNull("PollStatus must not be null", pollStatus);
@@ -98,6 +97,19 @@ public class AjaxPageSequenceMonitorTest {
 		System.err.println("PollStatus message: " + pollStatus.getReason());
 		assertEquals(PollStatus.available(), pollStatus);
 		
+	}
+	
+	@Test
+	public void testBaseUrlUtils() 
+	{
+	    
+	    String baseUrl = "http://${ipAddr}:8080";
+	    String monSvcIpAddr = "192.168.1.1";
+	    String finalUrl = "";
+	    
+	    finalUrl = BaseUrlUtils.replaceIpAddr(baseUrl, monSvcIpAddr);
+	    
+	    assertEquals("http://192.168.1.1:8080", finalUrl);
 	}
 	
 	
