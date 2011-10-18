@@ -10,6 +10,7 @@
     <componentDescriptor>src/assembly/components/webapps.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/adapters.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/dhcp.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/radius.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/xmp.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>

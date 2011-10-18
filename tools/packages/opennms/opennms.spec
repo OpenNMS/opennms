@@ -162,6 +162,7 @@ Requires:	opennms-plugin-provisioning-rancid
 Requires:   opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-protocol-dhcp
+Requires:	opennms-plugin-protocol-radius
 Requires:	opennms-plugin-protocol-xmp
 
 %description plugins
@@ -245,6 +246,19 @@ Requires:   opennms-core = %{version}-%{release}
 %description plugin-protocol-dhcp
 The DHCP protocol plugin provides a daemon, provisioning detector, capsd plugin, and
 poller monitor for DHCP.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-protocol-radius
+Summary:    RADIUS Plugin Support for OpenNMS
+Group:      Applications/System
+Requires:   opennms-core = %{version}-%{release}
+
+%description plugin-protocol-radius
+The RADIUS protocol plugin provides a daemon, provisioning detector, capsd plugin,
+poller monitor, and Spring Security authorization mechanism for RADIUS.
 
 %{extrainfo}
 %{extrainfo2}
@@ -394,6 +408,8 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
 	grep -v 'provisioning-adapter' | \
 	grep -v 'org.opennms.dhcp-' | \
+	grep -v 'org.opennms.protocols.radius' | \
+	grep -v 'gnu-crypto' | \
 	grep -v 'opennms-xmp' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
@@ -477,6 +493,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(664,root,root) %config(noreplace) %{instprefix}/etc/dhcpd-configuration.xml
 %attr(664,root,root) %{instprefix}/lib/org.opennms.dhcp-*.jar
 %attr(664,root,root) %{sharedir}/xsds/dhcpd-configuration.xsd
+
+%files plugin-protocol-radius
+%attr(664,root,root) %{instprefix}/lib/gnu-crypto*.jar
+%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.radius*.jar
 
 %files plugin-protocol-xmp
 %attr(664,root,root) %config(noreplace) %{instprefix}/etc/xmp-config.xml

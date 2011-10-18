@@ -101,7 +101,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  *             &lt;detector class="org.opennms.netmgt.provision.detector.simple.HttpsDetector" name="HTTPS"/&gt;
  *             &lt;detector class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" name="ICMP"/&gt;
  *             &lt;detector class="org.opennms.netmgt.provision.detector.simple.LdapDetector" name="LDAP"/&gt;
- *             &lt;detector class="org.opennms.netmgt.provision.detector.radius.RadiusDetector" name="Radius"/&gt;
  *             &lt;detector class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" name="SNMP"/&gt;
  *             &lt;detector class="org.opennms.netmgt.provision.detector.ssh.SshDetector" name="SSH"/&gt;
  *           &lt;/detectors&gt;
