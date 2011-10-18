@@ -1380,11 +1380,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-detector-radius</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-simple</artifactId>
         <version>${project.version}</version>
       </dependency>

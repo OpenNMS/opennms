@@ -12,6 +12,7 @@
   <modules>
     <module>dhcp</module>
     <module>nsclient</module>
+    <module>radius</module>
     <module>xmp</module>
   </modules>
 </project>
