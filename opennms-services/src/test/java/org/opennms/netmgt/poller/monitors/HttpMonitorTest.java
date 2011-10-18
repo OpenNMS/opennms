@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -622,6 +623,30 @@ public class HttpMonitorTest {
 
         PollStatus status = monitor.poll(svc, m);
         assertEquals("poll status not available", PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342)
+    public void testNMS2702() throws UnknownHostException {
+        HttpMonitor monitor = new HttpMonitor();
+        Map<String, Object> parameters = Collections.synchronizedMap(new TreeMap<String, Object>());
+        parameters.put("port", "10342");
+        parameters.put("url", "/test-NMS2702.html");
+        parameters.put("retry", "1");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+
+        // Match a string included on Initial Server Response
+        parameters.put("response-text", "~.*OK.*");
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", false);
+        PollStatus status = monitor.poll(svc, parameters);
+        assertTrue(status.isAvailable());
+
+        // Match a string included on Header
+        parameters.put("response-text", "~.*Jetty.*");
+        svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", false);
+        status = monitor.poll(svc, parameters);
+        assertTrue(status.isAvailable());
     }
 
 }

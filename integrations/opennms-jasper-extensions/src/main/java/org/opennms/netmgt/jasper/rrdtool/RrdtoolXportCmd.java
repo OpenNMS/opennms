@@ -33,22 +33,29 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.util.JRProperties;
+
 import org.exolab.castor.xml.Unmarshaller;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.util.FileCopyUtils;
 
-import net.sf.jasperreports.engine.JRDataSource;
-
 public class RrdtoolXportCmd {
 
-	public JRDataSource executeCommand(String queryString) {
+	public JRDataSource executeCommand(String queryString) throws JRException {
 		Xport data = getXportData(queryString);
 		return new RrdtoolDataSource(data);
 	}
 
-	private Xport getXportData(String queryString) {
-		String command = System.getProperty("rrd.binary") + " xport " + queryString.replaceAll("[\r\n]+", " ").replaceAll("\\s+", " ");
+	private Xport getXportData(String queryString) throws JRException {
+	    String rrdBinary = getRrdBinary();
+        if(rrdBinary == null) {
+            throw new JRException("rrd.binary property must be set either in opennms.properties or in iReport");
+        }
+
+		String command = rrdBinary + " xport " + queryString.replaceAll("[\r\n]+", " ").replaceAll("\\s+", " ");
 		log().debug("getXportData: executing command: " + command);
 		String[] commandArray = StringUtils.createCommandArray(command, '@');
 		Xport data = null;
@@ -72,12 +79,23 @@ public class RrdtoolXportCmd {
 			}
 		} catch (Exception e) {
 			log().error("getXportData: can't execute command '" + command + ": ", e);
-			return null;
+			throw new JRException("getXportData: can't execute command '" + command + ": ", e);
 		}
 		return data;
 	}
 
-	private ThreadCategory log() {
+	private String getRrdBinary() {
+	    if(System.getProperty("rrd.binary") != null) {
+            return System.getProperty("rrd.binary");
+        } else if(JRProperties.getProperty("rrd.binary") != null) {
+            return JRProperties.getProperty("rrd.binary");
+        } else {
+            return null;
+        }
+
+    }
+
+    private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 
