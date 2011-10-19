@@ -11,5 +11,6 @@
     <componentDescriptor>src/assembly/components/adapters.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/dhcp.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/xmp.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/selenium-monitor.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>

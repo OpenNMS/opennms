@@ -1,17 +1,14 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <parent>
-    <artifactId>org.opennms.features</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.9.92-SNAPSHOT</version>
+    <artifactId>org.opennms.protocols</artifactId>
+    <version>1.9.93-SNAPSHOT</version>
   </parent>
-  <groupId>org.opennms.features</groupId>
-  <artifactId>ajax-page-monitor</artifactId>
-  <version>1.9.92-SNAPSHOT</version>
-  <name>ajax-page-monitor</name>
-  <url>http://maven.apache.org</url>
+  <modelVersion>4.0.0</modelVersion>
+    
+  <artifactId>selenium-monitor</artifactId>
+  <name>selenium-monitor</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -23,7 +20,6 @@
         <configuration>
           <descriptors>
             <descriptor>src/assembly/etc.xml</descriptor>
-            <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
