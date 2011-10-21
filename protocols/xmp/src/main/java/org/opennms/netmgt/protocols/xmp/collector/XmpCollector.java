@@ -207,7 +207,6 @@ public class XmpCollector implements ServiceCollector {
             XmpSession session, 
             XmpVar[] queryVars)
     {
-        XmpCollectionResource aRow;
         int numColumns,numRows;
         XmpMessage reply;
         int i,j;
@@ -541,15 +540,7 @@ public class XmpCollector implements ServiceCollector {
         // Set the SO_TIMEOUT, why don't we...
         sockopts.setConnectTimeout(timeout);
 
-        session = new XmpSession(sockopts,
-                                 agent.getInetAddress(),
-                                 xmpPort,authenUser);
-
-        if (session == null) {
-            // send event saying collection failed
-            log().warn("collect unable to get XMP session with "+agent);
-            return collectionSet;
-        }
+        session = new XmpSession(sockopts, agent.getInetAddress(), xmpPort,authenUser);
 
         if (session.isClosed()) {
             log().warn("collect unable to open XMP session with "+agent);

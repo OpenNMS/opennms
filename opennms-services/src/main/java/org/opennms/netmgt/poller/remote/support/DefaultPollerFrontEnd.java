@@ -32,7 +32,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -45,9 +44,9 @@ import java.util.Properties;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.remote.ConfigurationChangedListener;
 import org.opennms.netmgt.poller.remote.PollService;

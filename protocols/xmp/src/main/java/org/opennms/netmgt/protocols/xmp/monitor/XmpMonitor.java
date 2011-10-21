@@ -56,11 +56,6 @@ import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
 public class XmpMonitor extends AbstractServiceMonitor {
     
     /**
-     * The protocol supported by the plugin
-     */
-    private final static String PROTOCOL_NAME = "XMP";
-    
-    /**
      * The default port to use for XMP
      */
     private final static int DEFAULT_PORT = Xmp.XMP_PORT;
@@ -227,10 +222,6 @@ public class XmpMonitor extends AbstractServiceMonitor {
         sockopts.setConnectTimeout(timeout);
         
         session = new XmpSession(sockopts, ipaddr, port, authenUser);
-        if (session == null) {
-            log.info("XMP connection failed to " + ipaddr + ":" + port + " with user " + authenUser + " and " + sockopts);
-            status = PollStatus.unavailable("XMP session failed to " + ipaddr + ":" + port + " for service ");
-        }
 
         boolean result = false;
         if (requestType.equalsIgnoreCase("SelectTableRequest")) {

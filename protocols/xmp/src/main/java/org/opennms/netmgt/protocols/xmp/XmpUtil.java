@@ -166,11 +166,13 @@ public class XmpUtil {
                     } else {
                         return valueOperand.equalsIgnoreCase(replyVar.getValue());
                     }
+                /*
                 } else {
                     if (log.isDebugEnabled()) {
                         log.debug("valueMeetsCriteria: operand is null, considering observed value |" + replyVar.getValue() + "| a match!");
                     }
                     return true;
+                */
                 }
             }
         } else {
@@ -212,10 +214,12 @@ public class XmpUtil {
         }
         
         replyVars = reply.getMIBVars();
+        /*
         if (reply == null) {
             log.warn("handleScalarQuery: query for object " + object + " from MIB " + mib + " failed, " + Xmp.errorStatusToString(session.getErrorStatus()));
             throw new XmpUtilException("XMP query failed (MIB " + mib + ", object " + object + "): " + Xmp.errorStatusToString(session.getErrorStatus()));
         }
+        */
         if (replyVars[0].getMibName().equals(mib) && replyVars[0].getObjName().equals(object)) {
             return valueMeetsCriteria(replyVars[0], valueOperator, valueOperand, log, caseSensitive);
         } else {

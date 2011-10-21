@@ -127,7 +127,7 @@ public class MockAgentTest extends TestCase {
         target.setTimeout(3000);
         target.setRetries(3);
         
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
         List results = walker.getTable(target, new OID[] {new OID("1.3.6.1.2.1.1")}, null, null);
         
         assertNotNull(results);

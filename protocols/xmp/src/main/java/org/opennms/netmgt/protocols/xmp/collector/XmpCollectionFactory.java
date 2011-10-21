@@ -73,8 +73,6 @@ public class XmpCollectionFactory {
 
     /* class variables and methods *********************** */
     private static XmpCollectionFactory instance;
-    private static boolean loadedFromFile = false;
-    private static boolean initialized = false;
 
     private static XmpDatacollectionConfig config;
 
@@ -93,8 +91,6 @@ public class XmpCollectionFactory {
         if (instance == null) {
             File dataCfgFile = ConfigFileConstants.getFile(ConfigFileConstants.XMP_COLLECTION_CONFIG_FILE_NAME);
             instance = new XmpCollectionFactory(dataCfgFile.getPath());
-            loadedFromFile = true;
-            initialized = true;
         }
 
     }
@@ -131,7 +127,6 @@ public class XmpCollectionFactory {
 
         // list out the collections I've found
         XmpCollection[] collections = config.getXmpCollection();
-        XmpCollection theCollection = null;
         for (XmpCollection coll: collections) {
 
             log().debug("XmpCollectionFactory: found collection "+

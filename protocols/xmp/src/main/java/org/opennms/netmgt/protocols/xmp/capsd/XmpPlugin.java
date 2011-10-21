@@ -257,10 +257,12 @@ public final class XmpPlugin extends AbstractPlugin {
 
         boolean result = false;
         session = new XmpSession(sockopts, address, port, authenUser);
+        /*
         if (session == null) {
             log.info("XMP connection failed to " + address + ":" + port + " with user " + authenUser + " and " + sockopts);
             return false;
         }
+        */
         if (requestType.equalsIgnoreCase("SelectTableRequest")) {
             try {
                 result = XmpUtil.handleTableQuery(session, mib, table, object, instance, instanceRegex, valueOperator, valueOperand, minMatches, maxMatches, maxMatchesUnbounded, log, valueCaseSensitive);

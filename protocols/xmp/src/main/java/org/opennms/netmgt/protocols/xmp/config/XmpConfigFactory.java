@@ -69,8 +69,6 @@ public class XmpConfigFactory {
 
     /* class variables and methods *********************** */
     private static XmpConfigFactory instance;
-    private static boolean loadedFromFile = false;
-    private static boolean initialized = false;
     private XmpConfig config = null;
 
     // initialize our class for the creation of instances
@@ -90,8 +88,6 @@ public class XmpConfigFactory {
             // create instance of ourselves and that causes
             // config file to be read and XmpConfig to be instantiated
             instance = new XmpConfigFactory(cfgFile.getPath());
-            loadedFromFile = true;
-            initialized = true;
         }
     }
 
