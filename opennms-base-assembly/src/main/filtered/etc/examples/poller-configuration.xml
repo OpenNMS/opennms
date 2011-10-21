@@ -773,6 +773,6 @@
   <monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" />
   
   <!--  DHCP monitor now distributed separately.  It must be installed to enable the following -->
-  <monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor" />
+  <monitor service="DHCP" class-name="org.opennms.netmgt.dhcp.monitor.DhcpMonitor" />
 
 </poller-configuration>

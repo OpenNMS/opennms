@@ -26,14 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.dhcp;
+package org.opennms.netmgt.dhcp.detector.response;
 
 /**
- * <p>DhcpRequest class.</p>
+ * <p>DhcpResponse class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public class DhcpRequest {
+public class DhcpResponse {
+    
+    private long m_responseTime;
+    
+    /**
+     * <p>Constructor for DhcpResponse.</p>
+     *
+     * @param responseTime a long.
+     */
+    public DhcpResponse(long responseTime){
+        m_responseTime = responseTime;
+    }
+    
+    /**
+     * <p>validate</p>
+     *
+     * @param num a long.
+     * @return a boolean.
+     */
+    public boolean validate(long num) {
+        return m_responseTime > num;
+    }
 
 }
