@@ -26,11 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dhcp.detector;
+package org.opennms.netmgt.provision.detector.dhcp;
 
-import org.opennms.netmgt.dhcp.detector.client.DhcpClient;
-import org.opennms.netmgt.dhcp.detector.request.DhcpRequest;
-import org.opennms.netmgt.dhcp.detector.response.DhcpResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;

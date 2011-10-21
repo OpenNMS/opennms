@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dhcp.plugin;
+package org.opennms.netmgt.capsd.plugins;
 
 import static org.junit.Assert.assertTrue;
 
@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.capsd.plugins.DhcpPlugin;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 
 

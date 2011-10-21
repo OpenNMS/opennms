@@ -26,14 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dhcp.detector.client;
+package org.opennms.netmgt.provision.detector.dhcp;
 
 import java.io.IOException;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dhcp.detector.request.DhcpRequest;
-import org.opennms.netmgt.dhcp.detector.response.DhcpResponse;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.provision.support.Client;
 
@@ -68,7 +66,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     /**
      * <p>receiveBanner</p>
      *
-     * @return a {@link org.opennms.netmgt.dhcp.detector.response.DhcpResponse} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.dhcp.DhcpResponse} object.
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
@@ -82,8 +80,8 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     /**
      * <p>sendRequest</p>
      *
-     * @param request a {@link org.opennms.netmgt.dhcp.detector.request.DhcpRequest} object.
-     * @return a {@link org.opennms.netmgt.dhcp.detector.response.DhcpResponse} object.
+     * @param request a {@link org.opennms.netmgt.provision.detector.dhcp.DhcpRequest} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.dhcp.DhcpResponse} object.
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */

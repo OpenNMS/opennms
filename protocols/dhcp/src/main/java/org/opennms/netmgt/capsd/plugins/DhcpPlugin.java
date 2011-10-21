@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dhcp.plugin;
+package org.opennms.netmgt.capsd.plugins;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
