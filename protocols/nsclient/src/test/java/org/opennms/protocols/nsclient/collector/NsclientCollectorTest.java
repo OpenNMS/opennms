@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.protocols.nsclient.collector;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
@@ -37,8 +37,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.config.NSClientDataCollectionConfigFactory;
-import org.opennms.netmgt.config.NSClientPeerFactory;
+import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
+import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.DefaultCollectionAgent;
+import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -47,7 +49,10 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.test.nsclient.AbstractNsclientTest;
+import org.opennms.protocols.nsclient.AbstractNsclientTest;
+import org.opennms.protocols.nsclient.collector.NSClientCollector;
+import org.opennms.protocols.nsclient.config.NSClientDataCollectionConfigFactory;
+import org.opennms.protocols.nsclient.config.NSClientPeerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**

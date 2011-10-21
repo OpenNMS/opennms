@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.protocols.nsclient.config;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -232,7 +232,7 @@ public final class NSClientPeerFactory {
     /**
      * <p>setInstance</p>
      *
-     * @param singleton a {@link org.opennms.netmgt.config.NSClientPeerFactory} object.
+     * @param singleton a {@link org.opennms.protocols.nsclient.config.NSClientPeerFactory} object.
      */
     public static synchronized void setInstance(NSClientPeerFactory singleton) {
         m_singleton = singleton;

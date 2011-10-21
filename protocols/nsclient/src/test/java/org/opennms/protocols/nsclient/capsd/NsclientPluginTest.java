@@ -26,14 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.capsd.plugins;
+package org.opennms.protocols.nsclient.capsd;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.test.nsclient.AbstractNsclientTest;
+import org.opennms.protocols.nsclient.AbstractNsclientTest;
+import org.opennms.protocols.nsclient.capsd.NsclientPlugin;
 
 /**
  * <p>JUnit Test Class for NsclientPlugin.</p>

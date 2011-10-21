@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.protocols.nsclient.config;
 
 
 //
@@ -145,7 +145,7 @@ public class NSClientDataCollectionConfigFactory {
      /**
       * <p>setInstance</p>
       *
-      * @param instance a {@link org.opennms.netmgt.config.NSClientDataCollectionConfigFactory} object.
+      * @param instance a {@link org.opennms.protocols.nsclient.config.NSClientDataCollectionConfigFactory} object.
       */
      public static synchronized void setInstance(final NSClientDataCollectionConfigFactory instance) {
          m_instance = instance;

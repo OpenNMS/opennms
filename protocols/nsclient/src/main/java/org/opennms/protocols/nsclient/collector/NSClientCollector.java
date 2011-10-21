@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.protocols.nsclient.collector;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
@@ -43,10 +43,12 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
+import org.opennms.netmgt.collectd.AbstractCollectionResource;
+import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.NSClientDataCollectionConfigFactory;
-import org.opennms.netmgt.config.NSClientPeerFactory;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
@@ -65,6 +67,8 @@ import org.opennms.protocols.nsclient.NsclientCheckParams;
 import org.opennms.protocols.nsclient.NsclientException;
 import org.opennms.protocols.nsclient.NsclientManager;
 import org.opennms.protocols.nsclient.NsclientPacket;
+import org.opennms.protocols.nsclient.config.NSClientDataCollectionConfigFactory;
+import org.opennms.protocols.nsclient.config.NSClientPeerFactory;
 
 /**
  * <p>NSClientCollector class.</p>

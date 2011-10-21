@@ -724,10 +724,8 @@
   <monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor" />
   <monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor" />
   <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor" />
-  <monitor service="NSClient" class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor" />
   <monitor service="NRPE" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
   <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
-  <monitor service="NSClientpp" class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor" />
   <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
   <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
 
@@ -772,7 +770,9 @@
   <monitor service="XMP" class-name="org.opennms.netmgt.poller.monitors.XmpMonitor" />
   <monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" />
   
-  <!--  DHCP monitor now distributed separately.  It must be installed to enable the following -->
+  <!-- These monitors are now distributed separately.  They must be installed before enabling the following: -->
   <monitor service="DHCP" class-name="org.opennms.netmgt.dhcp.monitor.DhcpMonitor" />
+  <monitor service="NSClient" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
+  <monitor service="NSClientpp" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
 
 </poller-configuration>

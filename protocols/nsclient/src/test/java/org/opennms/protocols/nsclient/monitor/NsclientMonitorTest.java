@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.protocols.nsclient.monitor;
 
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -37,7 +37,8 @@ import org.junit.Test;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.test.nsclient.AbstractNsclientTest;
+import org.opennms.protocols.nsclient.AbstractNsclientTest;
+import org.opennms.protocols.nsclient.monitor.NsclientMonitor;
 
 /**
  * <p>JUnit Test Class for NsclientMonitor.</p>

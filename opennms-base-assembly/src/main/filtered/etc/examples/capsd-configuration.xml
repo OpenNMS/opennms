@@ -147,13 +147,13 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>    
-    <protocol-plugin protocol="NSClient" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on">
+    <protocol-plugin protocol="NSClient" class-name="org.opennms.protocols.nsclient.capsd.NsclientPlugin" scan="on">
         <property key="banner" value="*" />
         <property key="port" value="1248" />
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>
-    <protocol-plugin protocol="NSClientpp" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on">
+    <protocol-plugin protocol="NSClientpp" class-name="org.opennms.protocols.nsclient.capsd.NsclientPlugin" scan="on">
         <property key="banner" value="*" />
         <property key="port" value="12489" />
         <property key="timeout" value="3000" />

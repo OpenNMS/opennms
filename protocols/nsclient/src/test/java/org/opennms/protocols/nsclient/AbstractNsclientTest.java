@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.test.nsclient;
+package org.opennms.protocols.nsclient;
 
 import java.io.IOException;
 import java.io.OutputStream;

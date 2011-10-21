@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.protocols.nsclient.config;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,6 +36,7 @@ import java.io.IOException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
+import org.opennms.protocols.nsclient.config.NSClientPeerFactory;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
