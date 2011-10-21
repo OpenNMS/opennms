@@ -412,7 +412,7 @@
     </protocol-plugin>
     
     <!--  The Dhcp plugin is now distributed separately and must be installed before enabling this -->
-    <protocol-plugin protocol="DHCP" class-name="org.opennms.netmgt.dhcp.plugin.DhcpPlugin" scan="on">
+    <protocol-plugin protocol="DHCP" class-name="org.opennms.netmgt.capsd.plugins.DhcpPlugin" scan="on">
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>

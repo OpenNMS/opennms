@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dhcp.monitor;
+package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.net.InetAddress;
