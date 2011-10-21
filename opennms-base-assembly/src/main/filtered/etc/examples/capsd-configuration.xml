@@ -244,7 +244,7 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>
-    <protocol-plugin protocol="RadiusAuth" class-name="org.opennms.netmgt.capsd.plugins.RadiusAuthPlugin" scan="on">
+    <protocol-plugin protocol="RadiusAuth" class-name="org.opennms.protocols.radius.capsd.RadiusAuthPlugin" scan="on">
         <property key="timeout" value="3000" />
         <property key="user" value="TEST" />
         <property key="password" value="test" />

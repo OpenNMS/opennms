@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.springframework.security;
+package org.opennms.protocols.radius.springsecurity;
 
 import java.io.IOException;
 import java.net.InetAddress;

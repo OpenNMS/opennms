@@ -742,7 +742,6 @@
   <monitor service="NTP" class-name="org.opennms.netmgt.poller.monitors.NtpMonitor" />
   <monitor service="Sybase" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="Informix" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
-  <monitor service="RadiusAuth" class-name="org.opennms.netmgt.poller.monitors.RadiusAuthMonitor" />
   <monitor service="DbTestExample" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor" />
   <monitor service="DiskUsage-root" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
   <monitor service="DiskUsage-home" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
@@ -773,6 +772,7 @@
   <monitor service="DHCP" class-name="org.opennms.netmgt.dhcp.monitor.DhcpMonitor" />
   <monitor service="NSClient" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
   <monitor service="NSClientpp" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
+  <monitor service="RadiusAuth" class-name="org.opennms.protocols.radius.monitor.RadiusAuthMonitor" />
   <monitor service="XMP" class-name="org.opennms.netmgt.protocols.xmp.monitor.XmpMonitor" />
 
 </poller-configuration>

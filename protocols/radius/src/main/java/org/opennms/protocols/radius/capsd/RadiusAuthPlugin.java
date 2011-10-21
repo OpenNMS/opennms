@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.capsd.plugins;
+package org.opennms.protocols.radius.capsd;
 
 import java.net.InetAddress;
 import java.util.Map;

@@ -64,7 +64,7 @@
 		the defaultRoles property.
 	-->
 	<!-- 
-	<beans:bean id="radiusAuthenticationProvider" class="org.opennms.web.springframework.security.RadiusAuthenticationProvider">
+	<beans:bean id="radiusAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
 		<custom-authentication-provider />
 		<beans:constructor-arg value="%%% Radius Server %%%"/>
 		<beans:constructor-arg value="%%% Shared Secret %%%"/>

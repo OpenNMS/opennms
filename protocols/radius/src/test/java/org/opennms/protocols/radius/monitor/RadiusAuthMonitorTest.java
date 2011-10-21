@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.protocols.radius.monitor;
 
 import static org.junit.Assert.assertEquals;
 
@@ -44,6 +44,8 @@ import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.monitors.MonitorTestUtils;
+import org.opennms.protocols.radius.monitor.RadiusAuthMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
