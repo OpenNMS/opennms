@@ -53,7 +53,7 @@
  *   @version $Id: XmpCollector.java 38 2008-07-24 13:39:32Z rdk $
  */
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.protocols.xmp.collector;
 
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -69,9 +69,8 @@ import org.krupczak.Xmp.XmpSession;
 import org.krupczak.Xmp.XmpVar;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.XmpAgentConfig;
-import org.opennms.netmgt.config.XmpConfigFactory;
-import org.opennms.netmgt.config.XmpPeerFactory;
+import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionSet;
@@ -81,6 +80,9 @@ import org.opennms.netmgt.config.xmpDataCollection.MibObj;
 import org.opennms.netmgt.config.xmpDataCollection.XmpCollection;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.protocols.xmp.config.XmpAgentConfig;
+import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
+import org.opennms.netmgt.protocols.xmp.config.XmpPeerFactory;
 public class XmpCollector implements ServiceCollector {
 
     /* class variables and methods *********************** */

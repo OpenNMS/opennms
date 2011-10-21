@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.protocols.xmp.monitor;
 
 import java.net.InetAddress;
 import java.util.Map;
@@ -38,13 +38,14 @@ import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpSession;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.XmpConfigFactory;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
+import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
 
 /**
  * <p>XmpMonitor class.</p>

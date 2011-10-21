@@ -51,7 +51,7 @@
  *   @version $Id: XmpCollectionFactory.java 38 2008-07-24 13:39:32Z rdk $
  */
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.protocols.xmp.collector;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -102,7 +102,7 @@ public class XmpCollectionFactory {
     /**
      * <p>Getter for the field <code>instance</code>.</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.XmpCollectionFactory} object.
+     * @return a {@link org.opennms.netmgt.protocols.xmp.collector.XmpCollectionFactory} object.
      */
     public static XmpCollectionFactory getInstance() { return instance; }
 

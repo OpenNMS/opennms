@@ -405,7 +405,7 @@
         <property key="service-name" value="WMI" />
     </protocol-plugin>
 <!-- XMP/Cartographer plugin: see http://www.krupczak.org/index.php/Cartographer for more information -->
-    <protocol-plugin protocol="XMP" class-name="org.opennms.netmgt.capsd.plugins.XmpPlugin" scan="on" user-defined="false">
+    <protocol-plugin protocol="XMP" class-name="org.opennms.netmgt.protocols.xmp.capsd.XmpPlugin" scan="on" user-defined="false">
         <property key="port" value="5270" />
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />

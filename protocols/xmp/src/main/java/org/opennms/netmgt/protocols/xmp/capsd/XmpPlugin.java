@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.capsd.plugins;
+package org.opennms.netmgt.protocols.xmp.capsd;
 
 import java.net.InetAddress;
 import java.util.Map;
@@ -39,10 +39,10 @@ import org.krupczak.Xmp.XmpSession;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.netmgt.config.XmpConfigFactory;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
+import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
 
 /**
  * <P>

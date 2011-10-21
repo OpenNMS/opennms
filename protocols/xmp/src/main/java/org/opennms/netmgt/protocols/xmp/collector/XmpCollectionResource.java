@@ -49,7 +49,7 @@
     @version $Id: XmpCollectionResource.java 38 2008-07-24 13:39:32Z rdk $
  **/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.protocols.xmp.collector;
 
 import java.io.File;
 import java.util.Collection;
@@ -57,6 +57,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.collectd.AbstractCollectionResource;
+import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;

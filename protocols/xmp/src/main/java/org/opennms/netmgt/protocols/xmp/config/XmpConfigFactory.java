@@ -50,7 +50,7 @@
  *   @version $Id: XmpConfigFactory.java 38 2008-07-24 13:39:32Z rdk $
  */
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.protocols.xmp.config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -105,7 +105,7 @@ public class XmpConfigFactory {
     /**
      * <p>Getter for the field <code>instance</code>.</p>
      *
-     * @return a {@link org.opennms.netmgt.config.XmpConfigFactory} object.
+     * @return a {@link org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory} object.
      */
     public static XmpConfigFactory getInstance() { return instance; }
 

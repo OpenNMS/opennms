@@ -51,10 +51,11 @@
  *   @version $Id: XmpCollectionAttribute.java 38 2008-07-24 13:39:32Z rdk $
  */
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.protocols.xmp.collector;
 
 import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpVar;
+import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;

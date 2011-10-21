@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.protocols.xmp.config;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -110,7 +110,7 @@ public class XmpPeerFactory {
     /**
      * <p>getInstance</p>
      *
-     * @return a {@link org.opennms.netmgt.config.XmpPeerFactory} object.
+     * @return a {@link org.opennms.netmgt.protocols.xmp.config.XmpPeerFactory} object.
      */
     public static synchronized XmpPeerFactory getInstance() {
         if (! m_loaded) {
@@ -123,7 +123,7 @@ public class XmpPeerFactory {
     /**
      * <p>setInstance</p>
      *
-     * @param instance a {@link org.opennms.netmgt.config.XmpPeerFactory} object.
+     * @param instance a {@link org.opennms.netmgt.protocols.xmp.config.XmpPeerFactory} object.
      */
     public static synchronized void setInstance(XmpPeerFactory instance) {
         m_singleton = instance;
@@ -134,7 +134,7 @@ public class XmpPeerFactory {
      * <p>getAgentConfig</p>
      *
      * @param agentInetAddress a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.netmgt.config.XmpAgentConfig} object.
+     * @return a {@link org.opennms.netmgt.protocols.xmp.config.XmpAgentConfig} object.
      */
     public synchronized XmpAgentConfig getAgentConfig(InetAddress agentInetAddress) {
         

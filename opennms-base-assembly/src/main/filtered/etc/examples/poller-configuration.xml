@@ -767,12 +767,12 @@
   <monitor service="MSExchangeFDS" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
   <monitor service="MSExchangeServiceHost" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
   <monitor service="MSExchangeTransport" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-  <monitor service="XMP" class-name="org.opennms.netmgt.poller.monitors.XmpMonitor" />
   <monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" />
   
   <!-- These monitors are now distributed separately.  They must be installed before enabling the following: -->
   <monitor service="DHCP" class-name="org.opennms.netmgt.dhcp.monitor.DhcpMonitor" />
   <monitor service="NSClient" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
   <monitor service="NSClientpp" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
+  <monitor service="XMP" class-name="org.opennms.netmgt.protocols.xmp.monitor.XmpMonitor" />
 
 </poller-configuration>

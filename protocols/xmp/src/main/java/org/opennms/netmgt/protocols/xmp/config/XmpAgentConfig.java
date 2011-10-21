@@ -27,7 +27,7 @@
  *******************************************************************************/
 
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.protocols.xmp.config;
 
 /**
  * <p>XmpAgentConfig class.</p>

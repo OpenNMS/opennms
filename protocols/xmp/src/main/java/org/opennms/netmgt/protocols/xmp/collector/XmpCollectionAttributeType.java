@@ -49,7 +49,7 @@
    @version $Id: XmpCollectionAttributeType.java 38 2008-07-24 13:39:32Z rdk $
  **/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.protocols.xmp.collector;
 
 import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpVar;
