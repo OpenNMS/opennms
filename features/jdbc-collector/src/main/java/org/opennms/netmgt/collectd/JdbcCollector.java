@@ -268,7 +268,7 @@ public class JdbcCollector implements ServiceCollector {
                                 }
                                 
                                 JdbcCollectionAttributeType attribType = m_attribTypeList.get(curColumn.getColumnName());
-                                resource.setAttributeValue(attribType, results.getString(curColumn.getColumnName()));
+                                resource.setAttributeValue(attribType, results.getString(columnName));
                             }
 
                             collectionSet.getCollectionResources().add(resource);
