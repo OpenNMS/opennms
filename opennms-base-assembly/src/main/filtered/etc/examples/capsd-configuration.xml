@@ -147,13 +147,13 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>    
-    <protocol-plugin protocol="NSClient" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on">
+    <protocol-plugin protocol="NSClient" class-name="org.opennms.protocols.nsclient.capsd.NsclientPlugin" scan="on">
         <property key="banner" value="*" />
         <property key="port" value="1248" />
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>
-    <protocol-plugin protocol="NSClientpp" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on">
+    <protocol-plugin protocol="NSClientpp" class-name="org.opennms.protocols.nsclient.capsd.NsclientPlugin" scan="on">
         <property key="banner" value="*" />
         <property key="port" value="12489" />
         <property key="timeout" value="3000" />
@@ -244,7 +244,7 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>
-    <protocol-plugin protocol="RadiusAuth" class-name="org.opennms.netmgt.capsd.plugins.RadiusAuthPlugin" scan="on">
+    <protocol-plugin protocol="RadiusAuth" class-name="org.opennms.protocols.radius.capsd.RadiusAuthPlugin" scan="on">
         <property key="timeout" value="3000" />
         <property key="user" value="TEST" />
         <property key="password" value="test" />
@@ -405,7 +405,7 @@
         <property key="service-name" value="WMI" />
     </protocol-plugin>
 <!-- XMP/Cartographer plugin: see http://www.krupczak.org/index.php/Cartographer for more information -->
-    <protocol-plugin protocol="XMP" class-name="org.opennms.netmgt.capsd.plugins.XmpPlugin" scan="on" user-defined="false">
+    <protocol-plugin protocol="XMP" class-name="org.opennms.netmgt.protocols.xmp.capsd.XmpPlugin" scan="on" user-defined="false">
         <property key="port" value="5270" />
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />
