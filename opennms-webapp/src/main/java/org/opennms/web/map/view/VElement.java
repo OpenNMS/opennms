@@ -60,13 +60,13 @@ public class VElement extends DbElement {
 	protected boolean isChild = false;
     
     // this is to define the status of the element
-	protected int status = 0;
+	protected int status = -1;
 
 	// this is used to understand if some fact happen is important
-	protected int severity = 0;
+	protected int severity = -1;
 
 	// this represents the global information elements
-	protected double avail = 0;
+	protected double avail = -1;
 	
 	
 

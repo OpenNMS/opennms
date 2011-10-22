@@ -301,14 +301,14 @@ public abstract class Manager {
 	public abstract boolean isElementInMap(int elementId, int mapId, String type) throws MapsException ;
 	
 	/**
-	 * <p>isElementNotDeleted</p>
+	 * <p>isElementDeleted</p>
 	 *
 	 * @param elementId a int.
 	 * @param type a {@link java.lang.String} object.
 	 * @return a boolean.
 	 * @throws org.opennms.web.map.MapsException if any.
 	 */
-	public abstract boolean isElementNotDeleted(int elementId, String type) throws MapsException;
+	public abstract boolean isElementDeleted(int elementId, String type) throws MapsException;
 	  
 
 	/**

@@ -1992,17 +1992,13 @@ public class DBManager extends Manager {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isElementNotDeleted(int elementId, String type)
+    public boolean isElementDeleted(int elementId, String type)
             throws MapsException {
         log.debug("isElementNotDeleted: elementId=" + elementId + " type= "
                 + type);
         if (type.equals(MapsConstants.MAP_TYPE)) {
-            log.debug("isElementNotDeleted: elementId=" + elementId
-                    + " type= " + type);
             return isMapInRow(elementId);
         } else if (type.equals(MapsConstants.NODE_TYPE)) {
-            log.debug("isElementNotDeleted: elementId=" + elementId
-                    + " type= " + type);
             return isNodeInRow(elementId);
         }
         return false;
