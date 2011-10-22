@@ -38,16 +38,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.test.mock.MockLogAppender;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -68,11 +68,13 @@ public class HostResourceSWRunMonitorTest {
 
     private Level m_defaultLogLevel = Level.WARN;
 
+    @Autowired
+    private SnmpPeerFactory m_snmpPeerFactory;
+    
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-        FileSystemResource r = new FileSystemResource("src/test/resources/org/opennms/netmgt/config/snmp-config.xml");
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(r.getInputStream()));
+        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
     }
 
     @After
@@ -191,7 +193,7 @@ public class HostResourceSWRunMonitorTest {
 
     private Map<String, Object> createBasicParams() {
         Map<String, Object> parameters = new HashMap<String,Object>();
-        parameters.put("port", TEST_SNMP_PORT);
+        parameters.put("port", m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)).getPort());
         parameters.put("service-name", "~^(auto|sh).*");
         parameters.put("match-all", "true");
         return parameters;

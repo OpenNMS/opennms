@@ -46,8 +46,8 @@
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
         <entry key="notificationCommands.xml" value="notificationCommandFactory"/>
         <!-- <entry key="notifications.xml" value="notificationFactory"/> --><!-- database access -->
-        <entry key="nsclient-config.xml" value="nsClientPeerFactory"/>
-        <entry key="nsclient-datacollection-config.xml" value="nsClientDataCollectionConfigFactory"/>
+        <!-- <entry key="nsclient-config.xml" value="nsClientPeerFactory"/> -->
+        <!-- <entry key="nsclient-datacollection-config.xml" value="nsClientDataCollectionConfigFactory"/> -->
         <entry key="opennms-datasources.xml" value="dataSourceTester"/>
         <entry key="opennms-server.xml" value="opennmsServerConfigFactory"/>
         <!-- <entry key="opennms.properties" value="unknown"/> -->
@@ -89,7 +89,7 @@
         <entry key="wmi-datacollection-config.xml" value="wmiDataCollectionConfigFactory"/>
         <entry key="xmlrpcd-configuration.xml" value="xmlrpcdConfigFactory"/>
         <!-- <entry key="xmp-config.xml" value="xmpConfigFactory"/> --><!-- Not part of standard build -->
-        <entry key="xmp-datacollection-config.xml" value="xmpCollectionFactory"/>
+        <!-- <entry key="xmp-datacollection-config.xml" value="xmpCollectionFactory"/> --><!-- Not part of standard build -->
         <!-- <entry key="xmpp-configuration.properties" value="unknown"/> --><!-- config code not in its own class -->
       </map>
     </property>
@@ -313,17 +313,19 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="notificationFactory" class="org.opennms.netmgt.config.NotificationFactory" depends-on="notificationFactory-init" factory-method="getInstance"/>
   
+  <!--
   <bean id="nsClientPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.NSClientPeerFactory.init</value></property>
+    <property name="staticMethod"><value>org.opennms.netmgt.protocols.nsclient.config.NSClientPeerFactory.init</value></property>
   </bean>
 
-  <bean id="nsClientPeerFactory" class="org.opennms.netmgt.config.NSClientPeerFactory" depends-on="nsClientPeerFactory-init" factory-method="getInstance"/>
+  <bean id="nsClientPeerFactory" class="org.opennms.netmgt.protocols.nsclient.config.NSClientPeerFactory" depends-on="nsClientPeerFactory-init" factory-method="getInstance"/>
 
   <bean id="nsClientDataCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.NSClientDataCollectionConfigFactory.init</value></property>
+    <property name="staticMethod"><value>org.opennms.netmgt.protocols.nsclient.config.NSClientDataCollectionConfigFactory.init</value></property>
   </bean>
 
-  <bean id="nsClientDataCollectionConfigFactory" class="org.opennms.netmgt.config.NSClientDataCollectionConfigFactory" depends-on="nsClientDataCollectionConfigFactory-init" factory-method="getInstance"/>
+  <bean id="nsClientDataCollectionConfigFactory" class="org.opennms.netmgt.protocols.nsclient.config.NSClientDataCollectionConfigFactory" depends-on="nsClientDataCollectionConfigFactory-init" factory-method="getInstance"/>
+  -->
 
   <!-- This doesn't work because it pokes the database -->
   <!--
@@ -604,16 +606,18 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="xmlrpcdConfigFactory" class="org.opennms.netmgt.config.XmlrpcdConfigFactory" depends-on="xmlrpcdConfigFactory-init" factory-method="getInstance"/>
 
+  <!--
   <bean id="xmpConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.XmpConfigFactory.init</value></property>
+    <property name="staticMethod"><value>org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory.init</value></property>
   </bean>
 
-  <bean id="xmpConfigFactory" class="org.opennms.netmgt.config.XmpConfigFactory" depends-on="xmpConfigFactory-init" factory-method="getInstance"/>
+  <bean id="xmpConfigFactory" class="org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory" depends-on="xmpConfigFactory-init" factory-method="getInstance"/>
  
   <bean id="xmpCollectionFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.collectd.XmpCollectionFactory.init</value></property>
+    <property name="staticMethod"><value>org.opennms.netmgt.protocols.xmp.collector.XmpCollectionFactory.init</value></property>
   </bean>
 
-  <bean id="xmpCollectionFactory" class="org.opennms.netmgt.collectd.XmpCollectionFactory" depends-on="xmpCollectionFactory-init" factory-method="getInstance"/>
+  <bean id="xmpCollectionFactory" class="org.opennms.netmgt.protocols.xmp.collector.XmpCollectionFactory" depends-on="xmpCollectionFactory-init" factory-method="getInstance"/>
+  -->
  
 </beans>

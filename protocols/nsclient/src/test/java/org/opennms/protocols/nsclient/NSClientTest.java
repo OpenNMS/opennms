@@ -32,7 +32,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.test.nsclient.AbstractNsclientTest;
 
 /**
  * <p>JUnit Test Class for NsclientManager.</p>

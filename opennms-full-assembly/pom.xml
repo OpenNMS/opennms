@@ -311,6 +311,11 @@
       <type>tar.gz</type>
       <classifier>etc</classifier>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.radius</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     
   </dependencies>
 </project>

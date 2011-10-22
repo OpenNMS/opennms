@@ -38,6 +38,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -125,5 +126,12 @@ public class InetAddressUtilsTest {
         } catch (IllegalArgumentException e) {
             // Expected
         }
+    }
+    
+    @Test
+    public void testNMS4972() throws Exception {
+        String ip1 = "1.1.1.1";
+        String ip2 = "255.255.255.255";
+        Assert.assertFalse(BigInteger.ZERO.compareTo(InetAddressUtils.difference(ip1, ip2)) < 0);
     }
 }

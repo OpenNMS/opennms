@@ -105,11 +105,6 @@ final class LatencyThresholder implements ServiceThresholder {
     private String m_svcName;
 
     /**
-     * Local host name
-     */
-    private String m_host;
-
-    /**
      * <P>
      * Returns the name of the service that the plug-in threshold checks.
      * </P>
@@ -137,9 +132,6 @@ final class LatencyThresholder implements ServiceThresholder {
         m_svcName = (String) parameters.get("svcName");
         if (log().isDebugEnabled())
             log().debug("initialize: latency thresholder for service '" + m_svcName + "'");
-
-        // Get local host name (used when generating threshold events)
-        m_host = InetAddressUtils.getLocalHostName();
     }
 
     /**
