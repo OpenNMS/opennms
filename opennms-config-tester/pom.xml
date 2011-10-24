@@ -78,11 +78,6 @@
     	<version>${project.parent.version}</version>
     	<scope>compile</scope>
     </dependency>
-    <dependency>
-    	<groupId>org.opennms</groupId>
-    	<artifactId>opennms-xmp</artifactId>
-    	<scope>compile</scope>
-    </dependency>
 
     <!-- Non-OpenNMS dependencies -->
     <dependency>
