@@ -94,7 +94,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  *           xmlns="http://xmlns.opennms.org/xsd/config/foreign-source"&gt;
  *           &lt;scan-interval&gt;1d&lt;/scan-interval&gt;
  *           &lt;detectors&gt;
- *             &lt;detector class="org.opennms.netmgt.provision.detector.dhcp.DhcpDetector" name="DHCP"/&gt;
  *             &lt;detector class="org.opennms.netmgt.provision.detector.datagram.DnsDetector" name="DNS"/&gt;
  *             &lt;detector class="org.opennms.netmgt.provision.detector.simple.FtpDetector" name="FTP"/&gt;
  *             &lt;detector class="org.opennms.netmgt.provision.detector.simple.HttpDetector" name="HTTP"/&gt;
