@@ -85,8 +85,6 @@ import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfigur
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.opennms.netmgt.config.notifications.Notifications;
-import org.opennms.netmgt.config.nsclient.NsclientConfig;
-import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -361,18 +359,6 @@ public class WillItUnmarshalTest {
         unmarshalExample("notifications.xml", Notifications.class);
     }
     @Test
-    public void testNsclientConfiguration() throws Exception {
-        unmarshal("nsclient-config.xml", NsclientConfig.class);
-    }
-    @Test
-    public void testExampleNsclientConfiguration() throws Exception {
-        unmarshalExample("nsclient-config.xml", NsclientConfig.class);
-    }
-    @Test
-    public void testNsclientDataCollectionConfiguration() throws Exception {
-        unmarshal("nsclient-datacollection-config.xml", NsclientDatacollectionConfig.class);
-    }
-    @Test
     public void testOpennmsDatasources() throws Exception {
         unmarshal("opennms-datasources.xml", DataSourceConfiguration.class);
     }
@@ -620,6 +606,7 @@ public class WillItUnmarshalTest {
         allXml.remove("correlation-engine.xml");
         allXml.remove("drools-engine.xml");
         allXml.remove("nodeParentRules-context.xml");
+        allXml.remove("nsclient-config.xml");
         if (allXml.size() > 0) {
             List<String> files = new ArrayList<String>(allXml);
             Collections.sort(files);
