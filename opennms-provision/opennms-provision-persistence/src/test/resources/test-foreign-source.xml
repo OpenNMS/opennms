@@ -3,7 +3,6 @@
     <scan-interval>2h</scan-interval>
     <detectors>
         <detector name="Citrix" class="org.opennms.netmgt.provision.detector.simple.CitrixDetector" />
-        <detector name="DHCP" class="org.opennms.netmgt.provision.detector.dhcp.DhcpDetector" />
         <detector name="DNS" class="org.opennms.netmgt.provision.detector.datagram.DnsDetector" />
         <detector name="DominoIIOP" class="org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector" />
         <detector name="FTP" class="org.opennms.netmgt.provision.detector.simple.FtpDetector" />

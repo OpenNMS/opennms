@@ -15,8 +15,5 @@
 		<detector name="SSH" class="org.opennms.netmgt.provision.detector.ssh.SshDetector">
 				  <parameter key="banner" value="1.5" />
 		</detector>
-        <!-- This detector is not yet implemented
-        <detector name="DHCP" class="org.opennms.netmgt.provision.detector.dhcp.DhcpDetector" /> 
-        -->
 	</detectors>
 </foreign-source>

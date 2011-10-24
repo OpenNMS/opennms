@@ -147,18 +147,6 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>    
-    <protocol-plugin protocol="NSClient" class-name="org.opennms.protocols.nsclient.capsd.NsclientPlugin" scan="on">
-        <property key="banner" value="*" />
-        <property key="port" value="1248" />
-        <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
-    </protocol-plugin>
-    <protocol-plugin protocol="NSClientpp" class-name="org.opennms.protocols.nsclient.capsd.NsclientPlugin" scan="on">
-        <property key="banner" value="*" />
-        <property key="port" value="12489" />
-        <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
-    </protocol-plugin>
     <protocol-plugin protocol="NRPE" class-name="org.opennms.netmgt.capsd.plugins.NrpePlugin" scan="on">
         <property key="banner" value="*" />
         <property key="port" value="5666" />
@@ -242,13 +230,6 @@
         <property key="banner" value="*" />
         <property key="port" value="1498" />
         <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
-    </protocol-plugin>
-    <protocol-plugin protocol="RadiusAuth" class-name="org.opennms.protocols.radius.capsd.RadiusAuthPlugin" scan="on">
-        <property key="timeout" value="3000" />
-        <property key="user" value="TEST" />
-        <property key="password" value="test" />
-        <property key="secret" value="opennms" />
         <property key="retry" value="2" />
     </protocol-plugin>
     <protocol-plugin protocol="JBoss4" class-name="org.opennms.netmgt.capsd.plugins.JBossPlugin" scan="on">
@@ -404,17 +385,42 @@
         <property key="compareValue" value="OK" />
         <property key="service-name" value="WMI" />
     </protocol-plugin>
-<!-- XMP/Cartographer plugin: see http://www.krupczak.org/index.php/Cartographer for more information -->
-    <protocol-plugin protocol="XMP" class-name="org.opennms.netmgt.protocols.xmp.capsd.XmpPlugin" scan="on" user-defined="false">
+
+    <!--  The DHCP plugin is now distributed separately and must be installed before enabling this -->
+    <protocol-plugin protocol="DHCP" class-name="org.opennms.protocols.dhcp.capsd.DhcpPlugin" scan="on">
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+
+    <!--  The NSClient plugin is now distributed separately and must be installed before enabling this -->
+    <protocol-plugin protocol="NSClient" class-name="org.opennms.protocols.nsclient.capsd.NsclientPlugin" scan="on">
+        <property key="banner" value="*" />
+        <property key="port" value="1248" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="NSClientpp" class-name="org.opennms.protocols.nsclient.capsd.NsclientPlugin" scan="on">
+        <property key="banner" value="*" />
+        <property key="port" value="12489" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    
+    <!--  The RADIUS plugin is now distributed separately and must be installed before enabling this -->
+    <protocol-plugin protocol="RadiusAuth" class-name="org.opennms.protocols.radius.capsd.RadiusAuthPlugin" scan="on">
+        <property key="timeout" value="3000" />
+        <property key="user" value="TEST" />
+        <property key="password" value="test" />
+        <property key="secret" value="opennms" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+
+    <!--  XMP/Cartographer plugin: see http://www.krupczak.org/index.php/Cartographer for more information -->
+    <!--  The XMP plugin is now distributed separately and must be installed before enabling this -->
+    <protocol-plugin protocol="XMP" class-name="org.opennms.protocols.xmp.capsd.XmpPlugin" scan="on" user-defined="false">
         <property key="port" value="5270" />
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />
-    </protocol-plugin>
-    
-    <!--  The Dhcp plugin is now distributed separately and must be installed before enabling this -->
-    <protocol-plugin protocol="DHCP" class-name="org.opennms.netmgt.dhcp.plugin.DhcpPlugin" scan="on">
-        <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
     </protocol-plugin>
     
     
