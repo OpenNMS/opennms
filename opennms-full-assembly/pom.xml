@@ -288,25 +288,25 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-xmp</artifactId>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.dhcp</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-xmp</artifactId>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.dhcp</artifactId>
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>etc</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>org.opennms.dhcp</artifactId>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.nsclient</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>org.opennms.dhcp</artifactId>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.nsclient</artifactId>
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>etc</classifier>
@@ -315,6 +315,18 @@
       <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.radius</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.xmp</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.xmp</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>etc</classifier>
     </dependency>
     
   </dependencies>

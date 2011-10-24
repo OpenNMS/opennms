@@ -305,11 +305,13 @@ public class ConfigTesterTest {
     }
     
     @Test
+    @Ignore
     public void testNsclientConfig() {
         testConfigFile("nsclient-config.xml");
     }
     
     @Test
+    @Ignore
     public void testNsclientDatacollectionConfig() {
         testConfigFile("nsclient-datacollection-config.xml");
     }

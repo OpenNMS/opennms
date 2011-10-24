@@ -1026,11 +1026,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>org.opennms.dhcp</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.jdbc-collector</artifactId>
         <version>${project.version}</version>
@@ -1492,11 +1487,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>org.opennms.nsclient</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-provision-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1754,11 +1744,6 @@
         <artifactId>tracker-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-xmp</artifactId>
-        <version>${project.version}</version>
       </dependency>
 
       <!--  external dependencies -->
