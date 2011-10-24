@@ -54,7 +54,7 @@ import edu.bucknell.net.JDHCP.DHCPMessage;
 import edu.bucknell.net.JDHCP.DHCPSocket;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+@ContextConfiguration(locations={"classpath*:/META-INF/opennms/detectors.xml"})
 public class DhcpDetectorTest{
 	
     //Tested local DHCP client
