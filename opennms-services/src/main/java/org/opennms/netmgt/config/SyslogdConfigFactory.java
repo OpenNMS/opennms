@@ -55,6 +55,7 @@ import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -65,14 +66,6 @@ import org.springframework.core.io.FileSystemResource;
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class SyslogdConfigFactory implements SyslogdConfig {
     /**
@@ -101,7 +94,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      */
     private SyslogdConfigFactory(String configFile) throws IOException,
             MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile));
+        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**
@@ -112,7 +105,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public SyslogdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, rdr);
+        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**
@@ -123,7 +116,11 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public SyslogdConfigFactory(InputStream stream) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, stream);
+        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+    }
+
+    public SyslogdConfigFactory(Resource resource) throws MarshalException, ValidationException, IOException {
+    	m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, resource, CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**

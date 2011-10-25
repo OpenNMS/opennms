@@ -28,13 +28,8 @@
 
 package org.opennms.netmgt.syslogd;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -42,17 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.SyslogdConfigFactory;
-import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.Match;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
@@ -68,7 +58,6 @@ import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -96,17 +85,12 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
-        "classpath:/META-INF/opennms/testEventProxy.xml"
+        "classpath:/META-INF/opennms/syslogdEventdLoadTestApplicationContext.xml"
 })
 @JUnitTemporaryDatabase
 public class SyslogdEventdLoadTest {
 
     private EventCounter m_eventCounter;
-    private static final String MATCH_PATTERN = "^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)";
-    private static final int HOST_GROUP = 6;
-    private static final int MESSAGE_GROUP = 8;
-    private static final HideMessage HIDE_MESSAGE = new HideMessage();
-    private static final String DISCARD_UEI = "DISCARD-MATCHING-MESSAGES";
     private static final UeiList UEI_LIST = new UeiList();
 
     @Autowired
@@ -115,7 +99,7 @@ public class SyslogdEventdLoadTest {
 
     @Autowired
     private Eventd m_eventd;
-    
+
     private Syslogd m_syslogd;
 
     static {
@@ -140,7 +124,7 @@ public class SyslogdEventdLoadTest {
     public void setUp() throws Exception {
     	MockLogAppender.setupLogging(true, "DEBUG");
 
-        loadSyslogConfiguration("/etc/syslogd-loadtest-configuration.xml");
+//        loadSyslogConfiguration("/etc/syslogd-loadtest-configuration.xml");
 
         m_eventCounter = new EventCounter();
         this.m_eventIpcManager.addEventListener(m_eventCounter);
@@ -151,20 +135,8 @@ public class SyslogdEventdLoadTest {
         if (m_syslogd != null) {
             m_syslogd.stop();
         }
+    	m_eventIpcManager.removeEventListener(m_eventCounter);
         MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
-    }
-
-    private void loadSyslogConfiguration(final String configuration) throws IOException, MarshalException, ValidationException {
-        InputStream stream = null;
-        try {
-            stream = ConfigurationTestUtils.getInputStreamForResource(this, configuration);
-            SyslogdConfigFactory cf = new SyslogdConfigFactory(stream);
-            SyslogdConfigFactory.setInstance(cf);
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
-        }
     }
 
     private void startSyslogdGracefully() {
@@ -173,7 +145,8 @@ public class SyslogdEventdLoadTest {
             m_syslogd = new Syslogd();
             m_syslogd.init();
             m_syslogd.start();
-        } catch (UndeclaredThrowableException ute) {
+        } catch (final UndeclaredThrowableException ute) {
+        	// Why is a BindException expected?!
             if (ute.getCause() instanceof BindException) {
                 LogUtils.warnf(this, ute, "received a bind exception");
                 // continue, this was expected
