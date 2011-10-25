@@ -151,7 +151,19 @@ public final class IpNetToMediaTableEntry extends SnmpStore
 	 */
 	public String getIpNetToMediaPhysAddress(){
 	    try {
-	        return normalizeMacAddress(getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR));
+	        // Try to fetch the physical address value as a hex string.
+            String hexString = getHexString(IpNetToMediaTableEntry.INTM_PHYSADDR);
+            if (hexString.length() == 12) {
+                // If the hex string is 12 characters long, than the agent is kinda weird and
+                // is returning the value as a raw binary value that is 6 bytes in length.
+                // But that's OK, as long as we can convert it into a string, that's fine. 
+                return hexString;
+            } else {
+                // This is the normal case that most agents conform to: the value is an ASCII 
+                // string representing the colon-separated MAC address. We just need to reformat 
+                // it to remove the colons and convert it into a 12-character string.
+                return normalizeMacAddress(getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR));
+            }
 	    } catch (IllegalArgumentException e) {
 	        LogUtils.warnf(this, e, e.getMessage());
 	        return getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR);
