@@ -398,9 +398,9 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
          * persisted to the database
          */
         Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
-        if ("donotpersist".equals(event.getLogmsg().getDest())) {
+        if ("donotpersist".equals(event.getLogmsg().getDest()) || "suppress".equals(event.getLogmsg().getDest())) {
             if (log().isDebugEnabled()) {
-                log().debug(logPrefix + ": uei '" + event.getUei() + "' marked as 'donotpersist'; not processing event.");
+                log().debug(logPrefix + ": uei '" + event.getUei() + "' marked as '" + event.getLogmsg().getDest() + "'; not processing event.");
             }
             return false;
         }
