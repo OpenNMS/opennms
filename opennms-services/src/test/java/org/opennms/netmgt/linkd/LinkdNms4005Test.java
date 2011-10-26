@@ -72,6 +72,10 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitTemporaryDatabase
 public class LinkdNms4005Test {
 
+	static {
+		System.setProperty("org.opennms.core.test-api.snmp.useMockSnmpStrategy", "true");
+	}
+	
     @Autowired
     private Linkd m_linkd;
 
@@ -83,7 +87,7 @@ public class LinkdNms4005Test {
 
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-
+    
     @Before
     public void setUp() throws Exception {
         // MockLogAppender.setupLogging(true);
