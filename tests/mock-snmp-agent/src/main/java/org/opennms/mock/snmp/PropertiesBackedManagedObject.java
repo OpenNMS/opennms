@@ -36,6 +36,7 @@ import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.snmp4j.agent.DefaultMOScope;
 import org.snmp4j.agent.MOAccess;
@@ -74,6 +75,10 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         for(final Entry<Object, Object> e : props.entrySet()) {
             final String key = (String)e.getKey();
             final Object value = e.getValue();
+            if (!key.startsWith(".")) {
+            	LogUtils.debugf(this, "key does not start with '.', probably a linewrap issue in snmpwalk: %s = %s", key, value);
+            	continue;
+            }
             try {
                 m_vars.put(new OID(key), value);
             } catch (final Throwable ex) {
