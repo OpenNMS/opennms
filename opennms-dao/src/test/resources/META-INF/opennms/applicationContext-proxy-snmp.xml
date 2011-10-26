@@ -11,4 +11,13 @@
 
 	<bean id="snmpPeerFactory" class="org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory" />
 
+    <bean id="init-snmpPeerFactory" depends-on="snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.setInstance</value></property>
+      <property name="arguments">
+        <list>
+          <ref bean="snmpPeerFactory" />
+        </list>
+      </property>      
+    </bean>
+
 </beans>
