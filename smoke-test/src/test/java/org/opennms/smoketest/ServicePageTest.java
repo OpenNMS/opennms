@@ -2,6 +2,7 @@ package org.opennms.smoketest;
 
 import java.net.URL;
 
+import org.opennms.smoketest.OpenNMSWebTester.Setter;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.internal.seleniumemulation.WaitForCondition;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -18,49 +19,104 @@ import org.junit.Test;
 
 
 public class ServicePageTest extends OpenNMSSeleniumTestCase {
+	
+    interface Setter {
+        public void setField(String prefix);
+    }
+
+    Setter type(final String suffix, final String value) {
+        return new Setter() {
+
+            public void setField(String prefix) {
+                selenium.type("name=" + prefix + "." + suffix,  value);
+            }
+
+        };
+    }
+
+    Setter select(final String suffix, final String value) {
+        return new Setter() {
+
+            public void setField(String prefix) {
+                selenium.select("name=" + prefix + "." + suffix, "label=" + value);
+            }
+
+        };
+    }
+    
+    String setTreeFieldsAndSave(String formName, Setter... setters) throws InterruptedException {
+
+		String currentNode = selenium.getAttribute("//input[@name='currentNode']@value");
+        assertTrue(currentNode.startsWith(formName+"."));
+        String prefix = currentNode.replace(formName+".", "");
+
+        for(Setter setter : setters) {
+            setter.setField(prefix);
+        }
+        
+        selenium.click("//input[contains(@onclick, '" + currentNode + "') and @value='Save']");
+        return currentNode;
+    }
+
 
     @Test
     public void testPrvoisioningGroupSetup() throws Exception {
+    	
+        String groupName = "SeleniumTestGroup";
+
         selenium.click("link=Admin");
+
         selenium.waitForPageToLoad("30000");
+
         selenium.waitForPageToLoad("30000");
+
         selenium.click("link=Manage Provisioning Groups");
         selenium.waitForPageToLoad("30000");
-        selenium.type("css=form[name=takeAction] > input[name=groupName]", "SeleniumTestGroup");
+
+        selenium.type("css=form[name=takeAction] > input[name=groupName]", groupName);
         selenium.click("css=input[type=submit]");
         selenium.waitForPageToLoad("30000");
-        selenium.click("//div[@id='content']/table/tbody/tr[2]/td[2]/a");
+
+        selenium.click("//a[contains(@href, 'editForeignSource(\""+ groupName+"\")')]");
         selenium.waitForPageToLoad("30000");
-        selenium.click("css=h4 > input[type=button]");
+        
+        selenium.click("//input[@value='Add Detector']");
         selenium.waitForPageToLoad("30000");
-        selenium.type("id=formData.detectors13.name", "HTTP-8980");
-        selenium.select("id=formData.detectors13.pluginClass", "label=HTTP");
-        selenium.click("//input[@value='Save']");
+        
+        String detectorNode = setTreeFieldsAndSave("foreignSourceEditForm", type("name", "HTTP-8980"), select("pluginClass", "HTTP"));
         selenium.waitForPageToLoad("30000");
-        selenium.click("//form[@id='foreignSourceEditForm']/ul/li[14]/a[3]");
+        
+        selenium.click("//a[contains(@href, '"+detectorNode+"') and text() = '[Add Parameter]']");
         selenium.waitForPageToLoad("30000");
-        selenium.select("id=formData.detectors13.parameters0.key", "label=port");
-        selenium.type("id=formData.detectors13.parameters0.value", "8980");
-        selenium.click("css=li > input[type=button]");
+        
+        setTreeFieldsAndSave("foreignSourceEditForm", select("key", "port"), type("value", "8980"));
+        
         selenium.waitForPageToLoad("30000");
-        selenium.click("css=input[type=button]");
+        
+        selenium.click("//input[@value='Done']");
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=Edit");
+
+        selenium.click("//a[contains(@href, '" + groupName + "') and contains(@href, 'editRequisition') and text() = 'Edit']");
         selenium.waitForPageToLoad("30000");
+
         selenium.click("//input[@value='Add Node']");
         selenium.waitForPageToLoad("30000");
-        selenium.type("id=formData.node0.nodeLabel", "localNode");
-        selenium.click("css=li > input[type=button]");
+        
+        String nodeForNode = setTreeFieldsAndSave("nodeEditForm", type("nodeLabel", "localNode"));
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=[Add Interface]");
+        
+        selenium.click("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface]']");
         selenium.waitForPageToLoad("30000");
-        selenium.type("id=formData.node0.interface0.ipAddr", "::1");
-        selenium.click("css=li > input[type=button]");
+
+        setTreeFieldsAndSave("nodeEditForm", type("ipAddr", "::1"));
         selenium.waitForPageToLoad("30000");
-        selenium.click("css=input[type=button]");
+
+        selenium.click("//input[@value='Done']");
         selenium.waitForPageToLoad("30000");
+
         selenium.click("//input[@value='Synchronize']");
         selenium.waitForPageToLoad("30000");
+
         selenium.click("link=Log out");
         selenium.waitForPageToLoad("30000");
     }
