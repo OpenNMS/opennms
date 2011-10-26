@@ -570,12 +570,17 @@ abstract public class LinkdConfigManager implements LinkdConfig {
                 LogUtils.infof(this, "no iproutes found in config");
                 return;
             }
-    
+
             for (final Vendor vendor : iproutes.getVendorCollection()) {
-                final SnmpObjectId oidMask = new SnmpObjectId(vendor.getSysoidRootMask());
+                final SnmpObjectId curRootSysOid = new SnmpObjectId(vendor.getSysoidRootMask());
                 final String curClassName = vendor.getClassName();
-                m_oidMask2IpRouteclassName.put(oidMask.toString(), curClassName);
-                LogUtils.debugf(this, "getIpRouteClassNames:  adding class %s for oid %s", curClassName, oidMask.toString());
+
+                for (final String specific : vendor.getSpecific()) {
+                    final SnmpObjectId oidMask = new SnmpObjectId(specific);
+                    oidMask.prepend(curRootSysOid);
+                    m_oidMask2IpRouteclassName.put(oidMask.toString(), curClassName);
+                    LogUtils.debugf(this, "initializeIpRouteClassNames:  adding class %s for oid %s", curClassName, oidMask.toString());
+                }
             }
         } finally {
             getWriteLock().unlock();
@@ -587,7 +592,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 	    try {
     		final Vlans vlans = m_config.getVlans();
     		if (vlans == null) {
-    		    LogUtils.infof(this, "no vlans found in config");
+    		    LogUtils.infof(this, "initializeVlanClassNames: no vlans found in config");
     		}
     
             final List<String> excludedOids = new ArrayList<String>();
@@ -599,7 +604,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     			    final SnmpObjectId oidMask = new SnmpObjectId(specific);
     				oidMask.prepend(curRootSysOid);
     				m_oidMask2VlanclassName.put(oidMask.toString(), curClassName);
-    				LogUtils.debugf(this, "getClassNames:  adding class %s for oid %s", curClassName, oidMask.toString());
+    				LogUtils.debugf(this, "initializeVlanClassNames:  adding class %s for oid %s", curClassName, oidMask.toString());
     			}
     
     			for (final ExcludeRange excludeRange : vendor.getExcludeRangeCollection()) {
@@ -610,7 +615,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     				    final SnmpObjectId snmpCurOid = new SnmpObjectId(snmpBeginOid);
     					while (snmpCurOid.compare(snmpEndOid) <= 0) {
     						excludedOids.add(snmpCurOid.toString());
-    						LogUtils.debugf(this, "getClassNames:  signing excluded class %s for oid %s", curClassName, curRootSysOid.toString().concat(snmpCurOid.toString()));
+    						LogUtils.debugf(this, "initializeVlanClassNames:  signing excluded class %s for oid %s", curClassName, curRootSysOid.toString().concat(snmpCurOid.toString()));
     						int lastCurCipher = snmpCurOid.getLastIdentifier();
     						lastCurCipher++;
     						int[] identifiers = snmpCurOid.getIdentifiers();
@@ -631,7 +636,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     							final SnmpObjectId oidMask = new SnmpObjectId(snmpBeginOid);
     							oidMask.prepend(curRootSysOid);
     							m_oidMask2VlanclassName.put(oidMask.toString(), curClassName);
-    							LogUtils.debugf(this, "getClassNames:  adding class %s for oid %s", curClassName, oidMask.toString());
+    							LogUtils.debugf(this, "initializeVlanClassNames:  adding class %s for oid %s", curClassName, oidMask.toString());
     						}
     						int lastCipher = snmpBeginOid.getLastIdentifier();
     						lastCipher++;
