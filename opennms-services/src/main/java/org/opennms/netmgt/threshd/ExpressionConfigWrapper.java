@@ -182,7 +182,8 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 		double result = Double.NaN;
 		try {
 			// Evaluate the script expression
-			result = (Double)m_parser.createExpression(m_expression.getExpression()).evaluate(context);
+                        Object resultObject = m_parser.createExpression(m_expression.getExpression()).evaluate(context);
+                        result = Double.parseDouble(resultObject.toString());
 		} catch (Throwable e) {
 			throw new ThresholdExpressionException("Error while evaluating expression "+m_expression.getExpression()+": " + e.getMessage(), e);
 		}
