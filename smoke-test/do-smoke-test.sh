@@ -123,6 +123,9 @@ run_tests() {
 	pushd "$SOURCEDIR"
 		./compile.pl -N -Denable.snapshots=true -DupdatePolicy=always install
 	popd
+	pushd "$SOURCEDIR/dependencies"
+		../compile.pl -Denable.snapshots=true -DupdatePolicy=always install
+	popd
 	pushd "$SOURCEDIR/core"
 		../compile.pl -Denable.snapshots=true -DupdatePolicy=always install
 	popd
