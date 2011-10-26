@@ -206,7 +206,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	public SnmpCollection(Linkd linkd, SnmpAgentConfig config) {
 	    m_linkd = linkd;
 		m_agentConfig = config;
-		m_address = m_agentConfig.getAddress();
+		m_address = m_agentConfig.getProxyFor();
 		m_ipNetToMedia = null;
 		m_ipRoute = null;
 		m_vlanTable = null;
@@ -433,10 +433,10 @@ public final class SnmpCollection implements ReadyRunnable {
                 tracker = new CollectionTracker[] { m_ipNetToMedia };
             }
             if (name == null) {
-                LogUtils.infof(this, "run: Unable to determine data to collect from %s", str(m_agentConfig.getAddress()));
+                LogUtils.infof(this, "run: Unable to determine data to collect from %s", str(m_agentConfig.getEffectiveAddress()));
                 return;
             } else {
-                LogUtils.infof(this, "run: Collecting %s from %s", name, str(m_agentConfig.getAddress()));
+                LogUtils.infof(this, "run: Collecting %s from %s", name, str(m_agentConfig.getEffectiveAddress()));
             }
             walker = SnmpUtils.createWalker(m_agentConfig, name, tracker);
 
@@ -511,7 +511,7 @@ public final class SnmpCollection implements ReadyRunnable {
 				runAndSaveSnmpVlanCollection(new OnmsVlan(DEFAULT_VLAN_INDEX,DEFAULT_VLAN_NAME,VlanCollectorEntry.VLAN_STATUS_OPERATIONAL));
 			}
 			// update info in linkd used correctly by {@link DiscoveryLink}
-			LogUtils.debugf(this, "run: saving collection into database for %s", str(m_agentConfig.getAddress()));
+			LogUtils.debugf(this, "run: saving collection into database for %s", str(m_agentConfig.getEffectiveAddress()));
 
 			m_linkd.updateNodeSnmpCollection(this);
 			// clean memory

@@ -115,7 +115,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 */
 	SnmpVlanCollection(final SnmpAgentConfig agentConfig) {
 		m_agentConfig = agentConfig;
-		m_address = m_agentConfig.getAddress();
+		m_address = m_agentConfig.getEffectiveAddress();
 		m_dot1dbase = null;
 		m_dot1dbaseTable = null;
 		m_dot1dstp = null;
@@ -135,7 +135,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 */
 	SnmpVlanCollection(final SnmpAgentConfig agentConfig, final boolean collectStpNode, final boolean collectStpTable, final boolean collectBridgeForwardingTable) {
 		m_agentConfig = agentConfig;
-		m_address = m_agentConfig.getAddress();
+		m_address = m_agentConfig.getEffectiveAddress();
 		m_dot1dbase = null;
 		m_dot1dbaseTable = null;
 		m_dot1dstp = null;

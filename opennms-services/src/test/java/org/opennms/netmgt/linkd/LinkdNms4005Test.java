@@ -72,10 +72,6 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitTemporaryDatabase
 public class LinkdNms4005Test {
 
-	static {
-		System.setProperty("org.opennms.core.test-api.snmp.useMockSnmpStrategy", "true");
-	}
-	
     @Autowired
     private Linkd m_linkd;
 
