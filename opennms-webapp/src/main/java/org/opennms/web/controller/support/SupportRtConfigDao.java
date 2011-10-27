@@ -49,26 +49,34 @@ public class SupportRtConfigDao extends ReadOnlyRtConfigDao {
         LogUtils.debugf(this, "saving configuration changes to " + getFile());
 
         FileWriter fw = null;
-        
+
         try {
             fw = new FileWriter(new File(getFile()), false);
-    
+
             fw.write("# NOTE: this file is generated.  You will lose any modifications that aren't known properties!\n\n");
-            
+
             if (!"https://mynms.opennms.com".equals(getBaseURL())) {
                 fw.write("# The base URL for the OpenNMS support server.\n");
                 fw.write("support.baseURL=" + getBaseURL() + "\n\n");
             }
-            
+
             fw.write("# The support queue numeric ID to use when opening tickets\n");
             fw.write("support.queueId=" + getQueueId() + "\n\n");
-            
+
             fw.write("# The timeout when attempting to open a ticket\n");
             fw.write("support.timeout=" + getTimeout() + "\n\n");
-            
+
             fw.write("# The number of times to retry before giving up when opening a ticket\n");
             fw.write("support.retry=" + getRetry() + "\n\n");
-            
+
+            if (!"OpenNMS Version".equals(getVersionFieldName())) {
+                fw.write("support.versionFieldName=" + getVersionFieldName() + "\n\n");
+            }
+
+            if (!"Operating System".equals(getOSFieldName())) {
+                fw.write("support.osFieldName=" + getOSFieldName() + "\n\n");
+            }
+
             fw.flush();
 
             clearCache();
@@ -78,11 +86,11 @@ public class SupportRtConfigDao extends ReadOnlyRtConfigDao {
             IOUtils.closeQuietly(fw);
         }
     }
-    
+
     public void setUsername(final String username) {
         setProperty("support.username", username);
     }
-    
+
     public void setPassword(final String password) {
         final String propertyName = "support.password";
         setProperty(propertyName, password);
@@ -116,5 +124,21 @@ public class SupportRtConfigDao extends ReadOnlyRtConfigDao {
     public String getFtpBaseURL() {
         return getStringProperty("support.ftpBaseURL", "ftp://ftp.opennms.org/incoming");
     }
-    
+
+    public void setVersionFieldName(final String name) {
+        setProperty("support.versionFieldName", name);
+    }
+
+    public String getVersionFieldName() {
+        return getStringProperty("support.versionFieldName", "OpenNMS Version");
+    }
+
+    public void setOSFieldName(final String name) {
+        setProperty("support.osFieldName", name);
+    }
+
+    public String getOSFieldName() {
+        return getStringProperty("support.osFieldName", "Operating System");
+    }
+
 }
