@@ -78,6 +78,10 @@ public class RequestTracker {
 
     private Pattern m_ticketUpdatedPattern = Pattern.compile("(?s) Ticket (\\d+) updated");
 
+    private Pattern m_customFieldPatternOld = Pattern.compile("^C(?:ustom)?F(?:ield)?-(.*?):\\s*(.*?)\\s*$");
+
+    private Pattern m_customFieldPatternNew = Pattern.compile("^CF\\.\\{(.*?)\\}:\\s*(.*?)\\s*$");
+
     private DefaultHttpClient m_client;
 
     public RequestTracker(final String baseURL, final String username, final String password, int timeout, int retries) {
@@ -89,12 +93,12 @@ public class RequestTracker {
     }
 
     public Long createTicket(final RTTicket ticket) throws RequestTrackerException {
-    	final HttpPost post = new HttpPost(m_baseURL + "/REST/1.0/edit");
+        final HttpPost post = new HttpPost(m_baseURL + "/REST/1.0/edit");
         return postEdit(post, ticket.toContent(), m_ticketCreatedPattern);
     }
 
     public Long updateTicket(final Long id, final String content) throws RequestTrackerException {
-    	HttpPost post = new HttpPost(m_baseURL + "/REST/1.0/ticket/" + id + "/edit");
+        HttpPost post = new HttpPost(m_baseURL + "/REST/1.0/ticket/" + id + "/edit");
         return postEdit(post, content, m_ticketUpdatedPattern);
     }
 
@@ -106,18 +110,18 @@ public class RequestTracker {
         params.add(new BasicNameValuePair("pass", m_password));
         params.add(new BasicNameValuePair("content", content));
 
-		try {
-			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, "UTF-8");
-			post.setEntity(entity);
-		} catch (final UnsupportedEncodingException e) {
-			// Should never happen
-			LogUtils.warnf(this, e, "unsupported encoding exception for UTF-8 -- WTF?!");
-		}
+        try {
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, "UTF-8");
+            post.setEntity(entity);
+        } catch (final UnsupportedEncodingException e) {
+            // Should never happen
+            LogUtils.warnf(this, e, "unsupported encoding exception for UTF-8 -- WTF?!");
+        }
 
         try {
-        	final HttpResponse response = getClient().execute(post);
+            final HttpResponse response = getClient().execute(post);
             int responseCode = response.getStatusLine().getStatusCode();
-			if (responseCode != HttpStatus.SC_OK) {
+            if (responseCode != HttpStatus.SC_OK) {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
             } else {
                 final String in = EntityUtils.toString(response.getEntity());
@@ -148,14 +152,14 @@ public class RequestTracker {
         final HttpGet get = new HttpGet(m_baseURL + "/REST/1.0/user/" + username);
 
         try {
-        	final HttpResponse response = getClient().execute(get);
+            final HttpResponse response = getClient().execute(get);
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode != HttpStatus.SC_OK) {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
             } else {
-            	if (response.getEntity() != null) {
-            		attributes = parseResponseStream(response.getEntity().getContent());
-            	}
+                if (response.getEntity() != null) {
+                    attributes = parseResponseStream(response.getEntity().getContent());
+                }
             }
         } catch (final Exception e) {
             LogUtils.errorf(this, e, "An exception occurred while getting user info for " + username);
@@ -165,7 +169,7 @@ public class RequestTracker {
         final String id = attributes.get("id");
         final String realname = attributes.get("realname");
         final String email = attributes.get("emailaddress");
-        
+
         if (id == null || "".equals(id)) {
             LogUtils.errorf(this, "Unable to retrieve ID from user info.");
             return null;
@@ -198,6 +202,18 @@ public class RequestTracker {
         } else if (attributes.containsKey("requestor")) {
             ticket.setRequestor(attributes.remove("requestor"));
         }
+
+        // We previously normalized to the new custom-field syntax, so no need to check here for the old
+        for (String bute : attributes.keySet()) {
+            String headerForm = bute + ": " + attributes.get(bute);
+            Matcher cfMatcher = m_customFieldPatternNew.matcher(headerForm);
+            if (cfMatcher.matches()) {
+                CustomField cf = new CustomField(cfMatcher.group(1));
+                cf.addValue(new CustomFieldValue(cfMatcher.group(2)));
+                attributes.remove(bute);
+            }
+        }
+
         if (LogUtils.isTraceEnabled(this)) {
             if (attributes.size() > 0) {
                 LogUtils.tracef(this, "unhandled RT ticket attributes: %s", attributes.keySet().toString());
@@ -223,7 +239,7 @@ public class RequestTracker {
     }
 
     public List<RTTicket> getTicketsForQueue(final String queueName, long limit) {
-    	getSession();
+        getSession();
 
         final List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("query", "Queue='" + queueName + "' AND Status='open'"));
@@ -235,7 +251,7 @@ public class RequestTracker {
         final List<Long> ticketIds = new ArrayList<Long>();
 
         try {
-        	final HttpResponse response = getClient().execute(get);
+            final HttpResponse response = getClient().execute(get);
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode != HttpStatus.SC_OK) {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
@@ -243,19 +259,19 @@ public class RequestTracker {
                 InputStreamReader isr = null;
                 BufferedReader br = null;
                 try {
-                	if (response.getEntity() == null) return null;
+                    if (response.getEntity() == null) return null;
                     isr = new InputStreamReader(response.getEntity().getContent());
                     br = new BufferedReader(isr);
                     String line = null;
                     do {
                         line = br.readLine();
                         if (line != null ) {
-                        	if (line.contains("does not exist.")) {
-                        		return null;
-                        	}
-	                        if (line.startsWith("ticket/")) {
-	                            ticketIds.add(Long.parseLong(line.replace("ticket/", "")));
-	                        }
+                            if (line.contains("does not exist.")) {
+                                return null;
+                            }
+                            if (line.startsWith("ticket/")) {
+                                ticketIds.add(Long.parseLong(line.replace("ticket/", "")));
+                            }
                         }
                     } while (line != null);
                 } catch (final Exception e) {
@@ -290,7 +306,7 @@ public class RequestTracker {
         for (final RTQueue queue : getQueuesForUser(username)) {
             if (queue.isAccessible() && !queue.getName().startsWith("___")) return queue;
         }
-        
+
         return null;
     }
 
@@ -333,14 +349,14 @@ public class RequestTracker {
         final HttpGet get = new HttpGet(m_baseURL + "/REST/1.0/queue/" + id);
 
         try {
-        	final HttpResponse response = getClient().execute(get);
+            final HttpResponse response = getClient().execute(get);
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode != HttpStatus.SC_OK) {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
             } else {
-            	if (response.getEntity() == null) {
-            		LogUtils.debugf(this, "no entity returned by HTTP client");
-            	}
+                if (response.getEntity() == null) {
+                    LogUtils.debugf(this, "no entity returned by HTTP client");
+                }
                 attributes = parseResponseStream(response.getEntity().getContent());
             }
         } catch (final Exception e) {
@@ -382,14 +398,14 @@ public class RequestTracker {
         final HttpGet get = new HttpGet(m_baseURL + "/REST/1.0/ticket/" + ticketQuery);
 
         try {
-        	final HttpResponse response = getClient().execute(get);
+            final HttpResponse response = getClient().execute(get);
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode != HttpStatus.SC_OK) {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
             } else {
-            	if (response.getEntity() == null) {
-            		LogUtils.debugf(this, "no entity returned by HTTP client");
-            	}
+                if (response.getEntity() == null) {
+                    LogUtils.debugf(this, "no entity returned by HTTP client");
+                }
                 ticketAttributes = parseResponseStream(response.getEntity().getContent());
             }
         } catch (final Exception e) {
@@ -406,7 +422,7 @@ public class RequestTracker {
     @SuppressWarnings("unchecked")
     protected Map<String,String> parseResponseStream(final InputStream responseStream) throws IOException {
         final Map<String,String> ticketAttributes = new HashMap<String,String>();
-        
+
         LogUtils.debugf(this, "parsing response");
         String lastIndent = "";
         String lastKey = null;
@@ -418,14 +434,23 @@ public class RequestTracker {
                 final String value = ticketAttributes.get(lastKey) + "\n" + line.replaceFirst("^" + lastIndent, "");
                 ticketAttributes.put(lastKey, value);
             } else {
-                final Matcher matcher = m_inTokensPattern.matcher(line);
-                if (matcher.matches()) {
-                    lastKey = matcher.group(1).toLowerCase();
+                final Matcher inTokensMatcher = m_inTokensPattern.matcher(line);
+                final Matcher cfMatcherOld = m_customFieldPatternOld.matcher(line);
+                final Matcher cfMatcherNew = m_customFieldPatternNew.matcher(line);
+                if (inTokensMatcher.matches()) {
+                    if (cfMatcherOld.matches()) {
+                        lastKey = "CF.{" + cfMatcherOld.group(1) + "}"; 
+                    } else if (cfMatcherNew.matches()) {
+                        lastKey = "CF.{" + cfMatcherNew.group(1) + "}";
+                    }
+                    else {
+                        lastKey = inTokensMatcher.group(1).toLowerCase();
+                    }
                     lastIndent = lastKey.replaceAll(".", " ") + "  ";
-                    ticketAttributes.put(lastKey, matcher.group(2));
+                    ticketAttributes.put(lastKey, inTokensMatcher.group(2));
                 }
             }
-            
+
         }
         return ticketAttributes;
     }
@@ -433,29 +458,29 @@ public class RequestTracker {
     private void getSession() {
         if (m_client == null) {
             // we need to log in at least once with a POST method before we can do any GETs so we get a session cookie
-        	
+
             final HttpPost post = new HttpPost(m_baseURL + "/REST/1.0/user/" + m_user);
             final List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("user", m_user));
             params.add(new BasicNameValuePair("pass", m_password));
 
-    		try {
-    			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, "UTF-8");
-    			post.setEntity(entity);
-    		} catch (final UnsupportedEncodingException e) {
-    			// Should never happen
-    			LogUtils.warnf(this, e, "unsupported encoding exception for UTF-8 -- WTF?!");
-    		}
+            try {
+                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, "UTF-8");
+                post.setEntity(entity);
+            } catch (final UnsupportedEncodingException e) {
+                // Should never happen
+                LogUtils.warnf(this, e, "unsupported encoding exception for UTF-8 -- WTF?!");
+            }
 
             try {
-            	final HttpResponse response = getClient().execute(post);
+                final HttpResponse response = getClient().execute(post);
                 int responseCode = response.getStatusLine().getStatusCode();
                 if (responseCode != HttpStatus.SC_OK) {
                     throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
                 } else {
-                	if (response.getEntity() != null) {
-                		response.getEntity().consumeContent();
-                	}
+                    if (response.getEntity() != null) {
+                        response.getEntity().consumeContent();
+                    }
                     LogUtils.warnf(this, "got user session for username: %s", m_user);
                 }
             } catch (final Exception e) {
@@ -465,20 +490,20 @@ public class RequestTracker {
     }
 
     public synchronized HttpClient getClient() {
-		if (m_client == null) {
-			m_client = new DefaultHttpClient();
+        if (m_client == null) {
+            m_client = new DefaultHttpClient();
 
-			HttpParams clientParams = m_client.getParams();
-			clientParams.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, m_timeout);
-			clientParams.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, m_timeout);
-			clientParams.setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-			m_client.setParams(clientParams);
+            HttpParams clientParams = m_client.getParams();
+            clientParams.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, m_timeout);
+            clientParams.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, m_timeout);
+            clientParams.setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
+            m_client.setParams(clientParams);
 
-			m_client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(m_retries, false));
+            m_client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(m_retries, false));
 
-		}
+        }
 
-		return m_client;
+        return m_client;
     }
 
     public synchronized void setClient(final DefaultHttpClient client) {
@@ -492,15 +517,15 @@ public class RequestTracker {
     public void setPassword(final String password) {
         m_password = password;
     }
-    
+
     public String toString() {
         return new ToStringBuilder(this)
-            .append("base-url", m_baseURL)
-            .append("username", m_user)
-            .append("password", m_password.replaceAll(".", "*"))
-            .append("timeout", m_timeout)
-            .append("retries", m_retries)
-            .toString();
+        .append("base-url", m_baseURL)
+        .append("username", m_user)
+        .append("password", m_password.replaceAll(".", "*"))
+        .append("timeout", m_timeout)
+        .append("retries", m_retries)
+        .toString();
     }
 
     public String getUsername() {

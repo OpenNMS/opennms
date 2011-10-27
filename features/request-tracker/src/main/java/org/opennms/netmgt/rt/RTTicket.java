@@ -35,13 +35,14 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.utils.LogUtils;
 
 public class RTTicket implements Serializable {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 445141747501076112L;
-	private static Pattern m_trim = Pattern.compile("\\s*\\n*$");
+     * 
+     */
+    private static final long serialVersionUID = 445141747501076112L;
+    private static Pattern m_trim = Pattern.compile("\\s*\\n*$");
     private Long m_id;
     private String m_status;
     private String m_queue;
@@ -49,20 +50,23 @@ public class RTTicket implements Serializable {
     private List<String> m_requestors = new ArrayList<String>();
     private String m_subject;
     private String m_text;
+    private List<CustomField> m_customFields;
 
     public RTTicket() {
+        m_customFields = new ArrayList<CustomField>();
     }
 
-    public RTTicket(final String queue, final String requestor, final String subject, final String text) {
-        this(null, queue, requestor, subject, text);
+    public RTTicket(final String queue, final String requestor, final String subject, final String text, final List<CustomField> customFields) {
+        this(null, queue, requestor, subject, text, customFields);
     }
 
-    public RTTicket(final Long id, final String queue, final String requestor, final String subject, final String text) {
+    public RTTicket(final Long id, final String queue, final String requestor, final String subject, final String text, final List<CustomField> customFields) {
         m_id = id;
         m_queue = queue;
         m_requestors.add(requestor);
         m_subject = subject;
         m_text = text;
+        m_customFields = customFields;
     }
 
     public Long getId() {
@@ -92,7 +96,7 @@ public class RTTicket implements Serializable {
     public String getCreated() {
         return m_created;
     }
-    
+
     public void setCreated(final String created) {
         m_created = created;
     }
@@ -144,16 +148,34 @@ public class RTTicket implements Serializable {
         m_text = text;
     }
 
+    public List<CustomField> getCustomFields() {
+        return m_customFields;
+    }
+
+    public void setCustomFields(List<CustomField> customFields) {
+        m_customFields = customFields;
+    }
+
+    public void addCustomField(CustomField customField) {
+        m_customFields.add(customField);
+    }
+
     public String toString() {
+        StringBuilder customFields = new StringBuilder();
+        for (CustomField cf : m_customFields) {
+            customFields.append(cf.toString())
+            .append("\n");
+        }
         return new ToStringBuilder(this)
-            .append("ID", m_id)
-            .append("Queue", m_queue)
-            .append("Created", m_created)
-            .append("Requestors", StringUtils.join(m_requestors, ", "))
-            .append("Status", m_status)
-            .append("Subject", m_subject)
-            .append("Text", m_text)
-            .toString();
+        .append("ID", m_id)
+        .append("Queue", m_queue)
+        .append("Created", m_created)
+        .append("Requestors", StringUtils.join(m_requestors, ", "))
+        .append("Status", m_status)
+        .append("Subject", m_subject)
+        .append("Text", m_text)
+        .append("Custom Fields", customFields.toString())
+        .toString();
     }
 
     public String toContent() {
@@ -164,6 +186,14 @@ public class RTTicket implements Serializable {
             if (m_requestors != null) contentBuilder.append("Requestor: ").append(getRequestor()).append("\n");
             if (m_subject    != null) contentBuilder.append("Subject: ").append(m_subject.replaceAll("[\\r\\n]+", " ")).append("\n");
             if (m_text       != null) contentBuilder.append("text: ").append(m_text.replaceAll("\\r?\\n", "\n ")).append("\n");
+            if (m_customFields.size() > 0) {
+                for (CustomField field : m_customFields) {
+                    if (field.getValues().size() == 0) continue;
+                    if (field.getValues().size() > 1) LogUtils.warnf(this, "Field %s has %d values, using only the first one", field.getName(), field.getValues().size());
+                    String value = field.getValues().get(0).getValue();
+                    contentBuilder.append("CF.{").append(field.getName()).append("}: ").append(value).append("\n");
+                }
+            }
         } else {
             // contentBuilder.append("id: ticket/").append(m_id).append("\n");
         }
@@ -180,6 +210,7 @@ public class RTTicket implements Serializable {
         newTicket.setStatus(m_status);
         newTicket.setSubject(m_subject);
         newTicket.setText(m_text);
+        newTicket.setCustomFields(m_customFields);
         return newTicket;
     }
 
