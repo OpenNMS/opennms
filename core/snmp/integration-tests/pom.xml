@@ -51,12 +51,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.snmp</groupId>
-      <artifactId>org.opennms.core.snmp.implementations.snmp4j</artifactId>
-		<version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
 		<version>${project.version}</version>
