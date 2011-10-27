@@ -523,6 +523,10 @@ abstract public class InetAddressUtils {
 	}
 
     public static byte[] macAddressStringToBytes(String macAddress) {
+        if (macAddress == null) {
+            throw new IllegalArgumentException("Cannot decode null MAC address");
+        }
+
         byte[] contents = new byte[6];
         String[] digits = macAddress.split(":");
         if (digits.length != 6) {

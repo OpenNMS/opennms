@@ -148,12 +148,13 @@ public final class IpNetToMediaTableEntry extends SnmpStore
 	 * <p>getIpNetToMediaPhysAddress</p>
 	 *
 	 * @return a {@link java.lang.String} object.
+	 * @see {@link org.opennms.netmgt.provision.service.snmp.IfTableEntry#getPhysAddr()}
 	 */
 	public String getIpNetToMediaPhysAddress(){
 	    try {
 	        // Try to fetch the physical address value as a hex string.
             String hexString = getHexString(IpNetToMediaTableEntry.INTM_PHYSADDR);
-            if (hexString.length() == 12) {
+            if (hexString != null && hexString.length() == 12) {
                 // If the hex string is 12 characters long, than the agent is kinda weird and
                 // is returning the value as a raw binary value that is 6 bytes in length.
                 // But that's OK, as long as we can convert it into a string, that's fine. 
