@@ -406,9 +406,11 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v 'endpoint-configuration.xml' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
-	grep -v -E 'etc/nsclient.*.xml' | \
-	grep -v -E 'etc/dhcp.*.xml' | \
-	grep -v -E 'etc/xmp-(config|datacollection-config).xml' | \
+	grep -v 'dhcpd-configuration.xml' | \
+	grep -v 'nsclient-config.xml' | \
+	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'xmp-config.xml' | \
+	grep -v 'xmp-datacollection-config.xml' | \
 	sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
@@ -417,9 +419,10 @@ find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
-	grep -v 'dhcpd-configuration.xsd' | \
-	grep -v -E 'nsclient.*.xsd' | \
-	grep -v -E 'xmp.*.xsd' | \
+	grep -v 'nsclient-config.xsd' | \
+	grep -v 'nsclient-datacollection.xsd' | \
+	grep -v 'xmp-config.xsd' | \
+	grep -v 'xmp-datacollection-config.xsd' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
@@ -514,6 +517,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-protocol-nsclient
 %attr(664,root,root) %config(noreplace) %{instprefix}/etc/nsclient*.xml
+%attr(664,root,root) %config(noreplace) %{instprefix}/etc/examples/nsclient*.xml
 %attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.nsclient*.jar
 %attr(664,root,root) %{sharedir}/xsds/nsclient*.xsd
 
