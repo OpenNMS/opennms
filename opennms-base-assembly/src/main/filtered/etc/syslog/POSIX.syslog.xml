@@ -5,7 +5,7 @@
 <syslogd-configuration-group>
     <ueiList>
         <ueiMatch>
-            <process>su</process>
+            <process-match expression="^su$" />
             <match type="regex" expression="su:.*?:\s+authentication failure; logname=(.*?) uid=(\d+) euid=(\d+) tty=(.*?) ruser=.*? rhost=.*? user=(.*?)$" />
             <uei>uei.opennms.org/vendor/posix/syslog/su/authenFailure</uei>
         </ueiMatch>
