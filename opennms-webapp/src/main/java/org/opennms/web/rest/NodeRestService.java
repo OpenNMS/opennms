@@ -55,7 +55,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -167,7 +167,7 @@ public class NodeRestService extends OnmsRestService {
             throwException(Status.BAD_REQUEST, "updateNode: Can't find node " + nodeCriteria);
         }
         log().debug("updateNode: updating node " + node);
-        BeanWrapper wrapper = new BeanWrapperImpl(node);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(node);
         for(String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
                 String stringValue = params.getFirst(key);

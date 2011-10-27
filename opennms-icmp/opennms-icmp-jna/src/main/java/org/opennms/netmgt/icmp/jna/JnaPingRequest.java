@@ -89,7 +89,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
     
 	private final AtomicBoolean m_processed = new AtomicBoolean(false);
 	
-    public JnaPingRequest(JnaPingRequestId id, long timeout, int retries, ThreadCategory log, PingResponseCallback cb) {
+    public JnaPingRequest(final JnaPingRequestId id, final long timeout, final int retries, final ThreadCategory log, final PingResponseCallback cb) {
         m_id = id;
         m_retries = retries;
         m_timeout = timeout;
@@ -97,11 +97,11 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
         m_callback = new LogPrefixPreservingPingResponseCallback(cb);
     }
 	
-    public JnaPingRequest(InetAddress addr, int identifier, int sequenceId, long threadId, long timeout, int retries, PingResponseCallback cb) {
+    public JnaPingRequest(final InetAddress addr, final int identifier, final int sequenceId, final long threadId, final long timeout, final int retries, final PingResponseCallback cb) {
         this(new JnaPingRequestId(addr, identifier, sequenceId, threadId), timeout, retries, ThreadCategory.getInstance(JnaPingRequest.class), cb);
     }
     
-    public JnaPingRequest(InetAddress addr, int identifier, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
+    public JnaPingRequest(final InetAddress addr, final int identifier, final int sequenceId, final long timeout, final int retries, final PingResponseCallback cb) {
         this(addr, identifier, sequenceId, getNextTID(), timeout, retries, cb);
     }
         
@@ -111,7 +111,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      * @param reply a {@link org.opennms.netmgt.icmp.spi.JnaPingReply.PingReply} object.
      * @return a boolean.
      */
-    public boolean processResponse(JnaPingReply reply) {
+    public boolean processResponse(final JnaPingReply reply) {
         try {
             m_log.debug(System.currentTimeMillis()+": Ping Response Received for request: "+this);
             m_callback.handleResponse(getAddress(), reply);
@@ -154,7 +154,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
     }
 
     /** {@inheritDoc} */
-    public long getDelay(TimeUnit unit) {
+    public long getDelay(final TimeUnit unit) {
         return unit.convert(m_expiration - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
 
@@ -164,9 +164,9 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      * @param request a {@link java.util.concurrent.Delayed} object.
      * @return a int.
      */
-    public int compareTo(Delayed request) {
-        long myDelay = getDelay(TimeUnit.MILLISECONDS);
-        long otherDelay = request.getDelay(TimeUnit.MILLISECONDS);
+    public int compareTo(final Delayed request) {
+        final long myDelay = getDelay(TimeUnit.MILLISECONDS);
+        final long otherDelay = request.getDelay(TimeUnit.MILLISECONDS);
         if (myDelay < otherDelay) return -1;
         if (myDelay == otherDelay) return 0;
         return 1;
@@ -182,7 +182,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
     }
 
     /** {@inheritDoc} */
-    public void processError(Throwable t) {
+    public void processError(final Throwable t) {
         try {
             m_callback.handleError(getAddress(), this, t);
         } finally {
@@ -190,7 +190,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
         }
     }
     
-    private void setProcessed(boolean processed) {
+    private void setProcessed(final boolean processed) {
         m_processed.set(processed);
     }
 
@@ -207,7 +207,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      * Send this V4PingRequest through the given icmpSocket
      * @param icmpSocket a {@link org.opennms.protocols.icmp.IcmpSocket} object.
      */
-    public void send(V4Pinger v4, V6Pinger v6) {
+    public void send(final V4Pinger v4, final V6Pinger v6) {
         InetAddress addr = getAddress();
         if (addr instanceof Inet4Address) {
             send(v4, (Inet4Address)addr);
@@ -220,25 +220,25 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
         return m_id.getAddress();
     }
 
-    public void send(V6Pinger v6, Inet6Address addr6) {
+    public void send(final V6Pinger v6, final Inet6Address addr6) {
         try {
             //throw new IllegalStateException("The m_request field should be set here!!!");
             m_log.debug(System.currentTimeMillis()+": Sending Ping Request: " + this);
         
             m_expiration = System.currentTimeMillis() + m_timeout;
             v6.ping(addr6, m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId(), 1, 0);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             m_callback.handleError(getAddress(), this, t);
         }
     }
 
-    public void send(V4Pinger v4, Inet4Address addr4) {
+    public void send(final V4Pinger v4, final Inet4Address addr4) {
         try {
             //throw new IllegalStateException("The m_request field should be set here!!!");
             m_log.debug(System.currentTimeMillis()+": Sending Ping Request: " + this);
             m_expiration = System.currentTimeMillis() + m_timeout;
             v4.ping(addr4, m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId(), 1, 0);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             m_callback.handleError(getAddress(), this, t);
         }
     }
@@ -250,7 +250,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append('[');
         sb.append("ID=").append(m_id).append(',');
         sb.append("Retries=").append(m_retries).append(",");

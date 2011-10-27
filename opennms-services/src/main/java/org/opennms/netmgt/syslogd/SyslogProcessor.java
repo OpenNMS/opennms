@@ -30,9 +30,9 @@ package org.opennms.netmgt.syslogd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SyslogdConfig;
@@ -93,15 +93,7 @@ final class SyslogProcessor implements Runnable {
 
         m_logPrefix = Syslogd.LOG4J_CATEGORY;
 
-        try {
-            m_localAddr = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException uhE) {
-            ThreadCategory log = ThreadCategory.getInstance(getClass());
-
-            m_localAddr = "localhost";
-            log.error("Error looking up local hostname; using 'localhost'", uhE);
-        }
-
+        m_localAddr = InetAddressUtils.getLocalHostName();
     }
 
     /**
@@ -170,8 +162,7 @@ final class SyslogProcessor implements Runnable {
                                 + o.getEvent().getLogmsg().getContent());
                         log.trace("  Dst   = "
                                 + o.getEvent().getLogmsg().getDest());
-                        Parm[] parms = (o.getEvent().getParms() == null ? null
-                                : o.getEvent().getParms().getParm());
+                        List<Parm> parms = (o.getEvent().getParmCollection() == null ? null : o.getEvent().getParmCollection());
                         if (parms != null) {
                             log.trace("  parms {");
                             for (Parm parm : parms) {

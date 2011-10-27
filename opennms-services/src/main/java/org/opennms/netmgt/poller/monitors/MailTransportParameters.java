@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Properties;
@@ -55,13 +54,13 @@ public class MailTransportParameters {
     public static final String KEY = MailTransportParameters.class.getName();
 	private static final int DEFAULT_RETRY = 1;
 	private static final int DEFAULT_TIMEOUT = 3000;
-    private Map<String, String> m_parameterMap;
+    private Map<String,Object> m_parameterMap;
     private MailTransportTest m_transportTest;
 	private String m_testSubjectSuffix;
     private boolean m_end2EndTestInProgress = false;
     private Properties m_javamailProperties = new Properties();
 
-    MailTransportParameters(Map<String, String> parameterMap) {
+    MailTransportParameters(Map<String,Object> parameterMap) {
         m_parameterMap = parameterMap;
         String test = getStringParm("mail-transport-test", null);
         if (test == null) {
@@ -70,8 +69,7 @@ public class MailTransportParameters {
         m_transportTest = parseMailTransportTest(test);
     }
     
-    @SuppressWarnings("unchecked")
-    static synchronized MailTransportParameters get(Map parameterMap) {
+    static synchronized MailTransportParameters get(Map<String,Object> parameterMap) {
         MailTransportParameters parms = (MailTransportParameters)parameterMap.get(KEY);
         if (parms == null) {
             parms = new MailTransportParameters(parameterMap);
@@ -80,7 +78,7 @@ public class MailTransportParameters {
         return parms;
     }
             
-    Map<String, String> getParameterMap() {
+    Map<String,Object> getParameterMap() {
         return m_parameterMap;
     }
 

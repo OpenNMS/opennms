@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.linkd;
 
-import java.util.Enumeration;
 import java.util.List;
 
 import org.opennms.core.utils.LogUtils;
@@ -39,7 +38,6 @@ import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 
 /**
  * Provides a collection of utility methods used by the DeleteEvent Processor
@@ -48,7 +46,7 @@ import org.opennms.netmgt.xml.event.Parms;
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  * @version $Id: $
  */
-public class EventUtils {
+public abstract class EventUtils {
 
     /**
      * Make the given listener object a listener for the list of events
@@ -275,14 +273,12 @@ public class EventUtils {
      *         not set
      */
     public static String getParm(Event e, String parmName, String defaultValue) {
-        Parms parms = e.getParms();
-        if (parms == null) {
+        final List<Parm> parms = e.getParmCollection();
+        if (parms == null || parms.size() == 0) {
             return defaultValue;
         }
 
-        Enumeration<Parm> parmEnum = parms.enumerateParm();
-        while (parmEnum.hasMoreElements()) {
-            Parm parm = parmEnum.nextElement();
+        for (final Parm parm : parms) {
             if (parmName.equals(parm.getParmName())) {
                 if (parm.getValue() != null && parm.getValue().getContent() != null) {
                     return parm.getValue().getContent();
@@ -307,14 +303,12 @@ public class EventUtils {
      * @param parmName a {@link java.lang.String} object.
      */
     public static void requireParm(Event e, String parmName) throws InsufficientInformationException {
-        Parms parms = e.getParms();
-        if (parms == null) {
+        final List<Parm> parms = e.getParmCollection();
+        if (parms == null || parms.size() == 0) {
             throw new InsufficientInformationException("parameter " + parmName + " required but but no parms are available.");
         }
 
-        Enumeration<Parm> parmEnum = parms.enumerateParm();
-        while (parmEnum.hasMoreElements()) {
-            Parm parm = parmEnum.nextElement();
+        for (final Parm parm : parms) {
             if (parmName.equals(parm.getParmName())) {
                 if (parm.getValue() != null && parm.getValue().getContent() != null) {
                     // we found a matching parameter

@@ -35,6 +35,11 @@ CREATE OR REPLACE FUNCTION getManagedServiceCountForIntf(integer,varchar(16))
    END;
 ' LANGUAGE 'plpgsql';
 </createProcedure>
+
+<rollback>
+  <sql>DROP FUNCTION IF EXISTS getManagedServiceCountForIntf(integer,varchar(16));</sql>
+</rollback>
+
 </changeSet>
 
 </databaseChangeLog>

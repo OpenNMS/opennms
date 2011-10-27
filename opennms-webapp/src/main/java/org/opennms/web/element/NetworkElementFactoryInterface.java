@@ -179,7 +179,7 @@ public interface NetworkElementFactoryInterface {
 	Interface[] getAllInterfacesOnNode(int nodeId);
 
 	/**
-	 * Returns all snmp interfaces on a node
+	 * Returns all SNMP interfaces on a node
 	 *
 	 * @Param int nodeId
 	 *               The nodeId of the node we are looking at
@@ -208,8 +208,8 @@ public interface NetworkElementFactoryInterface {
 	Interface[] getAllInterfaces();
 
 	/*
-	 * Returns all interfaces, but only includes snmp data if includeSNMP is true
-	 * This may be useful for pages that don't need snmp data and don't want to execute
+	 * Returns all interfaces, but only includes SNMP data if includeSNMP is true
+	 * This may be useful for pages that don't need SNMP data and don't want to execute
 	 * a sub-query per interface!
 	 *
 	 * @param includeSNMP a boolean.

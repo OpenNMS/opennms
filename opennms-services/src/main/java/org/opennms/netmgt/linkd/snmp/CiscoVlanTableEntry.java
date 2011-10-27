@@ -29,7 +29,7 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -37,20 +37,17 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 /**
  *<P>The CiscoVlanTableEntry class is designed to hold all the information
  * for one entry in the:
- * iso.org.dod.internet.private.enterprises.cisco.ciscoMgmt.
- * ciscoVtpMIB.vtpMIBObjects.vlanInfo.vtpVlanTable
+ * iso.org.dod.internet.private.enterprises.cisco.ciscoMgmt.ciscoVtpMIB.vtpMIBObjects.vlanInfo.vtpVlanTable</P>
  *
- * <P>This object is used by the CiscoVlanTable  to hold infomation
+ * <P>This object is used by the CiscoVlanTable  to hold information
  * single entries in the table. See the CiscoVlanPortTable documentation
  * form more information.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
  * @see CiscoVlanTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
- * @version $Id: $
  */
-public final class CiscoVlanTableEntry extends SnmpTableEntry
-implements VlanCollectorEntry {
+public final class CiscoVlanTableEntry extends SnmpStore implements VlanCollectorEntry {
 
 	// Lookup strings for specific table entries
 	//
@@ -83,8 +80,14 @@ implements VlanCollectorEntry {
 	/** Constant <code>VLAN_IFINDEX="vtpVlanIfIndex"</code> */
 	public final static String VLAN_IFINDEX = "vtpVlanIfIndex";
 
-	private static String VLAN_INDEX_OID=".1.3.6.1.4.1.9.9.46.1.3.1.1.1";
-	private static String VLAN_NAME_OID=".1.3.6.1.4.1.9.9.46.1.3.1.1.4";
+    /**
+     * <P>The TABLE_OID is the object identifier that represents
+     * the root of the table vtpVlanTable in the MIB forest.</P>
+     */
+    public static final String TABLE_OID = ".1.3.6.1.4.1.9.9.46.1.3.1.1"; // start of table (GETNEXT)
+
+	private static String VLAN_INDEX_OID  = TABLE_OID + ".1";
+	private static String VLAN_NAME_OID   = TABLE_OID + ".4";
 	
 	private boolean hasVlanIndex = false;
 	/**
@@ -94,77 +97,26 @@ implements VlanCollectorEntry {
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[] ciscoVlan_elemList = null;
-
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static {
-		ciscoVlan_elemList = new NamedSnmpVar[18];
-
-		int ndx = 0;
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_INDEX, VLAN_INDEX_OID, 1);
-		
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_STATUS, ".1.3.6.1.4.1.9.9.46.1.3.1.1.2", 2);
-		
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_TYPE, ".1.3.6.1.4.1.9.9.46.1.3.1.1.3", 3);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_NAME, ".1.3.6.1.4.1.9.9.46.1.3.1.1.4", 4);
-		
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_MTU, ".1.3.6.1.4.1.9.9.46.1.3.1.1.5", 5);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_D10S, ".1.3.6.1.4.1.9.9.46.1.3.1.1.6", 6);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_RINGN, ".1.3.6.1.4.1.9.9.46.1.3.1.1.7", 7);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_BRIDGEN, ".1.3.6.1.4.1.9.9.46.1.3.1.1.8", 8);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_STPTYPE, ".1.3.6.1.4.1.9.9.46.1.3.1.1.9", 9);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_PARV, ".1.3.6.1.4.1.9.9.46.1.3.1.1.10", 10);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_TRV1, ".1.3.6.1.4.1.9.9.46.1.3.1.1.11", 11);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_TRV2, ".1.3.6.1.4.1.9.9.46.1.3.1.1.12", 12);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_BRIDGETYPE, ".1.3.6.1.4.1.9.9.46.1.3.1.1.13", 13);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_AREHC, ".1.3.6.1.4.1.9.9.46.1.3.1.1.14", 14);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_STEHC, ".1.3.6.1.4.1.9.9.46.1.3.1.1.15", 15);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_ISCRFBACHUP, ".1.3.6.1.4.1.9.9.46.1.3.1.1.16", 16);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_TYPEEXT, ".1.3.6.1.4.1.9.9.46.1.3.1.1.17", 17);
-
-		ciscoVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_IFINDEX, ".1.3.6.1.4.1.9.9.46.1.3.1.1.18", 18);
-	}
-
-	/**
-	 * <P>The TABLE_OID is the object identifier that represents
-	 * the root of the table vtpVlanTable in the MIB forest.</P>
-	 */
-	public static final String TABLE_OID = ".1.3.6.1.4.1.9.9.46.1.3.1.1"; // start of table (GETNEXT)
+	public static NamedSnmpVar[] ciscoVlan_elemList = new NamedSnmpVar[] {
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_INDEX,       VLAN_INDEX_OID, 1),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_STATUS,      TABLE_OID + ".2", 2),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_TYPE,        TABLE_OID + ".3", 3),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_NAME,        TABLE_OID + ".4", 4),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_MTU,         TABLE_OID + ".5", 5),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_D10S,        TABLE_OID + ".6", 6),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_RINGN,       TABLE_OID + ".7", 7),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_BRIDGEN,     TABLE_OID + ".8", 8),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_STPTYPE,     TABLE_OID + ".9", 9),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_PARV,        TABLE_OID + ".10", 10),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_TRV1,        TABLE_OID + ".11", 11),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_TRV2,        TABLE_OID + ".12", 12),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_BRIDGETYPE,  TABLE_OID + ".13", 13),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_AREHC,       TABLE_OID + ".14", 14),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_STEHC,       TABLE_OID + ".15", 15),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_ISCRFBACHUP, TABLE_OID + ".16", 16),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_TYPEEXT,     TABLE_OID + ".17", 17),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       VLAN_IFINDEX,     TABLE_OID + ".18", 18)
+	};
 
 	/**
 	 * <p>Constructor for CiscoVlanTableEntry.</p>

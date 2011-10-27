@@ -24,6 +24,11 @@ CREATE OR REPLACE FUNCTION drop_trigger_if_exists(VARCHAR, VARCHAR) RETURNS VOID
         END;
 ' LANGUAGE 'plpgsql';
 </createProcedure>
+
+<rollback>
+  <sql>DROP FUNCTION IF EXISTS drop_trigger_if_exists(VARCHAR, VARCHAR);</sql>
+</rollback>
+
 </changeSet>
 
 </databaseChangeLog>

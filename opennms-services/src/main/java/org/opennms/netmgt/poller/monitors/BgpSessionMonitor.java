@@ -53,12 +53,13 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * <p>
  * Check for BgpPeering states via RFC1269-MIB.
  * </p>
+ * <p>
+ * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
+ * </p>
  *
  * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
  * @version $Id: $
  */
-
-//this does snmp and there relies on the snmp configuration so it is not distributable
 @Distributable(DistributionContext.DAEMON)
 final public class BgpSessionMonitor extends SnmpMonitorStrategy {
     /**
@@ -323,7 +324,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         } catch (NumberFormatException e) {
             status = logDown(Level.WARN, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.WARN, "Invalid Snmp Criteria: " + e.getMessage());
+            status = logDown(Level.WARN, "Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }

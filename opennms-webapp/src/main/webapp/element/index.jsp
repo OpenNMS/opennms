@@ -154,7 +154,7 @@
 				<input type="submit" value="Search" /></p>
         </form>
 		<ul class="plain">
-			<li><a href="asset/nodelist.jsp?column=<%=this.columns[0][1]%>&searchvalue=">All nodes with asset info</a></li>
+			<li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
       </ul>
 		</div>
   </div>

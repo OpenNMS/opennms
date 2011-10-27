@@ -46,8 +46,8 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
 
 /**
  * Singleton class used to send messages to an XMPP Server. Used by

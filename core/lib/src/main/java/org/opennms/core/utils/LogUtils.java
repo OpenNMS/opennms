@@ -39,7 +39,7 @@ import org.slf4j.Logger;
  * @author ranger
  * @version $Id: $
  */
-public class LogUtils {
+public abstract class LogUtils {
 
     /**
      * <p>tracef</p>

@@ -100,7 +100,7 @@ public class OutageTable {
      * @param m_outageService a {@link org.opennms.web.svclayer.outage.OutageService} object.
      * @return a {@link java.util.Map} object.
      */
-    public Map getResolvedOutageTable(HttpServletRequest request,
+    public Map<String, ?> getResolvedOutageTable(HttpServletRequest request,
             HttpServletResponse reply, OutageService m_outageService) {
 
         Context context = new HttpServletRequestContext(request);

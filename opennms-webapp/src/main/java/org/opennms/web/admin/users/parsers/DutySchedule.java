@@ -119,7 +119,7 @@ public class DutySchedule {
      * @param aSchedule
      *            Vector filled with 7 Boolean objects and two String objects
      */
-    public DutySchedule(Vector aSchedule) {
+    public DutySchedule(Vector<?> aSchedule) {
         m_days = new BitSet(7);
 
         // set each day that is set to true

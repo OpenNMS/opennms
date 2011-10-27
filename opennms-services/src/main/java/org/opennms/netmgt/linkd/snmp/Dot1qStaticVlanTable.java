@@ -38,7 +38,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * <P>
  * Dot1qStaticVlanTable uses a SnmpSession to collect the vtpVlanTable Port table
  * entries. It implements the SnmpHandler to receive notifications when a reply
- * is received/error occurs in the SnmpSession used to send requests /recieve
+ * is received/error occurs in the SnmpSession used to send requests/receive
  * replies.
  * </P>
  *

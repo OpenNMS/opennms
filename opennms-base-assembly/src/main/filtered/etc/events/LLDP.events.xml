@@ -1,0 +1,56 @@
+<!-- Start of auto generated data from MIB: LLDP-MIB -->
+<events>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.0.8802.1.1.2.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/ieee/lldpMIB/traps/lldpRemTablesChange</uei>
+	<event-label>LLDP-MIB defined trap event: lldpRemTablesChange</event-label>
+	<descr>
+&lt;p&gt;A lldpRemTablesChange notification is sent when the value 
+of lldpStatsRemTableLastChangeTime changes. It can be 
+utilized by an NMS to trigger LLDP remote systems table 
+maintenance polls.
+
+Note that transmission of lldpRemTablesChange
+notifications are throttled by the agent, as specified by the 
+'lldpNotificationInterval' object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	lldpStatsRemTablesInserts&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	lldpStatsRemTablesDeletes&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	lldpStatsRemTablesDrops&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	lldpStatsRemTablesAgeouts&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			lldpRemTablesChange trap received 
+			lldpStatsRemTablesInserts=%parm[#1]% 
+			lldpStatsRemTablesDeletes=%parm[#2]% 
+			lldpStatsRemTablesDrops=%parm[#3]% 
+			lldpStatsRemTablesAgeouts=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+</events>
+<!-- End of auto generated data from MIB: LLDP-MIB -->

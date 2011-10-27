@@ -38,7 +38,7 @@ import net.sf.jasperreports.engine.JRException;
 
 public class RrdtoolQueryExecutor extends JRobinQueryExecutor {
 
-	protected RrdtoolQueryExecutor(JRDataset dataset, Map parametersMap) {
+	protected RrdtoolQueryExecutor(JRDataset dataset, Map<?,?> parametersMap) {
 		super(dataset, parametersMap);
 	}
 

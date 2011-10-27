@@ -29,21 +29,23 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 
 /**
  *<P>The Dot1dBaseTableEntry class is designed to hold all the MIB-II
  * information for one entry in the .iso.org.dod.internet.mgmt.mib-2.dot1dBridge.dot1dBase.dot1dBasePortTable
  * The table effectively contains a list of these entries, each entry having information
- * about bridge info. The entry dot1dBasePortTable.dot1dBasePortEntry contains:
+ * about bridge info. The entry dot1dBasePortTable.dot1dBasePortEntry contains:</P>
  *
- *							dot1dBasePort
- *							dot1dBasePortIfIndex
- *							dot1dBasePortCircuit
- *							dot1dBasePortDelayExceededDiscards
- *							dot1dBasePortMtuExceededDiscards.</P>
+ * <ul>
+ * <li>dot1dBasePort</li>
+ * <li>dot1dBasePortIfIndex</li>
+ * <li>dot1dBasePortCircuit</li>
+ * <li>dot1dBasePortDelayExceededDiscards</li>
+ * <li>dot1dBasePortMtuExceededDiscards</li>
+ * </ul>
  *
- * <P>This object is used by the Dot1dBasePortTable  to hold infomation
+ * <P>This object is used by the Dot1dBasePortTable  to hold information
  * single entries in the table. See the Dot1dBasePortTable documentation
  * form more information.</P>
  *
@@ -52,7 +54,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class Dot1dBasePortTableEntry extends SnmpTableEntry {
+public final class Dot1dBasePortTableEntry extends SnmpStore {
 	// Lookup strings for specific table entries
 	//
 	/** Constant <code>BASE_PORT="dot1dBasePort"</code> */
@@ -77,30 +79,19 @@ public final class Dot1dBasePortTableEntry extends SnmpTableEntry {
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[] bridgePort_elemList = null;
-
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static {
-		bridgePort_elemList = new NamedSnmpVar[5];
-		int ndx = 0;
-
+	public static final NamedSnmpVar[] bridgePort_elemList = new NamedSnmpVar[] {
 		/**
 		 * The port number of the port for which this entry
  		 * contains bridge management information.
 		 */
-		bridgePort_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				BASE_PORT, ".1.3.6.1.2.1.17.1.4.1.1", 1);
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, BASE_PORT, ".1.3.6.1.2.1.17.1.4.1.1", 1),
 		
 		/**
 		 * The value of the instance of the ifIndex object,
 		 * defined in MIB-II, for the interface corresponding
  		 * to this port.
 		 */
-		bridgePort_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				BASE_IFINDEX, ".1.3.6.1.2.1.17.1.4.1.2", 2);
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, BASE_IFINDEX, ".1.3.6.1.2.1.17.1.4.1.2", 2),
 		
 		/**
 		 * For a port which (potentially) has the same value
@@ -116,8 +107,7 @@ public final class Dot1dBasePortTableEntry extends SnmpTableEntry {
  		 * dot1dBasePortIfIndex, this object can have the
  		 * value { 0 0 }.
 		 */
-		bridgePort_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID,
-				BASE_PORT_CIRCUIT, ".1.3.6.1.2.1.17.1.4.1.3", 3);
+		new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, BASE_PORT_CIRCUIT, ".1.3.6.1.2.1.17.1.4.1.3", 3),
 		
 		/**
 		 * The number of frames discarded by this port due
@@ -125,17 +115,15 @@ public final class Dot1dBasePortTableEntry extends SnmpTableEntry {
  		 * is incremented by both transparent and source
  		 * route bridges.
 		 */
-		bridgePort_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-				BASE_DELAY_EX_DIS, ".1.3.6.1.2.1.17.1.4.1.4", 4);
+		new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, BASE_DELAY_EX_DIS, ".1.3.6.1.2.1.17.1.4.1.4", 4),
 		
 		/**
 		 * The number of frames discarded by this port due
  		 * to an excessive size. It is incremented by both
  		 * transparent and source route bridges.
 		 */
-		bridgePort_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,
-				BASE_MTU_EX_DIS, ".1.3.6.1.2.1.17.1.4.1.5", 5);
-	}
+		new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, BASE_MTU_EX_DIS, ".1.3.6.1.2.1.17.1.4.1.5", 5)
+	};
 
 	/**
 	 * <P>The TABLE_OID is the object identifier that represents

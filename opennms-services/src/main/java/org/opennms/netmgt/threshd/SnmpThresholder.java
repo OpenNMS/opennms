@@ -58,7 +58,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
@@ -70,10 +69,7 @@ import org.springframework.util.Assert;
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @deprecated No longer used - see ThresholdingVisitor
- * @version $Id: $
  */
 public final class SnmpThresholder implements ServiceThresholder {
 
@@ -106,8 +102,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
-    @SuppressWarnings("unchecked")
-    public void initialize(Map parameters) {
+    public void initialize(@SuppressWarnings("unchecked") Map parameters) {
 
         m_serviceName = (String)parameters.get("svcName");
         
@@ -158,8 +153,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
      */
-    @SuppressWarnings("unchecked")
-    public void initialize(ThresholdNetworkInterface netIface, Map parms) {
+    public void initialize(ThresholdNetworkInterface netIface, @SuppressWarnings("unchecked") Map parms) {
         SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = new SnmpThresholdNetworkInterface(m_thresholdsDao, netIface, parms);
         m_snmpThresholdNetworkInterfaces.put(netIface, snmpThresholdNetworkInterface);
 
@@ -216,8 +210,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      *
      * Perform threshold checking.
      */
-    @SuppressWarnings("unchecked")
-    public int check(ThresholdNetworkInterface netIface, EventProxy eproxy, Map parms) {
+    public int check(ThresholdNetworkInterface netIface, EventProxy eproxy, @SuppressWarnings("unchecked") Map parms) {
         SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = m_snmpThresholdNetworkInterfaces.get(netIface);
         if (snmpThresholdNetworkInterface == null) {
             log().warn("check: interface has not been initialized in this thresholder: " + netIface);
@@ -629,7 +622,7 @@ public final class SnmpThresholder implements ServiceThresholder {
             }
         
             // Add appropriate parms
-            Parms eventParms = event.getParms();
+            final List<Parm> eventParms = event.getParmCollection();
             
             Parm eventParm;
             Value parmValue;
@@ -641,7 +634,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                 parmValue = new Value();
                 parmValue.setContent(dsLabelValue);
                 eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+                eventParms.add(eventParm);
             }
     
             // Add interface parms if available
@@ -652,7 +645,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                 parmValue = new Value();
                 parmValue.setContent(ifDataMap.get("iflabel"));
                 eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+                eventParms.add(eventParm);
             }
     
             if (ifDataMap != null && ifDataMap.get("snmpifindex") != null) {
@@ -662,7 +655,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                 parmValue = new Value();
                 parmValue.setContent(ifDataMap.get("snmpifindex"));
                 eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+                eventParms.add(eventParm);
             }
 
             events.addEvent(event);

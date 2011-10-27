@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -420,7 +421,7 @@ public class OnmsRestService {
      */
     @SuppressWarnings("unchecked")
 	protected void setProperties(org.opennms.web.rest.MultivaluedMapImpl params, Object req) {
-        BeanWrapper wrapper = new BeanWrapperImpl(req);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(req);
         wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
         for(String key : params.keySet()) {
             String propertyName = convertNameToPropertyName(key);

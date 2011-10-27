@@ -3,10 +3,8 @@ package org.opennms.util.ilr;
 import static org.junit.Assert.*;
 import static org.opennms.util.ilr.Filter.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;

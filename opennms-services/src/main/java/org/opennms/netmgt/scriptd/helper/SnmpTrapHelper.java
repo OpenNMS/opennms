@@ -81,7 +81,7 @@ public class SnmpTrapHelper {
     private static final String SNMP_TRAP_COMMUNITY_OID = ".1.3.6.1.6.3.18.1.4.0";
 
     /**
-     * The snmp trap enterprise OID, which if present in a V2 trap is the last
+     * The SNMP trap enterprise OID, which if present in a V2 trap is the last
      * varbind
      */
     private static final String SNMP_TRAP_ENTERPRISE_OID = ".1.3.6.1.6.3.1.1.4.3.0";
@@ -191,16 +191,7 @@ public class SnmpTrapHelper {
             } else if (EventConstants.XML_ENCODING_BASE64.equals(encoding)) {
                 contents = Base64.decodeBase64(value.toCharArray());
             } else if (EventConstants.XML_ENCODING_MAC_ADDRESS.equals(encoding)) {
-                String[] digits = value.split(":");
-                if (digits.length != 6) {
-                    throw new SnmpTrapHelperException("Cannot decode MAC address: " + value);
-                }
-                contents = new byte[6];
-                // Decode each MAC address digit into a hexadecimal byte value
-                for (int i = 0; i < 6; i++) {
-                    // Prefix the value with "0x" so that Byte.decode() knows which base to use
-                    contents[i] = Byte.decode("0x" + digits[i]);
-                }
+                contents = InetAddressUtils.macAddressStringToBytes(value);
             } else {
                 throw new SnmpTrapHelperException("Encoding " + encoding + "is invalid for SnmpOctetString");
             }
@@ -696,7 +687,7 @@ public class SnmpTrapHelper {
 
     /**
      * 
-     * This helper methis helps snmp trap daemon
+     * This helper method helps SNMP trap daemon
      * administrator to set up authentication
      * An snmpv3 trap is sent using the sender 
      * EngineID that needs to be known 

@@ -92,12 +92,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class SyslogdLoadTest {
 
     private EventCounter m_eventCounter;
-    private final String m_matchPattern = "^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)";
-    private final int m_hostGroup = 6;
-    private final int m_messageGroup = 8;
-    private HideMessage m_HideMessages = new HideMessage();
-    private String m_discardUei = "DISCARD-MATCHING-MESSAGES";
-    private UeiList m_UeiList = new UeiList();
+    private static final String MATCH_PATTERN = "^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)";
+    private static final int HOST_GROUP = 6;
+    private static final int MESSAGE_GROUP = 8;
+    private static final HideMessage HIDE_MESSAGE = new HideMessage();
+    private static final String DISCARD_UEI = "DISCARD-MATCHING-MESSAGES";
+    private static final UeiList UEI_LIST = new UeiList();
 
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
@@ -107,7 +107,7 @@ public class SyslogdLoadTest {
     
     private Syslogd m_syslogd;
 
-    public SyslogdLoadTest() {
+    static {
         UeiMatch ueiMatch;
         Match match;
         for (int i = 0; i < 10000; i++) {
@@ -121,7 +121,7 @@ public class SyslogdLoadTest {
             match.setExpression(String.format(".*foo%d: .*load test (\\S+) on ((pts\\/\\d+)|(tty\\d+)).*", i));
             ueiMatch.setMatch(match);
             ueiMatch.setUei(String.format("uei.example.org/syslog/loadTest/foo%d", i));
-            m_UeiList.addUeiMatch(ueiMatch);
+            UEI_LIST.addUeiMatch(ueiMatch);
         }
     }
 
@@ -177,7 +177,7 @@ public class SyslogdLoadTest {
     public void testDefaultSyslogd() throws Exception {
         startSyslogdGracefully();
 
-        int eventCount = 100;
+        final int eventCount = 100;
         
         List<Integer> foos = new ArrayList<Integer>();
 
@@ -188,13 +188,13 @@ public class SyslogdLoadTest {
 
         m_eventCounter.setAnticipated(eventCount);
 
-        long start = System.currentTimeMillis();
         String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
         SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        final long start = System.currentTimeMillis();
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            Thread worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei), SyslogConnection.class.getSimpleName());
+            Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
             worker.start();
         }
 
@@ -221,13 +221,13 @@ public class SyslogdLoadTest {
         // handle an invalid packet
         byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        Thread worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei), SyslogConnection.class.getSimpleName());
+        Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
         worker.run();
 
         // handle a valid packet
         bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei), SyslogConnection.class.getSimpleName());
+        worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
         worker.run();
 
         m_eventCounter.waitForFinish(120000);
@@ -249,13 +249,13 @@ public class SyslogdLoadTest {
         // handle an invalid packet
         byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        Thread worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei), SyslogConnection.class.getSimpleName());
+        Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
         worker.run();
 
         // handle a valid packet
         bytes = "<34>monkeysatemybrain!\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei), SyslogConnection.class.getSimpleName());
+        worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
         worker.run();
 
         m_eventCounter.waitForFinish(120000);
@@ -268,7 +268,7 @@ public class SyslogdLoadTest {
     public void testEventd() throws Exception {
     	m_eventd.start();
 
-        EventProxy ep = this.createEventProxy();
+        EventProxy ep = createEventProxy();
 
         Log eventLog = new Log();
         Events events = new Events();
@@ -304,7 +304,7 @@ public class SyslogdLoadTest {
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
     }
 
-    private EventProxy createEventProxy() throws UnknownHostException {
+    private static EventProxy createEventProxy() throws UnknownHostException {
         /*
          * Rather than defaulting to localhost all the time, give an option in properties
          */
@@ -324,7 +324,7 @@ public class SyslogdLoadTest {
         return proxy;
     }
 
-    public class EventCounter implements EventListener {
+    public static class EventCounter implements EventListener {
         private AtomicInteger m_eventCount = new AtomicInteger(0);
         private int m_expectedCount = 0;
 
@@ -335,7 +335,7 @@ public class SyslogdLoadTest {
         // Me love you, long time.
         public void waitForFinish(final long time) {
             final long start = System.currentTimeMillis();
-            while (m_eventCounter.getCount() < m_expectedCount) {
+            while (this.getCount() < m_expectedCount) {
                 if (System.currentTimeMillis() - start > time) {
                     LogUtils.warnf(this, "waitForFinish timeout (%s) reached", time);
                     break;

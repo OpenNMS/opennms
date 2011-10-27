@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -118,7 +119,7 @@ public class TrapdTest implements InitializingBean {
         defaultTrapBuilder.setInterface(localAddr);
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
 
-        EventBuilder newSuspectBuilder = new EventBuilder("uei.opennms.org/internal/discovery/newSuspect", "trapd");
+        EventBuilder newSuspectBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
         newSuspectBuilder.setInterface(localAddr);
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
 

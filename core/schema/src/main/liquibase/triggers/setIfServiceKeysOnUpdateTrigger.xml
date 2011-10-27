@@ -55,6 +55,14 @@ CREATE TRIGGER setIfServiceKeysOnUpdateTrigger
    ON outages FOR EACH ROW
    EXECUTE PROCEDURE setIfServiceKeysOnUpdate();
 </createProcedure>
+
+<rollback>
+  <sql>
+    DROP TRIGGER IF EXISTS setIfServiceKeysOnUpdateTrigger on outages;
+    DROP FUNCTION IF EXISTS setIfServiceKeysOnUpdate();
+  </sql>
+</rollback>
+
 </changeSet>
 
 </databaseChangeLog>

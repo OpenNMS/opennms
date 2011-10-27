@@ -46,7 +46,6 @@ import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 
@@ -55,7 +54,6 @@ import org.opennms.netmgt.xml.event.Value;
  * for dealing with Events
  *
  * @author brozow
- * @version $Id: $
  */
 public abstract class EventUtils {
 
@@ -928,23 +926,13 @@ public abstract class EventUtils {
 	 * @param pollResultId a {@link java.lang.Object} object.
 	 */
 	public static void addParam(Event event, String parmName, Object pollResultId) {
-		
-        // Add appropriate parms
-		Parms eventParms = event.getParms();
-		if (eventParms == null) {
-			eventParms = new Parms();
-			event.setParms(eventParms);
-		}
-        
-
-        Parm eventParm = new Parm();
+	    final Parm eventParm = new Parm();
         eventParm.setParmName(parmName);
-        Value parmValue = new Value();
+        final Value parmValue = new Value();
         parmValue.setContent(String.valueOf(pollResultId));
         eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
 
-
+        event.addParm(eventParm);
 	}
 
 }

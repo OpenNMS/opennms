@@ -33,11 +33,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
@@ -59,7 +61,6 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -89,7 +90,6 @@ public class EventTranslatorTest {
     private OutageAnticipator m_outageAnticipator;
     private EventTranslatorConfigFactory m_config;
 
-    @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
 //        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
@@ -105,7 +105,7 @@ public class EventTranslatorTest {
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(true);
 
-        Reader rdr = new StringReader(m_passiveStatusConfiguration);
+        InputStream rdr = new ByteArrayInputStream(m_passiveStatusConfiguration.getBytes("UTF-8"));
         m_config = new EventTranslatorConfigFactory(rdr, m_db);
         EventTranslatorConfigFactory.setInstance(m_config);
         
@@ -206,19 +206,18 @@ public class EventTranslatorTest {
         
         // test null parms fails
         Event teWithNullParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
-        teWithNullParms.setParms(null);
+        teWithNullParms.setParmCollection(null);
         assertFalse(m_config.isTranslationEvent(teWithNullParms));
         
         // test empty  parm list fails
         Event teWithNoParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
-        Parms parms = teWithNoParms.getParms();
-        parms.removeAllParm();
+        teWithNoParms.setParmCollection(new ArrayList<Parm>());
         assertFalse(m_config.isTranslationEvent(teWithNoParms));
 
         // test missing a parm fails
         Event teWithWrongParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
-        Parms p = teWithWrongParms.getParms();
-        p.getParm(2).setParmName("unmatching"); // change the name for the third parm so it fails to match
+        List<Parm> p = teWithWrongParms.getParmCollection();
+        p.get(2).setParmName("unmatching"); // change the name for the third parm so it fails to match
         assertFalse(m_config.isTranslationEvent(teWithWrongParms));
 
         // that a matching parm value succeeds
@@ -246,19 +245,18 @@ public class EventTranslatorTest {
 
         // test null parms fails
         Event teWithNullParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
-        teWithNullParms.setParms(null);
+        teWithNullParms.setParmCollection(null);
         assertTrue(m_config.translateEvent(teWithNullParms).isEmpty());
         
         // test empty  parm list fails
         Event teWithNoParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
-        Parms parms = teWithNoParms.getParms();
-        parms.removeAllParm();
+        teWithNoParms.setParmCollection(new ArrayList<Parm>());
         assertTrue(m_config.translateEvent(teWithNoParms).isEmpty());
 
         // test missing a parm fails
         Event teWithWrongParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
-        Parms p = teWithWrongParms.getParms();
-        p.getParm(2).setParmName("unmatching"); // change the name for the third parm so it fails to match
+        List<Parm> p = teWithWrongParms.getParmCollection();
+        p.get(2).setParmName("unmatching"); // change the name for the third parm so it fails to match
         assertTrue(m_config.translateEvent(teWithWrongParms).isEmpty());
 
         // that a matching parm value succeeds
@@ -272,10 +270,9 @@ public class EventTranslatorTest {
         assertTrue(m_config.translateEvent(te3).isEmpty());
     }
     
-    @SuppressWarnings("deprecation")
     @Test
-    public void testTranslateLinkDown() throws MarshalException, ValidationException, SQLException {
-        Reader rdr = new StringReader(getLinkDownTranslation());
+    public void testTranslateLinkDown() throws MarshalException, ValidationException, SQLException, UnsupportedEncodingException {
+        InputStream rdr = new ByteArrayInputStream(getLinkDownTranslation().getBytes("UTF-8"));
         m_config = new EventTranslatorConfigFactory(rdr, m_db);
         EventTranslatorConfigFactory.setInstance(m_config);
         
@@ -294,12 +291,12 @@ public class EventTranslatorTest {
         List<Event> translatedEvents = m_config.translateEvent(createLinkDownEvent());
         assertNotNull(translatedEvents);
         assertEquals(1, translatedEvents.size());
-        assertEquals(3, translatedEvents.get(0).getParms().getParmCount());
-        assertEquals(".1.3.6.1.2.1.2.2.1.1.2", translatedEvents.get(0).getParms().getParm(0).getParmName());
-        assertEquals("ifName", translatedEvents.get(0).getParms().getParm(1).getParmName());
-        assertEquals("ifAlias", translatedEvents.get(0).getParms().getParm(2).getParmName());
-        assertEquals("david", translatedEvents.get(0).getParms().getParm(1).getValue().getContent());
-        assertEquals("p-brane", translatedEvents.get(0).getParms().getParm(2).getValue().getContent());
+        assertEquals(3, translatedEvents.get(0).getParmCollection().size());
+        assertEquals(".1.3.6.1.2.1.2.2.1.1.2", translatedEvents.get(0).getParmCollection().get(0).getParmName());
+        assertEquals("ifName", translatedEvents.get(0).getParmCollection().get(1).getParmName());
+        assertEquals("ifAlias", translatedEvents.get(0).getParmCollection().get(2).getParmName());
+        assertEquals("david", translatedEvents.get(0).getParmCollection().get(1).getValue().getContent());
+        assertEquals("p-brane", translatedEvents.get(0).getParmCollection().get(2).getValue().getContent());
     }
 
 	private String getLinkDownTranslation() {
@@ -358,21 +355,21 @@ public class EventTranslatorTest {
     }
 
     private Event createTestEvent(String type, String nodeLabel, String ipAddr, String serviceName, String status) {
-		Parms parms = new Parms();
+        final List<Parm> parms = new ArrayList<Parm>();
 
-        if(nodeLabel != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_NODE_LABEL, nodeLabel));
-        if(ipAddr != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_IPADDR, ipAddr));
-        if(serviceName != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_NAME, serviceName));
-        if(status != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_STATUS, status));
+        if(nodeLabel != null) parms.add(buildParm(EventConstants.PARM_PASSIVE_NODE_LABEL, nodeLabel));
+        if(ipAddr != null) parms.add(buildParm(EventConstants.PARM_PASSIVE_IPADDR, ipAddr));
+        if(serviceName != null) parms.add(buildParm(EventConstants.PARM_PASSIVE_SERVICE_NAME, serviceName));
+        if(status != null) parms.add(buildParm(EventConstants.PARM_PASSIVE_SERVICE_STATUS, status));
 
 		return createEventWithParms("uei.opennms.org/services/"+type, parms);
 	}
 
-    private Event createEventWithParms(String uei, Parms parms) {
+    private Event createEventWithParms(String uei, List<Parm> parms) {
 		Event e = MockEventUtil.createEventBuilder("Automation", uei).getEvent();
 		e.setHost("localhost");
         
-        e.setParms(parms);
+        e.setParmCollection(parms);
         Logmsg logmsg = new Logmsg();
         logmsg.setContent("Testing Passive Status Keeper with down status");
         e.setLogmsg(logmsg);

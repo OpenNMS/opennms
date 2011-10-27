@@ -45,8 +45,8 @@ import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,7 +145,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         Map<String, String> parameters = new HashMap<String, String>(pluginConfig.getParameterMap());
 
         
-        BeanWrapper wrapper = new BeanWrapperImpl(pluginInstance);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(pluginInstance);
         try {
             wrapper.setPropertyValues(parameters);
         } catch (BeansException e) {

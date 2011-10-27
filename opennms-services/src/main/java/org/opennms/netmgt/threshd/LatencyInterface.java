@@ -30,7 +30,6 @@ package org.opennms.netmgt.threshd;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
 
@@ -77,7 +76,7 @@ public class LatencyInterface {
 	    NetworkInterface<InetAddress> iface = getNetworkInterface();
 		// ThresholdEntity map attributes
 	    //
-	    Map<String, ThresholdEntity> thresholdMap = (Map<String, ThresholdEntity>) iface.getAttribute(LatencyThresholder.THRESHOLD_MAP_KEY);
+	    Map<String, ThresholdEntity> thresholdMap = iface.getAttribute(LatencyThresholder.THRESHOLD_MAP_KEY);
 	    return thresholdMap;
 	}
 
@@ -99,7 +98,7 @@ public class LatencyInterface {
 	    NetworkInterface<InetAddress> iface = getNetworkInterface();
 	
 		int nodeId = -1;
-	    Integer tmp = (Integer) iface.getAttribute(LatencyThresholder.NODE_ID_KEY);
+	    Integer tmp = iface.getAttribute(LatencyThresholder.NODE_ID_KEY);
 	    if (tmp != null)
 	        nodeId = tmp.intValue();
 	    if (nodeId == -1) {
@@ -118,7 +117,7 @@ public class LatencyInterface {
 	}
 
 	File getLatencyDir() throws ThresholdingException {
-		String repository = (String) getNetworkInterface().getAttribute(LatencyThresholder.RRD_REPOSITORY_KEY);
+		String repository = getNetworkInterface().getAttribute(LatencyThresholder.RRD_REPOSITORY_KEY);
 	    if (log().isDebugEnabled())
 	        log().debug("check: rrd repository=" + repository);
 	    // Get File object representing the
@@ -175,13 +174,7 @@ public class LatencyInterface {
 	
 	
 	    // Set event host
-	    //
-	    try {
-	        bldr.setHost(InetAddress.getLocalHost().getHostName());
-	    } catch (UnknownHostException uhE) {
-	        bldr.setHost("unresolved.host");
-	        log.warn("Failed to resolve local hostname", uhE);
-	    }
+        bldr.setHost(InetAddressUtils.getLocalHostName());
 	    
 	    bldr.addParam("ds", threshold.getDsName());
 	    bldr.addParam("value", dsValue);

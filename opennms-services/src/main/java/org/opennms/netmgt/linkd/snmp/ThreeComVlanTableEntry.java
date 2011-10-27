@@ -29,7 +29,7 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -39,7 +39,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * information for one entry in the:
  * 1.3.6.1.4.1.43.10.1.14.1.2.1
  *
- * <P>This object is used by the ThreeComVlanTable  to hold infomation
+ * <P>This object is used by the ThreeComVlanTable  to hold information
  * single entries in the table. See the ThreeComVlanTable documentation
  * form more information.</P>
  *
@@ -48,7 +48,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class ThreeComVlanTableEntry extends SnmpTableEntry
+public final class ThreeComVlanTableEntry extends SnmpStore
 implements VlanCollectorEntry {
 
 	// Lookup strings for specific table entries
@@ -62,6 +62,7 @@ implements VlanCollectorEntry {
 	private static String VLAN_NAME_OID=".1.3.6.1.4.1.43.10.1.14.1.2.1.2";
 	
 	private boolean hasVlanIndex = false;
+
 	/**
 	 * <P>The keys that will be supported by default from the 
 	 * TreeMap base class. Each of the elements in the list
@@ -69,36 +70,14 @@ implements VlanCollectorEntry {
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[] threeComVlan_elemList = null;
-
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static {
-		threeComVlan_elemList = new NamedSnmpVar[6];
-
-		int ndx = 0;
-
-		threeComVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_IN, ".1.3.6.1.4.1.43.10.1.14.1.2.1.1", 1);
-		
-		threeComVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_NAME, ".1.3.6.1.4.1.43.10.1.14.1.2.1.2", 2);
-		
-		threeComVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_TYPE, ".1.3.6.1.4.1.43.10.1.14.1.2.1.3", 3);
-
-		threeComVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_INDEX, ".1.3.6.1.4.1.43.10.1.14.1.2.1.4", 4);
-		
-		threeComVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_IFINFO, ".1.3.6.1.4.1.43.10.1.14.1.2.1.5", 5);
-
-		threeComVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				VLAN_STATUS, ".1.3.6.1.4.1.43.10.1.14.1.2.1.6", 6);
-
-	}
+	public final static NamedSnmpVar[] threeComVlan_elemList = new NamedSnmpVar[] {
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_IN, ".1.3.6.1.4.1.43.10.1.14.1.2.1.1", 1),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_NAME, ".1.3.6.1.4.1.43.10.1.14.1.2.1.2", 2),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_TYPE, ".1.3.6.1.4.1.43.10.1.14.1.2.1.3", 3),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_INDEX, ".1.3.6.1.4.1.43.10.1.14.1.2.1.4", 4),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_IFINFO, ".1.3.6.1.4.1.43.10.1.14.1.2.1.5", 5),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_STATUS, ".1.3.6.1.4.1.43.10.1.14.1.2.1.6", 6)
+	};
 
 	/**
 	 * <P>The TABLE_OID is the object identifier that represents

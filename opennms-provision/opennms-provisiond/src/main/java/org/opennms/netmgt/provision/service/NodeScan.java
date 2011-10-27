@@ -547,7 +547,7 @@ public class NodeScan implements RunInBatch {
 				        abort("Aborting node scan : Agent failed while scanning the IP address tables : " + walker.getErrorMessage());
 				    } else {
 	      
-				        // After processing the snmp provided interfaces then we need to scan any that 
+				        // After processing the SNMP provided interfaces then we need to scan any that 
 				        // were provisioned but missing from the ip table
 				        for(final InetAddress ipAddr : provisionedIps) {
 				            final OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddr);
@@ -591,7 +591,7 @@ public class NodeScan implements RunInBatch {
                     if (snmpIface != null) {
                         final OnmsSnmpInterface snmpIfaceResult = snmpIface;
         
-                        // add call to the snmp interface collection enable policies
+                        // add call to the SNMP interface collection enable policies
         
                         final Runnable r = new Runnable() {
                             public void run() {
@@ -629,17 +629,17 @@ public class NodeScan implements RunInBatch {
                     new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), this, getAgentConfigFactory(), getProvisionService(), getNodeId()),
                     new RunInBatch() {
                         public void run(final BatchTask phase) {
+                            detectPhysicalInterfaces(phase);
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(final BatchTask phase) {
                         	detectIpAddressTable(phase);
                         }
                     },
                     new RunInBatch() {
                         public void run(final BatchTask phase) {
                             detectIpInterfaceTable(phase);
-                        }
-                    },
-                    new RunInBatch() {
-                        public void run(final BatchTask phase) {
-                            detectPhysicalInterfaces(phase);
                         }
                     },
                     new RunInBatch() {

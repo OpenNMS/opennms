@@ -49,7 +49,7 @@ public class TrapIdentity {
     private static final char DOT_CHAR = '.';
     
     /**
-     * The snmp trap enterprise OID, which if present in a V2 trap is the last
+     * The SNMP trap enterprise OID, which if present in a V2 trap is the last
      * varbind.
      * 
      * ref - book 'SNMP, SNMPv2, SNMPv3..' by William Stallings, third edition,

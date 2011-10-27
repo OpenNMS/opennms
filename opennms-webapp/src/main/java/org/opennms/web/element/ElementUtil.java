@@ -477,7 +477,7 @@ public abstract class ElementUtil {
     }
 
     /**
-     * Return the human-readable name for a snmp interface's status, may be null.
+     * Return the human-readable name for an SNMP interface's status, may be null.
      *
      * @param intf a {@link org.opennms.web.element.Interface} object.
      * @return a {@link java.lang.String} object.
@@ -815,7 +815,7 @@ public abstract class ElementUtil {
         intf = NetworkElementFactory.getInstance(servletContext).getSnmpInterface(nodeId, ifIndex);
 
         if (intf == null) {
-            throw new ElementNotFoundException("No such snmp interface in database for nodeId "
+            throw new ElementNotFoundException("No such SNMP interface in database for nodeId "
                                                + nodeIdString + " ifIndex " + ifIndexString, "snmpinterface");
         }
 

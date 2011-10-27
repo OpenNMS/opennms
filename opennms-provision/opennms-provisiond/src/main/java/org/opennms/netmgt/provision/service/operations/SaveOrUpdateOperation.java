@@ -35,14 +35,14 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.provision.service.ProvisionService;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyAccessorFactory;
 
 public abstract class SaveOrUpdateOperation extends ImportOperation {
 
@@ -191,7 +191,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      * @param value a {@link java.lang.String} object.
      */
     public void foundAsset(String name, String value) {
-        BeanWrapper w = new BeanWrapperImpl(m_node.getAssetRecord());
+        BeanWrapper w = PropertyAccessorFactory.forBeanPropertyAccess(m_node.getAssetRecord());
         try {
             w.setPropertyValue(name, value);
         } catch (BeansException e) {

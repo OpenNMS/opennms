@@ -32,7 +32,6 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -73,16 +72,8 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
  *
  * @author <A HREF="mailto:seth@opennms.org">Seth Leger </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:seth@opennms.org">Seth Leger </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public class Vulnscand extends AbstractServiceDaemon {
-    /**
-     * The log4j category used to log messages.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Vulnscand";
-
     /**
      * Singleton instance of the Vulnscand class
      */
@@ -93,7 +84,7 @@ public class Vulnscand extends AbstractServiceDaemon {
      * database between the SpecificScanProcessor and RescanProcessor thread
      * pools
      */
-    private static Object m_dbSyncLock = new Object();
+    private static final Object m_dbSyncLock = new Object();
 
     /**
      * <P>
@@ -101,7 +92,7 @@ public class Vulnscand extends AbstractServiceDaemon {
      * is running. Used when vulnscand sends events out
      * </P>
      */
-    private static String m_address = null;
+    private static final String m_address = InetAddressUtils.getLocalHostAddressAsString();
 
     /**
      * Rescan scheduler thread
@@ -136,20 +127,6 @@ public class Vulnscand extends AbstractServiceDaemon {
 	 * IP interfaces from the 'ipInterface' table.
 	 */
 	static final String SQL_DB_RETRIEVE_IP_INTERFACE = "SELECT ipaddr FROM ipinterface WHERE ipaddr!='0.0.0.0' AND isManaged!='D' AND isManaged!='F'";
-
-    /**
-     * <P>
-     * Static initialization
-     * </P>
-     */
-    static {
-        try {
-            m_address = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException uhE) {
-            m_address = "localhost";
-            ThreadCategory.getInstance(LOG4J_CATEGORY).warn("Could not lookup the host name for the local host machine, address set to \"localhost\"", uhE);
-        }
-    } // end static class initialization
 
     /**
      * Constructs the Vulnscand objec

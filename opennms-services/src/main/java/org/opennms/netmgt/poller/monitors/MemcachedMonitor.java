@@ -131,40 +131,36 @@ final public class MemcachedMonitor extends AbstractServiceMonitor {
                 }
 
                 String line = null;
-                if (reader != null) {
-                    do {
-                        line = reader.readLine();
-                        if (line == null) break;
-                        String[] statEntry = line.trim().split("\\s", 3);
-                        if (statEntry[0].equals("STAT")) {
-                            try {
-                                Number value;
-                                if (statEntry[2].contains(".")) {
-                                    value = Double.parseDouble(statEntry[2]);
-                                } else {
-                                    value = Long.parseLong(statEntry[2]);
-                                }
-                                String key = statEntry[1].toLowerCase();
-                                key = key.replaceAll("_", "");
-                                if (key.length() > 19) {
-                                    key = key.substring(0, 19);
-                                }
-                                if (statProps.containsKey(key)) {
-                                    statProps.put(key, value);
-                                }
-                            } catch (Throwable e) {
-                                // ignore errors parsing
+                do {
+                    line = reader.readLine();
+                    if (line == null) break;
+                    String[] statEntry = line.trim().split("\\s", 3);
+                    if (statEntry[0].equals("STAT")) {
+                        try {
+                            Number value;
+                            if (statEntry[2].contains(".")) {
+                                value = Double.parseDouble(statEntry[2]);
+                            } else {
+                                value = Long.parseLong(statEntry[2]);
                             }
-                        } else if (statEntry[0].equals("END")) {
-                            serviceStatus = PollStatus.available();
-                            osw.write("quit\n");
-                            osw.flush();
-                            break;
+                            String key = statEntry[1].toLowerCase();
+                            key = key.replaceAll("_", "");
+                            if (key.length() > 19) {
+                                key = key.substring(0, 19);
+                            }
+                            if (statProps.containsKey(key)) {
+                                statProps.put(key, value);
+                            }
+                        } catch (Throwable e) {
+                            // ignore errors parsing
                         }
-                    } while (line != null);
-                } else {
-                    log().warn("unable to read after sending stats request");
-                }
+                    } else if (statEntry[0].equals("END")) {
+                        serviceStatus = PollStatus.available();
+                        osw.write("quit\n");
+                        osw.flush();
+                        break;
+                    }
+                } while (line != null);
 
                 serviceStatus.setProperties(statProps);
                 serviceStatus.setResponseTime(timeoutTracker.elapsedTimeInMillis());

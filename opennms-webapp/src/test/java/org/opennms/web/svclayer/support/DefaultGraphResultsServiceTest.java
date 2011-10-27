@@ -29,7 +29,8 @@
 
 package org.opennms.web.svclayer.support;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -44,7 +45,7 @@ public class DefaultGraphResultsServiceTest {
      */
     @Test
     public void testParseResourceId() {
-        String[] values = DefaultGraphResultsService.parseResourceId("node[1].responseTime[127.0.0.1]");
+        final String[] values = DefaultGraphResultsService.parseResourceId("node[1].responseTime[127.0.0.1]");
         assertEquals("node[1]", values[0]);
         assertEquals("responseTime", values[1]);
         assertEquals("127.0.0.1", values[2]);
@@ -55,7 +56,19 @@ public class DefaultGraphResultsServiceTest {
      */
     @Test
     public void testUnparsableeResourceId() {
-        String[] values = DefaultGraphResultsService.parseResourceId("node[1.responseTime[127.0.0.1]");
+        final String[] values = DefaultGraphResultsService.parseResourceId("node[1.responseTime[127.0.0.1]");
         assertNull(values);
+    }
+
+    /**
+     * Ensure that invalid resource IDs return a null string array.
+     */
+    @Test
+    public void testParseForeignId() {
+        final String[] values = DefaultGraphResultsService.parseResourceId("nodeSource[foreignSource:foreignId].nodeSnmp[]");
+        assertEquals(3, values.length);
+        assertEquals("nodeSource[foreignSource:foreignId]", values[0]);
+        assertEquals("nodeSnmp", values[1]);
+        assertEquals("", values[2]);
     }
 }

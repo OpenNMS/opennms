@@ -254,7 +254,7 @@ public class CollectdTest extends TestCase {
         return iface;
     }
 
-    public void testCreate() {
+    public void testCreate() throws CollectionInitializationException {
         
         setupTransactionManager();
         
@@ -303,7 +303,7 @@ public class CollectdTest extends TestCase {
 		assertEquals("Overriding read community failed.", "notPublic", s);
     }
 
-    public void testNoMatchingSpecs() {
+    public void testNoMatchingSpecs() throws CollectionInitializationException {
         String svcName = "SNMP";
 
         setupCollector(svcName);
@@ -325,7 +325,7 @@ public class CollectdTest extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
-    public void testOneMatchingSpec() throws CollectionException {
+    public void testOneMatchingSpec() throws CollectionException, CollectionInitializationException {
         String svcName = "SNMP";
         OnmsIpInterface iface = getInterface();
 
@@ -408,7 +408,7 @@ public class CollectdTest extends TestCase {
         expect(m_ipIfDao.load(iface.getId())).andReturn(iface).atLeastOnce();
     }
 
-    private void setupCollector(String svcName) {
+    private void setupCollector(String svcName) throws CollectionInitializationException {
         Collector collector = new Collector();
         collector.setService(svcName);
         collector.setClassName(MockServiceCollector.class.getName());
@@ -441,11 +441,11 @@ public class CollectdTest extends TestCase {
             return s_delegate.collect(agent, eproxy, parameters);
         }
 
-        public void initialize(Map<String, String> parameters) {
+        public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
             s_delegate.initialize(parameters);
         }
 
-        public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
+        public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
             s_delegate.initialize(agent, parameters);
         }
 

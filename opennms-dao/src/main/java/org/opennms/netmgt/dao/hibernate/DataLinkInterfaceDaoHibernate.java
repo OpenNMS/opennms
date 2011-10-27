@@ -28,14 +28,18 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.hibernate.Session;
-import org.hibernate.HibernateException;
-
-import java.util.Collection;
-import java.sql.SQLException;
 
 public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLinkInterface, Integer> implements DataLinkInterfaceDao {
     /**
@@ -60,17 +64,95 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
     }
 
     /** {@inheritDoc} */
-    public DataLinkInterface findById(Integer id) {
+    public DataLinkInterface findById(final Integer id) {
         return findUnique("from DataLinkInterface as dli where dli.id = ?", id);
     }
 
     /** {@inheritDoc} */
-    public Collection<DataLinkInterface> findByNodeId(Integer nodeId) {
-        return find("from DataLinkInterface as dli where dli.nodeId = ?", nodeId);
+    public Collection<DataLinkInterface> findByNodeId(final Integer nodeId) {
+        return find("from DataLinkInterface as dli where dli.node.id = ?", nodeId);
     }
 
     /** {@inheritDoc} */
-    public Collection<DataLinkInterface> findByNodeParentId(Integer nodeParentId) {
+    public Collection<DataLinkInterface> findByNodeParentId(final Integer nodeParentId) {
         return find("from DataLinkInterface as dli where dli.nodeParentId = ?", nodeParentId);
+    }
+
+    /** {@inheritDoc} */
+    public DataLinkInterface findByNodeIdAndIfIndex(final Integer nodeId, final Integer ifIndex) {
+        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeId));
+        criteria.add(Restrictions.eq("ifIndex", ifIndex));
+
+        final List<DataLinkInterface> interfaces = findMatching(criteria);
+        if (interfaces.size() > 0) {
+            return interfaces.get(0);
+        }
+        return null;
+    }
+
+	@Override
+	public void markDeletedIfNodeDeleted() {
+		final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.type", "D"));
+        
+        for (final DataLinkInterface dataLinkIface : findMatching(criteria)) {
+        	dataLinkIface.setStatus("D");
+        	saveOrUpdate(dataLinkIface);
+        }
+	}
+
+    @Override
+    public void deactivateIfOlderThan(final Timestamp scanTime) {
+        // UPDATE datalinkinterface set status = 'N'  WHERE lastpolltime < ? AND status = 'A'
+
+        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.lt("lastPollTime", scanTime));
+        criteria.add(Restrictions.eq("status", "A"));
+
+        for (final DataLinkInterface iface : findMatching(criteria)) {
+            iface.setStatus("N");
+            saveOrUpdate(iface);
+        }
+    }
+
+    @Override
+    public void setStatusForNode(final Integer nodeid, final Character action) {
+        // UPDATE datalinkinterface set status = ? WHERE nodeid = ? OR nodeparentid = ?
+        
+        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.or(Restrictions.eq("node.id", nodeid), Restrictions.eq("nodeParentId", nodeid)));
+        
+        for (final DataLinkInterface iface : findMatching(criteria)) {
+            iface.setStatus(String.valueOf(action));
+            saveOrUpdate(iface);
+        }
+    }
+
+    @Override
+    public void setStatusForNodeAndIfIndex(final Integer nodeid, final Integer ifIndex, final Character action) {
+        // UPDATE datalinkinterface set status = ? WHERE (nodeid = ? and ifindex = ?) OR (nodeparentid = ? AND parentifindex = ?)
+
+        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(
+            Restrictions.or(
+                Restrictions.and(
+                    Restrictions.eq("node.id", nodeid),
+                    Restrictions.eq("ifIndex", ifIndex)
+                ),
+                Restrictions.and(
+                    Restrictions.eq("nodeParentId", nodeid),
+                    Restrictions.eq("parentIfIndex", ifIndex)
+                )
+            )
+        );
+        
+        for (final DataLinkInterface iface : findMatching(criteria)) {
+            iface.setStatus(String.valueOf(action));
+            saveOrUpdate(iface);
+        }
     }
 }

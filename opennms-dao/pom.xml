@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.9.90-SNAPSHOT</version>
+    <version>1.9.93-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-dao</artifactId>
@@ -137,7 +137,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
       <classifier>xsds</classifier>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

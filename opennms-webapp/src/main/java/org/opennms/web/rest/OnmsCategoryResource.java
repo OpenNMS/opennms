@@ -46,7 +46,7 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -155,11 +155,11 @@ public class OnmsCategoryResource extends OnmsRestService {
             throwException(Status.BAD_REQUEST, "updateCategory: Category " + categoryName + " not found on node " + nodeCriteria);
         }
         log().debug("updateCategory: updating category " + category);
-        BeanWrapper wrapper = new BeanWrapperImpl(category);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
         for(String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
                 String stringValue = params.getFirst(key);
-                Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+                Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                 wrapper.setPropertyValue(key, value);
             }
         }

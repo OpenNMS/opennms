@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -65,7 +66,6 @@ import org.opennms.netmgt.xml.event.Mask;
 import org.opennms.netmgt.xml.event.Maskelement;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Script;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Tticket;
@@ -182,7 +182,7 @@ public class JaxbCastorEquivalenceTest {
 		event.setDbid(37);
 		event.setMask(getFullMask());
 		event.setSnmp(getFullSnmp());
-		event.setParms(getFullParms());
+		event.setParmCollection(getParmCollection());
 		event.setLogmsg(getFullLogmsg());
 		event.setPathoutage("monkeys");
 		event.setCorrelation(getFullCorrelation());
@@ -273,12 +273,10 @@ public class JaxbCastorEquivalenceTest {
 		return logmsg;
 	}
 
-	@SuppressWarnings("deprecation")
-	private Parms getFullParms() {
-		final Parms parms = new Parms();
-		final Parm parm = new Parm("foo", "bar");
-		parms.addParm(parm);
-		return parms;
+	private List<Parm> getParmCollection() {
+	    final List<Parm> parms = new ArrayList<Parm>();
+	    parms.add(new Parm("foo", "bar"));
+	    return parms;
 	}
 
 	private Snmp getFullSnmp() {

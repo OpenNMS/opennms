@@ -39,10 +39,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;

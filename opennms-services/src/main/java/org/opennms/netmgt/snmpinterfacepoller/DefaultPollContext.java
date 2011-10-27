@@ -222,10 +222,15 @@ public class DefaultPollContext implements PollContext {
     /** {@inheritDoc} */
     public void update(OnmsSnmpInterface snmpinterface) {
     	OnmsSnmpInterface dbSnmpInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(snmpinterface.getNode().getId(), snmpinterface.getIfIndex());
-    	snmpinterface.setPoll(dbSnmpInterface.getPoll());
-    	dbSnmpInterface.mergeSnmpInterfaceAttributes(snmpinterface);
-    	log().debug("updating SnmpInterface: " + snmpinterface.toString());
-        getSnmpInterfaceDao().update(dbSnmpInterface);
+    	if (dbSnmpInterface == null)  {
+        	log().debug("updating SnmpInterface: no interface found on db for: " + snmpinterface.toString());
+    	} else {
+    		dbSnmpInterface.setIfOperStatus(snmpinterface.getIfOperStatus());
+    		dbSnmpInterface.setIfAdminStatus(snmpinterface.getIfAdminStatus());
+    		dbSnmpInterface.setLastSnmpPoll(snmpinterface.getLastSnmpPoll());
+    		log().debug("updating SnmpInterface: " + dbSnmpInterface.toString());
+    		getSnmpInterfaceDao().update(dbSnmpInterface);
+    	}
     }
 
 	@Override

@@ -201,7 +201,7 @@ public class Snmp4JAgentConfig {
     private OID convertPrivProtocol(String privProtocol) {
         /*
          * Returning null here is okay because the SNMP4J library supports
-         * this value as null when creating the Snmp session.
+         * this value as null when creating the SNMP session.
          */
         if (privProtocol == null) {
             return null;
@@ -235,7 +235,7 @@ public class Snmp4JAgentConfig {
     private OID convertAuthProtocol(String authProtocol) {
         /*
          * Returning null here is okay because the SNMP4J library supports
-         * this value as null when creating the Snmp session.
+         * this value as null when creating the SNMP session.
          */
         if (authProtocol == null) {
             return null;

@@ -38,6 +38,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -92,7 +93,7 @@ public class SnmpCollector implements ServiceCollector {
     static final String SQL_GET_LATEST_FORCED_RESCAN_EVENTID = "SELECT eventid "
         + "FROM events "
         + "WHERE (nodeid=? OR ipaddr=?) "
-        + "AND eventuei='uei.opennms.org/internal/capsd/forceRescan' "
+        + "AND eventuei='" + EventConstants.FORCE_RESCAN_EVENT_UEI + "' "
         + "ORDER BY eventid DESC " + "LIMIT 1";
 
     /**
@@ -102,7 +103,7 @@ public class SnmpCollector implements ServiceCollector {
     static final String SQL_GET_LATEST_RESCAN_COMPLETED_EVENTID = "SELECT eventid "
         + "FROM events "
         + "WHERE nodeid=? "
-        + "AND eventuei='uei.opennms.org/internal/capsd/rescanCompleted' "
+        + "AND eventuei='" + EventConstants.RESCAN_COMPLETED_EVENT_UEI + "' "
         + "ORDER BY eventid DESC " + "LIMIT 1";
 
     /**
@@ -225,7 +226,7 @@ public class SnmpCollector implements ServiceCollector {
         File f = new File(DataCollectionConfigFactory.getInstance().getRrdPath());
         if (!f.isDirectory()) {
             if (!f.mkdirs()) {
-                throw new RuntimeException("Unable to create RRD file "
+                throw new CollectionInitializationException("Unable to create RRD file "
                                            + "repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
             }
         }
@@ -236,7 +237,7 @@ public class SnmpCollector implements ServiceCollector {
             RrdUtils.initialize();
         } catch (RrdException e) {
             log().error("initializeRrdInterface: Unable to initialize RrdUtils", e);
-            throw new RuntimeException("Unable to initialize RrdUtils", e);
+            throw new CollectionInitializationException("Unable to initialize RrdUtils", e);
         }
     }*/
 
@@ -296,8 +297,9 @@ public class SnmpCollector implements ServiceCollector {
      *
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for data collection.
+     * @throws CollectionInitializationException 
      */
-    public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
+    public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
         agent.validateAgent();
         
         // XXX: Experimental code that creates an OnmsSnmpCollection only once

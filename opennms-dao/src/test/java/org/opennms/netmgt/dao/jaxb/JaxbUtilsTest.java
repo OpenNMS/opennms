@@ -45,6 +45,7 @@ import javax.xml.validation.Validator;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
@@ -141,6 +142,59 @@ public class JaxbUtilsTest {
 		LogUtils.debugf(this, "castor log = %s", log2);
 	}
 	
+    /**
+     * This test can be used to compare the performance of JAXB vs. Castor in XML unmarshalling speed.
+     * After running this test on my system when preparing for the OpenNMS 1.10 release, JAXB was
+     * roughly 30% faster than Castor.
+     */
+    @Test
+    @Ignore
+    public void testUnmarshalLogCastorVersusJaxb() throws Exception {
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            JaxbUtils.unmarshal(Log.class, m_logXml);
+        }
+        long jaxbTime = System.currentTimeMillis() - startTime;
+
+        final byte[] logBytes = m_logXml.getBytes();
+        startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            CastorUtils.unmarshal(Log.class, new ByteArrayInputStream(logBytes));
+        }
+        long castorTime = System.currentTimeMillis() - startTime;
+        
+        System.out.printf("JAXB unmarshal: %dms, Castor unmarshal: %dms\n", jaxbTime, castorTime);
+    }
+    
+    /**
+     * This test can be used to compare the performance of JAXB vs. Castor in XML marshalling speed.
+     * After running this test on my system when preparing for the OpenNMS 1.10 release, JAXB was
+     * roughly 8 times faster than Castor.
+     */
+    @Test
+    @Ignore
+    public void testMarshalLogCastorVersusJaxb() throws Exception {
+        Log log = JaxbUtils.unmarshal(Log.class, m_logXml);
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            JaxbUtils.marshal(log);
+            // If you want to see the marshalled XML output...
+            //System.out.println(JaxbUtils.marshal(log));
+        }
+        long jaxbTime = System.currentTimeMillis() - startTime;
+
+        log = CastorUtils.unmarshal(Log.class, new ByteArrayInputStream(m_logXml.getBytes()));
+        startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            CastorUtils.marshalWithTranslatedExceptions(log, new StringWriter());
+            // If you want to see the marshalled XML output...
+            //CastorUtils.marshalWithTranslatedExceptions(log, new OutputStreamWriter(System.out));
+        }
+        long castorTime = System.currentTimeMillis() - startTime;
+        
+        System.out.printf("JAXB marshal: %dms, Castor marshal: %dms\n", jaxbTime, castorTime);
+    }
+    
 	@Test
 	public void testUnmarshalLogNoNamespace() throws Exception {
 		final Log log = JaxbUtils.unmarshal(Log.class, m_logXmlWithoutNamespace);
@@ -163,6 +217,7 @@ public class JaxbUtilsTest {
 		final EventBuilder eb = new EventBuilder("uei.opennms.org/test", "JaxbUtilsTest");
 		final Event e = eb
 			.setDescription("test")
+			.addParam("foo", "bar")
 			.getEvent();
 		return e;
 	}
@@ -195,5 +250,52 @@ public class JaxbUtilsTest {
 		assertNotNull(log);
 		assertNotNull(log.getEvents());
 		assertEquals(1, log.getEvents().getEvent().length);
+	}
+	
+	@Test
+	@Ignore
+	public void testValidationMemoryLeak() throws Exception {
+        final String text = "<log>\n" + 
+            " <events>\n" + 
+            "  <event >\n" + 
+            "   <uei>uei.opennms.org/internal/capsd/addNode</uei>\n" + 
+            "   <source>perl_send_event</source>\n" + 
+            "   <time>Tuesday, 12 April 2011 18:05:00 o'clock GMT</time>\n" + 
+            "   <host></host>\n" + 
+            "   <interface>10.0.0.1</interface>\n" + 
+            "   <parms>\n" + 
+            "    <parm>\n" + 
+            "     <parmName><![CDATA[txno]]></parmName>\n" + 
+            "     <value type=\"string\" encoding=\"text\"><![CDATA[1]]></value>\n" + 
+            "    </parm>\n" + 
+            "    <parm>\n" + 
+            "     <parmName><![CDATA[nodelabel]]></parmName>\n" + 
+            "     <value type=\"string\" encoding=\"text\"><![CDATA[test10]]></value>\n" + 
+            "    </parm>\n" + 
+            "   </parms>\n" + 
+            "  </event>\n" + 
+            " </events>\n" + 
+            "</log>\n";
+        
+        final int eventCount = 1000000;
+        final int logEvery = (eventCount / 1000);
+        
+        MockLogAppender.setupLogging(true, "INFO");
+
+        LogUtils.infof(this, "starting");
+        Thread.sleep(30000);
+        for (int i = 0; i < eventCount; i++) {
+            if (i % logEvery == 0) {
+                LogUtils.infof(this, "- event #%d", i);
+            }
+            final Log log = JaxbUtils.unmarshal(Log.class, text);
+            assertNotNull(log);
+            assertNotNull(log.getEvents());
+            final String results = JaxbUtils.marshal(log);
+            assertNotNull(results);
+            assertTrue(results.contains("uei.opennms.org/internal/capsd/addNode"));
+        }
+        LogUtils.infof(this, "finished");
+        Thread.sleep(30000);
 	}
 }

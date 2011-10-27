@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.File;
@@ -1096,7 +1097,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 return;
             }
             
-            final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddressAsString();
+            final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+str(monSvc.getIpAddress());
     
             try {
                 final File rrdFile = new File(rrdDir, dsName);

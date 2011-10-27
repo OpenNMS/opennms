@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -44,6 +44,7 @@ import javax.management.MBeanServerFactory;
 import org.apache.log4j.LogManager;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
+import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
 
 /**
@@ -210,7 +211,6 @@ public class Manager implements ManagerMBean {
      */
     public void doTestLoadLibraries() {
         setLogPrefix();
-
         testPinger();
         testGetLocalHost();
     }
@@ -224,7 +224,31 @@ public class Manager implements ManagerMBean {
     }
 
     private void testPinger() {
-        PingerFactory.getInstance();
+        final Pinger pinger = PingerFactory.getInstance();
+
+        final boolean hasV4 = pinger.isV4Available();
+        final boolean hasV6 = pinger.isV6Available();
+
+        log().info("Using ICMP implementation: " + pinger.getClass().getName());
+        log().info("IPv4 ICMP available? " + hasV4);
+        log().info("IPv6 ICMP available? " + hasV6);
+
+        final String requireV4String = System.getProperty("org.opennms.netmgt.icmp.requireV4", "detect");
+        final String requireV6String = System.getProperty("org.opennms.netmgt.icmp.requireV6", "detect");
+        
+        if ("true".equalsIgnoreCase(requireV4String) && !hasV4) {
+            throw new IllegalStateException("org.opennms.netmgt.icmp.requireV4 is true, but IPv4 ICMP could not be initialized.");
+        }
+        if ("true".equalsIgnoreCase(requireV6String) && !hasV6) {
+            throw new IllegalStateException("org.opennms.netmgt.icmp.requireV6 is true, but IPv6 ICMP could not be initialized.");
+        }
+        
+        // If they don't specify any preference, start up as long as one available.
+        if ("detect".equals(requireV4String) || "detect".equals(requireV6String)) {
+            if (!hasV4 && !hasV6) {
+                throw new IllegalStateException("Unable to initialize any ICMP support.  Bailing out.");
+            }
+        }
     }
 
     private void setLogPrefix() {

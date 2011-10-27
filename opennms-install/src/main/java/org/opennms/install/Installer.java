@@ -61,7 +61,7 @@ import org.apache.log4j.Logger;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ProcessExec;
-import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.ConnectionFactoryUtil;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.dao.db.InstallerDb;

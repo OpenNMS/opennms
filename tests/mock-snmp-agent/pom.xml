@@ -2,10 +2,9 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.tests</artifactId>
-    <version>1.9.90-SNAPSHOT</version>
+    <version>1.9.93-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms</groupId>
   <artifactId>mock-snmp-agent</artifactId>
   <name>Mock SNMP Agent</name>
   <dependencies>
@@ -45,4 +44,30 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>org.opennms.mock.snmp.MockSnmpAgent</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> 
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

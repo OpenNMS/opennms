@@ -8,6 +8,8 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="rangerrick" id="1.7.8-remove-old-primary-key-if-necessary" failOnError="false" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+
         <preConditions onFail="MARK_RAN">
         	<foreignKeyConstraintExists foreignKeyName="pk_datalinkinterface" />
         </preConditions>

@@ -163,4 +163,22 @@ public class TriggerSetSnmpInterfaceKeysOnUpdateTest extends
 
     }
 
+    public void testBugNMS1881() {
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 100, now() )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, snmpIfIndex) VALUES ( 100, 100, 1 )");
+        executeSQL("INSERT INTO ipInterface (id, nodeId, ipAddr, ifIndex) VALUES ( 100, 100, '1.1.1.1', 1)");
+
+        // The trigger will assign the value of snmpInterfaceId
+        assertEquals("snmpInterfaceId after creation of new node", 100, jdbcTemplate.queryForInt("SELECT snmpInterfaceId FROM ipInterface WHERE id = 100"));
+
+        assertEquals("deleted interface count", 1, jdbcTemplate.update("UPDATE ipInterface SET ismanaged = 'D' WHERE id = 100"));
+        assertEquals("deleted node count", 1, jdbcTemplate.update("UPDATE node SET nodetype = 'D' WHERE nodeid = 100"));
+
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 101, now() )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, snmpIfIndex) VALUES ( 101, 101, 1 )");
+        executeSQL("INSERT INTO ipInterface (id, nodeId, ipAddr, ifIndex) VALUES ( 101, 101, '1.1.1.1', 1)");
+
+        assertEquals("snmpInterfaceId after creation of a second new node", 101, jdbcTemplate.queryForInt("SELECT snmpInterfaceId FROM ipInterface WHERE id = 101"));
+    }
+    
 }

@@ -32,9 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,7 +49,6 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
-import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -120,15 +116,6 @@ import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public abstract class JMXCollector implements ServiceCollector {
-
-    /**
-     * SQL statement to retrieve interface's 'ipinterface' table information.
-     */
-    private static final String SQL_GET_NODEID =
-        "SELECT nodeid "
-            + "FROM ipinterface "
-            + "WHERE ipaddr=? "
-            + "AND ismanaged!='D'";
 
     /**
      * Interface attribute key used to store the map of IfInfo objects which
@@ -245,56 +232,13 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
         InetAddress ipAddr = (InetAddress) agent.getAddress();
+        int nodeID = agent.getNodeId();
 
         // Retrieve the name of the JMX data collector
         String collectionName = ParameterMap.getKeyedString(parameters, "collection", serviceName);
 
         final String hostAddress = InetAddressUtils.str(ipAddr);
         LogUtils.debugf(this, "initialize: InetAddress=%s, collectionName=%s", hostAddress, collectionName);
-
-        java.sql.Connection dbConn = null;
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
-            d.watch(dbConn);
-        } catch (final SQLException e) {
-            LogUtils.errorf(this, e, "initialize: Failed getting connection to the database.");
-            throw new UndeclaredThrowableException(e);
-        }
-
-        int nodeID = -1;
-
-        /*
-         * Prepare & execute the SQL statement to get the 'nodeid' from the
-         * ipInterface table 'nodeid' will be used to retrieve the node's
-         * system object id from the node table.
-         * In addition to nodeid, the interface's ifIndex
-         * fields are also retrieved.
-         */
-        PreparedStatement stmt = null;
-
-        try {
-            stmt = dbConn.prepareStatement(SQL_GET_NODEID);
-            d.watch(stmt);
-            stmt.setString(1, hostAddress); // interface address
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            if (rs.next()) {
-                nodeID = rs.getInt(1);
-                if (rs.wasNull()) {
-                    nodeID = -1;
-                }
-            } else {
-                nodeID = -1;
-            }
-        } catch (final SQLException e) {
-            final String message = "initialize: exception while attempting to retrieve node id for interface " + hostAddress;
-            LogUtils.errorf(this, e, message);
-            throw new RuntimeException(message);
-        } finally {
-            d.cleanUp();
-        }
 
         JMXNodeInfo nodeInfo = new JMXNodeInfo(nodeID);
         LogUtils.debugf(this, "nodeInfo: %s %d %s", hostAddress, nodeID, agent);
@@ -344,7 +288,7 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> map) {
         InetAddress ipaddr = (InetAddress) agent.getAddress();
-        JMXNodeInfo nodeInfo = (JMXNodeInfo) agent.getAttribute(NODE_INFO_KEY);
+        JMXNodeInfo nodeInfo = agent.getAttribute(NODE_INFO_KEY);
         Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();
         String collDir = serviceName;
         

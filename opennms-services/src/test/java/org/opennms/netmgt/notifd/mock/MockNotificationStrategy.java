@@ -32,17 +32,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.utils.Argument;
+import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.notifd.NotificationStrategy;
 import org.opennms.test.mock.MockUtil;
 /**
  * @author david
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class MockNotificationStrategy implements NotificationStrategy {
     
-    private static NotificationAnticipator s_anticpator = null;
+    private static NotificationAnticipator s_anticipator = null;
     
     static {
         MockUtil.println("Static initializer on "+ MockNotificationStrategy.class.getName());
@@ -62,17 +60,17 @@ public class MockNotificationStrategy implements NotificationStrategy {
         Iterator<Argument> it = arguments.iterator();
         while (it.hasNext()) {
             Argument arg = it.next();
-            if (arg.getSwitch().equals("-subject")) {
+            if (arg.getSwitch().equals(NotificationManager.PARAM_SUBJECT)) {
                 notification.setSubject(arg.getValue());
-            } else if (arg.getSwitch().equals("-email")) {
+            } else if (arg.getSwitch().equals(NotificationManager.PARAM_EMAIL)) {
                 notification.setEmail(arg.getValue());
-            } else if (arg.getSwitch().equals("-tm")) {
+            } else if (arg.getSwitch().equals(NotificationManager.PARAM_TEXT_MSG)) {
 				notification.setTextMsg(arg.getValue());
             }
         }
         notification.setExpectedTime(System.currentTimeMillis());
 
-        NotificationAnticipator anticipator = getAnticpator();
+        NotificationAnticipator anticipator = getAnticipator();
         
         if (anticipator != null) {
             anticipator.notificationReceived(notification);
@@ -84,11 +82,11 @@ public class MockNotificationStrategy implements NotificationStrategy {
         
     }
 
-    public static NotificationAnticipator getAnticpator() {
-        return s_anticpator;
+    public static NotificationAnticipator getAnticipator() {
+        return s_anticipator;
     }
 
-    public static void setAnticipator(NotificationAnticipator anticpator) {
-        s_anticpator = anticpator;
+    public static void setAnticipator(NotificationAnticipator anticipator) {
+        s_anticipator = anticipator;
     }
 }

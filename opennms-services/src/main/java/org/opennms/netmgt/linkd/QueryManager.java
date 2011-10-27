@@ -31,8 +31,6 @@ package org.opennms.netmgt.linkd;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-
 /**
  * <p>QueryManager interface.</p>
  *
@@ -100,7 +98,7 @@ public interface QueryManager {
      * @return a {@link java.util.List} object.
      * @throws java.sql.SQLException if any.
      */
-    public List<LinkableNode> getSnmpNodeList() throws SQLException;
+    List<LinkableNode> getSnmpNodeList() throws SQLException;
 
     /**
      * <p>getSnmpNode</p>
@@ -109,24 +107,15 @@ public interface QueryManager {
      * @return a {@link org.opennms.netmgt.linkd.LinkableNode} object.
      * @throws java.sql.SQLException if any.
      */
-    public LinkableNode getSnmpNode(int nodeid) throws SQLException;
+    LinkableNode getSnmpNode(int nodeid) throws SQLException;
 
     /**
      * <p>updateDeletedNodes</p>
      *
      * @throws java.sql.SQLException if any.
      */
-    public void updateDeletedNodes() throws SQLException;
+    void updateDeletedNodes() throws SQLException;
 
-    /**
-     * <p>getSnmpPrimaryIp</p>
-     *
-     * @param nodeid a int.
-     * @return a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     */
-    public String getSnmpPrimaryIp(int nodeid) throws SQLException;
-    
     /**
      * <p>storeSnmpCollection</p>
      *
@@ -135,7 +124,7 @@ public interface QueryManager {
      * @return a {@link org.opennms.netmgt.linkd.LinkableNode} object.
      * @throws java.sql.SQLException if any.
      */
-    public LinkableNode storeSnmpCollection(LinkableNode node, SnmpCollection snmpColl) throws SQLException;
+    LinkableNode storeSnmpCollection(LinkableNode node, SnmpCollection snmpColl) throws SQLException;
     
     /**
      * <p>storeDiscoveryLink</p>
@@ -143,7 +132,7 @@ public interface QueryManager {
      * @param discoveryLink a {@link org.opennms.netmgt.linkd.DiscoveryLink} object.
      * @throws java.sql.SQLException if any.
      */
-    public void storeDiscoveryLink(DiscoveryLink discoveryLink) throws SQLException;
+    void storeDiscoveryLink(DiscoveryLink discoveryLink) throws SQLException;
     
     /**
      * <p>update</p>
@@ -152,7 +141,7 @@ public interface QueryManager {
      * @param action a char.
      * @throws java.sql.SQLException if any.
      */
-    public void update(int nodeid, char action) throws SQLException;
+    void update(int nodeid, char action) throws SQLException;
     
     /**
      * <p>updateForInterface</p>
@@ -163,13 +152,9 @@ public interface QueryManager {
      * @param action a char.
      * @throws java.sql.SQLException if any.
      */
-    public void updateForInterface(int nodeid, String ipAddr, int ifIndex, char action) throws SQLException;
+    void updateForInterface(int nodeid, String ipAddr, int ifIndex, char action) throws SQLException;
     
-    /**
-     * <p>setJdbcTemplate</p>
-     *
-     * @param jdbcTemplate a {@link org.springframework.jdbc.core.JdbcTemplate} object.
-     */
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate);
+    Linkd getLinkd();
+	void setLinkd(final Linkd linkd);
 
 }

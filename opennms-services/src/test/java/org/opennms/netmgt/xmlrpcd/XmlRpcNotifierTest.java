@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 
@@ -47,7 +48,6 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.ThrowableAnticipator;
@@ -463,7 +463,7 @@ public class XmlRpcNotifierTest  {
         m_anticipator.anticipateCall("sendEvent", basicEventMap(date));
 
         EventBuilder bldr = basicEventBuilder(date);
-        bldr.setParms(new Parms());
+        bldr.setParms(new ArrayList<Parm>());
         assertTrue("notifier sendEvent", m_notifier.sendEvent(bldr.getEvent()));
         
         finishUp();

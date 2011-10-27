@@ -67,6 +67,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  *
  * Values for the ' <parms>' block are loaded with each parm name and parm value
  * delimited with the NAME_VAL_DELIM.
+ * 
+ * @deprecated Replace with a Hibernate implementation. See bug NMS-3033. Actually
+ * it doesn't have any details. :P
+ * http://issues.opennms.org:8280/browse/NMS-3033
  *
  * @see org.opennms.netmgt.model.events.Constants#MULTIPLE_VAL_DELIM
  * @see org.opennms.netmgt.model.events.Constants#DB_ATTRIB_DELIM
@@ -198,15 +202,8 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             // eventParms
 
             // Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE 
-            final String parametersString=(event.getParms() != null) ? Parameter.format(event.getParms()) : null;
+            final String parametersString=Parameter.format(event);
             set(insStmt, 11, Constants.format(parametersString, 0));
-
-            // grab the ifIndex out of the parms if it is defined   
-            if (event.hasIfIndex()) {
-                if (event.getParms() != null) {
-                    Parameter.format(event.getParms());
-                }
-            }
 
             // eventCreateTime
             final Timestamp eventCreateTime = new Timestamp(System.currentTimeMillis());
@@ -223,7 +220,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             // eventDisplay
             if (event.getLogmsg() != null) {
                 // set log message
-                set(insStmt, 15, event.getLogmsg().getContent());
+                set(insStmt, 15, Constants.format(event.getLogmsg().getContent(), 0));
                 String logdest = event.getLogmsg().getDest();
                 if (logdest.equals("logndisplay")) {
                     // if 'logndisplay' set both log and display column to yes

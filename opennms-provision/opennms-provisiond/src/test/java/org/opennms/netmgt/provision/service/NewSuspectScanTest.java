@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
 
+import java.net.InetAddress;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
@@ -181,6 +182,7 @@ public class NewSuspectScanTest {
         final EventAnticipator anticipator = m_eventSubscriber.getEventAnticipator();
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(1).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(InetAddressUtils.addr("172.20.2.201")).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(InetAddressUtils.addr("172.20.2.204")).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(InetAddressUtils.addr("172.20.2.201")).setService("SNMP").getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(InetAddressUtils.addr("172.20.2.204")).setService("SNMP").getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(InetAddressUtils.addr("172.20.2.201")).getEvent());
@@ -257,6 +259,54 @@ public class NewSuspectScanTest {
         
     }
     
+    @Test(timeout=300000)
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    // 192.0.2.0/24 reserved by IANA for testing purposes
+    @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:no-ipaddrtable.properties")
+    public void testScanNewSuspectNoIpAddrTable() throws Exception {
+
+        //Verify empty database
+        assertEquals(1, getDistPollerDao().countAll());
+        assertEquals(0, getNodeDao().countAll());
+        assertEquals(0, getInterfaceDao().countAll());
+        assertEquals(0, getMonitoredServiceDao().countAll());
+        assertEquals(0, getServiceTypeDao().countAll());
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+        
+        InetAddress ip = InetAddressUtils.addr("192.0.2.123");
+
+        final EventAnticipator anticipator = m_eventSubscriber.getEventAnticipator();
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(1).getEvent());
+		anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(ip).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(ip).setService("SNMP").getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(1).setInterface(ip).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(1).getEvent());
+
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(ip);
+        runScan(scan);
+        
+        anticipator.verifyAnticipated(200000, 0, 2000, 0, 0);
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 1, getInterfaceDao().countAll());
+        
+        //Verify ifservices count - discover snmp service on other if
+        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 1, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(1, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+        
+    }
+
     public void runScan(final NewSuspectScan scan) throws InterruptedException, ExecutionException {
         final Task t = scan.createTask();
         t.schedule();

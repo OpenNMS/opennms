@@ -39,36 +39,12 @@ import org.opennms.netmgt.config.NotificationManager;
 /**
  * Implements NotificationStragey pattern used to send notifications using the
  * XMPP message protocol.
- * 
-/**
- *
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
  * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
- * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
- * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
- * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
- * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
- * @version $Id: $
  */
 public class XMPPNotificationStrategy implements NotificationStrategy {
 
@@ -125,6 +101,17 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 		try {
 
 			String[] parsedArgs = this.parseArguments(arguments);
+			if (parsedArgs[XMPP_TO] == null || "".equals(parsedArgs[XMPP_TO])) {
+			    StringBuffer argumentString = new StringBuffer();
+			    boolean first = true;
+			    for (Argument argument : arguments) {
+			        if (!first) argumentString.append(", ");
+			        first = false;
+			        argumentString.append(argument == null ? "[null]" : "\"" + argument.toString() + "\"");
+			    }
+			    ThreadCategory.getInstance(getClass()).warn("Blank XMPP address on notification: " + argumentString.toString());
+			    return 1;
+			} 
 
 			XMPPNotificationManager xmppManager = XMPPNotificationManager.getInstance();
 

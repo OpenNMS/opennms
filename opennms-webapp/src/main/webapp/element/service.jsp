@@ -88,7 +88,7 @@ function doDelete() {
 
 <% } %>
 
-      <h2><%=service.getServiceName()%> service on <%=service.getIpAddress()%></h2>
+      <h2><%=service.getServiceName()%> service on <%=ipAddr%></h2>
 
          <% if (request.isUserInRole(Authentication.ROLE_ADMIN)) { %>
          <form method="post" name="delete" action="admin/deleteService">

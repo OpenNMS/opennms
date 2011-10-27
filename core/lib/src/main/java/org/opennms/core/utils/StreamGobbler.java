@@ -39,6 +39,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * <P>
  * Captures the output of an InputStream.
@@ -54,13 +56,13 @@ import java.io.PrintWriter;
  */
 public class StreamGobbler extends Thread {
 
-    /** The input stream we're gobbling * */
+    /** The {@link InputStream} we're gobbling */
     private InputStream in = null;
 
-    /** The printwriter we'll send the gobbled characters to if asked* */
+    /** The {@link PrintWriter} we'll send the gobbled characters to if asked */
     private PrintWriter pwOut = null;
 
-    /** Our flag to allow us to safely terminate the monitoring thread * */
+    /** Our flag to allow us to safely terminate the monitoring thread */
     private boolean quit = false;
 
     /**
@@ -71,12 +73,12 @@ public class StreamGobbler extends Thread {
     }
 
     /**
-     * A simpler constructor for StreamGobbler - defaults to stdout.
+     * A simpler constructor for StreamGobbler - defaults to {@link System#out}
      *
      * @param in
      *            InputStream
      */
-    public StreamGobbler(InputStream in) {
+    public StreamGobbler(final InputStream in) {
         this();
         this.in = in;
         this.pwOut = new PrintWriter(System.out, true);
@@ -92,7 +94,7 @@ public class StreamGobbler extends Thread {
      * @param out
      *            OutputStream
      */
-    public StreamGobbler(InputStream in, OutputStream out) {
+    public StreamGobbler(final InputStream in, final OutputStream out) {
         this();
         this.in = in;
         this.pwOut = new PrintWriter(out, true);
@@ -108,7 +110,7 @@ public class StreamGobbler extends Thread {
      * @param pwOut
      *            PrintWriter
      */
-    public StreamGobbler(InputStream in, PrintWriter pwOut) {
+    public StreamGobbler(final InputStream in, final PrintWriter pwOut) {
         this();
         this.in = in;
         this.pwOut = pwOut;
@@ -145,7 +147,7 @@ public class StreamGobbler extends Thread {
      * @throws IOException
      *             thrown if a problem occurs
      */
-    private final void readObject(ObjectInputStream in) throws IOException {
+    private final void readObject(final ObjectInputStream in) throws IOException {
         throw new IOException("Object cannot be deserialized");
     }
 
@@ -155,11 +157,13 @@ public class StreamGobbler extends Thread {
      */
     public void run() {
 
+        InputStreamReader isr = null;
+        BufferedReader br = null;
         try {
 
             // Set up the input stream
-            InputStreamReader isr = new InputStreamReader(in);
-            BufferedReader br = new BufferedReader(isr);
+            isr = new InputStreamReader(in);
+            br = new BufferedReader(isr);
 
             // Initialize the temporary results containers
             String line = null;
@@ -173,8 +177,11 @@ public class StreamGobbler extends Thread {
                 }
             }
 
-        } catch (Throwable e) {
-        	// if we're not passing the exception on, why bother?
+        } catch (final Throwable e) {
+            LogUtils.debugf(this, e, "Unable to read lines.");
+        } finally {
+            IOUtils.closeQuietly(br);
+            IOUtils.closeQuietly(isr);
         }
 
     }
@@ -188,7 +195,7 @@ public class StreamGobbler extends Thread {
      * @throws IOException
      *             thrown if a problem occurs
      */
-    private final void writeObject(ObjectOutputStream out) throws IOException {
+    private final void writeObject(final ObjectOutputStream out) throws IOException {
         throw new IOException("Object cannot be serialized");
     }
 

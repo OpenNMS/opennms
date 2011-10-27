@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.9.90-SNAPSHOT</version>
+    <version>1.9.93-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -39,7 +39,6 @@
      <plugin>
        <groupId>org.apache.felix</groupId>
        <artifactId>maven-bundle-plugin</artifactId>
-       <version>1.4.3</version>
        <extensions>true</extensions>
        <configuration>
          <instructions>

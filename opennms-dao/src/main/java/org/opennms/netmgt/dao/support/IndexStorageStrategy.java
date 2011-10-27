@@ -83,7 +83,7 @@ public class IndexStorageStrategy implements StorageStrategy {
     }
 
     /** {@inheritDoc} */
-    public void setParameters(List<Parameter> parameterCollection) {
+    public void setParameters(List<Parameter> parameterCollection) throws IllegalArgumentException {
         // Empty method, this strategy takes no parameters
     }
     

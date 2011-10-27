@@ -35,7 +35,7 @@ import java.io.IOException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
-import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
+import org.opennms.netmgt.dao.DefaultDataCollectionConfigDao;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.ByteArrayResource;
 

@@ -49,7 +49,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IntSet;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DataCollectionConfig;
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -88,7 +88,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     private LocationMonitorDao m_locationMonitorDao;
     private File m_rrdDirectory;
     private CollectdConfigFactory m_collectdConfig;
-    private DataCollectionConfig m_dataCollectionConfig;
+    private DataCollectionConfigDao m_dataCollectionConfigDao;
 
     private Map<String, OnmsResourceType> m_resourceTypes;
     private NodeResourceType m_nodeResourceType;
@@ -130,19 +130,19 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     /**
      * <p>getDataCollectionConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
+     * @return a {@link org.opennms.netmgt.config.DataCollectionConfigDao} object.
      */
-    public DataCollectionConfig getDataCollectionConfig() {
-        return m_dataCollectionConfig;
+    public DataCollectionConfigDao getDataCollectionConfigDao() {
+        return m_dataCollectionConfigDao;
     }
 
     /**
      * <p>setDataCollectionConfig</p>
      *
-     * @param dataCollectionConfig a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
+     * @param dataCollectionConfigDao a {@link org.opennms.netmgt.config.DataCollectionConfigDao} object.
      */
-    public void setDataCollectionConfig(DataCollectionConfig dataCollectionConfig) {
-        m_dataCollectionConfig = dataCollectionConfig;
+    public void setDataCollectionConfigDao(DataCollectionConfigDao dataCollectionConfigDao) {
+        m_dataCollectionConfigDao = dataCollectionConfigDao;
     }
     
     /**
@@ -213,7 +213,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             throw new IllegalStateException("collectdConfig property has not been set");
         }
         
-        if (m_dataCollectionConfig == null) {
+        if (m_dataCollectionConfigDao == null) {
             throw new IllegalStateException("dataCollectionConfig property has not been set");
         }
 
@@ -262,7 +262,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resourceTypes = new LinkedHashMap<String, GenericIndexResourceType>();
 
         Map<String, org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
-            m_dataCollectionConfig.getConfiguredResourceTypes();
+            m_dataCollectionConfigDao.getConfiguredResourceTypes();
         for (org.opennms.netmgt.config.datacollection.ResourceType resourceType : configuredResourceTypes.values()) {
             String className = resourceType.getStorageStrategy().getClazz();
             Class<?> cinst;
@@ -456,18 +456,21 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         Set<String> responseTimeInterfaces = findChildrenMatchingFilter(new File(getRrdDirectory(), RESPONSE_DIRECTORY), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
         Set<String> distributedResponseTimeInterfaces = findChildrenChildrenMatchingFilter(new File(new File(getRrdDirectory(), RESPONSE_DIRECTORY), "distributed"), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
 
-        List<OnmsNode> nodes = m_nodeDao.findAll();
+        // Only returns non-deleted nodes to fix NMS-2977
+        // http://issues.opennms.org/browse/NMS-2977
+        Collection<Integer> nodeIds = m_nodeDao.getNodeIds();
         IntSet nodesFound = new IntSet();
-        for (OnmsNode node : nodes) {
-            if (nodesFound.contains(node.getId())) {
+        for (Integer nodeId : nodeIds) {
+            if (nodesFound.contains(nodeId.intValue())) {
                 continue;
             }
 
             boolean found = false;
-            if (snmpNodes.contains(node.getId())) {
+            OnmsNode node = m_nodeDao.get(nodeId);
+            if (snmpNodes.contains(nodeId)) {
                 found = true;
             } else if (responseTimeInterfaces.size() > 0 || distributedResponseTimeInterfaces.size() > 0) {
-                for (final OnmsIpInterface ip : node.getIpInterfaces()) {
+                for (final OnmsIpInterface ip : m_nodeDao.get(nodeId).getIpInterfaces()) {
                     final String addr = InetAddressUtils.str(ip.getIpAddress());
 					if (responseTimeInterfaces.contains(addr) || distributedResponseTimeInterfaces.contains(addr)) {
                         found = true;
@@ -478,7 +481,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
             if (found) {
                 resources.add(m_nodeResourceType.createChildResource(node));
-                nodesFound.add(node.getId());
+                nodesFound.add(nodeId);
             }
         }
 

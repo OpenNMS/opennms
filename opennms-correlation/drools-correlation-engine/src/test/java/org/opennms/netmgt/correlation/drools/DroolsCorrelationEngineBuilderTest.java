@@ -73,7 +73,7 @@ public class DroolsCorrelationEngineBuilderTest implements InitializingBean {
     public void testIt() throws Exception {
         List<CorrelationEngine> engines = m_mockCorrelator.getEngines();
         assertNotNull(engines);
-        assertEquals(2, m_mockCorrelator.getEngines().size());
+        assertEquals(3, m_mockCorrelator.getEngines().size());
         assertTrue(engines.get(0) instanceof DroolsCorrelationEngine);
         assertTrue(m_mockCorrelator.findEngineByName("locationMonitorRules") instanceof DroolsCorrelationEngine);
         DroolsCorrelationEngine engine = (DroolsCorrelationEngine) m_mockCorrelator.findEngineByName("locationMonitorRules");

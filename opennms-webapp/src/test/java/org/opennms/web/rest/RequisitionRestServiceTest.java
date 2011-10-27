@@ -31,14 +31,13 @@ package org.opennms.web.rest;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
-import javax.xml.ws.WebServiceException;
+import static org.junit.Assert.fail;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
 
@@ -74,8 +73,8 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
             "</model-import>";
 
         try {
-        	sendPost("/requisitions", req);
-        } catch (final WebServiceException e) {
+        	sendPost("/requisitions", req, 400);
+        } catch (final Exception e) {
         	assertTrue("exception should say 'c' has duplicates", e.getMessage().contains("Duplicate nodes found on foreign source test: c (2 found)"));
         }
     }
@@ -112,6 +111,23 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     }
 
     @Test
+    public void testAddExistingNode() throws Exception {
+        createRequisition();
+
+        String url = "/requisitions/test/nodes";
+
+        // attempt to add existing node
+        sendPost(url, "<node xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" node-label=\"shoe\" parent-node-label=\"david\" foreign-id=\"4243\" />");
+        
+        // get list of nodes
+        String xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("<node "));
+        assertTrue(xml.contains("node-label="));
+        assertTrue("Expected only 1 node", xml.contains("count=\"1\""));
+        
+    }
+
+    @Test
     public void testNodeInterfaces() throws Exception {
         createRequisition();
         
@@ -141,7 +157,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("descr=\"Total Crap\""));
         assertTrue(xml.contains("snmp-primary=\"P\""));
-
+ 
         // delete interface
         xml = sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 204);

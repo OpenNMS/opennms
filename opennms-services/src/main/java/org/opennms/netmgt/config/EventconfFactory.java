@@ -31,7 +31,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.IOException;
 
-import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -42,20 +42,13 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * @author ranger
  * @version $Id: $
  */
-public class EventconfFactory {
+public abstract class EventconfFactory {
     /**
      * The static singleton instance of the EventConfDao.
      * Is null if the init() method has not been called.
      */
     private static EventConfDao s_instance;
 
-    /**
-     * No constructors, only static methods.  Thank you, drive through.
-     */
-    private EventconfFactory() {
-        
-    }
-    
     /**
      * <p>init</p>
      *

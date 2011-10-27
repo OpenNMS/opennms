@@ -33,6 +33,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
@@ -57,7 +59,6 @@ import org.opennms.netmgt.poller.monitors.PassiveServiceMonitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -260,21 +261,21 @@ public class PassiveStatusKeeperTest {
     }
 
     private Event createPassiveStatusEvent(String nodeLabel, String ipAddr, String serviceName, String status) {
-        Parms parms = new Parms();
+        final List<Parm> parms = new ArrayList<Parm>();
 
-        if(nodeLabel != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_NODE_LABEL, nodeLabel));
-        if(ipAddr != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_IPADDR, ipAddr));
-        if(serviceName != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_NAME, serviceName));
-        if(status != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_STATUS, status));
+        if(nodeLabel != null) parms.add(buildParm(EventConstants.PARM_PASSIVE_NODE_LABEL, nodeLabel));
+        if(ipAddr != null) parms.add(buildParm(EventConstants.PARM_PASSIVE_IPADDR, ipAddr));
+        if(serviceName != null) parms.add(buildParm(EventConstants.PARM_PASSIVE_SERVICE_NAME, serviceName));
+        if(status != null) parms.add(buildParm(EventConstants.PARM_PASSIVE_SERVICE_STATUS, status));
 
 		return createEventWithParms("uei.opennms.org/services/passiveServiceStatus", parms);
     }
 
-    private Event createEventWithParms(String uei, Parms parms) {
+    private Event createEventWithParms(String uei, List<Parm> parms) {
 		Event e = MockEventUtil.createEventBuilder("Test", uei).getEvent();
 		e.setHost("localhost");
         
-        e.setParms(parms);
+        e.setParmCollection(parms);
         Logmsg logmsg = new Logmsg();
         logmsg.setContent("Testing Passive Status Keeper with down status");
         e.setLogmsg(logmsg);

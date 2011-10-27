@@ -84,6 +84,8 @@ public class IrcCatNotificationStrategy implements NotificationStrategy {
                 recipient = arg.getValue();
             } else if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) {
                 message = arg.getValue();
+            } else if (NotificationManager.PARAM_NUM_MSG.equals(arg.getSwitch())) {
+                message = arg.getValue();
             } else {
                 throw new IllegalArgumentException("Unsupported notification argument switch '" + arg.getSwitch() + "'");
             }

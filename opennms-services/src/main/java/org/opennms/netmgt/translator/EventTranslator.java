@@ -34,12 +34,12 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.EventTranslatorConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -51,13 +51,6 @@ import org.opennms.netmgt.xml.event.Parm;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @version $Id: $
  */
 public class EventTranslator extends AbstractServiceDaemon implements EventListener {
     

@@ -29,14 +29,9 @@
 package org.opennms.netmgt.dao.castor.collector;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Iterator;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -212,25 +207,6 @@ public class DataCollectionConfigFile {
     }
 
     private DatacollectionConfig getDataCollectionConfig() {
-		try {
-			return CastorUtils.unmarshal(DatacollectionConfig.class, new FileSystemResource(m_file));
-		} catch (MarshalException e) {
-			throw runtimeException("Syntax error in "+m_file, e);
-		} catch (ValidationException e) {
-			throw runtimeException("invalid attribute in "+m_file, e);
-        } catch (FileNotFoundException e) {
-            throw runtimeException("Unable to find file "+m_file, e);
-        } catch (IOException e) {
-            throw runtimeException("Unable to access file "+m_file, e);
-		}
-	}
-
-	private RuntimeException runtimeException(String msg, Exception e) {
-		log().error(msg, e);
-		return new RuntimeException(msg, e);
-	}
-
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
+        return JaxbUtils.unmarshal(DatacollectionConfig.class, new FileSystemResource(m_file));
 	}
 }

@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.snmp</artifactId>
-    <version>1.9.90-SNAPSHOT</version>
+    <version>1.9.93-SNAPSHOT</version>
 	 <relativePath>..</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>

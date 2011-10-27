@@ -63,6 +63,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  * @version $Id: $
  * @since 1.8.1
  */
+@SuppressWarnings("deprecation")
 public class EditForeignSourceController extends SimpleFormController {
 
     private ForeignSourceService m_foreignSourceService;
@@ -251,9 +252,8 @@ public class EditForeignSourceController extends SimpleFormController {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
-    protected Map referenceData(HttpServletRequest request) throws Exception {
+    protected Map<String,Object> referenceData(HttpServletRequest request) throws Exception {
         final Map<String, Object> map = new HashMap<String, Object>();
         int classFieldWidth = 20;
         int valueFieldWidth = 20;

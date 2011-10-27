@@ -57,13 +57,14 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
+ * <p>
+ * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
+ * </p>
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-
-//this does snmp and there relies on the snmp configuration so it is not distributable
 @Distributable(DistributionContext.DAEMON)
 public class SnmpMonitor extends SnmpMonitorStrategy {
     /**
@@ -272,7 +273,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         } catch (NumberFormatException e) {
             status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
+            status = logDown(Level.ERROR, "Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }

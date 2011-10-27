@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,11 +48,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.translator.Assignment;
 import org.opennms.netmgt.config.translator.EventTranslationSpec;
 import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
@@ -64,9 +63,9 @@ import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.FatalBeanException;
+import org.springframework.beans.PropertyAccessorFactory;
 
 /**
  * This is the singleton class used to load the configuration from the
@@ -79,9 +78,6 @@ import org.springframework.beans.FatalBeanException;
  *
  * @author <a href="mailto:david@opennms.org">David Hustace </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class EventTranslatorConfigFactory implements EventTranslatorConfig {
     /**
@@ -104,7 +100,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     /**
      * connection factory for use with sql-value
      */
-	private DataSource m_dbConnFactory;
+	private DataSource m_dbConnFactory = null;
 
     
     /**
@@ -122,7 +118,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         InputStream stream = null;
         try {
             stream = new FileInputStream(configFile);
-            marshall(stream, dbConnFactory);
+            unmarshall(stream, dbConnFactory);
         } finally {
             if (stream != null) {
                 IOUtils.closeQuietly(stream);
@@ -138,24 +134,17 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @Deprecated
-    public EventTranslatorConfigFactory(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
-        marshall(rdr, dbConnFactory);
+    public EventTranslatorConfigFactory(InputStream rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
+        unmarshall(rdr, dbConnFactory);
     }
 
-    private synchronized void marshall(InputStream stream, DataSource dbConnFactory) throws MarshalException, ValidationException {
+    private synchronized void unmarshall(InputStream stream, DataSource dbConnFactory) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, stream);
         m_dbConnFactory = dbConnFactory;
     }
     
-    @Deprecated
-    private synchronized void marshall(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, rdr);
-        m_dbConnFactory = dbConnFactory;
-    }
-    
-    private synchronized void marshall(InputStream stream) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, stream);
+    private synchronized void unmarshall(InputStream stream) throws MarshalException, ValidationException {
+        unmarshall(stream, null);
     }
 
     /**
@@ -172,7 +161,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             
             try {
                 stream = new FileInputStream(cfgFile);
-                marshall(stream);
+                unmarshall(stream);
             } finally {
                 if (stream != null) {
                     IOUtils.closeQuietly(stream);
@@ -443,6 +432,8 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
              */ 
             clonedEvent.setAlarmData(null);
             clonedEvent.setSeverity(null);
+            /* the reasoning for alarmData and severity also applies to description (see NMS-4038). */
+            clonedEvent.setDescr(null);
             return clonedEvent;
         }
 
@@ -531,7 +522,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		
 		protected void setValue(Event targetEvent, String value) {
 			try {
-				BeanWrapperImpl bean = new BeanWrapperImpl(targetEvent);
+				BeanWrapper bean = PropertyAccessorFactory.forBeanPropertyAccess(targetEvent);
 				bean.setPropertyValue(getAttributeName(), value);
 			} catch(FatalBeanException e) {
 				log().error("Unable to set value for attribute "+getAttributeName()+"to value "+value+ " Exception:" +e);
@@ -547,18 +538,12 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		}
 
 		protected void setValue(Event targetEvent, String value) {
-			Parms parms = targetEvent.getParms();
-			if (parms == null) {
-				parms = new Parms();
-				targetEvent.setParms(parms);
-			}
-			
 			if (value == null) {
 			    log().debug("Value of parameter is null setting to blank");
 			    value="";
 			}
 
-			for (Parm parm : parms.getParmCollection()) {
+			for (final Parm parm : targetEvent.getParmCollection()) {
 				if (parm.getParmName().equals(getAttributeName())) {
 					org.opennms.netmgt.xml.event.Value val = parm.getValue();
 					if (val == null) {
@@ -575,7 +560,6 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			
 			// if we got here then we didn't find the existing parameter
 			Parm newParm = new Parm();
-			parms.addParm(newParm);
 			newParm.setParmName(getAttributeName());
 			org.opennms.netmgt.xml.event.Value val = new org.opennms.netmgt.xml.event.Value();
 			newParm.setValue(val);
@@ -583,6 +567,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			    log().debug("Setting value of parameter "+getAttributeName()+" to "+value);
 			}
 			val.setContent(value);
+			targetEvent.addParm(newParm);
 		}
 	}
 	
@@ -836,7 +821,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
 		public String getAttributeValue(Event e) {
 			try {
-				BeanWrapperImpl bean = getBeanWrapper(e);
+				BeanWrapper bean = getBeanWrapper(e);
                 
 				return (String)bean.convertIfNecessary(bean.getPropertyValue(getAttributeName()), String.class);
 			} catch (FatalBeanException ex) {
@@ -845,8 +830,8 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			}
 		}
 
-        private BeanWrapperImpl getBeanWrapper(Event e) {
-            BeanWrapperImpl bean = new BeanWrapperImpl(e);
+        private BeanWrapper getBeanWrapper(Event e) {
+            BeanWrapper bean = PropertyAccessorFactory.forBeanPropertyAccess(e);
             bean.registerCustomEditor(String.class, new StringPropertyEditor());
             return bean;
         }

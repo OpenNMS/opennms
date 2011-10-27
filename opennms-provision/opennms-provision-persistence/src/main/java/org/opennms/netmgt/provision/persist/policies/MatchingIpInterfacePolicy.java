@@ -94,7 +94,7 @@ public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> imple
         OnmsSnmpInterface snmpiface = iface.getSnmpInterface();
         switch (m_action) {
         case DO_NOT_PERSIST: 
-            LogUtils.debugf(this, "NOT Peristing %s according to policy", iface);
+            LogUtils.debugf(this, "NOT Persisting %s according to policy", iface);
             return null;
         case MANAGE:
             LogUtils.debugf(this, "Managing %s according to policy", iface);
@@ -105,12 +105,12 @@ public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> imple
             iface.setIsManaged("U");
             return iface;
         case ENABLE_SNMP_POLL:
-            LogUtils.debugf(this, "Snmp Polling %s according to policy", iface);
+            LogUtils.debugf(this, "SNMP polling %s according to policy", iface);
             snmpiface.setPoll("P");
             iface.setSnmpInterface(snmpiface);
             return iface;
         case DISABLE_SNMP_POLL:
-            LogUtils.debugf(this, "Disable Snmp Polling %s according to policy", iface);
+            LogUtils.debugf(this, "Disable SNMP polling %s according to policy", iface);
             snmpiface.setPoll("N");
             iface.setSnmpInterface(snmpiface);
             return iface;

@@ -9,6 +9,7 @@
 	">
 
 <changeSet author="rangerrick" id="1.7.92-repair-opennmsnxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="acks" />
 		<tableExists tableName="applications" />
@@ -48,6 +49,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-nodenxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="node" />
 	</preConditions>
@@ -57,6 +59,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-servicenxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="service" />
 	</preConditions>
@@ -66,6 +69,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-eventsnxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="events" />
 	</preConditions>
@@ -75,6 +79,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-alarmsnxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="alarms" />
 	</preConditions>
@@ -84,6 +89,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-outagenxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="outages" />
 	</preConditions>
@@ -93,6 +99,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-notifynxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="notifications" />
 	</preConditions>
@@ -102,6 +109,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-vulnnxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="vulnerabilities" />
 	</preConditions>
@@ -111,6 +119,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-catnxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="categories" />
 	</preConditions>
@@ -120,6 +129,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-usernotifnxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="usersnotified" />
 	</preConditions>
@@ -129,6 +139,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-demandpollnxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="demandpolls" />
 	</preConditions>
@@ -138,6 +149,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-pollresultnxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="pollresults" />
 	</preConditions>
@@ -147,6 +159,7 @@
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-mapnxtid-fo-shizzle" runAlways="true" context="repair">
+	<validCheckSum>ANY</validCheckSum>
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="map" />
 	</preConditions>

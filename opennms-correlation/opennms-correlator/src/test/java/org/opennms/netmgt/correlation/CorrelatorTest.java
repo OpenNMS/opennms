@@ -58,6 +58,9 @@ public class CorrelatorTest extends TestCase {
 
 		m_eventIpcManager = createMock(EventIpcManager.class);
 		m_engine = createMock(CorrelationEngine.class);
+		
+		expect(m_engine.getName()).andStubReturn("myMockEngine");
+		
 		m_correlator = new Correlator();
 		m_correlator.setEventIpcManager(m_eventIpcManager);
 		m_correlator.setCorrelationEngines(Collections.singletonList(m_engine));
@@ -68,12 +71,22 @@ public class CorrelatorTest extends TestCase {
 	}
 	
 	public void testStartStop() throws Exception {
+		
+		List<String> interestingEvents = Collections.singletonList("uei.opennms.org:/testEvent");
+		
+		expect(m_engine.getInterestingEvents()).andReturn(interestingEvents);
+		m_eventIpcManager.addEventListener(isA(EventListener.class), same(interestingEvents));
+
+		replayMocks();
+		
 		m_correlator.afterPropertiesSet();
 		assertEquals("Expected the correlator to be init'd", Fiber.START_PENDING, m_correlator.getStatus());
 		m_correlator.start();
 		assertEquals("Expected the correlator to be running", Fiber.RUNNING, m_correlator.getStatus());
 		m_correlator.stop();
 		assertEquals("Expected the correlator to be stopped", Fiber.STOPPED, m_correlator.getStatus());
+		
+		verifyMocks();
 	}
 	
 	public void testRegisterForEvents() throws Exception {

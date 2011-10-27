@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -32,7 +32,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * This class holds all OpenNMS related config filenames
@@ -105,7 +105,7 @@ public final class ConfigFileConstants {
      */
     public static final int POLL_OUTAGES_CONFIG_FILE_NAME;
 
-    /** The opennms snmp poller config file
+    /** The opennms SNMP poller config file
      */
     public static final int SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME;
 
@@ -328,11 +328,6 @@ public final class ConfigFileConstants {
      */
     public static final int SITE_STATUS_VIEWS_FILE_NAME;
     
-    /**
-     * The monitoring locations config file (distributed monitoring)
-     */
-    public static final int MONITORING_LOCATIONS_FILE_NAME;
-    
     /** Constant <code>HTTP_COLLECTION_CONFIG_FILE_NAME</code> */
     public static final int HTTP_COLLECTION_CONFIG_FILE_NAME;
 
@@ -449,6 +444,11 @@ public final class ConfigFileConstants {
      */
     public static final int RANCID_CONFIG_FILE_NAME;
 
+    /**
+     * The SNMP Asset Provisioning Adapter configuration file
+     */
+    public static final int SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME;
+
 
     /**
      * The WMI collection configuration file
@@ -469,6 +469,11 @@ public final class ConfigFileConstants {
      * The config file for microblog notifications and acks
      */
     public static final int MICROBLOG_CONFIG_FILE_NAME;
+    
+    /**
+     * The config file for the JDBC Data Collector.
+     */
+    public static final int JDBC_COLLECTION_CONFIG_FILE_NAME;
 
     //
     // Initialize the class data. This section is used to initialize the
@@ -567,8 +572,6 @@ public final class ConfigFileConstants {
         
         SITE_STATUS_VIEWS_FILE_NAME = 62;
         
-        MONITORING_LOCATIONS_FILE_NAME = 63;
-        
         HTTP_COLLECTION_CONFIG_FILE_NAME = 64;
         
         NSCLIENT_COLLECTION_CONFIG_FILE_NAME = 65;
@@ -599,9 +602,14 @@ public final class ConfigFileConstants {
         
         MICROBLOG_CONFIG_FILE_NAME = 78;
         
+        SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME = 79;
+        
+        JDBC_COLLECTION_CONFIG_FILE_NAME = 80;
+        
+        
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[79];
+        FILE_ID_TO_NAME = new String[81];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -681,7 +689,6 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
         FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
         FILE_ID_TO_NAME[SITE_STATUS_VIEWS_FILE_NAME] = "site-status-views.xml";
-        FILE_ID_TO_NAME[MONITORING_LOCATIONS_FILE_NAME] = "monitoring-locations.xml";
         FILE_ID_TO_NAME[HTTP_COLLECTION_CONFIG_FILE_NAME] = "http-datacollection-config.xml";
         FILE_ID_TO_NAME[NSCLIENT_COLLECTION_CONFIG_FILE_NAME] = "nsclient-datacollection-config.xml";
         FILE_ID_TO_NAME[NSCLIENT_CONFIG_FILE_NAME] = "nsclient-config.xml";
@@ -696,7 +703,9 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";
         FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";
         FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";
-        FILE_ID_TO_NAME[MICROBLOG_CONFIG_FILE_NAME] = "microblog-configuration.properties";
+        FILE_ID_TO_NAME[MICROBLOG_CONFIG_FILE_NAME] = "microblog-configuration.xml";
+        FILE_ID_TO_NAME[SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME] = "snmp-asset-adapter-configuration.xml";
+        FILE_ID_TO_NAME[JDBC_COLLECTION_CONFIG_FILE_NAME] = "jdbc-datacollection-config.xml";
     }
 
     /**
@@ -747,7 +756,7 @@ public final class ConfigFileConstants {
         // Check to make sure that the home directory exists
         File fhome = new File(home);
         if (!fhome.exists()) {
-            log().warn("getFile: The specified home directory does not exist");
+            LogUtils.debugf(ConfigFileConstants.class, "The specified home directory does not exist.");
             throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist");
         }
 
@@ -766,10 +775,6 @@ public final class ConfigFileConstants {
         }
 
         return frfile;
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(ConfigFileConstants.class);
     }
 
     /**
@@ -805,20 +810,15 @@ public final class ConfigFileConstants {
         //
         File fhome = new File(home);
         if (!fhome.exists()) {
-            log().warn("getConfigFileByName: The specified home directory does not exist");
-            throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist");
+            LogUtils.debugf(ConfigFileConstants.class, "The specified home directory does not exist.");
+            throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist.");
         }
 
         File frfile = new File(home + File.separator + "etc" + File.separator + fname);
         if (!frfile.exists()) {
             File frfileNoEtc = new File(home + File.separator + fname);
             if (!frfileNoEtc.exists()) {
-                throw new FileNotFoundException("The requested file '" + fname
-                                                + "' could not be found at '"
-                                                + frfile.getAbsolutePath()
-                                                + "' or '"
-                                                + frfileNoEtc.getAbsolutePath()
-                                                + "'");
+                throw new FileNotFoundException(String.format("The requested file '%s' could not be found at '%s' or '%s'", fname, frfile.getAbsolutePath(), frfileNoEtc.getAbsolutePath()));
             }
         }
 
@@ -833,7 +833,7 @@ public final class ConfigFileConstants {
     public static final String getHome() {
         String home = System.getProperty("opennms.home");
         if (home == null) {
-            log().warn("getConfigFileByName: The \"opennms.home\" property was not set, falling back to /opt/opennms");
+            LogUtils.debugf(ConfigFileConstants.class, "The 'opennms.home' property was not set, falling back to /opt/opennms.  This should really only happen in unit tests.");
             home = File.separator + "opt" + File.separator + "opennms";
         }
         // Remove the trailing slash if necessary

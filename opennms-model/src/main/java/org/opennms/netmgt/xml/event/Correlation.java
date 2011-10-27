@@ -75,7 +75,7 @@ public class Correlation implements Serializable {
      * Field _path.
      */
 	@XmlAttribute(name="path")
-    private java.lang.String _path = "suppressDuplicates";
+    private java.lang.String _path = "suppressDuplicates".intern();
 
     /**
      * A cancelling UEI for this event
@@ -109,7 +109,7 @@ public class Correlation implements Serializable {
     public Correlation() {
         super();
         setState("off");
-        setPath("suppressDuplicates");
+        setPath("suppressDuplicates".intern());
         this._cueiList = new java.util.ArrayList<java.lang.String>();
     }
 
@@ -412,7 +412,7 @@ public class Correlation implements Serializable {
      */
     public void setPath(
             final java.lang.String path) {
-        this._path = path;
+        this._path = path.intern();
     }
 
     /**

@@ -83,7 +83,6 @@ public class DefaultSchedulerServiceTest implements InitializingBean {
     
     private static ReportParameters m_criteria;
     private static String REPORT_ID = "test";
-    private static String REPORT_SERVICE = "mockReportService";
     private static String CRON_EXPRESSION = "0 * * * * ?";
     private static final String TRIGGER_GROUP = "reporting";
     

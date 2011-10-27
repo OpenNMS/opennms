@@ -141,7 +141,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         // start the scheduler
         //
         try {
-            log().debug("onStart: Starting Snmp Interface Poller scheduler");
+            log().debug("onStart: Starting SNMP Interface Poller scheduler");
 
             getScheduler().start();
         } catch (RuntimeException e) {
@@ -203,7 +203,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         // Schedule the interfaces currently in the database
         //
         try {
-            log().debug("onInit: Scheduling existing snmp interfaces polling");
+            log().debug("onInit: Scheduling existing SNMP interfaces polling");
             scheduleExistingSnmpInterface();
         } catch (Throwable sqlE) {
             log().error("onInit: Failed to schedule existing interfaces", sqlE);
@@ -251,7 +251,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 log().debug("Scheduling snmppolling for node: " + nodeid +" ip address: " + ipaddress + " - Found package interface with name: " + pkgName);
                 scheduleSnmpCollection(getNetwork().create(nodeid,ipaddress,pkgName), pkgName);
             } else {
-                log().debug("No snmp Poll Package found for node: " + nodeid +" ip address: " + ipaddress + ". - Scheduling according with default interval");
+                log().debug("No SNMP Poll Package found for node: " + nodeid +" ip address: " + ipaddress + ". - Scheduling according with default interval");
                 scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress, "null"), "null");
             }
         }
@@ -313,11 +313,11 @@ public class SnmpPoller extends AbstractServiceDaemon {
         // Create a scheduler
         //
         try {
-            log().debug("init: Creating Snmp Interface Poller scheduler");
+            log().debug("init: Creating SNMP Interface Poller scheduler");
 
             setScheduler(new LegacyScheduler("Snmpinterfacepoller", getPollerConfig().getThreads()));
         } catch (RuntimeException e) {
-            log().fatal("init: Failed to create snmp interface poller scheduler", e);
+            log().fatal("init: Failed to create SNMP interface poller scheduler", e);
             throw e;
         }
     }
@@ -463,7 +463,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         String[] criticalServices = getPollerConfig().getCriticalServiceIds();
         for (int i = 0; i< criticalServices.length ; i++) {
             if (criticalServices[i].equals(service)) {
-            	log().info("Critical Service Lost: suspending snmp polling for primary interface: " + event.getInterface());
+            	log().info("Critical Service Lost: suspending SNMP polling for primary interface: " + event.getInterface());
                 getNetwork().suspend(event.getInterface());
             }
         }
@@ -480,7 +480,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         String[] criticalServices = getPollerConfig().getCriticalServiceIds();
         for (int i = 0; i< criticalServices.length ; i++) {
             if (criticalServices[i].equals(service)) {
-            	log().info("Critical Service Regained: activate snmp polling for primary interface: " + event.getInterface());
+            	log().info("Critical Service Regained: activate SNMP polling for primary interface: " + event.getInterface());
                 getNetwork().activate(event.getInterface());
             }
         }

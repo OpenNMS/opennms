@@ -36,9 +36,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
+import org.hibernate.impl.CriteriaImpl.CriterionEntry;
 import org.hibernate.transform.ResultTransformer;
+import org.hibernate.transform.Transformers;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -48,6 +56,8 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.StringUtils;
+
+import com.mchange.v2.codegen.bean.Property;
 
 /**
  * <p>NodeDaoHibernate class.</p>
@@ -331,13 +341,14 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     
     /** {@inheritDoc} */
     public List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp) {
-        return findObjects(OnmsIpInterface.class, "from OnmsIpInterface ipInterface where ipInterface.node.id = ? and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
+    	// we exclude the primary interface from the obsolete list since the only way for them to be obsolete is when we have snmp
+        return findObjects(OnmsIpInterface.class, "from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
     }
 
     /** {@inheritDoc} */
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
-        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
-        getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface ipInterface where ipInterface.node.id = ? and (ipInterface.lastCapsdPoll is null or ipInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ? and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
     }
 
     /** {@inheritDoc} */
@@ -356,9 +367,15 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return findObjects(Integer.class, "select distinct n.id from OnmsNode as n where n.type != 'D'");
     }
 
-
+    public Integer getNextNodeId (Integer nodeId) {
+    	Integer nextNodeId = null;
+    	nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id > ? and n.type != 'D' order by n.id asc limit 1", nodeId).get(0);
+    	return nextNodeId;
+    }
     
-    
-
-
+    public Integer getPreviousNodeId (Integer nodeId) {
+    	Integer nextNodeId = null;
+    	nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != 'D' order by n.id desc limit 1", nodeId).get(0);
+    	return nextNodeId;
+    }
 }

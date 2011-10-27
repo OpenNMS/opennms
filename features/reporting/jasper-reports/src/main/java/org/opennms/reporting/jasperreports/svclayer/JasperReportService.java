@@ -118,7 +118,7 @@ public class JasperReportService implements ReportService {
         JRParameter[] reportParms;
 
         JasperReport jasperReport = null;
-        Map defaultValues = null;
+        Map<?,?> defaultValues = null;
 
         String sourceFileName = m_jasperReportConfigDao.getTemplateLocation(reportId);
         if (sourceFileName != null) {

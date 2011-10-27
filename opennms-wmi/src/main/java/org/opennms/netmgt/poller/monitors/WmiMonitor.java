@@ -81,9 +81,8 @@ public class WmiMonitor extends AbstractServiceMonitor {
 	 * we are talking to a valid service and we set the service status to
 	 * SERVICE_AVAILABLE and return.
 	 */
-	@SuppressWarnings("unchecked")
     @Override
-	public PollStatus poll(final MonitoredService svc, final Map parameters) {
+	public PollStatus poll(final MonitoredService svc, final Map<String,Object> parameters) {
 		// Holds the response reason.
 		String reason = null;
 		// Used to exit the retry loop early, if possible.
@@ -92,9 +91,9 @@ public class WmiMonitor extends AbstractServiceMonitor {
 		WmiResult response = null;
 		// Used to track how long the request took.
 		Double responseTime = null;
-		final NetworkInterface iface = svc.getNetInterface();
+		final NetworkInterface<InetAddress> iface = svc.getNetInterface();
 		// Get the address we're going to poll.
-		final InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+		final InetAddress ipv4Addr = iface.getAddress();
 		
 		// Validate the interface type.
 		if (iface.getType() != NetworkInterface.TYPE_INET) {
@@ -171,8 +170,7 @@ public class WmiMonitor extends AbstractServiceMonitor {
                 // Set up the parameters the client will use to validate the response.
                 // Note: We will check and see if we were provided with a WQL string.
                 WmiParams clientParams = null;
-                if(wmiWqlStr.equals(DEFAULT_WMI_WQL)) {
-
+                if(DEFAULT_WMI_WQL.equals(wmiWqlStr)) {
 				    clientParams = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, compVal, compOp, wmiClass, wmiObject);
 				    LogUtils.debugf(this, "Attempting to perform operation: \\\\%s\\%s", wmiClass, wmiObject);
                 } else {
@@ -196,7 +194,13 @@ public class WmiMonitor extends AbstractServiceMonitor {
 				final ArrayList<Object> wmiObjects = response.getResponse();
 
 				final StringBuffer reasonBuffer = new StringBuffer();
-				reasonBuffer.append("Result for ").append(wmiClass).append("\\").append(wmiObject);
+				// If there's no WQL string then use the class\object name as the result message
+				if (DEFAULT_WMI_WQL.equals(wmiWqlStr)) {
+				    reasonBuffer.append("Result for ").append(wmiClass).append("\\").append(wmiObject);
+				} else {
+				    // Otherwise, print the WQL statement in the result message
+				    reasonBuffer.append("Result for \"").append(wmiWqlStr).append("\"");
+				}
 
 				if (response.getResultCode() == WmiResult.RES_STATE_OK) {
 					serviceStatus = PollStatus.SERVICE_AVAILABLE;

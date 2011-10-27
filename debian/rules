@@ -88,12 +88,20 @@ install: build
 	##
 	## Setup the protocol packages
 	##
-	install -d -m 755 debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-protocol-dhcp/etc/opennms
-	install -d -m 755 debian/opennms-plugin-protocol-dhcp/var/lib/opennms/xsds
-	mv debian/temp/lib/org.opennms.dhcp-*.jar     debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
-	mv debian/temp/etc/dhcpd-configuration.xml    debian/opennms-plugin-protocol-dhcp/etc/opennms/
-	mv debian/temp/share/xsds/dhcpd-configuration.xsd debian/opennms-plugin-protocol-dhcp/var/lib/opennms/xsds/
+	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xmp}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xmp}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xmp}/var/lib/opennms/xsds
+	mv debian/temp/lib/org.opennms.protocols.dhcp-*.jar     debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
+	mv debian/temp/etc/dhcpd-configuration.xml              debian/opennms-plugin-protocol-dhcp/etc/opennms/
+	mv debian/temp/share/xsds/dhcpd-configuration.xsd       debian/opennms-plugin-protocol-dhcp/var/lib/opennms/xsds/
+	mv debian/temp/lib/org.opennms.protocols.nsclient-*.jar debian/opennms-plugin-protocol-nsclient/usr/share/java/opennms/
+	mv debian/temp/etc/nsclient*.xml                        debian/opennms-plugin-protocol-nsclient/etc/opennms/
+	mv debian/temp/share/xsds/nsclient*.xsd                 debian/opennms-plugin-protocol-nsclient/var/lib/opennms/xsds/
+	mv debian/temp/lib/gnu-crypto*.jar                      debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
+	mv debian/temp/lib/*radius*.jar                         debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
+	mv debian/temp/lib/org.opennms.protocols.xmp-*.jar      debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
+	mv debian/temp/etc/xmp*-config.xml                      debian/opennms-plugin-protocol-xmp/etc/opennms/
+	mv debian/temp/share/xsds/xmp*.xsd                      debian/opennms-plugin-protocol-xmp/var/lib/opennms/xsds/
 	
 	##
 	## Setup the libopennms-java package

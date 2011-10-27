@@ -42,6 +42,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
@@ -98,7 +99,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
             
         };
 
-        m_server.setTimeout(10000);
+        m_server.setTimeout(0);
         m_server.init();
         m_server.startServer();
     }
@@ -108,34 +109,47 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         setUpServer();
         final int port = m_server.getLocalPort();
         final InetAddress address = m_server.getInetAddress();
-        for (int i = 0; i < 10000; i++) {
-            setUp();
-            System.err.println("current loop: " + i);
-            assertNotNull(m_detector);
-            
-            final TcpDetector detector = m_detector.get();
-            
-            detector.setPort(port);
-            
-            final DefaultDetectFuture future = (DefaultDetectFuture)detector.isServiceDetected(address, new NullDetectorMonitor());
-            future.addListener(new IoFutureListener<DetectFuture>() {
-    
-                public void operationComplete(final DetectFuture future) {
-                    detector.dispose();
-                }
-                
-            });
-            
-            future.awaitUninterruptibly();
-            assertNotNull(future);
-            if (future.getException() != null) {
-                System.err.println("got future exception: " + future.getException());
-                throw future.getException();
-            }
-            System.err.println("got value: " + future.getObjectValue());
-            assertTrue(future.isServiceDetected());
 
-            m_detector.set(null);
+        final double connectionRate = 0.2;
+        
+        final long startTime = System.currentTimeMillis();
+
+        int i = 0;
+        while (i < 10000) {
+            long now = Math.max(System.currentTimeMillis(), 1);
+            double actualRate = ((double)i) / ((double)(now - startTime));
+            LogUtils.debugf(this, "Expected Rate: %f Actual Rate: %f Events Sent: %d", connectionRate, actualRate, i);
+            if (actualRate < connectionRate) {
+                setUp();
+                LogUtils.debugf(this, "current loop: %d", i);
+                assertNotNull(m_detector);
+                
+                final TcpDetector detector = m_detector.get();
+
+                detector.setPort(port);
+
+                final DefaultDetectFuture future = (DefaultDetectFuture)detector.isServiceDetected(address, new NullDetectorMonitor());
+                future.addListener(new IoFutureListener<DetectFuture>() {
+                    public void operationComplete(final DetectFuture future) {
+                        detector.dispose();
+                    }
+                });
+
+                future.awaitUninterruptibly();
+                assertNotNull(future);
+                if (future.getException() != null) {
+                    LogUtils.debugf(this, future.getException(), "got future exception");
+                    throw future.getException();
+                }
+                LogUtils.debugf(this, "got value: %s", future.getObjectValue());
+                assertTrue(future.isServiceDetected());
+
+                m_detector.set(null);
+                
+                i++;
+            } else {
+                Thread.sleep(5);
+            }
         }
     }
     

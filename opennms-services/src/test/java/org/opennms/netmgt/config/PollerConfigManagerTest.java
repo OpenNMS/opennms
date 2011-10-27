@@ -67,6 +67,7 @@ import org.opennms.test.mock.MockLogAppender;
 
 public class PollerConfigManagerTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
+    @SuppressWarnings("unchecked")
     private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
 
     @Override

@@ -45,7 +45,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * <p>
  * Once loaded or create, the class tracks any changes and will write those
  * changes to the database whenever the <code>store</code> method is invoked.
- * If a database conneciton is not passed to the store method, then a temporary
+ * If a database connection is not passed to the store method, then a temporary
  * one is allocated to write the results.
  * </p>
  *
@@ -261,6 +261,12 @@ public final class DbSnmpInterfaceEntry {
             // Run the insert
             int rc = stmt.executeUpdate();
             log.debug("DbSnmpInterfaceEntry.insert: SQL update result = " + rc);
+        } catch (SQLException e) {
+            log.error(String.format("Insertion of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            throw e;
+        } catch (RuntimeException e) {
+            log.error(String.format("Insertion of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            throw e;
         } finally {
             d.cleanUp();
         }
@@ -448,6 +454,12 @@ public final class DbSnmpInterfaceEntry {
             // Run the update
             int rc = stmt.executeUpdate();
             log.debug("DbSnmpInterfaceEntry.update: update result = " + rc);
+        } catch (SQLException e) {
+            log.error(String.format("Update of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            throw e;
+        } catch (RuntimeException e) {
+            log.error(String.format("Update of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            throw e;
         } finally {
             d.cleanUp();
         }
@@ -472,8 +484,6 @@ public final class DbSnmpInterfaceEntry {
         if (!m_fromDb) {
             throw new IllegalStateException("The record does not exists in the database");
         }
-
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // create the Prepared statement and then start setting the query values
         PreparedStatement stmt = null;

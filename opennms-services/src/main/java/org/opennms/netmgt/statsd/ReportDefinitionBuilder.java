@@ -39,8 +39,8 @@ import org.opennms.netmgt.dao.castor.statsd.Report;
 import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
 import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
@@ -95,7 +95,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
                 reportDef.setReport(packageReport);
                 reportDef.setReportClass(clazz);
                 
-                BeanWrapper bw = new BeanWrapperImpl(reportDef);
+                BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(reportDef);
                 try {
                     bw.setPropertyValues(packageReport.getAggregateParameters());
                 } catch (BeansException e) {

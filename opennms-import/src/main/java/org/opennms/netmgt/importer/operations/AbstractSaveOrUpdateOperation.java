@@ -45,15 +45,15 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyAccessorFactory;
 
 /**
  * <p>Abstract AbstractSaveOrUpdateOperation class.</p>
@@ -328,7 +328,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 
     /** {@inheritDoc} */
     public void foundAsset(String name, String value) {
-        BeanWrapper w = new BeanWrapperImpl(m_node.getAssetRecord());
+        BeanWrapper w = PropertyAccessorFactory.forBeanPropertyAccess(m_node.getAssetRecord());
         try {
             w.setPropertyValue(name, value);
         } catch (BeansException e) {

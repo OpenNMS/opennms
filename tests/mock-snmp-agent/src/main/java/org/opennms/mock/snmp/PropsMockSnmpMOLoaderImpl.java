@@ -162,7 +162,7 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	            } else {
 	                // Punt, assume it's a String
 	                //newVar = new OctetString(moValStr);
-                    throw new IllegalArgumentException("Unrecognized Snmp Type "+moTypeStr);
+                    throw new IllegalArgumentException("Unrecognized SNMP Type "+moTypeStr);
 	            }
 	        } catch (Throwable t) {
 	            throw new UndeclaredThrowableException(t, "Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr);

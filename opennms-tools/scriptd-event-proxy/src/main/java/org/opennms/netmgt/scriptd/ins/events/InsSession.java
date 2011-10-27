@@ -55,7 +55,7 @@ import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
-import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -349,8 +349,8 @@ class InsSession extends InsAbstractSession {
         final String eventParms = ev.getEventParms();
 		if (eventParms != null) {
         	LogUtils.debugf(this, "Setting Event Parms: %s", eventParms);
-        	final Parms parms = Parameter.decode(eventParms);
-            if (parms != null) e.setParms(parms);
+        	final List<Parm> parms = Parameter.decode(eventParms);
+            if (parms != null) e.setParmCollection(parms);
         } else {
             LogUtils.infof(this, "No Event parms found.");
         }

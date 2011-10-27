@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.9.90-SNAPSHOT</version>
+    <version>1.9.93-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-provision</artifactId>
@@ -18,11 +18,12 @@
     <module>opennms-provisiond</module>
     <module>opennms-provision-persistence</module>
     <module>opennms-detector-datagram</module>
-    <module>opennms-detector-radius</module>
     <module>opennms-detector-jmx</module>
     <module>opennms-detector-jdbc</module>
     <module>opennms-detector-ssh</module>
     <module>opennms-detector-generic</module>
+    <module>opennms-detector-web</module>
+    <module>opennms-detector-bsf</module>
   </modules>
   <dependencyManagement>
     <dependencies>
@@ -68,11 +69,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-detector-radius</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-jmx</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -84,6 +80,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-ssh</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-web</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

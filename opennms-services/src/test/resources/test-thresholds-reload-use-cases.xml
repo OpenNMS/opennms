@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<thresholding-config>
+
+        <group name="generic-snmp" rrdRepository = "${install.share.dir}/rrd/snmp/">
+                <threshold type="high" ds-name="freeMem"  ds-type="node" value="4000" rearm="2000" trigger="1"/>
+                <threshold type="high" ds-name="ifInOctets"  ds-type="if" value="90" rearm="50" trigger="1">
+                	<resource-filter field='snmpifdescr'>wlan0</resource-filter>
+                </threshold>
+                <threshold type="high" ds-name="ifOutOctets"  ds-type="if" value="90" rearm="50" trigger="1"/>
+                <threshold type="high" ds-name="frReceivedFrames" ds-label="frName" ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1"/>
+                <threshold type="high" ds-name="frSentFrames" ds-label="frName" ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1">
+                	<resource-filter field='frIntf'>^0$</resource-filter>
+                	<resource-filter field='frDlci'>^1.+</resource-filter>
+                </threshold>
+        </group>
+
+        <group name="web-services" rrdRepository = "${install.share.dir}/rrd/snmp/">
+                <threshold type="high" ds-name="hits"  ds-type="node" value="100" rearm="50" trigger="3"/>
+        </group>
+
+</thresholding-config>

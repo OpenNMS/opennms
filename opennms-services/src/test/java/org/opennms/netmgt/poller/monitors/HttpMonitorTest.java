@@ -30,9 +30,9 @@ package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -50,9 +50,6 @@ import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
@@ -68,25 +65,6 @@ public class HttpMonitorTest {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-    }
-
-    @Test
-    public void testParms() {
-        Parms eventParms = new Parms();
-        Parm eventParm = new Parm();
-        Value parmValue = new Value();
-
-        assertTrue(eventParms.getParmCount() == 0);
-
-        eventParm.setParmName("test");
-        parmValue.setContent("test value");
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        assertTrue(eventParms.getParmCount() == 1);
-        assertTrue(eventParms.getParm(0).getParmName() == "test");
-        assertTrue(eventParms.getParm(0).getValue().getContent() == "test value");
-
     }
 
     /*
@@ -285,12 +263,11 @@ public class HttpMonitorTest {
 
         Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
         Parameter p = new Parameter();
-        HttpMonitor monitor = new HttpMonitor();
         p.setKey("basic-authentication");
         p.setValue("Aladdin:open sesame");
         m.put(p.getKey(), p.getValue());
-        assertEquals("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", monitor.determineBasicAuthentication(m));
-        assertFalse( "QWxhZGRpbjpvcZVuIHNlc2FtZQ==".equals(monitor.determineBasicAuthentication(m)));
+        assertEquals("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", HttpMonitor.determineBasicAuthentication(m));
+        assertFalse( "QWxhZGRpbjpvcZVuIHNlc2FtZQ==".equals(HttpMonitor.determineBasicAuthentication(m)));
     }
 
     @Test
@@ -646,6 +623,30 @@ public class HttpMonitorTest {
 
         PollStatus status = monitor.poll(svc, m);
         assertEquals("poll status not available", PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342)
+    public void testNMS2702() throws UnknownHostException {
+        HttpMonitor monitor = new HttpMonitor();
+        Map<String, Object> parameters = Collections.synchronizedMap(new TreeMap<String, Object>());
+        parameters.put("port", "10342");
+        parameters.put("url", "/test-NMS2702.html");
+        parameters.put("retry", "1");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+
+        // Match a string included on Initial Server Response
+        parameters.put("response-text", "~.*OK.*");
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", false);
+        PollStatus status = monitor.poll(svc, parameters);
+        assertTrue(status.isAvailable());
+
+        // Match a string included on Header
+        parameters.put("response-text", "~.*Jetty.*");
+        svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", false);
+        status = monitor.poll(svc, parameters);
+        assertTrue(status.isAvailable());
     }
 
 }

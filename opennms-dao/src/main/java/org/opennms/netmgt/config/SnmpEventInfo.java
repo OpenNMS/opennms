@@ -76,7 +76,7 @@ public class SnmpEventInfo {
         String parmContent = null;
 
         if (!event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
-            throw new IllegalArgumentException("Event not an a configure snmp event: "+event.toString());
+            throw new IllegalArgumentException("Event is not an a \"configure SNMP\" event: "+event.toString());
         }
         
         for (Parm parm : event.getParmCollection()) {

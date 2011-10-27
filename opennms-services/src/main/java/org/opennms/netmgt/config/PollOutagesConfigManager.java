@@ -39,7 +39,7 @@ import org.opennms.netmgt.config.poller.Node;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.Time;
-import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
+import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
@@ -48,7 +48,7 @@ import org.springframework.util.Assert;
  *
  * @author brozow
  */
-abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<Outages, Outages> implements PollOutagesConfig {
+abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Outages, Outages> implements PollOutagesConfig {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();

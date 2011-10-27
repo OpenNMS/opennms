@@ -62,7 +62,7 @@ import org.xbill.DNS.Update;
  */
 public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter implements InitializingBean {
     
-    /*
+    /**
      * A read-only DAO will be set by the Provisioning Daemon.
      */
     private NodeDao m_nodeDao;

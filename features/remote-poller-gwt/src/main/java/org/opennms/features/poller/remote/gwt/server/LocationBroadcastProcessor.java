@@ -29,6 +29,7 @@
 package org.opennms.features.poller.remote.gwt.server;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -47,7 +48,6 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -229,11 +229,11 @@ public class LocationBroadcastProcessor implements InitializingBean, DisposableB
             LogUtils.warnf(this, "handleLocationEvent called, but no eventHandler is registered");
             return;
         }
-        handleEventParms(event.getParms());
+        handleEventParms(event.getParmCollection());
     }
 
-    private void handleEventParms(final Parms parms) {
-        for (final Parm p : parms.getParmCollection()) {
+    private void handleEventParms(final List<Parm> parms) {
+        for (final Parm p : parms) {
             if (p.getParmName().equals(EventConstants.PARM_LOCATION_MONITOR_ID)) {
                 final LocationInfo info = m_locationDataService.getLocationInfoForMonitor(Integer.valueOf(p.getValue().getContent()));
                 m_eventHandler.sendEvent(new LocationUpdatedRemoteEvent(info));

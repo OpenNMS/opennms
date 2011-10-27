@@ -40,7 +40,7 @@ import org.opennms.netmgt.snmp.SnmpResult;
 /**
  * <P>Dot1dBaseGroup holds the dot1dBridge.dot1dBase group properties
  * It implements the SnmpHandler to receive notifications when a reply is
- * received/error occurs in the SnmpSession used to send requests /recieve
+ * received/error occurs in the SnmpSession used to send requests/receive
  * replies.</P>
  *
  * @author <A HREF="mailto:rssntn67@opennms.org">Antonio Russo</A>
@@ -66,37 +66,25 @@ public final class Dot1dBaseGroup extends AggregateTracker
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[]	ms_elemList = null;
-	
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static
-	{
-		// Array size is 3.
-		//
-		ms_elemList = new NamedSnmpVar[3]; 
-		int ndx = 0;
-		
+	public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
 		/**
-	 	 * <P>The MAC address used by this bridge when it must
-	 	 * be referred to in a unique fashion. It is
-	 	 * recommended that this be the numerically smallest
-	 	 *  MAC address of all ports that belong to this
-	 	 *  bridge. However it is only required to be unique.
-	 	 *  When concatenated with dot1dStpPriority a unique
-	 	 *  BridgeIdentifier is formed which is used in the
-	 	 *  Spanning Tree Protocol.</P>
-	 	 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,BASE_BRIDGE_ADDRESS,".1.3.6.1.2.1.17.1.1");
+		 * <P>The MAC address used by this bridge when it must
+		 * be referred to in a unique fashion. It is
+		 * recommended that this be the numerically smallest
+		 *  MAC address of all ports that belong to this
+		 *  bridge. However it is only required to be unique.
+		 *  When concatenated with dot1dStpPriority a unique
+		 *  BridgeIdentifier is formed which is used in the
+		 *  Spanning Tree Protocol.</P>
+		 */
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,BASE_BRIDGE_ADDRESS,".1.3.6.1.2.1.17.1.1"),
 
 		/**
 		 * <P> The number of ports controlled by this bridging entity.</P>
 		 * 
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,BASE_NUM_PORTS,".1.3.6.1.2.1.17.1.2");
-		
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32,BASE_NUM_PORTS,".1.3.6.1.2.1.17.1.2"),
+
 		/**
 		 * <P> Indicates what type of bridging this bridge can
 		 *  perform. If a bridge is actually performing a
@@ -108,8 +96,8 @@ public final class Dot1dBaseGroup extends AggregateTracker
 		 *  3 = sourceroute-only
 		 *  4 = srt
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,BASE_NUM_TYPE,".1.3.6.1.2.1.17.1.3");
-	}
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32,BASE_NUM_TYPE,".1.3.6.1.2.1.17.1.3")
+	};
 
 	/**
 	 * <P>The SYSTEM_OID is the object identifier that represents the

@@ -57,12 +57,11 @@ public class RescanProcessorTest extends TestCase {
         int ifIndex = 10;
         
         RescanProcessor.setQueuedRescansTracker(new HashSet<Integer>());
-        RescanProcessor processor = new RescanProcessor(nodeId, false, null, null);
         
         IfTableEntry ifTableEntry = new IfTableEntry();
         ifTableEntry.storeResult(new SnmpResult(SnmpObjId.get(".1.3.6.1.2.1.2.2.1.5"), new SnmpInstId("0"), new MockSnmpValue.StringSnmpValue("")));
         DbSnmpInterfaceEntry dbSnmpInterfaceEntry = DbSnmpInterfaceEntry.create(nodeId, ifIndex);
-        processor.updateSpeed(ifIndex, ifTableEntry, null, dbSnmpInterfaceEntry);
+        RescanProcessor.updateSpeed(ifIndex, ifTableEntry, null, dbSnmpInterfaceEntry);
         
         assertEquals("DbSnmpInterfaceEntry ifSpeed value", 0, dbSnmpInterfaceEntry.getSpeed());
     }

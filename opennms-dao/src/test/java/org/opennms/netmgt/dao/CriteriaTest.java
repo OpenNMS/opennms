@@ -33,7 +33,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collection;
 
 import org.hibernate.criterion.Restrictions;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -64,14 +63,12 @@ public class CriteriaTest {
 	private DatabasePopulator m_databasePopulator;
 	
     private static boolean m_populated = false;
-    private static DatabasePopulator m_lastPopulator;
     
     @BeforeTransaction
     public void setUp() {
         try {
             if (!m_populated) {
                 m_databasePopulator.populateDatabase();
-                m_lastPopulator = m_databasePopulator;
             }
         } catch (Throwable e) {
             e.printStackTrace(System.err);

@@ -33,8 +33,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.opennms.core.utils.Argument;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
 import org.opennms.netmgt.dao.MicroblogConfigurationDao;
@@ -51,9 +51,6 @@ import twitter4j.TwitterException;
  *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="mailto:http://www.opennms.org">OpenNMS</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:http://www.opennms.org">OpenNMS</a>
- * @version $Id: $
  */
 public class MicroblogNotificationStrategy implements NotificationStrategy {
     private static final String UBLOG_PROFILE_NAME = "notifd";
@@ -152,11 +149,14 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
      * @return a {@link java.lang.String} object.
      */
     protected String buildMessageBody(List<Argument> arguments) {
-        String messageBody = "";
+        String messageBody = null;
         
+        // Support PARAM_TEXT_MSG and PARAM_NUM_MSG but prefer PARAM_TEXT_MSG
         for (Argument arg : arguments) {
             if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) {
                 messageBody = arg.getValue();
+            } else if (NotificationManager.PARAM_NUM_MSG.equals(arg.getSwitch())) {
+                if (messageBody == null) messageBody = arg.getValue();
             }
         }
         

@@ -58,11 +58,6 @@ import org.springframework.util.Assert;
  */
 public class Capsd extends AbstractServiceDaemon {
     /**
-     * The log4j category used to log messages.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Capsd";
-
-    /**
      * Database synchronization lock for synchronizing write access to the
      * database between the SuspectEventProcessor and RescanProcessor thread
      * pools
@@ -130,7 +125,10 @@ public class Capsd extends AbstractServiceDaemon {
      * <p>onStop</p>
      */
     protected void onStop() {
-		// Stop the broadcast event receiver
+        // System.err.println("Capsd onStop() dumping stack");
+        // Thread.dumpStack();
+
+        // Stop the broadcast event receiver
         m_eventListener.stop();
 
         // Stop the Suspect Event Processor thread pool
@@ -138,6 +136,8 @@ public class Capsd extends AbstractServiceDaemon {
 
         // Stop the Rescan Processor thread pool
         m_rescanRunner.stop();
+
+        if (m_scheduler != null) m_scheduler.stop();
 	}
 
 	/**
@@ -183,6 +183,9 @@ public class Capsd extends AbstractServiceDaemon {
      * <p>onStart</p>
      */
     protected void onStart() {
+        // System.err.println("Capsd onStart() dumping stack");
+        // Thread.dumpStack();
+
     	// Set the Set that SuspectEventProcessor will use to track
     	// suspect scans that are in progress
     	SuspectEventProcessor.setQueuedSuspectsTracker(new HashSet<String>());

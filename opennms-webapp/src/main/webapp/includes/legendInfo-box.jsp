@@ -55,31 +55,10 @@
         <link rel="stylesheet" type="text/css" href="http://localhost:8980/opennms/css/print.css" media="print" />
         
         	
-        		<link rel='stylesheet' type='text/css' href='http://localhost:8980/opennms/extJS/resources/css/ext-all.css' />
-  				<link rel='stylesheet' type='text/css' href='http://localhost:8980/opennms/css/o-styles.css' media='screen' />
-  				<link rel='stylesheet' type='text/css' href='http://localhost:8980/opennms/extJS/resources/css/opennmsGridTheme.css' />
-        	
-        
-    
-  
-  
   <script type="text/javascript" src="http://localhost:8980/opennms/js/global.js"></script>
 
     
         <script type="text/javascript" src="http://localhost:8980/opennms/coreweb/coreweb.nocache.js"></script>
-    
-	
-  		<script type='text/javascript' src='http://localhost:8980/opennms/extJS/source/core/Ext.js'></script>
-  		<script type='text/javascript' src='http://localhost:8980/opennms/extJS/source/adapter/ext-base.js'></script>
-  		<script type='text/javascript' src='http://localhost:8980/opennms/extJS/ext-all-debug.js'></script>
-  		<script type='text/javascript'>Ext.BLANK_IMAGE_URL = 'http://localhost:8980/opennms/extJS/resources/images/default/s.gif'</script>
-	
-
-	
-
-	
-
-
 
 
 </head>

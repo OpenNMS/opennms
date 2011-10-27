@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.9.90-SNAPSHOT</version>
+  <version>1.9.93-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org</url>
@@ -93,6 +93,7 @@
     <module>core</module>
     <module>features</module>
     <module>integrations</module>
+    <module>protocols</module>
     <module>tests</module>
     <module>integration-tests</module>
 
@@ -124,10 +125,6 @@
     <module>opennms-webapp</module>
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
-    <module>opennms-xmp</module>
-
-    <!-- extra modules -->
-    <module>dhcp</module>
   </modules>
   <build>
   <extensions>
@@ -243,7 +240,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>2.1.0-1</version>
+        <version>2.3.0-1</version>
         <dependencies>
           <dependency>
             <groupId>com.google.gwt</groupId>
@@ -786,9 +783,9 @@
 
    <!-- dependency versions -->
    <gmavenVersion>1.0</gmavenVersion>
-	<gwtVersion>2.1.1</gwtVersion>
+	<gwtVersion>2.3.0</gwtVersion>
    <jasperreportsVersion>3.7.6</jasperreportsVersion>
-	<jettyVersion>7.4.0.v20110414</jettyVersion>
+	<jettyVersion>7.5.1.v20110908</jettyVersion>
 	<liquibaseVersion>2.0.1</liquibaseVersion>
    <log4jVersion>1.2.15</log4jVersion>
    <minaVersion>2.0.2</minaVersion>
@@ -1027,11 +1024,6 @@
         <artifactId>org.opennms.core.test-api.xml</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>org.opennms.dhcp</artifactId>
-        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
@@ -1285,6 +1277,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-config</artifactId>
+        <version>${project.version}</version>
+        <classifier>xsds</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-config-tester</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1352,6 +1350,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-bsf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-datagram</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1372,17 +1375,17 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-detector-radius</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-simple</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-ssh</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-web</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1426,7 +1429,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
-        <artifactId>org.opennms.core.jicmpv6</artifactId>
+        <artifactId>org.opennms.core.icmp-jna</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1475,6 +1478,12 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-model</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-model</artifactId>
+        <version>${project.version}</version>
+        <classifier>xsds</classifier>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1736,11 +1745,6 @@
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-xmp</artifactId>
-        <version>${project.version}</version>
-      </dependency>
 
       <!--  external dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
@@ -1773,16 +1777,6 @@
         <groupId>antlr</groupId>
         <artifactId>antlr</artifactId>
         <version>2.7.6</version>
-      </dependency>
-      <dependency>
-        <groupId>org.aspectj</groupId>
-        <artifactId>aspectjrt</artifactId>
-        <version>1.6.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.aspectj</groupId>
-        <artifactId>aspectjweaver</artifactId>
-        <version>1.6.2</version>
       </dependency>
       <dependency>
         <groupId>axis</groupId>
@@ -2120,12 +2114,17 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.5.11</version>
+        <version>1.6.2</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>1.5.11</version>
+        <version>1.6.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>1.6.2</version>
       </dependency>
       <dependency>
         <groupId>org.tuckey</groupId>

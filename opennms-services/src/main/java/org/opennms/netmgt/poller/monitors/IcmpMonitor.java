@@ -38,7 +38,6 @@ import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -55,8 +54,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 
-// this is marked not distributable because it relies on a shared library
-@Distributable(DistributionContext.DAEMON)
+@Distributable
 final public class IcmpMonitor extends AbstractServiceMonitor {
     /**
      * Constructs a new monitor.

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.9.90-SNAPSHOT</version>
+    <version>1.9.93-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -72,8 +72,20 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>org.opennms.dhcp</artifactId>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.dhcp</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.nsclient</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.xmp</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>

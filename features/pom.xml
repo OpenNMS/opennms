@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.9.90-SNAPSHOT</version>
+    <version>1.9.93-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -24,7 +24,13 @@
     <module>springframework-security</module>
     <module>request-tracker</module>
     <module>system-report</module>
-    <module>isoc-ipv6-gui</module>
+    <module>node-page-list</module>
+    <module>opennms-gwt-theme</module>
+    <module>gwt-suggestion-combobox</module>
+    <module>gwt-ksc-combobox</module>
+    <module>gwt-graph-resource-list</module>
+    <module>gwt-snmpselect-list</module>
+    <module>gwt-tableresources</module>
   </modules>
 
   <profiles>

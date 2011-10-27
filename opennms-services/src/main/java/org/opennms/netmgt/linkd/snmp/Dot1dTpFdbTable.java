@@ -37,7 +37,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 /**
  * <P>Dot1DBaseTable uses a SnmpSession to collect the dot1dBridge.dot1dBase entries
  * It implements the SnmpHandler to receive notifications when a reply is
- * received/error occurs in the SnmpSession used to send requests /recieve
+ * received/error occurs in the SnmpSession used to send requests/receive
  * replies.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo</A>
@@ -61,7 +61,3 @@ public class Dot1dTpFdbTable extends SnmpTable<Dot1dTpFdbTableEntry> {
     }
 
 }
-				
-
-
-

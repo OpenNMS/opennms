@@ -2,10 +2,9 @@
   <parent>
     <artifactId>opennms-provision</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.9.90-SNAPSHOT</version>
+    <version>1.9.93-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms</groupId>
   <artifactId>opennms-detector-jmx</artifactId>
   <name>OpenNMS JMX Detectors</name>
   <url>http://www.opennms.org</url>

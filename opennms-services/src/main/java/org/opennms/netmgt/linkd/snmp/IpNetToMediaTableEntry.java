@@ -28,19 +28,22 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
+import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
+
 import java.net.InetAddress;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 
 /**
  *<P>The IpNetToMediaTableEntry class is designed to hold all the MIB-II
  * information for one entry in the ipNetToMediaTable. The table effectively
  * contains a list of these entries, each entry having information
- * about one physical address. The entry contains the ifindex binding, the mac address,
+ * about one physical address. The entry contains the ifindex binding, the MAC address,
  * ip address and entry type.</P>
  *
- * <P>This object is used by the IpNetToMediaTable to hold infomation
+ * <P>This object is used by the IpNetToMediaTable to hold information
  * single entries in the table. See the IpNetToMediaTable documentation
  * form more information.</P>
  *
@@ -49,7 +52,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class IpNetToMediaTableEntry extends SnmpTableEntry
+public final class IpNetToMediaTableEntry extends SnmpStore
 {
 	// Lookup strings for specific table entries
 	//
@@ -62,6 +65,12 @@ public final class IpNetToMediaTableEntry extends SnmpTableEntry
 	/** Constant <code>INTM_TYPE="ipNetToMediatype"</code> */
 	public final static	String	INTM_TYPE		= "ipNetToMediatype";
 
+    /**
+     * <P>The TABLE_OID is the object identifier that represents
+     * the root of the IP Address table in the MIB forest.</P>
+     */
+    public static final String  TABLE_OID   = ".1.3.6.1.2.1.4.22.1";    // start of table (GETNEXT)
+
 	/**
 	 * <P>The keys that will be supported by default from the 
 	 * TreeMap base class. Each of the elements in the list
@@ -69,71 +78,54 @@ public final class IpNetToMediaTableEntry extends SnmpTableEntry
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[]	ms_elemList = null;
-	
-	/**
-	 * <P>Initialize the element list for the class. This
-	 * is class wide data, but will be used by each instance.</P>
-	 */
-	static
-	{
-		ms_elemList = new NamedSnmpVar[4];
-		int ndx = 0;
-		
-		/**
-		 * The interface on which this entry's equivalence
- 		 * is effective. The interface identified by a
- 		 * particular value of this index is the same
- 		 * interface as identified by the same value of
- 		 * ifIndex.
-		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,			INTM_INDEX,		".1.3.6.1.2.1.4.22.1.1",  1);
+	public static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
+	    /**
+	     * The interface on which this entry's equivalence
+         * is effective. The interface identified by a
+         * particular value of this index is the same
+         * interface as identified by the same value of
+         * ifIndex.
+         */
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       INTM_INDEX,    TABLE_OID + ".1",  1),
 
-		/**
-		 * The media-dependent `physical' address. 
-		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,	INTM_PHYSADDR,	".1.3.6.1.2.1.4.22.1.2",  2);
-		
-		/**
-		 * The IpAddress corresponding to the media-
-		 * dependent `physical' address.
-		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS,		INTM_NETADDR,	".1.3.6.1.2.1.4.22.1.3",  3);
-		
-		/**
-		 * The type of mapping.
- 		 * Setting this object to the value invalid(2) has
- 		 * the effect of invalidating the corresponding entry
- 		 * in the ipNetToMediaTable. That is, it effectively
- 		 * disassociates the interface identified with said
- 		 * entry from the mapping identified with said entry.
- 		 * It is an implementation-specific matter as to
- 		 * whether the agent removes an invalidated entry
- 		 * from the table. Accordingly, management stations
- 		 * must be prepared to receive tabular information
- 		 * from agents that corresponds to entries not
- 		 * currently in use. Proper interpretation of such
- 		 * entries requires examination of the relevant
- 		 * ipNetToMediaType object.
-		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,			INTM_TYPE,		".1.3.6.1.2.1.4.22.1.4",  4);
-	}
-	
-
-	/**
-	 * <P>The TABLE_OID is the object identifier that represents
-	 * the root of the IP Address table in the MIB forest.</P>
-	 */
-	public static final String	TABLE_OID	= ".1.3.6.1.2.1.4.22.1";	// start of table (GETNEXT)
+        /**
+         * The media-dependent `physical' address. 
+         */
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, INTM_PHYSADDR, TABLE_OID + ".2",  2),
+        
+        /**
+         * The IpAddress corresponding to the media-
+         * dependent `physical' address.
+         */
+	    new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS,   INTM_NETADDR,  TABLE_OID + ".3",  3),
+        
+        /**
+         * The type of mapping.
+         * Setting this object to the value invalid(2) has
+         * the effect of invalidating the corresponding entry
+         * in the ipNetToMediaTable. That is, it effectively
+         * disassociates the interface identified with said
+         * entry from the mapping identified with said entry.
+         * It is an implementation-specific matter as to
+         * whether the agent removes an invalidated entry
+         * from the table. Accordingly, management stations
+         * must be prepared to receive tabular information
+         * from agents that corresponds to entries not
+         * currently in use. Proper interpretation of such
+         * entries requires examination of the relevant
+         * ipNetToMediaType object.
+         */
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       INTM_TYPE,     TABLE_OID + ".4",  4)
+	};
 
 	/**
 	 * <P>Creates a default instance of the ipNetToMedia
 	 * table entry map. The map represents a singular
 	 * instance of the mac address table. Each column in
-	 * the table for the loaded instance may be retreived
+	 * the table for the loaded instance may be retrieved
 	 * either through its name or object identifier.</P>
 	 *
-	 * <P>The initial table is constructied with zero
+	 * <P>The initial table is constructed with zero
 	 * elements in the map.</P>
 	 */
 	public IpNetToMediaTableEntry( )
@@ -158,7 +150,24 @@ public final class IpNetToMediaTableEntry extends SnmpTableEntry
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String getIpNetToMediaPhysAddress(){
-		return getHexString(IpNetToMediaTableEntry.INTM_PHYSADDR);
+	    try {
+	        // Try to fetch the physical address value as a hex string.
+            String hexString = getHexString(IpNetToMediaTableEntry.INTM_PHYSADDR);
+            if (hexString.length() == 12) {
+                // If the hex string is 12 characters long, than the agent is kinda weird and
+                // is returning the value as a raw binary value that is 6 bytes in length.
+                // But that's OK, as long as we can convert it into a string, that's fine. 
+                return hexString;
+            } else {
+                // This is the normal case that most agents conform to: the value is an ASCII 
+                // string representing the colon-separated MAC address. We just need to reformat 
+                // it to remove the colons and convert it into a 12-character string.
+                return normalizeMacAddress(getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR));
+            }
+	    } catch (IllegalArgumentException e) {
+	        LogUtils.warnf(this, e, e.getMessage());
+	        return getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR);
+	    }
 	}
 	
 	/**

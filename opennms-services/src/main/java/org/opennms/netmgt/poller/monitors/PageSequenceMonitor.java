@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -165,10 +165,10 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
     }
 
-    private static final class EmptyKeyRelaxedTrustProvider extends Provider {
+    public static final class EmptyKeyRelaxedTrustProvider extends Provider {
         private static final long serialVersionUID = -543349021655585769L;
 
-        protected EmptyKeyRelaxedTrustProvider() {
+        public EmptyKeyRelaxedTrustProvider() {
             super(EmptyKeyRelaxedTrustSSLContext.ALGORITHM + "Provider", 1.0, null);
             put(
                 "SSLContext." + EmptyKeyRelaxedTrustSSLContext.ALGORITHM,
@@ -468,15 +468,13 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
                 if ("https".equals(uri.getScheme())) {
                     if (Boolean.parseBoolean(m_page.getDisableSslVerification())) {
-                        SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
-                        Scheme https = registry.getScheme("https");
+                        final SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
+                        final Scheme https = registry.getScheme("https");
+
                         // Override the trust validation with a lenient implementation
-                        SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM));
+                        final SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
-                        // @see http://hc.apache.org/httpcomponents-client-4.0.1/tutorial/html/connmgmt.html
-                        factory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-                        Scheme lenient = new Scheme(https.getName(), factory, https.getDefaultPort());
+                        final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
                         // This will replace the existing "https" schema
                         registry.register(lenient);
                     }
@@ -486,8 +484,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     method.setQueryParameters(expandParms(svc));
                 }
 
-                if (m_page.getUserInfo() != null) {
-                    String userInfo = m_page.getUserInfo();
+                if (getUserInfo() != null) {
+                    String userInfo = getUserInfo();
                     String[] streetCred = userInfo.split(":", 2);
                     if (streetCred.length == 2) {
                         client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
@@ -728,6 +726,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         private final HttpParams m_clientParams;
         private final HttpPageSequence m_pageSequence;
 
+        @SuppressWarnings("unchecked")
         PageSequenceMonitorParameters(Map<String, String> parameterMap) {
             m_parameterMap = parameterMap;
             String pageSequence = getStringParm("page-sequence", null);
@@ -751,14 +750,15 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return m_pageSequence;
         }
 
-        @SuppressWarnings("deprecation")
         PageSequence parsePageSequence(String sequenceString) {
             try {
-                return CastorUtils.unmarshal(PageSequence.class, new StringReader(sequenceString));
+                return CastorUtils.unmarshal(PageSequence.class, new ByteArrayInputStream(sequenceString.getBytes("UTF-8")));
             } catch (MarshalException e) {
                 throw new IllegalArgumentException("Unable to parse page-sequence for HttpMonitor: " + e + "\nConfig: " + sequenceString, e);
             } catch (ValidationException e) {
                 throw new IllegalArgumentException("Unable to validate page-sequence for HttpMonitor: " + e + "\nConfig: " + sequenceString, e);
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalArgumentException("UTF-8 encoding not supported", e);
             }
 
         }

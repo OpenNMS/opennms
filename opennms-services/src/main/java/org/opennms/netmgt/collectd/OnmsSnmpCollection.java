@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataCollectionConfig;
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -63,7 +63,7 @@ public class OnmsSnmpCollection {
     private IfResourceType m_ifResourceType;
     private IfAliasResourceType m_ifAliasResourceType;
     private Map<String, ResourceType> m_genericIndexResourceTypes;
-    private DataCollectionConfig m_dataCollectionConfig;
+    private DataCollectionConfigDao m_dataCollectionConfigDao;
     private List<SnmpAttributeType> m_nodeAttributeTypes;
     private List<SnmpAttributeType> m_indexedAttributeTypes;
     private List<SnmpAttributeType> m_aliasAttributeTypes;
@@ -83,10 +83,10 @@ public class OnmsSnmpCollection {
      *
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
-     * @param config a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
+     * @param config a {@link org.opennms.netmgt.config.DataCollectionConfigDao} object.
      */
-    public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params, DataCollectionConfig config) {
-        setDataCollectionConfig(config);
+    public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params, DataCollectionConfigDao config) {
+        setDataCollectionConfigDao(config);
 
         m_params = params;
 
@@ -272,20 +272,20 @@ public class OnmsSnmpCollection {
         return ThreadCategory.getInstance(getClass());
     }
 
-    private DataCollectionConfig getDataCollectionConfig() {
-        if (m_dataCollectionConfig == null) {
-            setDataCollectionConfig(DataCollectionConfigFactory.getInstance());
+    private DataCollectionConfigDao getDataCollectionConfigDao() {
+        if (m_dataCollectionConfigDao == null) {
+            setDataCollectionConfigDao(DataCollectionConfigFactory.getInstance());
         }
-        return m_dataCollectionConfig;
+        return m_dataCollectionConfigDao;
     }
 
     /**
      * <p>setDataCollectionConfig</p>
      *
-     * @param config a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
+     * @param config a {@link org.opennms.netmgt.config.DataCollectionConfigDao} object.
      */
-    public void setDataCollectionConfig(DataCollectionConfig config) {
-        m_dataCollectionConfig = config;
+    public void setDataCollectionConfigDao(DataCollectionConfigDao config) {
+        m_dataCollectionConfigDao = config;
     }
 
     /**
@@ -295,7 +295,7 @@ public class OnmsSnmpCollection {
      */
     public String getStorageFlag() {
         String collectionName = getName();
-        String storageFlag = getDataCollectionConfig().getSnmpStorageFlag(collectionName);
+        String storageFlag = getDataCollectionConfigDao().getSnmpStorageFlag(collectionName);
         if (storageFlag == null) {
             log().warn("getStorageFlag: Configuration error, failed to "
                     + "retrieve SNMP storage flag for collection: "
@@ -326,7 +326,7 @@ public class OnmsSnmpCollection {
     
     private List<SnmpAttributeType> getIndexedAttributeTypes(CollectionAgent agent) {
         if (m_indexedAttributeTypes == null) {
-            m_indexedAttributeTypes = loadAttributeTypes(agent, DataCollectionConfig.ALL_IF_ATTRIBUTES);
+            m_indexedAttributeTypes = loadAttributeTypes(agent, DataCollectionConfigDao.ALL_IF_ATTRIBUTES);
         }
         return m_indexedAttributeTypes;
     }
@@ -356,7 +356,7 @@ public class OnmsSnmpCollection {
      */
     public List<SnmpAttributeType> getNodeAttributeTypes(CollectionAgent agent) {
         if (m_nodeAttributeTypes == null) {
-            m_nodeAttributeTypes = loadAttributeTypes(agent, DataCollectionConfig.NODE_ATTRIBUTES);
+            m_nodeAttributeTypes = loadAttributeTypes(agent, DataCollectionConfigDao.NODE_ATTRIBUTES);
         }
         return m_nodeAttributeTypes;
     }
@@ -371,7 +371,7 @@ public class OnmsSnmpCollection {
     public List<SnmpAttributeType> loadAttributeTypes(CollectionAgent agent, int ifType) {
         String sysObjectId = agent.getSysObjectId();
         String hostAddress = agent.getHostAddress();
-        List<MibObject> oidList = getDataCollectionConfig().getMibObjectList(getName(), sysObjectId, hostAddress, ifType);
+        List<MibObject> oidList = getDataCollectionConfigDao().getMibObjectList(getName(), sysObjectId, hostAddress, ifType);
 
         Map<String, AttributeGroupType> groupTypes = new HashMap<String, AttributeGroupType>();
 
@@ -465,10 +465,14 @@ public class OnmsSnmpCollection {
     private Map<String, ResourceType> getGenericIndexResourceTypeMap(CollectionAgent agent) {
         if (m_genericIndexResourceTypes == null) {
             Collection<org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
-                getDataCollectionConfig().getConfiguredResourceTypes().values();
+                getDataCollectionConfigDao().getConfiguredResourceTypes().values();
             Map<String,ResourceType> resourceTypes = new HashMap<String,ResourceType>();
             for (org.opennms.netmgt.config.datacollection.ResourceType configuredResourceType : configuredResourceTypes) {
-                resourceTypes.put(configuredResourceType.getName(), new GenericIndexResourceType(agent, this, configuredResourceType));
+                try {
+                    resourceTypes.put(configuredResourceType.getName(), new GenericIndexResourceType(agent, this, configuredResourceType));
+                } catch (IllegalArgumentException e) {
+                    log().warn("Ignoring resource type " + configuredResourceType.getLabel() + " (" + configuredResourceType.getName() + ") because it is not properly configured.");
+                }
             }
             m_genericIndexResourceTypes = resourceTypes;
         }

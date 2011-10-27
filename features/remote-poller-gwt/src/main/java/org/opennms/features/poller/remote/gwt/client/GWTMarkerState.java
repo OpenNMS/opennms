@@ -41,6 +41,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @since 1.8.1
  */
 public class GWTMarkerState implements IsSerializable, Serializable {
+
+	private static final long serialVersionUID = 2603404660905704519L;
+
 	private Status m_status;
     private String m_name;
     private GWTLatLng m_latLng;

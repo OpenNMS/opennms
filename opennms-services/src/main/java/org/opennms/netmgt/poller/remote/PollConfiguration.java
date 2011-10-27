@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.poller.remote;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -36,7 +38,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
  * <p>PollConfiguration class.</p>
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class PollConfiguration {
 	
@@ -109,7 +110,7 @@ public class PollConfiguration {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String getId() {
-		return m_monitoredService.getNodeId()+":"+m_monitoredService.getIpAddressAsString()+":"+m_monitoredService.getServiceName();
+		return m_monitoredService.getNodeId()+":"+str(m_monitoredService.getIpAddress())+":"+m_monitoredService.getServiceName();
 	}
 
 }

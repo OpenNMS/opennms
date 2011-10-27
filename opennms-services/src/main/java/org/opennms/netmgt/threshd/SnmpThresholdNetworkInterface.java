@@ -55,7 +55,7 @@ public class SnmpThresholdNetworkInterface {
      * @param iface a {@link org.opennms.netmgt.threshd.ThresholdNetworkInterface} object.
      * @param parms a {@link java.util.Map} object.
      */
-    public SnmpThresholdNetworkInterface(ThresholdsDao thresholdsDao, ThresholdNetworkInterface iface, Map parms) {
+    public SnmpThresholdNetworkInterface(ThresholdsDao thresholdsDao, ThresholdNetworkInterface iface, Map<?,?> parms) {
         setNetworkInterface(iface);
         setThresholdConfiguration(new SnmpThresholdConfiguration(thresholdsDao, parms));
 

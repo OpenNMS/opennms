@@ -71,16 +71,16 @@ import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.linkd.DbVlanEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.AggregateStatus;
@@ -518,8 +518,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /*
-     * Returns all interfaces, but only includes snmp data if includeSNMP is true
-     * This may be useful for pages that don't need snmp data and don't want to execute
+     * Returns all interfaces, but only includes SNMP data if includeSNMP is true
+     * This may be useful for pages that don't need SNMP data and don't want to execute
      * a sub-query per interface!
      *
      * @param includeSNMP a boolean.
@@ -871,7 +871,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             
             service.setId(rs.getInt("id"));
             service.setNodeId(rs.getInt("nodeid"));
-            service.setIpAddress(rs.getString("ipaddr"));
+            service.setIpAddress(InetAddressUtils.normalize(rs.getString("ipaddr")));
 
             element = rs.getTimestamp("lastgood");
             if (element != null) {
@@ -1414,7 +1414,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     public List<LinkInterface> getDataLinksOnNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
-        criteria.add(Restrictions.eq("nodeId", nodeId));
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.ne("status", "D"));
         criteria.addOrder(Order.asc("ifIndex"));
 
@@ -1452,7 +1453,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     public List<LinkInterface> getDataLinksOnInterface(int nodeId, int ifIndex){
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
-        criteria.add(Restrictions.eq("nodeId", nodeId));
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("ifIndex", ifIndex));
         criteria.add(Restrictions.ne("status", "D"));
 
@@ -1475,7 +1477,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     private List<LinkInterface> getDataLinkInterface(List<DataLinkInterface> dlifaces, int nodeId) {
     	List<LinkInterface> lifaces = new ArrayList<LinkInterface>();
     	for (DataLinkInterface dliface: dlifaces) {
-    		if (dliface.getNodeId() == nodeId) {
+    		if (dliface.getNode().getId() == nodeId) {
     			lifaces.add(createLinkInterface(dliface, false));
     		} else if (dliface.getNodeParentId() == nodeId ) {
     			lifaces.add(createLinkInterface(dliface, true));
@@ -1489,20 +1491,20 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * 1) nessuna interfaccia associabile (come rappresentare il link?) 
      * se il nodo ha una sola interfaccia allora va associata anche a quella
      * altrimenti non la associamo
-     * 2) node ha ip interface e node parent has snmp interface
-     * 3) node ha una interfaccia snmp e node parent pure
+     * 2) node ha ip interface e node parent has SNMP interface
+     * 3) node ha una interfaccia SNMP e node parent pure
      * 
      */
 	private LinkInterface createLinkInterface(DataLinkInterface dliface, boolean isParent) {
 
-		Integer nodeid = dliface.getNodeId();
+		Integer nodeid = dliface.getNode().getId();
 		Integer linkedNodeid = dliface.getNodeParentId();
 		Integer ifindex = dliface.getIfIndex();
 		Integer linkedIfindex = dliface.getParentIfIndex();
 
     	if (isParent) {
     		nodeid = dliface.getNodeParentId();
-    		linkedNodeid = dliface.getNodeId();
+    		linkedNodeid = dliface.getNode().getId();
     		ifindex = dliface.getParentIfIndex();
     		linkedIfindex = dliface.getIfIndex();
     	} 

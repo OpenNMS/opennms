@@ -44,9 +44,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
@@ -508,17 +508,21 @@ public class Collectd extends AbstractServiceDaemon implements
                     sb.append(" collection, scheduled");
                     log().debug(sb.toString());
                 }
-            } catch (RuntimeException rE) {
+            } catch (CollectionInitializationException e) {
                 sb = new StringBuffer();
                 sb.append("scheduleInterface: Unable to schedule ");
                 sb.append(iface);
                 sb.append('/');
                 sb.append(svcName);
                 sb.append(", reason: ");
-                sb.append(rE.getMessage());
-                if (log().isDebugEnabled()) {
-                    log().debug(sb.toString(), rE);
-                } else if (log().isInfoEnabled()) {
+                sb.append(e.getMessage());
+
+                // Only log the stack trace if TRACE level logging is enabled.
+                // Fixes bug NMS-3324.
+                // http://issues.opennms.org/browse/NMS-3324
+                if (log().isTraceEnabled()) {
+                    log().trace(sb.toString(), e);
+                } else {
                     log().info(sb.toString());
                 }
             } catch (Throwable t) {
@@ -531,7 +535,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 sb.append(t);
                 log().error(sb.toString(), t);
             }
-        } // end while more specifications  exist
+        } // end while more specifications exist
         
         } finally {
             instrumentation().endScheduleInterface(iface.getNode().getId(), ipAddress, svcName);
@@ -1082,10 +1086,12 @@ public class Collectd extends AbstractServiceDaemon implements
             }
             EventBuilder ebldr = null;
             try {
-                if (targetFile.equals(thresholdsFile))
+                if (targetFile.equals(thresholdsFile)) {
                     ThresholdingConfigFactory.reload();
-                if (targetFile.equals(threshdFile))
+                }
+                if (targetFile.equals(threshdFile)) {
                     ThreshdConfigFactory.reload();
+                }
                 ebldr = new EventBuilder(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI, "Collectd");
                 getEventIpcManager().sendNow(ebldr.getEvent());
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");

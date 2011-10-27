@@ -28,24 +28,23 @@
 
 package org.opennms.web.rest;
 
-import org.springframework.stereotype.Component;
-import org.springframework.context.annotation.Scope;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.opennms.netmgt.dao.OnmsMapDao;
-import org.opennms.netmgt.dao.OnmsMapElementDao;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.OnmsMapElementList;
-import org.opennms.netmgt.model.OnmsMap;
-import com.sun.jersey.spi.resource.PerRequest;
-import com.sun.jersey.api.core.ResourceContext;
-
+import javax.ws.rs.GET;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.PathParam;
+
+import org.opennms.netmgt.dao.OnmsMapDao;
+import org.opennms.netmgt.model.OnmsMap;
+import org.opennms.netmgt.model.OnmsMapElementList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.sun.jersey.api.core.ResourceContext;
+import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
 /**
@@ -62,12 +61,6 @@ public class OnmsMapElementResource extends OnmsRestService {
     @Autowired
     private OnmsMapDao m_mapDao;
 
-    @Autowired
-    private OnmsMapElementDao m_mapElementDao;
-
-    @Autowired
-    private EventProxy m_eventProxy;
-
     @Context
     ResourceContext m_context;
 
@@ -79,11 +72,10 @@ public class OnmsMapElementResource extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsMapElementList getMapElements(@PathParam("mapId") int mapId) {
-        log().debug("getMapElements: reading elements for map " + mapId);
-        OnmsMap map = m_mapDao.get(mapId);
-        if (map == null)
-            throwException(Response.Status.BAD_REQUEST, "getMapElements: can't find map " + mapId);
+    public OnmsMapElementList getMapElements(@PathParam("mapId") final int mapId) {
+        if (log().isDebugEnabled()) log().debug("getMapElements: reading elements for map " + mapId);
+        final OnmsMap map = m_mapDao.get(mapId);
+        if (map == null) throwException(Response.Status.BAD_REQUEST, "getMapElements: can't find map " + mapId);
         return new OnmsMapElementList(map.getMapElements());
     }
 }

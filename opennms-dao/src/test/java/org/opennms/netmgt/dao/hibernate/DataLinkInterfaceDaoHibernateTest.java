@@ -36,15 +36,20 @@ import static org.junit.Assert.fail;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +64,8 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class DataLinkInterfaceDaoHibernateTest {
+    @Autowired
+    private NodeDao m_nodeDao;
     
 	@Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -68,11 +75,14 @@ public class DataLinkInterfaceDaoHibernateTest {
 	
 	@Before
 	public void setUp() {
+	    for (final OnmsNode node : m_nodeDao.findAll()) {
+	        m_nodeDao.delete(node);
+	    }
+	    m_nodeDao.flush();
 		m_databasePopulator.populateDatabase();
 	}
 
     @Test
-    @Transactional
     public void testFindById() throws Exception {
         // Note: This ID is based upon the creation order in DatabasePopulator - if you change
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
@@ -92,15 +102,31 @@ public class DataLinkInterfaceDaoHibernateTest {
             fail("No DataLinkInterface record with ID " + id + " was found, the only IDs are: " + ids.toString());
         }
         assertNotNull(dli);
-        assertEquals(m_databasePopulator.getNode1().getId(), dli.getNodeId());
+        assertEquals(m_databasePopulator.getNode1().getId(), dli.getNode().getId());
         assertEquals(Integer.valueOf(1), dli.getIfIndex());
     }
 
     @Test
-    @Transactional
+    public void testFindByCriteria() throws Exception {
+        OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.or(
+            Restrictions.eq("node.id", m_databasePopulator.getNode1().getId()),
+            Restrictions.eq("nodeParentId", m_databasePopulator.getNode1().getId())
+        ));
+        
+        final List<DataLinkInterface> dlis = m_dataLinkInterfaceDao.findMatching(criteria);
+        for (final DataLinkInterface iface : dlis) {
+            LogUtils.debugf(this, "dli = %s", iface);
+        }
+        assertEquals(3, dlis.size());
+    }
+    
+    @Test
+    @Transactional // why is this necessary?
     public void testSaveDataLinkInterface() {
         // Create a new data link interface and save it.
-        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode2().getId(), 2, m_databasePopulator.getNode1().getId(), 1, "?", new Date());
+        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode2(), 2, m_databasePopulator.getNode1().getId(), 1, "?", new Date());
         dli.setLinkTypeId(101);
         m_dataLinkInterfaceDao.save(dli);
         m_dataLinkInterfaceDao.flush();
@@ -110,7 +136,7 @@ public class DataLinkInterfaceDaoHibernateTest {
         DataLinkInterface dli2 = m_dataLinkInterfaceDao.findById(dli.getId());
         assertSame(dli, dli2);
         assertEquals(dli.getId(), dli2.getId());
-        assertEquals(dli.getNodeId(), dli2.getNodeId());
+        assertEquals(dli.getNode().getId(), dli2.getNode().getId());
         assertEquals(dli.getIfIndex(), dli2.getIfIndex());
         assertEquals(dli.getNodeParentId(), dli2.getNodeParentId());
         assertEquals(dli.getParentIfIndex(), dli2.getParentIfIndex());

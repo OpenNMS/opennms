@@ -1,3 +1,29 @@
+opennms (1.9.92-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 12 Oct 2011 13:45:00 -0400
+
+opennms (1.9.91-2) unstable; urgency=low
+
+  * Fix dependency issue in opennms-db.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 14 Sep 2011 12:05:00 -0400
+
+opennms (1.9.91-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 13 Sep 2011 21:31:00 -0400
+
+opennms (1.9.90-1) unstable; urgency=high
+
+  * New upstream release.  Note that this release fixes two important bugs: a
+  filehandle leak that can be triggered by Provisiond scanning, and a memory leak
+  in the logging infrastructure.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Aug 2011 17:09:00 -0400
+
 opennms (1.9.8-1) unstable; urgency=medium
 
   * New upstream release.
@@ -57,6 +83,32 @@ opennms (1.9.0-1) unstable; urgency=low
   * New upstream release.
 
  -- Benjamin Reed <ranger@opennms.org>  Tue, 10 Aug 2010 11:42:00 -0500
+
+opennms (1.8.15-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 11 Oct 2011 12:14:00 -0400
+
+opennms (1.8.14-2) unstable; urgency=low
+
+  * Fix dependency issue in opennms-db.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 14 Sep 2011 12:05:00 -0400
+
+opennms (1.8.14-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 13 Sep 2011 10:57:00 -0400
+
+opennms (1.8.13-1) unstable; urgency=high
+
+  * New upstream release.  Note that this release fixes two important bugs: a
+  filehandle leak that can be triggered by Provisiond scanning, and a memory leak
+  in the logging infrastructure.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 09 Aug 2011 15:41:00 -0400
 
 opennms (1.8.12-1) unstable; urgency=medium
 

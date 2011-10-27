@@ -352,14 +352,12 @@ public class OnmsOutage implements Serializable {
      */
     public String toString() {
         return new ToStringCreator(this)
-            .append("outageId", getId())
-            .append("ifLostService", getIfLostService())
-            .append("ifRegainedService", getIfRegainedService())
-            .append("suppressedBy", getSuppressedBy())
-            .append("suppressTime", getSuppressTime())
-            .append("ipAddr", getIpAddressAsString())
-            .append("serviceid", getServiceId())
-            .append("nodeid",getNodeId())
+            .append("outageId", m_id)
+            .append("ifLostService", m_ifLostService)
+            .append("ifRegainedService", m_ifRegainedService)
+            .append("service", m_monitoredService)
+            .append("suppressedBy", m_suppressedBy)
+            .append("suppressTime", m_suppressTime)
             .toString();
     }
 

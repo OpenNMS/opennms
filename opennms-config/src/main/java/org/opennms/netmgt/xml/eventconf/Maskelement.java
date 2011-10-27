@@ -109,7 +109,7 @@ public class Maskelement implements java.io.Serializable {
     public void addMevalue(
             final String vMevalue)
     throws IndexOutOfBoundsException {
-        this.m_mevalueList.add(vMevalue);
+        this.m_mevalueList.add(vMevalue.intern());
     }
 
     /**
@@ -124,7 +124,7 @@ public class Maskelement implements java.io.Serializable {
             final int index,
             final String vMevalue)
     throws IndexOutOfBoundsException {
-        this.m_mevalueList.add(index, vMevalue);
+        this.m_mevalueList.add(index, vMevalue.intern());
     }
 
     /**
@@ -399,7 +399,7 @@ public class Maskelement implements java.io.Serializable {
      */
     public void setMename(
             final String mename) {
-        this.m_mename = mename;
+        this.m_mename = mename.intern();
     }
 
     /**
@@ -419,7 +419,7 @@ public class Maskelement implements java.io.Serializable {
             throw new IndexOutOfBoundsException("setMevalue: Index value '" + index + "' not in range [0.." + (this.m_mevalueList.size() - 1) + "]");
         }
         
-        this.m_mevalueList.set(index, vMevalue);
+        this.m_mevalueList.set(index, vMevalue.intern());
     }
 
     /**
@@ -433,7 +433,7 @@ public class Maskelement implements java.io.Serializable {
         m_mevalueList.clear();
         
         for (int i = 0; i < vMevalueArray.length; i++) {
-                this.m_mevalueList.add(vMevalueArray[i]);
+                this.m_mevalueList.add(vMevalueArray[i].intern());
         }
     }
 
@@ -447,8 +447,9 @@ public class Maskelement implements java.io.Serializable {
             final List<String> vMevalueList) {
         // copy vector
         this.m_mevalueList.clear();
-        
-        this.m_mevalueList.addAll(vMevalueList);
+        for (final String value : vMevalueList) {
+            this.m_mevalueList.add(value.intern());
+        }
     }
 
     /**
@@ -460,7 +461,10 @@ public class Maskelement implements java.io.Serializable {
      */
     public void setMevalueCollection(
             final List<String> mevalueList) {
-        this.m_mevalueList = mevalueList;
+        this.m_mevalueList.clear();
+        for (final String value : mevalueList) {
+            this.m_mevalueList.add(value.intern());
+        }
     }
 
     /**

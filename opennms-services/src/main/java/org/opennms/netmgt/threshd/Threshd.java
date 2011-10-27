@@ -42,6 +42,7 @@ import java.util.TreeMap;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.threshd.Package;
@@ -66,8 +67,10 @@ public final class Threshd extends AbstractServiceDaemon {
     /**
      * SQL used to retrieve all the interfaces which support a particular
      * service.
+     * 
+     * @see DbIfServiceEntry#STATUS_ACTIVE
      */
-    private final static String SQL_RETRIEVE_INTERFACES = "SELECT nodeid,ipaddr FROM ifServices, service WHERE ifServices.serviceid = service.serviceid AND service.servicename = ?";
+    private final static String SQL_RETRIEVE_INTERFACES = "SELECT nodeid,ipaddr FROM ifServices, service WHERE ifServices.status = 'A' AND ifServices.serviceid = service.serviceid AND service.servicename = ?";
 
     /**
      * Singleton instance of the Threshd class

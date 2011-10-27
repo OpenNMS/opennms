@@ -35,9 +35,9 @@ import java.io.InputStream;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 

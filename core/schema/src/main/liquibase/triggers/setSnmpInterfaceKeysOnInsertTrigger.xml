@@ -61,6 +61,14 @@ CREATE TRIGGER setSnmpInterfaceKeysOnInsertTrigger
    ON ipInterface FOR EACH ROW
    EXECUTE PROCEDURE setSnmpInterfaceKeysOnInsert();
 </createProcedure>
+
+<rollback>
+  <sql>
+    DROP TRIGGER IF EXISTS setSnmpInterfaceKeysOnInsertTrigger ON ipInterface;
+    DROP FUNCTION IF EXISTS setSnmpInterfaceKeysOnInsert();
+  </sql>
+</rollback>
+
 </changeSet>
 
 </databaseChangeLog>

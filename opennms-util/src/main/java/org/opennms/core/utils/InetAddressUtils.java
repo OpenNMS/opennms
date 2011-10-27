@@ -55,11 +55,10 @@ abstract public class InetAddressUtils {
 
     static {
         try {
-            // This address (169.254.254.254) is within the link-local IPv4 range
-            // so it should almost never be pingable unless the network has an
-            // oddball link-local IPv4 setup.
-            UNPINGABLE_ADDRESS = InetAddress.getByAddress(new byte[] {(byte)169, (byte)254, (byte)254, (byte)254});
-        } catch (UnknownHostException e) {
+            // This address (192.0.2.123) is within a range of TEST IPS that
+            // that is guaranteed to be non-routed.
+            UNPINGABLE_ADDRESS = InetAddress.getByAddress(new byte[] {(byte)192, (byte)0, (byte)2, (byte)123});
+        } catch (final UnknownHostException e) {
             throw new IllegalStateException(e);
         }
     }
@@ -97,8 +96,7 @@ abstract public class InetAddressUtils {
     }
 
     public static byte[] incr(final byte[] address) throws UnknownHostException {
-    	final BigInteger addr = new BigInteger(1, address)
-    		.add(BigInteger.ONE);
+    	final BigInteger addr = new BigInteger(1, address).add(BigInteger.ONE);
         return convertBigIntegerIntoInetAddress(addr).getAddress();
     }
 
@@ -107,8 +105,7 @@ abstract public class InetAddressUtils {
     }
 
     public static byte[] decr(final byte[] address) throws UnknownHostException {
-    	final BigInteger addr = new BigInteger(1, address)
-    		.subtract(BigInteger.ONE);
+    	final BigInteger addr = new BigInteger(1, address).subtract(BigInteger.ONE);
         return convertBigIntegerIntoInetAddress(addr).getAddress();
     }
 
@@ -197,18 +194,18 @@ abstract public class InetAddressUtils {
                 } else {
                     //throw new UnknownHostException("No IPv4 addresses found via A record DNS lookup of host: " + hostname);
                 }
-            } catch (TextParseException e) {
-                UnknownHostException ex = new UnknownHostException("Could not perform A record lookup for host: " + hostname);
+            } catch (final TextParseException e) {
+                final UnknownHostException ex = new UnknownHostException("Could not perform A record lookup for host: " + hostname);
                 ex.initCause(e);
                 throw ex;
             }
 
-            List<InetAddress> v6Addresses = new ArrayList<InetAddress>();
+            final List<InetAddress> v6Addresses = new ArrayList<InetAddress>();
             try {
-                Record[] quadARecs = new Lookup(hostname, Type.AAAA).run();
+                final Record[] quadARecs = new Lookup(hostname, Type.AAAA).run();
                 if (quadARecs != null) {
-                    for (Record quadARec : quadARecs) {
-                        InetAddress addr = ((AAAARecord)quadARec).getAddress();
+                    for (final Record quadARec : quadARecs) {
+                        final InetAddress addr = ((AAAARecord)quadARec).getAddress();
                         if (addr instanceof Inet6Address) {
                             v6Addresses.add(addr);
                         } else {
@@ -219,13 +216,13 @@ abstract public class InetAddressUtils {
                 } else {
                     // throw new UnknownHostException("No IPv6 addresses found via AAAA record DNS lookup of host: " + hostname);
                 }
-            } catch (TextParseException e) {
-                UnknownHostException ex = new UnknownHostException("Could not perform AAAA record lookup for host: " + hostname);
+            } catch (final TextParseException e) {
+                final UnknownHostException ex = new UnknownHostException("Could not perform AAAA record lookup for host: " + hostname);
                 ex.initCause(e);
                 throw ex;
             }
 
-            List<InetAddress> addresses = new ArrayList<InetAddress>();
+            final List<InetAddress> addresses = new ArrayList<InetAddress>();
             if (preferInet6Address) {
                 addresses.addAll(v6Addresses);
                 addresses.addAll(v4Addresses);
@@ -234,7 +231,7 @@ abstract public class InetAddressUtils {
                 addresses.addAll(v6Addresses);
             }
 
-            for (InetAddress address : addresses) {
+            for (final InetAddress address : addresses) {
                 retval = address;
                 if (!preferInet6Address && retval instanceof Inet4Address) break;
                 if (preferInet6Address && retval instanceof Inet6Address) break;
@@ -242,7 +239,7 @@ abstract public class InetAddressUtils {
             if (preferInet6Address && !(retval instanceof Inet6Address)) {
                 throw new UnknownHostException("No IPv6 address could be found for the hostname: " + hostname);
             }
-        } catch (UnknownHostException e) {
+        } catch (final UnknownHostException e) {
             if (throwException) {
                 throw e;
             } else {
@@ -323,7 +320,7 @@ abstract public class InetAddressUtils {
                                  addr[13],
                                  addr[14],
                                  addr[15]
-            );
+            ).intern();
         } else {
             throw new IllegalArgumentException("IP address has an illegal number of bytes: " + addr.length);
         }
@@ -363,7 +360,7 @@ abstract public class InetAddressUtils {
     }
 
     public static BigInteger difference(final InetAddress addr1, final InetAddress addr2) {
-        return new BigInteger(addr1.getAddress()).subtract(new BigInteger(addr2.getAddress()));
+        return new BigInteger(1, addr1.getAddress()).subtract(new BigInteger(1, addr2.getAddress()));
     }
 
 	public static boolean isInetAddressInRange(final byte[] laddr, final String beginString, final String endString) {
@@ -482,12 +479,17 @@ abstract public class InetAddressUtils {
     }
     
     public static InetAddress addr(final String ipAddrString) {
-        return ipAddrString == null ? null : getInetAddress(ipAddrString);
+        return ipAddrString == null ? null : getInetAddress(ipAddrString.trim());
     }
     
-    // FIXME: do we lose 
+    /**
+     * This function is used to ensure that an IP address string is in fully-qualified
+     * format without any "::" segments for an IPv6 address.
+     * 
+     * FIXME: do we lose
+     */
     public static String normalize(final String ipAddrString) {
-    	return ipAddrString == null? null : toIpAddrString(addr(ipAddrString));
+    	return ipAddrString == null? null : toIpAddrString(addr(ipAddrString.trim()));
     }
     
 	public static String str(final InetAddress addr) {
@@ -505,7 +507,7 @@ abstract public class InetAddressUtils {
 			return str(addr);
 		} else if (addr instanceof Inet6Address) {
 			// This is horribly inefficient, I'm sure, but good enough for now.
-			byte[] buf = addr.getAddress();
+		    final byte[] buf = addr.getAddress();
 			final StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < buf.length; i++) {
 				sb.append(buf[i] & 0xff);
@@ -519,4 +521,51 @@ abstract public class InetAddressUtils {
 			return null;
 		}
 	}
+
+    public static byte[] macAddressStringToBytes(String macAddress) {
+        byte[] contents = new byte[6];
+        String[] digits = macAddress.split(":");
+        if (digits.length != 6) {
+            // If the MAC address is 12 hex digits long
+            if (macAddress.length() == 12) {
+                digits = new String[] {
+                    macAddress.substring(0, 2),
+                    macAddress.substring(2, 4),
+                    macAddress.substring(4, 6),
+                    macAddress.substring(6, 8),
+                    macAddress.substring(8, 10),
+                    macAddress.substring(10)
+                };
+            } else {
+                throw new IllegalArgumentException("Cannot decode MAC address: " + macAddress);
+            }
+        }
+        // Decode each MAC address digit into a hexadecimal byte value
+        for (int i = 0; i < 6; i++) {
+            // Prefix the value with "0x" so that Integer.decode() knows which base to use
+            contents[i] = Integer.decode("0x" + digits[i]).byteValue();
+        }
+        return contents;
+    }
+    
+    public static String macAddressBytesToString(byte[] macAddress) {
+        if (macAddress.length != 6) {
+            throw new IllegalArgumentException("Cannot decode MAC address: " + macAddress);
+        }
+        
+        return String.format(
+            //"%02X:%02X:%02X:%02X:%02X:%02X", 
+            "%02x%02x%02x%02x%02x%02x", 
+            macAddress[0],
+            macAddress[1],
+            macAddress[2],
+            macAddress[3],
+            macAddress[4],
+            macAddress[5]
+        );
+    }
+
+    public static String normalizeMacAddress(String macAddress) {
+        return macAddressBytesToString(macAddressStringToBytes(macAddress));
+    }
 }

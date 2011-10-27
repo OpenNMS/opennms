@@ -45,13 +45,14 @@ import org.opennms.netmgt.protocols.ssh.Ssh;
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  */
 public class SshTest extends TestCase {
+    InetAddress good;
+    private static final InetAddress bad = InetAddressUtils.UNPINGABLE_ADDRESS;
+
     private static final String GOOD_HOST = "www.opennms.org";
-    private static final String BAD_HOST = "1.1.1.1";
     private static final int PORT = 22;
     private static final int TIMEOUT = 2000;
     private TimeoutTracker tt;
     Ssh ssh;
-    InetAddress good, bad;
     
     public void setUp() throws Exception {
         Map<String, String> parameters = new HashMap<String,String>();
@@ -65,7 +66,6 @@ public class SshTest extends TestCase {
         ssh.setTimeout(TIMEOUT);
 
         good = InetAddressUtils.addr(GOOD_HOST);
-        bad  = InetAddressUtils.addr(BAD_HOST);
     }
     
     public void testSshGood() throws Exception {

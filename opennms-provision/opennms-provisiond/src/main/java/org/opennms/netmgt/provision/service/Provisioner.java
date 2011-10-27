@@ -638,7 +638,7 @@ public class Provisioner implements SpringServiceDaemon {
             }
             
             if (ebldr != null) {
-                getEventForwarder().sendNow(ebldr.getEvent());
+                m_eventForwarder.sendNow(ebldr.getEvent());
             }
             log().info("handleReloadConfigEvent: configuration reloaded.");
         }
@@ -854,7 +854,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     private void send(Event event) {
-        getEventForwarder().sendNow(event);
+        m_eventForwarder.sendNow(event);
     }
 
     private Event importFailedEvent(String msg, String url) {

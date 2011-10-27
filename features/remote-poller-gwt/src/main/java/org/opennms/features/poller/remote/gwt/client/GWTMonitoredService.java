@@ -43,7 +43,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @since 1.8.1
  */
 public class GWTMonitoredService implements Serializable, IsSerializable, Comparable<GWTMonitoredService> {
-    private int m_id;
+
+	private static final long serialVersionUID = -8529053406347958362L;
+
+	private int m_id;
 
     private int m_ifIndex;
 

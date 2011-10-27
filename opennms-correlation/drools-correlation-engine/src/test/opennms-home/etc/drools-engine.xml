@@ -19,4 +19,10 @@
     <global name="POLL_INTERVAL" type="java.lang.Long" value="3000" />
     <global name="nodeService" type="org.opennms.netmgt.correlation.drools.NodeService" ref="nodeService" />
   </rule-set>
+  <rule-set name="dependencyRules">
+    <rule-file>file:src/test/opennms-home/etc/DependencyRules.drl</rule-file>
+    <event>uei.opennms.org/nodes/nodeLostService</event>
+    <event>uei.opennms.org/nodes/nodeRegainedService</event>
+    <app-context>file:src/test/opennms-home/etc/dependencyRules-context.xml</app-context>
+  </rule-set>
 </engine-configuration>

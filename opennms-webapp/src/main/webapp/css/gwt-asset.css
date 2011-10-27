@@ -1,0 +1,210 @@
+/* Cleanup style sheet */
+.gwt-DialogBox td {
+    border: none;
+    padding: 0px 0px;
+}
+
+#opennms-assetNodePage table tbody tr td {
+	/* border-collapse: separate; */
+	border: none;
+	margin-bottom: 0px;
+	width: auto;
+}
+
+.gwt-SuggestBoxPopup {
+	height: 40px;
+}
+
+.gwt-SuggestBoxPopup div.suggestPopupContent {
+	overflow: auto;
+	padding-right: 20px;
+	max-height: 200px;
+}
+
+.gwt-SuggestBoxPopup table tr td {
+	border: none;
+	margin-bottom: 0px;
+	padding: 0px;
+}
+
+.gwt-DecoratedPopupPanel table tr td {
+	border: none;
+	margin-bottom: 0px;
+	padding: 0px;
+}
+
+div.label {
+	display: block;
+	width: 165px;
+}
+
+table.FieldSetHorizontalPanel {
+	margin-bottom: 0px;
+}
+
+
+table.FieldSetHorizontalPanel tbody tr td {
+	padding: 3px;
+	vertical-align: middle;
+}
+
+table.FieldSet td {
+	border: none;
+}
+
+table.FieldSet {
+    margin-bottom: 0px;
+    width: 400px;
+}
+
+.textLabel {
+    width: 300px;
+}
+
+table.DisclosurePanelCookie  h3 {
+	margin-top: 0px;
+}
+
+table.DisclosurePanelCookie .label {
+	padding-top: 3px;
+	overflow: hidden;
+}
+
+table.DisclosurePanelCookie .content {
+	padding-top: 4px;
+	padding-bottom: 3px;
+}
+
+table.DisclosurePanelCookie {
+	border-bottom-color: #71A336;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+}
+
+table.DisclosurePanelCookie-open h3 {
+	color: white;
+}
+
+table.DisclosurePanelCookie-closed h3 {
+	color: #b4c598;
+}
+
+input.suggBox {
+	border: none;
+	vertical-align: middle;
+	background-color: #eee;
+}
+
+input.textBox {
+	border: none;
+	background-color: #eee;
+	vertical-align: middle;
+}
+
+input.passBox {
+	border: none;
+	background-color: #eee;
+	vertical-align: middle;
+}
+
+input.dateBox {
+	border: none;
+	vertical-align: middle;
+	background-color: #eee;
+}
+
+.FieldSetErrorLabel {
+	padding: 3px;
+	vertical-align: middle;
+	color: #d94242;
+	font-weight: bold;
+}
+
+.FieldSetWarningLabel {
+	padding: 3px;
+	vertical-align: middle;
+	color: #f90;
+	font-weight: bold;
+}
+
+table.FieldSet-changed input {
+	background-color: #b4c598;
+}
+table.FieldSet-changed select {
+	background-color: #b4c598;
+}
+
+
+.FieldSet-changed .textArea {
+	background-color: #b4c598;
+}
+
+.FieldSet-error input.textArea {
+	background-color: #d94242;
+}
+
+.FieldSet-warning input.textArea {
+	background-color: #ffF5cd;
+}
+
+.FieldSet-error input.suggBox {
+	background-color: #d94242;
+}
+
+.FieldSet-warning input.suggBox {
+	background-color: #ffF5cd;
+}
+
+.FieldSet-error input.textBox {
+	background-color: #d94242;
+}
+
+.FieldSet-warning input.textBox {
+	background-color: #ffF5cd;
+}
+
+.FieldSet-error input.passBox {
+	background-color: #d94242;
+}
+
+.FieldSet-warning input.passBox {
+	background-color: #ffF5cd;
+}
+
+.FieldSet-error input.dateBox {
+	background-color: #d94242;
+}
+
+.FieldSet-warning input.dateBox {
+	background-color: #ffF5cd;
+}
+
+.FieldSet-error input.dateBoxFormatError {
+	background-color: #d94242 !important;
+}
+
+.legendHeadline {
+	font-weight: bold;
+	padding-bottom: 0px;
+	line-height: 1em;
+	padding-bottom: 2px;
+}
+.legendContent div {
+	float: left;
+	display: inline;
+	padding: 3px;
+	margin-right: 3px;
+}
+.legendContent .grey {
+	background-color: #EEEEEE;
+}
+.legendContent .green {
+	background-color: #b4c598;
+}
+.legendContent .yellow {
+	background-color: #FFF5CD;
+}
+.legendContent .red {
+	background-color: #d94242;
+}
+

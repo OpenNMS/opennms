@@ -154,15 +154,14 @@ public class ChartUtils {
      * @param barChart TODO
      * @param subLabelClass
      */
-    @SuppressWarnings("unchecked")
     private static void addSubLabels(JFreeChart barChart, String subLabelClass) {
         ExtendedCategoryAxis subLabels;
         CategoryPlot plot = barChart.getCategoryPlot();
         try {
             subLabels = (ExtendedCategoryAxis) Class.forName(subLabelClass).newInstance();
-            List cats = plot.getCategories();
+            List<?> cats = plot.getCategories();
             for(int i=0; i<cats.size(); i++) {
-                subLabels.addSubLabel((Comparable)cats.get(i), cats.get(i).toString());
+                subLabels.addSubLabel((Comparable<?>)cats.get(i), cats.get(i).toString());
             }
             plot.setDomainAxis(subLabels);
         } catch (InstantiationException e) {
@@ -178,7 +177,6 @@ public class ChartUtils {
      * @param barChart TODO
      * @param chartConfig
      */
-    @SuppressWarnings("unchecked")
     private static void customizeSeries(JFreeChart barChart, BarChart chartConfig) {
         
         /*
@@ -204,7 +202,7 @@ public class ChartUtils {
             SeriesDef seriesDef = seriesDefs[i];
             Paint paint = Color.BLACK;
             if (seriesColors != null) {
-                Comparable cat = (Comparable)((BarRenderer)barChart.getCategoryPlot().getRenderer()).getPlot().getCategories().get(i);
+                Comparable<?> cat = (Comparable<?>)((BarRenderer)barChart.getCategoryPlot().getRenderer()).getPlot().getCategories().get(i);
                 paint = seriesColors.getPaint(cat);
             } else {
                 Rgb rgb = seriesDef.getRgb();
