@@ -258,6 +258,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 					agent.shutDownAndWait();
 				} catch (final InterruptedException e) {
 					LogUtils.debugf(this, e, "Unable to shut down agent %s", agent);
+					Thread.currentThread().interrupt();
 				}
 			}
 			m_agents.clear();

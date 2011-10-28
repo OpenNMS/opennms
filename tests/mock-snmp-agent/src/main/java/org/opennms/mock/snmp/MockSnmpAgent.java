@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.BindException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -113,6 +112,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     private boolean m_stopped;
     private List<ManagedObject> m_moList;
     private MockSnmpMOLoader m_moLoader;
+    private IOException m_failure;
 
     private static File BOOT_COUNT_FILE;
 
@@ -188,7 +188,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             throw new RuntimeException("Got IOException while checking for existence of mock object file: " + e, e);
         }
         
-        MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), moFile, bindAddress);
+        final MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), moFile, bindAddress);
         Thread thread = new Thread(agent, agent.getClass().getSimpleName());
         thread.start();
 
@@ -196,7 +196,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             while (!agent.isRunning() && thread.isAlive()) {
                 Thread.sleep(10);
             } 
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             agent.shutDownAndWait();
             throw e;
         }
@@ -204,7 +204,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         if (!thread.isAlive()) {
             agent.m_running = false;
             agent.m_stopped = true;
-            throw new IllegalStateException("agent failed to start--check logs");
+            throw new IllegalStateException("agent failed to start", agent.m_failure);
         }
         
         if (System.getProperty(PROPERTY_SLEEP_ON_CREATE) != null) {
@@ -579,9 +579,14 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void initTransportMappings() throws IOException {
-        transportMappings = new TransportMapping[1];
-        transportMappings[0] =
-            new DefaultUdpTransportMapping(new UdpAddress(m_address));
+        try {
+            transportMappings = new TransportMapping[1];
+            transportMappings[0] =
+                new DefaultUdpTransportMapping(new UdpAddress(m_address));
+        } catch (final IOException e) {
+            m_failure = e;
+            throw e;
+        }
     }
 
 
