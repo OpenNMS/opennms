@@ -206,7 +206,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	public SnmpCollection(Linkd linkd, SnmpAgentConfig config) {
 	    m_linkd = linkd;
 		m_agentConfig = config;
-		m_address = m_agentConfig.getProxyFor();
+		m_address = m_agentConfig.getEffectiveAddress();
 		m_ipNetToMedia = null;
 		m_ipRoute = null;
 		m_vlanTable = null;
