@@ -5,13 +5,36 @@
     <version>1.9.93-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.opennms.nsclient</artifactId>
+  <groupId>org.opennms.protocols</groupId>
+  <artifactId>org.opennms.protocols.nsclient</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS NSClient Monitoring</name>
   <description>
     This module provides NSClient discovery and monitoring to opennms.
   </description>
   
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/etc.xml</descriptor>
+            <descriptor>src/assembly/xsds.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>

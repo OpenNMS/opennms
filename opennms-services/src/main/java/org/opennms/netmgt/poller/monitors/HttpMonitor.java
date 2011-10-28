@@ -307,6 +307,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
         private String m_responseText;
         private boolean m_responseTextFound = false;
         private final String m_nodeLabel;
+        private boolean m_headerFinished = false;
         
         HttpMonitorClient(final String nodeLabel, final NetworkInterface<InetAddress> iface, final TreeMap<String, Object>parameters) {
             m_nodeLabel = nodeLabel;
@@ -367,7 +368,12 @@ public class HttpMonitor extends AbstractServiceMonitor {
         }
 
         public boolean checkCurrentLineMatchesResponseText() {
-            
+            if (!m_headerFinished && StringUtils.isEmpty(m_currentLine)) {
+                m_headerFinished = true;  // Set to true when all HTTP headers has been processed.
+            }
+            if (!m_headerFinished) { // Skip perform the regex processing over HTTP headers.
+                return false;
+            }
             if (m_responseText.charAt(0) == '~' && !m_responseTextFound) {
                 m_responseTextFound = m_currentLine.matches(m_responseText.substring(1));
             } else {
@@ -495,7 +501,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
             return false;
         }
 
-        public String readLinedMatching() throws IOException {
+        public String readLine() throws IOException {
             m_currentLine = m_lineRdr.readLine();
             
             if (determineVerbosity(m_parameters) && log().isDebugEnabled()) {
@@ -503,6 +509,11 @@ public class HttpMonitor extends AbstractServiceMonitor {
             }
             
             m_html.append(m_currentLine);
+            return m_currentLine;
+        }
+
+        public String readLinedMatching() throws IOException {
+            readLine();
             
             if (m_responseText != null && m_currentLine != null && !m_responseTextFound) {
                 if (checkCurrentLineMatchesResponseText()) {
@@ -521,11 +532,12 @@ public class HttpMonitor extends AbstractServiceMonitor {
             }
             m_httpSocket.getOutputStream().write(m_httpCmd.getBytes());
             m_lineRdr = new BufferedReader(new InputStreamReader(m_httpSocket.getInputStream()));
-            readLinedMatching();
+            readLine();
             if (determineVerbosity(m_parameters)) {
                 log().debug("Server response: "+m_currentLine);
             }
             determineServerInitialResponse();
+            m_headerFinished = false; // Clean header flag for each HTTP request.
         }
 
         private void buildCommand() {

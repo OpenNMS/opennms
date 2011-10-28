@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<!-- Syslog message match definitions for Apache HTTPD -->
+
+<syslogd-configuration-group>
+    <ueiList>
+        <ueiMatch>
+            <process-match expression="^httpd$" />
+            <match type="regex" expression="^.*Warning: DocumentRoot \[(.*)\] does not exist.*$" />
+            <uei>uei.opennms.org/vendor/apache/syslog/httpd/documentRootDoesNotExist</uei>
+            <parameter-assignment matching-group="1" parameter-name="documentRoot" />
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^httpd$" />
+            <match type="regex" expression=".*" />
+            <uei>uei.opennms.org/vendor/apache/syslog/httpd/unknownMessage</uei>
+        </ueiMatch>
+    </ueiList>
+</syslogd-configuration-group>

@@ -360,7 +360,7 @@ abstract public class InetAddressUtils {
     }
 
     public static BigInteger difference(final InetAddress addr1, final InetAddress addr2) {
-        return new BigInteger(addr1.getAddress()).subtract(new BigInteger(addr2.getAddress()));
+        return new BigInteger(1, addr1.getAddress()).subtract(new BigInteger(1, addr2.getAddress()));
     }
 
 	public static boolean isInetAddressInRange(final byte[] laddr, final String beginString, final String endString) {
@@ -523,6 +523,10 @@ abstract public class InetAddressUtils {
 	}
 
     public static byte[] macAddressStringToBytes(String macAddress) {
+        if (macAddress == null) {
+            throw new IllegalArgumentException("Cannot decode null MAC address");
+        }
+
         byte[] contents = new byte[6];
         String[] digits = macAddress.split(":");
         if (digits.length != 6) {

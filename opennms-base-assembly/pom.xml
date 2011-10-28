@@ -228,10 +228,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-detector-radius</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-simple</artifactId>
     </dependency>
     <dependency>
@@ -243,10 +239,6 @@
       <artifactId>opennms-detector-web</artifactId>
     </dependency>
     <!-- end provisiond dependencies -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>org.opennms.nsclient</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-jetty</artifactId>

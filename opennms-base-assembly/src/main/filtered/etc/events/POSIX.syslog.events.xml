@@ -1,0 +1,25 @@
+<events>
+    <!-- Begin syslog event definitions for POSIX utilities  -->
+    <event>
+        <uei>uei.opennms.org/vendor/posix/syslog/su/authenFailure</uei>
+        <event-label>POSIX-defined event: su authentication failure</event-label>
+        <descr>
+            &lt;p&gt;A user failed to authenticate to the POSIX su command&lt;br&gt;
+            Attempting user (UID): %parm[user]% (%parm[uid]%) &lt;br&gt;
+            Target user (UID): %parm[targetUser]% (%parm[targetUid]%) &lt;br&gt;
+            TTY: %parm[tty]% &lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;su failure for user %parm[user]% to user %parm[targetUser]% on %parm[tty]% &lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%" alarm-type="3" auto-clean="false" />
+    </event>
+    <!-- End syslog event definitions for POSIX utilities  -->
+</events>

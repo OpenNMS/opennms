@@ -1,0 +1,6 @@
+<foreign-source name="default" xmlns="http://xmlns.opennms.org/xsd/config/foreign-source">
+	<scan-interval>1d</scan-interval>
+	<detectors>
+		<detector name="DHCP" class="org.opennms.protocols.dhcp.detector.DhcpDetector" />
+	</detectors>
+</foreign-source>

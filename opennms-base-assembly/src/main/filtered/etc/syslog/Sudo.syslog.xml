@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<!-- Syslog message match definitions for sudo -->
+
+<syslogd-configuration-group>
+    <ueiList>
+        <ueiMatch>
+            <process-match expression="^sudo$" />
+            <match type="regex" expression="^sudo:\s+(.*?) : user NOT authorized on host ; TTY=(.*?) ; PWD=(.*?) ; USER=(.*?) ; COMMAND=(.*?)$" />
+            <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/notAuthorizedOnHost</uei>
+            <parameter-assignment matching-group="1" parameter-name="user" />
+            <parameter-assignment matching-group="2" parameter-name="tty" />
+            <parameter-assignment matching-group="3" parameter-name="workingDirectory" />
+            <parameter-assignment matching-group="4" parameter-name="targetUser" />
+            <parameter-assignment matching-group="5" parameter-name="command" />
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^sudo$" />
+            <match type="regex" expression="^sudo:\s+(.*?) : command not allowed ; TTY=(.*?) ; PWD=(.*?) ; USER=(.*?) ; COMMAND=(.*?)$" />
+            <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/commandNotAllowed</uei>
+            <parameter-assignment matching-group="1" parameter-name="user" />
+            <parameter-assignment matching-group="2" parameter-name="tty" />
+            <parameter-assignment matching-group="3" parameter-name="workingDirectory" />
+            <parameter-assignment matching-group="4" parameter-name="targetUser" />
+            <parameter-assignment matching-group="5" parameter-name="command" />
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^sudo$" />
+            <match type="regex" expression="^sudo:\s+(.*?) : user NOT in sudoers ; TTY=(.*?) ; PWD=(.*?) ; USER=(.*?) ; COMMAND=(.*?)$" />
+            <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/userNotInSudoers</uei>
+            <parameter-assignment matching-group="1" parameter-name="user" />
+            <parameter-assignment matching-group="2" parameter-name="tty" />
+            <parameter-assignment matching-group="3" parameter-name="workingDirectory" />
+            <parameter-assignment matching-group="4" parameter-name="targetUser" />
+            <parameter-assignment matching-group="5" parameter-name="command" />
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^sudo$" />
+            <match type="regex" expression="^sudo:\s+(.*?) : (\d+) incorrect password attempts? ; TTY=(.*?) ; PWD=(.*?) ; USER=(.*?) ; COMMAND=(.*?)" />
+            <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/incorrectPassword</uei>
+            <parameter-assignment matching-group="1" parameter-name="user" />
+            <parameter-assignment matching-group="2" parameter-name="attempts" />
+            <parameter-assignment matching-group="3" parameter-name="tty" />
+            <parameter-assignment matching-group="4" parameter-name="workingDirectory" />
+            <parameter-assignment matching-group="5" parameter-name="targetUser" />
+            <parameter-assignment matching-group="6" parameter-name="command" />
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^sudo$" />
+            <match type="regex" expression=".*" />
+            <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/unknownMessage</uei>
+        </ueiMatch>
+    </ueiList>
+</syslogd-configuration-group>

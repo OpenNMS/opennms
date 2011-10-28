@@ -5,7 +5,8 @@
     <version>1.9.93-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.opennms.dhcp</artifactId>
+  <groupId>org.opennms.protocols</groupId>
+  <artifactId>org.opennms.protocols.dhcp</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS DHCP Monitoring</name>
   <description>
@@ -82,7 +83,17 @@
     <dependency>
     	<groupId>org.opennms</groupId>
     	<artifactId>opennms-mock-simpleserver</artifactId>
-	<scope>test</scope>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-dao</artifactId>
+   	<type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
 
   </dependencies>

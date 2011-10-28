@@ -61,7 +61,7 @@ reset_opennms() {
 	rpm -qa --queryformat='%{name}\n' | grep -E '^opennms' | xargs yum -y remove
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms /etc/yum.repos.d/opennms*
 	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-snapshot-rhel5.noarch.rpm
-	yum -y install opennms || die "Unable to install OpenNMS."
+	yum -y install opennms opennms-plugins || die "Unable to install OpenNMS."
 }
 
 get_source() {
@@ -120,12 +120,18 @@ run_tests() {
 
 	local RETVAL=0
 	rm -rf ~/.m2/repository/org/opennms
-	pushd "$SOURCEDIR"
-		./compile.pl -N -Denable.snapshots=true -DupdatePolicy=always install
-	popd
-	pushd "$SOURCEDIR/core"
-		../compile.pl -Denable.snapshots=true -DupdatePolicy=always install
-	popd
+
+# These aren't needed any longer
+#	pushd "$SOURCEDIR"
+#		./compile.pl -N -Denable.snapshots=true -DupdatePolicy=always install
+#	popd
+#	pushd "$SOURCEDIR/dependencies"
+#		../compile.pl -Denable.snapshots=true -DupdatePolicy=always install
+#	popd
+#	pushd "$SOURCEDIR/core"
+#		../compile.pl -Denable.snapshots=true -DupdatePolicy=always install
+#	popd
+
 	pushd "$SOURCEDIR/smoke-test"
 		../bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
 		RETVAL=$?

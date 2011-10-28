@@ -289,12 +289,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         List<RouterInterface> routeInterfaces = new ArrayList<RouterInterface>();
 
         for (final SnmpStore ent : entries) {
-            final Integer ifindex = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_IFINDEX);
-
-            if (ifindex == null || ifindex < 0) {
-                LogUtils.warnf(this, "processRouteTable: Not valid ifIndex %s. Skipping.", ifindex);
-                continue;
-            }
+            Integer ifindex = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_IFINDEX);
 
             final InetAddress nexthop = ent.getIPAddress(IpRouteCollectorEntry.IP_ROUTE_NXTHOP);
 
@@ -314,6 +309,29 @@ public abstract class AbstractQueryManager implements QueryManager {
             if (routemask == null) {
                 LogUtils.warnf(this, "processRouteTable: route mask not found. Skipping.");
                 continue;
+            }
+
+            if (ifindex == null || ifindex < 0) {
+                LogUtils.warnf(this, "processRouteTable: Not valid ifIndex %s. Skipping.", ifindex);
+                continue;
+            } else if (ifindex == 0) {
+                // According to the RFC, if the ifindex is zero (0) then this indicates that no
+                // particular interface was specified. We need to figure out the ifindex in that case.
+                /*
+                inetCidrRouteIfIndex OBJECT-TYPE
+                   SYNTAX InterfaceIndexOrZero
+                   DESCRIPTION
+                       "The ifIndex value that identifies the local interface
+                       through which the next hop of this route should be
+                       reached.  A value of 0 is valid and represents the
+                       scenario where no interface is specified."
+                   ::= { inetCidrRouteEntry 7 }
+                */
+                ifindex = getIfIndexFromRouteTableEntries(nexthop, entries);
+                if (ifindex < 1) {
+                    LogUtils.warnf(this, "processRouteTable: Not valid ifIndex %s. Skipping.", ifindex);
+                    continue;
+                }
             }
 
             LogUtils.debugf(this, "processRouteTable: parsing routeDest/routeMask/nextHop: %s/%s/%s - ifIndex = %d", str(routedest), str(routemask), str(nexthop), ifindex);
@@ -403,6 +421,28 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
         }
         node.setRouteInterfaces(routeInterfaces);
+    }
+
+    private static Integer getIfIndexFromRouteTableEntries(InetAddress nexthop, List<SnmpStore> entries) {
+        for (SnmpStore entry : entries) {
+            final InetAddress routedest = entry.getIPAddress(IpRouteCollectorEntry.IP_ROUTE_DEST);
+            if (routedest == null) {
+                continue;
+            }
+
+            final InetAddress routemask = entry.getIPAddress(IpRouteCollectorEntry.IP_ROUTE_MASK);
+            if (routemask == null) {
+                continue;
+            }
+
+            // Use a binary AND to determine if the next hop is in the subnet for this entry
+            if (InetAddressUtils.toInteger(routemask).and(InetAddressUtils.toInteger(nexthop)).equals(InetAddressUtils.toInteger(routedest))) {
+                Integer retval =  entry.getInt32(IpRouteCollectorEntry.IP_ROUTE_IFINDEX);
+                LogUtils.debugf(AbstractQueryManager.class, "processRouteTable: found ifindex based on subnet mask: %d", retval);
+                return retval;
+            }
+        }
+        return -1;
     }
 
     protected void processVlanTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {

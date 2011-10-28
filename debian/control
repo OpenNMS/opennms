@@ -164,7 +164,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Contrib)
 
 Package: opennms-plugins
 Architecture: all
-Depends: opennms-plugin-provisioning-dns (=${binary:Version}), opennms-plugin-provisioning-link (=${binary:Version}), opennms-plugin-provisioning-map (=${binary:Version}), opennms-plugin-provisioning-rancid (=${binary:Version}), opennms-plugin-protocol-dhcp (=${binary:Version}), apennms-plugin-protocol-xmp (=${binary:Version})
+Depends: opennms-plugin-provisioning-dns (=${binary:Version}), opennms-plugin-provisioning-link (=${binary:Version}), opennms-plugin-provisioning-map (=${binary:Version}), opennms-plugin-provisioning-rancid (=${binary:Version}), opennms-plugin-protocol-dhcp (=${binary:Version}), opennms-plugin-protocol-nsclient (=${binary:Version}), opennms-plugin-protocol-radius (=${binary:Version}), opennms-plugin-protocol-xmp (=${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (All Plugins)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -269,6 +269,37 @@ Description: Enterprise-grade Open-source Network Management Platform (DHCP Prot
  .
  This package provides DHCP support for capability scanning, provisiond, and
  polling.
+
+Package: opennms-plugin-protocol-nsclient
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Replaces: libopennms-java (<<${binary:Version}), opennms-common (<<${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (NSClient Protocol Support)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides NSClient support for capability scanning and polling.
+
+Package: opennms-plugin-protocol-radius
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Replaces: libopennms-java (<<${binary:Version}), opennms-common (<<${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (RADIUS Protocol Support)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides RADIUS support for capability scanning, provisiond,
+ polling, and Spring Security authentication.
 
 Package: opennms-plugin-protocol-xmp
 Architecture: all

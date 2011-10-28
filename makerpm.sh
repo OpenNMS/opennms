@@ -25,7 +25,7 @@ fi
 
 if [ -z "$RELEASE_MINOR" ]; then
 	if [ -n "$GIT" ] && [ -x "$GIT" ]; then
-		RELEASE_MINOR=`git log --pretty='format:%cd' --date=short -1 | grep '^Date:' | awk '{ print $2 }' | sed -e 's,-,,g'`
+		RELEASE_MINOR=`git log --pretty='format:%cd' --date=short -1 | head -n 1 | sed -e 's,^Date: *,,' -e 's,-,,g'`
 	else
 		RELEASE_MINOR=`date '+%Y%m%d'`
 	fi
