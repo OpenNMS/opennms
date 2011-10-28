@@ -100,6 +100,26 @@ public class SeleniumMonitorTest {
 	}
 	
 	@Test
+    public void testDefaultGroovyJUnitTest() throws UnknownHostException{
+	    System.setProperty("opennms.selenium.test.dir", "/Users/thedesloge/git/opennms/target/opennms-1.9.93-SNAPSHOT/etc");
+        MonitoredService monSvc = new MockMonService(1, "papajohns", InetAddress.getByName("213.187.33.164"), "PapaJohnsSite");
+        
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("selenium-test", "OpennmsSeleniumExample.groovy");
+        params.put("base-url", "http://${ipAddr}");
+        
+        SeleniumMonitor ajaxPSM = new SeleniumMonitor();
+        PollStatus pollStatus = ajaxPSM.poll(monSvc, params);
+        
+        assertNotNull("PollStatus must not be null", pollStatus);
+        
+        System.err.println("PollStatus message: " + pollStatus.getReason());
+        assertEquals(PollStatus.available(), pollStatus);
+        
+    }
+	
+	
+	@Test
 	public void testBaseUrlUtils() 
 	{
 	    

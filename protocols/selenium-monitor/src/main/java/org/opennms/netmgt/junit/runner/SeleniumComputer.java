@@ -13,7 +13,7 @@ public class SeleniumComputer extends Computer{
     }
     
     public SeleniumComputer(String baseUrl) {
-        setBaseUrl(baseUrl);
+        this(baseUrl, 3);
     }
     
     public SeleniumComputer(String baseUrl, int timeoutInSeconds) {

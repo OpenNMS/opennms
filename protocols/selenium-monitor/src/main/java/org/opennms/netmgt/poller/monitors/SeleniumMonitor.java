@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Level;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -54,7 +55,7 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
                 responseTimes.put("response-time", Double.NaN);
                 
                 tracker.startAttempt();
-                Result result = runTest( getBaseUrl(parameters, svc), createGroovyClass( seleniumTestFilename ) );
+                Result result = runTest( getBaseUrl(parameters, svc), getTimeout(parameters), createGroovyClass( seleniumTestFilename ) );
                 double responseTime = tracker.elapsedTimeInMillis();
                 responseTimes.put("response-time", responseTime);
                 
@@ -66,15 +67,26 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
                 }
             } catch (CompilationFailedException e) {
                 serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on:" + svc.getIpAddr() + " failed : selenium-test compilation error " + e.getMessage());
+                logDown(Level.DEBUG, "Selenium sequence failed: " + e.getMessage());
             } catch (IOException e) {
                 serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on " + svc.getIpAddr() + " failed: IOException occurred, failed to find selenium-test: " + seleniumTestFilename);
+                logDown(Level.DEBUG, "Selenium sequence failed: " + e.getMessage());
             } catch (Exception e) {
                 serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on " + svc.getIpAddr() + " failed:\n" + e.getMessage());
+                logDown(Level.DEBUG, "Selenium sequence failed: " + e.getMessage());
             }
 		}
 	    
 		return serviceStatus;
 	}
+
+    private int getTimeout(Map<String, Object> parameters) {
+        if(parameters.containsKey("timeout")) {
+            return Integer.parseInt("" + parameters.get("timeout"));
+        }else {
+            return 3;
+        }
+    }
 
     private String getBaseUrl(Map<String, Object> parameters, MonitoredService svc)
     {
@@ -99,16 +111,18 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
     private String getFailureMessage(Result result, MonitoredService svc)
     {
         StringBuffer stringBuilder = new StringBuffer();
-        stringBuilder.append("Failed page sequence attempt on " + svc.getIpAddr() + " for node: " + svc.getNodeLabel() + " with service: " + svc.getSvcName());
+        stringBuilder.append("Failed: ");
         for(Failure failure : result.getFailures()) { 
-            stringBuilder.append(failure.getMessage() + "\n");
+            stringBuilder.append(" " + failure.getMessage() + "\n");
         }
+        
+        logDown(Level.DEBUG, "Selenium sequence failed: " + stringBuilder.toString());
         return stringBuilder.toString();
     }
 
-    private Result runTest(String baseUrl, Class<?> clazz)
+    private Result runTest(String baseUrl, int timeoutInSeconds, Class<?> clazz)
     {
-        return JUnitCore.runClasses(new SeleniumComputer(baseUrl), clazz);
+        return JUnitCore.runClasses(new SeleniumComputer(baseUrl, timeoutInSeconds), clazz);
     }
 
     private String  getGroovyFilename(Map<String, Object> parameters) 
