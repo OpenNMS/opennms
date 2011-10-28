@@ -16,6 +16,70 @@ public class JRobinDirectoryUtil {
         return JRProperties.getBooleanProperty("org.opennms.rrd.storeByGroup") || Boolean.getBoolean("org.opennms.rrd.storeByGroup");
     }
     
+    public String getIfInOctetsDataSource(String rrdDirectory, String nodeId, String iFace) throws IOException {
+        StringBuffer directory = new StringBuffer();
+        directory.append(rrdDirectory)
+            .append(File.separator)
+            .append(nodeId)
+            .append(File.separator)
+            .append(iFace);
+        
+        if(!isStoreByGroup()) {
+            if(checkIfHCExists("ifHCInOctets", directory.toString())) {
+                return "ifHCInOctets";
+            }else {
+                return "ifInOctets";
+            }
+        }else {
+            if(checkDsPropertyFileFor("ifHCInOctets", directory.toString())) {
+                return "ifHCInOctets";
+            }else {
+                return "ifInOctets";
+            }
+        }
+    }
+    
+    public String getIfOutOctetsDataSource(String rrdDirectory, String nodeId,String iFace) throws IOException {
+        StringBuffer directory = new StringBuffer();
+        directory.append(rrdDirectory)
+            .append(File.separator)
+            .append(nodeId)
+            .append(File.separator)
+            .append(iFace);
+        
+        if(!isStoreByGroup()) {
+            
+            if(checkIfHCExists("ifHCOutOctets", directory.toString())) {
+                return "ifHCOutOctets";
+            }else {
+                return "ifOutOctets";
+            }
+            
+        }else {
+           
+            if(checkDsPropertyFileFor("ifHCOutOctets", directory.toString())) {
+                return "ifHCOutOctets";
+            }else {
+                return "ifOutOctets";
+            }
+        }
+    }
+    
+    private boolean checkDsPropertyFileFor(String ifOctetsDS, String directory) throws IOException {
+        File f = new File(directory.toString() + "" + File.separator + "ds.properties");
+        if(f.exists()) {
+            Properties prop = new Properties();
+            FileInputStream fis = new FileInputStream(f);
+            prop.load(fis);
+            fis.close();
+            
+            return prop.get(ifOctetsDS) != null ? true : false;
+        }else {
+            return false;
+        }
+        
+    }
+
     public String getIfInOctetsJrb(String rrdDirectory, String nodeId,String iFace) throws FileNotFoundException, IOException {
         return getOctetsJrbFile(rrdDirectory, nodeId, iFace, "ifHCInOctets.jrb", "ifInOctets.jrb");
     }
@@ -35,16 +99,19 @@ public class JRobinDirectoryUtil {
         if(isStoreByGroup()) {
             appendStoreByGroup(directory);
         }else {
-            
-            File ifOctets = new File(directory.toString() + "" + File.separator + ifHCFilename);
-            if(ifOctets.exists()) {
-                directory.append(File.separator).append(ifHCFilename);
+            if(checkIfHCExists(ifHCFilename, directory.toString())) {
+                directory.append(File.separator).append(ifHCFilename).append(getExtension());
             }else {
                 directory.append(File.separator).append(ifFilename);
             }
         }
         
         return  directory.toString();
+    }
+
+    private boolean checkIfHCExists(String ifHCFilename, String dir) {
+        File ifOctets = new File(dir + "" + File.separator + ifHCFilename + getExtension());
+        return ifOctets.exists();
     }
     
     private void appendStoreByGroup(StringBuffer directory) throws FileNotFoundException, IOException {
@@ -55,7 +122,12 @@ public class JRobinDirectoryUtil {
             prop.load(fis);
             fis.close();
             
-            directory.append(File.separator).append((String) prop.get("ifInOctets")).append(".jrb");
+            if(prop.get("ifHCInOctets") != null) {
+                directory.append(File.separator).append((String) prop.get("ifHCInOctets")).append(getExtension());
+            }else {
+                directory.append(File.separator).append((String) prop.get("ifInOctets")).append(getExtension());
+            }
+            
         }
     }
 

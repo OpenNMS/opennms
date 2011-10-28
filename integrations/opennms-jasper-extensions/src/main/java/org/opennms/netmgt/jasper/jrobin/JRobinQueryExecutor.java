@@ -26,8 +26,8 @@ public class JRobinQueryExecutor extends JRAbstractQueryExecuter {
     public JRDataSource createDatasource() throws JRException {
         try {
             return new RrdXportCmd().executeCommand(getQueryString());
-        } catch (Exception e) {
-            throw new JRException("Error creating JRobinDataSource", e);
+        } catch (Throwable e) {
+            throw new JRException("Error creating JRobinDataSource with command: " + getQueryString(), e);
         }
     }
 
