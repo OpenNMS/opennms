@@ -34,8 +34,8 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.lang.reflect.Method;
+import java.net.BindException;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -176,24 +176,31 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     	// try to find an unused port on localhost
     	int mappedPort = 1161;
     	do {
-    	    try {
-    	        final ServerSocket ss = new ServerSocket(mappedPort);
-    	        ss.close();
-                listenAddress = new SnmpAgentAddress(localHost, mappedPort);
-    	    } catch (final Throwable t) {
-    	        LogUtils.debugf(this, t, "Unable to create socket on %d, trying next port.", mappedPort);
-    	    }
-    		mappedPort++;
+            listenAddress = new SnmpAgentAddress(localHost, mappedPort++);
     	} while (mapper.contains(listenAddress));
 
 		if (Boolean.valueOf(useMockSnmpStrategy)) {
 			// map to itself  =)
 	    	mapper.addProxy(hostAddress, agentAddress);
 		} else {
+		    MockSnmpAgent agent = null;
+		    while (agent == null) {
+	            try {
+	                agent = MockSnmpAgent.createAgentAndRun(resource, str(listenAddress.getAddress()) + "/" + listenAddress.getPort());
+	                break;
+	            } catch (final InterruptedException e) {
+	                if (!(e.getCause() instanceof BindException) || !e.getCause().getMessage().equals("Address already in use")) {
+	                    throw e;
+	                }
+	                do {
+	                    listenAddress = new SnmpAgentAddress(localHost, mappedPort++);
+	                } while (mapper.contains(listenAddress));
+	            }
+		    }
+		    
 	    	mapper.addProxy(hostAddress, listenAddress);
 
-	    	LogUtils.debugf(this, "creating MockSnmpAgent on %s for 'real' address %s", listenAddress, agentAddress);
-            final MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(resource, str(listenAddress.getAddress()) + "/" + listenAddress.getPort());
+	    	LogUtils.debugf(this, "using MockSnmpAgent on %s for 'real' address %s", listenAddress, agentAddress);
 
             @SuppressWarnings("unchecked")
 			final Map<SnmpAgentAddress,MockSnmpAgent> agents = (Map<SnmpAgentAddress,MockSnmpAgent>)testContext.getAttribute(AGENT_KEY);
