@@ -35,6 +35,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -175,7 +176,14 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     	// try to find an unused port on localhost
     	int mappedPort = 1161;
     	do {
-    		listenAddress = new SnmpAgentAddress(localHost, mappedPort++);
+    	    try {
+    	        final ServerSocket ss = new ServerSocket(mappedPort);
+    	        ss.close();
+                listenAddress = new SnmpAgentAddress(localHost, mappedPort);
+    	    } catch (final Throwable t) {
+    	        LogUtils.debugf(this, t, "Unable to create socket on %d, trying next port.", mappedPort);
+    	    }
+    		mappedPort++;
     	} while (mapper.contains(listenAddress));
 
 		if (Boolean.valueOf(useMockSnmpStrategy)) {
