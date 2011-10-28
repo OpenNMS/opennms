@@ -62,7 +62,7 @@ usage() {
 usage: $0 <command>
 
 available commands:
-	get          Get the latest build ID (format: 0.<timestamp>.<revision>
+	get          Get the latest build ID (format: 0.<timestamp>.<revision>)
 	get_stamp    Get the latest build timestamp
 	get_revision Get the latest build revision
 	save         Save the current build ID state
