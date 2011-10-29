@@ -87,6 +87,20 @@ public class JRobinDirectoryUtil {
     public String getIfOutOctetsJrb(String rrdDirectory, String nodeId,String iFace) throws FileNotFoundException, IOException {
         return getOctetsJrbFile(rrdDirectory, nodeId, iFace, "ifHCOutOctets.jrb", "ifOutOctets.jrb");
     }
+    
+    private String getExtension() {
+        if(JRProperties.getProperty("org.opennms.rrd.fileExtension") != null) {
+            return JRProperties.getProperty("org.opennms.rrd.fileExtension");
+        }else if(System.getProperty("org.opennms.rrd.fileExtension") != null) {
+            return System.getProperty("org.opennms.rrd.fileExtension");
+        }else {
+            if(System.getProperty("org.opennms.rrd.strategyClass") != null) {
+                return System.getProperty("org.opennms.rrd.strategyClass", "UnknownStrategy").endsWith("JRobinRrdStrategy") ? ".jrb" : ".rrd";
+            }
+            return ".jrb";
+        }
+        
+    }
 
     private String getOctetsJrbFile(String rrdDirectory, String nodeId, String iFace, String ifHCFilename, String ifFilename) throws FileNotFoundException, IOException {
         StringBuffer directory = new StringBuffer();
