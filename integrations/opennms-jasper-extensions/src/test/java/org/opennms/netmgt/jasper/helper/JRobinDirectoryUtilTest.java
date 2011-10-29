@@ -47,8 +47,8 @@ public class JRobinDirectoryUtilTest {
         
         System.setProperty("org.opennms.rrd.storeByGroup", "false");
         
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/ifHCInOctets.jrb", lookup.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/ifHCOutOctets.jrb", lookup.getIfOutOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/ifInOctets.jrb", lookup.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/ifOutOctets.jrb", lookup.getIfOutOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
     }
     
     @Test
