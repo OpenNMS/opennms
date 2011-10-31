@@ -28,6 +28,8 @@
 
 package org.opennms.core.schema;
 
+import liquibase.resource.ResourceAccessor;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 
@@ -48,6 +50,7 @@ public class Migration {
     private String m_adminUser;
     private String m_adminPassword;
     private String m_changeLog;
+    private ResourceAccessor m_accessor;
 
     /**
      * Get the JDBC connection URL.  Defaults to jdbc:postgresql://host/database.
@@ -213,6 +216,14 @@ public class Migration {
         m_changeLog = changeLog;
     }
     
+    public ResourceAccessor getAccessor() {
+        return m_accessor;
+    }
+
+    public void setAccessor(final ResourceAccessor accessor) {
+        m_accessor = accessor;
+    }
+
     /**
      * <p>toString</p>
      *
@@ -220,14 +231,15 @@ public class Migration {
      */
     public String toString() {
         return new ToStringBuilder(this)
-            .append("database", getDatabaseName())
-            .append("schema", getSchemaName())
-            .append("host", getDatabaseHost())
-            .append("driver", getJdbcDriver())
-            .append("url", getJdbcUrl())
-            .append("admin-user", getAdminUser())
-            .append("user", getDatabaseUser())
-            .append("changelog", getChangeLog())
+            .append("database", m_databaseName)
+            .append("schema", m_schemaName)
+            .append("host", m_databaseHost)
+            .append("driver", m_jdbcDriver)
+            .append("url", m_jdbcUrl)
+            .append("admin-user", m_adminUser)
+            .append("user", m_databasePassword)
+            .append("changelog", m_changeLog)
+            .append("accessor", m_accessor)
             .toString();
     }
 }

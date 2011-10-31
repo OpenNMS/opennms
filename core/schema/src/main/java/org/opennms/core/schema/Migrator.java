@@ -48,6 +48,7 @@ import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.logging.LogFactory;
 import liquibase.logging.LogLevel;
+import liquibase.resource.ResourceAccessor;
 
 import org.opennms.core.utils.LogUtils;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -457,7 +458,10 @@ public class Migrator {
             connection = m_dataSource.getConnection();
             final DatabaseConnection dbConnection = new JdbcConnection(connection);
 
-            final Liquibase liquibase = new Liquibase( migration.getChangeLog(), new SpringResourceAccessor(), dbConnection );
+            ResourceAccessor accessor = migration.getAccessor();
+            if (accessor == null) accessor = new SpringResourceAccessor();
+            
+            final Liquibase liquibase = new Liquibase( migration.getChangeLog(), accessor, dbConnection );
             liquibase.setChangeLogParameter("install.database.admin.user", migration.getAdminUser());
             liquibase.setChangeLogParameter("install.database.admin.password", migration.getAdminPassword());
             liquibase.setChangeLogParameter("install.database.user", migration.getDatabaseUser());

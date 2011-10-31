@@ -14,6 +14,7 @@
     <module>dns</module>
     <module>lib</module>
     <module>http</module>
+    <module>schema</module>
     <module>snmp</module>
     <module>xml</module>
   </modules>
