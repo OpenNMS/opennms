@@ -31,8 +31,11 @@ package org.opennms.core.schema;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -41,10 +44,13 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -61,17 +67,21 @@ public class MigratorTest {
     @Autowired
     ResourceLoader m_resourceLoader;
 
+    @Autowired
+    ApplicationContext m_context;
+
     private Migration m_migration;
-    private String m_changeLog = "changelog.xml";
 
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+
         m_migration = new Migration();
         m_migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         m_migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         m_migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         m_migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        m_migration.setChangeLog(m_changeLog);
+        m_migration.setChangeLog("changelog.xml");
     }
 
     @Test
@@ -112,9 +122,45 @@ public class MigratorTest {
     }
     
     @Test
+    public void testMultipleChangelogs() throws Exception {
+        final Migrator m = new Migrator();
+        m.setDataSource(m_dataSource);
+        m.setAdminDataSource(m_dataSource);
+        m.setValidateDatabaseVersion(false);
+        m.setCreateUser(false);
+        m.setCreateDatabase(false);
+
+        Migration migration = new Migration();
+        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migration.setChangeLog("changelog.xml");
+
+        for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
+            System.err.println("=== found resource: " + resource + " ===");
+            migration.setAccessor(new ExistingResourceAccessor(resource));
+            m.migrate(migration);
+        }
+
+        final Connection connection = m_dataSource.getConnection();
+        final PreparedStatement statement = connection.prepareStatement("SELECT id FROM databasechangelog");
+        assertTrue(statement.execute());
+        final ResultSet rs = statement.getResultSet();
+        final List<String> ids = new ArrayList<String>();
+        while (rs.next()) {
+            ids.add(rs.getString(1));
+        }
+        
+        assertTrue(ids.size() > 0);
+        assertTrue(ids.contains("test-api.schema.a"));
+        assertTrue(ids.contains("test-api.schema.b"));
+    }
+    
+    @Test
     @Ignore("takes a long time, just did this to make sure 'upgrades' would not bomb")
     public void testUpdateTwice() throws Exception {
-        Migrator m = new Migrator();
+        final Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
         m.migrate(m_migration);
         m.migrate(m_migration);

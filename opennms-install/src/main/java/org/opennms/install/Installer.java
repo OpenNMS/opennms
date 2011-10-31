@@ -58,16 +58,20 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.opennms.bootstrap.Bootstrap;
+import org.opennms.core.schema.ExistingResourceAccessor;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
-import org.opennms.core.utils.ProcessExec;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.ConnectionFactoryUtil;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 /*
@@ -238,11 +242,18 @@ public class Installer {
         
         handleConfigurationChanges();
 
+        final GenericApplicationContext context = new GenericApplicationContext();
+        context.setClassLoader(Bootstrap.loadClasses(new File(m_opennms_home), true));
+
         if (m_update_database) {
             m_installerDb.databaseSetUser();
             m_installerDb.disconnect();
-            System.out.println("- Migrating/creating database:");
-            m_migrator.migrate(m_migration);
+
+            for (final Resource resource : context.getResources("classpath*:/changelog.xml")) {
+                System.out.println("- Running migration for changelog: " + resource.getDescription());
+                m_migration.setAccessor(new ExistingResourceAccessor(resource));
+                m_migrator.migrate(m_migration);
+            }
         }
 
         if (m_update_unicode) {

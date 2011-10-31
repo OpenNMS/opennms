@@ -35,10 +35,10 @@
 		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getInterfaceDirectory($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
 	</parameter>
 	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.io.File($P{rrdDir} + "/" + $P{nodeid} + "/" + $P{interface} + "/ifHCInOctets.jrb").exists() ? "ifHCInOctets" : "ifInOctets"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
 	</parameter>
 	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.io.File($P{rrdDir} + "/" + $P{nodeid} + "/" + $P{interface} + "/ifHCOutOctets.jrb").exists() ? "ifHCOutOctets" : "ifOutOctets"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
 	</parameter>
 	<parameter name="ifInOctets_PATH" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
@@ -79,7 +79,7 @@
 		<band splitType="Stretch"/>
 	</background>
 	<summary>
-		<band height="26" splitType="Stretch">
+		<band height="24" splitType="Stretch">
 			<textField pattern="#,##0.00">
 				<reportElement style="Detail" x="534" y="4" width="115" height="20"/>
 				<textElement/>
@@ -108,7 +108,7 @@
 		</band>
 	</summary>
 	<noData>
-		<band height="23">
+		<band height="20">
 			<textField>
 				<reportElement style="Detail" x="0" y="0" width="179" height="20"/>
 				<textElement textAlignment="Left"/>

@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class JRobinDirectoryUtilTest {
@@ -46,6 +47,25 @@ public class JRobinDirectoryUtilTest {
     public void setup() {
         System.setProperty("org.opennms.rrd.storeByGroup", "true");
         System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+    }
+    
+    
+    @Test
+    @Ignore
+    public void testJRobinDirectoryLookupLocal() throws FileNotFoundException, IOException {
+        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
+        
+        String rrdDirectory = "/Users/thedesloge/git/opennms/target/opennms-1.9.93-SNAPSHOT/share/rrd/snmp";
+        String nodeId = "48";
+        String iFace = lookup.getInterfaceDirectory("", "mgi1", "90840dd40a7d");
+        String jrb = lookup.getIfInOctetsJrb(rrdDirectory, nodeId, iFace);
+        System.out.println("path and file: " + jrb);
+        
+        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.9.93-SNAPSHOT/share/rrd/snmp/48/mgi1-90840dd40a7d/mib2-interfaces.jrb", lookup.getIfInOctetsJrb(rrdDirectory, nodeId, iFace));
+        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.9.93-SNAPSHOT/share/rrd/snmp/48/mgi1-90840dd40a7d/mib2-interfaces.jrb", lookup.getIfInOctetsJrb(rrdDirectory, nodeId, iFace));
+        
+        assertEquals("ifInOctets", lookup.getIfInOctetsDataSource(rrdDirectory, nodeId, iFace));
+        assertEquals("ifOutOctets", lookup.getIfOutOctetsDataSource(rrdDirectory, nodeId, iFace));
     }
     
     @Test
