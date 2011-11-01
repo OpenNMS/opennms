@@ -40,4 +40,5 @@ public interface VlanDao extends OnmsDao<OnmsVlan, Integer> {
 
     void setStatusForNode(Integer nodeId, Character action);
 
+    OnmsVlan findByNodeAndVlan(Integer nodeId, Integer vlanId);
 }
