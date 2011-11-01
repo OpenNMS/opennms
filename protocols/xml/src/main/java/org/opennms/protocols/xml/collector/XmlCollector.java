@@ -30,7 +30,6 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
@@ -43,7 +42,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.regexp.RE;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
@@ -156,12 +154,6 @@ public class XmlCollector implements ServiceCollector {
                 throw new RuntimeException("Unable to create RRD file repository.  Path doesn't already exist and could not make directory: " + m_xmlCollectionDao.getConfig().getRrdRepository());
             }
         }
-        try {
-            new URL("sftp://localhost/");
-        } catch (MalformedURLException e) {
-            log().info("Registering SFTP protocol");
-            URL.setURLStreamHandlerFactory(new SftpUrlFactory());
-        }
     }
 
     /* (non-Javadoc)
@@ -269,17 +261,9 @@ public class XmlCollector implements ServiceCollector {
      * @return the XML document
      */
     public Document getXmlDocument(CollectionAgent agent, XmlSource source) {
-        // The URL format could have some variables that will be replaced online to support dynamic URLs with timestamps.
-        HashMap<String, String> translationMap = new HashMap<String, String>();
-        translationMap.put("{ipaddr}", agent.getHostAddress());
-        String urlStr = source.getUrl();
-        for (Map.Entry<String, String> translation : translationMap.entrySet()) {
-            RE re = new RE(translation.getKey());
-            urlStr = re.subst(urlStr, translation.getValue());
-        }
-        // Create Document
+        String urlStr = source.getUrl().replace("{ipaddr}", agent.getHostAddress());
         try {
-            URL url = new URL(urlStr);
+            URL url = SftpUrlFactory.getUrl(urlStr);
             URLConnection c = url.openConnection();
             c.connect();
             InputStream is = c.getInputStream();

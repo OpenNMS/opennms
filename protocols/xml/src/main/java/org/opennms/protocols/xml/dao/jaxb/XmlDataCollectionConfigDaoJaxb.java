@@ -28,6 +28,7 @@
 
 package org.opennms.protocols.xml.dao.jaxb;
 
+import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlDataCollectionConfig;
 import org.opennms.protocols.xml.dao.XmlDataCollectionConfigDao;

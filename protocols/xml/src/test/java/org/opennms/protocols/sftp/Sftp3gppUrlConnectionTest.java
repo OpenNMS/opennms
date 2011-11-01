@@ -27,10 +27,11 @@
  *******************************************************************************/
 package org.opennms.protocols.sftp;
 
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 
-import org.junit.Before;
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -42,17 +43,15 @@ import org.opennms.core.utils.ThreadCategory;
 public class Sftp3gppUrlConnectionTest {
 
     /**
-     * Sets the up.
+     * Test path for Standard SFTP
+     *
+     * @throws Exception the exception
      */
-    @Before
-    public void setUp() {
-        try {
-            new URL("sftp://admin:admin@localhost/");
-            new URL("sftp+3gpp://admin:admin@localhost/");
-        } catch (MalformedURLException e) {
-            log().info("Registering supported protocols");
-            URL.setURLStreamHandlerFactory(new SftpUrlFactory());
-        }
+    @Test
+    public void testPathForSFTP() throws Exception {
+        URL url = SftpUrlFactory.getUrl("sftp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5/data.xml");
+        URLConnection conn = url.openConnection();
+        Assert.assertTrue(conn instanceof SftpUrlConnection);
     }
 
     /**
@@ -62,9 +61,10 @@ public class Sftp3gppUrlConnectionTest {
      */
     @Test
     public void testPathFor3GPPA() throws Exception {
-        URL url = new URL("sftp+3gpp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5/___CURRENT_3GPP_A_FORMAT?step=300&tz-offset=GMT-5&neId=MME00001");
-        Sftp3gppUrlConnection c = (Sftp3gppUrlConnection) url.openConnection();
-        String path = c.getPath();
+        URL url = SftpUrlFactory.getUrl("sftp+3gpp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5/___CURRENT_3GPP_A_FORMAT?step=300&tz-offset=GMT-5&neId=MME00001");
+        URLConnection conn = url.openConnection();
+        Assert.assertTrue(conn instanceof Sftp3gppUrlConnection);
+        String path = ((Sftp3gppUrlConnection) conn).getPath();
         log().debug(path);
     }
 
@@ -73,7 +73,7 @@ public class Sftp3gppUrlConnectionTest {
      *
      * @return the thread category
      */
-    public ThreadCategory log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.protocols.sftp;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
@@ -51,4 +53,23 @@ public class SftpUrlFactory implements URLStreamHandlerFactory {
         return null;
     }
 
+    /**
+     * Gets the URL Object.
+     * <p>This method has been created because it is not possible to call URL.setURLStreamHandlerFactory more than once.</p>
+     * 
+     * @param urlStr the URL String
+     * @return the URL Object
+     * @throws MalformedURLException the malformed URL exception
+     */
+    public static URL getUrl(String urlStr) throws MalformedURLException {
+        URL url = null;
+        if (urlStr.startsWith("sftp://")) {
+            url = new URL(null, urlStr, new SftpUrlHandler());
+        } else if (urlStr.startsWith("sftp+3gpp://")) {
+            url = new URL(null, urlStr, new Sftp3gppUrlHandler());
+        } else {
+            url = new URL(urlStr);
+        }
+        return url;
+    }
 }
