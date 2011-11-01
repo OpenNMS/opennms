@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.VlanDao;
@@ -79,5 +80,18 @@ public class VlanDaoHibernate extends AbstractDaoHibernate<OnmsVlan, Integer>  i
         }
     }
 
+    @Override
+    public OnmsVlan findByNodeAndVlan(final Integer nodeId, final Integer vlanId) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsVlan.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeId));
+        criteria.add(Restrictions.eq("vlanId", vlanId));
+
+        final List<OnmsVlan> objects = findMatching(criteria);
+        if (objects != null && objects.size() > 0) {
+            return objects.get(0);
+        }
+        return null;
+    }
 
 }

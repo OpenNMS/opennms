@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.IpRouteInterfaceDao;
@@ -94,6 +95,20 @@ public class IpRouteInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpRou
             item.setStatus(action);
             saveOrUpdate(item);
         }
+    }
+
+    @Override
+    public OnmsIpRouteInterface findByNodeAndDest(Integer id, String routeDest) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", id));
+        criteria.add(Restrictions.eq("routeDest", routeDest));
+
+        final List<OnmsIpRouteInterface> objects = findMatching(criteria);
+        if (objects != null && objects.size() > 0) {
+            return objects.get(0);
+        }
+        return null;
     }
 
 }

@@ -499,26 +499,42 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
 	@Override
 	@Transactional
-	protected synchronized void saveIpRouteInterface(final Connection dbConn, final OnmsIpRouteInterface ipRouteInterface) throws SQLException {
+	protected synchronized void saveIpRouteInterface(final Connection dbConn, final OnmsIpRouteInterface route) throws SQLException {
+        OnmsIpRouteInterface ipRouteInterface = m_ipRouteInterfaceDao.findByNodeAndDest(route.getNode().getId(), route.getRouteDest());
+        if (ipRouteInterface == null) {
+            ipRouteInterface = route;
+        } else {
+            ipRouteInterface.setLastPollTime(route.getLastPollTime());
+            //ipRouteInterface.setRouteDest(route.getRouteDest());
+            ipRouteInterface.setRouteIfIndex(route.getRouteIfIndex());
+            ipRouteInterface.setRouteMask(route.getRouteMask());
+            ipRouteInterface.setRouteMetric1(route.getRouteMetric1());
+            ipRouteInterface.setRouteMetric2(route.getRouteMetric2());
+            ipRouteInterface.setRouteMetric3(route.getRouteMetric3());
+            ipRouteInterface.setRouteMetric4(route.getRouteMetric4());
+            ipRouteInterface.setRouteMetric5(route.getRouteMetric5());
+            ipRouteInterface.setRouteNextHop(route.getRouteNextHop());
+            ipRouteInterface.setRouteProto(route.getRouteProto());
+            ipRouteInterface.setRouteType(route.getRouteType());
+            ipRouteInterface.setStatus(route.getStatus());
+        }
 		m_ipRouteInterfaceDao.saveOrUpdate(ipRouteInterface);
 	}
 
 	@Override
 	@Transactional
 	protected void saveVlan(final Connection dbConn, final OnmsVlan v) throws SQLException {
-	    /*
-	    OnmsVlan vlan = m_vlanDao.findByNodeIdAndVlanId(vlan.getNodeId(), vlan.getVlanId());
+	    OnmsVlan vlan = m_vlanDao.findByNodeAndVlan(v.getNode().getId(), v.getVlanId());
 	    if (vlan == null) {
 	        vlan = v;
 	    } else {
 	        vlan.setLastPollTime(v.getLastPollTime());
 	        vlan.setStatus(v.getStatus());
-	        vlan.setVlanId(v.getVlanId());
+	        //vlan.setVlanId(v.getVlanId());
 	        vlan.setVlanName(v.getVlanName());
             vlan.setVlanStatus(v.getVlanStatus());
 	        vlan.setVlanType(v.getVlanType());
 	    }
-	    */
 		m_vlanDao.saveOrUpdate(v);
 	}
 
