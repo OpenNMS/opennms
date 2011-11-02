@@ -75,7 +75,7 @@ public class XmlDataCollectionConfigTest {
     /** The JAXB context. */
     private JAXBContext context;
 
-    /** The XML data collection config. */
+    /** The XML data collection configuration. */
     private XmlDataCollectionConfig xmldcc;
 
     /**
@@ -122,7 +122,6 @@ public class XmlDataCollectionConfigTest {
         xmlRrd.addRra("RRA:MIN:0.5:12:8784");
         xmlRrd.addRra("RRA:MAX:0.5:12:8784");
         xmlRrd.setStep(300);
-
 
         XmlObject cpu = new XmlObject();
         cpu.setName("cpuUtilization");

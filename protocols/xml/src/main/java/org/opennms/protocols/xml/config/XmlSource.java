@@ -57,10 +57,6 @@ public class XmlSource implements Serializable, Comparable<XmlSource> {
     @XmlAttribute(name="url", required=true)
     private String m_url;
 
-    /** The handler. */
-    @XmlAttribute(name="handler") // FIXME maybe this is not needed here
-    private String m_handler;
-
     /** The user name for authentication. */
     @XmlAttribute(name="user-name")
     private String m_userName;
@@ -68,14 +64,6 @@ public class XmlSource implements Serializable, Comparable<XmlSource> {
     /** The password for authentication. */
     @XmlAttribute(name="password")
     private String m_password;
-
-    /** The timeout. */
-    @XmlAttribute(name="timeout")
-    private Integer m_timeout = 0;
-
-    /** The retries. */
-    @XmlAttribute(name="retries")
-    private Integer m_retries = 0;
 
     /** The XML groups list. */
     @XmlElement(name="xml-group")
@@ -142,63 +130,6 @@ public class XmlSource implements Serializable, Comparable<XmlSource> {
      */
     public void setPassword(String password) {
         this.m_password = password;
-    }
-
-    /**
-     * Gets the timeout.
-     *
-     * @return the timeout
-     */
-    @XmlTransient
-    public Integer getTimeout() {
-        return m_timeout;
-    }
-
-    /**
-     * Sets the timeout.
-     *
-     * @param timeout the new timeout
-     */
-    public void setTimeout(Integer timeout) {
-        this.m_timeout = timeout;
-    }
-
-    /**
-     * Gets the retries.
-     *
-     * @return the retries
-     */
-    @XmlTransient
-    public Integer getRetries() {
-        return m_retries;
-    }
-
-    /**
-     * Sets the retries.
-     *
-     * @param retries the new retries
-     */
-    public void setRetries(Integer retries) {
-        this.m_retries = retries;
-    }
-
-    /**
-     * Gets the handler.
-     *
-     * @return the handler
-     */
-    @XmlTransient
-    public String getHandler() {
-        return m_handler;
-    }
-
-    /**
-     * Sets the handler.
-     *
-     * @param handler the new handler
-     */
-    public void setHandler(String handler) {
-        m_handler = handler;
     }
 
     /**
