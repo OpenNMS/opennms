@@ -189,12 +189,13 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 	                agent = MockSnmpAgent.createAgentAndRun(resource, str(listenAddress.getAddress()) + "/" + listenAddress.getPort());
 	                break;
 	            } catch (final InterruptedException e) {
-	                if (!(e.getCause() instanceof BindException) || !e.getCause().getMessage().equals("Address already in use")) {
+	                if (e.getCause() instanceof BindException && e.getCause().getMessage().contains("already in use")) {
+	                    do {
+	                        listenAddress = new SnmpAgentAddress(localHost, mappedPort++);
+	                    } while (mapper.contains(listenAddress));
+	                } else {
 	                    throw e;
 	                }
-	                do {
-	                    listenAddress = new SnmpAgentAddress(localHost, mappedPort++);
-	                } while (mapper.contains(listenAddress));
 	            }
 		    }
 		    
