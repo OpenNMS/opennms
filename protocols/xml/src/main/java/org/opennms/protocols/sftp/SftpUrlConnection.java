@@ -38,7 +38,6 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
 
 /**
  * The class for managing SFTP URL Connection.
@@ -105,7 +104,7 @@ public class SftpUrlConnection extends URLConnection {
     public InputStream getInputStream() throws IOException {
         try {
             return m_channel.get(getPath());
-        } catch (SftpException e) {
+        } catch (Exception e) {
             throw new IOException("Can't retrieve " + m_url.getPath() + " from " + m_url.getHost() + " because " + e.getMessage());
         }
     }
@@ -114,8 +113,9 @@ public class SftpUrlConnection extends URLConnection {
      * Gets the path.
      *
      * @return the path
+     * @throws SftpUrlException the SFTP URL exception
      */
-    protected String getPath() {
+    protected String getPath() throws SftpUrlException {
         return m_url.getPath();
     }
 

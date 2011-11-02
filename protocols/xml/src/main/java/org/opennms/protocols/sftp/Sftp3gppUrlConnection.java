@@ -27,14 +27,13 @@
  *******************************************************************************/
 package org.opennms.protocols.sftp;
 
+import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
-
-import org.apache.regexp.RE;
 
 /**
  * The class for managing SFTP+3GPP URL Connection.
@@ -53,25 +52,46 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
     }
 
     /**
-     * Gets the path for 3GPP-A (NE Mode)
+     * Gets the path for 3GPP-A (NE Mode).
      *
-     * @param path the current unformatted path
      * @return the path for 3GPP-A (NE Mode)
+     * @throws SftpUrlException the SFTP URL exception
      */
     @Override
-    protected String getPath() {
+    protected String getPath() throws SftpUrlException {
         String path = m_url.getPath();
-        if (path.contains("___CURRENT_3GPP_A_FORMAT")) {
-            Map<String,String> properties = getProperties(url);
-            log().info("Processing 3GPP NE URL on " + path);
-            long step = Long.parseLong(properties.get("step")) * 1000;
-            String tz = properties.get("tz-offset");
-            long timestamp = System.currentTimeMillis() - System.currentTimeMillis()  % step;
-            SimpleDateFormat datef = new SimpleDateFormat("yyyyMMdd");
-            datef.setTimeZone(TimeZone.getTimeZone(tz));
-            SimpleDateFormat timef = new SimpleDateFormat("HHmmZ");
-            timef.setTimeZone(TimeZone.getTimeZone(tz));
+        Map<String,String> properties = getProperties(url);
 
+        // Checking required parameters
+        if (!properties.containsKey("step")) {
+            throw new SftpUrlException("Missing parameter 'step'. 3GPP requires the Collection Step to generate the file name.");
+        }
+        if (!properties.containsKey("neid")) {
+            throw new SftpUrlException("Missing parameter 'neId'. 3GPP requires NE ID to generate the file name.");
+        }
+        String fileType = properties.get("filetype");
+        if (fileType == null) {
+            log().debug("getPath: file type not provided, using A by default");
+            fileType = "A";
+        }
+
+        // Creating common time format objects
+        log().info("Processing 3GPP file type " + fileType + " using URL " + url);
+        long step = Long.parseLong(properties.get("step")) * 1000;
+        String tz = properties.get("tz-offset");
+        long timestamp = System.currentTimeMillis() - System.currentTimeMillis()  % step;
+        SimpleDateFormat datef = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat timef = new SimpleDateFormat("HHmmZ");
+        if (tz == null) {
+            log().debug("getPath: time zone not provided, using current timezone " + TimeZone.getDefault().getID());
+        } else {
+            log().debug("getPath: using time zone " + TimeZone.getTimeZone(tz).getID());
+            datef.setTimeZone(TimeZone.getTimeZone(tz));
+            timef.setTimeZone(TimeZone.getTimeZone(tz));
+        }
+
+        // Processing 3GPP File Type A (NE Mode)
+        if (fileType.equals("A")) {
             StringBuffer sb = new StringBuffer("A");
             sb.append(datef.format(new Date(timestamp)));
             sb.append(".");
@@ -81,9 +101,11 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
             sb.append("_");
             sb.append(properties.get("neid"));
             sb.append(".xml");
-            RE re = new RE("___CURRENT_3GPP_A_FORMAT");
-            path = re.subst(path, sb.toString());
+            File f = new File(path, sb.toString());
+            path = f.getAbsolutePath();
         }
+
+        log().info("Retrieving 3GPP NE data using " + path);
         return path;
     }
 
