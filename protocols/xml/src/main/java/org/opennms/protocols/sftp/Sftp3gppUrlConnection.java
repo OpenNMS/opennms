@@ -78,7 +78,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         // Creating common time format objects
         log().info("Processing 3GPP file type " + fileType + " using URL " + url);
         long step = Long.parseLong(properties.get("step")) * 1000;
-        String tz = properties.get("tz-offset");
+        String tz = properties.get("timezone");
         long timestamp = System.currentTimeMillis() - System.currentTimeMillis()  % step;
         SimpleDateFormat datef = new SimpleDateFormat("yyyyMMdd");
         SimpleDateFormat timef = new SimpleDateFormat("HHmmZ");
