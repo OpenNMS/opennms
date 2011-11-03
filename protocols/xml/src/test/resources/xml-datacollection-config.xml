@@ -11,7 +11,9 @@
 		<xml-source url="sftp://{ipaddr}:8080/3GPP-data.xml">
 			<xml-group name="platform-system-resource" resource-type="platformSystemResource"
 				key-xpath="@measObjLdn"
-				resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='platform-system|resource']/measValue">
+				resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='platform-system|resource']/measValue"
+				timestamp-xpath="/measCollecFile/measData/measInfo/granPeriod/@endTime"
+				timestamp-format="yyyy-MM-dd'T'HH:mm:ss'Z'">
 				<xml-object name="cpuUtilization" type="GAUGE" xpath="r[@p=1]" />
 				<xml-object name="memUtilization" type="GAUGE" xpath="r[@p=2]" />
 				<xml-object name="suspect" type="STRING" xpath="suspect" />

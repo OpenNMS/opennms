@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.xml.config.XmlSource;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.opennms.test.FileAnticipator;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
@@ -114,6 +115,7 @@ public class XmlCollectorTest {
      */
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
         m_fileAnticipator = new FileAnticipator();
     }
 
@@ -125,6 +127,7 @@ public class XmlCollectorTest {
     @After
     public void tearDown() throws Exception {
         m_fileAnticipator.deleteExpected();
+        MockLogAppender.assertNoWarningsOrGreater();
     }
 
     /**

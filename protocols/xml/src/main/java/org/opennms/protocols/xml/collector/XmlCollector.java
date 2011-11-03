@@ -32,6 +32,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +42,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.opennms.core.utils.BeanUtils;
@@ -206,12 +209,13 @@ public class XmlCollector implements ServiceCollector {
                 XPath xpath = XPathFactory.newInstance().newXPath();
                 for (XmlGroup group : source.getXmlGroups()) {
                     log().debug("collect: getting resources for XML group " + group.getName() + " using XPATH " + group.getResourceXpath());
+                    Date timestamp = getTimeStamp(doc, xpath, group);
                     NodeList resourceList = (NodeList) xpath.evaluate(group.getResourceXpath(), doc, XPathConstants.NODESET);
                     for (int j = 0; j < resourceList.getLength(); j++) {
                         Node resource = resourceList.item(j);
                         Node resourceName = (Node) xpath.evaluate(group.getKeyXpath(), resource, XPathConstants.NODE);
                         log().debug("collect: processing XML resource " + resourceName);
-                        XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName.getNodeValue(), group.getResourceType());
+                        XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName.getNodeValue(), group.getResourceType(), timestamp);
                         for (XmlObject object : group.getXmlObjects()) {
                             String value = (String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING);
                             collectionResource.setAttributeValue(m_attribTypeList.get(object.getName()), value);
@@ -224,8 +228,40 @@ public class XmlCollector implements ServiceCollector {
             return collectionSet;
         } catch (Exception e) {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
-            throw new CollectionException("Can't collect XML data.", e);
+            throw new CollectionException("Can't collect XML data because " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Gets the time stamp.
+     *
+     * @param doc the doc
+     * @param xpath the xpath
+     * @param group the group
+     * @return the time stamp
+     * @throws XPathExpressionException the x path expression exception
+     * @throws ParseException the parse exception
+     */
+    protected Date getTimeStamp(Document doc, XPath xpath, XmlGroup group) throws XPathExpressionException, ParseException {
+        if (group.getTimestampXpath() == null) {
+            return null;
+        }
+        String format = group.getTimestampFormat() == null ? "yyyy-MM-dd HH:mm:ss" : group.getTimestampFormat();
+        log().debug("getTimeStamp: retrieving custom timestamp to be used when updating RRDs using XPATH " + group.getTimestampXpath() + " and format " + format);
+        Node tsNode = (Node) xpath.evaluate(group.getTimestampXpath(), doc, XPathConstants.NODE);
+        if (tsNode == null) {
+            log().warn("getTimeStamp: can't find the custom timestamp using XPATH " +  group.getTimestampXpath());
+            return null;
+        }
+        Date date = null;
+        String value = tsNode.getNodeValue() == null ? tsNode.getTextContent() : tsNode.getNodeValue();
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+            date = dateFormat.parse(value);
+        } catch (Exception e) {
+            log().warn("getTimeStamp: can't convert custom timetime " + value + " using format " + format);
+        }
+        return date;
     }
 
     /**
@@ -234,14 +270,19 @@ public class XmlCollector implements ServiceCollector {
      * @param agent the collection agent
      * @param instance the resource instance
      * @param resourceType the resource type
+     * @param timestamp the timestamp
      * @return the collection resource
      */
-    private XmlCollectionResource getCollectionResource(CollectionAgent agent, String instance, String resourceType) {
+    private XmlCollectionResource getCollectionResource(CollectionAgent agent, String instance, String resourceType, Date timestamp) {
         XmlCollectionResource resource = null;
         if (resourceType.toLowerCase().equals("node")) {
             resource = new XmlSingleInstanceCollectionResource(agent);
         } else {
             resource = new XmlMultiInstanceCollectionResource(agent, instance, resourceType);
+        }
+        if (timestamp != null) {
+            log().debug("getCollectionResource: the date that will be used when updating the RRDs is " + timestamp);
+            resource.setTimeKeeper(new ConstantTimeKeeper(timestamp));
         }
         return resource;
     }

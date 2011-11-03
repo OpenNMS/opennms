@@ -143,6 +143,8 @@ public class XmlDataCollectionConfigTest {
         group.setResourceType("platformSystemResource");
         group.setResourceXpath("/measCollecFile/measData/measInfo[@measInfoId='platform-system|resource']/measValue");
         group.setKeyXpath("@measObjLdn");
+        group.setTimestampXpath("/measCollecFile/measData/measInfo/granPeriod/@endTime");
+        group.setTimestampFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         group.addXmlObject(cpu);
         group.addXmlObject(mem);
         group.addXmlObject(suspect);

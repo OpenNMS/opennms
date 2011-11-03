@@ -69,11 +69,10 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         if (!properties.containsKey("neid")) {
             throw new SftpUrlException("Missing parameter 'neId'. 3GPP requires NE ID to generate the file name.");
         }
-        String fileType = properties.get("filetype");
-        if (fileType == null) {
-            log().debug("getPath: file type not provided, using A by default");
-            fileType = "A";
+        if (!properties.containsKey("filetype")) {
+            throw new SftpUrlException("Missing parameter 'filetype'. 3GPP requires file type (valid values are A, B, C, D) to generate the file name.");
         }
+        String fileType = properties.get("filetype");
 
         // Creating common time format objects
         log().info("Processing 3GPP file type " + fileType + " using URL " + url);
@@ -103,6 +102,8 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
             sb.append(".xml");
             File f = new File(path, sb.toString());
             path = f.getAbsolutePath();
+        } else {
+            throw new SftpUrlException("Invalid file type " + fileType + ". Only file type A is supported");
         }
 
         log().info("Retrieving 3GPP NE data using " + path);
