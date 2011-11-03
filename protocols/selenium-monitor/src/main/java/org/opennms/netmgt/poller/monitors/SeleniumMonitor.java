@@ -67,13 +67,13 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
                 }
             } catch (CompilationFailedException e) {
                 serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on:" + svc.getIpAddr() + " failed : selenium-test compilation error " + e.getMessage());
-                logDown(Level.DEBUG, "Selenium sequence failed: " + e.getMessage());
+                logDown(Level.DEBUG, "Selenium sequence failed: CompilationFailedException" + e.getMessage());
             } catch (IOException e) {
                 serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on " + svc.getIpAddr() + " failed: IOException occurred, failed to find selenium-test: " + seleniumTestFilename);
-                logDown(Level.DEBUG, "Selenium sequence failed: " + e.getMessage());
+                logDown(Level.DEBUG, "Selenium sequence failed: IOException: " + e.getMessage());
             } catch (Exception e) {
                 serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on " + svc.getIpAddr() + " failed:\n" + e.getMessage());
-                logDown(Level.DEBUG, "Selenium sequence failed: " + e.getMessage());
+                logDown(Level.DEBUG, "Selenium sequence failed: Exception: " + e.getMessage());
             }
 		}
 	    
@@ -144,7 +144,7 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
     {
         GroovyClassLoader gcl = new GroovyClassLoader();
         
-        String file = System.getProperty("opennms.selenium.test.dir") + "/selenium/test/groovy/" + filename;
+        String file = System.getProperty("opennms.home") + "/etc/selenium/test/groovy/" + filename;
         return gcl.parseClass( new File( file ) );
     }
 

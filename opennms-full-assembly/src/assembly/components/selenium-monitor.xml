@@ -6,12 +6,6 @@
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>true</useTransitiveDependencies>
       <outputDirectory>lib</outputDirectory>
-<!--       <includes> -->
-<!--         <include>org.opennms:selenium-monitor:jar:${project.version}</include> -->
-<!--         <include>org.codehaus.groovy:groovy:jar:1.9.0-beta-3</include> -->
-<!--         <include>junit:junit:jar:4.8.2</include> -->
-<!--         <include>org.seleniumhq.selenium:selenium-java:jar:2.7.0</include> -->
-<!--       </includes> -->
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
