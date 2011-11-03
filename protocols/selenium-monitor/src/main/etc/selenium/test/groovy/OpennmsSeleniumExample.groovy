@@ -1,39 +1,44 @@
 package selenium.test.groovy;
 
-import java.util.regex.Pattern;
-import java.util.concurrent.TimeUnit;
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
-import org.openqa.selenium.*;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.Select;
+import static org.junit.Assert.*
 
-public class OpennmsSeleniumExample {
+import java.util.concurrent.TimeUnit
+
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.openqa.selenium.By
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.firefox.FirefoxDriver
+
+class OpennmsSeleniumExample  {
+    
     private WebDriver driver;
-    private String baseUrl="";
-    private int timeout = 3;
+    private String baseUrl="http://www.papajohns.co.uk/";
+    private int timeout = 30;
     private StringBuffer verificationErrors = new StringBuffer();
-
+    
     public OpennmsSeleniumExample(String url, int timeoutInSeconds) {
-         baseUrl = url;
-         timeout = timeoutInSeconds;
+        baseUrl = url;
+        timeout = timeoutInSeconds;
     }
+    
     @Before
     public void setUp() throws Exception {
         driver = new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
     }
-    
-    
+
     @Test
-    public void test() throws Exception {
-        // open | / | 
+    public void testSelenium() throws Exception {
+        // open | / |
         driver.get(baseUrl);
-        // click | link=About OpenNMS | 
-        driver.findElement(By.linkText("About OpenNMS")).click();
-        assertTextPresent | OpenNMS is an award winning network management application platform | 
-        // ERROR: Caught exception [ERROR: Unsupported command [isTextPresent]]
+        // click | link=Our Story |
+        driver.findElement(By.linkText("Our Story")).click();
+        
+        // assertText | link=Contact Us | Contact Us
+        //assertEquals("Contact Us", driver.findElement(By.linkText("Contact Us")).getText());
+        assertEquals("Contact Us", driver.findElement(By.linkText("Contact Us")).getText());
     }
 
     @After
@@ -44,14 +49,6 @@ public class OpennmsSeleniumExample {
             fail(verificationErrorString);
         }
     }
-
-    private boolean isElementPresent(By by) {
-        try {
-            driver.findElement(by);
-            return true;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
-    }
+    
     
 }

@@ -98,7 +98,12 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
             }
             
             if(baseUrl.contains("${ipAddr}")) {
-                return BaseUrlUtils.replaceIpAddr(baseUrl, svc.getIpAddr());
+                baseUrl = BaseUrlUtils.replaceIpAddr(baseUrl, svc.getIpAddr());
+            }
+            
+            if(parameters.containsKey("port")) {
+                String port = (String) parameters.get("port");
+                baseUrl = baseUrl + ":" + port;
             }
             
             return baseUrl;
