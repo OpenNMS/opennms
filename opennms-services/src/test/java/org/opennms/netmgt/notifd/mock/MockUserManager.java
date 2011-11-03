@@ -48,6 +48,7 @@ public class MockUserManager extends UserManager {
 
     String m_xmlString;
     boolean updateNeeded = true;
+    private long m_lastModified;
     
     /**
      * @param groupManager
@@ -64,6 +65,7 @@ public class MockUserManager extends UserManager {
         InputStream in = new ByteArrayInputStream(m_xmlString.getBytes());
         parseXML(in);
         updateNeeded = false;
+        m_lastModified = System.currentTimeMillis();
     }
 
     /* (non-Javadoc)
@@ -85,6 +87,11 @@ public class MockUserManager extends UserManager {
 
     public boolean isUpdateNeeded() {
         return updateNeeded;
+    }
+
+    @Override
+    public long getLastModified() {
+        return m_lastModified;
     }
 
 }

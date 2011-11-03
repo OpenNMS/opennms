@@ -256,7 +256,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="linkdConfigFactory" class="org.opennms.netmgt.config.LinkdConfigFactory" depends-on="linkdConfigFactory-init" factory-method="getInstance"/>
 
-  <bean id="userDao" class="org.opennms.web.springframework.security.UserDaoImpl">
+  <bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
     <property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />
     <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
     <property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />

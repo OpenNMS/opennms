@@ -186,4 +186,9 @@ public class UserFactory extends UserManager {
             reload();
         }
     }
+
+    @Override
+    public long getLastModified() {
+        return m_lastModified;
+    }
 }

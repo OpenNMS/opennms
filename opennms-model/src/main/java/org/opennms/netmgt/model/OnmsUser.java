@@ -26,29 +26,51 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.springframework.security;
+package org.opennms.netmgt.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.userdetails.UserDetails;
 
-/**
- * <p>User class.</p>
- */
-public class User implements UserDetails {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8649420222794568157L;
-	private String m_username;
+@XmlRootElement(name="user")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class OnmsUser implements UserDetails {
+    private static final long serialVersionUID = 9178300257028646237L;
+
+    @XmlElement(name="user-id", required=true)
+    private String m_username;
+    
+    @XmlElement(name="full-name", required=false)
 	private String m_fullName;
+    
+    @XmlElement(name="user-comments", required=false)
 	private String m_comments;
+    
+    @XmlElement(name="password", required=false)
 	private String m_password;
-	//private Set m_contactInformation;
-	//private Set m_dutySchedules;
+    
+    @XmlTransient
 	private GrantedAuthority[] m_authorities;
+
+    @XmlElement(name="duty-schedule", required=false)
+    private List<String> m_dutySchedule = new ArrayList<String>();
 	
-	/**
+	public OnmsUser() { }
+
+	public OnmsUser(final String username) {
+	    m_username = username;
+    }
+
+    /**
 	 * <p>getComments</p>
 	 *
 	 * @return a {@link java.lang.String} object.
@@ -119,6 +141,14 @@ public class User implements UserDetails {
 	public void setUsername(String username) {
 		m_username = username;
 	}
+
+	public List<String> getDutySchedule() {
+	    return m_dutySchedule;
+	}
+
+	public void setDutySchedule(final List<String> dutySchedule) {
+	    m_dutySchedule = dutySchedule;
+    }
     
     /**
      * <p>toString</p>
@@ -126,7 +156,12 @@ public class User implements UserDetails {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-    	return "Username " + m_username + " full name " + m_fullName + " comments " + m_comments + " password " + m_password;
+        return new ToStringBuilder(this)
+            .append("username", m_username)
+            .append("full-name", m_fullName)
+            .append("comments", m_comments)
+            .append("password", m_password)
+            .toString();
     }
 
 	/**
@@ -182,4 +217,5 @@ public class User implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
+
 }
