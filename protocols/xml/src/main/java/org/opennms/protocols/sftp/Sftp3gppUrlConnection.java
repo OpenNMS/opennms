@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.regexp.RE;
+import org.apache.regexp.RESyntaxException;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * The class for managing SFTP+3GPP URL Connection.
@@ -81,8 +83,13 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
             sb.append("_");
             sb.append(properties.get("neid"));
             sb.append(".xml");
-            RE re = new RE("___CURRENT_3GPP_A_FORMAT");
-            path = re.subst(path, sb.toString());
+            RE re;
+			try {
+				re = new RE("___CURRENT_3GPP_A_FORMAT");
+	            path = re.subst(path, sb.toString());
+			} catch (final RESyntaxException e) {
+				LogUtils.warnf(this, e, "An error occurred applying path '%s'", path);
+			}
         }
         return path;
     }
