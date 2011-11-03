@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.opennms.protocols.http.HttpUrlHandler;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.sftp.SftpUrlConnection;
 import org.opennms.protocols.sftp.SftpUrlHandler;
@@ -62,6 +63,8 @@ public class UrlFactory {
             url = new URL(null, urlStr, new SftpUrlHandler());
         } else if (urlStr.startsWith("sftp+3gpp://")) {
             url = new URL(null, urlStr, new Sftp3gppUrlHandler());
+        } else if (urlStr.startsWith("http://")) {
+            url = new URL(null, urlStr, new HttpUrlHandler());
         } else {
             url = new URL(urlStr);
         }
