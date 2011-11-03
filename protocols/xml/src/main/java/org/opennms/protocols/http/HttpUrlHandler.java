@@ -39,6 +39,9 @@ import java.net.URLStreamHandler;
  */
 public class HttpUrlHandler extends URLStreamHandler {
 
+    /** The Constant PROTOCOL. */
+    public static final String PROTOCOL = "http";
+
     /* (non-Javadoc)
      * @see java.net.URLStreamHandler#getDefaultPort()
      */

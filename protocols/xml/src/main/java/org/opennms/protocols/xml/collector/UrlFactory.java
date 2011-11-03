@@ -59,11 +59,11 @@ public class UrlFactory {
      */
     public static URL getUrl(String urlStr) throws MalformedURLException {
         URL url = null;
-        if (urlStr.startsWith("sftp://")) {
+        if (urlStr.startsWith(SftpUrlHandler.PROTOCOL + "://")) {
             url = new URL(null, urlStr, new SftpUrlHandler());
-        } else if (urlStr.startsWith("sftp+3gpp://")) {
+        } else if (urlStr.startsWith(Sftp3gppUrlHandler.PROTOCOL + "://")) {
             url = new URL(null, urlStr, new Sftp3gppUrlHandler());
-        } else if (urlStr.startsWith("http://")) {
+        } else if (urlStr.startsWith(HttpUrlHandler.PROTOCOL + "://")) {
             url = new URL(null, urlStr, new HttpUrlHandler());
         } else {
             url = new URL(urlStr);

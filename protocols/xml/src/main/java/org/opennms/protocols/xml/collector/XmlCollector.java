@@ -202,7 +202,8 @@ public class XmlCollector implements ServiceCollector {
 
             for (XmlSource source : collection.getXmlSources()) {
                 // Retrieve the XML data
-                Document doc = getXmlDocument(agent, source);
+                String urlStr = source.getUrl().replace("{ipaddr}", agent.getHostAddress()).replace("{step}", collection.getXmlRrd().getStep().toString());
+                Document doc = getXmlDocument(agent, urlStr);
 
                 // Cycle through all of the queries for this collection
                 XPath xpath = XPathFactory.newInstance().newXPath();
@@ -229,6 +230,13 @@ public class XmlCollector implements ServiceCollector {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
             throw new CollectionException("Can't collect XML data because " + e.getMessage(), e);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.ServiceCollector#getRrdRepository(java.lang.String)
+     */
+    public RrdRepository getRrdRepository(String collectionName) {
+        return m_xmlCollectionDao.getConfig().buildRrdRepository(collectionName);
     }
 
     /**
@@ -272,7 +280,7 @@ public class XmlCollector implements ServiceCollector {
      * @param timestamp the timestamp
      * @return the collection resource
      */
-    private XmlCollectionResource getCollectionResource(CollectionAgent agent, String instance, String resourceType, Date timestamp) {
+    protected XmlCollectionResource getCollectionResource(CollectionAgent agent, String instance, String resourceType, Date timestamp) {
         XmlCollectionResource resource = null;
         if (resourceType.toLowerCase().equals("node")) {
             resource = new XmlSingleInstanceCollectionResource(agent);
@@ -286,24 +294,16 @@ public class XmlCollector implements ServiceCollector {
         return resource;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.ServiceCollector#getRrdRepository(java.lang.String)
-     */
-    public RrdRepository getRrdRepository(String collectionName) {
-        return m_xmlCollectionDao.getConfig().buildRrdRepository(collectionName);
-    }
-
     /**
      * Gets the XML document.
      *
-     * @param agent the agent
-     * @param source the source
+     * @param agent the collection agent
+     * @param urlString the URL string
      * @return the XML document
      */
-    public Document getXmlDocument(CollectionAgent agent, XmlSource source) {
-        String urlStr = source.getUrl().replace("{ipaddr}", agent.getHostAddress());
+    protected Document getXmlDocument(CollectionAgent agent, String urlString) {
         try {
-            URL url = UrlFactory.getUrl(urlStr);
+            URL url = UrlFactory.getUrl(urlString);
             URLConnection c = url.openConnection();
             c.connect();
             InputStream is = c.getInputStream();
@@ -314,7 +314,7 @@ public class XmlCollector implements ServiceCollector {
             UrlFactory.disconnect(c);
             return doc;
         } catch (Exception e) {
-            throw new XmlCollectorException("Can't retrieve data from " + urlStr + " because " + e.getMessage(), e);
+            throw new XmlCollectorException("Can't retrieve data from " + urlString + " because " + e.getMessage(), e);
         }
     }
 

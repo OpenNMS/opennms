@@ -40,7 +40,7 @@ import java.net.URLStreamHandler;
 public class Sftp3gppUrlHandler extends URLStreamHandler {
 
     /** The Constant PROTOCOL. */
-    public static final String PROTOCOL = "sftp+3gpp";
+    public static final String PROTOCOL = "sftp.3gpp";
 
     /* (non-Javadoc)
      * @see java.net.URLStreamHandler#getDefaultPort()

@@ -102,6 +102,15 @@ public class SftpUrlConnection extends URLConnection {
         if (m_session != null)
             m_session.disconnect();
     }
+    
+    /**
+     * Gets the channel.
+     *
+     * @return the channel
+     */
+    public ChannelSftp getChannel() {
+        return m_channel;
+    }
 
     /* (non-Javadoc)
      * @see java.net.URLConnection#getInputStream()

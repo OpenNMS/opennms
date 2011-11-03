@@ -50,7 +50,6 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.protocols.xml.config.XmlSource;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
@@ -77,10 +76,10 @@ public class XmlCollectorTest {
     private class MockXmlCollector extends XmlCollector {
 
         /* (non-Javadoc)
-         * @see org.opennms.protocols.xml.collector.XmlCollector#getXmlDocument(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlSource)
+         * @see org.opennms.protocols.xml.collector.XmlCollector#getXmlDocument(org.opennms.netmgt.collectd.CollectionAgent, java.lang.String)
          */
         @Override
-        public Document getXmlDocument(CollectionAgent agent, XmlSource source) {
+        protected Document getXmlDocument(CollectionAgent agent, String urlString) {
             Document doc = null;
             try {
                 log().info("getXmlDocument: loading G3PP testing data...");
