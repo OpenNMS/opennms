@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
 
@@ -156,16 +157,30 @@ public class PollableSnmpInterface implements ReadyRunnable {
     		log().debug("setting snmpinterfaces: got null, thread instantiated but at moment no interface found");
     		return;
     	}
+
+    	// ifIndex -> operstatus
+    	final Map<Integer, Integer> oldStatuses = new HashMap<Integer, Integer>();
+    	for (final Integer ifIndex : m_snmpinterfaces.keySet()) {
+    		final OnmsSnmpInterface iface = m_snmpinterfaces.get(ifIndex);
+    		if (iface != null && iface.getIfOperStatus() != null) {
+    			oldStatuses.put(ifIndex, iface.getIfOperStatus());
+    		}
+    	}
+    	
     	m_snmpinterfaces.clear();
         for (OnmsSnmpInterface iface: snmpinterfaces) {
         	log().debug("setting snmpinterface:" + iface.toString());
         	if (iface != null && iface.getIfIndex() != null && iface.getIfIndex() > 0) {
+        		final Integer oldStatus = oldStatuses.get(iface.getIfIndex());
+        		
                 m_snmpinterfaces.put(iface.getIfIndex(), iface);            
         		if (iface.getIfAdminStatus() != null &&
         				iface.getIfAdminStatus().equals(SnmpMinimalPollInterface.IF_UP) && 
         				iface.getIfOperStatus() != null &&
-        				iface.getIfOperStatus().equals(SnmpMinimalPollInterface.IF_DOWN)) 
-        				sendOperDownEvent(iface);
+        				iface.getIfOperStatus().equals(SnmpMinimalPollInterface.IF_DOWN) &&
+        				iface.getIfOperStatus() != oldStatus) {
+        			sendOperDownEvent(iface);
+        		}
         	}
         }
     }
