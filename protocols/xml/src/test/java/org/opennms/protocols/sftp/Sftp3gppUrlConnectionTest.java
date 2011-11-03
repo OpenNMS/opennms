@@ -34,6 +34,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.protocols.xml.collector.UrlFactory;
 
 /**
  * The Class Sftp3gppUrlConnectionTest.
@@ -49,9 +50,10 @@ public class Sftp3gppUrlConnectionTest {
      */
     @Test
     public void testPathForSFTP() throws Exception {
-        URL url = SftpUrlFactory.getUrl("sftp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5/data.xml");
+        URL url = UrlFactory.getUrl("sftp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5/data.xml");
         URLConnection conn = url.openConnection();
         Assert.assertTrue(conn instanceof SftpUrlConnection);
+        UrlFactory.disconnect(conn);
     }
 
     /**
@@ -61,11 +63,12 @@ public class Sftp3gppUrlConnectionTest {
      */
     @Test
     public void testPathFor3GPPA() throws Exception {
-        URL url = SftpUrlFactory.getUrl("sftp+3gpp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5?fileType=A&step=300&timezone=GMT-5&neId=MME00001");
+        URL url = UrlFactory.getUrl("sftp+3gpp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5?fileType=A&step=300&timezone=GMT-5&neId=MME00001");
         URLConnection conn = url.openConnection();
         Assert.assertTrue(conn instanceof Sftp3gppUrlConnection);
         String path = ((Sftp3gppUrlConnection) conn).getPath();
         log().debug(path);
+        UrlFactory.disconnect(conn);
     }
 
     /**

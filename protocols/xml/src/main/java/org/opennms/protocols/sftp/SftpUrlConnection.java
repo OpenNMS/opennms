@@ -70,12 +70,16 @@ public class SftpUrlConnection extends URLConnection {
      */
     @Override
     public void connect() throws IOException {
+        if (m_url.getUserInfo() == null) {
+            throw new IOException("User credentials required.");
+        }
         String[] userInfo = m_url.getUserInfo().split(":");
         JSch jsch = new JSch();
         try {
             int port = m_url.getPort() > 0 ? m_url.getPort() : m_url.getDefaultPort();
             m_session = jsch.getSession(userInfo[0], m_url.getHost(), port);
-            m_session.setPassword(userInfo[1]);
+            if (userInfo.length > 1)
+                m_session.setPassword(userInfo[1]);
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
             m_session.setConfig(config);
@@ -93,8 +97,10 @@ public class SftpUrlConnection extends URLConnection {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public void disconnect() throws IOException {
-        m_channel.disconnect();
-        m_session.disconnect();
+        if (m_channel != null)
+            m_channel.disconnect();
+        if (m_session != null)
+            m_session.disconnect();
     }
 
     /* (non-Javadoc)

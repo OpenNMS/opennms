@@ -55,13 +55,12 @@ import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.protocols.sftp.SftpUrlConnection;
-import org.opennms.protocols.sftp.SftpUrlFactory;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
 import org.opennms.protocols.xml.dao.XmlDataCollectionConfigDao;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -304,7 +303,7 @@ public class XmlCollector implements ServiceCollector {
     public Document getXmlDocument(CollectionAgent agent, XmlSource source) {
         String urlStr = source.getUrl().replace("{ipaddr}", agent.getHostAddress());
         try {
-            URL url = SftpUrlFactory.getUrl(urlStr);
+            URL url = UrlFactory.getUrl(urlStr);
             URLConnection c = url.openConnection();
             c.connect();
             InputStream is = c.getInputStream();
@@ -312,11 +311,10 @@ public class XmlCollector implements ServiceCollector {
             factory.setIgnoringComments(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(is);
-            if (c instanceof SftpUrlConnection) // We need to be sure to close the connections for SFTP
-                ((SftpUrlConnection)c).disconnect();
+            UrlFactory.disconnect(c);
             return doc;
         } catch (Exception e) {
-            throw new XmlCollectorException("Can't retrieve data from " + urlStr);
+            throw new XmlCollectorException("Can't retrieve data from " + urlStr + " because " + e.getMessage(), e);
         }
     }
 
