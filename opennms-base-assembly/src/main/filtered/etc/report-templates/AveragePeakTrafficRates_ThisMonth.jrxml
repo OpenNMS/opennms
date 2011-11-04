@@ -69,7 +69,8 @@
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
+	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
+		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
 		<defaultValueExpression><![CDATA["Production"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date" isForPrompting="false">
