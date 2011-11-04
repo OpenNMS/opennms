@@ -1,0 +1,172 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.protocols.xml.collector;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.protocols.xml.config.XmlDataCollection;
+import org.opennms.protocols.xml.config.XmlGroup;
+import org.opennms.protocols.xml.config.XmlObject;
+import org.opennms.protocols.xml.config.XmlSource;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+/**
+ * The Abstract Class XML Collection Handler.
+ * <p>All XmlCollectionHandler should extend this class.</p>
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
+public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandler {
+
+    /** The XML attribute type Map. */
+    private HashMap<String, XmlCollectionAttributeType> m_attribTypeList = new HashMap<String, XmlCollectionAttributeType>();
+
+    /**
+     * Load attributes.
+     *
+     * @param collection the collection
+     */
+    protected void loadAttributes(XmlDataCollection collection) {
+        for (XmlSource source : collection.getXmlSources()) {
+            for (XmlGroup group : source.getXmlGroups()) {
+                AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
+                for (XmlObject object : group.getXmlObjects()) {
+                    XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
+                    m_attribTypeList.put(object.getName(), attribType);
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets the collection attribute type.
+     *
+     * @param attributeTypeName the attribute type name
+     * @return the collection attribute type
+     */
+    protected XmlCollectionAttributeType getCollectionAttributeType(String attributeTypeName) {
+        return m_attribTypeList.get(attributeTypeName);
+    }
+
+    /**
+     * Gets the collection resource.
+     *
+     * @param agent the collection agent
+     * @param instance the resource instance
+     * @param resourceType the resource type
+     * @param timestamp the timestamp
+     * @return the collection resource
+     */
+    protected XmlCollectionResource getCollectionResource(CollectionAgent agent, String instance, String resourceType, Date timestamp) {
+        XmlCollectionResource resource = null;
+        if (resourceType.toLowerCase().equals("node")) {
+            resource = new XmlSingleInstanceCollectionResource(agent);
+        } else {
+            resource = new XmlMultiInstanceCollectionResource(agent, instance, resourceType);
+        }
+        if (timestamp != null) {
+            log().debug("getCollectionResource: the date that will be used when updating the RRDs is " + timestamp);
+            resource.setTimeKeeper(new ConstantTimeKeeper(timestamp));
+        }
+        return resource;
+    }
+
+    /**
+     * Gets the time stamp.
+     *
+     * @param doc the doc
+     * @param xpath the xpath
+     * @param group the group
+     * @return the time stamp
+     * @throws XPathExpressionException the x path expression exception
+     * @throws ParseException the parse exception
+     */
+    protected Date getTimeStamp(Document doc, XPath xpath, XmlGroup group) throws XPathExpressionException, ParseException {
+        if (group.getTimestampXpath() == null) {
+            return null;
+        }
+        String format = group.getTimestampFormat() == null ? "yyyy-MM-dd HH:mm:ss" : group.getTimestampFormat();
+        log().debug("getTimeStamp: retrieving custom timestamp to be used when updating RRDs using XPATH " + group.getTimestampXpath() + " and format " + format);
+        Node tsNode = (Node) xpath.evaluate(group.getTimestampXpath(), doc, XPathConstants.NODE);
+        if (tsNode == null) {
+            log().warn("getTimeStamp: can't find the custom timestamp using XPATH " +  group.getTimestampXpath());
+            return null;
+        }
+        Date date = null;
+        String value = tsNode.getNodeValue() == null ? tsNode.getTextContent() : tsNode.getNodeValue();
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+            date = dateFormat.parse(value);
+        } catch (Exception e) {
+            log().warn("getTimeStamp: can't convert custom timetime " + value + " using format " + format);
+        }
+        return date;
+    }
+
+    /**
+     * Parses the URL.
+     *
+     * <p>Valid placeholders are:</p>
+     * <ul>
+     * <li><b>ipaddr</b>, The Node IP Address</li>
+     * <li><b>step</b>, The Collection Step in seconds</li>
+     * </ul>
+     * 
+     * @param unformattedUrl the unformatted URL
+     * @param agent the collection agent
+     * @param collectionStep the collection step
+     * @return the string
+     */
+    // TODO: Retrieve nodeDao and transactionTemplate from BeanUtils in order to retrieve node information used on placeholders
+    protected String parseUrl(String unformattedUrl, CollectionAgent agent, Integer collectionStep) {
+        return unformattedUrl.replace("{ipaddr}", agent.getHostAddress()).replace("{step}", collectionStep.toString());
+    }
+
+    /**
+     * Log.
+     *
+     * @return the thread category
+     */
+    protected ThreadCategory log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+}

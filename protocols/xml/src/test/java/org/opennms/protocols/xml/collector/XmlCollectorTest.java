@@ -33,15 +33,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.collectd.BasePersister;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.GroupPersister;
@@ -53,9 +50,9 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
+
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.w3c.dom.Document;
 
 /**
  * The Class XmlCollectorTest.
@@ -69,43 +66,6 @@ public class XmlCollectorTest {
 
     /** The SNMP directory. */
     private File m_rrdDirectory;
-
-    /**
-     * The Class MockXmlCollector.
-     */
-    private class MockXmlCollector extends XmlCollector {
-
-        /* (non-Javadoc)
-         * @see org.opennms.protocols.xml.collector.XmlCollector#getXmlDocument(org.opennms.netmgt.collectd.CollectionAgent, java.lang.String)
-         */
-        @Override
-        protected Document getXmlDocument(CollectionAgent agent, String urlString) {
-            Document doc = null;
-            try {
-                log().info("getXmlDocument: loading G3PP testing data...");
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                factory.setIgnoringComments(true);
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                doc = builder.parse("src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml");
-                doc.getDocumentElement().normalize();
-                log().info("getXmlDocument: loaded data from " + doc.getBaseURI());
-                return doc;
-            } catch (Exception e) {
-                Assert.fail(e.getMessage());
-            }
-            return doc;
-        }
-
-        /**
-         * Log.
-         *
-         * @return the thread category
-         */
-        private ThreadCategory log() {
-            return ThreadCategory.getInstance(getClass());
-        }
-
-    }
 
     /**
      * Sets the up.
@@ -144,13 +104,14 @@ public class XmlCollectorTest {
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("collection", "3GPP");
+        parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockXmlCollectionHandler");
 
         XmlDataCollectionConfigDaoJaxb xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
         Resource resource = new FileSystemResource("src/test/resources/xml-datacollection-config.xml");
         xmlCollectionDao.setConfigResource(resource);
         xmlCollectionDao.afterPropertiesSet();
 
-        MockXmlCollector collector = new MockXmlCollector();
+        XmlCollector collector = new XmlCollector();
         collector.setXmlCollectionDao(xmlCollectionDao);
         CollectionSet collectionSet = collector.collect(agent, eproxy, parameters);
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
