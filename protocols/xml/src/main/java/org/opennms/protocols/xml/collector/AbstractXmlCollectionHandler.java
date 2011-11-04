@@ -37,9 +37,12 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
@@ -148,6 +151,10 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * <ul>
      * <li><b>ipaddr</b>, The Node IP Address</li>
      * <li><b>step</b>, The Collection Step in seconds</li>
+     * <li><b>nodeId</b>, The Node ID</li>
+     * <li><b>nodeLabel</b>, The Node Label</li>
+     * <li><b>foreignId</b>, The Node Foreign ID</li>
+     * <li><b>foreignSource</b>, The Node Foreign Source</li>
      * </ul>
      * 
      * @param unformattedUrl the unformatted URL
@@ -155,9 +162,16 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param collectionStep the collection step
      * @return the string
      */
-    // TODO: Retrieve nodeDao and transactionTemplate from BeanUtils in order to retrieve node information used on placeholders
-    protected String parseUrl(String unformattedUrl, CollectionAgent agent, Integer collectionStep) {
-        return unformattedUrl.replace("{ipaddr}", agent.getHostAddress()).replace("{step}", collectionStep.toString());
+    protected String parseUrl(final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep) {
+        NodeDao nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
+        OnmsNode node = nodeDao.get(agent.getNodeId());
+        String url = unformattedUrl.replace("{ipaddr}", agent.getHostAddress());
+        url = url.replace("{step}", collectionStep.toString());
+        url = url.replace("{nodeId}", node.getNodeId());
+        url = url.replace("{nodeLabel}", node.getLabel());
+        url = url.replace("{foreignId}", node.getForeignId());
+        url = url.replace("{foreignSource}", node.getForeignSource());
+        return url;
     }
 
     /**
