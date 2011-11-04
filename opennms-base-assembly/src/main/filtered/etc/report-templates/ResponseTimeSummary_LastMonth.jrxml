@@ -68,8 +68,9 @@
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
+	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
+		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="RESPONSE_WARNING" class="java.lang.Double" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new Double("50.0")]]></defaultValueExpression>
@@ -130,7 +131,8 @@ ON
 	(categories.categoryid = category_node.categoryid)
 WHERE
 	ifservices.status = 'A' AND
-	service.servicename = 'ICMP'
+	service.servicename = 'ICMP' AND
+	categories.categoryname like $P{SURVEILLANCE_CATEGORY}
 ORDER BY
 	categories.categoryname,
 	node.nodelabel,
