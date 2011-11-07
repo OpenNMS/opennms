@@ -70,17 +70,31 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
             throw new SftpUrlException("Missing parameter 'neId'. 3GPP requires NE ID to generate the file name.");
         }
         if (!properties.containsKey("filetype")) {
-            throw new SftpUrlException("Missing parameter 'filetype'. 3GPP requires file type (valid values are A, B, C, D) to generate the file name.");
+            throw new SftpUrlException("Missing parameter 'fileType'. 3GPP requires file type (valid values are A, B, C, D) to generate the file name.");
         }
         String fileType = properties.get("filetype");
 
-        // Creating common time format objects
-        log().info("Processing 3GPP file type " + fileType + " using URL " + url);
+        // Build reference timestamp
+        long reference = System.currentTimeMillis();
+        String referenceStr = properties.get("referencetimestamp");
+        if (referenceStr != null) {
+            try {
+                Date d = new Date(Long.parseLong(referenceStr));
+                reference = d.getTime();
+            } catch (Exception e) {
+                throw new SftpUrlException("Invalid value for parameter 'referenceTimestamp': " + referenceStr);
+            }
+        }
         long step = Long.parseLong(properties.get("step")) * 1000;
-        String tz = properties.get("timezone");
-        long timestamp = System.currentTimeMillis() - System.currentTimeMillis()  % step;
+        long timestamp = reference - reference  % step; // normalize timestamp
+        log().debug("getPath: the reference timestamp used will be " + new Date(timestamp));
+
+        // Creating common time format objects
+        log().info("getPath: processing 3GPP file type " + fileType + " using URL " + url);
         SimpleDateFormat datef = new SimpleDateFormat("yyyyMMdd");
         SimpleDateFormat timef = new SimpleDateFormat("HHmmZ");
+        // Timezone processing
+        String tz = properties.get("timezone");
         if (tz == null) {
             log().debug("getPath: time zone not provided, using current timezone " + TimeZone.getDefault().getID());
         } else {

@@ -31,6 +31,7 @@ package org.opennms.protocols.xml.collector;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -54,7 +56,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * The Class XmlCollector.
+ * The default implementation of the interface XmlCollectionHandler based on AbstractXmlCollectionHandler.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
@@ -75,34 +77,45 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
 
         try {
             for (XmlSource source : collection.getXmlSources()) {
-                // Retrieve the XML data
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
                 Document doc = getXmlDocument(agent, urlStr);
-
-                // Cycle through all of the queries for this collection
-                XPath xpath = XPathFactory.newInstance().newXPath();
-                for (XmlGroup group : source.getXmlGroups()) {
-                    log().debug("collect: getting resources for XML group " + group.getName() + " using XPATH " + group.getResourceXpath());
-                    Date timestamp = getTimeStamp(doc, xpath, group);
-                    NodeList resourceList = (NodeList) xpath.evaluate(group.getResourceXpath(), doc, XPathConstants.NODESET);
-                    for (int j = 0; j < resourceList.getLength(); j++) {
-                        Node resource = resourceList.item(j);
-                        Node resourceName = (Node) xpath.evaluate(group.getKeyXpath(), resource, XPathConstants.NODE);
-                        log().debug("collect: processing XML resource " + resourceName);
-                        XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName.getNodeValue(), group.getResourceType(), timestamp);
-                        for (XmlObject object : group.getXmlObjects()) {
-                            String value = (String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING);
-                            collectionResource.setAttributeValue(getCollectionAttributeType(object.getName()), value);
-                        }
-                        collectionSet.getCollectionResources().add(collectionResource);
-                    }
-                }
+                fillCollectionSet(agent, collectionSet, source, doc);
             }
             collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
             return collectionSet;
         } catch (Exception e) {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
             throw new CollectionException("Can't collect XML data because " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Fill collection set.
+     *
+     * @param agent the agent
+     * @param collectionSet the collection set
+     * @param source the source
+     * @param doc the doc
+     * @throws XPathExpressionException the x path expression exception
+     * @throws ParseException the parse exception
+     */
+    protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, Document doc) throws XPathExpressionException, ParseException {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        for (XmlGroup group : source.getXmlGroups()) {
+            log().debug("fillCollectionSet: getting resources for XML group " + group.getName() + " using XPATH " + group.getResourceXpath());
+            Date timestamp = getTimeStamp(doc, xpath, group);
+            NodeList resourceList = (NodeList) xpath.evaluate(group.getResourceXpath(), doc, XPathConstants.NODESET);
+            for (int j = 0; j < resourceList.getLength(); j++) {
+                Node resource = resourceList.item(j);
+                Node resourceName = (Node) xpath.evaluate(group.getKeyXpath(), resource, XPathConstants.NODE);
+                log().debug("fillCollectionSet: processing XML resource " + resourceName);
+                XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName.getNodeValue(), group.getResourceType(), timestamp);
+                for (XmlObject object : group.getXmlObjects()) {
+                    String value = (String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING);
+                    collectionResource.setAttributeValue(getCollectionAttributeType(object.getName()), value);
+                }
+                collectionSet.getCollectionResources().add(collectionResource);
+            }
         }
     }
 

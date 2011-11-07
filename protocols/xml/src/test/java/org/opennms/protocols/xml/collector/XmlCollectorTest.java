@@ -41,6 +41,7 @@ import org.junit.Test;
 
 import org.opennms.netmgt.collectd.BasePersister;
 import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.GroupPersister;
 import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.collector.CollectionSet;
@@ -64,6 +65,10 @@ public class XmlCollectorTest {
     /** The file anticipator. */
     private FileAnticipator m_fileAnticipator;
 
+    private CollectionAgent m_collectionAgent;
+    private EventProxy m_eventProxy;
+    private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
+
     /** The SNMP directory. */
     private File m_rrdDirectory;
 
@@ -76,6 +81,17 @@ public class XmlCollectorTest {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
         m_fileAnticipator = new FileAnticipator();
+        m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
+        EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
+        EasyMock.expect(m_collectionAgent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
+        m_eventProxy = EasyMock.createMock(EventProxy.class);
+
+        m_xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
+        Resource resource = new FileSystemResource("src/test/resources/xml-datacollection-config.xml");
+        m_xmlCollectionDao.setConfigResource(resource);
+        m_xmlCollectionDao.afterPropertiesSet();
+
+        EasyMock.replay(m_collectionAgent, m_eventProxy);
     }
 
     /**
@@ -85,6 +101,7 @@ public class XmlCollectorTest {
      */
     @After
     public void tearDown() throws Exception {
+        EasyMock.verify(m_collectionAgent, m_eventProxy);
         m_fileAnticipator.deleteExpected();
         MockLogAppender.assertNoWarningsOrGreater();
     }
@@ -96,31 +113,41 @@ public class XmlCollectorTest {
      */
     @Test
     public void testXmlCollector() throws Exception {
-        CollectionAgent agent = EasyMock.createMock(CollectionAgent.class);
-        EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
-        EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
-        EventProxy eproxy = EasyMock.createMock(EventProxy.class);
-        EasyMock.replay(agent, eproxy);
-
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("collection", "3GPP");
-        parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockXmlCollectionHandler");
+        parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
+        doTest(parameters);
+    }
+    
+    /**
+     * Test XML collector.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void test3GPPXmlCollector() throws Exception {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("collection", "3GPP");
+        parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockSftp3gppXmlCollectionHandler");
+        doTest(parameters);
+    }
 
-        XmlDataCollectionConfigDaoJaxb xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
-        Resource resource = new FileSystemResource("src/test/resources/xml-datacollection-config.xml");
-        xmlCollectionDao.setConfigResource(resource);
-        xmlCollectionDao.afterPropertiesSet();
-
+    /**
+     * Do test.
+     *
+     * @param parameters the parameters
+     * @throws CollectionException the collection exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private void doTest(Map<String, Object> parameters) throws CollectionException, IOException {
         XmlCollector collector = new XmlCollector();
-        collector.setXmlCollectionDao(xmlCollectionDao);
-        CollectionSet collectionSet = collector.collect(agent, eproxy, parameters);
+        collector.setXmlCollectionDao(m_xmlCollectionDao);
+        CollectionSet collectionSet = collector.collect(m_collectionAgent, m_eventProxy, parameters);
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
         BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository()); // storeByGroup=true;
         collectionSet.visit(persister);
-
-        EasyMock.verify(agent, eproxy);
     }
 
     /**

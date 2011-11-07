@@ -27,39 +27,22 @@
  *******************************************************************************/
 package org.opennms.protocols.xml.collector;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.junit.Assert;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.w3c.dom.Document;
 
 /**
- * The Class MockXmlCollectionHandler.
+ * The Mock Class for DefaultXmlCollectionHandler.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class MockXmlCollectionHandler extends DefaultXmlCollectionHandler {
+public class MockDefaultXmlCollectionHandler extends DefaultXmlCollectionHandler {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollector#getXmlDocument(org.opennms.netmgt.collectd.CollectionAgent, java.lang.String)
      */
     @Override
     protected Document getXmlDocument(CollectionAgent agent, String urlString) {
-        Document doc = null;
-        try {
-            log().info("getXmlDocument: loading G3PP testing data...");
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setIgnoringComments(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            doc = builder.parse("src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml");
-            doc.getDocumentElement().normalize();
-            log().info("getXmlDocument: loaded data from " + doc.getBaseURI());
-            return doc;
-        } catch (Exception e) {
-            Assert.fail(e.getMessage());
-        }
-        return doc;
+        return MockDocumentBuilder.getXmlDocument(agent, urlString);
     }
 
     /* (non-Javadoc)
