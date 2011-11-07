@@ -68,11 +68,11 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
 
         // TODO We could be careful when handling exceptions because parsing exceptions will be treated different from connection or retrieval exceptions
         try {
-            // TODO This should work for single or multiple files
             int step = collection.getXmlRrd().getStep() * 1000; // The step should be specified in milliseconds for timestamp calculations
             long lastTs = getLastTimestamp(agent.getNodeId(), step);
             long currentTs = getCurrentTimestamp(step);
-            for (long ts = lastTs; ts <= currentTs; ts += step) {
+            // Cycle through the pending files starting from the next file after the last successfully processed.
+            for (long ts = lastTs + step; ts <= currentTs; ts += step) {
                 for (XmlSource source : collection.getXmlSources()) {
                     String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep(), ts);
                     log().debug("collect: retrieving data from " + urlStr);
@@ -93,7 +93,7 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
      * Gets the last timestamp.
      *
      * @param nodeId the node id
-     * @param step the step
+     * @param step the collection step (in milliseconds)
      * @return the last timestamp
      */
     private long getLastTimestamp(Integer nodeId, Integer step) {
@@ -106,7 +106,7 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
      * Sets the last timestamp.
      *
      * @param nodeId the node id
-     * @param ts the ts
+     * @param ts the timestamp
      */
     private void setLastTimestamp(Integer nodeId, Long ts) {
         m_cache.put(nodeId, ts);
@@ -115,7 +115,7 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
     /**
      * Gets the current timestamp.
      *
-     * @param step the step
+     * @param step the collection step (in milliseconds)
      * @return the current timestamp
      */
     private long getCurrentTimestamp(Integer step) {
@@ -124,11 +124,11 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
     }
 
     /**
-     * Parses the url.
+     * Parses the URL.
      *
-     * @param unformattedUrl the unformatted url
+     * @param unformattedUrl the unformatted URL
      * @param agent the agent
-     * @param collectionStep the collection step
+     * @param collectionStep the collection step (in seconds)
      * @param currentTimestamp the current timestamp
      * @return the string
      */

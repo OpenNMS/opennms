@@ -159,7 +159,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * 
      * @param unformattedUrl the unformatted URL
      * @param agent the collection agent
-     * @param collectionStep the collection step
+     * @param collectionStep the collection step (in seconds)
      * @return the string
      */
     protected String parseUrl(final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep) {
