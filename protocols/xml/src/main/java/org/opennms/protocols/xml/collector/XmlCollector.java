@@ -89,7 +89,7 @@ public class XmlCollector implements ServiceCollector {
      */
     @Override
     public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
-        log().debug("initialize: initializing XML collection");
+        log().debug("initialize: initializing XML collector");
 
         // Retrieve the DAO for our configuration file.
         if (m_xmlCollectionDao == null)
@@ -110,11 +110,14 @@ public class XmlCollector implements ServiceCollector {
      */
     @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
+        log().debug("initialize: initializing XML collection handling using " + parameters + " for collection agent " + agent);
+        String serviceName = ParameterMap.getKeyedString(parameters, "SERVICE", "XML");
         String handlerClass = ParameterMap.getKeyedString(parameters, "handler-class", "org.opennms.protocols.xml.collector.DefaultXmlCollectionHandler");
-        log().debug("initialize: instantiating XML collection handler " + handlerClass);
         try {
+            log().debug("initialize: instantiating XML collection handler " + handlerClass);
             Class<?> clazz = Class.forName(handlerClass);
             m_collectionHandler = (XmlCollectionHandler) clazz.newInstance();
+            m_collectionHandler.setServiceName(serviceName);
         } catch (Exception e) {
             throw new CollectionInitializationException("Unable to instantiate XML Collection Handler " + handlerClass + " because: " + e.getMessage());
         }

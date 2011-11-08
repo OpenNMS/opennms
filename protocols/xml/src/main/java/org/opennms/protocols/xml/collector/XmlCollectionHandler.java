@@ -60,4 +60,11 @@ public interface XmlCollectionHandler  {
      */
     public void setRrdRepository(RrdRepository repository);
 
+    /**
+     * Sets the service name associated with this Collection Handler.
+     *
+     * @param serviceName the new service name
+     */
+    public void setServiceName(String serviceName);
+
 }

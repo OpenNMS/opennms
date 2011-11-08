@@ -103,7 +103,7 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
     protected long getLastTimestamp(File resourceDir, Integer step) throws Exception {
         String ts = null;
         try {
-            ts = ResourceTypeUtils.getStringProperty(resourceDir, XML_LAST_TIMESTAMP);
+            ts = ResourceTypeUtils.getStringProperty(resourceDir, getCacheId());
         } catch (DataAccessResourceFailureException e) {
             log().info("getLastTimestamp: creating a timestamp tracker for on " + resourceDir);
         }
@@ -123,7 +123,16 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
      * @throws Exception the exception
      */
     protected void setLastTimestamp(File resourceDir, Long ts) throws Exception {
-        ResourceTypeUtils.updateStringProperty(resourceDir, ts.toString(), XML_LAST_TIMESTAMP);
+        ResourceTypeUtils.updateStringProperty(resourceDir, ts.toString(), getCacheId());
+    }
+
+    /**
+     * Gets the cache id.
+     *
+     * @return the cache id
+     */
+    private String getCacheId() {
+        return XML_LAST_TIMESTAMP + '.' + getServiceName();
     }
 
     /**
@@ -132,7 +141,7 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
      * @param step the collection step (in milliseconds)
      * @return the current timestamp
      */
-    protected long getCurrentTimestamp(Integer step) {
+    private long getCurrentTimestamp(Integer step) {
         long reference = System.currentTimeMillis();
         return reference - reference  % step; // normalize timestamp
     }

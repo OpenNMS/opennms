@@ -66,6 +66,9 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
     /** The RRD repository. */
     private RrdRepository m_rrdRepository;
 
+    /** The Service Name associated with this Collection Handler. */
+    private String m_serviceName;
+
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlDataCollection, java.util.Map)
      */
@@ -101,6 +104,13 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
         this.m_rrdRepository = rrdRepository;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setServiceName(java.lang.String)
+     */
+    public void setServiceName(String serviceName) {
+        this.m_serviceName = serviceName;
+    }
+
     /**
      * Gets the RRD repository.
      *
@@ -108,6 +118,15 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
      */
     public RrdRepository getRrdRepository() {
         return m_rrdRepository;
+    }
+
+    /**
+     * Gets the service name.
+     *
+     * @return the service name
+     */
+    public String getServiceName() {
+        return m_serviceName;
     }
 
     /**
