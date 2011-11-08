@@ -139,10 +139,12 @@ public class XmlCollectorTest {
      * @throws CollectionException the collection exception
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void doTest(Map<String, Object> parameters) throws CollectionException, IOException {
+    private void doTest(Map<String, Object> parameters) throws Exception {
         XmlCollector collector = new XmlCollector();
         collector.setXmlCollectionDao(m_xmlCollectionDao);
+        collector.initialize(m_collectionAgent, parameters);
         CollectionSet collectionSet = collector.collect(m_collectionAgent, m_eventProxy, parameters);
+        collector.release(m_collectionAgent);
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());

@@ -28,16 +28,18 @@
 
 package org.opennms.protocols.xml.collector;
 
+import java.io.File;
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlSource;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 import org.w3c.dom.Document;
 
@@ -49,9 +51,9 @@ import org.w3c.dom.Document;
  */
 public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
 
-    /** The Cache to hold last successfully processed timestamp for each node. */
-    // FIXME: The cache should be persisted on disk
-    protected static Map<Integer,Long> m_cache = new ConcurrentHashMap<Integer,Long>();
+    /** The Constant XML_LAST_TIMESTAMP. */
+    // TODO Attach the service name in order to use it multiple times per node.
+    public static final String XML_LAST_TIMESTAMP = "_xmlCollectorLastTimestamp";
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlDataCollection, java.util.Map)
@@ -68,8 +70,9 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
 
         // TODO We could be careful when handling exceptions because parsing exceptions will be treated different from connection or retrieval exceptions
         try {
+            File resourceDir = new File(getRrdRepository().getRrdBaseDir(), Integer.toString(agent.getNodeId()));
             int step = collection.getXmlRrd().getStep() * 1000; // The step should be specified in milliseconds for timestamp calculations
-            long lastTs = getLastTimestamp(agent.getNodeId(), step);
+            long lastTs = getLastTimestamp(resourceDir, step);
             long currentTs = getCurrentTimestamp(step);
             // Cycle through the pending files starting from the next file after the last successfully processed.
             for (long ts = lastTs + step; ts <= currentTs; ts += step) {
@@ -78,7 +81,7 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
                     log().debug("collect: retrieving data from " + urlStr);
                     Document doc = getXmlDocument(agent, urlStr);
                     fillCollectionSet(agent, collectionSet, source, doc);
-                    setLastTimestamp(agent.getNodeId(), ts); // collection succeeded
+                    setLastTimestamp(resourceDir, ts); // collection succeeded
                 }
             }
             collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
@@ -92,24 +95,35 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
     /**
      * Gets the last timestamp.
      *
-     * @param nodeId the node id
+     * @param resourceDir the resource directory
      * @param step the collection step (in milliseconds)
      * @return the last timestamp
+     * @throws Exception the exception
      */
-    private long getLastTimestamp(Integer nodeId, Integer step) {
-        if (!m_cache.containsKey(nodeId))
-            m_cache.put(nodeId, getCurrentTimestamp(step));
-        return m_cache.get(nodeId);
+    protected long getLastTimestamp(File resourceDir, Integer step) throws Exception {
+        String ts = null;
+        try {
+            ts = ResourceTypeUtils.getStringProperty(resourceDir, XML_LAST_TIMESTAMP);
+        } catch (DataAccessResourceFailureException e) {
+            log().info("getLastTimestamp: creating a timestamp tracker for on " + resourceDir);
+        }
+        if (ts == null) {
+            Long t = getCurrentTimestamp(step);
+            setLastTimestamp(resourceDir, t);
+            return t;
+        }
+        return Long.parseLong(ts);
     }
 
     /**
      * Sets the last timestamp.
      *
-     * @param nodeId the node id
-     * @param ts the timestamp
+     * @param resourceDir the resource directory
+     * @param ts the new timestamp
+     * @throws Exception the exception
      */
-    private void setLastTimestamp(Integer nodeId, Long ts) {
-        m_cache.put(nodeId, ts);
+    protected void setLastTimestamp(File resourceDir, Long ts) throws Exception {
+        ResourceTypeUtils.updateStringProperty(resourceDir, ts.toString(), XML_LAST_TIMESTAMP);
     }
 
     /**
@@ -118,7 +132,7 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
      * @param step the collection step (in milliseconds)
      * @return the current timestamp
      */
-    private long getCurrentTimestamp(Integer step) {
+    protected long getCurrentTimestamp(Integer step) {
         long reference = System.currentTimeMillis();
         return reference - reference  % step; // normalize timestamp
     }

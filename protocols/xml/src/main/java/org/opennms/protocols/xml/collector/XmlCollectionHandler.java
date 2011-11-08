@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 
 /**
@@ -51,4 +52,12 @@ public interface XmlCollectionHandler  {
      * @throws CollectionException the collection exception
      */
     public XmlCollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException;
+
+    /**
+     * Sets the RRD repository.
+     *
+     * @param repository the new RRD repository
+     */
+    public void setRrdRepository(RrdRepository repository);
+
 }

@@ -45,6 +45,7 @@ import javax.xml.xpath.XPathFactory;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.model.RrdRepository;
 
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlGroup;
@@ -61,6 +62,9 @@ import org.w3c.dom.NodeList;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
+
+    /** The RRD repository. */
+    private RrdRepository m_rrdRepository;
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlDataCollection, java.util.Map)
@@ -87,6 +91,23 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
             throw new CollectionException("Can't collect XML data because " + e.getMessage(), e);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setRrdRepository(org.opennms.netmgt.model.RrdRepository)
+     */
+    @Override
+    public void setRrdRepository(RrdRepository rrdRepository) {
+        this.m_rrdRepository = rrdRepository;
+    }
+
+    /**
+     * Gets the RRD repository.
+     *
+     * @return the RRD repository
+     */
+    public RrdRepository getRrdRepository() {
+        return m_rrdRepository;
     }
 
     /**
