@@ -686,6 +686,23 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="opennms-1.8.16">
+		<title>Changes in OpenNMS 1.8.16</title>
+
+		<section id="opennms-1.8.16-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>JDBCCollector Appears to Be Broken - stores last value only (Issue <ulink url='http://issues.opennms.org/browse/NMS-4512'>NMS-4512</ulink>)</para></listitem>
+				<listitem><para>Disable Data Collection using an Snmp Policy on an Interface with ip address does not work  (Issue <ulink url='http://issues.opennms.org/browse/NMS-4937'>NMS-4937</ulink>)</para></listitem>
+				<listitem><para>Bubble-up submap status (not severity) (Issue <ulink url='http://issues.opennms.org/browse/NMS-4976'>NMS-4976</ulink>)</para></listitem>
+				<listitem><para>SNMP - Problem with 64bit INTEGER (Issue <ulink url='http://issues.opennms.org/browse/NMS-4994'>NMS-4994</ulink>)</para></listitem>
+				<listitem><para>Javamail file type overrides Database Report file type for CSV files (Issue <ulink url='http://issues.opennms.org/browse/NMS-5020'>NMS-5020</ulink>)</para></listitem>
+				<listitem><para>interfaceOperDown events are sent every time a node with down interfaces is rescanned. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5040'>NMS-5040</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.8.15">
 		<title>Changes in OpenNMS 1.8.15</title>
 

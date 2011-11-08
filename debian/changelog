@@ -90,6 +90,12 @@ opennms (1.9.0-1) unstable; urgency=low
 
  -- Benjamin Reed <ranger@opennms.org>  Tue, 10 Aug 2010 11:42:00 -0500
 
+opennms (1.8.16-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 08 Nov 2011 14:14:00 -0500
+
 opennms (1.8.15-1) unstable; urgency=low
 
   * New upstream release.
