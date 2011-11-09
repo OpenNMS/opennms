@@ -6,7 +6,7 @@
   <parent>
     <artifactId>org.opennms.features</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.9.93-SNAPSHOT</version>
+    <version>1.9.93</version>
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.gwt.tableresources</artifactId>

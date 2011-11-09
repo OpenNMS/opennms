@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-tools</artifactId>
-    <version>1.9.93-SNAPSHOT</version>
+    <version>1.9.93</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
