@@ -108,12 +108,14 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param collection the collection
      */
     protected void loadAttributes(XmlDataCollection collection) {
-        for (XmlSource source : collection.getXmlSources()) {
-            for (XmlGroup group : source.getXmlGroups()) {
-                AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
-                for (XmlObject object : group.getXmlObjects()) {
-                    XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
-                    m_attribTypeList.put(object.getName(), attribType);
+        if (m_attribTypeList.isEmpty()) {
+            for (XmlSource source : collection.getXmlSources()) {
+                for (XmlGroup group : source.getXmlGroups()) {
+                    AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
+                    for (XmlObject object : group.getXmlObjects()) {
+                        XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
+                        m_attribTypeList.put(object.getName(), attribType);
+                    }
                 }
             }
         }

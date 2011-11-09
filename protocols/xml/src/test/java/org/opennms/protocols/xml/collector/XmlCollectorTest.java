@@ -91,6 +91,10 @@ public class XmlCollectorTest {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+
+        System.setProperty("org.opennms.rrd.usetcp", "false");
+        System.setProperty("org.opennms.rrd.usequeue", "false");
+
         m_fileAnticipator = new FileAnticipator();
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
