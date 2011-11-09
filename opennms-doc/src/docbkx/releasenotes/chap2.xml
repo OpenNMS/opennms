@@ -6,6 +6,42 @@
 
 	<!-- Start 1.9 -->
 
+	<section id="opennms-1.9.93">
+		<title>Changes in OpenNMS 1.9.93</title>
+
+		<section id="opennms-1.9.93-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>HttpMonitor marks service down when response-text matches first line of server response (Issue <ulink url='http://issues.opennms.org/browse/NMS-2702'>NMS-2702</ulink>)</para></listitem>
+				<listitem><para>linkd not working (Issue <ulink url='http://issues.opennms.org/browse/NMS-4005'>NMS-4005</ulink>)</para></listitem>
+				<listitem><para>events written to DB although dest=suppress (Issue <ulink url='http://issues.opennms.org/browse/NMS-4006'>NMS-4006</ulink>)</para></listitem>
+				<listitem><para>linkd ignores &lt;specific&gt; in &lt;iproutes&gt; section of config file (Issue <ulink url='http://issues.opennms.org/browse/NMS-4326'>NMS-4326</ulink>)</para></listitem>
+				<listitem><para>JDBCCollector Appears to Be Broken - stores last value only (Issue <ulink url='http://issues.opennms.org/browse/NMS-4512'>NMS-4512</ulink>)</para></listitem>
+				<listitem><para>Outages crossing report time boundary counted fully in SNMP Interface Availability Report (Issue <ulink url='http://issues.opennms.org/browse/NMS-4699'>NMS-4699</ulink>)</para></listitem>
+				<listitem><para>Interface MAC addresses don&#39;t display (and are missing from the DB) on some SNMP-capable nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-4902'>NMS-4902</ulink>)</para></listitem>
+				<listitem><para>Configuring SNMP broken for biggish IPv4 ranges (Issue <ulink url='http://issues.opennms.org/browse/NMS-4972'>NMS-4972</ulink>)</para></listitem>
+				<listitem><para>Bubble-up submap status (not severity) (Issue <ulink url='http://issues.opennms.org/browse/NMS-4976'>NMS-4976</ulink>)</para></listitem>
+				<listitem><para>rrd.usetcp crashing on startup (Issue <ulink url='http://issues.opennms.org/browse/NMS-4989'>NMS-4989</ulink>)</para></listitem>
+				<listitem><para>DHCP plugins changed (Java) package, old configs are no longer compatible (Issue <ulink url='http://issues.opennms.org/browse/NMS-5011'>NMS-5011</ulink>)</para></listitem>
+				<listitem><para>ClassCastException when using complex threshold expressions. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5014'>NMS-5014</ulink>)</para></listitem>
+				<listitem><para>OnmsAlarm class incorrectly references the alarm_attributes table as alarm_details (Issue <ulink url='http://issues.opennms.org/browse/NMS-5027'>NMS-5027</ulink>)</para></listitem>
+				<listitem><para>NPE in linkd with two Linux nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-5030'>NMS-5030</ulink>)</para></listitem>
+				<listitem><para>interfaceOperDown events are sent every time a node with down interfaces is rescanned. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5040'>NMS-5040</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.9.93-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Event definition for Juniper Chassis Cluster SNMP trap (Issue <ulink url='http://issues.opennms.org/browse/NMS-4986'>NMS-4986</ulink>)</para></listitem>
+				<listitem><para>Events definition for Juniper access authentication related SNMP traps (Issue <ulink url='http://issues.opennms.org/browse/NMS-4987'>NMS-4987</ulink>)</para></listitem>
+				<listitem><para>Separate out RADIUS implementation (Issue <ulink url='http://issues.opennms.org/browse/NMS-4992'>NMS-4992</ulink>)</para></listitem>
+				<listitem><para>Split Syslogd configuration across multiple files, add useful definitions and matching events (Issue <ulink url='http://issues.opennms.org/browse/NMS-5024'>NMS-5024</ulink>)</para></listitem>
+				<listitem><para>Missing OID in linkd&#39;s config for VLAN classes (Issue <ulink url='http://issues.opennms.org/browse/NMS-5031'>NMS-5031</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.9.92">
 		<title>Changes in OpenNMS 1.9.92</title>
