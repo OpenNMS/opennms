@@ -29,7 +29,11 @@ package org.opennms.protocols.xml.collector;
 
 import java.util.Date;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.protocols.xml.config.XmlGroup;
 import org.w3c.dom.Document;
 
 /**
@@ -38,13 +42,13 @@ import org.w3c.dom.Document;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class MockSftp3gppXmlCollectionHandler extends Sftp3gppXmlCollectionHandler {
-
+    
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollector#getXmlDocument(org.opennms.netmgt.collectd.CollectionAgent, java.lang.String)
      */
     @Override
     protected Document getXmlDocument(CollectionAgent agent, String urlString) {
-        return MockDocumentBuilder.getXmlDocument(agent, urlString);
+        return MockDocumentBuilder.getXmlDocument();
     }
 
     /* (non-Javadoc)
@@ -56,5 +60,15 @@ public class MockSftp3gppXmlCollectionHandler extends Sftp3gppXmlCollectionHandl
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getTimeStamp(org.w3c.dom.Document, javax.xml.xpath.XPath, org.opennms.protocols.xml.config.XmlGroup)
+     */
+    @Override
+    protected Date getTimeStamp(Document doc, XPath xpath, XmlGroup group) throws XPathExpressionException {
+       long ts = super.getTimeStamp(doc, xpath, group).getTime();
+       long offset = System.currentTimeMillis() - ts;
+       return new Date(ts + offset + 900000);
+    }
+    
 }
 

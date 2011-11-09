@@ -31,7 +31,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Assert;
-import org.opennms.netmgt.collectd.CollectionAgent;
 import org.w3c.dom.Document;
 
 /**
@@ -40,32 +39,42 @@ import org.w3c.dom.Document;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class MockDocumentBuilder {
-    
+
+    /** The XML file name. */
+    public static String m_xmlFileName = "src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml";
+
     /**
      * Instantiates a new mock document builder.
      */
     private MockDocumentBuilder() {}
 
     /**
-     * Gets the xml document.
+     * Gets the XML document.
      *
-     * @param agent the agent
-     * @param urlString the url string
-     * @return the xml document
+     * @return the XML document
      */
-    public static Document getXmlDocument(CollectionAgent agent, String urlString) {
+    public static Document getXmlDocument() {
         Document doc = null;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setIgnoringComments(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
-            doc = builder.parse("src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml");
+            doc = builder.parse(m_xmlFileName);
             doc.getDocumentElement().normalize();
             return doc;
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
         return doc;
+    }
+
+    /**
+     * Sets the XML file name.
+     *
+     * @param xmlFileName the new XML file name
+     */
+    public static void setXmlFileName(String xmlFileName) {
+        m_xmlFileName = xmlFileName;
     }
 
 }

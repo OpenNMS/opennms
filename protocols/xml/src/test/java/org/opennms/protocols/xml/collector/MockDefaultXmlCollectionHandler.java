@@ -42,7 +42,7 @@ public class MockDefaultXmlCollectionHandler extends DefaultXmlCollectionHandler
      */
     @Override
     protected Document getXmlDocument(CollectionAgent agent, String urlString) {
-        return MockDocumentBuilder.getXmlDocument(agent, urlString);
+        return MockDocumentBuilder.getXmlDocument();
     }
 
     /* (non-Javadoc)

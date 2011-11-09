@@ -52,7 +52,6 @@ import org.w3c.dom.Document;
 public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
 
     /** The Constant XML_LAST_TIMESTAMP. */
-    // TODO Attach the service name in order to use it multiple times per node.
     public static final String XML_LAST_TIMESTAMP = "_xmlCollectorLastTimestamp";
 
     /* (non-Javadoc)

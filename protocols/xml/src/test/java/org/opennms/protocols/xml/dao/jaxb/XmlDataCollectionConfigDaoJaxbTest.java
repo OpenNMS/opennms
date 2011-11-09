@@ -100,7 +100,7 @@ public class XmlDataCollectionConfigDaoJaxbTest {
     public void testAfterPropertiesSetWithGoodConfigFile() throws Exception {
         XmlDataCollectionConfigDaoJaxb dao = new XmlDataCollectionConfigDaoJaxb();
 
-        File xmlCollectionConfig = new File(ClassLoader.getSystemResource(XmlDataCollectionConfigFactory.XML_DATACOLLECTION_CONFIG_FILE).getFile());
+        File xmlCollectionConfig= new File("src/test/resources/", XmlDataCollectionConfigFactory.XML_DATACOLLECTION_CONFIG_FILE);
         assertTrue(XmlDataCollectionConfigFactory.XML_DATACOLLECTION_CONFIG_FILE + " is readable", xmlCollectionConfig.canRead());
         InputStream in = new FileInputStream(xmlCollectionConfig);
 

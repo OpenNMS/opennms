@@ -45,7 +45,6 @@ import javax.xml.xpath.XPathFactory;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.model.RrdRepository;
 
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlGroup;
@@ -62,12 +61,6 @@ import org.w3c.dom.NodeList;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
-
-    /** The RRD repository. */
-    private RrdRepository m_rrdRepository;
-
-    /** The Service Name associated with this Collection Handler. */
-    private String m_serviceName;
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlDataCollection, java.util.Map)
@@ -94,39 +87,6 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
             throw new CollectionException("Can't collect XML data because " + e.getMessage(), e);
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setRrdRepository(org.opennms.netmgt.model.RrdRepository)
-     */
-    @Override
-    public void setRrdRepository(RrdRepository rrdRepository) {
-        this.m_rrdRepository = rrdRepository;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setServiceName(java.lang.String)
-     */
-    public void setServiceName(String serviceName) {
-        this.m_serviceName = serviceName;
-    }
-
-    /**
-     * Gets the RRD repository.
-     *
-     * @return the RRD repository
-     */
-    public RrdRepository getRrdRepository() {
-        return m_rrdRepository;
-    }
-
-    /**
-     * Gets the service name.
-     *
-     * @return the service name
-     */
-    public String getServiceName() {
-        return m_serviceName;
     }
 
     /**

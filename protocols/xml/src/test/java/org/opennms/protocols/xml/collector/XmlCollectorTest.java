@@ -29,11 +29,17 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import org.easymock.EasyMock;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,13 +47,13 @@ import org.junit.Test;
 
 import org.opennms.netmgt.collectd.BasePersister;
 import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.GroupPersister;
 import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
@@ -65,8 +71,13 @@ public class XmlCollectorTest {
     /** The file anticipator. */
     private FileAnticipator m_fileAnticipator;
 
+    /** The collection agent. */
     private CollectionAgent m_collectionAgent;
+
+    /** The event proxy. */
     private EventProxy m_eventProxy;
+
+    /** The XML collection DAO. */
     private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
 
     /** The SNMP directory. */
@@ -87,7 +98,7 @@ public class XmlCollectorTest {
         m_eventProxy = EasyMock.createMock(EventProxy.class);
 
         m_xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
-        Resource resource = new FileSystemResource("src/test/resources/xml-datacollection-config.xml");
+        Resource resource = new FileSystemResource("src/test/resources/xml-datacollection-config.junit.xml");
         m_xmlCollectionDao.setConfigResource(resource);
         m_xmlCollectionDao.afterPropertiesSet();
 
@@ -107,20 +118,41 @@ public class XmlCollectorTest {
     }
 
     /**
-     * Test XML collector.
+     * Test time parser.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testXmlCollector() throws Exception {
+    public void testTimeParser() throws Exception {
+        String pattern = "yyyy-MM-dd'T'HH:mm:ssZ";
+        String value = "2011-10-25T00:45:00-05:00";
+        long expectedTimestamp = 1319521500000l;
+        DateTimeFormatter dtf = DateTimeFormat.forPattern(pattern);
+        DateTime dateTime = dtf.parseDateTime(value);
+        Date date = dateTime.toDate();
+        Assert.assertEquals(expectedTimestamp, date.getTime());
+
+        MockDefaultXmlCollectionHandler handler = new MockDefaultXmlCollectionHandler();
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        date = handler.getTimeStamp(MockDocumentBuilder.getXmlDocument(), xpath, m_xmlCollectionDao.getDataCollectionByName("3GPP").getXmlSources().get(0).getXmlGroups().get(0));
+        Assert.assertEquals(expectedTimestamp, date.getTime());
+    }
+
+    /**
+     * Test XML collector with Standard handler.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDefaultXmlCollector() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("collection", "3GPP");
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
         doTest(parameters);
     }
-    
+
     /**
-     * Test XML collector.
+     * Test XML collector with 3GPP Handler.
      *
      * @throws Exception the exception
      */
@@ -136,8 +168,7 @@ public class XmlCollectorTest {
      * Do test.
      *
      * @param parameters the parameters
-     * @throws CollectionException the collection exception
-     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws Exception the exception
      */
     private void doTest(Map<String, Object> parameters) throws Exception {
         XmlCollector collector = new XmlCollector();
@@ -159,11 +190,12 @@ public class XmlCollectorTest {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     private RrdRepository createRrdRepository() throws IOException {
+        XmlRrd rrd = m_xmlCollectionDao.getDataCollectionByName("3GPP").getXmlRrd();
         RrdRepository repository = new RrdRepository();
         repository.setRrdBaseDir(getRrdDirectory());
-        repository.setHeartBeat(600);
-        repository.setStep(300);
-        repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        repository.setHeartBeat(rrd.getStep() * 2);
+        repository.setStep(rrd.getStep());
+        repository.setRraList(rrd.getXmlRras());
         return repository;
     }
 

@@ -28,8 +28,6 @@
 
 package org.opennms.protocols.xml.collector;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -37,12 +35,16 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
@@ -59,8 +61,46 @@ import org.w3c.dom.Node;
  */
 public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandler {
 
+    /** The Service Name associated with this Collection Handler. */
+    private String m_serviceName;
+
+    /** The RRD Repository. */
+    private RrdRepository m_rrdRepository;
+
     /** The XML attribute type Map. */
     private HashMap<String, XmlCollectionAttributeType> m_attribTypeList = new HashMap<String, XmlCollectionAttributeType>();
+
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setServiceName(java.lang.String)
+     */
+    public void setServiceName(String serviceName) {
+        this.m_serviceName = serviceName;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setRrdRepository(org.opennms.netmgt.model.RrdRepository)
+     */
+    public void setRrdRepository(RrdRepository m_rrdRepository) {
+        this.m_rrdRepository = m_rrdRepository;
+    }
+
+    /**
+     * Gets the service name.
+     *
+     * @return the service name
+     */
+    public String getServiceName() {
+        return m_serviceName;
+    }
+
+    /**
+     * Gets the RRD repository.
+     *
+     * @return the RRD repository
+     */
+    public RrdRepository getRrdRepository() {
+        return m_rrdRepository;
+    }
 
     /**
      * Load attributes.
@@ -114,20 +154,19 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
 
     /**
      * Gets the time stamp.
-     *
+     * 
      * @param doc the doc
      * @param xpath the xpath
      * @param group the group
      * @return the time stamp
      * @throws XPathExpressionException the x path expression exception
-     * @throws ParseException the parse exception
      */
-    protected Date getTimeStamp(Document doc, XPath xpath, XmlGroup group) throws XPathExpressionException, ParseException {
+    protected Date getTimeStamp(Document doc, XPath xpath, XmlGroup group) throws XPathExpressionException {
         if (group.getTimestampXpath() == null) {
             return null;
         }
-        String format = group.getTimestampFormat() == null ? "yyyy-MM-dd HH:mm:ss" : group.getTimestampFormat();
-        log().debug("getTimeStamp: retrieving custom timestamp to be used when updating RRDs using XPATH " + group.getTimestampXpath() + " and format " + format);
+        String pattern = group.getTimestampFormat() == null ? "yyyy-MM-dd HH:mm:ss" : group.getTimestampFormat();
+        log().debug("getTimeStamp: retrieving custom timestamp to be used when updating RRDs using XPATH " + group.getTimestampXpath() + " and pattern " + pattern);
         Node tsNode = (Node) xpath.evaluate(group.getTimestampXpath(), doc, XPathConstants.NODE);
         if (tsNode == null) {
             log().warn("getTimeStamp: can't find the custom timestamp using XPATH " +  group.getTimestampXpath());
@@ -136,10 +175,11 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         Date date = null;
         String value = tsNode.getNodeValue() == null ? tsNode.getTextContent() : tsNode.getNodeValue();
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-            date = dateFormat.parse(value);
+            DateTimeFormatter dtf = DateTimeFormat.forPattern(pattern);
+            DateTime dateTime = dtf.parseDateTime(value);
+            date = dateTime.toDate();
         } catch (Exception e) {
-            log().warn("getTimeStamp: can't convert custom timetime " + value + " using format " + format);
+            log().warn("getTimeStamp: can't convert custom timetime " + value + " using pattern " + pattern);
         }
         return date;
     }
