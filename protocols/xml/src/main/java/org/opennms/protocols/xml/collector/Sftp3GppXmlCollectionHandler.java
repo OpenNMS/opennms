@@ -39,7 +39,6 @@ import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlSource;
-import org.springframework.dao.DataAccessResourceFailureException;
 
 import org.w3c.dom.Document;
 
@@ -49,7 +48,7 @@ import org.w3c.dom.Document;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
+public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
 
     /** The Constant XML_LAST_TIMESTAMP. */
     public static final String XML_LAST_TIMESTAMP = "_xmlCollectorLastTimestamp";
@@ -103,8 +102,8 @@ public class Sftp3gppXmlCollectionHandler extends DefaultXmlCollectionHandler {
         String ts = null;
         try {
             ts = ResourceTypeUtils.getStringProperty(resourceDir, getCacheId());
-        } catch (DataAccessResourceFailureException e) {
-            log().info("getLastTimestamp: creating a timestamp tracker for on " + resourceDir);
+        } catch (Exception e) {
+            log().info("getLastTimestamp: creating a new timestamp tracker on " + resourceDir);
         }
         if (ts == null) {
             Long t = getCurrentTimestamp(step);

@@ -41,10 +41,14 @@ import com.jcraft.jsch.Session;
 
 /**
  * The class for managing SFTP URL Connection.
+ * <p>The default connection timeout is 30 seconds.</p>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SftpUrlConnection extends URLConnection {
+
+    /** The Constant default timeout in milliseconds. */
+    public static final int DEFAULT_TIMEOUT = 30000;
 
     /** The URL. */
     protected URL m_url;
@@ -54,6 +58,9 @@ public class SftpUrlConnection extends URLConnection {
 
     /** The SFTP channel. */
     protected ChannelSftp m_channel;
+
+    /** The connection flag, true when the connection has been started. */
+    protected boolean m_connected = false;
 
     /**
      * Instantiates a new SFTP URL connection.
@@ -70,6 +77,10 @@ public class SftpUrlConnection extends URLConnection {
      */
     @Override
     public void connect() throws IOException {
+        if (m_connected) {
+            return;
+        }
+        m_connected = true;
         if (m_url.getUserInfo() == null) {
             throw new IOException("User credentials required.");
         }
@@ -78,15 +89,18 @@ public class SftpUrlConnection extends URLConnection {
         try {
             int port = m_url.getPort() > 0 ? m_url.getPort() : m_url.getDefaultPort();
             m_session = jsch.getSession(userInfo[0], m_url.getHost(), port);
-            if (userInfo.length > 1)
+            if (userInfo.length > 1) {
                 m_session.setPassword(userInfo[1]);
+            }
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
             m_session.setConfig(config);
+            m_session.setTimeout(DEFAULT_TIMEOUT);
             m_session.connect();
             m_channel = (ChannelSftp) m_session.openChannel("sftp");
             m_channel.connect();
         } catch (JSchException e) {
+            disconnect();
             throw new IOException("Can't connect using " + m_url + " because " + e.getMessage());
         }
     }
@@ -102,7 +116,7 @@ public class SftpUrlConnection extends URLConnection {
         if (m_session != null)
             m_session.disconnect();
     }
-    
+
     /**
      * Gets the channel.
      *
@@ -118,6 +132,7 @@ public class SftpUrlConnection extends URLConnection {
     @Override
     public InputStream getInputStream() throws IOException {
         try {
+            connect();
             return m_channel.get(getPath());
         } catch (Exception e) {
             throw new IOException("Can't retrieve " + m_url.getPath() + " from " + m_url.getHost() + " because " + e.getMessage());
