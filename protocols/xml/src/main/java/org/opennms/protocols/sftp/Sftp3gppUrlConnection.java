@@ -59,7 +59,6 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
      */
     @Override
     protected String getPath() throws SftpUrlException {
-        String path = m_url.getPath();
         Map<String,String> properties = getProperties(url);
 
         // Checking required parameters
@@ -69,10 +68,6 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         if (!properties.containsKey("neid")) {
             throw new SftpUrlException("Missing parameter 'neId'. 3GPP requires NE ID to generate the file name.");
         }
-        if (!properties.containsKey("filetype")) {
-            throw new SftpUrlException("Missing parameter 'fileType'. 3GPP requires file type (valid values are A, B, C, D) to generate the file name.");
-        }
-        String fileType = properties.get("filetype");
 
         // Build reference timestamp
         long reference = System.currentTimeMillis();
@@ -90,9 +85,10 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         log().debug("getPath: the reference timestamp used will be " + new Date(timestamp));
 
         // Creating common time format objects
-        log().info("getPath: processing 3GPP file type " + fileType + " using URL " + url);
+        log().info("getPath: generating 3GPP file type A (NE Mode) using URL " + url);
         SimpleDateFormat datef = new SimpleDateFormat("yyyyMMdd");
         SimpleDateFormat timef = new SimpleDateFormat("HHmmZ");
+
         // Timezone processing
         String tz = properties.get("timezone");
         if (tz == null) {
@@ -104,23 +100,19 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         }
 
         // Processing 3GPP File Type A (NE Mode)
-        if (fileType.equals("A")) {
-            StringBuffer sb = new StringBuffer("A");
-            sb.append(datef.format(new Date(timestamp)));
-            sb.append(".");
-            sb.append(timef.format(new Date(timestamp-step)));
-            sb.append("-");
-            sb.append(timef.format(new Date(timestamp)));
-            sb.append("_");
-            sb.append(properties.get("neid"));
-            sb.append(".xml");
-            File f = new File(path, sb.toString());
-            path = f.getAbsolutePath();
-        } else {
-            throw new SftpUrlException("Invalid file type " + fileType + ". Only file type A is supported");
-        }
+        StringBuffer sb = new StringBuffer("A");
+        sb.append(datef.format(new Date(timestamp)));
+        sb.append(".");
+        sb.append(timef.format(new Date(timestamp-step)));
+        sb.append("-");
+        sb.append(timef.format(new Date(timestamp)));
+        sb.append("_");
+        sb.append(properties.get("neid"));
+        sb.append(".xml");
+        File f = new File(m_url.getPath(), sb.toString());
+        String path = f.getAbsolutePath();
 
-        log().info("Retrieving 3GPP NE data using " + path);
+        log().debug("getPath: retrieving data 3GPP (NE Mode) using " + path);
         return path;
     }
 

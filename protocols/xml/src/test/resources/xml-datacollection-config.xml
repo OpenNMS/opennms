@@ -8,7 +8,7 @@
             <rra>RRA:MIN:0.5:12:8784</rra>
             <rra>RRA:MAX:0.5:12:8784</rra>
         </rrd>
-        <xml-source url="sftp.3gpp://opennms:Op3nNMS!@{ipaddr}/opt/3gpp/data/?fileType=A&amp;step={step}&amp;neId={foreignId}">
+        <xml-source url="sftp.3gpp://opennms:Op3nNMS!@{ipaddr}/opt/3gpp/data/?step={step}&amp;neId={foreignId}">
             <xml-group name="platform-system-resource" resource-type="platformSystemResource"
                 key-xpath="@measObjLdn"
                 resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='platform-system|resource']/measValue"

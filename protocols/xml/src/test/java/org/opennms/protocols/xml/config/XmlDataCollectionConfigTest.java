@@ -150,7 +150,7 @@ public class XmlDataCollectionConfigTest {
         group.addXmlObject(suspect);
 
         XmlSource source = new XmlSource();
-        source.setUrl("sftp.3gpp://opennms:Op3nNMS!@{ipaddr}/opt/3gpp/data/?fileType=A&step={step}&neId={foreignId}");
+        source.setUrl("sftp.3gpp://opennms:Op3nNMS!@{ipaddr}/opt/3gpp/data/?step={step}&neId={foreignId}");
         source.addXmlGroup(group);
 
         XmlDataCollection xmlDataCollection = new XmlDataCollection();
