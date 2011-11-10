@@ -108,7 +108,6 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         sb.append(timef.format(new Date(timestamp)));
         sb.append("_");
         sb.append(properties.get("neid"));
-        sb.append(".xml");
         File f = new File(m_url.getPath(), sb.toString());
         String path = f.getAbsolutePath();
 

@@ -88,7 +88,7 @@ public class Sftp3gppUrlConnectionTest {
         String path = ((Sftp3gppUrlConnection) conn).getPath();
         log().debug(path);
         UrlFactory.disconnect(conn);
-        Assert.assertEquals("/opt/3gpp/A20111102.1300-0500-1305-0500_MME00001.xml", path);
+        Assert.assertEquals("/opt/3gpp/A20111102.1300-0500-1305-0500_MME00001", path);
     }
 
     /**
