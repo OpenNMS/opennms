@@ -53,6 +53,8 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.opennms.test.FileAnticipator;
@@ -94,6 +96,7 @@ public class XmlCollectorTest {
 
         System.setProperty("org.opennms.rrd.usetcp", "false");
         System.setProperty("org.opennms.rrd.usequeue", "false");
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
 
         m_fileAnticipator = new FileAnticipator();
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);

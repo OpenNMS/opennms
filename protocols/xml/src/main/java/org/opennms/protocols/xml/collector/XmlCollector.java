@@ -157,6 +157,9 @@ public class XmlCollector implements ServiceCollector {
             }
             log().debug("collect: collecting XML data using collection " + collectionName);
             XmlDataCollection collection = m_xmlCollectionDao.getDataCollectionByName(collectionName);
+            if (collection == null) {
+                throw new CollectionException("XML Collection " + collectionName +" does not exist.");
+            }
 
             // Filling XML CollectionSet
             m_collectionHandler.setRrdRepository(getRrdRepository(collectionName));

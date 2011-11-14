@@ -45,10 +45,16 @@ import javax.xml.xpath.XPathFactory;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
@@ -77,6 +83,9 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
 
     /** The XML attribute type Map. */
     private HashMap<String, XmlCollectionAttributeType> m_attribTypeList = new HashMap<String, XmlCollectionAttributeType>();
+
+    /** The XML resource type Map. */
+    private HashMap<String, XmlResourceType> m_resourceTypeList = new HashMap<String, XmlResourceType>();
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setServiceName(java.lang.String)
@@ -120,10 +129,17 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             for (XmlSource source : collection.getXmlSources()) {
                 for (XmlGroup group : source.getXmlGroups()) {
                     AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
+                    // Add defined XML Objects
                     for (XmlObject object : group.getXmlObjects()) {
                         XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
                         m_attribTypeList.put(object.getName(), attribType);
                     }
+                    // Add instance Object (unnormalized resource instance name)
+                    XmlObject object = new XmlObject();
+                    object.setName("instance");
+                    object.setDataType("string");
+                    XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
+                    m_attribTypeList.put(object.getName(), attribType);
                 }
             }
         }
@@ -154,6 +170,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
                     String value = (String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING);
                     collectionResource.setAttributeValue(getCollectionAttributeType(object.getName()), value);
                 }
+                collectionResource.setAttributeValue(getCollectionAttributeType("instance"), resourceName.getNodeValue());
                 collectionSet.getCollectionResources().add(collectionResource);
             }
         }
@@ -183,7 +200,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         if (resourceType.toLowerCase().equals("node")) {
             resource = new XmlSingleInstanceCollectionResource(agent);
         } else {
-            resource = new XmlMultiInstanceCollectionResource(agent, instance, resourceType);
+            XmlResourceType type = getXmlResourceType(agent, resourceType);
+            resource = new XmlMultiInstanceCollectionResource(agent, instance, type);
         }
         if (timestamp != null) {
             log().debug("getCollectionResource: the date that will be used when updating the RRDs is " + timestamp);
@@ -275,6 +293,31 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         } catch (Exception e) {
             throw new XmlCollectorException("Can't retrieve data from " + urlString + " because " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Gets the XML resource type.
+     *
+     * @param agent the collection agent
+     * @param resourceType the resource type
+     * @return the XML resource type
+     */
+    protected XmlResourceType getXmlResourceType(CollectionAgent agent, String resourceType) {
+        if (!m_resourceTypeList.containsKey(resourceType)) {
+            ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
+            if (rt == null) {
+                log().debug("using default XML resource type strategy.");
+                rt = new ResourceType();
+                rt.setName(resourceType);
+                rt.setStorageStrategy(new StorageStrategy());
+                rt.getStorageStrategy().setClazz(XmlStorageStrategy.class.getName());
+                rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
+                rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
+            }
+            XmlResourceType type = new XmlResourceType(agent, rt);
+            m_resourceTypeList.put(resourceType, type);
+        }
+        return m_resourceTypeList.get(resourceType);
     }
 
     /**

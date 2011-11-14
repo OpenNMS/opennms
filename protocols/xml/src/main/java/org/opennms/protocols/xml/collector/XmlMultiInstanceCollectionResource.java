@@ -32,6 +32,7 @@ import java.io.File;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**
@@ -44,35 +45,45 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
     /** The collection resource instance. */
     private String m_instance;
 
+    /** The resource label. */
+    private String m_resourceLabel;
+
     /** The collection resource type name. */
-    private String m_resourceTypeName;
+    private XmlResourceType m_resourceType;
 
     /**
      * Instantiates a new XML Multi-instance collection resource.
      *
-     * @param agent the agent
-     * @param instance the instance
-     * @param name the name
+     * @param agent the collection agent
+     * @param instance the resource instance
+     * @param type the XML resource type
      */
-    public XmlMultiInstanceCollectionResource(CollectionAgent agent, String instance, String name) {
+    public XmlMultiInstanceCollectionResource(CollectionAgent agent, String instance, XmlResourceType type) {
         super(agent);
+        m_resourceType = type;
         m_instance = instance;
-        m_resourceTypeName = name;
     }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
+     */
+    @Override
+    public boolean shouldPersist(ServiceParameters params) {
+        return m_resourceType.getPersistenceSelectorStrategy().shouldPersist(this);
+    }
+
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getResourceDir(org.opennms.netmgt.model.RrdRepository)
      */
     @Override
     public File getResourceDir(RrdRepository repository) {
-        File rrdBaseDir = repository.getRrdBaseDir();
-        File nodeDir = new File(rrdBaseDir, String.valueOf(m_agent.getNodeId()));
-        File typeDir = new File(nodeDir, m_resourceTypeName);
-        File instDir = new File(typeDir, getInstance());
+        String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getLabel(), null);
+        File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
         if (log().isDebugEnabled()) {
-            log().debug("getResourceDir: " + instDir.toString());
+            log().debug("getResourceDir: " + resourceDir);
         }
-        return instDir;
+        return resourceDir;
     }
 
     /* (non-Javadoc)
@@ -80,7 +91,7 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
      */
     @Override
     public String getResourceTypeName() {
-        return m_resourceTypeName;
+        return m_resourceType.getName();
     }
 
     /* (non-Javadoc)
@@ -88,7 +99,7 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
      */
     @Override
     public String getInstance() {
-        return m_instance.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_").replaceAll("[|/]", "_").replaceAll("=", "").replaceAll("[_]+$", "").replaceAll("___", "_");
+        return m_instance;
     }
 
     /* (non-Javadoc)
@@ -96,7 +107,17 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
      */
     @Override
     public String toString() {
-        return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getInstance() +"]";
+        return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getLabel() +"]";
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getLabel()
+     */
+    public String getLabel() {
+        if (m_resourceLabel == null) {
+            m_resourceLabel = m_resourceType.getStorageStrategy().getResourceNameFromIndex(this);
+        }
+        return m_resourceLabel;
     }
 
     /**

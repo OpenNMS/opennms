@@ -155,7 +155,6 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
                 return dataCol;
             }
         }
-
         return null;
     }
 
@@ -166,7 +165,10 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
      * @return the RRD repository
      */
     public RrdRepository buildRrdRepository(String collectionName) {
-        XmlRrd rrd = getDataCollectionByName(collectionName).getXmlRrd();
+        XmlDataCollection collection = getDataCollectionByName(collectionName);
+        if (collection == null)
+            return null;
+        XmlRrd rrd = collection.getXmlRrd();
         RrdRepository repo = new RrdRepository();
         repo.setRrdBaseDir(new File(getRrdRepository()));
         repo.setRraList(rrd.getXmlRras());
