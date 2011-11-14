@@ -12,13 +12,13 @@ my $ref = XMLin($file, ForceArray => [ 'measInfo', 'measType' ]);
 my @report_ids;
 my @reports;
 
+my $index = 1;
 foreach my $measInfo (@{$ref->{measData}{measInfo}}) {
     my $groupName = getGroupName($measInfo->{measInfoId});
     my $groupType = getGroupType($measInfo->{measInfoId});
     my @tmp;
     for my $measType (@{$measInfo->{measType}}) {
-        my $idx  = $measType->{p};
-        my $name = "var$idx"; # To avoid problems with big names.
+        my $name = "var" . sprintf("%04d", $index++); # To avoid problems with big names.
         my $rpt  = "3gpp.$groupType.$name";
         push @tmp, $rpt;
         push @reports, <<EOF;
@@ -26,7 +26,7 @@ report.$rpt.name=3GPP - $measType->{content}
 report.$rpt.columns=$name
 report.$rpt.propertiesValues=instance
 report.$rpt.type=$groupType
-report.$rpt.command=--title="3GPP - {instance}" \\
+report.$rpt.command=--title="{instance}" \\
  DEF:v1={rrd1}:$name:AVERAGE \\
  LINE2:v1#ff0000:"$measType->{content}" \\
  COMMENT:"\\\\n" \\

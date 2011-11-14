@@ -21,6 +21,7 @@ print <<EOF;
         <xml-source url="sftp.3gpp://opennms:Op3nNMS!\@{ipaddr}/opt/3gpp/data/?step={step}&amp;neId={foreignId}">
 EOF
 
+my $index = 1;
 foreach my $measInfo (@{$ref->{measData}{measInfo}}) {
     my $groupName = getGroupName($measInfo->{measInfoId});
     my $groupType = getGroupType($measInfo->{measInfoId});
@@ -34,7 +35,7 @@ foreach my $measInfo (@{$ref->{measData}{measInfo}}) {
 EOF
     for my $measType (@{$measInfo->{measType}}) {
         my $idx  = $measType->{p};
-        my $name = "var$idx"; # To avoid problems with big names.
+        my $name = "var" . sprintf("%04d", $index++); # To avoid problems with big names.
         print <<EOF;
                 <xml-object name="$name" type="GAUGE" xpath="r[\@p=$idx]" /> <!-- $measType->{content} -->
 EOF
