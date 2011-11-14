@@ -145,9 +145,9 @@ public class IpInterfaceScan implements RunInBatch {
                                 }
                             }, 
                             new RunInBatch() {
-
                                 public void run(final BatchTask batch) {
                                     getProvisionService().addMonitoredService(getNodeId(), getAddress().getHostAddress(), serviceName);
+                                    getProvisionService().updateMonitoredServiceState(getNodeId(), getAddress().getHostAddress(), serviceName); // NMS-3906
                                 }
                             });
 

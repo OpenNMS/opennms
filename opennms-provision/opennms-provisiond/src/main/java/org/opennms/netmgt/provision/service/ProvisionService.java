@@ -227,6 +227,17 @@ public interface ProvisionService {
     public abstract OnmsServiceType createServiceTypeIfNecessary(String serviceName);
 
     /**
+     * <p>updateMonitoredServiceState</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     */
+    @Transactional
+    public abstract OnmsMonitoredService updateMonitoredServiceState(Integer nodeId, String ipAddress, String serviceName);
+
+    /**
      * Look up the OnmsCategory with the give name, creating one if none
      * exists.
      *

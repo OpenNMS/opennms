@@ -49,6 +49,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -69,6 +70,7 @@ import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
@@ -347,6 +349,39 @@ public class DefaultProvisionService implements ProvisionService {
 
         
         return svc;
+    }
+
+
+    @Transactional
+    public OnmsMonitoredService updateMonitoredServiceState(final Integer nodeId, final String ipAddress, final String svcName) {
+        final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
+        assertNotNull(iface, "could not find interface with nodeid %d and ipAddr %s", nodeId, ipAddress);
+
+        OnmsMonitoredService dbObj = iface.getMonitoredServiceByServiceType(svcName);
+
+        debug("current status of service %s on node with IP %s is %s ", dbObj.getServiceName(), dbObj.getIpAddress(), dbObj.getStatus());
+        if ("S".equals(dbObj.getStatus())) {
+            debug("suspending polling for service %s on node with IP %s", dbObj.getServiceName(), dbObj.getIpAddress());
+            dbObj.setStatus("F");
+            m_monitoredServiceDao.update(dbObj);
+            sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, dbObj);
+        }
+        if ("R".equals(dbObj.getStatus())) {
+            debug("resume polling for service %s on node with IP %s", dbObj.getServiceName(), dbObj.getIpAddress());
+            dbObj.setStatus("A");
+            m_monitoredServiceDao.update(dbObj);
+            sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, dbObj);
+        }
+        m_monitoredServiceDao.update(dbObj);
+        return dbObj;
+    }
+
+    private void sendEvent(String eventUEI, OnmsMonitoredService dbObj) {
+        final EventBuilder bldr = new EventBuilder(eventUEI, "ProvisionService");
+        bldr.setNodeid(dbObj.getNodeId());
+        bldr.setInterface(dbObj.getIpAddress());
+        bldr.setService(dbObj.getServiceName());
+        m_eventForwarder.sendNow(bldr.getEvent());
     }
 
     /**
