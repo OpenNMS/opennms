@@ -285,7 +285,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	 */
 	public String getVlanName(int m_vlan) {
 		if (this.hasVlanTable()) {
-		    for (final SnmpStore ent : this.getVlanTable().getEntries()) {
+		    for (final SnmpStore ent : this.getVlanTable()) {
 				int vlanIndex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 				if (vlanIndex == m_vlan) {
 					return ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
@@ -303,7 +303,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	 */
 	public int getVlanIndex(String m_vlanname) {
 		if (this.hasVlanTable()) {
-		    for (final SnmpStore ent : this.getVlanTable().getEntries()) {
+		    for (final SnmpStore ent : this.getVlanTable()) {
 				String vlanName = ent
 						.getDisplayString(VlanCollectorEntry.VLAN_NAME);
 				if (vlanName.equals(m_vlanname)) {
@@ -475,9 +475,9 @@ public final class SnmpCollection implements ReadyRunnable {
 
 					runAndSaveSnmpVlanCollection(new OnmsVlan(TRUNK_VLAN_INDEX,TRUNK_VLAN_NAME,VlanCollectorEntry.VLAN_STATUS_OPERATIONAL));
 				} else {
-				    LogUtils.debugf(this, "run: start collection for %d VLAN entries", getVlanTable().getEntries().size());
+				    LogUtils.debugf(this, "run: start collection for %d VLAN entries", getVlanTable().size());
 
-					for (final SnmpStore ent : m_vlanTable.getEntries()) {
+					for (final SnmpStore ent : m_vlanTable) {
 		 				int vlanindex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 						if (vlanindex == -1) {
 						    LogUtils.debugf(this, "run: found null value for VLAN.");

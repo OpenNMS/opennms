@@ -80,10 +80,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
       * @return an array of {@link java.net.InetAddress} objects.
       */
      public InetAddress[] getIfAddressAndMask(int ifIndex) {
-        if (getEntries() == null)
-            return null;
-        
-        for(IpAddrTableEntry entry : getEntries()) {
+        for(IpAddrTableEntry entry : this) {
 
             Integer ndx = entry.getIpAdEntIfIndex();
             if (ndx != null && ndx.intValue() == ifIndex) {
@@ -106,13 +103,10 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * @return a int.
      */
     public int getIfIndex(InetAddress address) {
-        if (getEntries() == null) {
-            return -1;
-        }
         if (log().isDebugEnabled())
-            log().debug("getIfIndex: num ipAddrTable entries: " + getEntries().size());
+            log().debug("getIfIndex: num ipAddrTable entries: " + this.size());
 
-        for(IpAddrTableEntry entry : getEntries()) {
+        for(IpAddrTableEntry entry : this) {
 
             InetAddress ifAddr = entry.getIpAdEntAddr();
             if (ifAddr != null && ifAddr.equals(address)) {
@@ -147,13 +141,13 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * @param index a int.
      */
     public List<InetAddress> getIpAddresses(int index) {
-        if (index == -1 || getEntries() == null) {
+        if (index == -1) {
             return null;
         }
         
         List<InetAddress> addresses = new ArrayList<InetAddress>();
         
-        for(IpAddrTableEntry entry : getEntries()) {
+        for(IpAddrTableEntry entry : this) {
 
             Integer ndx = entry.getIpAdEntIfIndex();
             if (ndx != null && ndx.intValue() == index) {
@@ -175,13 +169,9 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      *         IP addresses.
      */
     public List<InetAddress> getIpAddresses() {
-        if (getEntries() == null) {
-            return null;
-        }
-        
         List <InetAddress>addresses = new ArrayList<InetAddress>();
         
-        for(IpAddrTableEntry entry : getEntries()) {
+        for(IpAddrTableEntry entry : this) {
 
             Integer ndx = entry.getIpAdEntIfIndex();
             if (ndx != null) {

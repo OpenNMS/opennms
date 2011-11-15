@@ -341,7 +341,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 			//if not found macaddresses forwarding table find it in Qbridge
 			//ExtremeNetwork works.....
 			
-			if (m_dot1dtpFdbtable.getEntries().isEmpty() && m_collectBridgeForwardingTable) {
+			if (m_dot1dtpFdbtable.isEmpty() && m_collectBridgeForwardingTable) {
 			    LogUtils.infof(this, "run: Trying to collect QbridgeDot1dTpFdbTable for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
 				m_qdot1dtpFdbtable = new QBridgeDot1dTpFdbTable(m_address);
 		        walker =  SnmpUtils.createWalker(m_agentConfig, "qBridgedot1dTpFdbTable ", new CollectionTracker[] { m_qdot1dtpFdbtable });
