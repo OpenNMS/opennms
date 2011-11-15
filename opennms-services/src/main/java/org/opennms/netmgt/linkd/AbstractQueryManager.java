@@ -168,7 +168,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             // get an AtInterface but without setting MAC address
             final OnmsAtInterface at = getAtInterfaceForAddress(dbConn, ipaddress);
             if (at == null) {
-                LogUtils.warnf(this, "processIpNetToMediaTable: no node found for IP address %s.", hostAddress);
+                LogUtils.debugf(this, "processIpNetToMediaTable: no node found for IP address %s.", hostAddress);
                 sendNewSuspectEvent(ipaddress, snmpcoll.getTarget(), snmpcoll.getPackageName());
                 continue;
             }
