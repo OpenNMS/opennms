@@ -336,14 +336,14 @@ public class OnmsRestService {
      * @param <T> a T object.
      * @return a T object.
      */
-    protected <T> T throwException(Status status, String msg) throws WebApplicationException {
+    protected <T> WebApplicationException getException(final Status status, final String msg) throws WebApplicationException {
         log().error(msg);
-        throw new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
 
-    protected <T> T throwException(Status status, Throwable t) throws WebApplicationException {
+    protected <T> WebApplicationException getException(Status status, Throwable t) throws WebApplicationException {
         log().error(t.getMessage(), t);
-        throw new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
     }
 
     /**

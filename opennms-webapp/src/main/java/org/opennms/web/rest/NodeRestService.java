@@ -146,7 +146,7 @@ public class NodeRestService extends OnmsRestService {
         try {
             sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId());
         } catch (EventProxyException ex) {
-            throwException(Status.BAD_REQUEST, ex.getMessage());
+            throw getException(Status.BAD_REQUEST, ex.getMessage());
         }
         return Response.ok(node).build();
     }
@@ -164,7 +164,7 @@ public class NodeRestService extends OnmsRestService {
     public Response updateNode(@PathParam("nodeCriteria") String nodeCriteria, MultivaluedMapImpl params) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
-            throwException(Status.BAD_REQUEST, "updateNode: Can't find node " + nodeCriteria);
+            throw getException(Status.BAD_REQUEST, "updateNode: Can't find node " + nodeCriteria);
         }
         log().debug("updateNode: updating node " + node);
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(node);
@@ -192,14 +192,14 @@ public class NodeRestService extends OnmsRestService {
     public Response deleteNode(@PathParam("nodeCriteria") String nodeCriteria) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
-            throwException(Status.BAD_REQUEST, "deleteNode: Can't find node " + nodeCriteria);
+            throw getException(Status.BAD_REQUEST, "deleteNode: Can't find node " + nodeCriteria);
         }
         log().debug("deleteNode: deleting node " + nodeCriteria);
         m_nodeDao.delete(node);
         try {
             sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId());
         } catch (EventProxyException ex) {
-            throwException(Status.BAD_REQUEST, ex.getMessage());
+            throw getException(Status.BAD_REQUEST, ex.getMessage());
         }
         return Response.ok().build();
     }

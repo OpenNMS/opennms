@@ -32,8 +32,10 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -47,6 +49,8 @@ import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Component;
@@ -79,7 +83,7 @@ public class UserRestService extends OnmsRestService {
     public UserRestService() {
         try {
             UserFactory.init();
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             throw new DataRetrievalFailureException("Unable to initialize the user factory.", t);
         }
         m_userManager = UserFactory.getInstance();
@@ -99,21 +103,21 @@ public class UserRestService extends OnmsRestService {
             });
             return list;
         } catch (final Throwable t) {
-            throwException(Status.BAD_REQUEST, t);
+            throw getException(Status.BAD_REQUEST, t);
         }
-        return null;
     }
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{username}")
-    public OnmsUser getNode(@PathParam("username") String username) {
+    public OnmsUser getUser(@PathParam("username") String username) {
         try {
-            return m_userManager.getOnmsUser(username);
+            final OnmsUser user = m_userManager.getOnmsUser(username);
+            if (user != null) return user;
         } catch (final Throwable t) {
-            throwException(Status.BAD_REQUEST, t);
+            throw getException(Status.BAD_REQUEST, t);
         }
-        return null;
+        throw getException(Status.NOT_FOUND, username + " does not exist");
     }
 
     @POST
@@ -123,95 +127,58 @@ public class UserRestService extends OnmsRestService {
         try {
             m_userManager.save(user);
         } catch (final Throwable t) {
-            throwException(Status.BAD_REQUEST, t);
+            getException(Status.BAD_REQUEST, t);
         }
         return Response.ok(user).build();
     }
     
-    /*
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{nodeCriteria}")
-    public Response updateNode(@PathParam("nodeCriteria") String nodeCriteria, MultivaluedMapImpl params) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throwException(Status.BAD_REQUEST, "updateNode: Can't find node " + nodeCriteria);
+    @Path("{userCriteria}")
+    public Response updateUser(@PathParam("userCriteria") String userCriteria, MultivaluedMapImpl params) {
+        OnmsUser user = null;
+        try {
+            user = m_userManager.getOnmsUser(userCriteria);
+        } catch (final Throwable t) {
+            getException(Status.BAD_REQUEST, t);
         }
-        log().debug("updateNode: updating node " + node);
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(node);
-        for(String key : params.keySet()) {
+        if (user == null) throw getException(Status.BAD_REQUEST, "updateUser: User does not exist: " + userCriteria);
+        log().debug("updateUser: updating user " + user);
+        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(user);
+        for(final String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
-                String stringValue = params.getFirst(key);
+                final String stringValue = params.getFirst(key);
                 @SuppressWarnings("unchecked")
-				Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+                final Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
                 wrapper.setPropertyValue(key, value);
             }
         }
-        log().debug("updateNode: node " + node + " updated");
-        m_nodeDao.saveOrUpdate(node);
-        return Response.ok(node).build();
+        log().debug("updateUser: user " + user + " updated");
+        try {
+            m_userManager.save(user);
+        } catch (final Throwable t) {
+            getException(Status.INTERNAL_SERVER_ERROR, t);
+        }
+        return Response.ok(user).build();
     }
     
     @DELETE
-    @Path("{nodeCriteria}")
-    public Response deleteNode(@PathParam("nodeCriteria") String nodeCriteria) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throwException(Status.BAD_REQUEST, "deleteNode: Can't find node " + nodeCriteria);
-        }
-        log().debug("deleteNode: deleting node " + nodeCriteria);
-        m_nodeDao.delete(node);
+    @Path("{userCriteria}")
+    public Response deleteUser(@PathParam("userCriteria") String userCriteria) {
+        OnmsUser user = null;
         try {
-            sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId());
-        } catch (EventProxyException ex) {
-            throwException(Status.BAD_REQUEST, ex.getMessage());
+            user = m_userManager.getOnmsUser(userCriteria);
+        } catch (final Throwable t) {
+            throw getException(Status.BAD_REQUEST, t);
+        }
+        if (user == null) throw getException(Status.BAD_REQUEST, "updateUser: User does not exist: " + userCriteria);
+        log().debug("deleteUser: deleting user " + user);
+        try {
+            m_userManager.deleteUser(user.getUsername());
+        } catch (final Throwable t) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         }
         return Response.ok().build();
     }
 
-    @Path("{nodeCriteria}/ipinterfaces")
-    public OnmsIpInterfaceResource getIpInterfaceResource() {
-        return m_context.getResource(OnmsIpInterfaceResource.class);
-    }
-
-    @Path("{nodeCriteria}/snmpinterfaces")
-    public OnmsSnmpInterfaceResource getSnmpInterfaceResource() {
-        return m_context.getResource(OnmsSnmpInterfaceResource.class);
-    }
-
-    @Path("{nodeCriteria}/categories")
-    public OnmsCategoryResource getCategoryResource() {
-        return m_context.getResource(OnmsCategoryResource.class);
-    }
-
-    @Path("{nodeCriteria}/assetRecord")
-    public AssetRecordResource getAssetRecordResource() {
-        return m_context.getResource(AssetRecordResource.class);
-    }
-    */
-
-    /*
-    private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-
-        setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
-        addOrdering(params, criteria, false);
-        // Set default ordering
-        addOrdering(
-            new MultivaluedMapImpl(
-                new String[][] { 
-                    new String[] { "orderBy", "label" }, 
-                    new String[] { "order", "asc" } 
-                }
-            ), criteria, false
-        );
-        addFiltersToCriteria(params, criteria, OnmsNode.class);
-
-        criteria.createAlias("snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
-
-        return getDistinctIdCriteria(OnmsNode.class, criteria);
-    }
-    */
-    
 }

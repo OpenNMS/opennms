@@ -197,8 +197,8 @@ public abstract class GroupManager {
      */
     public synchronized void saveGroups() throws Exception {
         Header header = m_oldHeader;
-    
-        header.setCreated(EventConstants.formatToString(new Date()));
+
+        if (header != null) header.setCreated(EventConstants.formatToString(new Date()));
     
         Groups groups = new Groups();
         for (Group grp : m_groups.values()) {

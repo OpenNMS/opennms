@@ -38,23 +38,12 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserManager;
 
-/**
- * @author brozow
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 public class MockUserManager extends UserManager {
 
     String m_xmlString;
     boolean updateNeeded = true;
     private long m_lastModified;
     
-    /**
-     * @param groupManager
-     * @throws ValidationException
-     * @throws MarshalException
-     */
     public MockUserManager(GroupManager groupManager, String xmlString) throws MarshalException, ValidationException {
         super(groupManager);
         m_xmlString = xmlString;
@@ -68,17 +57,11 @@ public class MockUserManager extends UserManager {
         m_lastModified = System.currentTimeMillis();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.UserManager#saveXML(java.lang.String)
-     */
     protected void saveXML(String writerString) throws IOException {
         m_xmlString = writerString;
         updateNeeded = true;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.UserManager#update()
-     */
     public void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (updateNeeded) {
             parseXML();
