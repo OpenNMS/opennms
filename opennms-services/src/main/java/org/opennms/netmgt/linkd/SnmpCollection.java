@@ -46,6 +46,7 @@ import org.opennms.netmgt.linkd.snmp.IntelVlanTable;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTable;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 import org.opennms.netmgt.model.OnmsVlan;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -86,7 +87,12 @@ public final class SnmpCollection implements ReadyRunnable {
 	private final SnmpAgentConfig m_agentConfig;
 
 	/**
-	 * The IP address to used to collect the SNMP information
+	 * The node ID of the system used to collect the SNMP information
+	 */
+	private final int m_nodeid;
+
+	/**
+	 * The IP address used to collect the SNMP information
 	 */
 	private final InetAddress m_address;
 
@@ -199,13 +205,15 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * Constructs a new SNMP collector for a node using the passed interface as
 	 * the collection point. The collection does not occur until the
 	 * <code>run</code> method is invoked.
+	 * @param nodeid 
 	 *
 	 * @param config
 	 *            The SnmpPeer object to collect from.
 	 */
-	public SnmpCollection(Linkd linkd, SnmpAgentConfig config) {
+	public SnmpCollection(final Linkd linkd, final int nodeid, final SnmpAgentConfig config) {
 	    m_linkd = linkd;
 		m_agentConfig = config;
+		m_nodeid = nodeid;
 		m_address = m_agentConfig.getEffectiveAddress();
 		m_ipNetToMedia = null;
 		m_ipRoute = null;
@@ -331,8 +339,11 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * </p>
 	 */
 	@SuppressWarnings("unchecked")
-    public void run() {
-		
+	public void run() {
+	    EventBuilder builder = new EventBuilder("uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted", "Linkd");
+	    builder.setNodeid(m_nodeid);
+	    builder.setInterface(m_address);
+	    m_linkd.getEventForwarder().sendNow(builder.getEvent());
 
 		final String hostAddress = str(m_address);
 		if (suspendCollection) {
@@ -522,6 +533,11 @@ public final class SnmpCollection implements ReadyRunnable {
 			m_vlanTable = null;
 			m_snmpVlanCollection.clear();
 		}
+
+		builder = new EventBuilder("uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted", "Linkd");
+		builder.setNodeid(m_nodeid);
+		builder.setInterface(m_address);
+		m_linkd.getEventForwarder().sendNow(builder.getEvent());
 
 		// reschedule itself
 		reschedule();
