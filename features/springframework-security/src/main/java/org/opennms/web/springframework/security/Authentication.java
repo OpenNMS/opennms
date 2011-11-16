@@ -71,7 +71,7 @@ public final class Authentication extends Object {
      * @param oldRole a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String getSpringSecuirtyRoleFromOldRoleName(String oldRole) {
+    public static String getSpringSecurityRoleFromOldRoleName(String oldRole) {
     	return s_oldToNewMap.get(oldRole);
     }
 

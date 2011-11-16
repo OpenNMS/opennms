@@ -45,9 +45,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.model.OnmsUser;
-import org.opennms.netmgt.model.OnmsUserList;
+import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.model.OnmsGroup;
+import org.opennms.netmgt.model.OnmsGroupList;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.spi.resource.PerRequest;
 
 /**
- * Basic Web Service using REST for OnmsUser entity
+ * Basic Web Service using REST for OnmsGroup entity
  *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @since 1.9.93
@@ -67,12 +67,12 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Component
 @PerRequest
 @Scope("prototype")
-@Path("users")
+@Path("groups")
 @Transactional
-public class UserRestService extends OnmsRestService {
+public class GroupRestService extends OnmsRestService {
     @Autowired
-    private UserManager m_userManager;
-
+    private GroupManager m_groupManager;
+    
     @Context 
     UriInfo m_uriInfo;
     
@@ -81,14 +81,14 @@ public class UserRestService extends OnmsRestService {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsUserList getUsers() {
-        final OnmsUserList list;
+    public OnmsGroupList getGroups() {
+        final OnmsGroupList list;
         try {
-            list = m_userManager.getOnmsUserList();
-            Collections.sort(list, new Comparator<OnmsUser>() {
+            list = m_groupManager.getOnmsGroupList();
+            Collections.sort(list, new Comparator<OnmsGroup>() {
                 @Override
-                public int compare(final OnmsUser a, final OnmsUser b) {
-                    return a.getUsername().compareTo(b.getUsername());
+                public int compare(final OnmsGroup a, final OnmsGroup b) {
+                    return a.getName().compareTo(b.getName());
                 }
             });
             return list;
@@ -99,42 +99,42 @@ public class UserRestService extends OnmsRestService {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @Path("{username}")
-    public OnmsUser getUser(@PathParam("username") final String username) {
+    @Path("{groupName}")
+    public OnmsGroup getGroup(@PathParam("groupName") final String groupName) {
         try {
-            final OnmsUser user = m_userManager.getOnmsUser(username);
-            if (user != null) return user;
+            final OnmsGroup group = m_groupManager.getOnmsGroup(groupName);
+            if (group != null) return group;
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         }
-        throw getException(Status.NOT_FOUND, username + " does not exist");
+        throw getException(Status.NOT_FOUND, groupName + " does not exist");
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addUser(final OnmsUser user) {
-        log().debug("addUser: Adding user " + user);
+    public Response addGroup(final OnmsGroup group) {
+        log().debug("addGroup: Adding group " + group);
         try {
-            m_userManager.save(user);
+            m_groupManager.save(group);
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         }
-        return Response.ok(user).build();
+        return Response.ok(group).build();
     }
     
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{userCriteria}")
-    public Response updateUser(@PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
-        OnmsUser user = null;
+    @Path("{groupName}")
+    public Response updateGroup(@PathParam("groupName") final String groupName, final MultivaluedMapImpl params) {
+        OnmsGroup group = null;
         try {
-            user = m_userManager.getOnmsUser(userCriteria);
+            group = m_groupManager.getOnmsGroup(groupName);
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         }
-        if (user == null) throw getException(Status.BAD_REQUEST, "updateUser: User does not exist: " + userCriteria);
-        log().debug("updateUser: updating user " + user);
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(user);
+        if (group == null) throw getException(Status.BAD_REQUEST, "updateGroup: Group does not exist: " + groupName);
+        log().debug("updateGroup: updating group " + group);
+        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(group);
         for(final String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
                 final String stringValue = params.getFirst(key);
@@ -143,28 +143,28 @@ public class UserRestService extends OnmsRestService {
                 wrapper.setPropertyValue(key, value);
             }
         }
-        log().debug("updateUser: user " + user + " updated");
+        log().debug("updateGroup: group " + group + " updated");
         try {
-            m_userManager.save(user);
+            m_groupManager.save(group);
         } catch (final Throwable t) {
             throw getException(Status.INTERNAL_SERVER_ERROR, t);
         }
-        return Response.ok(user).build();
+        return Response.ok(group).build();
     }
     
     @DELETE
-    @Path("{userCriteria}")
-    public Response deleteUser(@PathParam("userCriteria") final String userCriteria) {
-        OnmsUser user = null;
+    @Path("{groupName}")
+    public Response deleteGroup(@PathParam("groupName") final String groupName) {
+        OnmsGroup group = null;
         try {
-            user = m_userManager.getOnmsUser(userCriteria);
+            group = m_groupManager.getOnmsGroup(groupName);
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         }
-        if (user == null) throw getException(Status.BAD_REQUEST, "deleteUser: User does not exist: " + userCriteria);
-        log().debug("deleteUser: deleting user " + user);
+        if (group == null) throw getException(Status.BAD_REQUEST, "deleteGroup: Group does not exist: " + groupName);
+        log().debug("deleteGroup: deleting group " + group);
         try {
-            m_userManager.deleteUser(user.getUsername());
+            m_groupManager.deleteGroup(groupName);
         } catch (final Throwable t) {
             throw getException(Status.INTERNAL_SERVER_ERROR, t);
         }

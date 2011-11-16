@@ -160,7 +160,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         Collection<Role> roles = gm.getRoles();
         for (Role role : roles) {
             String groupname = role.getMembershipGroup();
-            String securityRole = Authentication.getSpringSecuirtyRoleFromOldRoleName(role.getName());
+            String securityRole = Authentication.getSpringSecurityRoleFromOldRoleName(role.getName());
             if (securityRole != null) {
                 List<String> users;
                 try {
@@ -240,7 +240,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
             boolean notInDefaultGroup = "true".equals(properties.getProperty("role." + role + ".notInDefaultGroup"));
 
-            String securityRole = Authentication.getSpringSecuirtyRoleFromOldRoleName(rolename);
+            String securityRole = Authentication.getSpringSecurityRoleFromOldRoleName(rolename);
             if (securityRole == null) {
                 throw new DataRetrievalFailureException("Could not find Spring Security role mapping for old role name '" + rolename + "' for role '" + role + "'");
             }
