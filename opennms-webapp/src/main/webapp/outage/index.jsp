@@ -71,7 +71,7 @@ function validateId() {
       <h3>Outages and Service Level Availability</h3>
 		<div class="boxWrapper">
 			<p>Outages are tracked by OpenNMS by polling services that have been
-			discovered.  If the service does not respond to the poll, a service outage
+			provisioned.  If the service does not respond to the poll, a service outage
 			is created and service availability levels are impacted.  Service 
 			outages create notifications.</p>
 		</div>

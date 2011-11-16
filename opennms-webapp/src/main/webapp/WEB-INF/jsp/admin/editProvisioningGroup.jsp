@@ -37,14 +37,14 @@
 <%@ taglib tagdir="/WEB-INF/tags/springx" prefix="springx" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Provisioning Groups" /> 
-	<jsp:param name="headTitle" value="Provisioning Groups" />
+	<jsp:param name="title" value="Provisioning Requisitions" /> 
+	<jsp:param name="headTitle" value="Provisioning Requisitions" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Groups</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Requisitions</a>" />
 	<jsp:param name="breadcrumb" value="Edit Requisition" />
 </jsp:include>
 
-<h3>Manually Provisioned Nodes for Group: ${fn:escapeXml(nodeEditForm.groupName)}</h3>
+<h3>Requisitioned Nodes for Group: ${fn:escapeXml(nodeEditForm.groupName)}</h3>
 
  <tree:form commandName="nodeEditForm"> 
 

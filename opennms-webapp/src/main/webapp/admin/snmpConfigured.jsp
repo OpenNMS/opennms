@@ -46,7 +46,7 @@
 <h3>Finished configuring SNMP</h3>
 
 <p>
-  OpenNMS should not need to be restarted.
+  OpenNMS does not need to be restarted.
 </p>
 
 <jsp:include page="/includes/footer.jsp" flush="true"/>
