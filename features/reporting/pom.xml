@@ -14,5 +14,6 @@
     <module>core</module>
     <module>availability</module>
     <module>jasper-reports</module>
+    <module>repository</module>
   </modules>
 </project>
