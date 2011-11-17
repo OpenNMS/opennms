@@ -24,9 +24,9 @@ foreach my $measInfo (@{$ref->{measData}{measInfo}}) {
         push @reports, <<EOF;
 report.$rpt.name=3GPP - $measType->{content}
 report.$rpt.columns=$name
-report.$rpt.propertiesValues=instance
+report.$rpt.propertiesValues=label
 report.$rpt.type=$groupType
-report.$rpt.command=--title="{instance}" \\
+report.$rpt.command=--title="{label}" \\
  DEF:v1={rrd1}:$name:AVERAGE \\
  LINE2:v1#ff0000:"$measType->{content}" \\
  COMMENT:"\\\\n" \\

@@ -34,6 +34,7 @@ import java.util.Map;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
 
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlSource;
@@ -52,14 +53,9 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
      */
     @Override
     public XmlCollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException {
-        // Create a new collection set.
         XmlCollectionSet collectionSet = new XmlCollectionSet(agent);
         collectionSet.setCollectionTimestamp(new Date());
         collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
-
-        // Load the attribute group types.
-        loadAttributes(collection);
-
         try {
             for (XmlSource source : collection.getXmlSources()) {
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
@@ -73,5 +69,10 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
             throw new CollectionException("Can't collect XML data because " + e.getMessage(), e);
         }
     }
+
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
+     */
+    protected void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType) {}
 
 }

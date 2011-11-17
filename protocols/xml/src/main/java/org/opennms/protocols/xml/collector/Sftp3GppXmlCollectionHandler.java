@@ -29,15 +29,23 @@
 package org.opennms.protocols.xml.collector;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.xml.config.XmlDataCollection;
+import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
 
 import org.w3c.dom.Document;
@@ -53,6 +61,9 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
     /** The Constant XML_LAST_TIMESTAMP. */
     public static final String XML_LAST_TIMESTAMP = "_xmlCollectorLastTimestamp";
 
+    /** The 3GPP Performance Metric Instance Formats. */
+    private Properties m_pmGroups;
+
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlDataCollection, java.util.Map)
      */
@@ -62,9 +73,6 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         XmlCollectionSet collectionSet = new XmlCollectionSet(agent);
         collectionSet.setCollectionTimestamp(new Date());
         collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
-
-        // Load the attribute group types.
-        loadAttributes(collection);
 
         // TODO We could be careful when handling exceptions because parsing exceptions will be treated different from connection or retrieval exceptions
         try {
@@ -87,6 +95,18 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         } catch (Exception e) {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
             throw new CollectionException("Can't collect XML data because " + e.getMessage(), e);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
+     */
+    @Override
+    protected void processXmlResource(XmlCollectionResource resource, AttributeGroupType attribGroupType) {
+        Map<String,String> properties = get3gppProperties(get3gppFormat(resource.getResourceTypeName()), resource.getInstance());
+        for (Entry<String,String> entry : properties.entrySet()) {
+            XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(new XmlObject(entry.getKey(), "string"), attribGroupType);
+            resource.setAttributeValue(attribType, entry.getValue());
         }
     }
 
@@ -161,4 +181,52 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         return baseUrl + "&referenceTimestamp=" + currentTimestamp;
     }
 
+    /**
+     * Gets the 3GPP resource format.
+     *
+     * @param resourceType the resource type
+     * @return the 3gpp format
+     */
+    public String get3gppFormat(String resourceType) {
+        if (m_pmGroups == null) {
+            m_pmGroups = new Properties();
+            try {
+                m_pmGroups.load(getClass().getResourceAsStream("/3gpp-pmgroups.properties"));
+            } catch (IOException e) {
+                log().warn("Can't load 3GPP PM Groups formats because " + e.getMessage());
+            }
+        }
+        return m_pmGroups.getProperty(resourceType);
+    }
+
+    /**
+     * Gets the 3GPP properties based on measInfoId.
+     *
+     * @param format the format
+     * @param measInfoId the measInfoId (the resource instance)
+     * @return the properties
+     */
+    public Map<String,String> get3gppProperties(String format, String measInfoId) {
+        Map<String,String> properties = new TreeMap<String,String>();
+        if (format != null) {
+            String[] groups = format.split("\\|");
+            for (String group : groups) {
+                String[] subgroups = group.split("/");
+                for (String subgroup : subgroups) {
+                    String pair[] = subgroup.split("(?!\\\\)=");
+                    if (pair.length > 1) {
+                        if (pair[1].matches("^[<].+[>]$")) {
+                            Matcher m = Pattern.compile(pair[0] + "=([^|/]+)").matcher(measInfoId);
+                            if (m.find()) {
+                                properties.put(pair[0], m.group(1));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        properties.put("label", properties.toString().replaceAll("[{}]", ""));
+        properties.put("instance", measInfoId);
+        return properties;
+    }
 }

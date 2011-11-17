@@ -58,7 +58,6 @@ import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
@@ -80,9 +79,6 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
 
     /** The RRD Repository. */
     private RrdRepository m_rrdRepository;
-
-    /** The XML attribute type Map. */
-    private HashMap<String, XmlCollectionAttributeType> m_attribTypeList = new HashMap<String, XmlCollectionAttributeType>();
 
     /** The XML resource type Map. */
     private HashMap<String, XmlResourceType> m_resourceTypeList = new HashMap<String, XmlResourceType>();
@@ -120,32 +116,6 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     }
 
     /**
-     * Load attributes.
-     *
-     * @param collection the collection
-     */
-    protected void loadAttributes(XmlDataCollection collection) {
-        if (m_attribTypeList.isEmpty()) {
-            for (XmlSource source : collection.getXmlSources()) {
-                for (XmlGroup group : source.getXmlGroups()) {
-                    AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
-                    // Add defined XML Objects
-                    for (XmlObject object : group.getXmlObjects()) {
-                        XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
-                        m_attribTypeList.put(object.getName(), attribType);
-                    }
-                    // Add instance Object (unnormalized resource instance name)
-                    XmlObject object = new XmlObject();
-                    object.setName("instance");
-                    object.setDataType("string");
-                    XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
-                    m_attribTypeList.put(object.getName(), attribType);
-                }
-            }
-        }
-    }
-
-    /**
      * Fill collection set.
      *
      * @param agent the agent
@@ -166,25 +136,25 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
                 Node resourceName = (Node) xpath.evaluate(group.getKeyXpath(), resource, XPathConstants.NODE);
                 log().debug("fillCollectionSet: processing XML resource " + resourceName);
                 XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName.getNodeValue(), group.getResourceType(), timestamp);
+                AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
                 for (XmlObject object : group.getXmlObjects()) {
                     String value = (String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING);
-                    collectionResource.setAttributeValue(getCollectionAttributeType(object.getName()), value);
+                    XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
+                    collectionResource.setAttributeValue(attribType, value);
                 }
-                collectionResource.setAttributeValue(getCollectionAttributeType("instance"), resourceName.getNodeValue());
+                processXmlResource(collectionResource, attribGroupType);
                 collectionSet.getCollectionResources().add(collectionResource);
             }
         }
     }
 
     /**
-     * Gets the collection attribute type.
+     * Process XML resource.
      *
-     * @param attributeTypeName the attribute type name
-     * @return the collection attribute type
+     * @param collectionResource the collection resource
+     * @param attribGroupType the attribute group type
      */
-    protected XmlCollectionAttributeType getCollectionAttributeType(String attributeTypeName) {
-        return m_attribTypeList.get(attributeTypeName);
-    }
+    protected abstract void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType);
 
     /**
      * Gets the collection resource.

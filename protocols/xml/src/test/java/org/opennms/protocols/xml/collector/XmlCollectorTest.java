@@ -36,6 +36,7 @@ import java.util.Map;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -57,7 +58,6 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
-import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 
 import org.springframework.core.io.FileSystemResource;
@@ -70,8 +70,8 @@ import org.springframework.core.io.Resource;
  */
 public class XmlCollectorTest {
 
-    /** The file anticipator. */
-    private FileAnticipator m_fileAnticipator;
+    /** The Constant TEST_SNMP_DIRECTORY. */
+    private static final String TEST_SNMP_DIRECTORY = "target/snmp/";
 
     /** The collection agent. */
     private CollectionAgent m_collectionAgent;
@@ -82,9 +82,6 @@ public class XmlCollectorTest {
     /** The XML collection DAO. */
     private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
 
-    /** The SNMP directory. */
-    private File m_rrdDirectory;
-
     /**
      * Sets the up.
      *
@@ -92,13 +89,13 @@ public class XmlCollectorTest {
      */
     @Before
     public void setUp() throws Exception {
+        FileUtils.deleteDirectory(new File(TEST_SNMP_DIRECTORY));
         MockLogAppender.setupLogging();
 
         System.setProperty("org.opennms.rrd.usetcp", "false");
         System.setProperty("org.opennms.rrd.usequeue", "false");
         RrdUtils.setStrategy(new JRobinRrdStrategy());
 
-        m_fileAnticipator = new FileAnticipator();
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(m_collectionAgent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
@@ -120,7 +117,6 @@ public class XmlCollectorTest {
     @After
     public void tearDown() throws Exception {
         EasyMock.verify(m_collectionAgent, m_eventProxy);
-        m_fileAnticipator.deleteExpected();
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
@@ -213,10 +209,7 @@ public class XmlCollectorTest {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     private File getRrdDirectory() throws IOException {
-        if (m_rrdDirectory == null) {
-            m_rrdDirectory = m_fileAnticipator.tempDir("snmp"); 
-        }
-        return m_rrdDirectory;
+        return new File(TEST_SNMP_DIRECTORY);
     }
 
 }

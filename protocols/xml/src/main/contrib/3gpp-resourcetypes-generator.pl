@@ -17,7 +17,7 @@ EOF
 foreach my $measInfo (@{$ref->{measData}{measInfo}}) {
     my $groupType = getGroupType($measInfo->{measInfoId});
     print <<EOF;
-  <resourceType name="$groupType" label="3GPP $measInfo->{measInfoId}" resourceLabel="\${instance}" >
+  <resourceType name="$groupType" label="3GPP $measInfo->{measInfoId}" resourceLabel="\${label}" >
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
       <parameter key="match-expression" value="#suspect=='false'" />
     </persistenceSelectorStrategy>
