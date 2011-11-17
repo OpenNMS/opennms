@@ -1,7 +1,9 @@
 package org.opennms.features.reporting.reportrepository;
 
 import java.util.Collection;
+import java.util.List;
 
+import org.opennms.netmgt.config.databaseReports.Report;
 /**
  * Created by IntelliJ IDEA.
  * User: indigo
@@ -11,17 +13,17 @@ import java.util.Collection;
  */
 public interface ReportRepository {
 
-    public Collection<String> getOnlineReports();
+    public List<Report> getOnlineReports();
 
-    public Collection<String> getAllReport();
+    public List<Report> getAllReports();
 
-    public Collection<String> getReportsByReportProvider(ReportProvider provider);
+    public List<Report> getReportsByReportProvider(ReportProvider provider);
 
-    public Collection<String> getOnlineReportsByReportProvider(ReportProvider provider);
+    public List<Report> getOnlineReportsByReportProvider(ReportProvider provider);
 
-    public Collection<ReportProvider> getAllReportProvider();
+    public List<ReportProvider> getAllReportProvider();
 
-    public Collection<ReportProvider> getReportProviderList ();
+    public List<ReportProvider> getReportProviderList ();
 
     public void setReportProviderList(Collection<ReportProvider> reportProviderList);
 }

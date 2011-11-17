@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,41 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
-
-import java.util.List;
-
-import org.opennms.features.reporting.reportrepository.ReportRepository;
-import org.opennms.web.svclayer.support.DatabaseReportDescription;
-
-/**
- * <p>DatabaseReportListService interface.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public interface DatabaseReportListService {
-    
-    /**
-     * <p>getAll</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    List<DatabaseReportDescription> getAll();
-    
-    /**
-     * <p>getAllOnline</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    List<DatabaseReportDescription> getAllOnline();
-    
-    /**
-     * <p>setReportRepository</p>
-     *
-     * @param repo a {@link org.opennms.features.reporting.reportrepository.ReportRepository} object.
-     */
-    void setReportRepository(ReportRepository repo);
-
-}
+@XmlSchema(namespace = "http://xmlns.opennms.org/xsd/config/database-reports", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+package org.opennms.netmgt.config.databaseReports;
+import javax.xml.bind.annotation.XmlSchema;
