@@ -50,6 +50,7 @@ import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.StpInterfaceDao;
 import org.opennms.netmgt.dao.StpNodeDao;
 import org.opennms.netmgt.dao.VlanDao;
+import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -93,7 +95,10 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
 	@Autowired
 	private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-	
+
+	@Autowired
+	private PlatformTransactionManager m_transactionManager;
+
 	// SELECT node.nodeid, nodesysoid, ipaddr FROM node LEFT JOIN ipinterface ON node.nodeid = j.nodeid WHERE nodetype = 'A' AND issnmpprimary = 'P'
 	@Override
 	public List<LinkableNode> getSnmpNodeList() throws SQLException {
@@ -500,42 +505,68 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	@Override
 	@Transactional
 	protected synchronized void saveIpRouteInterface(final Connection dbConn, final OnmsIpRouteInterface route) throws SQLException {
-        OnmsIpRouteInterface ipRouteInterface = m_ipRouteInterfaceDao.findByNodeAndDest(route.getNode().getId(), route.getRouteDest());
-        if (ipRouteInterface == null) {
-            ipRouteInterface = route;
-        } else {
-            ipRouteInterface.setLastPollTime(route.getLastPollTime());
-            //ipRouteInterface.setRouteDest(route.getRouteDest());
-            ipRouteInterface.setRouteIfIndex(route.getRouteIfIndex());
-            ipRouteInterface.setRouteMask(route.getRouteMask());
-            ipRouteInterface.setRouteMetric1(route.getRouteMetric1());
-            ipRouteInterface.setRouteMetric2(route.getRouteMetric2());
-            ipRouteInterface.setRouteMetric3(route.getRouteMetric3());
-            ipRouteInterface.setRouteMetric4(route.getRouteMetric4());
-            ipRouteInterface.setRouteMetric5(route.getRouteMetric5());
-            ipRouteInterface.setRouteNextHop(route.getRouteNextHop());
-            ipRouteInterface.setRouteProto(route.getRouteProto());
-            ipRouteInterface.setRouteType(route.getRouteType());
-            ipRouteInterface.setStatus(route.getStatus());
-        }
-		m_ipRouteInterfaceDao.saveOrUpdate(ipRouteInterface);
+	    new UpsertTemplate<OnmsIpRouteInterface, IpRouteInterfaceDao>(m_transactionManager, m_ipRouteInterfaceDao) {
+
+	        @Override
+	        protected OnmsIpRouteInterface query() {
+	            return m_ipRouteInterfaceDao.findByNodeAndDest(route.getNode().getId(), route.getRouteDest());
+	        }
+
+	        @Override
+	        protected OnmsIpRouteInterface doUpdate(OnmsIpRouteInterface ipRouteInterface) {
+	            ipRouteInterface.setLastPollTime(route.getLastPollTime());
+	            //ipRouteInterface.setRouteDest(route.getRouteDest());
+	            ipRouteInterface.setRouteIfIndex(route.getRouteIfIndex());
+	            ipRouteInterface.setRouteMask(route.getRouteMask());
+	            ipRouteInterface.setRouteMetric1(route.getRouteMetric1());
+	            ipRouteInterface.setRouteMetric2(route.getRouteMetric2());
+	            ipRouteInterface.setRouteMetric3(route.getRouteMetric3());
+	            ipRouteInterface.setRouteMetric4(route.getRouteMetric4());
+	            ipRouteInterface.setRouteMetric5(route.getRouteMetric5());
+	            ipRouteInterface.setRouteNextHop(route.getRouteNextHop());
+	            ipRouteInterface.setRouteProto(route.getRouteProto());
+	            ipRouteInterface.setRouteType(route.getRouteType());
+	            ipRouteInterface.setStatus(route.getStatus());
+	            m_ipRouteInterfaceDao.update(ipRouteInterface);
+	            return ipRouteInterface;
+	        }
+
+	        @Override
+	        protected OnmsIpRouteInterface doInsert() {
+	            m_ipRouteInterfaceDao.save(route);
+	            return route;
+	        }
+	    }.execute();
 	}
 
 	@Override
 	@Transactional
 	protected void saveVlan(final Connection dbConn, final OnmsVlan v) throws SQLException {
-	    OnmsVlan vlan = m_vlanDao.findByNodeAndVlan(v.getNode().getId(), v.getVlanId());
-	    if (vlan == null) {
-	        vlan = v;
-	    } else {
-	        vlan.setLastPollTime(v.getLastPollTime());
-	        vlan.setStatus(v.getStatus());
-	        //vlan.setVlanId(v.getVlanId());
-	        vlan.setVlanName(v.getVlanName());
-            vlan.setVlanStatus(v.getVlanStatus());
-	        vlan.setVlanType(v.getVlanType());
-	    }
-		m_vlanDao.saveOrUpdate(v);
+	    new UpsertTemplate<OnmsVlan, VlanDao>(m_transactionManager, m_vlanDao) {
+
+	        @Override
+	        protected OnmsVlan query() {
+	            return m_vlanDao.findByNodeAndVlan(v.getNode().getId(), v.getVlanId());
+	        }
+
+	        @Override
+	        protected OnmsVlan doUpdate(OnmsVlan vlan) {
+	            vlan.setLastPollTime(v.getLastPollTime());
+	            vlan.setStatus(v.getStatus());
+	            //vlan.setVlanId(v.getVlanId());
+	            vlan.setVlanName(v.getVlanName());
+	            vlan.setVlanStatus(v.getVlanStatus());
+	            vlan.setVlanType(v.getVlanType());
+	            m_vlanDao.update(v);
+	            return vlan;
+	        }
+
+	        @Override
+	        protected OnmsVlan doInsert() {
+	            m_vlanDao.save(v);
+	            return v;
+	        }
+	    }.execute();
 	}
 
 	@Override
@@ -595,6 +626,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         Assert.notNull(m_snmpInterfaceDao);
         Assert.notNull(m_stpInterfaceDao);
         Assert.notNull(m_stpNodeDao);
+        Assert.notNull(m_transactionManager);
         Assert.notNull(m_vlanDao);
         LogUtils.debugf(this, "Initialized %s", this.getClass().getSimpleName());
     }
