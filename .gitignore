@@ -12,3 +12,6 @@ target
 .DS_Store
 META-INF
 build.properties
+*.iml
+*.iws
+*.ipr
