@@ -4,4 +4,18 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <bean id="localDatabaseReportProvider" class="org.opennms.features.reporting.reportrepository.LocalDatabaseReportProvider" />
+
+    <bean id="connectReportProvider" class="org.opennms.features.reporting.reportrepository.ConnectReportProvider" />
+
+    <bean id="defaultReportRepository" class="org.opennms.features.reporting.reportrepository.DefaultReportRepository">
+        <property name="reportProviderList">
+            <list>
+                <value>localDatabaseReportsProvider</value>
+                <ref bean="localDatabaseReportProvider" />
+                <value>connectDatabaseReportsProvider</value>
+                <ref bean="connectReportProvider" />
+            </list>
+        </property>
+    </bean>
 </beans>
