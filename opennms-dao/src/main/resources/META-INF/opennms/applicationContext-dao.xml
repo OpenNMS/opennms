@@ -33,12 +33,18 @@
     <property name="dataSource" ref="dataSource" />
     <property name="packagesToScan">
       <list>
+        <value>org.opennms.netmgt.dao.hibernate</value>
         <value>org.opennms.netmgt.model</value>
-        <value>org.opennms.netmgt.dao</value>
       </list>
     </property>
     <!--  property name="schemaUpdate" value="true">
       </property -->
+    <property name="annotatedPackages">
+      <list>
+        <value>org.opennms.netmgt.dao.hibernate</value>
+        <value>org.opennms.netmgt.model</value>
+      </list>
+    </property>
     <property name="hibernateProperties">
       <value>
         hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
