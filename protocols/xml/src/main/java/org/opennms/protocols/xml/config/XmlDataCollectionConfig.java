@@ -54,6 +54,9 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -7884808717236892997L;
 
+    /** The Constant XML_DATACOLLECTION_CONFIG_FILE. */
+    public static final String XML_DATACOLLECTION_CONFIG_FILE = "xml-datacollection-config.xml";
+
     /** The Constant OF_DATA_COLLECTIONS. */
     private static final XmlDataCollection[] OF_DATA_COLLECTIONS = new XmlDataCollection[0];
 

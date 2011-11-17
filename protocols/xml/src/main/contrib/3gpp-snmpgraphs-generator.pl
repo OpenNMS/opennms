@@ -7,6 +7,10 @@ my $file = shift;
 die "Need the 3GPP XML sample file.\n" unless $file;
 die "File $file does not exist\n" unless -e $file;
 
+my $height = 150;
+my $width  = 600;
+my $color  = "ff0000";
+
 my $ref = XMLin($file, ForceArray => [ 'measInfo', 'measType' ]);
 
 my @report_ids;
@@ -26,11 +30,14 @@ report.$rpt.name=3GPP - $measType->{content}
 report.$rpt.columns=$name
 report.$rpt.propertiesValues=label
 report.$rpt.type=$groupType
+report.$rpt.height=$height
+report.$rpt.width=$width
 report.$rpt.command=--title="{label}" \\
+ --height $height --width $width \\
  DEF:v1={rrd1}:$name:AVERAGE \\
- LINE2:v1#ff0000:"$measType->{content}" \\
+ LINE2:v1#$color:"$measType->{content}" \\
  COMMENT:"\\\\n" \\
- GPRINT:v1:AVERAGE:"Avg\\\\: %8.2lf %s" \\
+ GPRINT:v1:AVERAGE:"    Avg\\\\: %8.2lf %s" \\
  GPRINT:v1:MIN:"Min\\\\: %8.2lf %s" \\
  GPRINT:v1:MAX:"Max\\\\: %8.2lf %s\\\\n"
 EOF

@@ -236,7 +236,7 @@ public class XmlDataCollectionConfigTest {
     @Test
     public void readXML() throws Exception {
         File xmlCollectionConfig = getSourceFile();
-        assertTrue(XmlDataCollectionConfigFactory.XML_DATACOLLECTION_CONFIG_FILE + " is readable", xmlCollectionConfig.canRead());
+        assertTrue(XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE + " is readable", xmlCollectionConfig.canRead());
 
         InputStream reader = new FileInputStream(xmlCollectionConfig);
 
@@ -254,7 +254,7 @@ public class XmlDataCollectionConfigTest {
      * @return the source file
      */
     private File getSourceFile() {
-        File xmlCollectionConfig = new File("src/test/resources/", XmlDataCollectionConfigFactory.XML_DATACOLLECTION_CONFIG_FILE);
+        File xmlCollectionConfig = new File("src/test/resources/", XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE);
         System.err.println("Source File: " + xmlCollectionConfig.getAbsolutePath());
         return xmlCollectionConfig;
     }
