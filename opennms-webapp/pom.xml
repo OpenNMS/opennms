@@ -219,6 +219,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.repository</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.request-tracker</artifactId>
       <scope>provided</scope>
