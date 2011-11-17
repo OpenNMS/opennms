@@ -282,7 +282,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             dli.setParentIfIndex(lkm.getParentifindex());
             dli.setStatus(String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE));
             dli.setLastPollTime(now);
-            m_dataLinkInterfaceDao.save(dli);
+            m_dataLinkInterfaceDao.saveOrUpdate(dli);
 
             LogUtils.debugf(this, "storeDiscoveryLink: Storing %s", dli);
             m_dataLinkInterfaceDao.deactivateIfOlderThan(now);
@@ -551,19 +551,27 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
 	        @Override
 	        protected OnmsVlan doUpdate(OnmsVlan vlan) {
+	            // Make sure that the fields used in the query match
+	            Assert.isTrue(vlan.getNode().equals(v.getNode()));
+	            Assert.isTrue(vlan.getVlanId().equals(v.getVlanId()));
+
+	            if (vlan.getId() == null && v.getId() != null) {
+	                vlan.setId(v.getId());
+	            }
 	            vlan.setLastPollTime(v.getLastPollTime());
 	            vlan.setStatus(v.getStatus());
-	            //vlan.setVlanId(v.getVlanId());
 	            vlan.setVlanName(v.getVlanName());
 	            vlan.setVlanStatus(v.getVlanStatus());
 	            vlan.setVlanType(v.getVlanType());
 	            m_vlanDao.update(v);
+	            m_vlanDao.flush();
 	            return vlan;
 	        }
 
 	        @Override
 	        protected OnmsVlan doInsert() {
 	            m_vlanDao.save(v);
+	            m_vlanDao.flush();
 	            return v;
 	        }
 	    }.execute();
