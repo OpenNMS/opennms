@@ -65,6 +65,17 @@ public class MockSftp3gppXmlCollectionHandlerTest {
         Assert.assertEquals("GB71", properties.get("sg-name"));
         Assert.assertEquals("1", properties.get("su-number"));
         Assert.assertEquals("nse-id=1201, sg-name=GB71, su-number=1", properties.get("label"));
+
+        format = handler.get3gppFormat("platformSystemFilesystem");
+        Assert.assertEquals("disk|/=/v=1/frame=<frame>/shelf=<shelf>/slot=<slot>/sub-slot=<sub-slot>/name=<directory path>|", format);
+        properties = handler.get3gppProperties(format, "disk|/=/v=1/frame=0/shelf=0/slot=2/sub-slot=0/name=\\/opt\\/hitachi\\/agw\\/data\\/trace|");
+        Assert.assertEquals(7, properties.size());
+        Assert.assertEquals("0", properties.get("frame"));
+        Assert.assertEquals("0", properties.get("shelf"));
+        Assert.assertEquals("2", properties.get("slot"));
+        Assert.assertEquals("0", properties.get("sub-slot"));
+        Assert.assertEquals("/opt/hitachi/agw/data/trace", properties.get("name"));
+        Assert.assertEquals("frame=0, shelf=0, slot=2, sub-slot=0, name=/opt/hitachi/agw/data/trace", properties.get("label"));
     }
 
 }

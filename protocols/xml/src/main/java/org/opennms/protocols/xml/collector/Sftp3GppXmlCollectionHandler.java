@@ -31,10 +31,10 @@ package org.opennms.protocols.xml.collector;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -207,18 +207,21 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
      * @return the properties
      */
     public Map<String,String> get3gppProperties(String format, String measInfoId) {
-        Map<String,String> properties = new TreeMap<String,String>();
+        Map<String,String> properties = new LinkedHashMap<String,String>();
         if (format != null) {
             String[] groups = format.split("\\|");
             for (String group : groups) {
                 String[] subgroups = group.split("/");
                 for (String subgroup : subgroups) {
-                    String pair[] = subgroup.split("(?!\\\\)=");
+                    String pair[] = subgroup.split("=");
                     if (pair.length > 1) {
                         if (pair[1].matches("^[<].+[>]$")) {
-                            Matcher m = Pattern.compile(pair[0] + "=([^|/]+)").matcher(measInfoId);
+                            // I'm not sure how to deal with separating by | or / and avoiding separating by \/
+                            String valueRegex = pair[1].equals("<directory path>") ? "=([^|]+)" : "=([^|/]+)";
+                            Matcher m = Pattern.compile(pair[0] + valueRegex).matcher(measInfoId);
                             if (m.find()) {
-                                properties.put(pair[0], m.group(1));
+                                String v = pair[1].equals("<directory path>") ? m.group(1).replaceAll("\\\\/", "/") : m.group(1);
+                                properties.put(pair[0], v);
                             }
                         }
                     }
