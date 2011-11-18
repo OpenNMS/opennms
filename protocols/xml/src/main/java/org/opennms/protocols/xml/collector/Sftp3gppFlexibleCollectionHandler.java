@@ -114,6 +114,7 @@ public class Sftp3gppFlexibleCollectionHandler extends Sftp3gppStrictCollectionH
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     DocumentBuilder builder = factory.newDocumentBuilder();
                     factory.setIgnoringComments(true);
+                    boolean collected = false;
                     for (LsEntry entry : files) {
                         long currentTs = getTimeStampFromFile(entry.getFilename());
                         if (currentTs > lastTs) {
@@ -123,7 +124,11 @@ public class Sftp3gppFlexibleCollectionHandler extends Sftp3gppStrictCollectionH
                             Document doc = builder.parse(is);
                             fillCollectionSet(agent, collectionSet, source, doc);
                             setLastFilename(resourceDir, url.getPath(), entry.getFilename());
+                            collected = true;
                         }
+                    }
+                    if (!collected) {
+                        log().warn("collect: could not find any file after " + lastFile + " on " + agent);
                     }
                     connection.disconnect();
                 }
