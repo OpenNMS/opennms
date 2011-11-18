@@ -1921,6 +1921,7 @@
   </event>
 
 
+  <event-file>events/Translator.default.events.xml</event-file>
   <event-file>events/Rancid.events.xml</event-file>
   <event-file>events/3Com.events.xml</event-file>
   <event-file>events/AdaptecRaid.events.xml</event-file>
@@ -2099,6 +2100,5 @@
 
   <event-file>events/asset-management.events.xml</event-file>
   <event-file>events/Standard.events.xml</event-file>
-  <event-file>events/Translator.default.events.xml</event-file>
   <event-file>events/default.events.xml</event-file>
 </events>
