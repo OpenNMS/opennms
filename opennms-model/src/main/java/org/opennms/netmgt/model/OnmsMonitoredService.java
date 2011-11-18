@@ -131,6 +131,7 @@ Comparable<OnmsMonitoredService> {
      * @return a {@link java.lang.Integer} object.
      */
     @Id
+    @Column(nullable=false)
     @XmlAttribute(name="id")
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")    

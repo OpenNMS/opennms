@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.build</artifactId>
-    <version>1.9.93-SNAPSHOT</version>
+    <version>1.9.94-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 

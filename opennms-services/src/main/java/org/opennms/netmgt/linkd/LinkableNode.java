@@ -51,7 +51,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $
  */
-public class LinkableNode extends Object {
+public class LinkableNode {
 
     private final int m_nodeId;
 

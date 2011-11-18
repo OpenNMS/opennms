@@ -86,8 +86,8 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     	final int port = getPort();
     	final int retries = getRetries();
         final int timeout = getTimeout();
-        LogUtils.infof(this, "Address: %s || port: %s || \n", address, getPort());
-        detectorMonitor.start(this, "Checking address: %s for %s capability", address, getServiceName());
+        LogUtils.infof(this, "Address: %s || port: %s || \n", ipAddr, getPort());
+        detectorMonitor.start(this, "Checking address: %s for %s capability", ipAddr, getServiceName());
 
         final Client<Request, Response> client = getClient();
         for (int attempts = 0; attempts <= retries; attempts++) {

@@ -31,52 +31,17 @@
 
   <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
     <property name="dataSource" ref="dataSource" />
-    <property name="annotatedClasses">
+    <property name="packagesToScan">
       <list>
-        <value>org.opennms.netmgt.dao.hibernate.AccessLock</value>
-        <value>org.opennms.netmgt.model.OnmsDistPoller</value>
-        <value>org.opennms.netmgt.model.OnmsAssetRecord</value>
-        <value>org.opennms.netmgt.model.PathElement</value>
-        <value>org.opennms.netmgt.model.OnmsNode</value>
-        <value>org.opennms.netmgt.model.OnmsIpInterface</value>
-        <value>org.opennms.netmgt.model.OnmsSnmpInterface</value>
-        <value>org.opennms.netmgt.model.OnmsArpInterface</value>
-        <value>org.opennms.netmgt.model.OnmsMonitoredService</value>
-        <value>org.opennms.netmgt.model.OnmsCategory</value>
-        <value>org.opennms.netmgt.model.OnmsServiceType</value>
-        <value>org.opennms.netmgt.model.OnmsOutage</value>
-        <value>org.opennms.netmgt.model.OnmsEvent</value>
-        <value>org.opennms.netmgt.model.OnmsAlarm</value>
-        <value>org.opennms.netmgt.model.OnmsNotification</value>
-        <value>org.opennms.netmgt.model.OnmsUserNotification</value>
-        <value>org.opennms.netmgt.model.OnmsLocationMonitor</value>
-        <value>org.opennms.netmgt.model.OnmsLocationSpecificStatus</value>
-        <value>org.opennms.netmgt.model.PollStatus</value>
-        <value>org.opennms.netmgt.model.OnmsApplication</value>
-        <value>org.opennms.netmgt.model.ResourceReference</value>
-        <value>org.opennms.netmgt.model.StatisticsReportData</value>
-        <value>org.opennms.netmgt.model.StatisticsReport</value>
-        <value>org.opennms.netmgt.model.OnmsMap</value>
-        <value>org.opennms.netmgt.model.OnmsMapElement</value>
-        <value>org.opennms.netmgt.model.DataLinkInterface</value>
-        <value>org.opennms.netmgt.model.OnmsAcknowledgment</value>
-        <value>org.opennms.netmgt.model.OnmsLinkState</value>
-        <value>org.opennms.netmgt.model.ReportCatalogEntry</value>
-        <value>org.opennms.netmgt.model.OnmsAtInterface</value>
-        <value>org.opennms.netmgt.model.OnmsVlan</value>
-        <value>org.opennms.netmgt.model.OnmsStpNode</value>
-        <value>org.opennms.netmgt.model.OnmsStpInterface</value>
-        <value>org.opennms.netmgt.model.OnmsIpRouteInterface</value>
-        <!--
-        <value>org.opennms.netmgt.model.OnmsUser</value>
-        <value>org.opennms.netmgt.model.OnmsGroup</value>
-        -->
+        <value>org.opennms.netmgt.dao.hibernate</value>
+        <value>org.opennms.netmgt.model</value>
       </list>
     </property>
     <!--  property name="schemaUpdate" value="true">
       </property -->
     <property name="annotatedPackages">
       <list>
+        <value>org.opennms.netmgt.dao.hibernate</value>
         <value>org.opennms.netmgt.model</value>
       </list>
     </property>
