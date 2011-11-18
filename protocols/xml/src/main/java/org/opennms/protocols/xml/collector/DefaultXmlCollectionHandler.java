@@ -59,7 +59,7 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
         try {
             for (XmlSource source : collection.getXmlSources()) {
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                Document doc = getXmlDocument(agent, urlStr);
+                Document doc = getXmlDocument(urlStr);
                 fillCollectionSet(agent, collectionSet, source, doc);
             }
             collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);

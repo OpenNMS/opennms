@@ -155,7 +155,7 @@ public class XmlCollectorTest {
     }
 
     /**
-     * Test XML collector with 3GPP Handler.
+     * Test XML collector with 3GPP Strict Handler.
      *
      * @throws Exception the exception
      */
@@ -163,7 +163,7 @@ public class XmlCollectorTest {
     public void test3GPPXmlCollector() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("collection", "3GPP");
-        parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockSftp3gppXmlCollectionHandler");
+        parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockSftp3gppStrictCollectionHandler");
         doTest(parameters);
     }
 

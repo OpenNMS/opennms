@@ -245,11 +245,10 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     /**
      * Gets the XML document.
      *
-     * @param agent the collection agent
      * @param urlString the URL string
      * @return the XML document
      */
-    protected Document getXmlDocument(CollectionAgent agent, String urlString) {
+    protected Document getXmlDocument(String urlString) {
         try {
             URL url = UrlFactory.getUrl(urlString);
             URLConnection c = url.openConnection();
@@ -276,7 +275,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         if (!m_resourceTypeList.containsKey(resourceType)) {
             ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
             if (rt == null) {
-                log().debug("using default XML resource type strategy.");
+                log().debug("getXmlResourceType: using default XML resource type strategy.");
                 rt = new ResourceType();
                 rt.setName(resourceType);
                 rt.setStorageStrategy(new StorageStrategy());

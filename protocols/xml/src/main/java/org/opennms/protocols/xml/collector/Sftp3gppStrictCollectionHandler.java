@@ -52,11 +52,14 @@ import org.w3c.dom.Document;
 
 /**
  * The custom implementation of the interface XmlCollectionHandler for 3GPP XML Data.
- * <p>This supports the processing of several files.</p>
+ * <p>This supports the processing of several files strictly ordered by timestamp,
+ * and the timestamp between files should be only one granularity period.</p>
+ * <p>The state will be persisted on disk by saving the last successfully processed
+ * timestamp.</p>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
+public class Sftp3gppStrictCollectionHandler extends AbstractXmlCollectionHandler {
 
     /** The Constant XML_LAST_TIMESTAMP. */
     public static final String XML_LAST_TIMESTAMP = "_xmlCollectorLastTimestamp";
@@ -85,7 +88,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                 for (XmlSource source : collection.getXmlSources()) {
                     String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep(), ts);
                     log().debug("collect: retrieving data from " + urlStr);
-                    Document doc = getXmlDocument(agent, urlStr);
+                    Document doc = getXmlDocument(urlStr);
                     fillCollectionSet(agent, collectionSet, source, doc);
                     setLastTimestamp(resourceDir, ts); // collection succeeded
                 }
@@ -118,7 +121,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
      * @return the last timestamp
      * @throws Exception the exception
      */
-    protected long getLastTimestamp(File resourceDir, Integer step) throws Exception {
+    private long getLastTimestamp(File resourceDir, Integer step) throws Exception {
         String ts = null;
         try {
             ts = ResourceTypeUtils.getStringProperty(resourceDir, getCacheId());
@@ -140,7 +143,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
      * @param ts the new timestamp
      * @throws Exception the exception
      */
-    protected void setLastTimestamp(File resourceDir, Long ts) throws Exception {
+    private void setLastTimestamp(File resourceDir, Long ts) throws Exception {
         ResourceTypeUtils.updateStringProperty(resourceDir, ts.toString(), getCacheId());
     }
 

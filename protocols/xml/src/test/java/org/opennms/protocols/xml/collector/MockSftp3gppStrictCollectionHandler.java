@@ -41,17 +41,17 @@ import org.opennms.protocols.xml.config.XmlGroup;
 import org.w3c.dom.Document;
 
 /**
- * The Mock Class for DefaultXmlCollectionHandler.
+ * The Mock Class for Sftp3gppStrictCollectionHandler.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class MockSftp3gppXmlCollectionHandler extends Sftp3gppXmlCollectionHandler {
+public class MockSftp3gppStrictCollectionHandler extends Sftp3gppStrictCollectionHandler {
 
     /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.XmlCollector#getXmlDocument(org.opennms.netmgt.collectd.CollectionAgent, java.lang.String)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlDocument(java.lang.String)
      */
     @Override
-    protected Document getXmlDocument(CollectionAgent agent, String urlString) {
+    protected Document getXmlDocument(String urlString) {
         return MockDocumentBuilder.getXmlDocument();
     }
 

@@ -33,11 +33,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * The Test Class for MockSftp3gppXmlCollectionHandler.
+ * The Test Class for MockSftp3gppStrictCollectionHandler.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class MockSftp3gppXmlCollectionHandlerTest {
+public class MockSftp3gppStrictCollectionHandlerTest {
 
     /**
      * Test parser.
@@ -46,7 +46,7 @@ public class MockSftp3gppXmlCollectionHandlerTest {
      */
     @Test
     public void testParser() throws Exception {
-        MockSftp3gppXmlCollectionHandler handler = new MockSftp3gppXmlCollectionHandler();
+        MockSftp3gppStrictCollectionHandler handler = new MockSftp3gppStrictCollectionHandler();
 
         String format = handler.get3gppFormat("cdmaSc");
         Assert.assertEquals("system|/=/v=1/sg-name=<mmeScSgName>|", format);

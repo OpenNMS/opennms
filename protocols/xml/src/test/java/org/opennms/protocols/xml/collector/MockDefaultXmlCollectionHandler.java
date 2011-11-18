@@ -42,10 +42,10 @@ import org.w3c.dom.Document;
 public class MockDefaultXmlCollectionHandler extends DefaultXmlCollectionHandler {
 
     /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.XmlCollector#getXmlDocument(org.opennms.netmgt.collectd.CollectionAgent, java.lang.String)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlDocument(java.lang.String)
      */
     @Override
-    protected Document getXmlDocument(CollectionAgent agent, String urlString) {
+    protected Document getXmlDocument(String urlString) {
         return MockDocumentBuilder.getXmlDocument();
     }
 

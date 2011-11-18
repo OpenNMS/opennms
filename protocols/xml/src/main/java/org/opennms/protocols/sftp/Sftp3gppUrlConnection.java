@@ -59,6 +59,19 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
      */
     @Override
     protected String getPath() throws SftpUrlException {
+        File f = new File(m_url.getPath(), get3gppFileName());
+        String path = f.getAbsolutePath();
+        log().debug("getPath: retrieving data 3GPP (NE Mode) using " + path);
+        return path;
+    }
+
+    /**
+     * Gets the file name for 3GPP-A (NE Mode).
+     *
+     * @return the path for 3GPP-A (NE Mode)
+     * @throws SftpUrlException the SFTP URL exception
+     */
+    public String get3gppFileName() throws SftpUrlException {
         Map<String,String> properties = getProperties(url);
 
         // Checking required parameters
@@ -108,11 +121,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         sb.append(timef.format(new Date(timestamp)));
         sb.append("_");
         sb.append(properties.get("neid"));
-        File f = new File(m_url.getPath(), sb.toString());
-        String path = f.getAbsolutePath();
-
-        log().debug("getPath: retrieving data 3GPP (NE Mode) using " + path);
-        return path;
+        return sb.toString();
     }
 
     /**
