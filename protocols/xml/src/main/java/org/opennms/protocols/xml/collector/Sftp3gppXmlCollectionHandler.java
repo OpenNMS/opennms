@@ -30,39 +30,45 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
-
 import org.w3c.dom.Document;
 
 /**
  * The custom implementation of the interface XmlCollectionHandler for 3GPP XML Data.
- * <p>This supports the processing of several files strictly ordered by timestamp,
- * and the timestamp between files should be only one granularity period.</p>
- * <p>The state will be persisted on disk by saving the last successfully processed
- * timestamp.</p>
+ * <p>This supports the processing of several files ordered by filename, and the
+ * timestamp between files won't be taken in consideration.</p>
+ * <p>The state will be persisted on disk by saving the name of the last successfully
+ * processed file.</p>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class Sftp3gppStrictCollectionHandler extends AbstractXmlCollectionHandler {
+public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
 
-    /** The Constant XML_LAST_TIMESTAMP. */
-    public static final String XML_LAST_TIMESTAMP = "_xmlCollectorLastTimestamp";
+    /** The Constant XML_LAST_FILENAME. */
+    public static final String XML_LAST_FILENAME = "_xmlCollectorLastFilename";
 
     /** The 3GPP Performance Metric Instance Formats. */
     private Properties m_pmGroups;
@@ -80,17 +86,44 @@ public class Sftp3gppStrictCollectionHandler extends AbstractXmlCollectionHandle
         // TODO We could be careful when handling exceptions because parsing exceptions will be treated different from connection or retrieval exceptions
         try {
             File resourceDir = new File(getRrdRepository().getRrdBaseDir(), Integer.toString(agent.getNodeId()));
-            int step = collection.getXmlRrd().getStep() * 1000; // The step should be specified in milliseconds for timestamp calculations
-            long lastTs = getLastTimestamp(resourceDir, step);
-            long currentTs = getCurrentTimestamp(step);
-            // Cycle through the pending files starting from the next file after the last successfully processed.
-            for (long ts = lastTs + step; ts <= currentTs; ts += step) {
-                for (XmlSource source : collection.getXmlSources()) {
-                    String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep(), ts);
-                    log().debug("collect: retrieving data from " + urlStr);
+            for (XmlSource source : collection.getXmlSources()) {
+                if (!source.getUrl().startsWith(Sftp3gppUrlHandler.PROTOCOL)) {
+                    throw new CollectionException("The 3GPP SFTP Collection Handler can only use the protocol " + Sftp3gppUrlHandler.PROTOCOL);
+                }
+                String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
+                URL url = UrlFactory.getUrl(urlStr);
+                String lastFile = getLastFilename(resourceDir, url.getPath());
+                Sftp3gppUrlConnection connection = (Sftp3gppUrlConnection) url.openConnection();
+                if (lastFile == null) {
+                    lastFile = connection.get3gppFileName();
+                    log().debug("collect(single): retrieving file from " + url.getPath() + File.separatorChar + lastFile + " from " + agent.getHostAddress());
                     Document doc = getXmlDocument(urlStr);
                     fillCollectionSet(agent, collectionSet, source, doc);
-                    setLastTimestamp(resourceDir, ts); // collection succeeded
+                    setLastFilename(resourceDir, url.getPath(), lastFile);
+                    deleteFile(connection, lastFile);
+                } else {
+                    connection.connect();
+                    List<String> files = connection.getFileList();
+                    long lastTs = connection.getTimeStampFromFile(lastFile);
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    factory.setIgnoringComments(true);
+                    boolean collected = false;
+                    for (String fileName : files) {
+                        if (connection.getTimeStampFromFile(fileName) > lastTs) {
+                            log().debug("collect(multiple): retrieving file " + fileName + " from " + agent.getHostAddress());
+                            InputStream is = connection.getFile(fileName);
+                            Document doc = builder.parse(is);
+                            fillCollectionSet(agent, collectionSet, source, doc);
+                            setLastFilename(resourceDir, url.getPath(), fileName);
+                            deleteFile(connection, fileName);
+                            collected = true;
+                        }
+                    }
+                    if (!collected) {
+                        log().warn("collect: could not find any file after " + lastFile + " on " + agent);
+                    }
+                    connection.disconnect();
                 }
             }
             collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
@@ -98,6 +131,60 @@ public class Sftp3gppStrictCollectionHandler extends AbstractXmlCollectionHandle
         } catch (Exception e) {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
             throw new CollectionException("Can't collect XML data because " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Gets the last filename.
+     *
+     * @param resourceDir the resource directory
+     * @param targetPath the target path
+     * @return the last filename
+     * @throws Exception the exception
+     */
+    private String getLastFilename(File resourceDir, String targetPath) throws Exception {
+        String filename = null;
+        try {
+            filename = ResourceTypeUtils.getStringProperty(resourceDir, getCacheId(targetPath));
+        } catch (Exception e) {
+            log().info("getLastFilename: creating a new filename tracker on " + resourceDir);
+        }
+        return filename;
+    }
+
+    /**
+     * Sets the last filename.
+     *
+     * @param resourceDir the resource directory
+     * @param targetPath the target path
+     * @param filename the filename
+     * @throws Exception the exception
+     */
+    private void setLastFilename(File resourceDir, String targetPath, String filename) throws Exception {
+        ResourceTypeUtils.updateStringProperty(resourceDir, filename, getCacheId(targetPath));
+    }
+
+    /**
+     * Gets the cache id.
+     *
+     * @param targetPath the target path
+     * @return the cache id
+     */
+    private String getCacheId(String targetPath) {
+        return XML_LAST_FILENAME + '.' + getServiceName() + targetPath.replaceAll("/", "_");
+    }
+
+    /**
+     * Safely delete file on remote node.
+     *
+     * @param connection the SFTP URL Connection
+     * @param fileName the file name
+     */
+    private void deleteFile(Sftp3gppUrlConnection connection, String fileName) {
+        try {
+            connection.deleteFile(fileName);
+        } catch (Exception e) {
+            log().warn("Can't delete file " + fileName + " from " +  connection.getURL().getHost() + " because " + e.getMessage());
         }
     }
 
@@ -111,60 +198,6 @@ public class Sftp3gppStrictCollectionHandler extends AbstractXmlCollectionHandle
             XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(new XmlObject(entry.getKey(), "string"), attribGroupType);
             resource.setAttributeValue(attribType, entry.getValue());
         }
-    }
-
-    /**
-     * Gets the last timestamp.
-     *
-     * @param resourceDir the resource directory
-     * @param step the collection step (in milliseconds)
-     * @return the last timestamp
-     * @throws Exception the exception
-     */
-    private long getLastTimestamp(File resourceDir, Integer step) throws Exception {
-        String ts = null;
-        try {
-            ts = ResourceTypeUtils.getStringProperty(resourceDir, getCacheId());
-        } catch (Exception e) {
-            log().info("getLastTimestamp: creating a new timestamp tracker on " + resourceDir);
-        }
-        if (ts == null) {
-            Long t = getCurrentTimestamp(step);
-            setLastTimestamp(resourceDir, t);
-            return t;
-        }
-        return Long.parseLong(ts);
-    }
-
-    /**
-     * Sets the last timestamp.
-     *
-     * @param resourceDir the resource directory
-     * @param ts the new timestamp
-     * @throws Exception the exception
-     */
-    private void setLastTimestamp(File resourceDir, Long ts) throws Exception {
-        ResourceTypeUtils.updateStringProperty(resourceDir, ts.toString(), getCacheId());
-    }
-
-    /**
-     * Gets the cache id.
-     *
-     * @return the cache id
-     */
-    private String getCacheId() {
-        return XML_LAST_TIMESTAMP + '.' + getServiceName();
-    }
-
-    /**
-     * Gets the current timestamp.
-     *
-     * @param step the collection step (in milliseconds)
-     * @return the current timestamp
-     */
-    private long getCurrentTimestamp(Integer step) {
-        long reference = System.currentTimeMillis();
-        return reference - reference  % step; // normalize timestamp
     }
 
     /**

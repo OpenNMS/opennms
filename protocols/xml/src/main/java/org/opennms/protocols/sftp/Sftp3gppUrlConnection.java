@@ -51,7 +51,7 @@ import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.SftpException;
 
 /**
- * The class for managing SFTP+3GPP URL Connection.
+ * The class for managing SFTP.3GPP URL Connection.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
@@ -89,7 +89,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
      * @throws SftpUrlException the SFTP URL exception
      */
     public String get3gppFileName() throws SftpUrlException {
-        Map<String,String> properties = getProperties();
+        Map<String,String> properties = getQueryMap();
 
         // Checking required parameters
         if (!properties.containsKey("step")) {
@@ -165,11 +165,11 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
     }
 
     /**
-     * Gets the properties.
+     * Gets the properties map from the URL Query..
      *
-     * @return the properties map
+     * @return the query map
      */
-    private Map<String,String> getProperties() {
+    public Map<String,String> getQueryMap() {
         if (m_urlProperties == null) {
             m_urlProperties = new HashMap<String,String>();
             if (url.getQuery() != null) {
@@ -194,6 +194,8 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         List<String> files = new ArrayList<String>();
         Vector<LsEntry> entries = getChannel().ls(url.getPath());
         for (LsEntry entry : entries) {
+            if (entry.getFilename().startsWith("."))
+                continue;
             files.add(entry.getFilename());
         }
         Collections.sort(files);
@@ -208,11 +210,11 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public void deleteFile(String fileName) throws SftpException, IOException {
-        String deleteFlag = getProperties().get("eraseFile");
+        String deleteFlag = getQueryMap().get("deletefile");
         if (deleteFlag != null && Boolean.parseBoolean(deleteFlag)) {
             String file = url.getPath() + File.separatorChar + fileName;
             log().debug("deleting file " + file + " from " + url.getHost());
-            getChannel().rm(url.getPath() + File.separatorChar + fileName);
+            getChannel().rm(file);
         }
     }
 
