@@ -31,20 +31,13 @@ package org.opennms.protocols.xml.collector;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
@@ -54,9 +47,6 @@ import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlSource;
 import org.w3c.dom.Document;
-
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.ChannelSftp.LsEntry;
 
 /**
  * The custom implementation of the interface XmlCollectionHandler for 3GPP XML Data.
@@ -101,29 +91,21 @@ public class Sftp3gppFlexibleCollectionHandler extends Sftp3gppStrictCollectionH
                     setLastFilename(resourceDir, url.getPath(), lastFile);
                 } else {
                     connection.connect();
-                    ChannelSftp channel = connection.getChannel();
-                    @SuppressWarnings("unchecked")
-                    Vector<LsEntry> files = channel.ls(url.getPath());
-                    Collections.sort(files, new Comparator<LsEntry>() {
-                        @Override
-                        public int compare(LsEntry arg0, LsEntry arg1) {
-                            return arg0.getFilename().compareTo(arg1.getFilename());
-                        }
-                    });
-                    long lastTs = getTimeStampFromFile(lastFile);
+                    List<String> files = connection.getFileList();
+                    long lastTs = connection.getTimeStampFromFile(lastFile);
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     DocumentBuilder builder = factory.newDocumentBuilder();
                     factory.setIgnoringComments(true);
                     boolean collected = false;
-                    for (LsEntry entry : files) {
-                        long currentTs = getTimeStampFromFile(entry.getFilename());
+                    for (String fileName : files) {
+                        long currentTs = connection.getTimeStampFromFile(fileName);
                         if (currentTs > lastTs) {
-                            String fileName = url.getPath() + File.separatorChar + entry.getFilename();
-                            log().debug("collect(multiple): retrieving file from " + fileName + " from " + agent.getHostAddress());
-                            InputStream is = channel.get(fileName);
+                            log().debug("collect(multiple): retrieving file " + fileName + " from " + agent.getHostAddress());
+                            InputStream is = connection.getFile(fileName);
                             Document doc = builder.parse(is);
                             fillCollectionSet(agent, collectionSet, source, doc);
-                            setLastFilename(resourceDir, url.getPath(), entry.getFilename());
+                            setLastFilename(resourceDir, url.getPath(), fileName);
+                            connection.deleteFile(fileName);
                             collected = true;
                         }
                     }
@@ -139,29 +121,6 @@ public class Sftp3gppFlexibleCollectionHandler extends Sftp3gppStrictCollectionH
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
             throw new CollectionException("Can't collect XML data because " + e.getMessage(), e);
         }
-    }
-
-    /**
-     * Gets the time stamp from 3GPP XML file name.
-     *
-     * @param fileName the 3GPP XML file name
-     * @return the time stamp from file
-     */
-    private long getTimeStampFromFile(String fileName) {
-        Pattern p = Pattern.compile("\\w(\\d+)\\.(\\d+)-(\\d+)-(\\d+)-(\\d+)_.+");
-        Matcher m = p.matcher(fileName);
-        if (m.find()) {
-            String value = m.group(1) + '-' + m.group(4); // Using end date as a reference
-            try {
-                DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyyMMdd-HHmm");
-                DateTime dateTime = dtf.parseDateTime(value);
-                return dateTime.getMillis();
-            } catch (Exception e) {
-                log().warn("getTimeStampFromFile: malformed 3GPP file " + fileName + ", because " + e.getMessage());
-                return 0;
-            }
-        }
-        return 0;
     }
 
     /**

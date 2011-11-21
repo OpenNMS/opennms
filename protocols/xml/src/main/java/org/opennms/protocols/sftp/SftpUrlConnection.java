@@ -38,6 +38,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 /**
  * The class for managing SFTP URL Connection.
@@ -50,17 +51,14 @@ public class SftpUrlConnection extends URLConnection {
     /** The Constant default timeout in milliseconds. */
     public static final int DEFAULT_TIMEOUT = 30000;
 
-    /** The URL. */
-    protected URL m_url;
-
     /** The SSH session. */
-    protected Session m_session; 
+    private Session m_session; 
 
     /** The SFTP channel. */
-    protected ChannelSftp m_channel;
+    private ChannelSftp m_channel;
 
     /** The connection flag, true when the connection has been started. */
-    protected boolean m_connected = false;
+    private boolean m_connected = false;
 
     /**
      * Instantiates a new SFTP URL connection.
@@ -69,7 +67,6 @@ public class SftpUrlConnection extends URLConnection {
      */
     protected SftpUrlConnection(URL url) {
         super(url);
-        m_url = url;
     }
 
     /* (non-Javadoc)
@@ -81,14 +78,14 @@ public class SftpUrlConnection extends URLConnection {
             return;
         }
         m_connected = true;
-        if (m_url.getUserInfo() == null) {
+        if (url.getUserInfo() == null) {
             throw new IOException("User credentials required.");
         }
-        String[] userInfo = m_url.getUserInfo().split(":");
+        String[] userInfo = url.getUserInfo().split(":");
         JSch jsch = new JSch();
         try {
-            int port = m_url.getPort() > 0 ? m_url.getPort() : m_url.getDefaultPort();
-            m_session = jsch.getSession(userInfo[0], m_url.getHost(), port);
+            int port = url.getPort() > 0 ? url.getPort() : url.getDefaultPort();
+            m_session = jsch.getSession(userInfo[0], url.getHost(), port);
             if (userInfo.length > 1) {
                 m_session.setPassword(userInfo[1]);
             }
@@ -101,7 +98,7 @@ public class SftpUrlConnection extends URLConnection {
             m_channel.connect();
         } catch (JSchException e) {
             disconnect();
-            throw new IOException("Can't connect using " + m_url + " because " + e.getMessage());
+            throw new IOException("Can't connect using " + url + " because " + e.getMessage());
         }
     }
 
@@ -122,7 +119,10 @@ public class SftpUrlConnection extends URLConnection {
      *
      * @return the channel
      */
-    public ChannelSftp getChannel() {
+    public ChannelSftp getChannel() throws IOException {
+        if (m_channel == null) {
+            connect();
+        }
         return m_channel;
     }
 
@@ -132,10 +132,9 @@ public class SftpUrlConnection extends URLConnection {
     @Override
     public InputStream getInputStream() throws IOException {
         try {
-            connect();
-            return m_channel.get(getPath());
-        } catch (Exception e) {
-            throw new IOException("Can't retrieve " + m_url.getPath() + " from " + m_url.getHost() + " because " + e.getMessage());
+            return getChannel().get(getPath());
+        } catch (SftpException e) {
+            throw new IOException("Can't retrieve " + url.getPath() + " from " + url.getHost() + " because " + e.getMessage());
         }
     }
 
@@ -146,7 +145,7 @@ public class SftpUrlConnection extends URLConnection {
      * @throws SftpUrlException the SFTP URL exception
      */
     protected String getPath() throws SftpUrlException {
-        return m_url.getPath();
+        return url.getPath();
     }
 
     /**
