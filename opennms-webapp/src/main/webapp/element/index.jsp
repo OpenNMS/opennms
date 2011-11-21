@@ -115,7 +115,7 @@
             </form>
             
             <form action="element/nodeList.htm" method="get">
-                    <p align="right">Foreign Source like:
+                    <p align="right">Foreign Source name like:
                         <input type="hidden" name="listInterfaces" value="false"/>
                         <input type="text" name="foreignSource"/>
                         <input type="submit" value="Search"/>

@@ -307,6 +307,7 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
      * @return a {@link java.lang.Integer} object.
      */
     @Id
+    @Column(nullable=false)
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")
     public Integer getId() {

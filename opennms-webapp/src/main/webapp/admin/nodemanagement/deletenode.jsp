@@ -125,9 +125,9 @@
 
 <p>
   <strong>Note:</strong> If the IP address of any of the node's interfaces
-  is still configured for discovery, the node will be discovered again.  To
-  prevent this, either remove the IP address from the discovery range or
-  unmanage the device instead of deleting it.
+  is still configured for discovery and still responding to pings, the node will
+  be discovered again. To prevent this, either remove the IP address from the
+  discovery range or unmanage the device instead of deleting it.
 </p>
 
 <hr/> 

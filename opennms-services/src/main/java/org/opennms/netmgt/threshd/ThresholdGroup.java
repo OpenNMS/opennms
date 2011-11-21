@@ -73,7 +73,7 @@ public class ThresholdGroup {
 	 * @param name a {@link java.lang.String} object.
 	 */
 	public void setName(String name) {
-		m_name = name;
+		m_name = (name == null ? null : name.intern());
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class ThresholdGroup {
 	 * @param name a {@link java.lang.String} object.
 	 */
 	public ThresholdGroup(String name) {
-		m_name = name;
+		m_name = (name == null ? null : name.intern());
 	}
 
 	/**

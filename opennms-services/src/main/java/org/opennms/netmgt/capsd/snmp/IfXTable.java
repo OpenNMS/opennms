@@ -84,11 +84,7 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
      * @return a {@link org.opennms.netmgt.capsd.snmp.IfXTableEntry} object.
      */
     public IfXTableEntry getEntry(int ifIndex) {
-        if (getEntries() == null) {
-            return null;
-        }
-        
-        for(IfXTableEntry entry : getEntries()) {
+        for(IfXTableEntry entry : this) {
             Integer ndx = entry.getIfIndex();
             if (ndx != null && ndx.intValue() == ifIndex) {
                 return entry;
@@ -108,7 +104,7 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
     
         // Find ifXTable entry with matching ifIndex
 
-        for(IfXTableEntry ifXEntry : getEntries()) {
+        for(IfXTableEntry ifXEntry : this) {
     
             int ifXIndex = -1;
             Integer snmpIfIndex = ifXEntry.getIfIndex();
@@ -134,7 +130,7 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
     public String getIfAlias(int ifIndex) {
         // Find ifXTable entry with matching ifIndex
 
-        for(IfXTableEntry ifXEntry : getEntries()) {
+        for(IfXTableEntry ifXEntry : this) {
             
             int ifXIndex = -1;
             Integer snmpIfIndex = ifXEntry.getIfIndex();
@@ -158,7 +154,7 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
      * @return a {@link java.lang.Long} object.
      */
     public Long getIfHighSpeed(int ifIndex) {
-        for(IfXTableEntry ifXEntry : getEntries()) {
+        for(IfXTableEntry ifXEntry : this) {
             
             int ifXIndex = -1;
             Integer snmpIfIndex = ifXEntry.getIfIndex();

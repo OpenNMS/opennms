@@ -217,7 +217,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @Id
     @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId")
     @GeneratedValue(generator="alarmSequence")    
-    @Column(name="alarmId")
+    @Column(name="alarmId", nullable=false)
     @XmlAttribute(name="id")
     public Integer getId() {
         return this.m_id;

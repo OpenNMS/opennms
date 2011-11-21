@@ -198,7 +198,10 @@
 <div class="onms">
 <h2>Node: ${model.label}</h2>
 <c:if test="${model.foreignSource != null}">
-<h2>Foreign Source: ${model.foreignSource}</h2>
+<h2><em>Created via provisioning requisition <strong>${model.foreignSource}</strong></em></h2>
+</c:if>
+<c:if test="${model.foreignSource == null}">
+<h2><em>Not a member of any provisioning requisition</em></h2>
 </c:if>
 <div id="linkbar">
   <ul class="o-menu">

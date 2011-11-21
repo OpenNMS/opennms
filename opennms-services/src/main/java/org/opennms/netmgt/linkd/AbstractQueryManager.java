@@ -35,6 +35,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
@@ -127,9 +128,8 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processIpNetToMediaTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
-        List<IpNetToMediaTableEntry> entries = snmpcoll.getIpNetToMediaTable().getEntries();
         if (LogUtils.isDebugEnabled(this)) {
-            if (entries.size() > 0) {
+            if (snmpcoll.getIpNetToMediaTable().size() > 0) {
                 LogUtils.debugf(this, "processIpNetToMediaTable: Starting ipNetToMedia table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
                 LogUtils.debugf(this, "processIpNetToMediaTable: Zero ipNetToMedia table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
@@ -139,7 +139,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         // the AtInterfaces used by LinkableNode where to save info
         final List<OnmsAtInterface> atInterfaces = new ArrayList<OnmsAtInterface>();
 
-        for (final IpNetToMediaTableEntry ent : entries) {
+        for (final IpNetToMediaTableEntry ent : snmpcoll.getIpNetToMediaTable()) {
 
             final int ifindex = ent.getIpNetToMediaIfIndex();
 
@@ -198,9 +198,8 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processCdpCacheTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
-        List<CdpCacheTableEntry> entries = snmpcoll.getCdpCacheTable().getEntries();
         if (LogUtils.isDebugEnabled(this)) {
-            if (entries.size() > 0) {
+            if (snmpcoll.getCdpCacheTable().size() > 0) {
                 LogUtils.debugf(this, "processCdpCacheTable: Starting CDP cache table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
                 LogUtils.debugf(this, "processCdpCacheTable: Zero CDP cache table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
@@ -209,7 +208,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         List<CdpInterface> cdpInterfaces = new ArrayList<CdpInterface>();
 
-        for (final CdpCacheTableEntry cdpEntry : entries) {
+        for (final CdpCacheTableEntry cdpEntry : snmpcoll.getCdpCacheTable()) {
             final int cdpAddrType = cdpEntry.getCdpCacheAddressType();
 
             if (cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
@@ -277,9 +276,8 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processRouteTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
-        List<SnmpStore> entries = snmpcoll.getIpRouteTable().getEntries();
         if (LogUtils.isDebugEnabled(this)) {
-            if (entries.size() > 0) {
+            if (snmpcoll.getIpRouteTable().size() > 0) {
                 LogUtils.debugf(this, "processRouteTable: Starting route table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
                 LogUtils.debugf(this, "processRouteTable: Zero route table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
@@ -288,7 +286,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         List<RouterInterface> routeInterfaces = new ArrayList<RouterInterface>();
 
-        for (final SnmpStore ent : entries) {
+        for (final SnmpStore ent : snmpcoll.getIpRouteTable()) {
             Integer ifindex = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_IFINDEX);
 
             final InetAddress nexthop = ent.getIPAddress(IpRouteCollectorEntry.IP_ROUTE_NXTHOP);
@@ -327,7 +325,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                        scenario where no interface is specified."
                    ::= { inetCidrRouteEntry 7 }
                 */
-                ifindex = getIfIndexFromRouteTableEntries(nexthop, entries);
+                ifindex = getIfIndexFromRouteTableEntries(nexthop, snmpcoll.getIpRouteTable());
                 if (ifindex < 1) {
                     LogUtils.warnf(this, "processRouteTable: Not valid ifIndex %s. Skipping.", ifindex);
                     continue;
@@ -423,7 +421,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         node.setRouteInterfaces(routeInterfaces);
     }
 
-    private static Integer getIfIndexFromRouteTableEntries(InetAddress nexthop, List<SnmpStore> entries) {
+    private static Integer getIfIndexFromRouteTableEntries(InetAddress nexthop, Collection<SnmpStore> entries) {
         for (SnmpStore entry : entries) {
             final InetAddress routedest = entry.getIPAddress(IpRouteCollectorEntry.IP_ROUTE_DEST);
             if (routedest == null) {
@@ -446,9 +444,8 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processVlanTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
-        List<SnmpStore> entries = snmpcoll.getVlanTable().getEntries();
         if (LogUtils.isDebugEnabled(this)) {
-            if (entries.size() > 0) {
+            if (snmpcoll.getVlanTable().size() > 0) {
                 LogUtils.debugf(this, "processVlanTable: Starting VLAN table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
                 LogUtils.debugf(this, "processVlanTable: Zero VLAN table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
@@ -457,7 +454,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         final List<OnmsVlan> vlans = new ArrayList<OnmsVlan>();
 
-        for (final SnmpStore ent : entries) {
+        for (final SnmpStore ent : snmpcoll.getVlanTable()) {
             final Integer vlanIndex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 
             if (vlanIndex == null || vlanIndex < 0) {
@@ -533,16 +530,15 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processQBridgeDot1dTpFdbTable(final LinkableNode node, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl) {
-        List<QBridgeDot1dTpFdbTableEntry> entries = snmpVlanColl.getQBridgeDot1dFdbTable().getEntries();
         if (LogUtils.isDebugEnabled(this)) {
-            if (entries.size() > 0) {
+            if (snmpVlanColl.getQBridgeDot1dFdbTable().size() > 0) {
                 LogUtils.debugf(this, "processQBridgeDot1dTpFdbTable: Starting Q-BRIDGE-MIB dot1dTpFdb table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
                 LogUtils.debugf(this, "processQBridgeDot1dTpFdbTable: Zero Q-BRIDGE-MIB dot1dTpFdb table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
         }
 
-        for (final QBridgeDot1dTpFdbTableEntry dot1dfdbentry : entries) {
+        for (final QBridgeDot1dTpFdbTableEntry dot1dfdbentry : snmpVlanColl.getQBridgeDot1dFdbTable()) {
             final String curMacAddress = dot1dfdbentry.getQBridgeDot1dTpFdbAddress();
 
             if (curMacAddress == null || curMacAddress.equals("000000000000")) {
@@ -582,16 +578,15 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processDot1DTpFdbTable(LinkableNode node, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl, Timestamp scanTime) {
-        List<Dot1dTpFdbTableEntry> entries = snmpVlanColl.getDot1dFdbTable().getEntries();
         if (LogUtils.isDebugEnabled(this)) {
-            if (entries.size() > 0) {
+            if (snmpVlanColl.getDot1dFdbTable().size() > 0) {
                 LogUtils.debugf(this, "processDot1DTpFdbTable: Starting dot1dTpFdb table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
                 LogUtils.debugf(this, "processDot1DTpFdbTable: Zero dot1dTpFdb table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
         }
 
-        for (final Dot1dTpFdbTableEntry dot1dfdbentry : entries) {
+        for (final Dot1dTpFdbTableEntry dot1dfdbentry : snmpVlanColl.getDot1dFdbTable()) {
             final String curMacAddress = dot1dfdbentry.getDot1dTpFdbAddress();
             final int fdbport = dot1dfdbentry.getDot1dTpFdbPort();
             final int curfdbstatus = dot1dfdbentry.getDot1dTpFdbStatus();
@@ -629,16 +624,15 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processDot1StpPortTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl) throws SQLException {
-        List<Dot1dStpPortTableEntry> entries = snmpVlanColl.getDot1dStpPortTable().getEntries();
         if (LogUtils.isDebugEnabled(this)) {
-            if (entries.size() > 0) {
+            if (snmpVlanColl.getDot1dStpPortTable().size() > 0) {
                 LogUtils.debugf(this, "processDot1StpPortTable: Starting dot1StpPort table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
                 LogUtils.debugf(this, "processDot1StpPortTable: Zero dot1StpPort table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
         }
 
-        for (final Dot1dStpPortTableEntry dot1dstpptentry : entries) {
+        for (final Dot1dStpPortTableEntry dot1dstpptentry : snmpVlanColl.getDot1dStpPortTable()) {
 
             final int stpport = dot1dstpptentry.getDot1dStpPort();
 
@@ -683,16 +677,15 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processDot1DBasePortTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl) throws SQLException {
-        List<Dot1dBasePortTableEntry> entries = snmpVlanColl.getDot1dBasePortTable().getEntries();
         if (LogUtils.isDebugEnabled(this)) {
-            if (entries.size() > 0) {
+            if (snmpVlanColl.getDot1dBasePortTable().size() > 0) {
                 LogUtils.debugf(this, "processDot1DBasePortTable: Starting dot1BasePort table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
                 LogUtils.debugf(this, "processDot1DBasePortTable: Zero dot1BasePort table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
         }
 
-        for (final Dot1dBasePortTableEntry dot1dbaseptentry : entries) {
+        for (final Dot1dBasePortTableEntry dot1dbaseptentry : snmpVlanColl.getDot1dBasePortTable()) {
             int baseport = dot1dbaseptentry.getBaseBridgePort();
             int ifindex = dot1dbaseptentry.getBaseBridgePortIfindex();
 

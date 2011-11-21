@@ -130,7 +130,7 @@
 	<h3 class="o-box">Choose SNMP Interfaces for Data Collection</h3>
 
 	<p>
-		Listed below are all the interfaces discovered for the selected node. If
+		Listed below are all the known interfaces for the selected node. If
 		snmpStorageFlag is set to "select" for a collection scheme that includes
 		the interface marked as "Primary", only the interfaces checked below will have
 		their collected SNMP data stored. This has no effect if snmpStorageFlag is

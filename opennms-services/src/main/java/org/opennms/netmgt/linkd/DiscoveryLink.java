@@ -281,8 +281,8 @@ public final class DiscoveryLink implements ReadyRunnable {
 					    final NodeToNodeLink lk = new NodeToNodeLink(targetCdpNodeId, cdpDestIfindex);
 						lk.setNodeparentid(curCdpNodeId);
 						lk.setParentifindex(cdpIfIndex);
-						addNodetoNodeLink(lk);
 						LogUtils.infof(this, "run: CDP link added: %s", lk.toString());
+						addNodetoNodeLink(lk);
 					}
 				}
 
@@ -296,7 +296,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 			// try get backbone links between switches using STP info
 			// and store information in Bridge class
 			if (m_bridgeNodes.size() > 0) {
-			    LogUtils.infof(this, "run: try to found backbone ethernet links among bridge nodes using Spanning Tree Protocol");
+			    LogUtils.infof(this, "run: trying to find backbone ethernet links among bridge nodes using Spanning Tree Protocol");
 			}
 
 			for (final LinkableNode curNode : m_bridgeNodes.values()) {
@@ -448,9 +448,9 @@ public final class DiscoveryLink implements ReadyRunnable {
 						// writing to db using class
 						// DbDAtaLinkInterfaceEntry
 						final NodeToNodeLink lk = new NodeToNodeLink(curNodeId, curIfIndex);
-						LogUtils.infof(this, "run: saving STP bridge link: " + lk.toString());
 						lk.setNodeparentid(designatednodeid);
 						lk.setParentifindex(designatedifindex);
+						LogUtils.infof(this, "run: saving STP bridge link: " + lk.toString());
 						addNodetoNodeLink(lk);
 
 					}
@@ -464,7 +464,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 			// finding links using MAC address on ports
 			if (m_bridgeNodes.size() > 0) {
-			    LogUtils.infof(this, "run: try to found links using MAC Address Forwarding Table");
+			    LogUtils.infof(this, "run: trying to find links using MAC Address Forwarding Table");
 			}
 
 			for (final LinkableNode curNode : m_bridgeNodes.values()) {
@@ -533,9 +533,9 @@ public final class DiscoveryLink implements ReadyRunnable {
 							addLinks(getMacsOnBridgeLink(curNode, curBridgePort, endNode, endBridgePort),curNodeId,curIfIndex);
 
 							final NodeToNodeLink lk = new NodeToNodeLink(curNodeId, curIfIndex);
-							LogUtils.infof(this, "run: saving bridge link: " + lk.toString());
 							lk.setNodeparentid(endNodeid);
 							lk.setParentifindex(endIfindex);
+							LogUtils.infof(this, "run: saving bridge link: " + lk.toString());
 							addNodetoNodeLink(lk);
 						}
 					}
@@ -644,9 +644,9 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 					// Saving link also when ifindex = -1 (not found)
 					final NodeToNodeLink lk = new NodeToNodeLink(nextHopNodeid, routeIface.getNextHopIfindex());
-					LogUtils.infof(this, "run: saving route link: " + lk.toString());
 					lk.setNodeparentid(curNodeId);
 					lk.setParentifindex(ifindex);
+					LogUtils.infof(this, "run: saving route link: " + lk.toString());
 					addNodetoNodeLink(lk);
 				}
 				LogUtils.infof(this, "run: done parsing router node with ID %d IP address %s and %d router interfaces", curNodeId, str(curIpAddr), curNode.getRouteInterfaces().size());

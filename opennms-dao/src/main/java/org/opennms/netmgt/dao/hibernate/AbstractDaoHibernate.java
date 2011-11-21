@@ -36,11 +36,14 @@ import java.util.List;
 import javax.persistence.Table;
 
 import org.hibernate.Criteria;
+import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
+import org.hibernate.metadata.ClassMetadata;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.dao.DataAccessException;
@@ -422,7 +425,13 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * @throws org.springframework.dao.DataAccessException if any.
      */
     public void saveOrUpdate(T entity) throws DataAccessException {
-        getHibernateTemplate().saveOrUpdate(entity);
+        try {
+            getHibernateTemplate().saveOrUpdate(entity);
+        } catch (DataAccessException e) {
+            logExtraSaveOrUpdateExceptionInformation(entity, e);
+            // Rethrow the exception
+            throw e;
+        }
     }
 
     /**
@@ -432,7 +441,35 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * @throws org.springframework.dao.DataAccessException if any.
      */
     public void update(T entity) throws DataAccessException {
-        getHibernateTemplate().update(entity);
+        try {
+            getHibernateTemplate().update(entity);
+        } catch (DataAccessException e) {
+            logExtraSaveOrUpdateExceptionInformation(entity, e);
+            // Rethrow the exception
+            throw e;
+        }
     }
 
+    /**
+     * <p>Parse the {@link DataAccessException} to see if special problems were
+     * encountered while performing the query. See issue NMS-5029 for examples of
+     * stack traces that can be thrown from these calls.</p>
+     * {@see http://issues.opennms.org/browse/NMS-5029}
+     */
+    private void logExtraSaveOrUpdateExceptionInformation(T entity, DataAccessException e) {
+        Throwable cause = e;
+        while (cause.getCause() != null) {
+            //if (cause.getCause().getClass().getName().equals(PSQLException.class.getName())) {
+            if (cause.getMessage().contains("duplicate key value violates unique constraint")) {
+                ClassMetadata meta = getSessionFactory().getClassMetadata(m_entityClass);
+                LogUtils.warnf(this, "Duplicate key constraint violation, class: %s, key value: %s", m_entityClass.getName(), meta.getPropertyValue(entity, meta.getIdentifierPropertyName(), EntityMode.POJO));
+                break;
+            } else if (cause.getMessage().contains("given object has a null identifier")) {
+                LogUtils.warnf(this, "Null identifier on object, class: %s: %s", m_entityClass.getName(), entity.toString());
+                break;
+            }
+            //}
+            cause = cause.getCause();
+        }
+    }
 }

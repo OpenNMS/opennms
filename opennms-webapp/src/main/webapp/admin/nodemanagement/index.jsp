@@ -144,9 +144,12 @@
 
   <p>
     When OpenNMS was first started, the nodes, interfaces, and services
-    in the network were <em>discovered</em>. As your network grows and changes, 
+    in the network were either <em>discovered</em> automatically or added
+    via one or more <em>requisitions</em>. As your network grows and changes, 
     the TCP/IP ranges you want to manage, as well as the interfaces and
-    services within those ranges, may change.
+    services within those ranges, may change. For requisitioned nodes, it's
+    usually better to make changes in the requisition rather than via the
+    options presented below.
     <b>Manage and Unmanage Interfaces and Services</b> allows you to change
     your OpenNMS configuration along with your network.
   </p>
@@ -158,11 +161,11 @@
         
   <p>
     <% if (node_db.getForeignSource() == null || node_db.getForeignSource().length() == 0) { %>
-    <b>Delete Node</b> allows you to permanently delete a current node
+    <b>Delete Node</b> allows you to delete a current node permanently
     from the database.
     <% } else { %>
-    This node was imported via a Provisioning Group or the Model Importer and
-    must therefore be deleted from its provisioning source rather than through
+    This node was imported via a provisioning Requisition and
+    must therefore be deleted from its requisition rather than through
     this interface. Otherwise, <b>Delete Node</b> would appear on this page.
     <% } %>
   </p>
