@@ -29,6 +29,11 @@ my @command = ($MVN, '-Dmaven.test.skip.exec=true', @ARGS, 'install', 'deploy');
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
+chdir($PREFIX . '/opennms-assemblies');
+@command = ($MVN, '-Dmaven.test.skip.exec=true', '-N', @ARGS, 'install', 'deploy');
+info("running:", @command);
+handle_errors_and_exit_on_failure(system(@command));
+
 clean_git() unless (exists $ENV{'SKIP_CLEAN'});
 
 exit 0;
