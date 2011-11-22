@@ -31,10 +31,11 @@ package org.opennms.web.svclayer.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.config.databaseReports.Report;
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.web.svclayer.DatabaseReportListService;
+import org.opennms.features.reporting.model.Report;
+import org.opennms.features.reporting.repository.DefaultReportRepository;
+import org.opennms.features.reporting.repository.ReportRepository;
 
+import org.opennms.web.svclayer.DatabaseReportListService;
 /**
  * <p>DefaultDatabaseReportListService class.</p>
  *
@@ -45,9 +46,9 @@ import org.opennms.web.svclayer.DatabaseReportListService;
 public class DefaultDatabaseReportListService implements
         DatabaseReportListService {
     
-    DatabaseReportConfigDao m_dao;
-
-    /**
+    private ReportRepository m_repo = new DefaultReportRepository();
+    
+     /**
      * <p>getAll</p>
      *
      * @return a {@link java.util.List} object.
@@ -56,7 +57,7 @@ public class DefaultDatabaseReportListService implements
         
         List <DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
         
-        for(Report report : m_dao.getReports()) {
+        for(Report report : m_repo.getReports()) {
             DatabaseReportDescription summary = new DatabaseReportDescription();
             summary.setId(report.getId());
             summary.setDisplayName(report.getDisplayName());
@@ -77,7 +78,7 @@ public class DefaultDatabaseReportListService implements
 
         List <DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
         
-        for(Report report : m_dao.getOnlineReports()) {
+        for(Report report : m_repo.getOnlineReports()) {
             DatabaseReportDescription summary = new DatabaseReportDescription();
             summary.setId(report.getId());
             summary.setDisplayName(report.getDisplayName());
@@ -86,14 +87,6 @@ public class DefaultDatabaseReportListService implements
         }
         
         return onlineReports;
-    }
-   
-
-    /** {@inheritDoc} */
-    public void setDatabaseReportConfigDao(DatabaseReportConfigDao dao) {
-        
-        m_dao = dao;
-
     }
 
 }
