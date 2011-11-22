@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.*;
  * @version $Revision$ $Date$
  */
 
-@XmlRootElement(name="report")
+@XmlRootElement(name = "report")
 public class Report {
 
     /**

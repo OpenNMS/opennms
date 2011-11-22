@@ -34,4 +34,8 @@ public interface ReportRepository {
      * @return a {@link java.lang.String} object.
      */
     String getDisplayName(String id);
+
+    String getTemplateLocation(String reportId);
+
+    String getEngine(String reportId);
 }

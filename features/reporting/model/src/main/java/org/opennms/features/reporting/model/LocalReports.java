@@ -13,14 +13,14 @@ import java.util.List;
 @XmlRootElement(name = "local-reports")
 public class LocalReports {
 
-    private List<Report> reportList = new ArrayList<Report>();
+    private List<Report> m_reportList = new ArrayList<Report>();
 
     @XmlElement(name = "report")
     public List<Report> getReportList() {
-        return reportList;
+        return m_reportList;
     }
 
     public void setReportList(List<Report> reportList) {
-        this.reportList = reportList;
+        this.m_reportList = reportList;
     }
 }

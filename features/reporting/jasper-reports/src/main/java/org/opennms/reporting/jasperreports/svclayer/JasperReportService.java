@@ -63,8 +63,9 @@ import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.features.reporting.repository.DefaultReportRepository;
+import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.dao.JasperReportConfigDao;
 
 /**
  * <p>
@@ -80,8 +81,8 @@ public class JasperReportService implements ReportService {
     
     private static final String STRING_INPUT_TYPE = "org.opennms.report.stringInputType";
 
-    private JasperReportConfigDao m_jasperReportConfigDao;
-
+    private ReportRepository m_repo = new DefaultReportRepository();
+    
     private final ThreadCategory log;
 
     /**
@@ -120,7 +121,7 @@ public class JasperReportService implements ReportService {
         JasperReport jasperReport = null;
         Map<?,?> defaultValues = null;
 
-        String sourceFileName = m_jasperReportConfigDao.getTemplateLocation(reportId);
+        String sourceFileName = m_repo.getTemplateLocation(reportId);
         if (sourceFileName != null) {
             try {
                 jasperReport = JasperCompileManager.compileReport(System.getProperty("opennms.home")
@@ -363,7 +364,7 @@ public class JasperReportService implements ReportService {
         String baseDir = System.getProperty("opennms.report.dir");
         JasperReport jasperReport = null;
         String outputFileName = null;
-        String sourceFileName = m_jasperReportConfigDao.getTemplateLocation(reportId);
+        String sourceFileName = m_repo.getTemplateLocation(reportId);
         HashMap<String, Object> jrReportParms;
 
         if (sourceFileName != null) {
@@ -382,7 +383,7 @@ public class JasperReportService implements ReportService {
             outputFileName = new String(baseDir + "/"
                     + jasperReport.getName() + new SimpleDateFormat("-MMddyyyy-HHmm").format(new Date()) + ".jrprint");
             log.debug("jrpcml output file: " + outputFileName);
-            if (m_jasperReportConfigDao.getEngine(reportId).equals("jdbc")) {
+            if (m_repo.getEngine(reportId).equals("jdbc")) {
                 Connection connection;
                 try {
                     connection = DataSourceFactory.getDataSource().getConnection();
@@ -401,7 +402,7 @@ public class JasperReportService implements ReportService {
                                               "unable to run emptyDataSource jasperReport",
                                               e);
                 }
-            } else if (m_jasperReportConfigDao.getEngine(reportId).equals("null")) {
+            } else if (m_repo.getEngine(reportId).equals("null")) {
                 
                 try {
                     
@@ -430,7 +431,7 @@ public class JasperReportService implements ReportService {
         JasperPrint jasperPrint = null;
         HashMap<String, Object> jrReportParms;
 
-        String sourceFileName = m_jasperReportConfigDao.getTemplateLocation(reportId);
+        String sourceFileName = m_repo.getTemplateLocation(reportId);
         if (sourceFileName != null) {
             try {
                 jasperReport = JasperCompileManager.compileReport(System.getProperty("opennms.home")
@@ -443,7 +444,7 @@ public class JasperReportService implements ReportService {
             jrReportParms = buildJRparameters(reportParms,
                                               jasperReport.getParameters());
 
-            if (m_jasperReportConfigDao.getEngine(reportId).equals("jdbc")) {
+            if (m_repo.getEngine(reportId).equals("jdbc")) {
                 Connection connection;
                 try {
                     connection = DataSourceFactory.getDataSource().getConnection();
@@ -464,7 +465,7 @@ public class JasperReportService implements ReportService {
                                               "unable to run or render jdbc jasperReport",
                                               e);
                 }
-            } else if (m_jasperReportConfigDao.getEngine(reportId).equals("null")) {
+            } else if (m_repo.getEngine(reportId).equals("null")) {
                 try {
                     jasperPrint = JasperFillManager.fillReport(
                                                                jasperReport,
@@ -606,18 +607,4 @@ public class JasperReportService implements ReportService {
         // returns true until we can take parameters
         return true;
     }
-
-    /**
-     * <p>
-     * setConfigDao
-     * </p>
-     * 
-     * @param jasperReportConfigDao
-     *            a {@link org.opennms.netmgt.dao.JasperReportConfigDao}
-     *            object.
-     */
-    public void setConfigDao(JasperReportConfigDao jasperReportConfigDao) {
-        m_jasperReportConfigDao = jasperReportConfigDao;
-    }
-
 }
