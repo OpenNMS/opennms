@@ -260,7 +260,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             UrlFactory.disconnect(c);
             return doc;
         } catch (Exception e) {
-            throw new XmlCollectorException("Can't retrieve data from " + urlString + " because " + e.getMessage(), e);
+            throw new XmlCollectorException(e.getMessage(), e);
         }
     }
 

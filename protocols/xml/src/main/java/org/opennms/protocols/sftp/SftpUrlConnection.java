@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Properties;
 
 import org.opennms.core.utils.ThreadCategory;
 
@@ -81,15 +82,21 @@ public class SftpUrlConnection extends URLConnection {
         if (url.getUserInfo() == null) {
             throw new IOException("User credentials required.");
         }
-        String[] userInfo = url.getUserInfo().split(":");
         JSch jsch = new JSch();
         try {
+            // TODO: Experimental authentication handling using Private/Public keys
+            // http://wiki.jsch.org/index.php?Manual%2FExamples%2FJschPubkeyAuthExample
+            String prvkey = System.getProperty("sftp.private-key.location");
+            if (prvkey != null) {
+                jsch.addIdentity(prvkey);
+            }
             int port = url.getPort() > 0 ? url.getPort() : url.getDefaultPort();
+            String[] userInfo = url.getUserInfo().split(":");
             m_session = jsch.getSession(userInfo[0], url.getHost(), port);
             if (userInfo.length > 1) {
                 m_session.setPassword(userInfo[1]);
             }
-            java.util.Properties config = new java.util.Properties();
+            Properties config = new Properties();
             config.put("StrictHostKeyChecking", "no");
             m_session.setConfig(config);
             m_session.setTimeout(DEFAULT_TIMEOUT);
@@ -131,10 +138,11 @@ public class SftpUrlConnection extends URLConnection {
      */
     @Override
     public InputStream getInputStream() throws IOException {
+        String filePath = getPath();
         try {
-            return getChannel().get(getPath());
+            return getChannel().get(filePath);
         } catch (SftpException e) {
-            throw new IOException("Can't retrieve " + url.getPath() + " from " + url.getHost() + " because " + e.getMessage());
+            throw new IOException("Can't retrieve " + filePath + " from " + url.getHost() + " because " + e.getMessage());
         }
     }
 
