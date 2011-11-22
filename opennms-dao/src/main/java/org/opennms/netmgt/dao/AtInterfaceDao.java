@@ -29,6 +29,8 @@
 package org.opennms.netmgt.dao;
 
 import java.net.InetAddress;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -48,6 +50,25 @@ public interface AtInterfaceDao extends OnmsDao<OnmsAtInterface, Integer> {
 
     void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, Character action);
 
+    void saveAtInterface(Connection dbConn, OnmsAtInterface at) throws SQLException;
+
     OnmsAtInterface findByNodeAndAddress(final Integer nodeId, final InetAddress ipAddress, final String macAddress);
 
+    /**
+     * Get the {@link OnmsAtInterface} that goes with a given address and
+     * node. If it does not exist, but the IP interface does exist, then
+     * create it. If an equivalent IP interface does *not* exist, returns
+     * null.
+     * 
+     * @param dbConn
+     *            the database connection, if necessary
+     * @param ipaddress
+     *            the IP address to look up
+     * @param node
+     *            the {@link LinkableNode} associated with the interface (if
+     *            known)
+     * @return an {@link OnmsAtInterface}
+     * @throws SQLException
+     */
+    OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress address);
 }
