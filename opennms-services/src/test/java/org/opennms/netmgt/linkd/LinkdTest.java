@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -43,6 +44,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.config.LinkdConfig;
+import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -56,38 +59,41 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
-		"classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-		"classpath:/META-INF/opennms/applicationContext-daemon.xml",
-		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
-		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-		"classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-		"classpath:/META-INF/opennms/applicationContext-linkd.xml",
-		"classpath:/applicationContext-minimal-conf.xml",
-		"classpath:/applicationContext-linkd-test.xml"
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
+        "classpath:/applicationContext-minimal-conf.xml",
+        "classpath:/applicationContext-linkd-test.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class LinkdTest {
 
     @Autowired
-	private Linkd m_linkd;
+    private Linkd m_linkd;
 
-	@Autowired
-	private NodeDao m_nodeDao;
+    @Autowired
+    private NodeDao m_nodeDao;
 
-	@Autowired
-	private DataLinkInterfaceDao m_dataLinkInterfaceDao;
+    @Autowired
+    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
 
-	@Before
-	public void setUp() throws Exception {
-//		MockLogAppender.setupLogging(true);
+    @Autowired
+    private LinkdConfig m_linkdConfig;
+
+    @Before
+    public void setUp() throws Exception {
+        // MockLogAppender.setupLogging(true);
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-		MockLogAppender.setupLogging(p);
+        MockLogAppender.setupLogging(p);
 
-		NetworkBuilder nb = new NetworkBuilder();
+        NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("test.example.com").setForeignSource("linkd").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.1724.81").setType("A");
         nb.addInterface("192.168.1.10").setIsSnmpPrimary("P").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
@@ -139,7 +145,7 @@ public class LinkdTest {
         nb.addInterface("10.1.5.1").setIsSnmpPrimary("P").setIsManaged("M")
             .addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c00397a70000");
         m_nodeDao.save(nb.getCurrentNode());
-        */
+         */
 
         nb.addNode("cisco3600").setForeignSource("linkd").setForeignId("cisco3600").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType("A");
         nb.addInterface("10.1.6.2").setIsSnmpPrimary("P").setIsManaged("M")
@@ -149,16 +155,20 @@ public class LinkdTest {
         m_nodeDao.save(nb.getCurrentNode());
 
         m_nodeDao.flush();
-	}
 
-	@After
-	public void tearDown() throws Exception {
-	    for (final OnmsNode node : m_nodeDao.findAll()) {
-	        m_nodeDao.delete(node);
-	    }
-	    m_nodeDao.flush();
-	}
-	
+        for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
+            pkg.setForceIpRouteDiscoveryOnEthernet(true);
+        }
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        for (final OnmsNode node : m_nodeDao.findAll()) {
+            m_nodeDao.delete(node);
+        }
+        m_nodeDao.flush();
+    }
+
     @Test
     @Ignore
     @JUnitSnmpAgents(value={
