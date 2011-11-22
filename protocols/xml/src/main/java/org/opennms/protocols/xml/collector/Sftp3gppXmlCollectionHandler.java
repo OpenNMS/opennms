@@ -130,7 +130,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
             return collectionSet;
         } catch (Exception e) {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
-            throw new CollectionException("Can't collect XML data because " + e.getMessage(), e);
+            throw new CollectionException(e.getMessage(), e);
         }
     }
 
