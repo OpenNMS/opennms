@@ -691,7 +691,7 @@ public final class DiscoveryLink implements ReadyRunnable {
         			macsExcluded.add(macAddress);
         			continue;
         		}
-                if (macAddress.indexOf("00000c07ac") == 0) {
+                if ((macAddress.indexOf("00000c07ac") == 0) || (macAddress.indexOf("00000c9ff") == 0)) {
                     LogUtils.debugf(this, "populateMacToAtInterface: AtInterface %s is Cisco HSRP address! Not adding to discoverable atinterface.", macAddress);
                    macsExcluded.add(macAddress); 
                    continue; 
