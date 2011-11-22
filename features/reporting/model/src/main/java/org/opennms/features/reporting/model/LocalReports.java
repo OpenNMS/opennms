@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Report Configuration for database reports
+ * Report Configuration for local reports
  * 
  * @version $Revision$ $Date$
  */
-@XmlRootElement(name = "database-reports")
-public class DatabaseReports {
+@XmlRootElement(name = "local-reports")
+public class LocalReports {
 
     private List<Report> reportList = new ArrayList<Report>();
 

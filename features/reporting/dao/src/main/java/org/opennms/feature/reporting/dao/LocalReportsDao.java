@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.opennms.features.reporting.model.Report;
 
-public interface DatabaseReportsDao {
+public interface LocalReportsDao {
     /**
      * <p>getReports</p>
      *

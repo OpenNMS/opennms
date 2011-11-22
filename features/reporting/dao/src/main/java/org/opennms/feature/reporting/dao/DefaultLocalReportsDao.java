@@ -6,22 +6,26 @@ import java.util.List;
 
 import javax.xml.bind.JAXB;
 
-import org.opennms.features.reporting.model.DatabaseReports;
+import org.opennms.features.reporting.model.LocalReports;
 import org.opennms.features.reporting.model.Report;
 
-public class DefaultDatabaseReportsDao implements DatabaseReportsDao {
+public class DefaultLocalReportsDao implements LocalReportsDao {
 
-    private final String DATABASE_REPORTS_CONFIG_XML = 
+    private final String LOCAL_REPORTS_CONFIG_XML = 
             System.getProperty("opennms.home") + 
             File.separator + 
             "etc" + 
             File.separator + 
-            "database-reports2.xml";
+            "local-reports.xml";
     
-    private DatabaseReports m_reports;
+    private LocalReports m_reports;
     
-    public DefaultDatabaseReportsDao() {
-        m_reports = JAXB.unmarshal(new File(DATABASE_REPORTS_CONFIG_XML), DatabaseReports.class);
+    public DefaultLocalReportsDao() {
+        try {
+            m_reports = JAXB.unmarshal(new File(LOCAL_REPORTS_CONFIG_XML), LocalReports.class);
+        }catch (Exception e) {
+            // TODO Tak: logging and fail safety 
+        }
     }
     
     @Override

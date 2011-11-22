@@ -2,12 +2,12 @@ package org.opennms.features.reporting.repository;
 
 import java.util.List;
 
-import org.opennms.feature.reporting.dao.DefaultDatabaseReportsDao;
+import org.opennms.feature.reporting.dao.DefaultLocalReportsDao;
 import org.opennms.features.reporting.model.Report;
 
 public class DefaultReportRepository implements ReportRepository {
     
-    private DefaultDatabaseReportsDao m_databaseReportsDao = new DefaultDatabaseReportsDao();
+    private DefaultLocalReportsDao m_databaseReportsDao = new DefaultLocalReportsDao();
     
     
     @Override
