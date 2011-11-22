@@ -28,12 +28,15 @@
 
 package org.opennms.reporting.core.svclayer.support;
 
+
 import org.opennms.api.reporting.ReportService;
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import org.opennms.features.reporting.repository.DefaultReportRepository;
+import org.opennms.features.reporting.repository.ReportRepository;
 
 /**
  * <p>DefaultReportServiceLocator class.</p>
@@ -41,8 +44,9 @@ import org.springframework.context.ApplicationContextAware;
 public class DefaultReportServiceLocator implements ApplicationContextAware, ReportServiceLocator {
 
     private ApplicationContext m_applicationContext;
-    private DatabaseReportConfigDao m_databaseReportConfigDao;
-
+    
+    private ReportRepository m_repo = new DefaultReportRepository();
+    
     /** {@inheritDoc} */
     public ReportService getReportService(String reportServiceName) throws ReportServiceLocatorException {
         
@@ -53,30 +57,17 @@ public class DefaultReportServiceLocator implements ApplicationContextAware, Rep
         } else {
             return reportService;
         }
-
     }
-    
-
+ 
     /** {@inheritDoc} */
     public ReportService getReportServiceForId(String reportId)
             throws ReportServiceLocatorException {
         
-        return getReportService(m_databaseReportConfigDao.getReportService(reportId));
+        return getReportService(m_repo.getReportService(reportId));
     }
 
     /** {@inheritDoc} */
     public void setApplicationContext(ApplicationContext applicationContext) {
             m_applicationContext = applicationContext;
     }
-    
-    /**
-     * <p>setDatabaseReportConfigDao</p>
-     *
-     * @param databaseReportConfigDao a {@link org.opennms.netmgt.dao.DatabaseReportConfigDao} object.
-     */
-    public void setDatabaseReportConfigDao(DatabaseReportConfigDao databaseReportConfigDao) {
-        m_databaseReportConfigDao = databaseReportConfigDao;
-    }
-    
-
 }
