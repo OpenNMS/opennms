@@ -390,10 +390,7 @@ public final class IfCollector implements Runnable {
 
                     // Iterate over ifTable entries
                     //
-                    Iterator<IfTableEntry> i = m_snmpCollector.getIfTable().getEntries().iterator();
-                    while (i.hasNext()) {
-                        // IpAddrTableEntry entry = (IpAddrTableEntry)i.next();
-                        IfTableEntry ifEntry = i.next();
+                    for (IfTableEntry ifEntry : m_snmpCollector.getIfTable()) {
 
                         // Get the ifIndex
                         //

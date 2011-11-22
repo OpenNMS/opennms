@@ -72,6 +72,7 @@ public class OnmsIpRouteInterface {
 	private Date m_lastPollTime;
 
     @Id
+    @Column(nullable=false)
     @XmlTransient
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")    

@@ -39,12 +39,11 @@ import javax.persistence.Table;
 
 import org.springframework.core.style.ToStringCreator;
 
-
+/*
+This is not properly annotated so comment out the annotations so it not discovered during scanning
 @Entity
-/**
- * <p>OnmsServerMap class.</p>
- */
 @Table(name="servermap")
+*/
 public class OnmsServerMap extends OnmsEntity implements Serializable {
 
     /**
@@ -86,7 +85,7 @@ public class OnmsServerMap extends OnmsEntity implements Serializable {
     @Id
     @Column(name="id")
     @SequenceGenerator(name="serverMapSequence", sequenceName="svrMapNxtId")
-    @GeneratedValue(generator="outageSequence")
+    @GeneratedValue(generator="serverMapSequence")
     public Integer getId() {
         return m_id;
     }

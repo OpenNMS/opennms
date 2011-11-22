@@ -171,6 +171,8 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
     public String getSysObjectId() {
         if (m_sysObjId == null) {
             m_sysObjId = m_agentService.getSysObjectId();
+            // Intern the string value to save RAM
+            m_sysObjId = (m_sysObjId == null ? null : m_sysObjId.intern());
         }
         return m_sysObjId;
     }

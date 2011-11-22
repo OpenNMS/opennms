@@ -1740,18 +1740,14 @@ public final class RescanProcessor implements Runnable {
 
             // Find the ifTable entry for this interface
             IfTable ift = snmpc.getIfTable();
-            Iterator<IfTableEntry> ifiter = ift.getEntries().iterator();
             IfTableEntry ifte = null;
-            while (ifiter.hasNext()) {
-                ifte = ifiter.next();
-
+            for (IfTableEntry current : ift) {
                 // index
-                Integer sint = ifte.getIfIndex();
+                Integer sint = current.getIfIndex();
                 if (sint != null) {
                     if (ifIndex == sint.intValue()) {
+                        ifte = current;
                         break;
-                    } else {
-                        ifte = null;
                     }
                 }
             }

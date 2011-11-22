@@ -181,7 +181,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	private void updateSnmpDataForSnmpInterfaces() {
 	    if (m_collector != null && m_collector.hasIfTable()) {
 
-            for(IfTableEntry entry : m_collector.getIfTable().getEntries()) {
+            for(IfTableEntry entry : m_collector.getIfTable()) {
 	            
 	            Integer ifIndex = entry.getIfIndex();
 	            

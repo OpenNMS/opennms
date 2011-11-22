@@ -52,12 +52,28 @@ import org.xbill.DNS.Type;
 abstract public class InetAddressUtils {
 
     public static final InetAddress UNPINGABLE_ADDRESS;
+    public static final InetAddress UNPINGABLE_ADDRESS_IPV6;
 
     static {
         try {
-            // This address (192.0.2.123) is within a range of TEST IPS that
+            // This address (192.0.2.123) is within a range of test IPs that
             // that is guaranteed to be non-routed.
+            //
             UNPINGABLE_ADDRESS = InetAddress.getByAddress(new byte[] {(byte)192, (byte)0, (byte)2, (byte)123});
+        } catch (final UnknownHostException e) {
+            throw new IllegalStateException(e);
+        }
+
+        try {
+            // This address is within a subnet of "Unique Unicast" IPv6 addresses
+            // that are defined by RFC4193. This is the IPv6 equivalent of the
+            // 192.168.0.0/16 subnet and because the IPv6 address space is so large,
+            // you can just randomly generate the first portion of the address. :)
+            // I used an online address generator to get this particular address.
+            //
+            // http://www.rfc-editor.org/rfc/rfc4193.txt
+            //
+            UNPINGABLE_ADDRESS_IPV6 = InetAddress.getByName("fd25:28a0:ba2f:6b78:0000:0000:0000:0001");
         } catch (final UnknownHostException e) {
             throw new IllegalStateException(e);
         }

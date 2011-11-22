@@ -30,9 +30,9 @@ package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -40,10 +40,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.mock.MockMonitoredService;
@@ -171,6 +173,68 @@ public class HttpMonitorTest {
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
+    }
+
+    /**
+     * This throws a java.net.NoRouteToHostException because the {@link InetAddressUtils#UNPINGABLE_ADDRESS} 
+     * address is in an unroutable test range. :-/  Dear reader, if you can find an address that works with
+     * this test, then please replace {@link InetAddressUtils#UNPINGABLE_ADDRESS} inside {@link #callTestTimeout(boolean)}.
+     */
+    @Test
+    @Ignore
+    public void testTimeout() throws UnknownHostException {
+        callTestTimeout(false);
+    }
+
+    /**
+     * <p>
+     * This test works fine because the "Unique Unicast" range for IPv6 is so big,
+     * you can use it for testing, local communications, etc. so it is always routable.
+     * Yay!
+     * </p>
+     * 
+     * <p>
+     * This test was created to test the issue documented in NMS-5028.
+     * </p> 
+     * 
+     * {@see http://issues.opennms.org/browse/NMS-5028}
+     */
+    @Test
+    public void testTimeoutIPv6() throws UnknownHostException {
+        callTestTimeout(true);
+    }
+
+    public void callTestTimeout(boolean preferIPv6) throws UnknownHostException {
+        if (m_runTests == false) return;
+
+        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Parameter p = new Parameter();
+
+        ServiceMonitor monitor = new HttpMonitor();
+        // We need a routable but unreachable address in order to simulate a timeout
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, preferIPv6 ? InetAddressUtils.UNPINGABLE_ADDRESS_IPV6 : InetAddressUtils.UNPINGABLE_ADDRESS, "HTTP");
+
+        p.setKey("port");
+        p.setValue("10342");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("retry");
+        p.setValue("1");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("timeout");
+        p.setValue("500");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("response");
+        p.setValue("100-199");
+        m.put(p.getKey(), p.getValue());
+
+        PollStatus status = monitor.poll(svc, m);
+        MockUtil.println("Reason: "+status.getReason());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
+        assertNotNull(status.getReason());
+        assertTrue(status.getReason().contains("HTTP connection timeout"));
     }
 
     @Test

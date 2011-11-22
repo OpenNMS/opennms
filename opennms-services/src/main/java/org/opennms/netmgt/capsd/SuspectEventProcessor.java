@@ -183,9 +183,7 @@ final class SuspectEventProcessor implements Runnable {
         List<String> ipaddrsOfNewNode = new ArrayList<String>();
         List<String> ipaddrsOfOldNode = new ArrayList<String>();
 
-        Iterator<IfTableEntry> iter = ifTable.getEntries().iterator();
-        while (iter.hasNext()) {
-            IfTableEntry ifEntry = iter.next();
+        for (IfTableEntry ifEntry : ifTable) {
 
             if (ifEntry.getIfIndex() == null) {
                 log().debug("getExistingNodeEntry:  Breaking from loop");
@@ -780,7 +778,7 @@ final class SuspectEventProcessor implements Runnable {
 
         boolean addedSnmpInterfaceEntry = false;
 
-        for (IfTableEntry ifte : snmpc.getIfTable().getEntries()) {
+        for (IfTableEntry ifte : snmpc.getIfTable()) {
             // index
             if (ifte.getIfIndex() == null) {
                 continue;

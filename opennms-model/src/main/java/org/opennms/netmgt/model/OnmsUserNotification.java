@@ -108,6 +108,7 @@ public class OnmsUserNotification implements Serializable {
      * @return a {@link java.lang.Integer} object.
      */
     @Id
+    @Column(nullable=false)
     @SequenceGenerator(name="userNotificationSequence", sequenceName="userNotifNxtId")
     @GeneratedValue(generator="userNotificationSequence")
     public Integer getId() {
