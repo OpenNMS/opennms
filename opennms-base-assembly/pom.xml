@@ -364,6 +364,18 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.repository</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.dao</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
     </dependency>
     <dependency>
