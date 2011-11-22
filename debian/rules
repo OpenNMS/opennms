@@ -105,7 +105,7 @@ install: build
 	mv debian/temp/share/xsds/xmp*.xsd                      debian/opennms-plugin-protocol-xmp/var/lib/opennms/xsds/
 	mv debian/temp/lib/org.opennms.protocols.xml-*.jar      debian/opennms-plugin-protocol-xml/usr/share/java/opennms/
 	mv debian/temp/etc/xml*-config.xml                      debian/opennms-plugin-protocol-xml/etc/opennms/
-	mv debian/temp/contrib/3gpp*.pl                         debian/opennms-plugin-protocol-xml/usr/share/opennms/contrib/
+	mv debian/temp/contrib/xml-collector                    debian/opennms-plugin-protocol-xml/usr/share/opennms/contrib/
 	
 	##
 	## Setup the libopennms-java package

@@ -440,7 +440,7 @@ find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/contrib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
-	grep -v -E '3gpp.*.pl' | \
+	grep -v 'xml-collector' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
@@ -545,13 +545,13 @@ rm -rf $RPM_BUILD_ROOT
 %attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.radius*.jar
 
 %files plugin-protocol-xml
-%attr(664,root,root) %config(noreplace) %{instprefix}/etc/xml*.xml
-%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.xml*.jar
-%attr(664,root,root) %{instprefix}/contrib/3gpp*.pl
+%attr(664,root,root) %config(noreplace) %{instprefix}/etc/xml-*.xml
+%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.xml-*.jar
+%attr(664,root,root) %{instprefix}/contrib/xml-collector
 
 %files plugin-protocol-xmp
 %attr(664,root,root) %config(noreplace) %{instprefix}/etc/xmp*.xml
-%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.xmp*.jar
+%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.xmp-*.jar
 %attr(664,root,root) %{sharedir}/xsds/xmp*.xsd
 
 %post docs
