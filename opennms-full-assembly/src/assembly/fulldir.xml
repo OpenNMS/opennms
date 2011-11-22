@@ -12,6 +12,6 @@
     <componentDescriptor>src/assembly/components/dhcp.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/nsclient.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/radius.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/xmp.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/xml.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>

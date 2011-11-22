@@ -15,7 +15,8 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>src/assembly/files.xml</descriptor>
+            <descriptor>src/assembly/etc.xml</descriptor>
+            <descriptor>src/assembly/contrib.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
