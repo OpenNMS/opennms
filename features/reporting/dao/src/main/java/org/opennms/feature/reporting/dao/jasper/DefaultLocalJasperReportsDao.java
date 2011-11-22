@@ -7,7 +7,8 @@ import javax.xml.bind.JAXB;
 import org.opennms.features.reporting.model.jasper.LocalJasperReport;
 import org.opennms.features.reporting.model.jasper.LocalJasperReports;
 
-public class DefaultLocalJasperReportsDao implements LocalJasperReportsDao {
+//TODO Tak: add Interface for JasperReportDataProvider
+public class DefaultLocalJasperReportsDao implements LocalJasperReportsDao, JasperReportDataProvider {
     
     private final String LOCAL_JASPER_REPORTS_CONFIG_XML = 
             System.getProperty("opennms.home") + 

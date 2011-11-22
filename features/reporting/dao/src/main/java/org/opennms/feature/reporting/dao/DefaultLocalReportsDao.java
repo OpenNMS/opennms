@@ -9,7 +9,8 @@ import javax.xml.bind.JAXB;
 import org.opennms.features.reporting.model.LocalReports;
 import org.opennms.features.reporting.model.Report;
 
-public class DefaultLocalReportsDao implements LocalReportsDao {
+//TODO Tak: add Interface for BasicReportDataProvider
+public class DefaultLocalReportsDao implements LocalReportsDao, BasicReportDataProvider {
 
     private final String LOCAL_REPORTS_CONFIG_XML = 
             System.getProperty("opennms.home") + 

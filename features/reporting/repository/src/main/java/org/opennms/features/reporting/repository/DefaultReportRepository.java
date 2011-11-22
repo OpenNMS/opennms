@@ -1,46 +1,81 @@
 package org.opennms.features.reporting.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.feature.reporting.dao.BasicReportDataProvider;
 import org.opennms.feature.reporting.dao.DefaultLocalReportsDao;
 import org.opennms.feature.reporting.dao.jasper.DefaultLocalJasperReportsDao;
+import org.opennms.feature.reporting.dao.jasper.JasperReportDataProvider;
+import org.opennms.feature.reporting.dao.remote.DefaultRemoteRepository;
+import org.opennms.feature.reporting.dao.remote.RemoteReportDataProvider;
 import org.opennms.features.reporting.model.Report;
 
 public class DefaultReportRepository implements ReportRepository {
     
-    private DefaultLocalReportsDao m_defaultLocalReportsDao = new DefaultLocalReportsDao();
+    private BasicReportDataProvider m_defaultLocalReportsDao = new DefaultLocalReportsDao();
     
-    private DefaultLocalJasperReportsDao m_defaultLocalJasperReportsDao = new DefaultLocalJasperReportsDao();
+    private JasperReportDataProvider m_defaultLocalJasperReportsDao = new DefaultLocalJasperReportsDao();
     
-    
+    private RemoteReportDataProvider m_defaultRemote = new DefaultRemoteRepository();
+
     @Override
-    public List<Report> getReports() {
-        return m_defaultLocalReportsDao.getOnlineReports();
+    public List<Report> getReports() {      
+        List<Report> results = new ArrayList<Report>();
+        results.addAll(m_defaultLocalReportsDao.getReports());
+        results.addAll(m_defaultRemote.getReports());
+        return results;
     }
 
     @Override
     public List<Report> getOnlineReports() {
-        return m_defaultLocalReportsDao.getOnlineReports();
+        List<Report> results = new ArrayList<Report>();
+        results.addAll(m_defaultLocalReportsDao.getOnlineReports());
+        results.addAll(m_defaultRemote.getOnlineReports());
+        return results;
     }
 
     @Override
     public String getReportService(String id) {
-        return m_defaultLocalReportsDao.getReportService(id);
+        String result = "";
+        if(id.startsWith("connect_")) {
+            result = m_defaultRemote.getReportService(id);
+        }else {
+            result = m_defaultLocalReportsDao.getReportService(id);
+        }
+        return result;
     }
 
     @Override
     public String getDisplayName(String id) {
-        return m_defaultLocalReportsDao.getDisplayName(id);
+        String result = "";
+        if(id.startsWith("connect_")) {
+            result = m_defaultRemote.getDisplayName(id);
+        }else {
+            result = m_defaultLocalReportsDao.getDisplayName(id);
+        }
+        return result;
     }
 
     @Override
     public String getTemplateLocation(String reportId) {
-        return m_defaultLocalJasperReportsDao.getTemplateLocation(reportId);
+        String result = "";
+        if(reportId.startsWith("connect_")) {
+            result = m_defaultRemote.getTemplateLocation(reportId);
+        }else {
+            result = m_defaultLocalJasperReportsDao.getTemplateLocation(reportId);
+        }
+        return result;
     }
 
     @Override
     public String getEngine(String reportId) {
-        return m_defaultLocalJasperReportsDao.getEngine(reportId);
-    }
-    
+        String result = "";
+        if(reportId.startsWith("connect_")) {
+            result = m_defaultRemote.getEngine(reportId);
+        }else {
+            result = m_defaultLocalJasperReportsDao.getEngine(reportId);
+        }
+        return result;
+    }   
 }
