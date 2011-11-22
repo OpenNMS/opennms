@@ -74,8 +74,9 @@ public class GenericIndexResource extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    // NMS-5062: Avoid call getLabel here, otherwise the SiblingColumnStorageStrategy will fail if DEBUG is enabled for Collectd.
     public String toString() {
-        return "node["+getCollectionAgent().getNodeId() + "]." + getResourceTypeName() + "[" + getLabel() + "]";
+        return "node["+getCollectionAgent().getNodeId() + "]." + getResourceTypeName() + "[" + getInstance() + "]";
     }
 
 
