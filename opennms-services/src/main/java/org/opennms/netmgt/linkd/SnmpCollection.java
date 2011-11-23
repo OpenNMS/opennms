@@ -772,8 +772,8 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String getInfo() {
-		return "Ready Runnable(s) SnmpCollection "
-		+ " ip=" + getTarget()
+		return "ReadyRunnable SnmpCollection"
+		+ " ip=" + str(getTarget())
 		+ " port=" + getPort()
 		+ " community=" + getReadCommunity()
 		+ " package=" + getPackageName()

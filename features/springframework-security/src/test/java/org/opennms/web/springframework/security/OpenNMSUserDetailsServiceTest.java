@@ -34,6 +34,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.security.userdetails.UserDetails;
 import org.springframework.security.userdetails.UsernameNotFoundException;
@@ -41,14 +42,14 @@ import org.springframework.security.userdetails.UsernameNotFoundException;
 public class OpenNMSUserDetailsServiceTest extends TestCase {
 	
 	public void testDaoSetter() {
-		UserDao userDao = createMock(UserDao.class);
+		SpringSecurityUserDao userDao = createMock(SpringSecurityUserDao.class);
 		OpenNMSUserDetailsService detailsService = new OpenNMSUserDetailsService();
 		
 		detailsService.setUserDao(userDao);
 	}
 	
 	public void testDaoGetter() {
-		UserDao userDao = createMock(UserDao.class);
+		SpringSecurityUserDao userDao = createMock(SpringSecurityUserDao.class);
 		OpenNMSUserDetailsService detailsService = new OpenNMSUserDetailsService();
 		detailsService.setUserDao(userDao);
 		assertEquals("getUsersDao returned what we passed to setUsersDao", userDao, detailsService.getUserDao());
@@ -67,11 +68,11 @@ public class OpenNMSUserDetailsServiceTest extends TestCase {
 	}
 	
 	public void testGetUser() {
-		UserDao userDao = createMock(UserDao.class);
+		SpringSecurityUserDao userDao = createMock(SpringSecurityUserDao.class);
 		OpenNMSUserDetailsService detailsService = new OpenNMSUserDetailsService();
 		detailsService.setUserDao(userDao);
 		
-		User user = new User();
+		OnmsUser user = new OnmsUser();
 		expect(userDao.getByUsername("test_user")).andReturn(user);
 		
 		replay(userDao);
@@ -85,7 +86,7 @@ public class OpenNMSUserDetailsServiceTest extends TestCase {
 	}
 	
 	public void testGetUnknownUser() {
-		UserDao userDao = createMock(UserDao.class);
+		SpringSecurityUserDao userDao = createMock(SpringSecurityUserDao.class);
 		OpenNMSUserDetailsService detailsService = new OpenNMSUserDetailsService();
 		detailsService.setUserDao(userDao);
 		

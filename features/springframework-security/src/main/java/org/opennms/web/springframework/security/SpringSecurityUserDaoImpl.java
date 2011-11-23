@@ -41,14 +41,14 @@ import java.util.Properties;
 
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.config.users.Userinfo;
+import org.opennms.netmgt.model.OnmsUser;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
@@ -64,7 +64,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:eric@tuxbot.com">Eric Molitor</A>
  */
-public class UserDaoImpl implements UserDao, InitializingBean {
+public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, InitializingBean {
     private static final UpperCaseMd5PasswordEncoder PASSWORD_ENCODER = new UpperCaseMd5PasswordEncoder();
 
     private static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.ROLE_USER);
@@ -76,7 +76,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
     /**
      * The set of valid users from users.xml, keyed by userId
      */
-    private Map<String, org.opennms.web.springframework.security.User> m_users = null;
+    private Map<String, OnmsUser> m_users = null;
     
     private long m_usersLastModified;
 
@@ -85,7 +85,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
     /**
      * The set of valid users from magic-users.properties, keyed by userId
      */
-    private Map<String, org.opennms.web.springframework.security.User> m_magicUsers = null;
+    private Map<String, OnmsUser> m_magicUsers = null;
 
     private Map<String, GrantedAuthority[]> m_roles = null;
     
@@ -96,15 +96,11 @@ public class UserDaoImpl implements UserDao, InitializingBean {
     private boolean m_useGroups;
 
     /**
-     * <p>Constructor for UserDaoImpl.</p>
+     * <p>Constructor for SpringSecurityUserDaoImpl.</p>
      */
-    public UserDaoImpl() {
+    public SpringSecurityUserDaoImpl() {
     }
     
-    private Userinfo unmarshallUsers() throws DataRetrievalFailureException {
-        return CastorUtils.unmarshalWithTranslatedExceptions(Userinfo.class, new FileSystemResource(m_usersConfigurationFile));
-    }
-
     /**
      * Convenience method for parsing the users.xml file.
      * <p/>
@@ -113,15 +109,26 @@ public class UserDaoImpl implements UserDao, InitializingBean {
      * instance variable.</p>
      */
     private void parseUsers() throws DataRetrievalFailureException {
-        HashMap<String, org.opennms.web.springframework.security.User> users = new HashMap<String, org.opennms.web.springframework.security.User>();
+        final HashMap<String, OnmsUser> users = new HashMap<String, OnmsUser>();
 
-        long lastModified = new File(m_usersConfigurationFile).lastModified();
-        Userinfo userinfo = unmarshallUsers();
+        try {
+            UserFactory.init();
+        } catch (Exception e) {
+            throw new DataRetrievalFailureException("Unable to initialize user factory.", e);
+        }
 
-        Collection<User> usersList = userinfo.getUsers().getUserCollection();
+        final UserManager manager = UserFactory.getInstance();
+        long lastModified = manager.getLastModified();
+        
+        final Map<String, User> castorUsers;
+        try {
+            castorUsers = manager.getUsers();
+        } catch (final Exception e) {
+            throw new DataRetrievalFailureException("Unable to get user list.", e);
+        }
 
-        for (User user : usersList) {
-            org.opennms.web.springframework.security.User newUser = new org.opennms.web.springframework.security.User();
+        for (final User user : castorUsers.values()) {
+            OnmsUser newUser = new OnmsUser();
             newUser.setUsername(user.getUserId());
             newUser.setPassword(user.getPassword());
 
@@ -139,8 +146,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
      * Parses the groups.xml file into mapping roles to users of that role
      * through group membership.
      */
-    private Map<String, LinkedList<String>> parseGroupRoles()
-            throws DataRetrievalFailureException {
+    private Map<String, LinkedList<String>> parseGroupRoles() throws DataRetrievalFailureException {
         long lastModified = new File(m_groupsConfigurationFile).lastModified();
         
         try {
@@ -154,7 +160,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         Collection<Role> roles = gm.getRoles();
         for (Role role : roles) {
             String groupname = role.getMembershipGroup();
-            String securityRole = Authentication.getSpringSecuirtyRoleFromOldRoleName(role.getName());
+            String securityRole = Authentication.getSpringSecurityRoleFromOldRoleName(role.getName());
             if (securityRole != null) {
                 List<String> users;
                 try {
@@ -186,7 +192,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
      * role.
      */
     private void parseMagicUsers() throws DataRetrievalFailureException {
-        HashMap<String, org.opennms.web.springframework.security.User> magicUsers = new HashMap<String, org.opennms.web.springframework.security.User>();
+        HashMap<String, OnmsUser> magicUsers = new HashMap<String, OnmsUser>();
         HashMap<String, GrantedAuthority[]> roles = new HashMap<String, GrantedAuthority[]>();
 
         long lastModified = new File(m_magicUsersConfigurationFile).lastModified();
@@ -208,7 +214,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
             String username = properties.getProperty("user." + user + ".username");
             String password = properties.getProperty("user." + user + ".password");
 
-            org.opennms.web.springframework.security.User newUser = new org.opennms.web.springframework.security.User();
+            OnmsUser newUser = new OnmsUser();
             newUser.setUsername(username);
             newUser.setPassword(PASSWORD_ENCODER.encodePassword(password, null));
 
@@ -234,7 +240,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
 
             boolean notInDefaultGroup = "true".equals(properties.getProperty("role." + role + ".notInDefaultGroup"));
 
-            String securityRole = Authentication.getSpringSecuirtyRoleFromOldRoleName(rolename);
+            String securityRole = Authentication.getSpringSecurityRoleFromOldRoleName(rolename);
             if (securityRole == null) {
                 throw new DataRetrievalFailureException("Could not find Spring Security role mapping for old role name '" + rolename + "' for role '" + role + "'");
             }
@@ -425,10 +431,10 @@ public class UserDaoImpl implements UserDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
-    public org.opennms.web.springframework.security.User getByUsername(String username) {
+    public OnmsUser getByUsername(String username) {
         reloadIfNecessary();
 
-        org.opennms.web.springframework.security.User user;
+        OnmsUser user;
         if (m_magicUsers.containsKey(username)) {
             user = m_magicUsers.get(username);
         } else {
