@@ -14,7 +14,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @XmlRootElement(name="group")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OnmsGroup implements Serializable {
-    private static final long serialVersionUID = 3896708424386708948L;
+    private static final long serialVersionUID = -7658664550834146185L;
 
     @XmlElement(name="name", required=true)
     private String m_name;
@@ -53,6 +53,18 @@ public class OnmsGroup implements Serializable {
 
     public void setUsers(final List<String> users) {
         m_users = users;
+    }
+
+    public void addUser(final String userName) {
+        if (m_users == null) {
+            m_users = new ArrayList<String>();
+        }
+        m_users.add(userName.intern());
+    }
+
+    public void removeUser(final String userName) {
+        if (m_users == null) return;
+        m_users.remove(userName);
     }
 
     @Override

@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -158,7 +157,7 @@ public abstract class GroupManager {
         
         final OnmsGroup group = new OnmsGroup(groupName);
         group.setComments(castorGroup.getComments());
-        group.setUsers(Arrays.asList(castorGroup.getUser()));
+        group.setUsers(castorGroup.getUserCollection());
         
         return group;
     }

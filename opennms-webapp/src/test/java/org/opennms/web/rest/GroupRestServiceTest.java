@@ -29,6 +29,7 @@
 package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -85,6 +86,22 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendRequest(DELETE, "/groups/deleteMe", 200);
 
         sendRequest(GET, "/groups/deleteMe", 404);
+    }
+
+    @Test
+    public void testUsers() throws Exception {
+        createGroup("deleteMe");
+
+        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 200);
+
+        String xml = sendRequest(GET, "/groups/deleteMe", 200);
+        assertTrue(xml.contains("totallyUniqueUser"));
+
+        sendRequest(DELETE, "/groups/deleteMe/users/totallyBogusUser", 400);
+        sendRequest(DELETE, "/groups/deleteMe/users/totallyUniqueUser", 200);
+
+        xml = sendRequest(GET, "/groups/deleteMe", 200);
+        assertFalse(xml.contains("totallyUniqueUser"));
     }
 
     protected void createGroup(final String groupname) throws Exception {
