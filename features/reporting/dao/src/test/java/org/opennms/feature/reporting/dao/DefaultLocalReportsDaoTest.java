@@ -10,7 +10,7 @@ import org.junit.Test;
 
 public class DefaultLocalReportsDaoTest {
 
-    private DefaultLocalReportsDao m_defaultLocalReportsDao;
+    private LegacyLocalReportsDao m_defaultLocalReportsDao;
     
     @Before
     public void setup() {
@@ -20,7 +20,7 @@ public class DefaultLocalReportsDaoTest {
     
     @Test
     public void getReportsCountTest () {
-        this.m_defaultLocalReportsDao = new DefaultLocalReportsDao();
+        this.m_defaultLocalReportsDao = new LegacyLocalReportsDao();
         assertEquals(18, this.m_defaultLocalReportsDao.getReports().size());
     }
 }

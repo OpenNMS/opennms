@@ -4,13 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class DefaultLocalJasperReportsDaoTest {
 
-    private DefaultLocalJasperReportsDao m_defaultLocalJasperReportsDao;
+    private LegacyLocalJasperReportsDao m_defaultLocalJasperReportsDao;
     
     @Before
     public void setup() {
@@ -20,15 +22,22 @@ public class DefaultLocalJasperReportsDaoTest {
     
     @Test
     public void getValuesForSampleReportTest () {
-        this.m_defaultLocalJasperReportsDao = new DefaultLocalJasperReportsDao();
+        this.m_defaultLocalJasperReportsDao = new LegacyLocalJasperReportsDao();
         assertEquals("sample-report.jrxml", m_defaultLocalJasperReportsDao.getTemplateLocation("sample-report"));
         assertEquals("jdbc", m_defaultLocalJasperReportsDao.getEngine("sample-report"));
     }
     
     @Test
     public void getValuesForTrivialReportTest () {
-        this.m_defaultLocalJasperReportsDao = new DefaultLocalJasperReportsDao();
+        this.m_defaultLocalJasperReportsDao = new LegacyLocalJasperReportsDao();
         assertEquals("trivial-report.jrxml", m_defaultLocalJasperReportsDao.getTemplateLocation("trivial-report"));
         assertEquals("null", m_defaultLocalJasperReportsDao.getEngine("trivial-report"));
+    }
+    
+    @Test
+    public void getTemplateForSampleReportAsStreamTest () throws IOException {
+        this.m_defaultLocalJasperReportsDao = new LegacyLocalJasperReportsDao();
+        InputStream m_templateStream = m_defaultLocalJasperReportsDao.getTemplateStream("sample-report");
+        assertEquals("check filesize by availiable call", 4822, m_templateStream.available());
     }
 }

@@ -10,8 +10,7 @@ import javax.xml.bind.JAXB;
 import org.opennms.features.reporting.model.jasper.LocalJasperReport;
 import org.opennms.features.reporting.model.jasper.LocalJasperReports;
 
-public class DefaultLocalJasperReportsDao implements LocalJasperReportsDao,
-        JasperReportDataProvider {
+public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
 
     private final String LOCAL_JASPER_REPORTS_CONFIG_XML = System.getProperty("opennms.home")
             + File.separator
@@ -19,6 +18,7 @@ public class DefaultLocalJasperReportsDao implements LocalJasperReportsDao,
             + File.separator
             + "local-jasper-reports.xml";
 
+    //TODO Tak: move out of dao
     private final String LOCAL_JASPER_REPORTS_TEMPLATE_FOLDER = System.getProperty("opennms.home")
             + File.separator
             + "etc"
@@ -28,7 +28,7 @@ public class DefaultLocalJasperReportsDao implements LocalJasperReportsDao,
 
     private LocalJasperReports reports;
 
-    public DefaultLocalJasperReportsDao() {
+    public LegacyLocalJasperReportsDao() {
         try {
             reports = JAXB.unmarshal(new File(LOCAL_JASPER_REPORTS_CONFIG_XML),
                                      LocalJasperReports.class);
@@ -56,7 +56,7 @@ public class DefaultLocalJasperReportsDao implements LocalJasperReportsDao,
         }
         return null;
     }
-
+    
     @Override
     public InputStream getTemplateStream(String id) {
         InputStream reportTemplateStream = null;

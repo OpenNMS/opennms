@@ -1,11 +1,12 @@
-package org.opennms.feature.reporting.dao.remote;
+package org.opennms.features.reporting.repository.remote;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.opennms.features.reporting.model.Report;
+import org.opennms.features.reporting.repository.ReportRepository;
 
-public class DefaultRemoteRepository implements RemoteReportDataProvider {
+public class DefaultRemoteRepository implements ReportRepository {
 
     public List<Report> getReports() {
         // TODO Auto-generated method stub

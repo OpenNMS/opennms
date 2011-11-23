@@ -1,5 +1,7 @@
 package org.opennms.feature.reporting.dao.jasper;
 
+import java.io.InputStream;
+
 public interface LocalJasperReportsDao {
     
     /**
@@ -9,4 +11,8 @@ public interface LocalJasperReportsDao {
      * @return a {@link java.lang.String} object.
      */
     String getEngine(String id);
+
+    InputStream getTemplateStream(String id);
+
+    String getTemplateLocation(String id);
 }

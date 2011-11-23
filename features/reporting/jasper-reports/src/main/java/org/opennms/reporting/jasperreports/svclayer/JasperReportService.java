@@ -51,8 +51,8 @@ import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.features.reporting.repository.DefaultReportRepository;
 import org.opennms.features.reporting.repository.ReportRepository;
+import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
@@ -69,7 +69,7 @@ public class JasperReportService implements ReportService {
 
     private static final String STRING_INPUT_TYPE = "org.opennms.report.stringInputType";
 
-    private ReportRepository m_repo = new DefaultReportRepository();
+    private ReportRepository m_repo = new GlobalReportRepository();
 
     private final ThreadCategory log;
 
@@ -137,9 +137,9 @@ public class JasperReportService implements ReportService {
 
         for (JRParameter reportParm : reportParms) {
 
-            if (reportParm.isSystemDefined() == false) {
+            if (reportParm.isSystemDefined()) {
 
-                if (reportParm.isForPrompting() == false) {
+                if (reportParm.isForPrompting()) {
                     log.debug("report parm  " + reportParm.getName()
                             + " is not for prompting - continuing");
                     continue;
@@ -510,17 +510,17 @@ public class JasperReportService implements ReportService {
         for (JRParameter reportParm : reportParms) {
             log.debug("found report parm " + reportParm.getName()
                     + " of class " + reportParm.getValueClassName());
-            if (reportParm.isSystemDefined() == false) {
+            if (reportParm.isSystemDefined()) {
 
                 String parmName = reportParm.getName();
 
-                if (reportParm.isForPrompting() == false) {
+                if (reportParm.isForPrompting()) {
                     log.debug("Required parameter  " + parmName
                             + " is not for prompting - continuing");
                     continue;
                 }
 
-                if (onmsReportParms.containsKey(parmName) == false)
+                if (onmsReportParms.containsKey(parmName))
                     throw new ReportException("Required parameter "
                             + parmName
                             + " not supplied to JasperReports by OpenNMS");
