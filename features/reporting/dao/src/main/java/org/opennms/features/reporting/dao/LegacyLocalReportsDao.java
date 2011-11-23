@@ -1,4 +1,4 @@
-package org.opennms.feature.reporting.dao;
+package org.opennms.features.reporting.dao;
 
 import java.io.File;
 import java.util.ArrayList;

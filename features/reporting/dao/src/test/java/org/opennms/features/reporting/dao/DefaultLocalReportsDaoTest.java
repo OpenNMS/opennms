@@ -1,4 +1,4 @@
-package org.opennms.feature.reporting.dao;
+package org.opennms.features.reporting.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -7,6 +7,7 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.reporting.dao.LegacyLocalReportsDao;
 
 public class DefaultLocalReportsDaoTest {
 

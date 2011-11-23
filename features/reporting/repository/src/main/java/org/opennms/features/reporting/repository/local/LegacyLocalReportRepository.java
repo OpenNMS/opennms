@@ -3,10 +3,10 @@ package org.opennms.features.reporting.repository.local;
 import java.io.InputStream;
 import java.util.List;
 
-import org.opennms.feature.reporting.dao.LegacyLocalReportsDao;
-import org.opennms.feature.reporting.dao.LocalReportsDao;
-import org.opennms.feature.reporting.dao.jasper.LegacyLocalJasperReportsDao;
-import org.opennms.feature.reporting.dao.jasper.LocalJasperReportsDao;
+import org.opennms.features.reporting.dao.LegacyLocalReportsDao;
+import org.opennms.features.reporting.dao.LocalReportsDao;
+import org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao;
+import org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao;
 import org.opennms.features.reporting.model.Report;
 import org.opennms.features.reporting.repository.ReportRepository;
 

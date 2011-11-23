@@ -1,4 +1,4 @@
-package org.opennms.feature.reporting.dao.jasper;
+package org.opennms.features.reporting.dao.jasper;
 
 import java.io.File;
 import java.io.FileInputStream;
