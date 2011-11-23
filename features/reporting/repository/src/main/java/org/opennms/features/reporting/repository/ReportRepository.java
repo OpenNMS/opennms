@@ -1,5 +1,6 @@
 package org.opennms.features.reporting.repository;
 
+import java.io.InputStream;
 import java.util.List;
 
 import org.opennms.features.reporting.model.Report;
@@ -35,7 +36,9 @@ public interface ReportRepository {
      */
     String getDisplayName(String id);
 
-    String getTemplateLocation(String reportId);
+    String getTemplateLocation(String id);
 
-    String getEngine(String reportId);
+    String getEngine(String id);
+    
+    InputStream getTemplateStream(String id);
 }

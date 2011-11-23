@@ -1,5 +1,6 @@
 package org.opennms.feature.reporting.dao.remote;
 
+import java.io.InputStream;
 import java.util.List;
 import org.opennms.features.reporting.model.Report;
 
@@ -25,12 +26,18 @@ public class DefaultRemoteRepository implements RemoteReportDataProvider {
         return null;
     }
 
-    public String getEngine(String reportId) {
+    public String getEngine(String id) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public String getTemplateLocation(String reportId) {
+    public String getTemplateLocation(String id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public InputStream getTemplateStream(String id) {
         // TODO Auto-generated method stub
         return null;
     }
