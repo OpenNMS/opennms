@@ -36,8 +36,6 @@ public interface ReportRepository {
      */
     String getDisplayName(String id);
 
-    String getTemplateLocation(String id);
-
     String getEngine(String id);
     
     InputStream getTemplateStream(String id);

@@ -364,8 +364,7 @@ public class JasperReportService implements ReportService {
             throw new ReportException("unable to compile jasperReport", e);
         }
 
-        jrReportParms = buildJRparameters(reportParms,
-                                          jasperReport.getParameters());
+        jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
 
         outputFileName = new String(baseDir + "/" + jasperReport.getName()
                 + new SimpleDateFormat("-MMddyyyy-HHmm").format(new Date())
@@ -375,9 +374,11 @@ public class JasperReportService implements ReportService {
             Connection connection;
             try {
                 connection = DataSourceFactory.getDataSource().getConnection();
+                
+                //TODO Tak: Moved from reportParms to jrReportParms. Check if thats ok.
                 JasperFillManager.fillReportToFile(jasperReport,
                                                    outputFileName,
-                                                   reportParms, connection);
+                                                   jrReportParms, connection);
 
                 connection.close();
             } catch (SQLException e) {
@@ -394,10 +395,10 @@ public class JasperReportService implements ReportService {
         } else if (m_repo.getEngine(reportId).equals("null")) {
 
             try {
-
+                //TODO Tak: Moved from reportParms to jrReportParms. Check if thats ok.
                 JasperFillManager.fillReportToFile(jasperReport,
                                                    outputFileName,
-                                                   reportParms,
+                                                   jrReportParms,
                                                    new JREmptyDataSource());
             } catch (JRException e) {
                 log.error("jasper report exception ", e);

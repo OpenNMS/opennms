@@ -59,17 +59,6 @@ public class DefaultReportRepository implements ReportRepository {
     }
 
     @Override
-    public String getTemplateLocation(String id) {
-        String result = "";
-        if (id.startsWith("connect_")) {
-            result = m_defaultRemote.getTemplateLocation(id);
-        } else {
-            result = m_defaultLocalJasperReportsDao.getTemplateLocation(id);
-        }
-        return result;
-    }
-
-    @Override
     public String getEngine(String id) {
         String result = "";
         if (id.startsWith("connect_")) {
