@@ -53,6 +53,8 @@ import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -71,17 +73,20 @@ public class Linkd extends AbstractServiceDaemon {
 	/**
 	 * Rescan scheduler thread
 	 */
+	@Autowired
 	private Scheduler m_scheduler;
 
     /**
      * The DB connection read and write handler
      */
+    @Autowired
     private QueryManager m_queryMgr;
     
     /**
     * Linkd Configuration Initialization
     */
     
+    @Autowired
     private LinkdConfig m_linkdConfig;
 	
 	/**
@@ -388,7 +393,6 @@ public class Linkd extends AbstractServiceDaemon {
 		// First of all get Linkable Node
 		LogUtils.debugf(this, "scheduleNodeCollection: Loading node %d from database", nodeid);
 		try {
-
 			node = m_queryMgr.getSnmpNode(nodeid);
 			if (node == null) {
 			    LogUtils.warnf(this, "scheduleNodeCollection: Failed to get linkable node from database with ID %d. Exiting", nodeid);
@@ -410,7 +414,6 @@ public class Linkd extends AbstractServiceDaemon {
 	public boolean runSingleCollection(final int nodeId) {
 	    try {
             final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
-
 
             for (final SnmpCollection snmpColl : getSnmpCollections(nodeId, node.getSnmpPrimaryIpAddr(), node.getSysoid())) {
                 snmpColl.setScheduler(m_scheduler);
@@ -563,6 +566,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 * 
 	 * @param snmpcoll
 	 */
+	@Transactional
 	void updateNodeSnmpCollection(final SnmpCollection snmpcoll) {
 	    LogUtils.debugf(this, "Updating SNMP collection for %s", InetAddressUtils.str(snmpcoll.getTarget()));
 		LinkableNode node = removeNode(snmpcoll.getTarget());

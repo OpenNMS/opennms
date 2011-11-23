@@ -53,9 +53,6 @@
     </bean>
 
     <bean name="daemon" class="org.opennms.netmgt.linkd.Linkd">
-      <property name="queryManager" ref="queryManager" />
-      <property name="linkdConfig" ref="linkdConfig" />
-      <property name="scheduler" ref="scheduler" />
       <property name="eventForwarder" ref="eventForwarder" />
     </bean>
 
