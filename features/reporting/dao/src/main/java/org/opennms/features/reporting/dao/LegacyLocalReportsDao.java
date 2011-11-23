@@ -10,7 +10,7 @@ import org.opennms.features.reporting.model.LocalReports;
 import org.opennms.features.reporting.model.Report;
 
 //TODO Tak: add Interface for BasicReportDataProvider
-public class LegacyLocalReportsDao implements LocalReportsDao, BasicReportDataProvider {
+public class LegacyLocalReportsDao implements LocalReportsDao {
 
     private final String LOCAL_REPORTS_CONFIG_XML = 
             System.getProperty("opennms.home") + 
