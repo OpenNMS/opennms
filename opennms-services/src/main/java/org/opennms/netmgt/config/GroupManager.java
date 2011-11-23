@@ -57,6 +57,8 @@ import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Roles;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.users.DutySchedule;
+import org.opennms.netmgt.model.OnmsGroup;
+import org.opennms.netmgt.model.OnmsGroupList;
 
 
 /**
@@ -68,6 +70,8 @@ import org.opennms.netmgt.config.users.DutySchedule;
  * @author <a href="mailto:dj@gregor.com">DJ Gregor</a>
  */
 public abstract class GroupManager {
+
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     /**
      * The duty schedules for each group
@@ -136,6 +140,40 @@ public abstract class GroupManager {
     
     }
 
+    public OnmsGroupList getOnmsGroupList() throws MarshalException, ValidationException, IOException {
+        final OnmsGroupList list = new OnmsGroupList();
+        
+        for (final String name : getGroupNames()) {
+            list.add(getOnmsGroup(name));
+        }
+        list.setTotalCount(list.getCount());
+
+        return list;
+    }
+
+    public OnmsGroup getOnmsGroup(final String groupName) throws MarshalException, ValidationException, IOException {
+        final Group castorGroup = getGroup(groupName);
+        if (castorGroup == null) return null;
+        
+        final OnmsGroup group = new OnmsGroup(groupName);
+        group.setComments(castorGroup.getComments());
+        group.setUsers(castorGroup.getUserCollection());
+        
+        return group;
+    }
+
+    public synchronized void save(final OnmsGroup group) throws Exception {
+        Group castorGroup = getGroup(group.getName());
+        if (castorGroup == null) {
+            castorGroup = new Group();
+            castorGroup.setName(group.getName());
+        }
+        castorGroup.setComments(group.getComments());
+        castorGroup.setUser(group.getUsers().toArray(EMPTY_STRING_ARRAY));
+        
+        saveGroup(group.getName(), castorGroup);
+    }
+
     /**
      * <p>update</p>
      *
@@ -197,8 +235,8 @@ public abstract class GroupManager {
      */
     public synchronized void saveGroups() throws Exception {
         Header header = m_oldHeader;
-    
-        header.setCreated(EventConstants.formatToString(new Date()));
+
+        if (header != null) header.setCreated(EventConstants.formatToString(new Date()));
     
         Groups groups = new Groups();
         for (Group grp : m_groups.values()) {

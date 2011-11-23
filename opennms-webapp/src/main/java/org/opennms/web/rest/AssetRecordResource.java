@@ -85,7 +85,7 @@ public class AssetRecordResource extends OnmsRestService {
     public OnmsAssetRecord getAssetRecord(@PathParam("nodeCriteria") String nodeCriteria) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
-            throwException(Status.BAD_REQUEST, "getCategories: Can't find node " + nodeCriteria);
+            throw getException(Status.BAD_REQUEST, "getCategories: Can't find node " + nodeCriteria);
         }
         return getAssetRecord(node);
     }
@@ -102,12 +102,12 @@ public class AssetRecordResource extends OnmsRestService {
     public Response updateAssetRecord(@PathParam("nodeCriteria") String nodeCriteria,  MultivaluedMapImpl params) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
-            throwException(Status.BAD_REQUEST, "updateAssetRecord: Can't find node " + nodeCriteria);
+            throw getException(Status.BAD_REQUEST, "updateAssetRecord: Can't find node " + nodeCriteria);
         }
         
         OnmsAssetRecord assetRecord = getAssetRecord(node);
         if (assetRecord == null) {
-            throwException(Status.BAD_REQUEST, "updateAssetRecord: Node " + node  + " could not update ");
+            throw getException(Status.BAD_REQUEST, "updateAssetRecord: Node " + node  + " could not update ");
         }
         log().debug("updateAssetRecord: updating category " + assetRecord);
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
@@ -125,7 +125,7 @@ public class AssetRecordResource extends OnmsRestService {
         try {
             sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
         } catch (EventProxyException e) {
-            throwException(Status.BAD_REQUEST, e.getMessage());
+            throw getException(Status.BAD_REQUEST, e.getMessage());
         }
         
         return Response.ok().build();

@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
- <bean id="userDao" class="org.opennms.web.springframework.security.UserDaoImpl">
+ <bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
   <property name="usersConfigurationFile" value="src/test/resources/org/opennms/web/springframework/security/users.xml"/>
   <property name="useGroups" value="false"/>
   <property name="magicUsersConfigurationFile" value="src/test/resources/org/opennms/web/springframework/security/magic-users.properties"/>
