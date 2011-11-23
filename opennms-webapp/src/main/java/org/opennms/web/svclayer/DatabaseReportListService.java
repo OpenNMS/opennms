@@ -30,7 +30,6 @@ package org.opennms.web.svclayer;
 
 import java.util.List;
 
-import org.opennms.features.reporting.reportrepository.ReportRepository;
 import org.opennms.web.svclayer.support.DatabaseReportDescription;
 
 /**
@@ -55,12 +54,4 @@ public interface DatabaseReportListService {
      * @return a {@link java.util.List} object.
      */
     List<DatabaseReportDescription> getAllOnline();
-    
-    /**
-     * <p>setReportRepository</p>
-     *
-     * @param repo a {@link org.opennms.features.reporting.reportrepository.ReportRepository} object.
-     */
-    void setReportRepository(ReportRepository repo);
-
 }

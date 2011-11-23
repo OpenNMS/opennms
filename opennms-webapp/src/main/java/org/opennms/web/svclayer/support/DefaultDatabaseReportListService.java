@@ -19,10 +19,11 @@ package org.opennms.web.svclayer.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.reporting.reportrepository.ReportRepository;
-import org.opennms.netmgt.config.databaseReports.Report;
-import org.opennms.web.svclayer.DatabaseReportListService;
+import org.opennms.features.reporting.model.Report;
+import org.opennms.features.reporting.repository.DefaultReportRepository;
+import org.opennms.features.reporting.repository.ReportRepository;
 
+import org.opennms.web.svclayer.DatabaseReportListService;
 /**
  * <p>
  * DefaultDatabaseReportListService class.
@@ -34,21 +35,19 @@ import org.opennms.web.svclayer.DatabaseReportListService;
  */
 public class DefaultDatabaseReportListService implements
         DatabaseReportListService {
-
-    ReportRepository m_repo;
-
-    /**
-     * <p>
-     * getAll
-     * </p>
-     * 
+    
+    private ReportRepository m_repo = new DefaultReportRepository();
+    
+     /**
+     * <p>getAll</p>
+     *
      * @return a {@link java.util.List} object.
      */
     public List<DatabaseReportDescription> getAll() {
-
-        List<DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
-
-        for (Report report : m_repo.getAllReports()) {
+        
+        List <DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
+        
+        for(Report report : m_repo.getReports()) {
             DatabaseReportDescription summary = new DatabaseReportDescription();
             summary.setId(report.getId());
             summary.setDisplayName(report.getDisplayName());
@@ -69,9 +68,9 @@ public class DefaultDatabaseReportListService implements
      */
     public List<DatabaseReportDescription> getAllOnline() {
 
-        List<DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
-
-        for (Report report : m_repo.getOnlineReports()) {
+        List <DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
+        
+        for(Report report : m_repo.getOnlineReports()) {
             DatabaseReportDescription summary = new DatabaseReportDescription();
             summary.setId(report.getId());
             summary.setDisplayName(report.getDisplayName());
@@ -80,9 +79,5 @@ public class DefaultDatabaseReportListService implements
         }
 
         return onlineReports;
-    }
-
-    public void setReportRepository(ReportRepository repo) {
-        m_repo = repo;
     }
 }

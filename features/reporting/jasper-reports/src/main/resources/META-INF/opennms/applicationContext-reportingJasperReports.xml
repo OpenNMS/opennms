@@ -5,8 +5,6 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean id="jasperReportService"
-		class="org.opennms.reporting.jasperreports.svclayer.JasperReportService">
-		<property name="configDao" ref="jasperReportConfigDao" />  
-	</bean>
-	
+		class="org.opennms.reporting.jasperreports.svclayer.JasperReportService" />
+
 </beans>

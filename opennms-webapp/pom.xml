@@ -220,6 +220,16 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.model</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.dao</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.repository</artifactId>
       <scope>provided</scope>
     </dependency>

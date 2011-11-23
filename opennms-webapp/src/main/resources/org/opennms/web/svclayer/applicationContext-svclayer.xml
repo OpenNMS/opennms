@@ -211,9 +211,7 @@
   
   <!-- Database Report Beans -->
   
-  <bean id="databaseReportListService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportListService">
-    <property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
-  </bean>
+  <bean id="databaseReportListService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportListService"/>
   
   <bean id="reportSchedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">
 	<property name="scheduler">

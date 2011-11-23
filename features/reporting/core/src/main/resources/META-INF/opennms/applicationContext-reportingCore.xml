@@ -4,9 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="reportServiceLocator" class="org.opennms.reporting.core.svclayer.support.DefaultReportServiceLocator">
-		<property name="databaseReportConfigDao" ref="databaseReportConfigDao" />
-	</bean>
+	<bean id="reportServiceLocator" class="org.opennms.reporting.core.svclayer.support.DefaultReportServiceLocator" />
 	
 	<bean id="reportWrapperService" class="org.opennms.reporting.core.svclayer.support.DefaultReportWrapperService">
 		<property name="reportServiceLocator">
@@ -19,7 +17,6 @@
 
 	<bean id="reportStoreService" class="org.opennms.reporting.core.svclayer.support.DefaultReportStoreService" >
 		<property name="reportCatalogDao" ref="reportCatalogDao" />
-		<property name="databaseReportConfigDao" ref="databaseReportConfigDao" />
 		<property name="reportServiceLocator">
 		 <ref local="reportServiceLocator" />
 		</property>

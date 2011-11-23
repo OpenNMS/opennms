@@ -40,8 +40,9 @@ import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.databaseReports.Report;
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import org.opennms.features.reporting.model.Report;
+import org.opennms.features.reporting.repository.ReportRepository;
+import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.ReportCatalogEntry;
@@ -55,7 +56,8 @@ public class DefaultReportStoreService implements ReportStoreService {
     
     private ReportCatalogDao m_reportCatalogDao;
     private ReportServiceLocator m_reportServiceLocator;
-    private DatabaseReportConfigDao m_databaseReportConfigDao;
+    
+    private ReportRepository m_repo = new GlobalReportRepository();
     
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
     
@@ -116,7 +118,7 @@ public class DefaultReportStoreService implements ReportStoreService {
      */
     public Map<String, Object> getFormatMap() {
         HashMap <String, Object> formatMap = new HashMap<String, Object>();
-        List <Report> reports = m_databaseReportConfigDao.getReports();
+        List <Report> reports = m_repo.getReports();
         Iterator<Report> reportIter = reports.iterator();
         while (reportIter.hasNext()) {
             Report report = reportIter.next();
@@ -131,7 +133,7 @@ public class DefaultReportStoreService implements ReportStoreService {
     /** {@inheritDoc} */
     public void render(Integer id, ReportFormat format, OutputStream outputStream) {
         ReportCatalogEntry catalogEntry = m_reportCatalogDao.get(id);
-        String reportServiceName = m_databaseReportConfigDao.getReportService(catalogEntry.getReportId());
+        String reportServiceName = m_repo.getReportService(catalogEntry.getReportId());
         ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
         log().debug("attempting to rended the report as " + format.toString() + " using " + reportServiceName );
         try {
@@ -156,18 +158,8 @@ public class DefaultReportStoreService implements ReportStoreService {
         m_reportCatalogDao = reportCatalogDao;
     }
     
-    /**
-     * <p>setDatabaseReportConfigDao</p>
-     *
-     * @param databaseReportConfigDao a {@link org.opennms.netmgt.dao.DatabaseReportConfigDao} object.
-     */
-    public void setDatabaseReportConfigDao(DatabaseReportConfigDao databaseReportConfigDao) {
-        m_databaseReportConfigDao = databaseReportConfigDao;
-    }
-    
     /** {@inheritDoc} */
     public void setReportServiceLocator(ReportServiceLocator reportServiceLocator) {
         m_reportServiceLocator = reportServiceLocator;
     }
-
 }

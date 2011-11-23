@@ -15,12 +15,12 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.opennms</groupId>
-			<artifactId>opennms-dao</artifactId>
+			<groupId>org.opennms.features.reporting</groupId>
+			<artifactId>org.opennms.features.reporting.dao</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.opennms</groupId>
-			<artifactId>opennms-config</artifactId>
+			<groupId>org.opennms.features.reporting</groupId>
+			<artifactId>org.opennms.features.reporting.model</artifactId>
 		</dependency>
 	</dependencies>
 

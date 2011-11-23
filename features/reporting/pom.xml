@@ -15,5 +15,7 @@
     <module>availability</module>
     <module>jasper-reports</module>
     <module>repository</module>
+    <module>model</module>
+    <module>dao</module>
   </modules>
 </project>
