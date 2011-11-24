@@ -353,7 +353,8 @@ MenuElement.prototype.handleEvent = function(evt) {
 		this.menuElement.setAttributeNS(null,'fill',this.upColor);
 		if (this.subitemstohide == null) return;
 		for (var a in this.subitemstohide) {
-			document.getElementById(this.subitemstohide[a]+"ElementGroup").setAttributeNS(null,'display','none');
+            if ( document.getElementById(this.subitemstohide[a]+"ElementGroup") != null ) 
+                document.getElementById(this.subitemstohide[a]+"ElementGroup").setAttributeNS(null,'display','none');
 		}
 	}
 	
