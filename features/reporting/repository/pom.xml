@@ -22,6 +22,11 @@
 			<groupId>org.opennms.features.reporting</groupId>
 			<artifactId>org.opennms.features.reporting.model</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-apache-client</artifactId>
+			<version>1.10</version>
+		</dependency>
 	</dependencies>
 
 </project>
