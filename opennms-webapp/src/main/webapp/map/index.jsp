@@ -76,7 +76,7 @@ function toggle(id)
 window.onresize = function() {
     if (resizing) return;
     resizing=true;
-    resizeSVG();
+    window.resizeSVG();
 }
 
 function resize(timeout) {
