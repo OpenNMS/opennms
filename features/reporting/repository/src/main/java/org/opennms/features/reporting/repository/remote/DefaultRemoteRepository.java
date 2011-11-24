@@ -13,7 +13,7 @@ import com.sun.jersey.api.client.WebResource;
 //TODO Tak: SSL Auth and Session-Handling(create/destroy)
 public class DefaultRemoteRepository implements ReportRepository {
 
-    private String SERVER_URI = "http://192.168.30.176:8080/opennms/connect/rest/repo/";
+    private String SERVER_URI = "http://localhost:8080/opennms/connect/rest/repo/";
     private Client m_client = Client.create();
     private WebResource m_webResource;
 
