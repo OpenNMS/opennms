@@ -19,13 +19,12 @@ package org.opennms.reporting.jasperreports.svclayer;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 
-public class TemporatyJasperReportServiceTest {
+public class JasperReportServiceGetParametersTest {
 
     private JasperReportService service = new JasperReportService();
 
@@ -35,7 +34,6 @@ public class TemporatyJasperReportServiceTest {
         service.setReportRepository(new GlobalReportRepository());
     }
     
-    @Ignore
     @Test
     public void readPropertiesOfTrivialTestReportFromRESTRepoTest() throws ReportException {
         String id = "REMOTE_trivialJasperReport";
@@ -44,16 +42,14 @@ public class TemporatyJasperReportServiceTest {
         assertEquals(0, params.getReportParms().size());
     }
 
-    @Ignore
     @Test
     public void readPropertiesOfPropertyTestReportFromRESTRepoTest() throws ReportException {
         String id = "REMOTE_parameterTestJasperReport";
         assertNotNull(service.getParameters(id));
         ReportParameters params = service.getParameters(id);
-        assertEquals(12, params.getReportParms().size());
+        assertEquals(7, params.getReportParms().size());
     }
 
-    @Ignore
     @Test
     public void readPropertiesOfTrivialTestReportTest() throws ReportException {
         String id = "trivial-report";
@@ -67,6 +63,6 @@ public class TemporatyJasperReportServiceTest {
         String id = "parameter-test";
         assertNotNull(service.getParameters(id));
         ReportParameters params = service.getParameters(id);
-        assertEquals(12, params.getReportParms().size());
+        assertEquals(7, params.getReportParms().size());
     }
 }

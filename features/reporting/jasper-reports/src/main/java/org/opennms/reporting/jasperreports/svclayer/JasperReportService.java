@@ -345,7 +345,6 @@ public class JasperReportService implements ReportService {
             log.error("unable to render report", e);
             throw new ReportException("unable to render report", e);
         }
-
     }
 
     private JasperPrint getJasperPrint(String location) throws JRException {
@@ -379,7 +378,7 @@ public class JasperReportService implements ReportService {
         outputFileName = new String(baseDir + "/" + jasperReport.getName()
                 + new SimpleDateFormat("-MMddyyyy-HHmm").format(new Date())
                 + ".jrprint");
-        log.debug("jrpcml output file: " + outputFileName);
+        log.debug("jrprint output file: " + outputFileName);
         if ("jdbc".equalsIgnoreCase(m_repo.getEngine(reportId))) {
             Connection connection;
             try {
@@ -400,8 +399,7 @@ public class JasperReportService implements ReportService {
                                           "unable to run emptyDataSource jasperReport",
                                           e);
             }
-            // TODO TAK: make sure that getEngine will return null if is not
-            // set
+            // TODO TAK: make sure that getEngine will return null if is not set
         } else if (m_repo.getEngine(reportId).equals("null")) {
 
             try {
