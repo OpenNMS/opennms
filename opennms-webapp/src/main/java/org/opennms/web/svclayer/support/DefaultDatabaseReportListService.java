@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.reporting.model.Report;
-import org.opennms.features.reporting.repository.DefaultReportRepository;
+import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.features.reporting.repository.ReportRepository;
 
 import org.opennms.web.svclayer.DatabaseReportListService;
@@ -36,7 +36,7 @@ import org.opennms.web.svclayer.DatabaseReportListService;
 public class DefaultDatabaseReportListService implements
         DatabaseReportListService {
     
-    private ReportRepository m_repo = new DefaultReportRepository();
+    private ReportRepository m_repo = new GlobalReportRepository();
     
      /**
      * <p>getAll</p>
