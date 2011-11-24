@@ -4,14 +4,21 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.features.reporting.model.Report;
 import org.opennms.features.reporting.repository.remote.DefaultRemoteRepository;
 
 public class DefaultRemoteRepositoryTest {
     
-    private DefaultRemoteRepository m_repo = new DefaultRemoteRepository();
+    private DefaultRemoteRepository m_repo;
 
+    @BeforeClass
+    public void setup(){
+        System.setProperty("opennms.home", "/opt/opennms");
+        m_repo = new DefaultRemoteRepository();
+    }
+    
     @Test
     public void getOnlineReports() {
         ArrayList<Report> reports = (ArrayList<Report>) m_repo.getOnlineReports();
