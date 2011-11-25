@@ -38,11 +38,12 @@ public class JasperReportServiceGetJprintTest {
     }
     
     @Test
-    public void runReportReport() throws ReportException {
+    public void runReportFromLocalRepoTest() throws ReportException {
         assertTrue(service.run(new HashMap<String, Object>(), "trivial-report").startsWith("/tmp/trivial-report"));
+    }
+    
+    @Test
+    public void runReportFromRemoteRepoTest() throws ReportException {
         assertTrue(service.run(new HashMap<String, Object>(), "REMOTE_trivialJasperReport").startsWith("/tmp/trivial-report"));
-        
-        //assertTrue(service.run(new HashMap<String, Object>(), "parameter-test").startsWith("/tmp/parameter-test"));
-        //assertTrue(service.run(new HashMap<String, Object>(), "REMOTE_parameterTestJasperReport").startsWith("/tmp/parameter-test"));
     }
 }

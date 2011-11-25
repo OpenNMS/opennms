@@ -19,6 +19,7 @@ package org.opennms.reporting.jasperreports.svclayer;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.parameter.ReportParameters;
@@ -70,6 +71,23 @@ public class JasperReportServiceGetParametersTest {
     @Test
     public void readPropertiesOfPropertyTestReportTest() throws ReportException {
         String id = "parameter-test";
+        assertNotNull(service.getParameters(id));
+        ReportParameters params = service.getParameters(id);
+        assertEquals(7, params.getReportParms().size());
+    }
+ 
+    @Test
+    public void readPropertiesOfJasperUriTest() throws ReportException {
+        String id = "REMOTE_jasper-uri-test";
+        assertNotNull(service.getParameters(id));
+        ReportParameters params = service.getParameters(id);
+        assertEquals(1, params.getReportParms().size());
+    }
+    
+    @Ignore
+    @Test
+    public void readPropertiesOfJasperResourceInputStreamURITest() throws ReportException {
+        String id = "REMOTE_jasper-resource-inputstream-uri-test";
         assertNotNull(service.getParameters(id));
         ReportParameters params = service.getParameters(id);
         assertEquals(7, params.getReportParms().size());
