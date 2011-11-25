@@ -26,16 +26,25 @@ import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 
 public class JasperReportServiceGetParametersTest {
 
-    private JasperReportService service = new JasperReportService();
+    private JasperReportService service;
 
     @Before
     public void setUp() {
         System.setProperty("opennms.home", "/opt/opennms");
+        service = new JasperReportService();
         service.setReportRepository(new GlobalReportRepository());
+        assertEquals("/opt/opennms", System.getProperty("opennms.home"));
+    }
+    
+    @Test
+    public void systemPropertyTest() {
+        System.setProperty("opennms.home", "/opt/opennms");
+        assertEquals("/opt/opennms", System.getProperty("opennms.home"));
     }
     
     @Test
     public void readPropertiesOfTrivialTestReportFromRESTRepoTest() throws ReportException {
+        assertEquals("/opt/opennms", System.getProperty("opennms.home"));
         String id = "REMOTE_trivialJasperReport";
         assertNotNull(service.getParameters(id));
         ReportParameters params = service.getParameters(id);

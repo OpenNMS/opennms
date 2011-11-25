@@ -9,30 +9,40 @@ import org.opennms.features.reporting.dao.remoterepository.RemoteRepositoryConfi
 import org.opennms.features.reporting.model.Report;
 import org.opennms.features.reporting.repository.ReportRepository;
 
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.client.apache.ApacheHttpClient;
+import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
+import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 
 // TODO Tak: SSL Auth and Session-Handling(create/destroy)
 public class DefaultRemoteRepository implements ReportRepository {
 
     private RemoteRepositoryConfigDao m_config = new DefaultRemoteRepositoryConfigDao();
 
-    private Client m_client = Client.create();
+    private ApacheHttpClient m_client;
+    private ApacheHttpClientConfig m_clientConfig;
     private WebResource m_webResource;
 
-    private Boolean isConfigOk() {
-        if (m_config != null) {
-            if (m_config.isRepositoryActive()) {
-            } else {
-                // TODO Tak: Logging RemoteRepository not activated
-                return false;
-            }
-        } else {
-            // TODO Tak: Logging no Config for RemoteRepository found
-            return false;
-        }
-        return true;
+    public DefaultRemoteRepository() {
+
+        /**
+         * DefaultApacheHttpClientConfig config = new
+         * DefaultApacheHttpClientConfig();
+         * config.getState().setCredentials(null, null, -1, "foo", "bar");
+         * ApacheHttpClient c = ApacheHttpClient.create(config);
+         * WebResource r = c.resource("http://host/base"); 
+         * String s = r.get(String.class);
+         * s = r.post(String.class, s);
+         */
+
+        m_clientConfig = new DefaultApacheHttpClientConfig();
+        m_clientConfig.getState().setCredentials(null,
+                                                 "localhost",
+                                                 8080,
+                                                 m_config.getLoginUser(),
+                                                 m_config.getLoginRepoPassword());
+        m_client = ApacheHttpClient.create(m_clientConfig);
     }
 
     @Override
@@ -101,6 +111,20 @@ public class DefaultRemoteRepository implements ReportRepository {
             templateStreamResult = m_webResource.get(InputStream.class);
         }
         return templateStreamResult;
+    }
+
+    private Boolean isConfigOk() {
+        if (m_config != null) {
+            if (m_config.isRepositoryActive()) {
+            } else {
+                // TODO Tak: Logging RemoteRepository not activated
+                return false;
+            }
+        } else {
+            // TODO Tak: Logging no Config for RemoteRepository found
+            return false;
+        }
+        return true;
     }
 
     public RemoteRepositoryConfigDao getConfig() {

@@ -20,27 +20,27 @@ import static org.junit.Assert.*;
 
 import java.util.HashMap;
 
-import org.hibernate.mapping.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 
-public class JasperReportServiceGetPDFTest {
+public class JasperReportServiceGetJprintTest {
 
-    private JasperReportService service = new JasperReportService();
-
+    private JasperReportService service;
+    
     @Before
     public void setUp() {
         System.setProperty("opennms.home", "/opt/opennms");
         System.setProperty("opennms.report.dir", "/tmp");
+        service = new JasperReportService();
         service.setReportRepository(new GlobalReportRepository());
     }
     
     @Test
-    public void runReport() throws ReportException {
+    public void runReportReport() throws ReportException {
         assertTrue(service.run(new HashMap<String, Object>(), "trivial-report").startsWith("/tmp/trivial-report"));
-        assertTrue(service.run(new HashMap<String, Object>(), "trivial-report").startsWith("/tmp/trivial-report"));
+        assertTrue(service.run(new HashMap<String, Object>(), "REMOTE_trivialJasperReport").startsWith("/tmp/trivial-report"));
         
         //assertTrue(service.run(new HashMap<String, Object>(), "parameter-test").startsWith("/tmp/parameter-test"));
         //assertTrue(service.run(new HashMap<String, Object>(), "REMOTE_parameterTestJasperReport").startsWith("/tmp/parameter-test"));
