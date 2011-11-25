@@ -7,7 +7,7 @@ import org.opennms.features.reporting.dao.LegacyLocalReportsDao;
 import org.opennms.features.reporting.dao.LocalReportsDao;
 import org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao;
 import org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao;
-import org.opennms.features.reporting.model.Report;
+import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 
 public class LegacyLocalReportRepository implements ReportRepository {
@@ -17,12 +17,12 @@ public class LegacyLocalReportRepository implements ReportRepository {
     private LocalJasperReportsDao m_localJasperReportsDao = new LegacyLocalJasperReportsDao();
     
     @Override
-    public List<Report> getReports() {
+    public List<BasicReportDefinition> getReports() {
         return m_localReportsDao.getReports();
     }
 
     @Override
-    public List<Report> getOnlineReports() {
+    public List<BasicReportDefinition> getOnlineReports() {
         return m_localReportsDao.getOnlineReports();
     }
 

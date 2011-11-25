@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<simple-jasper-reports>
+    <simple-jasper-report>
+        <description>your description here</description>
+        <display-name>your display name here</display-name>
+        <engine>fucking engine here</engine>
+        <id>just another id here</id>
+        <online>true</online>
+        <report-service>jasperReportService</report-service>
+        <template>file:///your-uri-to-file</template>
+    </simple-jasper-report>
+</simple-jasper-reports>

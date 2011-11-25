@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao;
 import org.opennms.features.reporting.dao.remoterepository.RemoteRepositoryConfigDao;
-import org.opennms.features.reporting.model.Report;
+import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 
 import com.sun.jersey.api.client.GenericType;
@@ -46,24 +46,24 @@ public class DefaultRemoteRepository implements ReportRepository {
     }
 
     @Override
-    public List<Report> getReports() {
-        ArrayList<Report> resultReports = new ArrayList<Report>();
+    public List<BasicReportDefinition> getReports() {
+        ArrayList<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()
                     + "getReports");
-            resultReports = m_webResource.get(new GenericType<ArrayList<Report>>() {
+            resultReports = m_webResource.get(new GenericType<ArrayList<BasicReportDefinition>>() {
             });
         }
         return resultReports;
     }
 
     @Override
-    public List<Report> getOnlineReports() {
-        ArrayList<Report> resultReports = new ArrayList<Report>();
+    public List<BasicReportDefinition> getOnlineReports() {
+        ArrayList<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()
                     + "getOnlineReports");
-            resultReports = m_webResource.get(new GenericType<ArrayList<Report>>() {
+            resultReports = m_webResource.get(new GenericType<ArrayList<BasicReportDefinition>>() {
             });
         }
         return resultReports;

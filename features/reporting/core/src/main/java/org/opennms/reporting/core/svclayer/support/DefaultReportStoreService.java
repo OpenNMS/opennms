@@ -40,7 +40,7 @@ import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.features.reporting.model.Report;
+import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.netmgt.dao.ReportCatalogDao;
@@ -118,10 +118,10 @@ public class DefaultReportStoreService implements ReportStoreService {
      */
     public Map<String, Object> getFormatMap() {
         HashMap <String, Object> formatMap = new HashMap<String, Object>();
-        List <Report> reports = m_repo.getReports();
-        Iterator<Report> reportIter = reports.iterator();
+        List <BasicReportDefinition> reports = m_repo.getReports();
+        Iterator<BasicReportDefinition> reportIter = reports.iterator();
         while (reportIter.hasNext()) {
-            Report report = reportIter.next();
+            BasicReportDefinition report = reportIter.next();
             String id = report.getId();
             String service = report.getReportService();
             List <ReportFormat> formats = m_reportServiceLocator.getReportService(service).getFormats(id);

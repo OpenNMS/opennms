@@ -7,8 +7,8 @@ import java.io.InputStream;
 
 import javax.xml.bind.JAXB;
 
-import org.opennms.features.reporting.model.jasper.LocalJasperReport;
-import org.opennms.features.reporting.model.jasper.LocalJasperReports;
+import org.opennms.features.reporting.model.jasperreport.JasperReportDefinition;
+import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 
 public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
 
@@ -39,7 +39,7 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
 
     @Override
     public String getTemplateLocation(String id) {
-        for (LocalJasperReport report : reports.getReportList()) {
+        for (JasperReportDefinition report : reports.getReportList()) {
             if (id.equals(report.getId())) {
                 return report.getTemplate();
             }
@@ -49,7 +49,7 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
 
     @Override
     public String getEngine(String id) {
-        for (LocalJasperReport report : reports.getReportList()) {
+        for (JasperReportDefinition report : reports.getReportList()) {
             if (id.equals(report.getId())) {
                 return report.getEngine();
             }
@@ -60,7 +60,7 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     @Override
     public InputStream getTemplateStream(String id) {
         InputStream reportTemplateStream = null;
-        for (LocalJasperReport report : reports.getReportList()) {
+        for (JasperReportDefinition report : reports.getReportList()) {
             if (id.equals(report.getId())) {
                 try {
                     reportTemplateStream = new FileInputStream(

@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.reporting.model.Report;
+import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.local.LegacyLocalReportRepository;
 import org.opennms.features.reporting.repository.remote.DefaultRemoteRepository;
@@ -20,16 +20,16 @@ public class GlobalReportRepository implements ReportRepository {
     //TODO Tak: Stamp prefixe into reportIDs for each Repository
     
     @Override
-    public List<Report> getReports() {
-        List<Report> results = new ArrayList<Report>();
+    public List<BasicReportDefinition> getReports() {
+        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
         results.addAll(m_dummyRemoteRepo.getReports());
         results.addAll(m_localReportRepo.getReports());
         return results;
     }
 
     @Override
-    public List<Report> getOnlineReports() {
-        List<Report> results = new ArrayList<Report>();
+    public List<BasicReportDefinition> getOnlineReports() {
+        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
         results.addAll(m_dummyRemoteRepo.getOnlineReports());
         results.addAll(m_localReportRepo.getOnlineReports());
         return results;

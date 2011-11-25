@@ -6,8 +6,8 @@ import java.util.List;
 
 import javax.xml.bind.JAXB;
 
-import org.opennms.features.reporting.model.LocalReports;
-import org.opennms.features.reporting.model.Report;
+import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
+import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 
 //TODO Tak: add Interface for BasicReportDataProvider
 public class LegacyLocalReportsDao implements LocalReportsDao {
@@ -19,26 +19,26 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
             File.separator + 
             "local-reports.xml";
     
-    private LocalReports m_reports;
+    private LegacyLocalReportsDefinition m_reports;
     
     public LegacyLocalReportsDao() {
         try {
-            m_reports = JAXB.unmarshal(new File(LOCAL_REPORTS_CONFIG_XML), LocalReports.class);
+            m_reports = JAXB.unmarshal(new File(LOCAL_REPORTS_CONFIG_XML), LegacyLocalReportsDefinition.class);
         }catch (Exception e) {
             // TODO Tak: logging and fail safety 
         }
     }
     
     @Override
-    public List<Report> getReports() {
+    public List<BasicReportDefinition> getReports() {
        return m_reports.getReportList();
     }
 
     @Override
-    public List<Report> getOnlineReports() {
-       List<Report> onlineReports = new ArrayList<Report>();
-       for (Report report : m_reports.getReportList()) {
-           if (report.isOnline()) {
+    public List<BasicReportDefinition> getOnlineReports() {
+       List<BasicReportDefinition> onlineReports = new ArrayList<BasicReportDefinition>();
+       for (BasicReportDefinition report : m_reports.getReportList()) {
+           if (report.getOnline()) {
                onlineReports.add(report);
            }
        }
@@ -47,7 +47,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
 
     @Override
     public String getReportService(String id) {
-        for (Report report : m_reports.getReportList()) {
+        for (BasicReportDefinition report : m_reports.getReportList()) {
             if (id.equals(report.getId())) {
                 return report.getReportService();
             }
@@ -57,7 +57,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
 
     @Override
     public String getDisplayName(String id) {
-        for (Report report : m_reports.getReportList()) {
+        for (BasicReportDefinition report : m_reports.getReportList()) {
             if (id.equals(report.getId())) {
                 return report.getDisplayName();
             }
