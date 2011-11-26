@@ -4,9 +4,9 @@
         <description>your description here</description>
         <display-name>your display name here</display-name>
         <engine>fucking engine here</engine>
-        <id>just another id here</id>
+        <id>423</id>
         <online>true</online>
         <report-service>jasperReportService</report-service>
-        <template>file:///your-uri-to-file</template>
+        <template>file:///tmp/foo.txt</template>
     </simple-jasper-report>
 </simple-jasper-reports>
