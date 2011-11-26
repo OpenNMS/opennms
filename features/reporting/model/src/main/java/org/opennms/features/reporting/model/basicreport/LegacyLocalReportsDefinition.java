@@ -13,14 +13,14 @@ import java.util.List;
 @XmlRootElement(name = "local-reports")
 public class LegacyLocalReportsDefinition {
 
-    private List<BasicReportDefinition> m_reportList = new ArrayList<BasicReportDefinition>();
+    private List<LegacyLocalReportDefinition> m_reportList = new ArrayList<LegacyLocalReportDefinition>();
 
     @XmlElement(name = "report")
-    public List<BasicReportDefinition> getReportList() {
+    public List<LegacyLocalReportDefinition> getReportList() {
         return m_reportList;
     }
 
-    public void setReportList(List<BasicReportDefinition> reportList) {
+    public void setReportList(List<LegacyLocalReportDefinition> reportList) {
         this.m_reportList = reportList;
     }
 }

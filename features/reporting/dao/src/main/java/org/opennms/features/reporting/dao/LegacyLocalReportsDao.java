@@ -25,13 +25,21 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
         try {
             m_reports = JAXB.unmarshal(new File(LOCAL_REPORTS_CONFIG_XML), LegacyLocalReportsDefinition.class);
         }catch (Exception e) {
-            // TODO Tak: logging and fail safety 
+            // TODO Tak: logging and fail safety
+            System.out.println(LegacyLocalReportsDao.class.getName() + " Unmarshal Failed! for " + LOCAL_REPORTS_CONFIG_XML);
+            System.out.println(LegacyLocalReportsDao.class.getName() + " Returning blank new LegacyLocalReportsDefinition");
+            e.printStackTrace();
+            m_reports = new LegacyLocalReportsDefinition();
         }
     }
     
     @Override
     public List<BasicReportDefinition> getReports() {
-       return m_reports.getReportList();
+        ArrayList<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
+        for (BasicReportDefinition report : m_reports.getReportList()) {
+            resultList.add(report);
+        }
+        return resultList;
     }
 
     @Override

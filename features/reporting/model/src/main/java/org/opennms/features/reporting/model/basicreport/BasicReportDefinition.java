@@ -1,6 +1,6 @@
 package org.opennms.features.reporting.model.basicreport;
 
-//import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlAttribute;
 
 public interface BasicReportDefinition {
     
@@ -11,7 +11,7 @@ public interface BasicReportDefinition {
      * 
      * @return the value of field 'Description'.
      */
-//    @XmlAttribute(name = "description")
+    @XmlAttribute(name = "description")
     public abstract String getDescription();
 
     /**
@@ -22,7 +22,7 @@ public interface BasicReportDefinition {
      * 
      * @return the value of field 'DisplayName'.
      */
-//    @XmlAttribute(name = "display-name")
+    @XmlAttribute(name = "display-name")
     public abstract String getDisplayName();
 
     /**
@@ -33,7 +33,7 @@ public interface BasicReportDefinition {
      * 
      * @return the value of field 'Id'.
      */
-//    @XmlAttribute(name = "id")
+    @XmlAttribute(name = "id")
     public abstract String getId();
 
     /**
@@ -46,7 +46,7 @@ public interface BasicReportDefinition {
      * 
      * @return the value of field 'Online'.
      */
-//    @XmlAttribute(name = "online")
+    @XmlAttribute(name = "online")
     public abstract boolean getOnline();
 
     /**
@@ -57,7 +57,7 @@ public interface BasicReportDefinition {
      * 
      * @return the value of field 'ReportService'.
      */
-//    @XmlAttribute(name = "report-service")
+    @XmlAttribute(name = "report-service")
     public abstract String getReportService();
 
     public abstract void setId(String id);
@@ -69,5 +69,4 @@ public interface BasicReportDefinition {
     public abstract void setDescription(String description);
 
     public abstract void setOnline(boolean online);
-
 }

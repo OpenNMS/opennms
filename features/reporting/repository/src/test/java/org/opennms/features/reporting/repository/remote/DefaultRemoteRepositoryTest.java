@@ -2,18 +2,18 @@ package org.opennms.features.reporting.repository.remote;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-import org.opennms.features.reporting.model.Report;
+import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.remote.DefaultRemoteRepository;
 
 public class DefaultRemoteRepositoryTest {
     
     private DefaultRemoteRepository m_repo;
 
-    @BeforeClass
+    @Before
     public void setup(){
         System.setProperty("opennms.home", "/opt/opennms");
         m_repo = new DefaultRemoteRepository();
@@ -21,18 +21,18 @@ public class DefaultRemoteRepositoryTest {
     
     @Test
     public void getOnlineReports() {
-        ArrayList<Report> reports = (ArrayList<Report>) m_repo.getOnlineReports();
+        List<BasicReportDefinition> reports = m_repo.getOnlineReports();
         System.out.println("getOnlineReports");
-        for(Report report : reports) {
+        for(BasicReportDefinition report : reports) {
             System.out.println(report);
         }
     }
 
     @Test
     public void getReports() {
-        ArrayList<Report> reports = (ArrayList<Report>) m_repo.getReports();
+        List<BasicReportDefinition> reports = m_repo.getReports();
         System.out.println("getReports");
-        for(Report report : reports) {
+        for(BasicReportDefinition report : reports) {
             System.out.println(report);
         }
     }
