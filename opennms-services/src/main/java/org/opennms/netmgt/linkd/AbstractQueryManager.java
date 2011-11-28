@@ -61,9 +61,11 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractQueryManager implements QueryManager {
 
+    @Autowired
     protected Linkd m_linkd;
 
     @Override
