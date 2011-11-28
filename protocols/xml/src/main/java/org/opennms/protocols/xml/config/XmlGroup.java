@@ -69,6 +69,14 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
     @XmlAttribute(name="key-xpath", required=false)
     private String m_keyXpath;
 
+    /** The Resource Time XPath (for RRD updates). */
+    @XmlAttribute(name="timestamp-xpath", required=false)
+    private String m_timestampXpath;
+
+    /** The Resource Time Format (for RRD updates). */
+    @XmlAttribute(name="timestamp-format", required=false)
+    private String m_timestampFormat;
+
     /** The XML objects list. */
     @XmlElement(name="xml-object")
     private List<XmlObject> m_xmlObjects = new ArrayList<XmlObject>();
@@ -199,6 +207,44 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
      */
     public void setKeyXpath(String keyXpath) {
         this.m_keyXpath = keyXpath;
+    }
+
+    /**
+     * Gets the timestamp xpath.
+     *
+     * @return the timestamp xpath
+     */
+    @XmlTransient
+    public String getTimestampXpath() {
+        return m_timestampXpath;
+    }
+
+    /**
+     * Sets the timestamp xpath.
+     *
+     * @param timestampXpath the new timestamp xpath
+     */
+    public void setTimestampXpath(String timestampXpath) {
+        this.m_timestampXpath = timestampXpath;
+    }
+
+    /**
+     * Gets the timestamp format.
+     *
+     * @return the timestamp format
+     */
+    @XmlTransient
+    public String getTimestampFormat() {
+        return m_timestampFormat;
+    }
+
+    /**
+     * Sets the timestamp format.
+     *
+     * @param timestampFormat the new timestamp format
+     */
+    public void setTimestampFormat(String timestampFormat) {
+        this.m_timestampFormat = timestampFormat;
     }
 
     /**

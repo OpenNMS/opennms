@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collectd.jdbc;
 
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
@@ -63,6 +64,10 @@ public abstract class JdbcCollectionResource extends AbstractCollectionResource 
     
     public String getParent() {
         return Integer.toString(m_agent.getNodeId());
+    }
+
+    public TimeKeeper getTimeKeeper() {
+        return null;
     }
 
 }

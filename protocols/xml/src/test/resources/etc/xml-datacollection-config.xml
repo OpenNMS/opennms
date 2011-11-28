@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<xml-datacollection-config rrdRepository="target/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/xml-datacollection">
+	<xml-collection name="3GPP-5min">
+		<rrd step="300">
+			<rra>RRA:AVERAGE:0.5:1:8928</rra>
+			<rra>RRA:AVERAGE:0.5:12:8784</rra>
+			<rra>RRA:MIN:0.5:12:8784</rra>
+			<rra>RRA:MAX:0.5:12:8784</rra>
+		</rrd>
+		<xml-source url="sftp.3gpp://opennms:Op3nNMS!@{ipaddr}/opt/3gpp/data/?step={step}&amp;neId={foreignId}">
+			<import-groups>xml-datacollection/3gpp.core.xml</import-groups>
+		</xml-source>
+	</xml-collection>
+	<xml-collection name="3GPP-15min">
+		<rrd step="900">
+			<rra>RRA:AVERAGE:0.5:1:8928</rra>
+			<rra>RRA:AVERAGE:0.5:12:8784</rra>
+			<rra>RRA:MIN:0.5:12:8784</rra>
+			<rra>RRA:MAX:0.5:12:8784</rra>
+		</rrd>
+		<xml-source url="sftp.3gpp://opennms:Op3nNMS!@{ipaddr}/opt/3gpp/data/?step={step}&amp;neId={foreignId}">
+			<import-groups>xml-datacollection/3gpp.core.xml</import-groups>
+			<import-groups>xml-datacollection/3gpp.platform.xml</import-groups>
+		</xml-source>
+	</xml-collection>
+</xml-datacollection-config>

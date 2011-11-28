@@ -28,10 +28,17 @@
 
 package org.opennms.protocols.xml.dao.jaxb;
 
+import java.io.File;
+
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlDataCollectionConfig;
+import org.opennms.protocols.xml.config.XmlGroups;
+import org.opennms.protocols.xml.config.XmlSource;
 import org.opennms.protocols.xml.dao.XmlDataCollectionConfigDao;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * The Class XmlDataCollectionConfigDaoJaxb.
@@ -51,13 +58,12 @@ public class XmlDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<XmlDat
      * @see org.opennms.protocols.xml.dao.XmlDataCollectionConfigDao#getDataCollectionByName(java.lang.String)
      */
     public XmlDataCollection getDataCollectionByName(String name) {
-        XmlDataCollectionConfig xmlcc = getContainer().getObject();
-        for (XmlDataCollection dataCol : xmlcc.getXmlDataCollections()) {
+        XmlDataCollectionConfig config = getContainer().getObject();
+        for (XmlDataCollection dataCol : config.getXmlDataCollections()) {
             if(dataCol.getName().equals(name)) {
                 return dataCol;
             }
         }
-
         return null;
     }
 
@@ -65,8 +71,8 @@ public class XmlDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<XmlDat
      * @see org.opennms.protocols.xml.dao.XmlDataCollectionConfigDao#getDataCollectionByIndex(int)
      */
     public XmlDataCollection getDataCollectionByIndex(int idx) {
-        XmlDataCollectionConfig jdcc = getContainer().getObject();
-        return jdcc.getXmlDataCollections().get(idx);
+        XmlDataCollectionConfig config = getContainer().getObject();
+        return config.getXmlDataCollections().get(idx);
     }
 
     /* (non-Javadoc)
@@ -80,8 +86,30 @@ public class XmlDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<XmlDat
      * @see org.opennms.protocols.xml.dao.jaxb.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
      */
     @Override
-    public XmlDataCollectionConfig translateConfig(XmlDataCollectionConfig jaxbConfig) {
-        return jaxbConfig;
+    public XmlDataCollectionConfig translateConfig(XmlDataCollectionConfig config) {
+        for (XmlDataCollection collection : config.getXmlDataCollections()) {
+            for (XmlSource source : collection.getXmlSources()) {
+                parseXmlGroups(source);
+            }
+        }
+        return config;
+    }
+
+    /**
+     * Parses the XML groups.
+     *
+     * @param source the XML source
+     */
+    private void parseXmlGroups(XmlSource source) {
+        if (!source.hasImportGroups()) {
+            return;
+        }
+        for (String importGroup : source.getImportGroupsList()) {
+            File file = new File(ConfigFileConstants.getHome(), "/etc/" + importGroup);
+            log().debug("parseXmlGroups: parsing " + file);
+            XmlGroups groups = JaxbUtils.unmarshal(XmlGroups.class, new FileSystemResource(file));
+            source.getXmlGroups().addAll(groups.getXmlGroups());
+        }
     }
 
 }

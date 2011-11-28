@@ -164,6 +164,7 @@ Requires:	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-protocol-dhcp
 Requires:	opennms-plugin-protocol-nsclient
 Requires:	opennms-plugin-protocol-radius
+Requires:	opennms-plugin-protocol-xml
 Requires:	opennms-plugin-protocol-xmp
 
 %description plugins
@@ -273,6 +274,18 @@ Requires:   opennms-core = %{version}-%{release}
 %description plugin-protocol-radius
 The RADIUS protocol plugin provides a provisioning detector, capsd plugin, poller
 monitor, and Spring Security authorization mechanism for RADIUS.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-protocol-xml
+Summary:    XML Collector for OpenNMS
+Group:      Applications/System
+Requires:   opennms-core = %{version}-%{release}
+
+%description plugin-protocol-xml
+The XML protocol plugin provides a collector for XML data.
 
 %{extrainfo}
 %{extrainfo2}
@@ -409,6 +422,7 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	sort > %{_tmppath}/files.main
@@ -424,6 +438,10 @@ find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
 	grep -v 'xmp-config.xsd' | \
 	grep -v 'xmp-datacollection-config.xsd' | \
 	sort >> %{_tmppath}/files.main
+find $RPM_BUILD_ROOT%{instprefix}/contrib ! -type d | \
+	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	grep -v 'xml-collector' | \
+	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
 	grep -v 'provisioning-adapter' | \
@@ -431,6 +449,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'gnu-crypto' | \
+	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
@@ -525,9 +544,14 @@ rm -rf $RPM_BUILD_ROOT
 %attr(664,root,root) %{instprefix}/lib/gnu-crypto*.jar
 %attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.radius*.jar
 
+%files plugin-protocol-xml
+%attr(664,root,root) %config(noreplace) %{instprefix}/etc/xml-*.xml
+%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.xml-*.jar
+%attr(664,root,root) %{instprefix}/contrib/xml-collector
+
 %files plugin-protocol-xmp
 %attr(664,root,root) %config(noreplace) %{instprefix}/etc/xmp*.xml
-%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.xmp*.jar
+%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.xmp-*.jar
 %attr(664,root,root) %{sharedir}/xsds/xmp*.xsd
 
 %post docs
