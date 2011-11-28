@@ -148,13 +148,7 @@ new Menu(menuSvgElement,refreshMenuId,"Reload",refreshMenuX,refreshMenuY,menuWid
 
 	top.$j(document).ready(function() {
 		top.$j.history.init(historyCallBack);
-		
-		top.$j("a[@rel='history']").click(function(){
-			var hash = this.href;
-			hash = hash.replace(/^.*#/, '');
-			top.$j.history.load(hash);
-			return false;
-		});
+
 	});
 }
 

@@ -148,12 +148,8 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_XML)
     public Response addSnmpInterface(@PathParam("nodeCriteria") String nodeCriteria, OnmsSnmpInterface snmpInterface) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throwException(Status.BAD_REQUEST, "addSnmpInterface: can't find node " + nodeCriteria);
-        }
-        if (snmpInterface == null) {
-            throwException(Status.BAD_REQUEST, "addSnmpInterface: SNMP interface object cannot be null");
-        }
+        if (node == null) throw getException(Status.BAD_REQUEST, "addSnmpInterface: can't find node " + nodeCriteria);
+        if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "addSnmpInterface: SNMP interface object cannot be null");
         log().debug("addSnmpInterface: adding interface " + snmpInterface);
         node.addSnmpInterface(snmpInterface);
         if (snmpInterface.getPrimaryIpInterface() != null) {
@@ -176,13 +172,9 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Path("{ifIndex}")
     public Response deleteSnmpInterface(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ifIndex") int ifIndex) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
-        }
+        if (node == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
         OnmsEntity snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
-        if (snmpInterface == null) {
-            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
-        }
+        if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
         log().debug("deletSnmpInterface: deleting interface with ifIndex " + ifIndex + " from node " + nodeCriteria);
         node.getSnmpInterfaces().remove(snmpInterface);
         m_nodeDao.saveOrUpdate(node);
@@ -204,16 +196,10 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     public Response updateSnmpInterface(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ifIndex") int ifIndex, MultivaluedMapImpl params) {
         
         OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
-        }
-        if (ifIndex < 0) {
-            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: invalid ifIndex specified for SNMP interface on node " + node.getId() + ": " + ifIndex);
-        }
+        if (node == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
+        if (ifIndex < 0) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: invalid ifIndex specified for SNMP interface on node " + node.getId() + ": " + ifIndex);
         OnmsSnmpInterface snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
-        if (snmpInterface == null) {
-            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
-        }
+        if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
         log().debug("updateSnmpInterface: updating SNMP interface " + snmpInterface);
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(snmpInterface);
         for(String key : params.keySet()) {
@@ -247,7 +233,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             try {
                 m_eventProxy.send(e);
             } catch (EventProxyException ex) {
-                return throwException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event: "+ex.getMessage());
+                throw getException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event: "+ex.getMessage());
             }
         }
         return Response.ok().build();

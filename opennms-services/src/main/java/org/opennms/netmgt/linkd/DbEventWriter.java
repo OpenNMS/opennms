@@ -42,10 +42,10 @@ import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.dao.AtInterfaceDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
@@ -69,6 +69,10 @@ public class DbEventWriter extends AbstractQueryManager {
     private JdbcTemplate jdbcTemplate;
 
     private NodeDao m_nodeDao;
+
+    private IpInterfaceDao m_ipInterfaceDao;
+
+    private AtInterfaceDao m_atInterfaceDao;
 
     /**
      * Query to select info for specific node
@@ -318,28 +322,6 @@ public class DbEventWriter extends AbstractQueryManager {
         }
 
     }
-
-    @Override
-	protected void saveAtInterface(Connection dbConn,
-			OnmsAtInterface at)
-			throws SQLException {
-		// Save in DB
-		DbAtInterfaceEntry atInterfaceEntry = DbAtInterfaceEntry.get(dbConn, at.getNode().getId(), at.getIpAddress());
-   
-		if (atInterfaceEntry == null) {
-		    atInterfaceEntry = DbAtInterfaceEntry.create(at.getNode().getId(), at.getIpAddress());
-		}
-   
-		// update object
-		atInterfaceEntry.updateAtPhysAddr(at.getMacAddress());
-		atInterfaceEntry.updateSourceNodeId(at.getSourceNodeId());
-		atInterfaceEntry.updateIfIndex(at.getIfIndex());
-		atInterfaceEntry.updateStatus(at.getStatus());
-		atInterfaceEntry.set_lastpolltime(at.getLastPollTime());
-   
-		// store object in database
-		atInterfaceEntry.store(dbConn);
-	}
 
     @Override
     protected void markOldDataInactive(final Connection dbConn, final Timestamp now, final int nodeid) throws SQLException {
@@ -596,57 +578,6 @@ public class DbEventWriter extends AbstractQueryManager {
 
         RouterInterface ri = new RouterInterface(nodeid, ifindex);
         return ri;
-
-    }
-
-    @Override
-    protected OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress ipaddr) throws SQLException {
-
-        final String hostAddress = str(ipaddr);
-		if (ipaddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) return null;
-
-        int atnodeid = -1;
-        int atifindex = -1;
-        OnmsAtInterface ati = null;
-
-        final String ipQuery = "SELECT node.nodeid,ipinterface.ifindex FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?";
-        
-        final DBUtils d = new DBUtils(getClass());
-        try {
-        	final PreparedStatement stmt;
-        	
-    		// old style, first node matching ipinterface address only
-    		stmt = dbConn.prepareStatement(ipQuery);
-            d.watch(stmt);
-            stmt.setString(1, hostAddress);
-            LogUtils.debugf(this, "getAtInterfaceForAddress: executing SQL Statement " + ipQuery + " with IP address=" + str(ipaddr));
-
-        	final ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-    
-            if (!rs.next()) {
-                return null;
-            }
-    
-            atnodeid = rs.getInt("nodeid");
-            if (rs.wasNull()) { return null; }
-            // save info for DiscoveryLink
-            final OnmsNode onmsNode = m_nodeDao.get(atnodeid);
-            ati = new OnmsAtInterface(onmsNode, ipaddr);
-    
-            // get ifindex if exists
-            atifindex = rs.getInt("ifindex");
-            if (rs.wasNull()) {
-                LogUtils.infof(this, "getAtInterfaceForAddress: nodeid " + atnodeid + " no ifindex (-1) found for ipaddress " + ipaddr + ".");
-            } else {
-                LogUtils.infof(this, "getAtInterfaceForAddress: nodeid " + atnodeid + " ifindex " + atifindex + " found for ipaddress " + ipaddr + ".");
-                ati.setIfIndex(atifindex);
-            }
-        } finally {
-            d.cleanUp();
-        }
-
-        return ati;
 
     }
 
@@ -935,16 +866,34 @@ public class DbEventWriter extends AbstractQueryManager {
             d.cleanUp();
         }
     }
-    
+
     @Override
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
-    
+
     public void setNodeDao(final NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
-    
+
+    @Override
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(final IpInterfaceDao dao) {
+        m_ipInterfaceDao = dao;
+    }
+
+    @Override
+    public AtInterfaceDao getAtInterfaceDao() {
+        return m_atInterfaceDao;
+    }
+
+    public void setAtInterfaceDao(final AtInterfaceDao dao) {
+        m_atInterfaceDao = dao;
+    }
+
     /** {@inheritDoc} */
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

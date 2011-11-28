@@ -113,7 +113,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml " +
                 "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml " +
                 "classpath:/org/opennms/web/rest/applicationContext-mockEventProxy.xml " +
+                "classpath:/applicationContext-jersey-test.xml " +
                 "classpath:/META-INF/opennms/applicationContext-reporting.xml " +
+                "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml " +
                 "/WEB-INF/applicationContext-spring-security.xml " +
                 "/WEB-INF/applicationContext-jersey.xml");
         

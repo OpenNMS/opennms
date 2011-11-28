@@ -28,18 +28,28 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
+import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AtInterfaceDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterface, Integer>  implements AtInterfaceDao {
     
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
     public AtInterfaceDaoHibernate() {
         super(OnmsAtInterface.class);
     }
@@ -138,6 +148,61 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
             return null;
         } else {
             return ifaces.get(0);
+        }
+    }
+
+    @Override
+    public void saveAtInterface(final Connection dbConn, final OnmsAtInterface at) {
+        OnmsAtInterface atInterface = findByNodeAndAddress(at.getNode().getId(), at.getIpAddress(), at.getMacAddress());
+        if (atInterface == null) {
+            atInterface = at;
+        } else {
+            atInterface.setIfIndex(at.getIfIndex());
+            atInterface.setIpAddress(at.getIpAddress());
+            atInterface.setLastPollTime(at.getLastPollTime());
+            atInterface.setMacAddress(at.getMacAddress());
+            atInterface.setNode(at.getNode());
+            atInterface.setSourceNodeId(at.getSourceNodeId());
+            atInterface.setStatus(at.getStatus());
+        }
+        
+        // "nodeId", "ipAddr", "atPhysAddr
+        saveOrUpdate(at);
+    }
+
+    // SELECT node.nodeid,ipinterface.ifindex FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
+    @Override
+    public OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress address) {
+        final String addressString = str(address);
+
+        if (address.isLoopbackAddress() || addressString.equals("0.0.0.0")) return null;
+
+        // See if we have an existing version of this OnmsAtInterface first
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.type", "A"));
+        criteria.add(Restrictions.eq("ipAddress", addressString));
+        List<OnmsAtInterface> interfaces = findMatching(criteria);
+
+        if (interfaces.isEmpty()) {
+            // Create a new OnmsAtInterface if the IP address is in the database
+            // WE NEED TO UPSERT!!!
+            OnmsIpInterface iface;
+            final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(addressString);
+            if (ifaces.isEmpty()) {
+                return null;
+            } else {
+                if (ifaces.size() > 1) {
+                    LogUtils.debugf(this, "getAtInterfaceForAddress: More than one IpInterface matched address %s!", addressString);
+                }
+                iface = ifaces.get(0);
+                return new OnmsAtInterface(iface.getNode(), iface.getIpAddress());
+            }
+        } else {
+            if (interfaces.size() > 1) {
+                LogUtils.debugf(this, "getAtInterfaceForAddress: More than one AtInterface matched address %s!", addressString);
+            }
+            return interfaces.get(0);
         }
     }
 

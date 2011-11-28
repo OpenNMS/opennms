@@ -312,39 +312,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	    }
 	}
 
-	// SELECT node.nodeid,ipinterface.ifindex FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
-	@Override
-	protected OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress address) {
-	    final String addressString = str(address);
-
-	    // See if we have an existing version of this OnmsAtInterface first
-	    final OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
-	    criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-	    criteria.add(Restrictions.eq("node.type", "A"));
-	    criteria.add(Restrictions.eq("ipAddress", addressString));
-	    List<OnmsAtInterface> interfaces = m_atInterfaceDao.findMatching(criteria);
-
-	    if (interfaces.isEmpty()) {
-	        // Create a new OnmsAtInterface if the IP address is in the database
-	        OnmsIpInterface iface;
-	        final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(addressString);
-	        if (ifaces.isEmpty()) {
-	            return null;
-	        } else {
-	            if (ifaces.size() > 1) {
-	                LogUtils.debugf(this, "getAtInterfaceForAddress: More than one IpInterface matched address %s!", addressString);
-	            }
-	            iface = ifaces.get(0);
-	            return new OnmsAtInterface(iface.getNode(), iface.getIpAddress());
-	        }
-	    } else {
-	        if (interfaces.size() > 1) {
-	            LogUtils.debugf(this, "getAtInterfaceForAddress: More than one AtInterface matched address %s!", addressString);
-	        }
-	        return interfaces.get(0);
-	    }
-	}
-
 	// SELECT snmpifindex FROM snmpinterface WHERE nodeid = ? AND (snmpifname = ? OR snmpifdescr = ?)
 	@Override
 	protected int getIfIndexByName(final Connection dbConn, final int targetCdpNodeId, final String cdpTargetDevicePort) throws SQLException {
@@ -482,28 +449,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         return addrs;
     }
 
-    @Override
-    @Transactional
-    protected void saveAtInterface(final Connection dbConn, final OnmsAtInterface at) {
-        OnmsAtInterface atInterface = m_atInterfaceDao.findByNodeAndAddress(at.getNode().getId(), at.getIpAddress(), at.getMacAddress());
-        if (atInterface == null) {
-            atInterface = at;
-        } else {
-            atInterface.setIfIndex(at.getIfIndex());
-            atInterface.setIpAddress(at.getIpAddress());
-            atInterface.setLastPollTime(at.getLastPollTime());
-            atInterface.setMacAddress(at.getMacAddress());
-            atInterface.setNode(at.getNode());
-            atInterface.setSourceNodeId(at.getSourceNodeId());
-            atInterface.setStatus(at.getStatus());
-        }
-        
-        // "nodeId", "ipAddr", "atPhysAddr
-        m_atInterfaceDao.saveOrUpdate(at);
-    }
-
 	@Override
-	@Transactional
 	protected synchronized void saveIpRouteInterface(final Connection dbConn, final OnmsIpRouteInterface route) throws SQLException {
 	    new UpsertTemplate<OnmsIpRouteInterface, IpRouteInterfaceDao>(m_transactionManager, m_ipRouteInterfaceDao) {
 
@@ -540,7 +486,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	}
 
 	@Override
-	@Transactional
 	protected void saveVlan(final Connection dbConn, final OnmsVlan v) throws SQLException {
 	    new UpsertTemplate<OnmsVlan, VlanDao>(m_transactionManager, m_vlanDao) {
 
@@ -578,7 +523,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	}
 
 	@Override
-	@Transactional
 	protected synchronized void saveStpNode(final Connection dbConn, final OnmsStpNode stp) throws SQLException {
 	    OnmsStpNode stpNode = m_stpNodeDao.findByNodeAndVlan(stp.getNode().getId(), stp.getBaseVlan());
 	    if (stpNode == null) {
@@ -602,7 +546,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	}
 
     @Override
-    @Transactional
     protected void saveStpInterface(final Connection dbConn, final OnmsStpInterface stp) throws SQLException {
         OnmsStpInterface stpInterface = m_stpInterfaceDao.findByNodeAndVlan(stp.getNode().getId(), stp.getBridgePort(), stp.getVlan());
         if (stpInterface == null) {

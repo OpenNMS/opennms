@@ -451,7 +451,7 @@ public class RequisitionRestService extends OnmsRestService {
 			requisition.validate();
 		} catch (final ValidationException e) {
 			LogUtils.debugf(this, e, "error validating incoming requisition with foreign source '%s'", requisition.getForeignSource());
-			throwException(Status.BAD_REQUEST, e.getMessage());
+			throw getException(Status.BAD_REQUEST, e.getMessage());
 		}
         debug("addOrReplaceRequisition: Adding requisition %s", requisition.getForeignSource());
         m_pendingForeignSourceRepository.save(requisition);
