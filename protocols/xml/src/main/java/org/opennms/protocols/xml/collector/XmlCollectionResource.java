@@ -28,6 +28,8 @@
 
 package org.opennms.protocols.xml.collector;
 
+import org.opennms.core.utils.DefaultTimeKeeper;
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
@@ -39,6 +41,9 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public abstract class XmlCollectionResource extends AbstractCollectionResource {
+
+    /** The Time Keeper. */
+    private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
 
     /**
      * Instantiates a new XML collection resource.
@@ -99,4 +104,19 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
         return Integer.toString(m_agent.getNodeId());
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getTimeKeeper()
+     */
+    public TimeKeeper getTimeKeeper() {
+        return m_timeKeeper;
+    }
+
+    /**
+     * Sets the time keeper.
+     *
+     * @param timeKeeper the new time keeper
+     */
+    public void setTimeKeeper(TimeKeeper timeKeeper) {
+        m_timeKeeper = timeKeeper;
+    }
 }

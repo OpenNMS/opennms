@@ -54,6 +54,9 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -7884808717236892997L;
 
+    /** The Constant XML_DATACOLLECTION_CONFIG_FILE. */
+    public static final String XML_DATACOLLECTION_CONFIG_FILE = "xml-datacollection-config.xml";
+
     /** The Constant OF_DATA_COLLECTIONS. */
     private static final XmlDataCollection[] OF_DATA_COLLECTIONS = new XmlDataCollection[0];
 
@@ -155,7 +158,6 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
                 return dataCol;
             }
         }
-
         return null;
     }
 
@@ -166,7 +168,10 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
      * @return the RRD repository
      */
     public RrdRepository buildRrdRepository(String collectionName) {
-        XmlRrd rrd = getDataCollectionByName(collectionName).getXmlRrd();
+        XmlDataCollection collection = getDataCollectionByName(collectionName);
+        if (collection == null)
+            return null;
+        XmlRrd rrd = collection.getXmlRrd();
         RrdRepository repo = new RrdRepository();
         repo.setRrdBaseDir(new File(getRrdRepository()));
         repo.setRraList(rrd.getXmlRras());

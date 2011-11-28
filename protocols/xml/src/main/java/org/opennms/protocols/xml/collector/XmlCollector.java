@@ -29,39 +29,20 @@
 package org.opennms.protocols.xml.collector;
 
 import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
 
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
+import org.opennms.netmgt.collectd.CollectionInitializationException;
 import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.protocols.sftp.SftpUrlConnection;
-import org.opennms.protocols.sftp.SftpUrlFactory;
 import org.opennms.protocols.xml.config.XmlDataCollection;
-import org.opennms.protocols.xml.config.XmlGroup;
-import org.opennms.protocols.xml.config.XmlObject;
-import org.opennms.protocols.xml.config.XmlSource;
 import org.opennms.protocols.xml.dao.XmlDataCollectionConfigDao;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * The Class XmlCollector.
@@ -73,8 +54,8 @@ public class XmlCollector implements ServiceCollector {
     /** The XML Data Collection DAO. */
     private XmlDataCollectionConfigDao m_xmlCollectionDao;
 
-    /** The XML attribute type Map. */
-    private HashMap<String, XmlCollectionAttributeType> m_attribTypeList = new HashMap<String, XmlCollectionAttributeType>();
+    /** The XML Collection Handler. */
+    private XmlCollectionHandler m_collectionHandler;
 
     /**
      * Gets the XML Data Collection DAO.
@@ -103,56 +84,42 @@ public class XmlCollector implements ServiceCollector {
         return ThreadCategory.getInstance(getClass());
     }
 
-    /**
-     * Load attributes.
-     *
-     * @param collection the collection
-     */
-    private void loadAttributes(XmlDataCollection collection) {
-        for (XmlSource source : collection.getXmlSources()) {
-            for (XmlGroup group : source.getXmlGroups()) {
-                AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
-                for (XmlObject object : group.getXmlObjects()) {
-                    XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
-                    m_attribTypeList.put(object.getName(), attribType);
-                }
-            }
-        }
-    }
-
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.ServiceCollector#initialize(java.util.Map)
      */
     @Override
-    public void initialize(Map<String, String> parameters) {
-        log().debug("initialize: Initializing XML Collector.");
-        initialize();
+    public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
+        log().debug("initialize: initializing XML collector");
+
+        // Retrieve the DAO for our configuration file.
+        if (m_xmlCollectionDao == null)
+            m_xmlCollectionDao = BeanUtils.getBean("daoContext", "xmlDataCollectionConfigDao", XmlDataCollectionConfigDao.class);
+
+        // If the RRD file repository directory does NOT already exist, create it.
+        log().debug("initialize: Initializing RRD repo from XmlCollector...");
+        File f = new File(m_xmlCollectionDao.getConfig().getRrdRepository());
+        if (!f.isDirectory()) {
+            if (!f.mkdirs()) {
+                throw new CollectionInitializationException("Unable to create RRD file repository.  Path doesn't already exist and could not make directory: " + m_xmlCollectionDao.getConfig().getRrdRepository());
+            }
+        }
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.ServiceCollector#initialize(org.opennms.netmgt.collectd.CollectionAgent, java.util.Map)
      */
     @Override
-    public void initialize(CollectionAgent agent, Map<String, Object> parameters) {        
-        log().debug("initialize: Initializing XML collection for agent: " + agent);
-        initialize();
-    }
-
-    /**
-     * Initialize.
-     */
-    private void initialize() {
-        // Retrieve the DAO for our configuration file.
-        if (m_xmlCollectionDao == null)
-            m_xmlCollectionDao = BeanUtils.getBean("daoContext", "xmlDataCollectionConfigDao", XmlDataCollectionConfigDao.class);
-
-        // If the RRD file repository directory does NOT already exist, create it.
-        log().debug("initializeRrdRepository: Initializing RRD repo from XmlCollector...");
-        File f = new File(m_xmlCollectionDao.getConfig().getRrdRepository());
-        if (!f.isDirectory()) {
-            if (!f.mkdirs()) {
-                throw new RuntimeException("Unable to create RRD file repository.  Path doesn't already exist and could not make directory: " + m_xmlCollectionDao.getConfig().getRrdRepository());
-            }
+    public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
+        log().debug("initialize: initializing XML collection handling using " + parameters + " for collection agent " + agent);
+        String serviceName = ParameterMap.getKeyedString(parameters, "SERVICE", "XML");
+        String handlerClass = ParameterMap.getKeyedString(parameters, "handler-class", "org.opennms.protocols.xml.collector.DefaultXmlCollectionHandler");
+        try {
+            log().debug("initialize: instantiating XML collection handler " + handlerClass);
+            Class<?> clazz = Class.forName(handlerClass);
+            m_collectionHandler = (XmlCollectionHandler) clazz.newInstance();
+            m_collectionHandler.setServiceName(serviceName);
+        } catch (Exception e) {
+            throw new CollectionInitializationException("Unable to instantiate XML Collection Handler " + handlerClass + " because: " + e.getMessage());
         }
     }
 
@@ -161,6 +128,7 @@ public class XmlCollector implements ServiceCollector {
      */
     @Override
     public void release() {
+        log().debug("release: realeasing XML collection");
     }
 
     /* (non-Javadoc)
@@ -168,82 +136,37 @@ public class XmlCollector implements ServiceCollector {
      */
     @Override
     public void release(CollectionAgent agent) {
+        log().debug("release: realeasing XML collection for agent " + agent);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.ServiceCollector#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, java.util.Map)
      */
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
-        // Create a new collection set.
-        XmlCollectionSet collectionSet = new XmlCollectionSet(agent);
-        collectionSet.setCollectionTimestamp(new Date());
-        collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
-
         if (parameters == null) {
-            log().error("Null parameters is now allowed in XML Collector!!");
-            return collectionSet;
+            throw new CollectionException("Null parameters is now allowed in XML Collector!");
         }
-
-        // FIXME Instantiate the parser and execute it
-        try {            
+        try {
+            // Getting XML Collection
             String collectionName = ParameterMap.getKeyedString(parameters, "collection", null);
             if (collectionName == null) {
-                //Look for the old configuration style:
                 collectionName = ParameterMap.getKeyedString(parameters, "xml-collection", null);
             }
-
+            if (collectionName == null) {
+                throw new CollectionException("Parameter collection is required for the XML Collector!");
+            }
             log().debug("collect: collecting XML data using collection " + collectionName);
             XmlDataCollection collection = m_xmlCollectionDao.getDataCollectionByName(collectionName);
-
-            // Load the attribute group types.
-            loadAttributes(collection);
-
-            for (XmlSource source : collection.getXmlSources()) {
-                // Retrieve the XML data
-                Document doc = getXmlDocument(agent, source);
-
-                // Cycle through all of the queries for this collection
-                XPath xpath = XPathFactory.newInstance().newXPath();
-                for (XmlGroup group : source.getXmlGroups()) {
-                    log().debug("collect: getting resources for XML group " + group.getName() + " using XPATH " + group.getResourceXpath());
-                    NodeList resourceList = (NodeList) xpath.evaluate(group.getResourceXpath(), doc, XPathConstants.NODESET);
-                    for (int j = 0; j < resourceList.getLength(); j++) {
-                        Node resource = resourceList.item(j);
-                        Node resourceName = (Node) xpath.evaluate(group.getKeyXpath(), resource, XPathConstants.NODE);
-                        log().debug("collect: processing XML resource " + resourceName);
-                        XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName.getNodeValue(), group.getResourceType());
-                        for (XmlObject object : group.getXmlObjects()) {
-                            String value = (String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING);
-                            collectionResource.setAttributeValue(m_attribTypeList.get(object.getName()), value);
-                        }
-                        collectionSet.getCollectionResources().add(collectionResource);
-                    }
-                }
+            if (collection == null) {
+                throw new CollectionException("XML Collection " + collectionName +" does not exist.");
             }
-            collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
-            return collectionSet;
-        } catch (Exception e) {
-            collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
-            throw new CollectionException("Can't collect XML data.", e);
-        }
-    }
 
-    /**
-     * Gets the collection resource.
-     *
-     * @param agent the collection agent
-     * @param instance the resource instance
-     * @param resourceType the resource type
-     * @return the collection resource
-     */
-    private XmlCollectionResource getCollectionResource(CollectionAgent agent, String instance, String resourceType) {
-        XmlCollectionResource resource = null;
-        if (resourceType.toLowerCase().equals("node")) {
-            resource = new XmlSingleInstanceCollectionResource(agent);
-        } else {
-            resource = new XmlMultiInstanceCollectionResource(agent, instance, resourceType);
+            // Filling XML CollectionSet
+            m_collectionHandler.setRrdRepository(getRrdRepository(collectionName));
+            return m_collectionHandler.collect(agent, collection, parameters);
+        } catch (Exception e) {
+            throw new CollectionException("Can't collect XML data because " + e.getMessage(), e);
         }
-        return resource;
     }
 
     /* (non-Javadoc)
@@ -251,32 +174,6 @@ public class XmlCollector implements ServiceCollector {
      */
     public RrdRepository getRrdRepository(String collectionName) {
         return m_xmlCollectionDao.getConfig().buildRrdRepository(collectionName);
-    }
-
-    /**
-     * Gets the XML document.
-     *
-     * @param agent the agent
-     * @param source the source
-     * @return the XML document
-     */
-    public Document getXmlDocument(CollectionAgent agent, XmlSource source) {
-        String urlStr = source.getUrl().replace("{ipaddr}", agent.getHostAddress());
-        try {
-            URL url = SftpUrlFactory.getUrl(urlStr);
-            URLConnection c = url.openConnection();
-            c.connect();
-            InputStream is = c.getInputStream();
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setIgnoringComments(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(is);
-            if (c instanceof SftpUrlConnection) // We need to be sure to close the connections for SFTP
-                ((SftpUrlConnection)c).disconnect();
-            return doc;
-        } catch (Exception e) {
-            throw new XmlCollectorException("Can't retrieve data from " + urlStr);
-        }
     }
 
 }

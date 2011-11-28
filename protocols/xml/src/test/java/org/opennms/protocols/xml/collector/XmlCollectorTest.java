@@ -29,19 +29,23 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMock;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.collectd.BasePersister;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.GroupPersister;
@@ -50,12 +54,14 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.protocols.xml.config.XmlSource;
+import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
-import org.opennms.test.FileAnticipator;
+import org.opennms.test.mock.MockLogAppender;
+
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.w3c.dom.Document;
 
 /**
  * The Class XmlCollectorTest.
@@ -64,48 +70,17 @@ import org.w3c.dom.Document;
  */
 public class XmlCollectorTest {
 
-    /** The file anticipator. */
-    private FileAnticipator m_fileAnticipator;
+    /** The Constant TEST_SNMP_DIRECTORY. */
+    private static final String TEST_SNMP_DIRECTORY = "target/snmp/";
 
-    /** The SNMP directory. */
-    private File m_rrdDirectory;
+    /** The collection agent. */
+    private CollectionAgent m_collectionAgent;
 
-    /**
-     * The Class MockXmlCollector.
-     */
-    private class MockXmlCollector extends XmlCollector {
+    /** The event proxy. */
+    private EventProxy m_eventProxy;
 
-        /* (non-Javadoc)
-         * @see org.opennms.protocols.xml.collector.XmlCollector#getXmlDocument(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlSource)
-         */
-        @Override
-        public Document getXmlDocument(CollectionAgent agent, XmlSource source) {
-            Document doc = null;
-            try {
-                log().info("getXmlDocument: loading G3PP testing data...");
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                factory.setIgnoringComments(true);
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                doc = builder.parse("src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml");
-                doc.getDocumentElement().normalize();
-                log().info("getXmlDocument: loaded data from " + doc.getBaseURI());
-                return doc;
-            } catch (Exception e) {
-                Assert.fail(e.getMessage());
-            }
-            return doc;
-        }
-
-        /**
-         * Log.
-         *
-         * @return the thread category
-         */
-        private ThreadCategory log() {
-            return ThreadCategory.getInstance(getClass());
-        }
-
-    }
+    /** The XML collection DAO. */
+    private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
 
     /**
      * Sets the up.
@@ -114,7 +89,24 @@ public class XmlCollectorTest {
      */
     @Before
     public void setUp() throws Exception {
-        m_fileAnticipator = new FileAnticipator();
+        FileUtils.deleteDirectory(new File(TEST_SNMP_DIRECTORY));
+        MockLogAppender.setupLogging();
+
+        System.setProperty("org.opennms.rrd.usetcp", "false");
+        System.setProperty("org.opennms.rrd.usequeue", "false");
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
+
+        m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
+        EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
+        EasyMock.expect(m_collectionAgent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
+        m_eventProxy = EasyMock.createMock(EventProxy.class);
+
+        m_xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
+        Resource resource = new FileSystemResource("src/test/resources/xml-datacollection-config.junit.xml");
+        m_xmlCollectionDao.setConfigResource(resource);
+        m_xmlCollectionDao.afterPropertiesSet();
+
+        EasyMock.replay(m_collectionAgent, m_eventProxy);
     }
 
     /**
@@ -124,40 +116,61 @@ public class XmlCollectorTest {
      */
     @After
     public void tearDown() throws Exception {
-        m_fileAnticipator.deleteExpected();
+        EasyMock.verify(m_collectionAgent, m_eventProxy);
+        MockLogAppender.assertNoWarningsOrGreater();
     }
 
     /**
-     * Test XML collector.
+     * Test time parser.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testXmlCollector() throws Exception {
-        CollectionAgent agent = EasyMock.createMock(CollectionAgent.class);
-        EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
-        EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
-        EventProxy eproxy = EasyMock.createMock(EventProxy.class);
-        EasyMock.replay(agent, eproxy);
+    public void testTimeParser() throws Exception {
+        String pattern = "yyyy-MM-dd'T'HH:mm:ssZ";
+        String value = "2011-10-25T00:45:00-05:00";
+        long expectedTimestamp = 1319521500000l;
+        DateTimeFormatter dtf = DateTimeFormat.forPattern(pattern);
+        DateTime dateTime = dtf.parseDateTime(value);
+        Date date = dateTime.toDate();
+        Assert.assertEquals(expectedTimestamp, date.getTime());
 
+        MockDefaultXmlCollectionHandler handler = new MockDefaultXmlCollectionHandler();
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        date = handler.getTimeStamp(MockDocumentBuilder.getXmlDocument(), xpath, m_xmlCollectionDao.getDataCollectionByName("3GPP").getXmlSources().get(0).getXmlGroups().get(0));
+        Assert.assertEquals(expectedTimestamp, date.getTime());
+    }
+
+    /**
+     * Test XML collector with Standard handler.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDefaultXmlCollector() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("collection", "3GPP");
+        parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
+        doTest(parameters);
+    }
 
-        XmlDataCollectionConfigDaoJaxb xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
-        Resource resource = new FileSystemResource("src/test/resources/xml-datacollection-config.xml");
-        xmlCollectionDao.setConfigResource(resource);
-        xmlCollectionDao.afterPropertiesSet();
-
-        MockXmlCollector collector = new MockXmlCollector();
-        collector.setXmlCollectionDao(xmlCollectionDao);
-        CollectionSet collectionSet = collector.collect(agent, eproxy, parameters);
+    /**
+     * Do test.
+     *
+     * @param parameters the parameters
+     * @throws Exception the exception
+     */
+    private void doTest(Map<String, Object> parameters) throws Exception {
+        XmlCollector collector = new XmlCollector();
+        collector.setXmlCollectionDao(m_xmlCollectionDao);
+        collector.initialize(m_collectionAgent, parameters);
+        CollectionSet collectionSet = collector.collect(m_collectionAgent, m_eventProxy, parameters);
+        collector.release(m_collectionAgent);
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
         BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository()); // storeByGroup=true;
         collectionSet.visit(persister);
-
-        EasyMock.verify(agent, eproxy);
     }
 
     /**
@@ -167,11 +180,12 @@ public class XmlCollectorTest {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     private RrdRepository createRrdRepository() throws IOException {
+        XmlRrd rrd = m_xmlCollectionDao.getDataCollectionByName("3GPP").getXmlRrd();
         RrdRepository repository = new RrdRepository();
         repository.setRrdBaseDir(getRrdDirectory());
-        repository.setHeartBeat(600);
-        repository.setStep(300);
-        repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        repository.setHeartBeat(rrd.getStep() * 2);
+        repository.setStep(rrd.getStep());
+        repository.setRraList(rrd.getXmlRras());
         return repository;
     }
 
@@ -182,10 +196,7 @@ public class XmlCollectorTest {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     private File getRrdDirectory() throws IOException {
-        if (m_rrdDirectory == null) {
-            m_rrdDirectory = m_fileAnticipator.tempDir("snmp"); 
-        }
-        return m_rrdDirectory;
+        return new File(TEST_SNMP_DIRECTORY);
     }
 
 }

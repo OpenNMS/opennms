@@ -31,6 +31,7 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.util.Date;
 
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
@@ -67,6 +68,9 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
                 return null;
             }
             public String getParent() {
+                return null;
+            }
+            public TimeKeeper getTimeKeeper() {
                 return null;
             }
         }, null);
