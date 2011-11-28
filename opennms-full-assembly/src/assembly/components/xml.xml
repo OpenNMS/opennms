@@ -15,6 +15,7 @@
     <!-- configuration files -->
     <dependencySet>
       <unpack>true</unpack>
+      <unpackOptions><filtered>true</filtered></unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>/</outputDirectory>
@@ -27,6 +28,7 @@
     <!-- contrib scripts -->
     <dependencySet>
       <unpack>true</unpack>
+      <unpackOptions><filtered>true</filtered></unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>/</outputDirectory>
