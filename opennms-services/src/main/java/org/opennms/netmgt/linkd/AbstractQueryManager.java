@@ -42,6 +42,8 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import org.opennms.netmgt.dao.AtInterfaceDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
@@ -79,31 +81,14 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     public abstract NodeDao getNodeDao();
-    
+
+    public abstract IpInterfaceDao getIpInterfaceDao();
+
+    public abstract AtInterfaceDao getAtInterfaceDao();
+
     protected abstract int getIfIndexByName(Connection dbConn, int targetCdpNodeId, String cdpTargetDevicePort) throws SQLException;
 
     protected abstract int getNodeidFromIp(Connection dbConn, InetAddress cdpTargetIpAddr) throws SQLException;
-
-    /**
-     * Get the {@link OnmsAtInterface} that goes with a given address and
-     * node. If it does not exist, but the IP interface does exist, then
-     * create it. If an equivalent IP interface does *not* exist, returns
-     * null.
-     * 
-     * @param dbConn
-     *            the database connection, if necessary
-     * @param ipaddress
-     *            the IP address to look up
-     * @param node
-     *            the {@link LinkableNode} associated with the interface (if
-     *            known)
-     * @return an {@link OnmsAtInterface}
-     * @throws SQLException
-     */
-    protected abstract OnmsAtInterface getAtInterfaceForAddress(Connection dbConn, InetAddress ipaddress) throws SQLException;
-
-    protected abstract void saveAtInterface(Connection dbConn, OnmsAtInterface at)
-            throws SQLException;
 
     protected abstract RouterInterface getNodeidMaskFromIp(Connection dbConn, InetAddress nexthop) throws SQLException;
 
@@ -166,7 +151,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             LogUtils.debugf(this, "processIpNetToMediaTable: trying save ipNetToMedia info: IP address %s, MAC address %s, ifIndex %d", hostAddress, physAddr, ifindex);
 
             // get an AtInterface but without setting MAC address
-            final OnmsAtInterface at = getAtInterfaceForAddress(dbConn, ipaddress);
+            final OnmsAtInterface at = getAtInterfaceDao().getAtInterfaceForAddress(dbConn, ipaddress);
             if (at == null) {
                 LogUtils.debugf(this, "processIpNetToMediaTable: no node found for IP address %s.", hostAddress);
                 sendNewSuspectEvent(ipaddress, snmpcoll.getTarget(), snmpcoll.getPackageName());
@@ -191,7 +176,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             // add AtInterface to list of valid interfaces
             atInterfaces.add(at);
 
-            saveAtInterface(dbConn, at);
+            getAtInterfaceDao().saveAtInterface(dbConn, at);
         }
         // set AtInterfaces in LinkableNode
         node.setAtInterfaces(atInterfaces);

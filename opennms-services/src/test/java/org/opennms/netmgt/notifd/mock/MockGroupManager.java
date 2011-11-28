@@ -37,12 +37,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.GroupManager;
 
-/**
- * @author brozow
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 public class MockGroupManager extends GroupManager {
     
     String m_xmlString;
@@ -63,18 +57,12 @@ public class MockGroupManager extends GroupManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.GroupManager#updateFromFile()
-     */
     public void update() throws IOException, MarshalException, ValidationException {
         if (updateNeeded) {
             parseXML();
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.GroupManager#saveXml(java.lang.String)
-     */
     protected void saveXml(String data) throws IOException {
         m_xmlString = data;
         updateNeeded = true;

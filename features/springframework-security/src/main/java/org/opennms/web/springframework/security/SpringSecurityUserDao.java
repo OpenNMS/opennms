@@ -28,15 +28,17 @@
 
 package org.opennms.web.springframework.security;
 
+import org.opennms.netmgt.model.OnmsUser;
+
 /**
- * <p>UserDao interface.</p>
+ * <p>SpringSecurityUserDao interface.</p>
  */
-public interface UserDao {
+public interface SpringSecurityUserDao {
 	/**
 	 * <p>getByUsername</p>
 	 *
 	 * @param username a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.web.springframework.security.User} object.
+	 * @return a {@link org.opennms.netmgt.model.OnmsUser} object.
 	 */
-	public User getByUsername(String username);
+	public OnmsUser getByUsername(String username);
 }

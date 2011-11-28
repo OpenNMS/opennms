@@ -56,15 +56,14 @@ import org.opennms.netmgt.config.users.Header;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
+import org.opennms.netmgt.model.OnmsUser;
+import org.opennms.netmgt.model.OnmsUserList;
 
 /**
  * <p>Abstract UserManager class.</p>
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- * @version $Id: $
  */
 public abstract class UserManager {
 
@@ -125,6 +124,22 @@ public abstract class UserManager {
         }
     
         saveCurrent();
+    }
+    
+    public synchronized void save(final OnmsUser user) throws Exception {
+        User castorUser = getUser(user.getUsername());
+        if (castorUser == null) {
+            castorUser = new User();
+            castorUser.setUserId(user.getUsername());
+        }
+        castorUser.setFullName(user.getFullName());
+        castorUser.setUserComments(user.getComments());
+        castorUser.setPassword(user.getPassword());
+        if (user.getDutySchedule() != null) {
+            castorUser.setDutySchedule(user.getDutySchedule());
+        }
+        
+        saveUser(user.getUsername(), castorUser);
     }
 
     /**
@@ -198,6 +213,30 @@ public abstract class UserManager {
         return m_users;
     }
 
+    public OnmsUserList getOnmsUserList() throws MarshalException, ValidationException, IOException {
+        final OnmsUserList list = new OnmsUserList();
+        
+        for (final String username : getUserNames()) {
+            list.add(getOnmsUser(username));
+        }
+        list.setTotalCount(list.getCount());
+
+        return list;
+    }
+    
+    public OnmsUser getOnmsUser(final String username) throws MarshalException, ValidationException, IOException {
+        final User castorUser = getUser(username);
+        if (castorUser == null) return null;
+        
+        final OnmsUser user = new OnmsUser(username);
+        user.setFullName(castorUser.getFullName());
+        user.setComments(castorUser.getUserComments());
+        user.setPassword(castorUser.getPassword());
+        user.setDutySchedule(castorUser.getDutyScheduleCollection());
+
+        return user;
+    }
+    
     /**
      * Returns a boolean indicating if the user name appears in the XML file
      *
@@ -742,10 +781,6 @@ public abstract class UserManager {
      * Saves into "users.xml" file
      */
     private synchronized void saveCurrent() throws Exception {
-        Header header = oldHeader;
-    
-        header.setCreated(EventConstants.formatToString(new Date()));
-    
         Users users = new Users();
         Collection<User> collUsers = m_users.values();
         Iterator<User> iter = collUsers.iterator();
@@ -756,8 +791,12 @@ public abstract class UserManager {
     
         Userinfo userinfo = new Userinfo();
         userinfo.setUsers(users);
-        userinfo.setHeader(header);
-    
+
+        Header header = oldHeader;
+        if (header != null) {
+            header.setCreated(EventConstants.formatToString(new Date()));
+            userinfo.setHeader(header);
+        }
         oldHeader = header;
     
         // marshal to a string first, then write the string to the file. This
@@ -1049,5 +1088,7 @@ public abstract class UserManager {
      * @return a boolean.
      */
     public abstract boolean isUpdateNeeded();
-    
+
+    public abstract long getLastModified();
+
 }

@@ -76,7 +76,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
     
-	private static final String DEFAULT_IP_ROUTE_CLASS_NAME = "org.opennms.netmgt.linkd.snmp.IpRouteTable";
+	public static final String DEFAULT_IP_ROUTE_CLASS_NAME = "org.opennms.netmgt.linkd.snmp.IpRouteTable";
 
     /**
 	 * Object containing all Linkd-configuration objects parsed from the XML

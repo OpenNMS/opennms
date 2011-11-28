@@ -30,7 +30,7 @@
 	</beans:bean>
 
 	<!-- ===================== USER DAO AUTHENTICATION ==================== -->
-	<beans:bean id="userDao" class="org.opennms.web.springframework.security.UserDaoImpl">
+	<beans:bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
 		<beans:property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />
 		<beans:property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
 		<beans:property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />
