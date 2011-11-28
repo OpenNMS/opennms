@@ -1,16 +1,25 @@
-#!/usr/bin/perl
+#!${install.perl.bin}
 
 use strict;
 use XML::Simple;
 
-my $file = shift;
-die "Need the 3GPP XML sample file.\n" unless $file;
-die "File $file does not exist\n" unless -e $file;
+#-----------------------------------------------------------
+# COMMON VARIABLES
+#-----------------------------------------------------------
 
 my $height = 150;
 my $width  = 600;
 my $color  = "ff0000";
 
+#-----------------------------------------------------------
+# DO NOT CHANGE ANYTHING FROM HERE
+#-----------------------------------------------------------
+
+my $file = shift;
+die "Need the 3GPP XML sample file.\n" unless $file;
+die "File $file does not exist\n" unless -e $file;
+
+print "Parsing XML file $file\n";
 my $ref = XMLin($file, ForceArray => [ 'measInfo', 'measType' ]);
 
 my @report_ids;
@@ -45,10 +54,16 @@ EOF
     push @report_ids, join(",", @tmp);
 }
 
-print "reports=" . join(", \\\n", @report_ids), "\n\n";
+my $out = "3gpp.graphs.properties";
+print "Generating $out\n";
+open XML, ">$out" or die "Can't write $out\n";
+print XML "reports=" . join(", \\\n", @report_ids), "\n\n";
 foreach my $rpt (@reports) {
-    print "$rpt\n";
+    print XML "$rpt\n";
 }
+close XML;
+
+print "Remember to put $out into \$OPENNMS_HOME/etc/snmp-graph.properties.d/\n";
 
 sub getGroupName($) {
     my $id = shift @_;
