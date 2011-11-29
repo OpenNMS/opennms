@@ -126,6 +126,9 @@ public class Linkd extends AbstractServiceDaemon {
         Assert.state(m_scheduler != null, "must set the scheduler property");
         Assert.state(m_eventForwarder != null, "must set the eventForwarder property");
 
+        // FIXME: circular dependency
+        m_queryMgr.setLinkd(this);
+
 		m_activepackages = new ArrayList<String>();
 		
 		// initialize the ipaddrsentevents

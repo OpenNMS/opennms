@@ -55,17 +55,16 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 public class HibernateEventWriter extends AbstractQueryManager implements InitializingBean {
