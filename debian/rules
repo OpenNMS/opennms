@@ -92,7 +92,7 @@ install: build
 	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/usr/share/opennms/contrib
 	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/etc/opennms
 	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/var/lib/opennms/xsds
-	install -d -m 755 debian/opennms-plugin-protocol-xml/etc/opennms/{datacollection,xml-datacollection-config,snmp-graph.properties.d}
+	install -d -m 755 debian/opennms-plugin-protocol-xml/etc/opennms/{datacollection,xml-datacollection,snmp-graph.properties.d}
 	mv debian/temp/lib/org.opennms.protocols.dhcp-*.jar     debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
 	mv debian/temp/etc/dhcpd-configuration.xml              debian/opennms-plugin-protocol-dhcp/etc/opennms/
 	mv debian/temp/share/xsds/dhcpd-configuration.xsd       debian/opennms-plugin-protocol-dhcp/var/lib/opennms/xsds/
@@ -104,7 +104,7 @@ install: build
 	mv debian/temp/lib/org.opennms.protocols.xml-*.jar      debian/opennms-plugin-protocol-xml/usr/share/java/opennms/
 	mv debian/temp/etc/xml*-config.xml                      debian/opennms-plugin-protocol-xml/etc/opennms/
 	mv debian/temp/etc/datacollection/3gpp*                 debian/opennms-plugin-protocol-xml/etc/opennms/datacollection/
-	mv debian/temp/etc/xml-datacollection-config/3gpp*      debian/opennms-plugin-protocol-xml/etc/opennms/xml-datacollection-config/
+	mv debian/temp/etc/xml-datacollection/3gpp*             debian/opennms-plugin-protocol-xml/etc/opennms/xml-datacollection/
 	mv debian/temp/etc/snmp-graph.properties.d/3gpp*        debian/opennms-plugin-protocol-xml/etc/opennms/snmp-graph.properties.d/
 	mv debian/temp/contrib/xml-collector                    debian/opennms-plugin-protocol-xml/usr/share/opennms/contrib/
 	mv debian/temp/lib/org.opennms.protocols.xmp-*.jar      debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
