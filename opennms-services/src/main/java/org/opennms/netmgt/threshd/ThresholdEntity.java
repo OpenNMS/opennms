@@ -360,7 +360,7 @@ public final class ThresholdEntity implements Cloneable {
             }
             
             //Store the new list with the instance as the key
-            m_thresholdEvaluatorStates.put(instance,result);
+            m_thresholdEvaluatorStates.put(instance == null ? null : instance.intern(), result);
         }
         return result;
     }
