@@ -415,13 +415,14 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'link-adapter-configuration.xml' | \
-	grep -v 'endpoint-configuration.xml' | \
-	grep -v 'mapsadapter-configuration.xml' | \
-	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
+	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'link-adapter-configuration.xml' | \
+	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
@@ -481,8 +482,7 @@ rm -rf $RPM_BUILD_ROOT
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
-%attr(755,root,root)	%{instprefix}/contrib
-			%{logdir}
+%attr(755,root,root) %{logdir}
 			%{logdir}/controller
 			%{logdir}/daemon
 			%{logdir}/webapp
