@@ -19,6 +19,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>/</outputDirectory>
+      <outputFileNameMapping></outputFileNameMapping>
       <includes>
         <include>org.opennms.protocols:org.opennms.protocols.dhcp:tar.gz:etc:${project.version}</include>
       </includes>
