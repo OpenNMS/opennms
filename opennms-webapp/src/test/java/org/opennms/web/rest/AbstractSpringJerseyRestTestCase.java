@@ -115,6 +115,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 "classpath:/org/opennms/web/rest/applicationContext-mockEventProxy.xml " +
                 "classpath:/applicationContext-jersey-test.xml " +
                 "classpath:/META-INF/opennms/applicationContext-reporting.xml " +
+                "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml " +
                 "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml " +
                 "/WEB-INF/applicationContext-spring-security.xml " +
                 "/WEB-INF/applicationContext-jersey.xml");
