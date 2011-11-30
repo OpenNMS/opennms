@@ -34,21 +34,27 @@ import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
 
 public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterface, Integer>  implements AtInterfaceDao {
     
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
 
     public AtInterfaceDaoHibernate() {
         super(OnmsAtInterface.class);
@@ -185,19 +191,50 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
         List<OnmsAtInterface> interfaces = findMatching(criteria);
 
         if (interfaces.isEmpty()) {
-            // Create a new OnmsAtInterface if the IP address is in the database
-            // WE NEED TO UPSERT!!!
-            OnmsIpInterface iface;
-            final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(addressString);
-            if (ifaces.isEmpty()) {
-                return null;
-            } else {
-                if (ifaces.size() > 1) {
-                    LogUtils.debugf(this, "getAtInterfaceForAddress: More than one IpInterface matched address %s!", addressString);
+            return new UpsertTemplate<OnmsAtInterface, AtInterfaceDao>(m_transactionManager, this) {
+                @Override
+                protected OnmsAtInterface query() {
+                    // See if we have an existing version of this OnmsAtInterface first
+                    final OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
+                    criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+                    criteria.add(Restrictions.eq("node.type", "A"));
+                    criteria.add(Restrictions.eq("ipAddress", addressString));
+                    List<OnmsAtInterface> interfaces = findMatching(criteria);
+                    if (interfaces.isEmpty()) {
+                        return null;
+                    } else {
+                        if (interfaces.size() > 1) {
+                            LogUtils.debugf(this, "getAtInterfaceForAddress: More than one AtInterface matched address %s!", addressString);
+                        }
+                        return interfaces.get(0);
+                    }
                 }
-                iface = ifaces.get(0);
-                return new OnmsAtInterface(iface.getNode(), iface.getIpAddress());
-            }
+
+                @Override
+                protected OnmsAtInterface doUpdate(OnmsAtInterface dbObj) {
+                    // Do nothing... all we care about is that there is an object in the database
+                    return dbObj;
+                }
+
+                @Override
+                protected OnmsAtInterface doInsert() {
+                    final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(addressString);
+                    if (ifaces.isEmpty()) {
+                        return null;
+                    } else {
+                        if (ifaces.size() > 1) {
+                            LogUtils.debugf(this, "getAtInterfaceForAddress: More than one AtInterface matched address %s!", addressString);
+                        }
+                        OnmsIpInterface iface = ifaces.get(0);
+                        OnmsAtInterface retval = new OnmsAtInterface(iface.getNode(), iface.getIpAddress());
+                        retval.setLastPollTime(new Date());
+                        retval.setSourceNodeId(iface.getNode().getId());
+                        retval.setStatus('N');
+                        save(retval);
+                        return retval;
+                    }
+                }
+            }.execute();
         } else {
             if (interfaces.size() > 1) {
                 LogUtils.debugf(this, "getAtInterfaceForAddress: More than one AtInterface matched address %s!", addressString);

@@ -50,19 +50,13 @@ import org.springframework.util.Assert;
 /**
  * <p>ResourceTypeUtils class.</p>
  */
-public class ResourceTypeUtils {
+public abstract class ResourceTypeUtils {
 
     /** Constant <code>DS_PROPERTIES_FILE="ds.properties"</code> */
     public static String DS_PROPERTIES_FILE = "ds.properties";
 
     private static PropertiesCache s_cache = new PropertiesCache();
 
-    /**
-     * This class has only static methods.
-     */
-    private ResourceTypeUtils() {
-    }
-    
     /**
      * <p>getAttributesAtRelativePath</p>
      *

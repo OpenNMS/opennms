@@ -54,7 +54,7 @@ public class ThresholdConfigWrapper extends BaseThresholdDefConfigWrapper {
         super(threshold);
         m_threshold=threshold;
         m_dataSources=new ArrayList<String>(1);
-        m_dataSources.add(m_threshold.getDsName());
+        m_dataSources.add(m_threshold.getDsName() == null ? null : m_threshold.getDsName().intern());
     }
 
     /** {@inheritDoc} */
