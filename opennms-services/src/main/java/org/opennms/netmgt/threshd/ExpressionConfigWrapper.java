@@ -47,15 +47,11 @@ import org.opennms.netmgt.config.threshd.Expression;
  *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- * @version $Id: $
  */
 public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 
     private Expression m_expression;
     private Collection<String> m_datasources;
-    private JEP m_parser;
     /**
      * <p>Constructor for ExpressionConfigWrapper.</p>
      *
@@ -66,14 +62,14 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
         super(expression);
         m_expression=expression;
         m_datasources=new ArrayList<String>();
-        m_parser = new JEP();
-        m_parser.setAllowUndeclared(true); //This is critical - we allow undelared vars, then ask the parser for what vars are used
-        m_parser.addStandardFunctions();
-        m_parser.parseExpression(m_expression.getExpression());
-        if(m_parser.hasError()) {
-            throw new ThresholdExpressionException("Could not parse threshold expression:"+m_parser.getErrorInfo());
+        final JEP expressionParser = new JEP();
+        expressionParser.setAllowUndeclared(true); //This is critical - we allow undelared vars, then ask the parser for what vars are used
+        expressionParser.addStandardFunctions();
+        expressionParser.parseExpression(m_expression.getExpression());
+        if(expressionParser.hasError()) {
+            throw new ThresholdExpressionException("Could not parse threshold expression:"+expressionParser.getErrorInfo());
         }
-        m_datasources.addAll(m_parser.getSymbolTable().keySet());
+        m_datasources.addAll(expressionParser.getSymbolTable().keySet());
     }
     
     /** {@inheritDoc} */
@@ -90,12 +86,16 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
     /** {@inheritDoc} */
     @Override
     public double evaluate(Map<String, Double> values) throws ThresholdExpressionException {
+        final JEP expressionParser = new JEP();
+        expressionParser.setAllowUndeclared(true); //This is critical - we allow undelared vars, then ask the parser for what vars are used
+        expressionParser.addStandardFunctions();
+        expressionParser.parseExpression(m_expression.getExpression());
         for(String valueName : values.keySet()) {
-            m_parser.addVariable(valueName, values.get(valueName));
+            expressionParser.addVariable(valueName, values.get(valueName));
         }
-        double result=m_parser.getValue();
-        if(m_parser.hasError()) {
-            throw new ThresholdExpressionException("Error while evaluating expression "+m_expression.getExpression()+": "+m_parser.getErrorInfo());
+        double result=expressionParser.getValue();
+        if(expressionParser.hasError()) {
+            throw new ThresholdExpressionException("Error while evaluating expression "+m_expression.getExpression()+": "+expressionParser.getErrorInfo());
         }
         return result;
     }
