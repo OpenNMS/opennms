@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.OnmsUser;
@@ -66,6 +66,9 @@ import org.springframework.util.Assert;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class AuthenticationIntegrationTest implements InitializingBean {
+
+    @Autowired
+    private UserManager m_userManager;
 
 	@Autowired
 	private DaoAuthenticationProvider m_provider; 
@@ -104,7 +107,7 @@ public class AuthenticationIntegrationTest implements InitializingBean {
 	    user.setFullName("Temporary User");
 	    user.setPassword("18126E7BD3F84B3F3E4DF094DEF5B7DE");
 	    user.setDutySchedule(Arrays.asList("MoTuWeThFrSaSu800-2300"));
-	    UserFactory.getInstance().save(user);
+	    m_userManager.save(user);
 
 		Authentication authentication = new UsernamePasswordAuthenticationToken("tempuser", "mike");
 		Authentication authenticated = m_provider.authenticate(authentication);

@@ -496,7 +496,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	        @Override
 	        protected OnmsVlan doUpdate(OnmsVlan vlan) {
 	            // Make sure that the fields used in the query match
-	            Assert.isTrue(vlan.getNode().equals(v.getNode()));
+	            Assert.isTrue(vlan.getNode().compareTo(v.getNode()) == 0);
 	            Assert.isTrue(vlan.getVlanId().equals(v.getVlanId()));
 
 	            if (vlan.getId() == null && v.getId() != null) {
