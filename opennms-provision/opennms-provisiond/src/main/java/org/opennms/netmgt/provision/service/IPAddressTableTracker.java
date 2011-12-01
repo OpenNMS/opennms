@@ -134,6 +134,13 @@ public class IPAddressTableTracker extends TableTracker {
 
             final SnmpInstId netmaskRef = value.toSnmpObjId().getInstance(IP_ADDRESS_PREFIX_ORIGIN_INDEX);
 
+            // See bug NMS-5036
+            // {@see http://issues.opennms.org/browse/NMS-5036}
+            if (netmaskRef == null) {
+                LogUtils.warnf(this, "BAD AGENT: Null netmask instanceId");
+                return null;
+            }
+
             final int[] rawIds = netmaskRef.getIds();
             final int addressType = rawIds[1];
             final int mask = rawIds[rawIds.length - 1];
