@@ -570,7 +570,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 * @param snmpcoll
 	 */
 	@Transactional
-	void updateNodeSnmpCollection(final SnmpCollection snmpcoll) {
+	public void updateNodeSnmpCollection(final SnmpCollection snmpcoll) {
 	    LogUtils.debugf(this, "Updating SNMP collection for %s", InetAddressUtils.str(snmpcoll.getTarget()));
 		LinkableNode node = removeNode(snmpcoll.getTarget());
 		if (node == null) {
