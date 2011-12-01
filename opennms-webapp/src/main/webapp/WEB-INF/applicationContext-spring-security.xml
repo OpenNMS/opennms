@@ -89,6 +89,8 @@
     <beans:property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
     <beans:property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />
     <beans:property name="useGroups" value="false" />
+    <beans:property name="userManager" ref="userManager" />
+    <beans:property name="groupManager" ref="groupManager" />
   </beans:bean>
 
   <beans:bean id="openNMSUserDetailsService" class="org.opennms.web.springframework.security.OpenNMSUserDetailsService">

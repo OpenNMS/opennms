@@ -46,9 +46,9 @@ import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Role;
-import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.model.OnmsUser;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
@@ -65,6 +65,10 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:eric@tuxbot.com">Eric Molitor</A>
  */
 public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, InitializingBean {
+    private UserManager m_userManager;
+
+    private GroupManager m_groupManager;
+
     private static final UpperCaseMd5PasswordEncoder PASSWORD_ENCODER = new UpperCaseMd5PasswordEncoder();
 
     private static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.ROLE_USER);
@@ -112,33 +116,17 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         final HashMap<String, OnmsUser> users = new HashMap<String, OnmsUser>();
 
         try {
-            UserFactory.init();
-        } catch (Exception e) {
-            throw new DataRetrievalFailureException("Unable to initialize user factory.", e);
-        }
-
-        final UserManager manager = UserFactory.getInstance();
-        long lastModified = manager.getLastModified();
-        
-        final Map<String, User> castorUsers;
-        try {
-            castorUsers = manager.getUsers();
-        } catch (final Exception e) {
-            throw new DataRetrievalFailureException("Unable to get user list.", e);
-        }
-
-        for (final User user : castorUsers.values()) {
-            OnmsUser newUser = new OnmsUser();
-            newUser.setUsername(user.getUserId());
-            newUser.setPassword(user.getPassword());
-
-            users.put(user.getUserId(), newUser);
+            for (final OnmsUser user : m_userManager.getOnmsUserList()) {
+                users.put(user.getUsername(), user);
+            }
+        } catch (final Throwable t) {
+            throw new DataRetrievalFailureException("Unable to get user list.", t);
         }
 
         log().debug("Loaded the users.xml file with " + users.size() + " users");
 
 
-        m_usersLastModified = lastModified; 
+        m_usersLastModified = m_userManager.getLastModified(); 
         m_users = users;
     }
     
@@ -149,31 +137,25 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     private Map<String, LinkedList<String>> parseGroupRoles() throws DataRetrievalFailureException {
         long lastModified = new File(m_groupsConfigurationFile).lastModified();
         
-        try {
-            GroupFactory.init();
-        } catch (Throwable e) {
-            throw new DataRetrievalFailureException("Error reading groups configuration file '" + m_groupsConfigurationFile + "': " + e.getMessage(), e);
-        }
-        GroupManager gm = GroupFactory.getInstance();
-        Map<String, LinkedList<String>> roleMap = new HashMap<String, LinkedList<String>>();
+        final Map<String, LinkedList<String>> roleMap = new HashMap<String, LinkedList<String>>();
 
-        Collection<Role> roles = gm.getRoles();
-        for (Role role : roles) {
-            String groupname = role.getMembershipGroup();
-            String securityRole = Authentication.getSpringSecurityRoleFromOldRoleName(role.getName());
+        final Collection<Role> roles = m_groupManager.getRoles();
+        for (final Role role : roles) {
+            final String groupname = role.getMembershipGroup();
+            final String securityRole = Authentication.getSpringSecurityRoleFromOldRoleName(role.getName());
             if (securityRole != null) {
-                List<String> users;
+                final List<String> users;
                 try {
-                    users = gm.getGroup(groupname).getUserCollection();
+                    users = m_groupManager.getGroup(groupname).getUserCollection();
                 } catch (Throwable e) {
                     throw new DataRetrievalFailureException("Error reading groups configuration file '" + m_groupsConfigurationFile + "': " + e.getMessage(), e);
                 }
 
-                for (String user : users) {
+                for (final String user : users) {
                     if (roleMap.get(user) == null) {
                         roleMap.put(user, new LinkedList<String>());
                     }
-                    LinkedList<String> userRoleList = roleMap.get(user);
+                    final LinkedList<String> userRoleList = roleMap.get(user);
                     userRoleList.add(securityRole);
                 }
             }
@@ -383,6 +365,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
      */
     public void setUsersConfigurationFile(String usersConfigurationFile) {
         m_usersConfigurationFile = usersConfigurationFile;
+        UserFactory.setInstance(null);
     }
     
     /**
@@ -392,6 +375,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
      */
     public void setGroupsConfigurationFile(String groupsConfigurationFile) {
         m_groupsConfigurationFile = groupsConfigurationFile;
+        GroupFactory.setInstance(null);
     }
     
     /**
@@ -502,7 +486,23 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     public boolean isUseGroups() {
         return m_useGroups;
     }
-    
+
+    public UserManager getUserManager() {
+        return m_userManager;
+    }
+
+    public void setUserManager(final UserManager mgr) {
+        m_userManager = mgr;
+    }
+
+    public GroupManager getGroupManager() {
+        return m_groupManager;
+    }
+
+    public void setGroupManager(final GroupManager mgr) {
+        m_groupManager = mgr;
+    }
+
     /**
      * <p>afterPropertiesSet</p>
      */
@@ -510,5 +510,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         Assert.state(m_usersConfigurationFile != null, "usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
         Assert.state(!m_useGroups || m_groupsConfigurationFile != null, "groupsConfigurationFile parameter must be set to the location of the groups.xml configuration file");
         Assert.state(m_magicUsersConfigurationFile != null, "magicUsersConfigurationFile parameter must be set to the location of the magic-users.properties configuration file");
+        Assert.notNull(m_userManager);
+        Assert.notNull(m_groupManager);
     }
 }

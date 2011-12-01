@@ -8,6 +8,7 @@
        <list>
          <value>META-INF/opennms/applicationContext-daemon.xml</value>
          <value>META-INF/opennms/applicationContext-pinger.xml</value>
+         <value>META-INF/opennms/applicationContext-usergroup.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="daoContext" />
