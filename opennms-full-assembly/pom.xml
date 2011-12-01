@@ -348,12 +348,12 @@
       <classifier>etc</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.protocols</groupId>
       <artifactId>selenium-monitor</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.protocols</groupId>
       <artifactId>selenium-monitor</artifactId>
       <version>${project.version}</version>
       <type>tar.gz</type>
