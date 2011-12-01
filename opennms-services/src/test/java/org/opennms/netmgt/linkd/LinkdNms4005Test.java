@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -86,7 +87,6 @@ public class LinkdNms4005Test {
     
     @Before
     public void setUp() throws Exception {
-        // MockLogAppender.setupLogging(true);
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
         MockLogAppender.setupLogging(p);
@@ -170,6 +170,73 @@ public class LinkdNms4005Test {
         assertTrue(m_linkd.runSingleCollection(cisco1.getId()));
         assertTrue(m_linkd.runSingleCollection(cisco2.getId()));
         assertTrue(m_linkd.runSingleCollection(cisco3.getId()));
+
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        assertEquals("we should have found 3 data links", 3, ifaces.size());
+    }
+
+    /**
+     * This test is the same as {@link #testNms4005Network()} except that it spawns multiple threads
+     * for each scan to ensure that the upsert code is working properly.
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/10.1.1.2-walk.txt"),
+            @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/10.1.2.2-walk.txt"),
+            @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/10.1.3.2-walk.txt"),
+            @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/10.1.4.2-walk.txt")
+    })
+    public void testNms4005NetworkWithThreads() throws Exception {
+        final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", "cisco1");
+        final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", "cisco2");
+        final OnmsNode cisco3 = m_nodeDao.findByForeignId("linkd", "cisco3");
+
+        assertTrue(m_linkd.scheduleNodeCollection(cisco1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco2.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco3.getId()));
+
+        final int NUMBER_OF_THREADS = 20;
+
+        List<Thread> waitForMe = new ArrayList<Thread>();
+        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+            Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                public void run() {
+                    assertTrue(m_linkd.runSingleCollection(cisco1.getId()));
+                }
+            };
+            thread.start();
+            waitForMe.add(thread);
+        }
+        for (Thread thread : waitForMe) {
+            thread.join();
+        }
+        waitForMe.clear();
+        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+            Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                public void run() {
+                    assertTrue(m_linkd.runSingleCollection(cisco2.getId()));
+                }
+            };
+            thread.start();
+            waitForMe.add(thread);
+        }
+        for (Thread thread : waitForMe) {
+            thread.join();
+        }
+        waitForMe.clear();
+        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+            Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                public void run() {
+                    assertTrue(m_linkd.runSingleCollection(cisco3.getId()));
+                }
+            };
+            thread.start();
+            waitForMe.add(thread);
+        }
+        for (Thread thread : waitForMe) {
+            thread.join();
+        }
+        waitForMe.clear();
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         assertEquals("we should have found 3 data links", 3, ifaces.size());
