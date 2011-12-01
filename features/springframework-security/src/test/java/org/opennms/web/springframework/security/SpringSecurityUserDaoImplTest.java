@@ -40,76 +40,59 @@ import java.io.Writer;
 
 import junit.framework.TestCase;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.test.FileAnticipator;
-import org.opennms.test.ThrowableAnticipator;
+import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.GrantedAuthority;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/org/opennms/web/springframework/security/AuthenticationIntegrationTest-context.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class SpringSecurityUserDaoImplTest extends TestCase {
 
     private static final String MAGIC_USERS_FILE = "src/test/resources/org/opennms/web/springframework/security/magic-users.properties";
     private static final String USERS_XML_FILE = "src/test/resources/org/opennms/web/springframework/security/users.xml";
 
-    public void testConfigSetter() {
-        String usersConfigurationFile = "users.xml";
-        String magicUsersConfigurationFile = "magic-users.properties";
-        SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
+    @Autowired
+    SpringSecurityUserDao m_springSecurityDao;
 
-        dao.setUsersConfigurationFile(usersConfigurationFile);
-        dao.setMagicUsersConfigurationFile(magicUsersConfigurationFile);
+    @Autowired
+    UserManager m_userManager;
+    
+    @Autowired
+    GroupManager m_groupManager;
 
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging(true, "DEBUG");
     }
 
-    public void testConfigGetter() {
-        String usersConfigurationFile = "users.xml";
-        String magicUsersConfigurationFile = "magic-users.properties";
-        SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
-
-        dao.setUsersConfigurationFile(usersConfigurationFile);
-        dao.setMagicUsersConfigurationFile(magicUsersConfigurationFile);
-        assertEquals("getUsersConfigurationFile returned what we passed to setUsersConfigurationFile", usersConfigurationFile, dao.getUsersConfigurationFile());
-        assertEquals("getMagicUsersConfigurationFile returned what we passed to setMagicUsersConfigurationFile", magicUsersConfigurationFile, dao.getMagicUsersConfigurationFile());
-    }
-
-    public void testAfterPropertiesSetWithoutUsersConfigFile() {
-        SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
-
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException("usersConfigurationFile parameter must be set to the location of the users.xml configuration file"));
-
-        try {
-            dao.afterPropertiesSet();
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
-    }
-
-    public void testAfterPropertiesSetWithoutMagicUsersConfigFile() {
-        SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
-        setUsersConfigurationFile(dao);
-
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException("magicUsersConfigurationFile parameter must be set to the location of the magic-users.properties configuration file"));
-
-        try {
-            dao.afterPropertiesSet();
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
-    }
-
+    @Test
     public void testGetByUsernameAdmin() {
-        SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
-
-        setUsersConfigurationFile(dao);
-        setMagicUsersConfigurationFile(dao);
-
-        OnmsUser user = dao.getByUsername("admin");
+        OnmsUser user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("admin");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "admin", user.getUsername());
-        assertEquals("Full name", null, user.getFullName());
+        assertEquals("Full name", "Administrator", user.getFullName());
         assertEquals("Comments", null, user.getComments());
         assertEquals("Password", "21232F297A57A5A743894A0E4A801FC3", user.getPassword());
 
@@ -120,21 +103,14 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
         assertEquals("authorities 2 name", "ROLE_ADMIN", authorities[1].getAuthority());
     }
 
+    @Test
     public void testGetByUsernameBogus() {
-        SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
-        setUsersConfigurationFile(dao);
-        setMagicUsersConfigurationFile(dao);
-
-        OnmsUser user = dao.getByUsername("bogus");
-        assertNull("user object should be null", user);
+        assertNull("user object should be null", m_springSecurityDao.getByUsername("bogus"));
     }
 
+    @Test
     public void testGetByUsernameRtc() {
-        SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
-        setUsersConfigurationFile(dao);
-        setMagicUsersConfigurationFile(dao);
-
-        OnmsUser user = dao.getByUsername("rtc");
+        OnmsUser user = m_springSecurityDao.getByUsername("rtc");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "rtc", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -147,12 +123,14 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
         assertEquals("authorities 0 name", "ROLE_RTC", authorities[0].getAuthority());
     }
 
-    public void testGetByUsernameTempUser() {
-        SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
-        setUsersConfigurationFile(dao);
-        setMagicUsersConfigurationFile(dao);
+    @Test
+    @DirtiesContext
+    public void testGetByUsernameTempUser() throws Exception {
+        final OnmsUser newUser = new OnmsUser("tempuser");
+        newUser.setPassword("18126E7BD3F84B3F3E4DF094DEF5B7DE");
+        m_userManager.save(newUser);
 
-        OnmsUser user = dao.getByUsername("tempuser");
+        final OnmsUser user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("tempuser");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "tempuser", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -165,12 +143,14 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
         assertEquals("authorities 0 name", "ROLE_USER", authorities[0].getAuthority());
     }
     
-    public void testGetByUsernameDashoard() {
-        SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
-        setUsersConfigurationFile(dao);
-        setMagicUsersConfigurationFile(dao);
+    @Test
+    @DirtiesContext
+    public void testGetByUsernameDashboard() throws Exception {
+        final OnmsUser newUser = new OnmsUser("dashboard");
+        newUser.setPassword("DC7161BE3DBF2250C8954E560CC35060");
+        m_userManager.save(newUser);
 
-        OnmsUser user = dao.getByUsername("dashboard");
+        OnmsUser user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "dashboard", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -183,55 +163,13 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
         assertEquals("authorities 0 name", "ROLE_DASHBOARD", authorities[0].getAuthority());
     }
     
-    public void testUsersReload() throws Exception {
-        /*
-         * We're not going to use the anticipator functionality, but it's
-         * handy for handling temporary directories.
-         */
-        FileAnticipator fa = new FileAnticipator();
-        
-        try {
-            File users = fa.tempFile("users.xml");
-            File magicUsers = fa.tempFile("magic-users.properties");
-            
-            writeTemporaryFile(users, getUsersXmlContents());
-            writeTemporaryFile(magicUsers, getMagicUsersContents());
-
-            SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
-            dao.setUsersConfigurationFile(users.getAbsolutePath());
-            dao.setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
-
-            OnmsUser user;
-            
-            user = dao.getByUsername("dashboard");
-            assertNotNull("dashboard user should exist and the object should not be null", user);
-            
-            user = dao.getByUsername("dashboard-foo");
-            assertNull("dashboard-foo user should not exist and the object should be null", user);
-
-            /*
-             *  On UNIX, the resolution of the last modified time is 1 second,
-             *  so we need to wait at least that long before rewriting the
-             *  file to ensure that we have crossed over into the next second.
-             *  At least we're not crossing over with John Edward.
-             */
-            Thread.sleep(1100);
-
-            writeTemporaryFile(users, getUsersXmlContents().replace("<user-id>dashboard</user-id>", "<user-id>dashboard-foo</user-id>"));
-
-            user = dao.getByUsername("dashboard");
-            assertNull("dashboard user should no longer exist and the object should be null", user);
-            
-            user = dao.getByUsername("dashboard-foo");
-            assertNotNull("dashboard-foo user should now exist and the object should not be null", user);
-        } finally {
-            fa.deleteExpected();
-            fa.tearDown();
-        }
-    }
-
-
+    @Test
+    @DirtiesContext
     public void testMagicUsersReload() throws Exception {
+        final OnmsUser newUser = new OnmsUser("dashboard");
+        newUser.setPassword("DC7161BE3DBF2250C8954E560CC35060");
+        m_userManager.save(newUser);
+
         /*
          * We're not going to use the anticipator functionality, but it's
          * handy for handling temporary directories.
@@ -245,14 +183,13 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
             writeTemporaryFile(users, getUsersXmlContents());
             writeTemporaryFile(magicUsers, getMagicUsersContents());
 
-            SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
-            dao.setUsersConfigurationFile(users.getAbsolutePath());
-            dao.setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
+            ((SpringSecurityUserDaoImpl) m_springSecurityDao).setUsersConfigurationFile(users.getAbsolutePath());
+            ((SpringSecurityUserDaoImpl) m_springSecurityDao).setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
 
             OnmsUser user;
             GrantedAuthority[] authorities;
             
-            user = dao.getByUsername("dashboard");
+            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
@@ -269,7 +206,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
 
             writeTemporaryFile(magicUsers, getMagicUsersContents().replace("role.dashboard.users=dashboard", "role.dashboard.users="));
 
-            user = dao.getByUsername("dashboard");
+            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
@@ -296,7 +233,13 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
      * @param content
      * @throws IOException
      */
+    @Test
+    @DirtiesContext
     public void testMagicUsersReloadUpdateLastModified() throws Exception {
+        final OnmsUser newUser = new OnmsUser("dashboard");
+        newUser.setPassword("DC7161BE3DBF2250C8954E560CC35060");
+        m_userManager.save(newUser);
+
         /*
          * We're not going to use the anticipator functionality, but it's
          * handy for handling temporary directories.
@@ -310,14 +253,13 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
             writeTemporaryFile(users, getUsersXmlContents());
             writeTemporaryFile(magicUsers, getMagicUsersContents());
 
-            SpringSecurityUserDaoImpl dao = new SpringSecurityUserDaoImpl();
-            dao.setUsersConfigurationFile(users.getAbsolutePath());
-            dao.setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
+            ((SpringSecurityUserDaoImpl) m_springSecurityDao).setUsersConfigurationFile(users.getAbsolutePath());
+            ((SpringSecurityUserDaoImpl) m_springSecurityDao).setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
 
             OnmsUser user;
             GrantedAuthority[] authorities;
             
-            user = dao.getByUsername("dashboard");
+            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
@@ -334,7 +276,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
 
             writeTemporaryFile(magicUsers, getMagicUsersContents().replace("role.dashboard.users=dashboard", "role.dashboard.users="));
 
-            user = dao.getByUsername("dashboard");
+            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
@@ -342,7 +284,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
             assertEquals("user GrantedAuthorities[0]", "ROLE_USER", authorities[0].getAuthority());
 
             long ourLastModifiedTime = magicUsers.lastModified();
-            long daoLastModifiedTime = dao.getMagicUsersLastModified();
+            long daoLastModifiedTime = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getMagicUsersLastModified();
             
             assertEquals("last modified time of magic users file does not match what the DAO stored after reloading the file", ourLastModifiedTime, daoLastModifiedTime);
         } finally {
@@ -376,13 +318,4 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
         
         return contents.toString();
     }
-
-    private void setUsersConfigurationFile(SpringSecurityUserDaoImpl dao) {
-        dao.setUsersConfigurationFile(USERS_XML_FILE);
-    }
-
-    private void setMagicUsersConfigurationFile(SpringSecurityUserDaoImpl dao) {
-        dao.setMagicUsersConfigurationFile(MAGIC_USERS_FILE);
-    }
-
 }
