@@ -23,6 +23,7 @@
     <module>springframework-security</module>
     <module>request-tracker</module>
     <module>system-report</module>
+    <module>selenium-monitor</module>
   </modules>
 
   <profiles>

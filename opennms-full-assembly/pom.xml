@@ -287,5 +287,11 @@
       <artifactId>opennms-rancid-provisioning-adapter</artifactId>
       <version>${project.version}</version>
     </dependency>
+    
+    <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>selenium-monitor</artifactId>
+        <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>
