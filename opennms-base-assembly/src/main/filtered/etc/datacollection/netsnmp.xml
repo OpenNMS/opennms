@@ -9,8 +9,8 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="diskIODevice" />
 		<parameter key="replace-all" value="s/^-//" />
-		<parameter key="replace-all" value="s/\\s//" />
-		<parameter key="replace-all" value="s/:\\\\.*//" />
+		<parameter key="replace-all" value="s/\s//" />
+		<parameter key="replace-all" value="s/:\\.*//" />
       </storageStrategy>
     </resourceType>
 
@@ -21,8 +21,8 @@
         <parameter key="sibling-column-name" value="ns-dskPath" />
 		<parameter key="replace-first" value="s/^-$/_root_fs/" />
 		<parameter key="replace-all" value="s/^-//" />
-		<parameter key="replace-all" value="s/\\s//" />
-		<parameter key="replace-all" value="s/:\\\\.*//" />
+		<parameter key="replace-all" value="s/\s//" />
+		<parameter key="replace-all" value="s/:\\.*//" />
       </storageStrategy>
     </resourceType>
 
