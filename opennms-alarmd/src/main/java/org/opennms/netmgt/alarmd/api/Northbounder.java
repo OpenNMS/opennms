@@ -26,25 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd;
+package org.opennms.netmgt.alarmd.api;
 
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.alarmd.api.support.NorthbounderException;
+
 
 /**
- * AlarmPersting Interface
+ * Northbound Interface API
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public interface AlarmPersister {
 
-    /**
-     * <p>persist</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @return 
-     */
-    public abstract OnmsAlarm persist(Event event);
+public interface Northbounder {
 
+    void init() throws NorthbounderException;
+    
+    public void start() throws NorthbounderException;
+    
+    public void onAlarm(Alarm alarm) throws NorthbounderException;
+    
+    public void stop() throws NorthbounderException;
+    
+    public void fetch(String query) throws NorthbounderException;
+    
+    public void sync(Alarm alarm) throws NorthbounderException; 
+    
+    public void syncAll() throws NorthbounderException;
+        
 }

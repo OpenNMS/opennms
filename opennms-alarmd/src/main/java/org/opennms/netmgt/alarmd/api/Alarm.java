@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,25 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd;
+package org.opennms.netmgt.alarmd.api;
 
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.xml.event.Event;
 
-/**
- * AlarmPersting Interface
- *
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
- */
-public interface AlarmPersister {
+import java.util.Date;
 
-    /**
-     * <p>persist</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @return 
-     */
-    public abstract OnmsAlarm persist(Event event);
+import org.opennms.netmgt.alarmd.Resolver;
 
+public interface Alarm {
+
+    public String getUei();
+    public Date getTimeStamp();
+
+    public boolean isPreserved();
+    public void setPreserved(boolean preserved);
+
+    public String resolveNodeLabel(Resolver r);
 }

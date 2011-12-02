@@ -28,7 +28,13 @@
 
 package org.opennms.netmgt.alarmd;
 
+import java.util.List;
+
+import org.opennms.netmgt.alarmd.api.Alarm;
+import org.opennms.netmgt.alarmd.api.Northbounder;
+import org.opennms.netmgt.alarmd.api.support.NorthboundAlarm;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
@@ -37,6 +43,11 @@ import org.springframework.beans.factory.DisposableBean;
 
 /**
  * Alarm management Daemon
+ * 
+ * TODO: Create configuration for Alarm to enable forwarding.
+ * TODO: Application Context for wiring in forwarders???
+ * TODO: Change this class to use AbstractServiceDaemon instead of SpringServiceDaemon
+ * 
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
@@ -47,9 +58,50 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     /** Constant <code>NAME="Alarmd"</code> */
     public static final String NAME = "Alarmd";
 
-    private volatile EventForwarder m_eventForwarder;
+    private EventForwarder m_eventForwarder;
+    
+    private List<Northbounder> m_northboundInterfaces;
 
     private AlarmPersister m_persister;
+    
+    
+    //Get all events
+    /**
+     * <p>onEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    @EventHandler(uei = EventHandler.ALL_UEIS)
+    public void onEvent(Event e) {
+        OnmsAlarm alarm = m_persister.persist(e);
+        
+        if (alarm != null) {
+            Alarm a = new NorthboundAlarm(alarm);
+
+            for (Northbounder nbi : m_northboundInterfaces) {
+                nbi.onAlarm(a);
+            }
+        }
+        
+    }
+
+    /**
+     * <p>setPersister</p>
+     *
+     * @param persister a {@link org.opennms.netmgt.alarmd.AlarmPersister} object.
+     */
+    public void setPersister(AlarmPersister persister) {
+        this.m_persister = persister;
+    }
+
+    /**
+     * <p>getPersister</p>
+     *
+     * @return a {@link org.opennms.netmgt.alarmd.AlarmPersister} object.
+     */
+    public AlarmPersister getPersister() {
+        return m_persister;
+    }
 
     /**
      * <p>getEventForwarder</p>
@@ -70,11 +122,16 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     }
 
     /**
+     * 
+     * TODO: use onInit() instead
      * <p>afterPropertiesSet</p>
      *
      * @throws java.lang.Exception if any.
      */
     public void afterPropertiesSet() throws Exception {
+        for (Northbounder nb : getNorthboundInterfaces()) {
+            nb.init();
+        }
     }
 
     /**
@@ -102,32 +159,16 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     public void start() throws Exception {
     }
 
-    //Get all events
-    /**
-     * <p>onEvent</p>
-     *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei = EventHandler.ALL_UEIS)
-    public void onEvent(Event e) {
-        m_persister.persist(e);
+    public List<Northbounder> getNorthboundInterfaces() {
+        synchronized (m_northboundInterfaces) {
+            return m_northboundInterfaces;
+        }
     }
 
-    /**
-     * <p>setPersister</p>
-     *
-     * @param persister a {@link org.opennms.netmgt.alarmd.AlarmPersister} object.
-     */
-    public void setPersister(AlarmPersister persister) {
-        this.m_persister = persister;
+    public void setNorthboundInterfaces(List<Northbounder> northboundInterfaces) {
+        synchronized (northboundInterfaces) {
+            m_northboundInterfaces = northboundInterfaces;
+        }
     }
 
-    /**
-     * <p>getPersister</p>
-     *
-     * @return a {@link org.opennms.netmgt.alarmd.AlarmPersister} object.
-     */
-    public AlarmPersister getPersister() {
-        return m_persister;
-    }
 }

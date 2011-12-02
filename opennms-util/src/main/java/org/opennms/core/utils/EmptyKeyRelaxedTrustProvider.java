@@ -26,25 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd;
-
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.xml.event.Event;
-
 /**
- * AlarmPersting Interface
- *
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
+ * @author <a mailto:seth@opennms.org>Seth Leger</a>
  */
-public interface AlarmPersister {
+package org.opennms.core.utils;
 
-    /**
-     * <p>persist</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @return 
-     */
-    public abstract OnmsAlarm persist(Event event);
+import java.security.Provider;
 
+
+public final class EmptyKeyRelaxedTrustProvider extends Provider {
+    private static final long serialVersionUID = -543349021655585769L;
+
+    public EmptyKeyRelaxedTrustProvider() {
+        super(EmptyKeyRelaxedTrustSSLContext.ALGORITHM + "Provider", 1.0, null);
+        put(
+            "SSLContext." + EmptyKeyRelaxedTrustSSLContext.ALGORITHM,
+            EmptyKeyRelaxedTrustSSLContext.class.getName()
+        );
+    }
 }
