@@ -66,4 +66,12 @@ public class SimpleJasperReportDefinition implements BasicReportDefinition,
     public void setTemplate(String template) {
         m_template = template;
     }
+    @Override
+    public String toString() {
+        return "SimpleJasperReportDefinition [m_id=" + m_id + ", m_engine="
+                + m_engine + ", m_template=" + m_template
+                + ", m_description=" + m_description + ", m_displayName="
+                + m_displayName + ", m_reportService=" + m_reportService
+                + ", m_online=" + m_online + "]";
+    }
 }

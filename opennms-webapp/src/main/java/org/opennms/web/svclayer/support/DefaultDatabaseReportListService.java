@@ -19,7 +19,7 @@ package org.opennms.web.svclayer.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.reporting.model.Report;
+import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.features.reporting.repository.ReportRepository;
 
@@ -47,7 +47,7 @@ public class DefaultDatabaseReportListService implements
         
         List <DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
         
-        for(Report report : m_repo.getReports()) {
+        for(BasicReportDefinition report : m_repo.getReports()) {
             DatabaseReportDescription summary = new DatabaseReportDescription();
             summary.setId(report.getId());
             summary.setDisplayName(report.getDisplayName());
@@ -70,7 +70,7 @@ public class DefaultDatabaseReportListService implements
 
         List <DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
         
-        for(Report report : m_repo.getOnlineReports()) {
+        for(BasicReportDefinition report : m_repo.getOnlineReports()) {
             DatabaseReportDescription summary = new DatabaseReportDescription();
             summary.setId(report.getId());
             summary.setDisplayName(report.getDisplayName());

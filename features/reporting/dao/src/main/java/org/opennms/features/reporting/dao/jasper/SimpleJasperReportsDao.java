@@ -14,9 +14,13 @@ import org.opennms.features.reporting.dao.LocalReportsDao;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.jasperreport.JasperReportDefinition;
 import org.opennms.features.reporting.model.jasperreport.SimpleJasperReportsDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleJasperReportsDao implements LocalReportsDao, LocalJasperReportsDao {
-
+    
+    private Logger logger = LoggerFactory.getLogger(SimpleJasperReportsDao.class.getSimpleName());
+    
     private final String SIMPLE_JASPER_REPORTS_CONFIG_XML = System.getProperty("opennms.home")
             + File.separator
             + "etc"
@@ -29,7 +33,9 @@ public class SimpleJasperReportsDao implements LocalReportsDao, LocalJasperRepor
         try {
             reports = JAXB.unmarshal(new File(SIMPLE_JASPER_REPORTS_CONFIG_XML),
                                      SimpleJasperReportsDefinition.class);
+            logger.debug("file '{}' unmarshalled: '{}'", SIMPLE_JASPER_REPORTS_CONFIG_XML);
         } catch (Exception e) {
+            logger.error("unmarshal of file '{}' faild: '{}'", SIMPLE_JASPER_REPORTS_CONFIG_XML, e.getMessage());
             // TODO Tak: logging and fail safety
         }
     }
@@ -46,12 +52,13 @@ public class SimpleJasperReportsDao implements LocalReportsDao, LocalJasperRepor
 
     @Override
     public String getEngine(String id) {
+        String result = "null";
         for (JasperReportDefinition report : reports.getReportList()) {
             if (id.equals(report.getId())) {
-                return report.getEngine();
+                result = report.getEngine();
             }
         }
-        return null;
+        return result;
     }
     
     @Override
@@ -62,7 +69,7 @@ public class SimpleJasperReportsDao implements LocalReportsDao, LocalJasperRepor
                 try {
                     reportTemplateStream = new FileInputStream(new File(URI.create(report.getTemplate())));
                 } catch (FileNotFoundException e) {
-                    // TODO Tak: logging and fail safety
+                    logger.error("getTemplateStream faild, file '{}' not fould: '{}'", report.getTemplate(), e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -93,7 +100,7 @@ public class SimpleJasperReportsDao implements LocalReportsDao, LocalJasperRepor
         String result = "";
         for (BasicReportDefinition report : reports.getReportList()) {
             if (id.equals(report.getId())) {
-                report.getReportService();
+                result = report.getReportService();
             }
         }
         return result;
@@ -104,9 +111,13 @@ public class SimpleJasperReportsDao implements LocalReportsDao, LocalJasperRepor
         String result = "";
         for (BasicReportDefinition report : reports.getReportList()) {
             if (id.equals(report.getId())) {
-                report.getDescription();
+                result = report.getDescription();
             }
         }
         return result;
+    }
+
+    public SimpleJasperReportsDefinition getSimpleJasperReportsDefinitionOnlineReports() {
+        return reports;
     }
 }
