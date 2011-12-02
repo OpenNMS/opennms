@@ -9,7 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.htmlunit.HtmlUnitDriver
 
 class SeleniumGroovyTest  {
     
@@ -19,28 +19,25 @@ class SeleniumGroovyTest  {
     private StringBuffer verificationErrors = new StringBuffer();
     
     public SeleniumGroovyTest(String url, int timeoutInSeconds) {
+        System.err.println("URL: " + url);
         baseUrl = url;
         timeout = timeoutInSeconds;
     }
     
     @Before
     public void setUp() throws Exception {
-        driver = new FirefoxDriver();
+        driver = new HtmlUnitDriver();
         driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
     }
 
-    //Ignoring test because it require firefox installed
     @Test
-    @Ignore
     public void testSelenium() throws Exception {
         // open | / |
-        driver.get(baseUrl);
-        // click | link=Our Story |
-        driver.findElement(By.linkText("Our Story")).click();
+        driver.get(baseUrl + "/opennms/index.html");
         
         // assertText | link=Contact Us | Contact Us
         //assertEquals("Contact Us", driver.findElement(By.linkText("Contact Us")).getText());
-        assertEquals("Contact Us", driver.findElement(By.linkText("Contact Us")).getText());
+        assertEquals("Testing Testing", driver.findElement(By.tagName("h2")).getText());
     }
 
     @After
@@ -50,10 +47,6 @@ class SeleniumGroovyTest  {
         if (!"".equals(verificationErrorString)) {
             fail(verificationErrorString);
         }
-    }
-    
-    static void main(args) {
-        
     }
     
 }
