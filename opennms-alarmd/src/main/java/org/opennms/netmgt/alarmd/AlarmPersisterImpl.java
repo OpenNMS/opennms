@@ -49,9 +49,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
 
-    /** {@inheritDoc} 
-     * @return */
-    public OnmsAlarm persist(Event event) {
+    /** {@inheritDoc} */
+    @Transactional
+    public void persist(Event event) {
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;
         }

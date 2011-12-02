@@ -63,7 +63,6 @@ import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
 
 public abstract class AbstractQueryManager implements QueryManager {
-
     protected Linkd m_linkd;
 
     @Override

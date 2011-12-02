@@ -126,6 +126,9 @@ public class Linkd extends AbstractServiceDaemon {
         Assert.state(m_scheduler != null, "must set the scheduler property");
         Assert.state(m_eventForwarder != null, "must set the eventForwarder property");
 
+        // FIXME: circular dependency
+        m_queryMgr.setLinkd(this);
+
 		m_activepackages = new ArrayList<String>();
 		
 		// initialize the ipaddrsentevents
@@ -567,7 +570,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 * @param snmpcoll
 	 */
 	@Transactional
-	void updateNodeSnmpCollection(final SnmpCollection snmpcoll) {
+	public void updateNodeSnmpCollection(final SnmpCollection snmpcoll) {
 	    LogUtils.debugf(this, "Updating SNMP collection for %s", InetAddressUtils.str(snmpcoll.getTarget()));
 		LinkableNode node = removeNode(snmpcoll.getTarget());
 		if (node == null) {

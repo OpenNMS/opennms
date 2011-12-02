@@ -164,6 +164,7 @@ Requires:	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-protocol-dhcp
 Requires:	opennms-plugin-protocol-nsclient
 Requires:	opennms-plugin-protocol-radius
+Requires:	opennms-plugin-protocol-xml
 Requires:	opennms-plugin-protocol-xmp
 
 %description plugins
@@ -273,6 +274,18 @@ Requires:   opennms-core = %{version}-%{release}
 %description plugin-protocol-radius
 The RADIUS protocol plugin provides a provisioning detector, capsd plugin, poller
 monitor, and Spring Security authorization mechanism for RADIUS.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-protocol-xml
+Summary:    XML Collector for OpenNMS
+Group:      Applications/System
+Requires:   opennms-core = %{version}-%{release}
+
+%description plugin-protocol-xml
+The XML protocol plugin provides a collector for XML data.
 
 %{extrainfo}
 %{extrainfo2}
@@ -402,13 +415,15 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'link-adapter-configuration.xml' | \
-	grep -v 'endpoint-configuration.xml' | \
-	grep -v 'mapsadapter-configuration.xml' | \
-	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
+	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'link-adapter-configuration.xml' | \
+	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	sort > %{_tmppath}/files.main
@@ -424,6 +439,10 @@ find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
 	grep -v 'xmp-config.xsd' | \
 	grep -v 'xmp-datacollection-config.xsd' | \
 	sort >> %{_tmppath}/files.main
+find $RPM_BUILD_ROOT%{instprefix}/contrib ! -type d | \
+	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	grep -v 'xml-collector' | \
+	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
 	grep -v 'provisioning-adapter' | \
@@ -431,6 +450,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'gnu-crypto' | \
+	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
@@ -462,8 +482,7 @@ rm -rf $RPM_BUILD_ROOT
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
-%attr(755,root,root)	%{instprefix}/contrib
-			%{logdir}
+%attr(755,root,root) %{logdir}
 			%{logdir}/controller
 			%{logdir}/daemon
 			%{logdir}/webapp
@@ -491,44 +510,61 @@ rm -rf $RPM_BUILD_ROOT
 %files plugins
 
 %files plugin-provisioning-dns
-%attr(664,root,root) %{instprefix}/lib/opennms-dns-provisioning-adapter*.jar
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-dns-provisioning-adapter*.jar
 
 %files plugin-provisioning-link
-%attr(664,root,root) %{instprefix}/lib/opennms-link-provisioning-adapter*.jar
-%attr(664,root,root) %{instprefix}/etc/link-adapter-configuration.xml
-%attr(664,root,root) %{instprefix}/etc/endpoint-configuration.xml
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-link-provisioning-adapter*.jar
+%{instprefix}/etc/link-adapter-configuration.xml
+%{instprefix}/etc/endpoint-configuration.xml
 
 %files plugin-provisioning-map
-%attr(664,root,root) %{instprefix}/lib/opennms-map-provisioning-adapter*.jar
-%attr(664,root,root) %{instprefix}/etc/examples/mapsadapter-configuration.xml
-%attr(664,root,root) %{instprefix}/etc/mapsadapter-configuration.xml
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-map-provisioning-adapter*.jar
+%{instprefix}/etc/examples/mapsadapter-configuration.xml
+%{instprefix}/etc/mapsadapter-configuration.xml
 
 %files plugin-provisioning-rancid
-%attr(664,root,root) %{instprefix}/lib/opennms-rancid-provisioning-adapter*.jar
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-rancid-provisioning-adapter*.jar
 
 %files plugin-provisioning-snmp-asset
-%attr(664,root,root) %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
-%attr(664,root,root) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
+%{instprefix}/etc/snmp-asset-adapter-configuration.xml
 
 %files plugin-protocol-dhcp
-%attr(664,root,root) %config(noreplace) %{instprefix}/etc/dhcp*.xml
-%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.dhcp*.jar
-%attr(664,root,root) %{sharedir}/xsds/dhcp*.xsd
+%defattr(664 root root 775)
+%config(noreplace) %{instprefix}/etc/dhcp*.xml
+%{instprefix}/lib/org.opennms.protocols.dhcp*.jar
+%{sharedir}/xsds/dhcp*.xsd
 
 %files plugin-protocol-nsclient
-%attr(664,root,root) %config(noreplace) %{instprefix}/etc/nsclient*.xml
-%attr(664,root,root) %config(noreplace) %{instprefix}/etc/examples/nsclient*.xml
-%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.nsclient*.jar
-%attr(664,root,root) %{sharedir}/xsds/nsclient*.xsd
+%defattr(664 root root 775)
+%config(noreplace) %{instprefix}/etc/nsclient*.xml
+%config(noreplace) %{instprefix}/etc/examples/nsclient*.xml
+%{instprefix}/lib/org.opennms.protocols.nsclient*.jar
+%{sharedir}/xsds/nsclient*.xsd
 
 %files plugin-protocol-radius
-%attr(664,root,root) %{instprefix}/lib/gnu-crypto*.jar
-%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.radius*.jar
+%defattr(664 root root 775)
+%{instprefix}/lib/gnu-crypto*.jar
+%{instprefix}/lib/org.opennms.protocols.radius*.jar
+
+%files plugin-protocol-xml
+%defattr(664 root root 775)
+%config(noreplace) %{instprefix}/etc/xml-*.xml
+%config(noreplace) %{instprefix}/etc/*datacollection*/3gpp*
+%config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/3gpp*
+%{instprefix}/lib/org.opennms.protocols.xml-*.jar
+%attr(755,root,root) %{instprefix}/contrib/xml-collector/*.pl
 
 %files plugin-protocol-xmp
-%attr(664,root,root) %config(noreplace) %{instprefix}/etc/xmp*.xml
-%attr(664,root,root) %{instprefix}/lib/org.opennms.protocols.xmp*.jar
-%attr(664,root,root) %{sharedir}/xsds/xmp*.xsd
+%defattr(664 root root 775)
+%config(noreplace) %{instprefix}/etc/xmp*.xml
+%{instprefix}/lib/org.opennms.protocols.xmp-*.jar
+%{sharedir}/xsds/xmp*.xsd
 
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "

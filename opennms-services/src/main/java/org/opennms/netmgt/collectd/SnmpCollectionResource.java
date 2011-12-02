@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionResource;
@@ -168,6 +169,10 @@ public abstract class SnmpCollectionResource implements CollectionResource {
      */
     protected Collection<AttributeGroup> getGroups() {
         return m_groups.values();
+    }
+
+    public TimeKeeper getTimeKeeper() {
+        return null;
     }
 
 }

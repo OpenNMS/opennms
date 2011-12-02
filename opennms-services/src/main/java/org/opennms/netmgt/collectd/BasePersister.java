@@ -136,6 +136,8 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      */
     protected void createBuilder(CollectionResource resource, String name, Set<AttributeDefinition> attributeTypes) {
         m_builder = new PersistOperationBuilder(getRepository(), resource, name);
+        if (resource.getTimeKeeper() != null)
+            m_builder.setTimeKeeper(resource.getTimeKeeper());
         for (Iterator<AttributeDefinition> iter = attributeTypes.iterator(); iter.hasNext();) {
             AttributeDefinition attrType = iter.next();
             if (attrType instanceof NumericAttributeType) {

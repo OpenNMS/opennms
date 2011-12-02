@@ -261,6 +261,8 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
     <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
     <property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />
     <property name="useGroups" value="false" />
+    <property name="userManager" ref="userManager" />
+    <property name="groupManager" ref="groupManager" />
   </bean>
   
   <bean id="mapPropertiesFactory" class="org.opennms.web.map.config.MapPropertiesFactory"/>

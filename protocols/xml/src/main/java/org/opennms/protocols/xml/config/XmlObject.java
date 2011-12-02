@@ -61,6 +61,25 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
     private String m_xpath;
 
     /**
+     * Instantiates a new XML object.
+     */
+    public XmlObject() {
+        super();
+    }
+
+    /**
+     * Instantiates a new XML object.
+     *
+     * @param name the object name
+     * @param dataType the data type
+     */
+    public XmlObject(String name, String dataType) {
+        this();
+        this.m_name = name;
+        this.m_dataType = dataType;
+    }
+
+    /**
      * Gets the name.
      *
      * @return the name

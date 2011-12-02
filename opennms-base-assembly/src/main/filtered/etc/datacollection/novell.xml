@@ -8,8 +8,8 @@
         <parameter key="sibling-column-name" value="nwLabel" />
 		<parameter key="replace-first" value="s/^-$/_root_fs/" />
 		<parameter key="replace-all" value="s/^-//" />
-		<parameter key="replace-all" value="s/\\s//" />
-		<parameter key="replace-all" value="s/:\\\\/_/" />
+		<parameter key="replace-all" value="s/\s//" />
+		<parameter key="replace-all" value="s/:\\/_/" />
 		<parameter key="replace-all" value="s/:/_/" />
       </storageStrategy>
     </resourceType>

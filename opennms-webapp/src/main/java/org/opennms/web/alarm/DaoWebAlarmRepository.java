@@ -199,7 +199,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     }
     
     @Transactional
-    void acknowledgeAlarms(String user, Date timestamp, int[] alarmIds) {
+    public void acknowledgeAlarms(String user, Date timestamp, int[] alarmIds) {
         acknowledgeMatchingAlarms(user, timestamp, new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
     }
     

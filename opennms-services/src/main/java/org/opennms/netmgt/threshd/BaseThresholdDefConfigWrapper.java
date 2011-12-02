@@ -41,9 +41,6 @@ import org.opennms.netmgt.config.threshd.Threshold;
  *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- * @version $Id: $
  */
 public abstract class BaseThresholdDefConfigWrapper {
     Basethresholddef m_baseDef;

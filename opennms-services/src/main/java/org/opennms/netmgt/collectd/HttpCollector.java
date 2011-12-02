@@ -86,6 +86,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.collector.AttributeDefinition;
@@ -841,6 +842,10 @@ public class HttpCollector implements ServiceCollector {
 
         public String getParent() {
             return Integer.toString(m_agent.getNodeId());
+        }
+
+        public TimeKeeper getTimeKeeper() {
+            return null;
         }
     }
 
