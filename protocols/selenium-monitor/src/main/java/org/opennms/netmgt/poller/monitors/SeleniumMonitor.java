@@ -144,7 +144,8 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
     {
         GroovyClassLoader gcl = new GroovyClassLoader();
         
-        String file = System.getProperty("opennms.home") + "/etc/selenium/test/groovy/" + filename;
+        String file = System.getProperty("opennms.home") + "/etc/selenium/" + filename;
+        System.err.println("File name: " + file);
         return gcl.parseClass( new File( file ) );
     }
 
