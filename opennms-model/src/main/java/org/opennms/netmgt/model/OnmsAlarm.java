@@ -295,6 +295,20 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_node = node;
     }
 
+    @Transient
+    @XmlElement(name="nodeId", required=false)
+    public Integer getNodeId() {
+        if (m_node == null) return null;
+        return m_node.getId();
+    }
+
+    @Transient
+    @XmlElement(name="nodeLabel", required=false)
+    public String getNodeLabel() {
+        if (m_node == null) return null;
+        return m_node.getLabel();
+    }
+
     /**
      * <p>getIpAddr</p>
      *
