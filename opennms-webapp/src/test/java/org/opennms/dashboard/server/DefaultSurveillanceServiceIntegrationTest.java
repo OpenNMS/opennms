@@ -55,6 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
         "classpath*:/META-INF/opennms/applicationContext-reportingCore.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",

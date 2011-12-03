@@ -73,6 +73,7 @@ public class SpringWebflowContextTest extends TestCase {
 
         servletContext.addInitParameter("contextConfigLocation", 
                                         "classpath:/org/opennms/web/rest/applicationContext-test.xml " +
+                                        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml " +
                                         "classpath*:/META-INF/opennms/component-service.xml " +
                                         "classpath*:/META-INF/opennms/component-dao.xml " +
                                         "classpath:/META-INF/opennms/applicationContext-reportingCore.xml " +
