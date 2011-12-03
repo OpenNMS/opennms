@@ -36,7 +36,6 @@
     <param-value>
         /WEB-INF/applicationContext-common.xml
         classpath:/META-INF/opennms/applicationContext-commonConfigs.xml
-        classpath:/META-INF/opennms/applicationContext-usergroup.xml
         classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
         classpath*:/META-INF/opennms/component-service.xml
         classpath:/META-INF/opennms/applicationContext-systemReport.xml
