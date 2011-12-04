@@ -408,6 +408,8 @@ install -m 755 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.
 install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/opennms-remote-poller
 rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
+rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-etc.tar.gz
+
 pushd $RPM_BUILD_ROOT
 
 # core package files
