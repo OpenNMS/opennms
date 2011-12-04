@@ -87,7 +87,7 @@ public class ExecCommandAjaxController extends AbstractController {
                 if (address == null )
                     throw new IllegalArgumentException("Address is required");
                 
-                if ( NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(address).length == 0 ) {
+                if ( NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(address).size() == 0 ) {
                     os.write("NOADDRESSINDATABASE");
                 } else if (!manager.checkCommandExecution()) {
                     os.write("NOEXECUTIONALLOWED");
