@@ -143,6 +143,10 @@
   </bean>  
   
   <bean name="/ExecCommand.map" class="org.opennms.web.map.ExecCommandController"/>   
+
+  <bean name="/ExecCommandAjax.map" class="org.opennms.web.map.ExecCommandAjaxController">
+  	<property name="manager" ref="manager" />
+  </bean>   
   
   <bean name="/RefreshMap.map" class="org.opennms.web.map.RefreshMapController">
     <property name="manager" ref="manager" />
