@@ -243,4 +243,14 @@ public interface Manager {
      */
     public void reloadConfig() throws MapsException;
 
+    /**
+     * <p> ExecCommand</p>
+     */
+    public String execCommand(Command command);
+    
+    public Command getCommand(String id);
+    
+    public void removeCommand(String id);
+        
+    public boolean checkCommandExecution();
 }

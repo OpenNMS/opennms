@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.opennms.core.utils.ThreadCategory;
@@ -55,6 +56,7 @@ import org.opennms.web.map.MapsException;
 import org.opennms.web.map.MapsManagementException;
 import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.db.datasources.DataSourceInterface;
+import org.opennms.web.map.view.Command;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VElementInfo;
@@ -122,6 +124,8 @@ public class ManagerDefaultImpl implements Manager {
     private List<VElementInfo> elemInfo = new ArrayList<VElementInfo>();
 
     private List<VMapInfo> mapInfo = new ArrayList<VMapInfo>();
+    
+    private HashMap<String, Command> commandmap = new HashMap<String, Command>();
 
     /**
      * <p>Getter for the field <code>filter</code>.</p>
@@ -1679,4 +1683,43 @@ public class ManagerDefaultImpl implements Manager {
             throw new MapsException(e);
         }
     }
+
+    @Override
+    public String execCommand(final Command command) {
+        String key= UUID.randomUUID().toString();
+        commandmap.put(key, command);
+        return key;
+    }
+
+    @Override
+    public Command getCommand(String id) {
+        return commandmap.get(id);
+    }
+
+    @Override
+    public void removeCommand(String id) {
+        commandmap.remove(id);
+    }
+
+    @Override
+    public boolean checkCommandExecution() {
+        List<String> keytoremove = new ArrayList<String>();
+        for (String key: commandmap.keySet()) {
+            Command c = commandmap.get(key);
+            if (c.runned() && !c.scheduledToRemove())
+                c.scheduleToRemove();
+            if (c.runned() && c.scheduledToRemove())
+                keytoremove.add(key);
+        }
+        for (String key: keytoremove) {
+            commandmap.remove(key);
+        }
+        
+        if ( commandmap.size() > 5 )
+            return false;
+        return true;
+        
+    }
+    
+    
 }
