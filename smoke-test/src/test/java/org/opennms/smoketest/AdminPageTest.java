@@ -28,7 +28,7 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testAllLinksArePresent() throws Exception  {
 
-        assertTrue(selenium.isElementPresent("link=Configure Users, Groups and Roles"));
+        assertTrue(selenium.isElementPresent("link=Configure Users, Groups and On-Call Roles"));
         assertTrue(selenium.isElementPresent("link=System Information"));
         assertTrue(selenium.isElementPresent("link=Instrumentation Log Reader"));
         assertTrue(selenium.isElementPresent("link=Configure Discovery"));
@@ -38,8 +38,8 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isElementPresent("link=Manage Thresholds"));
         assertTrue(selenium.isElementPresent("link=Configure Notifications"));
         assertTrue(selenium.isElementPresent("link=Scheduled Outages"));
-        assertTrue(selenium.isElementPresent("link=Add Interface"));
-        assertTrue(selenium.isElementPresent("link=Manage Provisioning Groups"));
+        assertTrue(selenium.isElementPresent("link=Add Interface for Scanning"));
+        assertTrue(selenium.isElementPresent("link=Manage Provisioning Requisitions"));
         assertTrue(selenium.isElementPresent("link=Import and Export Asset Information"));
         assertTrue(selenium.isElementPresent("link=Manage Surveillance Categories"));
         assertTrue(selenium.isElementPresent("link=Delete Nodes"));
@@ -50,7 +50,7 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testLinkGroupOne() throws Exception {
-        selenium.click("link=Configure Users, Groups and Roles");
+        selenium.click("link=Configure Users, Groups and On-Call Roles");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("Users and Groups"));
         assertTrue(selenium.isTextPresent("Users"));
@@ -124,14 +124,14 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testLinkGroupThree() throws Exception {
-        selenium.click("link=Add Interface");
+        selenium.click("link=Add Interface for Scanning");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("Enter IP address"));
         assertTrue(selenium.isTextPresent("Add Interface"));
         assertTrue(selenium.isTextPresent("valid IP address"));
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=Manage Provisioning Groups");
+        selenium.click("link=Manage Provisioning Requisitions");
         selenium.waitForPageToLoad("30000");
         assertEquals("Add New Group", selenium.getValue("css=input[type=submit]"));
         assertEquals("Edit Default Foreign Source", selenium.getValue("css=input[type=button]"));

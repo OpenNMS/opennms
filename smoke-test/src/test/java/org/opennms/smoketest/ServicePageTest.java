@@ -46,7 +46,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
 
     @Test
-    public void testPrvoisioningGroupSetup() throws Exception {
+    public void testProvisioningGroupSetup() throws Exception {
     	
         String groupName = "SeleniumTestGroup";
 
@@ -91,7 +91,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         String nodeForNode = setTreeFieldsAndSave("nodeEditForm", type("nodeLabel", "localNode"));
         selenium.waitForPageToLoad("30000");
         
-        selenium.click("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface]']");
+        selenium.click("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface for Scanning]']");
         selenium.waitForPageToLoad("30000");
 
         setTreeFieldsAndSave("nodeEditForm", type("ipAddr", "::1"));
@@ -111,7 +111,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
     public void testCreateUser() { 
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=Configure Users, Groups and Roles");
+        selenium.click("link=Configure Users, Groups and On-Call Roles");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Configure Users");
         selenium.waitForPageToLoad("30000");
@@ -133,7 +133,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
     public void testCreateGroup() {
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=Configure Users, Groups and Roles");
+        selenium.click("link=Configure Users, Groups and On-Call Roles");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Configure Groups");
         selenium.waitForPageToLoad("30000");
@@ -307,7 +307,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=Configure Users, Groups and Roles");
+        selenium.click("link=Configure Users, Groups and On-Call Roles");
         selenium.waitForPageToLoad("30000");
         selenium.click("link=Configure Groups");
         selenium.waitForPageToLoad("30000");
