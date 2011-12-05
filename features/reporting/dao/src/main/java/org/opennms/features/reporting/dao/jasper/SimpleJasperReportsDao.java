@@ -33,7 +33,7 @@ public class SimpleJasperReportsDao implements LocalReportsDao, LocalJasperRepor
         try {
             reports = JAXB.unmarshal(new File(SIMPLE_JASPER_REPORTS_CONFIG_XML),
                                      SimpleJasperReportsDefinition.class);
-            logger.debug("file '{}' unmarshalled: '{}'", SIMPLE_JASPER_REPORTS_CONFIG_XML);
+            logger.debug("file '{}' unmarshalled: '{}' repotrs.", SIMPLE_JASPER_REPORTS_CONFIG_XML, reports.getReportList().size());
         } catch (Exception e) {
             logger.error("unmarshal of file '{}' faild: '{}'", SIMPLE_JASPER_REPORTS_CONFIG_XML, e.getMessage());
             // TODO Tak: logging and fail safety

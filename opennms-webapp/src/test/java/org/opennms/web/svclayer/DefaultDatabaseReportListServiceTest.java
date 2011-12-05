@@ -34,50 +34,42 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao;
 import org.opennms.web.svclayer.support.DatabaseReportDescription;
 import org.opennms.web.svclayer.support.DefaultDatabaseReportListService;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+
+//import org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao;
+//import org.springframework.core.io.ClassPathResource;
+//import org.springframework.core.io.Resource;
 
 public class DefaultDatabaseReportListServiceTest {
     
-    private DefaultDatabaseReportConfigDao m_dao;
+//    private DefaultDatabaseReportConfigDao m_dao;
     private DatabaseReportListService m_descriptionService;
-    //TODO Tak: replace test
-//    @Before
-//    public void setupDao() throws Exception {
-//
+    
+    @Before
+    public void setupDao() throws Exception {
+        System.setProperty("opennms.home", "src/test/resources");
+        m_descriptionService = new DefaultDatabaseReportListService();
+        
 //        m_dao = new DefaultDatabaseReportConfigDao();
 //        Resource resource = new ClassPathResource("/database-reports-testdata.xml");
 //        m_dao.setConfigResource(resource);
 //        m_dao.afterPropertiesSet();
-//        
 //        m_descriptionService = new DefaultDatabaseReportListService();
-//        
 //        m_descriptionService.setDatabaseReportConfigDao(m_dao);
 //        m_descriptionService = new DefaultDatabaseReportListService();
 //        m_descriptionService.setDatabaseReportConfigDao(m_dao);
-//        
-//    }
-//    
-//    
-//    @Test
-//    public void testGetAll() throws Exception {
-//        
-//        List<DatabaseReportDescription> description = m_descriptionService.getAll();
-//        
-//        assertEquals(2,description.size());
-//        
-//    }
-//    
-//    @Test
-//    public void testGetAlOnlinel() throws Exception {
-//        
-//        List<DatabaseReportDescription> description = m_descriptionService.getAllOnline();
-//        
-//        assertEquals(1,description.size());
-//        
-//    }
+    }
 
+    @Test
+    public void testGetAll() throws Exception {
+        List<DatabaseReportDescription> description = m_descriptionService.getAll();
+        assertEquals(2,description.size());
+    }
+    
+    @Test
+    public void testGetAlOnlinel() throws Exception {
+        List<DatabaseReportDescription> description = m_descriptionService.getAllOnline();
+        assertEquals(1,description.size());
+    }
 }

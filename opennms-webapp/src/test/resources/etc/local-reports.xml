@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<local-reports
+        xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-local-reports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-local-reports">
+
+        <report id="Early-Morning-Report" display-name="Early morning report" online="true" 
+                report-service="jasperReportService" description="Global overview of outages, notifications and events in last 24 hours" />
+
+	<report id="subreporttest" display-name="subreporttest" online="false"
+                report-service="jasperReportService" description="subreporttest"/>
+
+</local-reports>
