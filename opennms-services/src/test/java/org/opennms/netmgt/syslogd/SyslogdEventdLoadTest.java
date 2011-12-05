@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.LogUtils;
@@ -157,6 +158,7 @@ public class SyslogdEventdLoadTest {
     }
 
     @Test
+    @Ignore
     @Transactional
     public void testDefaultSyslogd() throws Exception {
         startSyslogdGracefully();
@@ -197,6 +199,7 @@ public class SyslogdEventdLoadTest {
     }
 
     @Test
+    @Ignore
     @Transactional
     public void testEventd() throws Exception {
     	m_eventd.start();

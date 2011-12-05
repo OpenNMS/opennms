@@ -12,6 +12,7 @@ import org.apache.mina.core.future.IoFutureListener;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.DetectFuture;
@@ -76,6 +77,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
     }
     
     @Test
+    @Ignore
     public void testSucessServer() throws Throwable {
         setUpServer();
         final int port = m_server.getLocalPort();
@@ -112,6 +114,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
     }
     
     @Test
+    @Ignore
     @Repeat(10000)
     public void testNoServerPresent() throws Exception {
         
