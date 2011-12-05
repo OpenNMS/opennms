@@ -21,7 +21,7 @@ public class GroovyRunnerTest {
     
     @Test
     public void testGroovyClassLoaderFailConstructorError() throws CompilationFailedException, IOException {
-        String filename = "src/test/resources/groovy/SeleniumGroovyTest.groovy";
+        String filename = "src/test/resources/etc/selenium/SeleniumGroovyTest.groovy";
         Result result = runJUnitTests(getGroovyClass(filename));
         assertEquals(1, result.getFailureCount());
     }
@@ -29,7 +29,7 @@ public class GroovyRunnerTest {
     
     @Test
     public void testAnnotatedGroovyClassWithBaseUrl() throws IOException {
-        String filename = "src/test/resources/groovy/AnnotatedGroovyTest.groovy";
+        String filename = "src/test/resources/etc/selenium/AnnotatedGroovyTest.groovy";
         Result result = runJUnitTests(getGroovyClass(filename));
         
         assertEquals(0, result.getFailureCount());
@@ -37,7 +37,7 @@ public class GroovyRunnerTest {
     
     @Test
     public void testCustomJUnitRunnerWithComputer() throws CompilationFailedException, IOException {
-        String filename = "src/test/resources/groovy/GroovyRunnerTest.groovy";
+        String filename = "src/test/resources/etc/selenium/GroovyRunnerTest.groovy";
         
         Computer computer = new SeleniumComputer("http://www.papajohns.co.uk");
         

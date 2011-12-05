@@ -10,6 +10,7 @@ import org.junit.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.htmlunit.HtmlUnitDriver
 
 class SeleniumGroovyTest  {
     
@@ -25,20 +26,18 @@ class SeleniumGroovyTest  {
     
     @Before
     public void setUp() throws Exception {
-        driver = new FirefoxDriver();
+        driver = new HtmlUnitDriver();
         driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
     }
 
     @Test
     public void testSelenium() throws Exception {
         // open | / |
-        driver.get(baseUrl);
-        // click | link=Our Story |
-        driver.findElement(By.linkText("Our Story")).click();
+        driver.get(baseUrl + "/opennms/index.html");
         
         // assertText | link=Contact Us | Contact Us
         //assertEquals("Contact Us", driver.findElement(By.linkText("Contact Us")).getText());
-        assertEquals("Contact Us", driver.findElement(By.linkText("Contact Us")).getText());
+        assertEquals("Hello World!", driver.findElement(By.tagName("h2")).getText());
     }
 
     @After
