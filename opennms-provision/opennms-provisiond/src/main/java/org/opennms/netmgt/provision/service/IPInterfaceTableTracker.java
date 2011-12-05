@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.service;
 
+import java.net.InetAddress;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -95,15 +97,15 @@ public class IPInterfaceTableTracker extends TableTracker {
             return null;
         }
 
-        private String getNetMask() {
+        private InetAddress getNetMask() {
             SnmpValue value = getValue(IP_ADDR_ENT_NETMASK);
-            return value == null ? null : InetAddressUtils.str(value.toInetAddress());
+            return value == null ? null : value.toInetAddress();
         }
 
         public OnmsIpInterface createInterfaceFromRow() {
             
             String ipAddr = getIpAddress();
-            String netMask = getNetMask();
+            InetAddress netMask = getNetMask();
             Integer ifIndex = getIfIndex();
             
             OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);

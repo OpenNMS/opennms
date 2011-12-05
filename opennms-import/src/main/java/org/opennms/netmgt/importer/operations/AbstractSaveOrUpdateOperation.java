@@ -287,10 +287,10 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 		return (ifType == -1 ? null : new Integer(ifType));
 	}
 
-	private String getNetMask(int ifIndex) {
+	private InetAddress getNetMask(int ifIndex) {
 		InetAddress[] ifAddressAndMask = m_collector.getIfAddressAndMask(ifIndex);
 		if (ifAddressAndMask != null && ifAddressAndMask.length > 1 && ifAddressAndMask[1] != null) {
-            return InetAddressUtils.str(ifAddressAndMask[1]);
+            return ifAddressAndMask[1];
         }
 		return null;
 	}

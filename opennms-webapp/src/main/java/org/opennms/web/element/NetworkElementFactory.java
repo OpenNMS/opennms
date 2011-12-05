@@ -28,6 +28,8 @@
 
 package org.opennms.web.element;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -2296,7 +2298,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             if(iface.getSnmpInterface() != null) {
                 OnmsSnmpInterface snmpIface = iface.getSnmpInterface();
                 intf.m_snmpIfIndex = snmpIface.getIfIndex();
-                intf.m_snmpIpAdEntNetMask = snmpIface.getNetMask();
+                intf.m_snmpIpAdEntNetMask = str(snmpIface.getNetMask());
                 intf.m_snmpPhysAddr = snmpIface.getPhysAddr();
                 intf.m_snmpIfDescr = snmpIface.getIfDescr();
                 intf.m_snmpIfName = snmpIface.getIfName();
@@ -2341,7 +2343,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             }
             
             intf.m_snmpIfIndex = snmpIface.getIfIndex();
-            intf.m_snmpIpAdEntNetMask = snmpIface.getNetMask();
+            intf.m_snmpIpAdEntNetMask = str(snmpIface.getNetMask());
             intf.m_snmpPhysAddr = snmpIface.getPhysAddr();
             intf.m_snmpIfDescr = snmpIface.getIfDescr();
             intf.m_snmpIfName = snmpIface.getIfName();
