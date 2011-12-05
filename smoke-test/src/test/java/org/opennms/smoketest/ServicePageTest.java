@@ -1,21 +1,7 @@
 package org.opennms.smoketest;
 
-import java.net.URL;
-
-import org.opennms.smoketest.OpenNMSWebTester.Setter;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.internal.seleniumemulation.WaitForCondition;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverBackedSelenium;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.NoSuchElementException;
 
 
 public class ServicePageTest extends OpenNMSSeleniumTestCase {
