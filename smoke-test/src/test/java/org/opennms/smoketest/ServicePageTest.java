@@ -56,7 +56,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
         selenium.waitForPageToLoad("30000");
 
-        selenium.click("link=Manage Provisioning Groups");
+        selenium.click("link=Manage Provisioning Requisitions");
         selenium.waitForPageToLoad("30000");
 
         selenium.type("css=form[name=takeAction] > input[name=groupName]", groupName);
@@ -272,7 +272,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
     public void testDeleteProvisioningNodesAndGroups() throws Exception {
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=Manage Provisioning Groups");
+        selenium.click("link=Manage Provisioning Requisitions");
         selenium.waitForPageToLoad("30000");
         selenium.click("//input[@value='Delete Nodes']");
         selenium.waitForPageToLoad("30000");
