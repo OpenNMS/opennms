@@ -6,7 +6,6 @@ import org.junit.Test;
 public class UserAccountPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testAllTextIsPresent() throws Exception {
-
         assertTrue(selenium.isTextPresent("User Account Self-Service"));
         assertTrue(selenium.isTextPresent("Account Self-Service Options"));
         assertTrue(selenium.isTextPresent("require further"));

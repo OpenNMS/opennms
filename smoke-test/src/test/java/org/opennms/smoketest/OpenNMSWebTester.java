@@ -269,7 +269,7 @@ public class OpenNMSWebTester extends WebTester {
         String addedNode = setTreeFieldsAndSave("nodeEditForm", text("nodeLabel", nodeLabel));
 
         // add an interface
-        clickElementByXPath("//a[contains(@href, '" + addedNode + "') and text() = '[Add Interface]']");
+        clickElementByXPath("//a[contains(@href, '" + addedNode + "') and text() = '[Add Interface for Scanning]']");
 
         // set the ipAddr to ::1 and set snmpPrimary to 'P' and save
         setTreeFieldsAndSave("nodeEditForm", text("ipAddr", "::1"), option("snmpPrimary", "P"));
