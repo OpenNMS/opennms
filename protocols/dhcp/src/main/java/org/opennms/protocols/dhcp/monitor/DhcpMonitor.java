@@ -111,9 +111,12 @@ final public class DhcpMonitor extends AbstractServiceMonitor {
             if (responseTime >= 0) {
                 serviceStatus = PollStatus.available((double)responseTime);
             }
-        } catch (IOException ioE) {
-            ioE.fillInStackTrace();
-            serviceStatus = logDown(Level.WARN, "An I/O exception occured during DHCP discovery", ioE);
+        } catch (IOException e) {
+            e.fillInStackTrace();
+            serviceStatus = logDown(Level.WARN, "An I/O exception occured during DHCP polling", e);
+        } catch (Throwable e) {
+            e.fillInStackTrace();
+            serviceStatus = logDown(Level.WARN, "An unexpected exception occured during DHCP polling", e);
         }
 
         //
