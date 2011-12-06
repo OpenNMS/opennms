@@ -62,7 +62,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     private EventForwarder m_eventForwarder;
     
     /*TODO This needs to be done right with the onmsgi list style*/
-    @Autowired
+    // @Autowired
     private List<Northbounder> m_northboundInterfaces;
 
     private AlarmPersister m_persister;
@@ -132,8 +132,10 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
      * @throws java.lang.Exception if any.
      */
     public void afterPropertiesSet() throws Exception {
-        for (Northbounder nb : getNorthboundInterfaces()) {
-            nb.init();
+        if (getNorthboundInterfaces() != null) {
+            for (Northbounder nb : getNorthboundInterfaces()) {
+                nb.init();
+            }
         }
     }
 
@@ -163,15 +165,11 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     }
 
     public List<Northbounder> getNorthboundInterfaces() {
-        synchronized (m_northboundInterfaces) {
-            return m_northboundInterfaces;
-        }
+        return m_northboundInterfaces;
     }
 
     public void setNorthboundInterfaces(List<Northbounder> northboundInterfaces) {
-        synchronized (northboundInterfaces) {
-            m_northboundInterfaces = northboundInterfaces;
-        }
+        m_northboundInterfaces = northboundInterfaces;
     }
 
 }

@@ -250,15 +250,11 @@ public class HttpNorthbounder extends AbstractNorthbounder {
     }
 
     public HttpNorthbounderConfig getConfig() {
-        synchronized (m_config) {
-            return m_config;
-        }
+        return m_config;
     }
 
     public void setConfig(HttpNorthbounderConfig config) {
-        synchronized (m_config) {
-            m_config = config;
-        }
+        m_config = config;
     }
 
 }
