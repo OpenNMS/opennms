@@ -31,6 +31,12 @@ package org.opennms.netmgt.alarmd.api;
 
 import java.util.Date;
 
+/**
+ * Alarm API to be implemented by NBI and SBI.
+ * FIXME: Is this necessary???
+ * 
+ * @author <a mailto:david@opennms.org>David Hustace</a>
+ */
 public interface Alarm {
 
     public Integer getId();

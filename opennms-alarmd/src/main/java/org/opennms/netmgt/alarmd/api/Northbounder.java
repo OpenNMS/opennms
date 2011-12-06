@@ -32,7 +32,9 @@ import org.opennms.netmgt.alarmd.api.support.NorthbounderException;
 
 
 /**
- * Northbound Interface API
+ * North bound Interface API
+ * 
+ * FIXME: these fetch, sync, and sycncAll API calls need some helper functions in the abstraction
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $

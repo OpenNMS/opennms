@@ -29,7 +29,8 @@
 package org.opennms.netmgt.alarmd.api.support;
 
 /**
- * Northbound Interface API Exception
+ * North bound Interface API Exception
+ * Intention is to wrap all Throwables as a Runtime Exception
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $

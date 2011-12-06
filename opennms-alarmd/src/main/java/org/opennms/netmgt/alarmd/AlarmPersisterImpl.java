@@ -35,7 +35,6 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**

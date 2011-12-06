@@ -39,6 +39,13 @@ import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.springframework.test.context.ContextConfiguration;
 
+/**
+ * Tests the HTTP North Bound Interface
+ * FIXME: This is far from completed
+ * 
+ * @author <a mailto:brozow@opennms.org>Matt Brozowski</a>
+ * @author <a mailto:david@opennms.org>David Hustace</a>
+ */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations="classpath:META-INF/opennms/emptyContext.xml")
 @JUnitConfigurationEnvironment

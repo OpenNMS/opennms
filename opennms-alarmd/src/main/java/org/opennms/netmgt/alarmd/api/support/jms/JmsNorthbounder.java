@@ -46,6 +46,9 @@ import org.springframework.jms.core.MessageCreator;
 
 /**
  * Northbound Interface JMS Implementation
+ * 
+ * FIXME: Needs LOTS of work.  Need to implement ActiveMQ client instead of Geronimo.
+ * FIXME: Needs configuration DAO
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $

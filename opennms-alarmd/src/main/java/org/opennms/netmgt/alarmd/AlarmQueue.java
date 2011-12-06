@@ -39,7 +39,16 @@ import org.apache.log4j.Logger;
 import org.opennms.netmgt.alarmd.api.Alarm;
 import org.opennms.netmgt.alarmd.api.support.StatusAlarm;
 
-
+/**
+ * Based on Matt's queue implementation of event forwarding in opennmsd (OVAPI daemon)
+ * When in forwarding state, uses Nagle's algorithm to batch up alarms for forwarding by the NBI.
+ * 
+ * FIXME: Need to make sure the are reasonable defaults in the configuration just-in-case
+ * the NBI implementations don't set the batch size, etc. 
+ * 
+ * @auther <a mailto:brozow@opennms.org>Matt Brozowski</a>
+ * @author <a mailto:david@opennms.org>David Hustace</a>
+ */
 public class AlarmQueue {
     
     private static Logger log = Logger.getLogger(AlarmQueue.class);

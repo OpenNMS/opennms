@@ -40,6 +40,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.alarmd.api.support.NorthbounderException;
 
+/**
+ * Configuration for HTTP NBI implementation.
+ * FIXME: This needs lots of work.
+ * FIXME: Make configuration mimic configuration of other HttpClient configurations: PSM, HttpCollector
+ * so that users can reuse their configuration knowledge and not have to configured HTTP based client
+ * configurations differently in every section of the software.
+ * 
+ * @author <a mailto:david@opennms.org>David Hustace</a>
+ */
 @XmlRootElement(name="http-northbounder-config")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class HttpNorthbounderConfig implements Serializable, Comparable<HttpNorthbounderConfig>{

@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.alarmd.api.support.jms;
 
+/**
+ * Configuration for the JMS NBI
+ * 
+ * FIXME: Currently just stubbed in.
+ * 
+ * @author <a mailto:david@opennms.org>David Hustace</a>
+ */
 public class JmsNorthbounderConfig {
 
 }

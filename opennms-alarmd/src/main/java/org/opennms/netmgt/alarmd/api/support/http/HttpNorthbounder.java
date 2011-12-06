@@ -70,6 +70,9 @@ import org.opennms.netmgt.alarmd.api.support.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.http.HttpNorthbounderConfig.HttpMethod;
 
 /**
+ * Forwards north bound alarms via HTTP.
+ * FIXME: Needs lots of work still :(
+ * 
  * @author <a mailto:david@opennms.org>David Hustace</a>
  */
 public class HttpNorthbounder extends AbstractNorthbounder {
@@ -79,7 +82,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         super("HttpNorthbounder");
     }
 
-    //FIXME: This should be wired with Spring
+    //FIXME: This should be wired with Spring but is implmented as was in the PSM
     // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
     // is available to JSSE
     static {
@@ -222,6 +225,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
     }
     
     /**
+     * FIXME: Forcing the developer to call super()
      * This method should be overridden in the implementation with a call to super.sync(alarm);
      */
     @Override
@@ -229,6 +233,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
     }
     
     /**
+     * FIXME: Forcing the developer to call super()
      * This method should be overridden in the implementation with a call to super.sync(alarm);
      */
     @Override
@@ -236,6 +241,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
     }
     
     /**
+     * FIXME: Forcing the developer to call super()
      * This method should be overridden in the implementation with a call to super.sync(alarm);
      */
     @Override
@@ -244,11 +250,15 @@ public class HttpNorthbounder extends AbstractNorthbounder {
     }
 
     public HttpNorthbounderConfig getConfig() {
-        return m_config;
+        synchronized (m_config) {
+            return m_config;
+        }
     }
 
     public void setConfig(HttpNorthbounderConfig config) {
-        m_config = config;
+        synchronized (m_config) {
+            m_config = config;
+        }
     }
 
 }
