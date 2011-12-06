@@ -29,6 +29,7 @@
 package org.opennms.protocols.xml.collector;
 
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.opennms.core.utils.TimeKeeper;
 
@@ -47,24 +48,23 @@ public class ConstantTimeKeeper implements TimeKeeper {
      *
      * @param date the date
      */
-    public ConstantTimeKeeper(Date date) {
+    public ConstantTimeKeeper(final Date date) {
         m_date = date;
     }
     
-    /* (non-Javadoc)
-     * @see org.opennms.core.utils.TimeKeeper#getCurrentTime()
-     */
     @Override
     public long getCurrentTime() {
         return m_date.getTime();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.core.utils.TimeKeeper#getCurrentDate()
-     */
     @Override
     public Date getCurrentDate() {
         return m_date;
+    }
+
+    @Override
+    public TimeZone getTimeZone() {
+        return TimeZone.getDefault();
     }
   
 }
