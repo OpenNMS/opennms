@@ -62,7 +62,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     private EventForwarder m_eventForwarder;
     
     /*TODO This needs to be done right with the onmsgi list style*/
-    @Autowired
+    // @Autowired
     private List<Northbounder> m_northboundInterfaces;
 
     private AlarmPersister m_persister;
