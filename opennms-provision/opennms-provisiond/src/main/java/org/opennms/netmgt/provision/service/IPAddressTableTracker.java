@@ -34,6 +34,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -129,7 +130,7 @@ public class IPAddressTableTracker extends TableTracker {
             return value.toInt();
         }
 
-        private String getNetMask() {
+        private InetAddress getNetMask() {
             final SnmpValue value = getValue(IP_ADDRESS_PREFIX_INDEX);
 
             final SnmpInstId netmaskRef = value.toSnmpObjId().getInstance(IP_ADDRESS_PREFIX_ORIGIN_INDEX);
@@ -163,10 +164,12 @@ public class IPAddressTableTracker extends TableTracker {
                 return null;
             }
 
-            final InetAddress address = getInetAddress(rawIds, addressIndex, addressLength);
+            //final InetAddress address = getInetAddress(rawIds, addressIndex, addressLength);
 
-            if (addressType == TYPE_IPV4 || addressType == TYPE_IPV6) {
-                return str(address) + "/" + mask;
+            if (addressType == TYPE_IPV4) {
+                return InetAddressUtils.convertCidrToInetAddressV4(mask);
+            } else if (addressType == TYPE_IPV6) {
+                return InetAddressUtils.convertCidrToInetAddressV6(mask);
             } else {
                 LogUtils.warnf(this, "unknown address type, expected 1 (IPv4) or 2 (IPv6), but got %d", addressType);
                 return null;
@@ -178,7 +181,7 @@ public class IPAddressTableTracker extends TableTracker {
             final Integer ifIndex = getIfIndex();
             final String ipAddr = getIpAddress();
             final Integer type = getType();
-            final String netMask = getNetMask();
+            final InetAddress netMask = getNetMask();
 
             LogUtils.debugf(this, "createInterfaceFromRow: ifIndex = %s, ipAddress = %s, type = %s, netmask = %s", ifIndex, ipAddr, type, netMask);
 

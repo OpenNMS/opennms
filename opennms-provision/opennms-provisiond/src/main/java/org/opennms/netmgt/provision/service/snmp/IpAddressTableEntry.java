@@ -124,7 +124,7 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
      *
      * @return a {@link java.net.InetAddress} object.
      */
-    public String getIpAddressNetMask() {
+    public InetAddress getIpAddressNetMask() {
     	final SnmpValue value = getValue(IP_ADDR_ENT_NETMASK);
     	// LogUtils.debugf(this, "getIpAddressNetMask: value = %s", value.toDisplayString());
     	final SnmpObjId netmaskRef = value.toSnmpObjId().getInstance(IPAddressTableTracker.IP_ADDRESS_PREFIX_ORIGIN_INDEX);
@@ -135,13 +135,13 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
     	final InetAddress address = getInetAddress(rawIds, 3, addressLength);
     	final int mask = rawIds[rawIds.length - 1];
 
-		if (addressType == IPAddressTableTracker.TYPE_IPV4 || addressType == IPAddressTableTracker.TYPE_IPV6) {
-			final String netmask = str(address) + "/" + mask;
-			// LogUtils.debugf(this, "getIpAddressNetMask: returning %s", netmask);
-			return netmask;
+    	if (addressType == IPAddressTableTracker.TYPE_IPV4) {
+    	    return InetAddressUtils.convertCidrToInetAddressV4(mask);
+    	} else if (addressType == IPAddressTableTracker.TYPE_IPV6) {
+    	    return InetAddressUtils.convertCidrToInetAddressV6(mask);
     	} else {
-    		LogUtils.warnf(this, "unknown address type, expected 1 (IPv4) or 2 (IPv6), but got %d", addressType);
-    		return null;
+    	    LogUtils.warnf(this, "unknown address type, expected 1 (IPv4) or 2 (IPv6), but got %d", addressType);
+    	    return null;
     	}
     }
     

@@ -533,7 +533,7 @@ public class DbEventWriter extends AbstractQueryManager {
             d.cleanUp();
         }
 
-        RouterInterface ri = new RouterInterface(nodeid, ifindex, netmask);
+        RouterInterface ri = new RouterInterface(nodeid, ifindex, addr(netmask));
         return ri;
 
     }

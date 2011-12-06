@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,27 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd;
+package org.opennms.netmgt.alarmd.api;
 
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.xml.event.Event;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 /**
- * AlarmPersting Interface
- *
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
+ * Alarm API to be implemented by NBI and SBI.
+ * FIXME: Is this necessary???
+ * 
+ * @author <a mailto:david@opennms.org>David Hustace</a>
  */
-public interface AlarmPersister {
+public interface Alarm {
 
-    /**
-     * <p>persist</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @return 
-     */
-    @Transactional
-    public abstract OnmsAlarm persist(Event event);
+    public Integer getId();
+    public String getUei();
+    public Date getTimeStamp();
+
+    public boolean isPreserved();
+    public void setPreserved(boolean preserved);
 
 }

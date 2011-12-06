@@ -99,6 +99,7 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 
 		BindingsSniffer sniffer = new BindingsSniffer();
 		sniffer.put("math", new MathBinding());
+		sniffer.put("datasources", new HashMap<String,Double>()); // To workaround NMS-5019
 
 		// Test parsing of the expression and collect the variable names by using
 		// a Bindings instance that sniffs all of the variable names
@@ -177,6 +178,7 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 		// Add all of the variable values to the script context
 		BindingsSniffer context = new BindingsSniffer();
 		context.putAll(values);
+		context.set("datasources",  new HashMap<String, Double>(values)); // To workaround NMS-5019
 		context.put("math", new MathBinding());
 		double result = Double.NaN;
 		try {

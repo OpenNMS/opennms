@@ -35,7 +35,6 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -49,18 +48,18 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
 
-    /** {@inheritDoc} */
-    @Transactional
-    public void persist(Event event) {
+    /** {@inheritDoc} 
+     * @return */
+    public OnmsAlarm persist(Event event) {
         if (!checkEventSanityAndDoWeProcess(event)) {
-            return;
+            return null;
         }
         log().debug("process: " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
 
-        addOrReduceEventAsAlarm(event);
+        return addOrReduceEventAsAlarm(event);
     }
 
-    private void addOrReduceEventAsAlarm(Event event) {
+    private OnmsAlarm addOrReduceEventAsAlarm(Event event) {
         //TODO: Understand why we use Assert
         Assert.notNull(event, "Incoming event was null, aborting"); 
         Assert.isTrue(event.getDbid() > 0, "Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
@@ -88,6 +87,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 m_eventDao.deletePreviousEventsForAlarm(alarm.getId(), e);
             }
         }
+        
+        return alarm;
     }
 
     private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm) {

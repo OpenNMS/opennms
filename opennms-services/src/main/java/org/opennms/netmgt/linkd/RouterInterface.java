@@ -44,10 +44,10 @@ public class RouterInterface {
     private final InetAddress m_nextHopNetmask;
     private int m_snmpIfType; 
 	
-	RouterInterface(final int nextHopNodeId, final int nextHopIfIndex, final String nextHopNetmask) {
+	RouterInterface(final int nextHopNodeId, final int nextHopIfIndex, final InetAddress nextHopNetmask) {
 		m_nextHopNodeId = nextHopNodeId;
 		m_nextHopIfIndex = nextHopIfIndex;
-		m_nextHopNetmask = InetAddressUtils.getInetAddress(nextHopNetmask);
+		m_nextHopNetmask = nextHopNetmask;
 	}
 
 	RouterInterface(final int nextHopNodeId, final int nextHopIfIndex) {

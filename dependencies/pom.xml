@@ -15,6 +15,7 @@
     <module>dnsjava</module>
     <module>drools</module>
     <module>gwt</module>
+    <module>geronimo</module>
     <module>hibernate</module>
     <module>jasper</module>
     <module>javamail</module>

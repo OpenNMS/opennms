@@ -120,7 +120,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * @param ifIndex a int.
      * @return a {@link java.net.InetAddress} object.
      */
-    public String getNetMask(final int ifIndex) {
+    public InetAddress getNetMask(final int ifIndex) {
         IpAddrTableEntry entry = getEntryByIfIndex(ifIndex);
         return entry == null ? null : entry.getIpAdEntNetMask();
         
@@ -132,7 +132,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * @param address a {@link java.net.InetAddress} object.
      * @return a {@link java.net.InetAddress} object.
      */
-    public String getNetMask(final InetAddress address) {
+    public InetAddress getNetMask(final InetAddress address) {
         return getEntry(address) == null ? null : getEntry(address).getIpAdEntNetMask();
     }
     
@@ -223,7 +223,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
                 snmpIf = new OnmsSnmpInterface(node, ifIndex);
             }
 
-            final String mask = getNetMask(inetAddr);
+            final InetAddress mask = getNetMask(inetAddr);
             if (mask != null) {
                 snmpIf.setNetMask(mask);
             }

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,10 +52,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Type;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.RrdLabelUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -73,7 +77,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     private Integer m_id;
 
     /** identifier field */
-    private String m_netMask;
+    private InetAddress m_netMask;
 
     /** identifier field */
     private String m_physAddr;
@@ -171,7 +175,9 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     @Column(name = "snmpIpAdEntNetMask")
-    public String getNetMask() {
+    @Type(type="org.opennms.netmgt.model.InetAddressUserType")
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+    public InetAddress getNetMask() {
         return m_netMask;
     }
 
@@ -180,7 +186,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      * 
      * @param snmpipadentnetmask a {@link java.lang.String} object.
      */
-    public void setNetMask(String snmpipadentnetmask) {
+    public void setNetMask(InetAddress snmpipadentnetmask) {
         m_netMask = snmpipadentnetmask;
     }
     

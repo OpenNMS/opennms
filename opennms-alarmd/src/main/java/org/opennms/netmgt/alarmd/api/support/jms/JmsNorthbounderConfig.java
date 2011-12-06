@@ -26,27 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd;
-
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.xml.event.Event;
-import org.springframework.transaction.annotation.Transactional;
+package org.opennms.netmgt.alarmd.api.support.jms;
 
 /**
- * AlarmPersting Interface
- *
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
+ * Configuration for the JMS NBI
+ * 
+ * FIXME: Currently just stubbed in.
+ * 
+ * @author <a mailto:david@opennms.org>David Hustace</a>
  */
-public interface AlarmPersister {
-
-    /**
-     * <p>persist</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @return 
-     */
-    @Transactional
-    public abstract OnmsAlarm persist(Event event);
+public class JmsNorthbounderConfig {
 
 }

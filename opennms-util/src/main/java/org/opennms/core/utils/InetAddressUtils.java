@@ -439,6 +439,44 @@ abstract public class InetAddressUtils {
 		return isInetAddressInRange(InetAddressUtils.toIpAddrBytes(ipAddr), begin, end);
 	}
 
+    public static InetAddress convertCidrToInetAddressV4(int cidr) {
+        if (cidr < 0 || cidr > 32) {
+            throw new IllegalArgumentException("Illegal IPv4 CIDR mask length: " + cidr);
+        }
+        StringBuffer binaryString = new StringBuffer();
+        int i = 0;
+        for (; i < cidr; i++) {
+            binaryString.append('1');
+        }
+        for (; i < 32; i++) {
+            binaryString.append('0');
+        }
+        try {
+            return convertBigIntegerIntoInetAddress(new BigInteger(binaryString.toString(), 2));
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Could not convert CIDR mask to InetAddress: " + e.getMessage());
+        }
+    }
+
+    public static InetAddress convertCidrToInetAddressV6(int cidr) {
+        if (cidr < 0 || cidr > 128) {
+            throw new IllegalArgumentException("Illegal IPv6 CIDR mask length: " + cidr);
+        }
+        StringBuffer binaryString = new StringBuffer();
+        int i = 0;
+        for (; i < cidr; i++) {
+            binaryString.append('1');
+        }
+        for (; i < 128; i++) {
+            binaryString.append('0');
+        }
+        try {
+            return convertBigIntegerIntoInetAddress(new BigInteger(binaryString.toString(), 2));
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Could not convert CIDR mask to InetAddress: " + e.getMessage());
+        }
+    }
+
     public static InetAddress convertBigIntegerIntoInetAddress(final BigInteger i) throws UnknownHostException {
         if (i.compareTo(BigInteger.ZERO) < 0) {
             throw new IllegalArgumentException("BigInteger is negative, cannot convert into an IP address: " + i.toString());

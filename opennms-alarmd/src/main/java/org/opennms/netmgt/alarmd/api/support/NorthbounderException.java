@@ -26,27 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd;
-
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.xml.event.Event;
-import org.springframework.transaction.annotation.Transactional;
+package org.opennms.netmgt.alarmd.api.support;
 
 /**
- * AlarmPersting Interface
+ * North bound Interface API Exception
+ * Intention is to wrap all Throwables as a Runtime Exception
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public interface AlarmPersister {
 
-    /**
-     * <p>persist</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @return 
-     */
-    @Transactional
-    public abstract OnmsAlarm persist(Event event);
+public class NorthbounderException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+    
+    public NorthbounderException(Throwable t) {
+        super(t);
+    }
+    
+    public NorthbounderException(String message) {
+        super(message);
+    }
+    
+    public NorthbounderException(String message, Throwable t) {
+        super(message, t);
+    }
 
 }
