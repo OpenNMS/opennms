@@ -37,6 +37,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -133,5 +134,17 @@ public class InetAddressUtilsTest {
         String ip1 = "1.1.1.1";
         String ip2 = "255.255.255.255";
         Assert.assertFalse(BigInteger.ZERO.compareTo(InetAddressUtils.difference(ip1, ip2)) < 0);
+    }
+    
+    @Test
+    public void testCidrFunctions() throws Exception {
+        assertEquals("255.0.0.0", str(InetAddressUtils.convertCidrToInetAddressV4(8)));
+        assertEquals("255.255.0.0", str(InetAddressUtils.convertCidrToInetAddressV4(16)));
+        assertEquals("255.255.255.0", str(InetAddressUtils.convertCidrToInetAddressV4(24)));
+        assertEquals("255.255.255.255", str(InetAddressUtils.convertCidrToInetAddressV4(32)));
+
+        assertEquals("ffff:ffff:ffff:0000:0000:0000:0000:0000", str(InetAddressUtils.convertCidrToInetAddressV6(48)));
+        assertEquals("ffff:ffff:ffff:ffff:0000:0000:0000:0000", str(InetAddressUtils.convertCidrToInetAddressV6(64)));
+        assertEquals("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", str(InetAddressUtils.convertCidrToInetAddressV6(128)));
     }
 }

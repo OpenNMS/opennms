@@ -15,7 +15,7 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
         selenium.open("/opennms/admin/node/add.htm");
         selenium.click("link=Admin");
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=Manage Provisioning Groups");
+        selenium.click("link=Manage Provisioning Requisitions");
         selenium.waitForPageToLoad("30000");
         selenium.type("css=form[name=takeAction] > input[name=groupName]", "test");
         selenium.click("css=input[type=submit]");

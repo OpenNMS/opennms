@@ -104,8 +104,8 @@ public class ScanManager {
         return m_ifXTable;
     }
 
-    String getNetMask(final int ifIndex) {
-    	final String ipAddressNetmask = getIpAddressTable().getNetMask(ifIndex);
+    InetAddress getNetMask(final int ifIndex) {
+    	final InetAddress ipAddressNetmask = getIpAddressTable().getNetMask(ifIndex);
     	if (ipAddressNetmask == null) {
     		return getIpAddrTable().getNetMask(ifIndex);
     	} else {
