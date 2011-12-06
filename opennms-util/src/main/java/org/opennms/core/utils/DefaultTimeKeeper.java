@@ -29,6 +29,7 @@
 package org.opennms.core.utils;
 
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * <p>DefaultTimeKeeper class.</p>
@@ -51,6 +52,11 @@ public class DefaultTimeKeeper implements TimeKeeper {
      */
     public long getCurrentTime() {
         return System.currentTimeMillis();
+    }
+
+    @Override
+    public TimeZone getTimeZone() {
+        return TimeZone.getDefault();
     }
 
 }
