@@ -30,6 +30,7 @@ package org.opennms.netmgt.alarmd;
 
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * AlarmPersting Interface
@@ -45,6 +46,7 @@ public interface AlarmPersister {
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      * @return 
      */
+    @Transactional
     public abstract OnmsAlarm persist(Event event);
 
 }

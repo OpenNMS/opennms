@@ -243,8 +243,6 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         
     }
 
-
-
     public HttpNorthbounderConfig getConfig() {
         return m_config;
     }

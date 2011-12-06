@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.opennms.netmgt.alarmd.api.Alarm;
@@ -66,7 +67,7 @@ public class AlarmQueue {
 
         protected void addPreservedToPreservedQueue(List<Alarm> alarms) {
             for(Iterator<Alarm> it = alarms.iterator(); it.hasNext(); ) {
-                Alarm a = (Alarm)it.next();
+                Alarm a = it.next();
                 if (a.isPreserved()) {
                     addToPreservedQueue(a);
                 }
@@ -84,11 +85,29 @@ public class AlarmQueue {
         public List<Alarm> getAlarmsToForward() throws InterruptedException {
             List<Alarm> alarms = new ArrayList<Alarm>(m_maxBatchSize);
             
-            Alarm a = (Alarm) m_queue.take();
+            Alarm a = m_queue.take();
             alarms.add(a);
+            
             
             m_queue.drainTo(alarms, m_maxBatchSize - alarms.size());
             
+            if (m_naglesDelay <= 0) {
+                return alarms;
+            }
+
+            long now = System.currentTimeMillis();
+            long expirationTime = now + m_naglesDelay;
+            while (alarms.size() < m_maxBatchSize && now < expirationTime) {
+                Alarm alarm = m_queue.poll(expirationTime - now, TimeUnit.MILLISECONDS);
+                
+                if (alarm != null) {
+                    alarms.add(alarm);
+                    m_queue.drainTo(alarms, m_maxBatchSize - alarms.size());
+                }
+                
+                now = System.currentTimeMillis();
+            }
+
             return alarms;
             
         }
@@ -166,6 +185,7 @@ public class AlarmQueue {
     // operational parameters
     private int m_maxPreservedAlarms = 300000;
     private int m_maxBatchSize = 100;
+    private long m_naglesDelay = 1000;
 
     // queue for all alarms to be forwarded
     private BlockingQueue<Alarm> m_queue = new LinkedBlockingQueue<Alarm>();
@@ -182,6 +202,14 @@ public class AlarmQueue {
     private void setState(State state) {
         m_state = state;
         log.debug("Setting state of AlarmQueue to "+m_state);
+    }
+    
+    public long getNaglesDelay() {
+        return m_naglesDelay;
+    }
+    
+    public void setNaglesDelay(long delay) {
+        m_naglesDelay = delay;
     }
     
     public int getMaxPreservedAlarms() {

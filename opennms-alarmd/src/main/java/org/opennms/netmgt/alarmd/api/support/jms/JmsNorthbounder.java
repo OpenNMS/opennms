@@ -66,6 +66,9 @@ public class JmsNorthbounder extends AbstractNorthbounder {
     //TODO needs to be configured
     private Queue m_queue;
     
+    @Autowired
+    private JmsNorthbounderConfig m_config;
+    
     @Override
     public boolean accepts(Alarm alarm) {
         // TODO Auto-generated method stub
@@ -76,6 +79,10 @@ public class JmsNorthbounder extends AbstractNorthbounder {
 
     @Override
     public void forwardAlarms(List<Alarm> alarms) throws NorthbounderException {
+        
+        for (final Alarm alarm : alarms) {
+            m_template.convertAndSend(alarm);
+        }
         
         for (final Alarm alarm : alarms) {
             m_template.send(m_queue, new MessageCreator() {

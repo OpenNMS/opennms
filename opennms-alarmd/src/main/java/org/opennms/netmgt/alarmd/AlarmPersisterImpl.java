@@ -49,9 +49,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
 
-    /** {@inheritDoc} */
-    @Transactional
-    public void persist(Event event) {
+    /** {@inheritDoc} 
+     * @return */
+    public OnmsAlarm persist(Event event) {
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;
         }
@@ -60,7 +60,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return addOrReduceEventAsAlarm(event);
     }
 
-    @Transactional
     private OnmsAlarm addOrReduceEventAsAlarm(Event event) {
         //TODO: Understand why we use Assert
         Assert.notNull(event, "Incoming event was null, aborting"); 

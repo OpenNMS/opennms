@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Alarm management Daemon
@@ -60,6 +61,8 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
 
     private EventForwarder m_eventForwarder;
     
+    /*TODO This needs to be done right with the onmsgi list style*/
+    @Autowired
     private List<Northbounder> m_northboundInterfaces;
 
     private AlarmPersister m_persister;

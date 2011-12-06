@@ -4,7 +4,6 @@ package org.opennms.netmgt.alarmd.api.support;
 import java.net.InetAddress;
 import java.util.Date;
 
-import org.opennms.netmgt.alarmd.Resolver;
 import org.opennms.netmgt.alarmd.api.Alarm;
 
 /**
@@ -103,11 +102,10 @@ public class StatusAlarm implements Alarm {
         m_preserved = preserved;
     }
 
-    public String resolveNodeLabel(Resolver r) {
-        if (m_nodeLabel == null) {
-            m_nodeLabel = r.resolveAddress(getAgentAddress());
-        }
-        return m_nodeLabel;
+    @Override
+    public Integer getId() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

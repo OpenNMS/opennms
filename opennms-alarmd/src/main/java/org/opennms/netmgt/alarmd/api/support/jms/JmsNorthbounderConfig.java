@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,18 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd.api;
+package org.opennms.netmgt.alarmd.api.support.jms;
 
-
-import java.util.Date;
-
-public interface Alarm {
-
-    public Integer getId();
-    public String getUei();
-    public Date getTimeStamp();
-
-    public boolean isPreserved();
-    public void setPreserved(boolean preserved);
+public class JmsNorthbounderConfig {
 
 }

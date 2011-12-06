@@ -51,10 +51,12 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable {
     
     private String m_name;
 
+    /**
+     * If you override this, be sure to call super.init()
+     */
     @Override
     public void init() throws NorthbounderException {
-        // TODO Auto-generated method stub
-
+        start();
     }
     
     protected AbstractNorthbounder(String name) {
@@ -66,6 +68,10 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable {
 
     private AlarmQueue m_queue = new AlarmQueue();
     private long m_retryInterval = 1000;
+    
+    public void setNaglesDelay (long delay) {
+        m_queue.setNaglesDelay(delay);
+    }
     
     public void setRetryInterval(int retryInterval) {
         m_retryInterval = retryInterval;
