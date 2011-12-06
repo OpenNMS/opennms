@@ -188,6 +188,9 @@ public class HttpMonitor extends AbstractServiceMonitor {
                 } catch (IOException e) {
                     log().warn("IOException while polling address " + (iface.getAddress()), e);
                     httpClient.setReason("IOException while polling address: "+(iface.getAddress())+": "+e.getMessage());
+                } catch (Throwable e) {
+                    log().warn("Unexpected exception while polling address " + (iface.getAddress()), e);
+                    httpClient.setReason("Unexpected exception while polling address: "+(iface.getAddress())+": "+e.getMessage());
                 } finally {
                     httpClient.closeConnection();
                 }
