@@ -120,4 +120,8 @@ public class SimpleJasperReportsDao implements LocalReportsDao, LocalJasperRepor
     public SimpleJasperReportsDefinition getSimpleJasperReportsDefinitionOnlineReports() {
         return reports;
     }
+
+    public SimpleJasperReportsDefinition getSimpleJasperReportsDefinitionReports() {
+        return reports;
+    }
 }

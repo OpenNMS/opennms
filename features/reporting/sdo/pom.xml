@@ -9,29 +9,26 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opennms.features.reporting</groupId>
-	<artifactId>org.opennms.features.reporting.repository</artifactId>
-	<name>OpenNMS Repository for Reports</name>
+	<artifactId>org.opennms.features.reporting.sdo</artifactId>
+	<name>OpenNMS SDO for Remote Repository Reports</name>
 	<url>http://www.opennms.org/</url>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.opennms.features.reporting</groupId>
-			<artifactId>org.opennms.features.reporting.dao</artifactId>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils-core</artifactId>			
 		</dependency>
+
+		<!-- logging -->
 		<dependency>
-			<groupId>org.opennms.features.reporting</groupId>
-			<artifactId>org.opennms.features.reporting.model</artifactId>
-		</dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			</dependency>
+
 		<dependency>
-			<groupId>org.opennms.features.reporting</groupId>
-			<artifactId>org.opennms.features.reporting.sdo</artifactId>
-		</dependency>
-		
-		<dependency>			
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-apache-client</artifactId>
-			<version>1.10</version>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>0.9.30</version>
 		</dependency>
 	</dependencies>
-
 </project>

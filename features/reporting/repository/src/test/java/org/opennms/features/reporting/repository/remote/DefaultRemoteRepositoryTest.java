@@ -36,14 +36,14 @@ public class DefaultRemoteRepositoryTest {
             System.out.println(report);
         }
     }
-    
-    @Test
-    public void getReportsTest() {
-        assertEquals("jdbc", m_repo.getEngine("4"));
-    }
-
-    @Test
-    public void getDisplayTest() {
-        assertEquals("Eat my shorts!", m_repo.getDisplayName("4"));
-    } 
+//TODO Tak: tests deprecated, write new tests
+//    @Test
+//    public void getReportsTest() {
+//        assertEquals("jdbc", m_repo.getEngine("4"));
+//    }
+//
+//    @Test
+//    public void getDisplayTest() {
+//        assertEquals("Eat my shorts!", m_repo.getDisplayName("4"));
+//    } 
 }

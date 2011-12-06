@@ -1079,6 +1079,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.sdo</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
         <artifactId>org.opennms.features.reporting.model</artifactId>
         <version>${project.version}</version>
       </dependency>

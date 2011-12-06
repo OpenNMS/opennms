@@ -17,5 +17,6 @@
     <module>repository</module>
     <module>model</module>
     <module>dao</module>
+    <module>sdo</module>
   </modules>
 </project>
