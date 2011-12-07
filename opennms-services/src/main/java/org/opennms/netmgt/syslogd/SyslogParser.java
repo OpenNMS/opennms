@@ -28,10 +28,15 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.statsd.RelativeTime;
 
 
 public class SyslogParser {
@@ -106,6 +111,29 @@ public class SyslogParser {
     
     protected int getSeverity(final int priorityField) {
         return (priorityField & SyslogMessage.LOG_PRIMASK);
+    }
+
+    @SuppressWarnings("deprecation")
+    protected Date parseDate(final String dateString) {
+        Date date;
+        try {
+            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            date = df.parse(dateString);
+        } catch (final Exception e) {
+            try {
+                final DateFormat df = new SimpleDateFormat("MMM d HH:mm:ss");
+                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                
+                // Ugh, what's the non-lame way of forcing it to parse to "this year"?
+                date = df.parse(dateString);
+                date.setYear(RelativeTime.THISYEAR.getStart().getYear());
+            } catch (final Exception e2) {
+                LogUtils.debugf(this, e2, "Unable to parse date '%s'", dateString);
+                date = null;
+            }
+        }
+        return date;
     }
 
 }

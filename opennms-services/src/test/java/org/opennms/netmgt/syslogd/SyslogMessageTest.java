@@ -31,13 +31,20 @@ package org.opennms.netmgt.syslogd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.mock.MockLogAppender;
 
 public class SyslogMessageTest {
     public SyslogMessageTest() throws Exception {
@@ -53,23 +60,66 @@ public class SyslogMessageTest {
         }
     }
     
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging(true, "TRACE");
+    }
+
     @Test
     public void testCustomParserWithProcess() throws Exception {
         SyslogParser parser = CustomSyslogParser.getParser("<6>test: 2007-01-01 127.0.0.1 OpenNMS[1234]: A SyslogNG style message");
         assertTrue(parser.find());
-        SyslogMessage message = parser.parse();
-        final Date date = new Date(1167609600000L);
+        final SyslogMessage message = parser.parse();
 
         assertEquals(0, message.getFacility());
         assertEquals(6, message.getSeverity());
         assertEquals("test", message.getMessageID());
-        assertEquals(date, message.getDate());
         assertEquals("127.0.0.1", message.getHostName());
         assertEquals("OpenNMS", message.getProcessName());
         assertEquals(1234, message.getProcessId().intValue());
         assertEquals("A SyslogNG style message", message.getMessage());
     }
 
+    @Test
+    public void testCustomParserWithSimpleForwardingRegexAndSyslog21Message() throws Exception {
+        // see: http://searchdatacenter.techtarget.com/tip/Turn-aggregated-syslog-messages-into-OpenNMS-events
+
+        final InputStream stream = new ByteArrayInputStream(("<syslogd-configuration>" +
+                                                        "<configuration " +
+                                                        "syslog-port=\"10514\" " +
+                                                        "new-suspect-on-message=\"false\" " +
+                                                        "forwarding-regexp=\"^((.+?) (.*))\\r?\\n?$\" " +
+                                                        "matching-group-host=\"2\" " +
+                                                        "matching-group-message=\"3\" " +
+                                                        "discard-uei=\"DISCARD-MATCHING-MESSAGES\" " +
+                                                        "/></syslogd-configuration>").getBytes());
+        final SyslogdConfigFactory factory = new SyslogdConfigFactory(stream);
+        SyslogdConfigFactory.setInstance(factory);
+
+        final SyslogParser parser = CustomSyslogParser.getParser("<173>Dec  7 12:02:06 10.13.110.116 mgmtd[8326]: [mgmtd.NOTICE]: Configuration saved to database initial");
+        assertTrue(parser.find());
+        final SyslogMessage message = parser.parse();
+        final Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        calendar.set(Calendar.MONTH, 11);
+        calendar.set(Calendar.DATE, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 2);
+        calendar.set(Calendar.SECOND, 6);
+        calendar.set(Calendar.MILLISECOND, 0);
+        final Date date = calendar.getTime();
+
+        LogUtils.debugf(this, "got message: %s", message);
+
+        assertEquals(21, message.getFacility());
+        assertEquals(5, message.getSeverity());
+        assertEquals(null, message.getMessageID());
+        assertEquals(date, message.getDate());
+        assertEquals("10.13.110.116", message.getHostName());
+        assertEquals("mgmtd", message.getProcessName());
+        assertEquals(8326, message.getProcessId().intValue());
+        assertEquals("[mgmtd.NOTICE]: Configuration saved to database initial", message.getMessage());
+    }
+    
     @Test
     public void testSyslogNGParserWithProcess() throws Exception {
         SyslogParser parser = SyslogNGParser.getParser("<6>test: 2007-01-01 127.0.0.1 OpenNMS[1234]: A SyslogNG style message");
@@ -102,6 +152,23 @@ public class SyslogMessageTest {
         assertEquals(null, message.getProcessName());
         assertEquals(null, message.getProcessId());
         assertEquals("A SyslogNG style message", message.getMessage());
+    }
+
+    @Test
+    public void testSyslogNGParserWithSyslog21Message() throws Exception {
+        SyslogParser parser = SyslogNGParser.getParser("<173>Dec  7 12:02:06 10.13.110.116 mgmtd[8326]: [mgmtd.NOTICE]: Configuration saved to database initial");
+        assertTrue(parser.find());
+        SyslogMessage message = parser.parse();
+        final Date date = new Date(1323259326000L);
+
+        assertEquals(21, message.getFacility());
+        assertEquals(5, message.getSeverity());
+        assertEquals(null, message.getMessageID());
+        assertEquals(date, message.getDate());
+        assertEquals("10.13.110.116", message.getHostName());
+        assertEquals("mgmtd", message.getProcessName());
+        assertEquals(8326, message.getProcessId().intValue());
+        assertEquals("[mgmtd.NOTICE]: Configuration saved to database initial", message.getMessage());
     }
 
     @Test

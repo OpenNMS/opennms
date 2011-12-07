@@ -28,18 +28,16 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.LogUtils;
 
 public class SyslogNGParser extends SyslogParser {
-    //                                                                <PRI>        IDENT     TIMESTAMP                    HOST   PROCESS/ID                          MESSAGE
-    private static final Pattern m_syslogNGPattern = Pattern.compile("^<(\\d{1,3})>(\\S+?):? (\\d\\d\\d\\d-\\d\\d-\\d\\d) (\\S+) (?:(\\S+?)(?:\\[(\\d+)\\])?: ){0,1}(\\S.*?)$", Pattern.MULTILINE);
-    
+    //                                                                <PRI>        IDENT               TIMESTAMP                                                                                 HOST   PROCESS/ID                            MESSAGE
+    private static final Pattern m_syslogNGPattern = Pattern.compile("^<(\\d{1,3})>(?:(\\S*?)(?::? )?)((?:\\d\\d\\d\\d-\\d\\d-\\d\\d)|(?:\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)) (\\S+) (?:(\\S+?)(?:\\[(\\d+)\\])?:\\s+){0,1}(\\S.*?)$", Pattern.MULTILINE);
+
     protected SyslogNGParser(final String text) {
         super(text);
     }
@@ -69,14 +67,13 @@ public class SyslogNGParser extends SyslogParser {
         } catch (final NumberFormatException e) {
             LogUtils.debugf(this, e, "Unable to parse priority field '%s'", matcher.group(1));
         }
-        message.setMessageID(matcher.group(2));
-        try {
-            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            message.setDate(df.parse(matcher.group(3)));
-        } catch (final Exception e) {
-            LogUtils.debugf(this, e, "Unable to parse date '%s'", matcher.group(3));
+        if (matcher.group(2) != null && !matcher.group(2).isEmpty()) {
+            message.setMessageID(matcher.group(2));
         }
+
+        Date date = parseDate(matcher.group(3));
+        if (date == null) date = new Date();
+        message.setDate(date);
 
         message.setHostName(matcher.group(4));
         message.setProcessName(matcher.group(5));
