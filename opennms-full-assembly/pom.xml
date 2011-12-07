@@ -289,7 +289,7 @@
     </dependency>
     
     <dependency>
-        <groupId>org.opennms</groupId>
+        <groupId>org.opennms.features</groupId>
         <artifactId>selenium-monitor</artifactId>
         <version>${project.version}</version>
     </dependency>

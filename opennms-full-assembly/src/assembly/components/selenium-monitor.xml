@@ -6,6 +6,9 @@
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>true</useTransitiveDependencies>
       <outputDirectory>lib</outputDirectory>
+      <includes>
+        <include>org.opennms.features:selenium-monitor:jar:${project.version}</include>
+      </includes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
