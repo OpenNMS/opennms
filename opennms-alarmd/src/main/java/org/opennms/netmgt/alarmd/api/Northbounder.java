@@ -42,8 +42,6 @@ import org.opennms.netmgt.alarmd.api.support.NorthbounderException;
 
 public interface Northbounder {
 
-    void init() throws NorthbounderException;
-    
     public void start() throws NorthbounderException;
     
     public void onAlarm(Alarm alarm) throws NorthbounderException;

@@ -58,7 +58,7 @@ public class AbstractNorthbounderTest {
         
         private CountDownLatch m_acceptsCalled = new CountDownLatch(1);
 
-        protected TestNorthbounder() {
+        public TestNorthbounder() {
             super("TestNorthbounder");
         }
 
@@ -118,7 +118,7 @@ public class AbstractNorthbounderTest {
         TestNorthbounder tnb = new TestNorthbounder();
         tnb.setAccepting(true);
         
-        tnb.init();
+        tnb.start();
         
         Alarm a = createNorthboundAlarm(1);
         
@@ -138,7 +138,7 @@ public class AbstractNorthbounderTest {
         TestNorthbounder tnb = new TestNorthbounder();
         tnb.setAccepting(false);
         
-        tnb.init();
+        tnb.start();
         
         tnb.onAlarm(createNorthboundAlarm(1));
 
@@ -157,7 +157,7 @@ public class AbstractNorthbounderTest {
         tnb.setAccepting(true);
         
         tnb.setNaglesDelay(500);
-        tnb.init();
+        tnb.start();
         
         Alarm a1 = createNorthboundAlarm(1);
         Alarm a2 = createNorthboundAlarm(2);

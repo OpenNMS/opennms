@@ -51,20 +51,12 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable {
     
     private String m_name;
 
-    /**
-     * If you override this, be sure to call super.init()
-     */
-    @Override
-    public void init() throws NorthbounderException {
-        start();
-    }
-    
     protected AbstractNorthbounder(String name) {
         setName(name);
     }
 
     private Thread m_thread;
-    private volatile boolean m_stopped = false;
+    private volatile boolean m_stopped = true;
 
     private AlarmQueue m_queue = new AlarmQueue();
     private long m_retryInterval = 1000;
@@ -84,13 +76,22 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable {
     public void setMaxPreservedAlarms(int maxPreservedAlarms) {
         m_queue.setMaxPreservedAlarms(maxPreservedAlarms);
     }
-    
+
+    /** Override this to perform actions before startup. **/
+    protected void onPreStart() {}
+
+    /** Override this to perform actions after startup. **/
+    protected void onPostStart() {}
+
     @Override
-    public void start() throws NorthbounderException {
+    public final void start() throws NorthbounderException {
+        if (! m_stopped) return;
+        this.onPreStart();
         m_stopped = false;
         m_queue.init();
         m_thread = new Thread(this, getName()+"-Thread");
         m_thread.start();
+        this.onPostStart();
     }
     
     @Override
@@ -111,7 +112,12 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable {
         m_queue.discard(alarm);
     }
     
-    public void stop() throws NorthbounderException {
+    /** Override this to perform actions when stopping. **/
+    protected void onStop() {
+    }
+
+    public final void stop() throws NorthbounderException {
+        this.onStop();
         m_stopped = true;
     }
     

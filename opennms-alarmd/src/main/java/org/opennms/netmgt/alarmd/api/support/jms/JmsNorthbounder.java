@@ -74,7 +74,6 @@ public class JmsNorthbounder extends AbstractNorthbounder {
     
     @Override
     public boolean accepts(Alarm alarm) {
-        // TODO Auto-generated method stub
         return true;
     }
 
@@ -107,7 +106,7 @@ public class JmsNorthbounder extends AbstractNorthbounder {
     }
 
     @Override
-    public void init() throws NorthbounderException {
+    public void onPreStart() throws NorthbounderException {
         m_template = new JmsTemplate(m_connectionFactory);
     }
     

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.sql.ResultSet;
@@ -42,7 +43,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.alarmd.api.Alarm;
+import org.opennms.netmgt.alarmd.api.Northbounder;
+import org.opennms.netmgt.alarmd.api.support.NorthbounderException;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -55,6 +60,7 @@ import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,8 +69,10 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.StringUtils;
 
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -74,6 +82,46 @@ import org.springframework.util.StringUtils;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
 public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
+
+    public class MockNorthbounder implements Northbounder {
+
+        private boolean m_startCalled = false;
+        private List<Alarm> m_alarms = new ArrayList<Alarm>();
+
+        @Override
+        public void start() throws NorthbounderException {
+            m_startCalled = true;
+        }
+
+        @Override
+        public void onAlarm(final Alarm alarm) throws NorthbounderException {
+            m_alarms.add(alarm);
+        }
+
+        @Override
+        public void stop() throws NorthbounderException {
+        }
+
+        @Override
+        public void fetch(String query) throws NorthbounderException {
+        }
+
+        @Override
+        public void sync(Alarm alarm) throws NorthbounderException {
+        }
+
+        @Override
+        public void syncAll() throws NorthbounderException {
+        }
+        
+        public boolean isInitialized() {
+            return m_startCalled;
+        }
+        
+        public List<Alarm> getAlarms() {
+            return m_alarms;
+        }
+    }
 
     private MockNetwork m_mockNetwork = new MockNetwork();
 
@@ -89,9 +137,14 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
     @Autowired
     private MockEventIpcManager m_eventdIpcMgr;
 
+    @Autowired
+    private ServiceRegistry m_registry;
+
     private MockDatabase m_database;
 
-    public void setTemporaryDatabase(MockDatabase database) {
+    private MockNorthbounder m_northbounder;
+
+    public void setTemporaryDatabase(final MockDatabase database) {
         m_database = database;
     }
 
@@ -102,10 +155,13 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
         m_eventdIpcMgr.setEventWriter(m_database);
 
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
-        OnmsNode node = new OnmsNode();
+        final OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("node1");
         m_nodeDao.save(node);
+        
+        m_northbounder = new MockNorthbounder();
+        m_registry.register(m_northbounder, Northbounder.class);
     }
 
     @After
@@ -116,7 +172,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
     @Test
     @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on specific IDs so we need a fresh database
     public void testPersistAlarm() throws Exception {
-        MockNode node = m_mockNetwork.getNode(1);
+        final MockNode node = m_mockNetwork.getNode(1);
 
         //there should be no alarms in the alarms table
         assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
@@ -243,6 +299,27 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
         }
         ta.verifyAnticipated();
     }
+
+    @Test
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on specific IDs so we need a fresh database
+    public void testNorthbounder() throws Exception {
+        assertTrue(m_northbounder.isInitialized());
+        assertTrue(m_northbounder.getAlarms().isEmpty());
+
+        final EventBuilder bldr = new EventBuilder("testNoLogmsg", "AlarmdTest");
+        bldr.setAlarmData(new AlarmData());
+        bldr.setLogMessage("This is a test.");
+
+        final Event event = bldr.getEvent();
+        event.setDbid(17);
+
+        MockNode node = m_mockNetwork.getNode(1);
+        sendNodeDownEvent("%nodeid%", node);
+
+        final List<Alarm> alarms = m_northbounder.getAlarms();
+        assertTrue(alarms.size() > 0);
+    }
+    
 
     @Test
     public void testNoLogmsg() throws Exception {
