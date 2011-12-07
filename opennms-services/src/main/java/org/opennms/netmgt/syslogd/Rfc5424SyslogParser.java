@@ -104,7 +104,8 @@ public class Rfc5424SyslogParser extends SyslogParser {
         return message;
     }
 
-    private Date parseDate(final String dateString) {
+    @Override
+    protected Date parseDate(final String dateString) {
         if (dateString.endsWith("Z")) {
             try {
                 final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
