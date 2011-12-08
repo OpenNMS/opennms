@@ -36,6 +36,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 
 public class SyslogMessage {
     private static final ThreadLocal<DateFormat> m_dateFormat = new ThreadLocal<DateFormat>() {
@@ -127,8 +128,13 @@ public class SyslogMessage {
 
     public String getHostAddress() {
         if (m_hostname != null) {
-            final InetAddress address = InetAddressUtils.addr(m_hostname);
-            return InetAddressUtils.str(address).replace("/", "");
+            try {
+                final InetAddress address = InetAddressUtils.addr(m_hostname);
+                return InetAddressUtils.str(address).replace("/", "");
+            } catch (final IllegalArgumentException e) {
+                LogUtils.debugf(this, e, "Unable to resolve hostname '%s' in syslog message.", m_hostname);
+                return null;
+            }
         }
         return null;
     }
