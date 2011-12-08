@@ -85,8 +85,8 @@ public class CustomSyslogParser extends SyslogParser {
 
         LogUtils.tracef(this, "priority code = %d", priCode);
 
-        syslogMessage.setFacility(SyslogDefs.extractFacility(priCode));
-        syslogMessage.setSeverity(SyslogDefs.extractPriority(priCode));
+        syslogMessage.setFacility(SyslogFacility.getFacilityForCode(priCode));
+        syslogMessage.setSeverity(SyslogSeverity.getSeverityForCode(priCode));
 
         message = message.substring(rbIdx + 1, message.length());
 

@@ -65,8 +65,8 @@ public class Rfc5424SyslogParser extends SyslogParser {
         final SyslogMessage message = new SyslogMessage();
         try {
             int priorityField = Integer.parseInt(matcher.group(1));
-            message.setFacility(getFacility(priorityField));
-            message.setSeverity(getSeverity(priorityField));
+            message.setFacility(SyslogFacility.getFacilityForCode(priorityField));
+            message.setSeverity(SyslogSeverity.getSeverityForCode(priorityField));
         } catch (final NumberFormatException e) {
             LogUtils.debugf(this, e, "Unable to parse priority field '%s'", matcher.group(1));
         }

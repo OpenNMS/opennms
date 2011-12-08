@@ -104,15 +104,6 @@ public class SyslogParser {
         return m_matcher;
     }
 
-    // useful methods for parser
-    protected int getFacility(final int priorityField) {
-        return ((priorityField & SyslogMessage.LOG_FACMASK) >> 3);
-    }
-    
-    protected int getSeverity(final int priorityField) {
-        return (priorityField & SyslogMessage.LOG_PRIMASK);
-    }
-
     @SuppressWarnings("deprecation")
     protected Date parseDate(final String dateString) {
         Date date;
