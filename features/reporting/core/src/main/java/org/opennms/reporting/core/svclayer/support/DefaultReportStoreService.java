@@ -43,6 +43,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
+import org.opennms.features.reporting.repository.global.MetaReportRepository;
 import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.ReportCatalogEntry;
@@ -57,7 +58,7 @@ public class DefaultReportStoreService implements ReportStoreService {
     private ReportCatalogDao m_reportCatalogDao;
     private ReportServiceLocator m_reportServiceLocator;
     
-    private ReportRepository m_repo = new GlobalReportRepository();
+    private MetaReportRepository m_repo = new GlobalReportRepository();
     
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
     
@@ -118,6 +119,8 @@ public class DefaultReportStoreService implements ReportStoreService {
      */
     public Map<String, Object> getFormatMap() {
         HashMap <String, Object> formatMap = new HashMap<String, Object>();
+        
+        //TODO Tak: m_repo is working on a list of ReportRepository, so getReports needs a RepositoryId and handling of many Repository Instances is needed
         List <BasicReportDefinition> reports = m_repo.getReports();
         Iterator<BasicReportDefinition> reportIter = reports.iterator();
         while (reportIter.hasNext()) {
@@ -133,6 +136,7 @@ public class DefaultReportStoreService implements ReportStoreService {
     /** {@inheritDoc} */
     public void render(Integer id, ReportFormat format, OutputStream outputStream) {
         ReportCatalogEntry catalogEntry = m_reportCatalogDao.get(id);
+        //TODO Tak: reportId AND repositoryId is required now
         String reportServiceName = m_repo.getReportService(catalogEntry.getReportId());
         ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
         log().debug("attempting to rended the report as " + format.toString() + " using " + reportServiceName );

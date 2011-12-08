@@ -53,6 +53,7 @@ import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
+import org.opennms.features.reporting.repository.global.MetaReportRepository;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
@@ -69,7 +70,7 @@ public class JasperReportService implements ReportService {
 
     private static final String STRING_INPUT_TYPE = "org.opennms.report.stringInputType";
 
-    private ReportRepository m_repo = new GlobalReportRepository();
+    private MetaReportRepository m_repo = new GlobalReportRepository();
 
     private final ThreadCategory log;
 
@@ -85,11 +86,11 @@ public class JasperReportService implements ReportService {
         ThreadCategory.setPrefix(oldPrefix);
     }
 
-    public ReportRepository getReportRepository() {
+    public MetaReportRepository getMetaReportRepository() {
         return m_repo;
     }
 
-    public void setReportRepository(ReportRepository repo) {
+    public void setMetaReportRepository(MetaReportRepository repo) {
         m_repo = repo;
     }
 
@@ -122,6 +123,7 @@ public class JasperReportService implements ReportService {
         Map<?, ?> defaultValues = null;
 
         try {
+            //TODO Tak: reportId AND repositoryId is required now
             jasperReport = JasperCompileManager.compileReport(m_repo.getTemplateStream(reportId));
             defaultValues = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport,
                                                                                              null);
@@ -366,6 +368,7 @@ public class JasperReportService implements ReportService {
         HashMap<String, Object> jrReportParms;
 
         try {
+            //TODO Tak: reportId AND repositoryId is required now
             jasperReport = JasperCompileManager.compileReport(m_repo.getTemplateStream(reportId));
         } catch (JRException e) {
             log.error("unable to compile jasper report", e);
@@ -379,6 +382,8 @@ public class JasperReportService implements ReportService {
                 + new SimpleDateFormat("-MMddyyyy-HHmm").format(new Date())
                 + ".jrprint");
         log.debug("jrprint output file: " + outputFileName);
+        
+        //TODO Tak: reportId AND repositoryId is required now
         if ("jdbc".equalsIgnoreCase(m_repo.getEngine(reportId))) {
             Connection connection;
             try {
@@ -399,7 +404,8 @@ public class JasperReportService implements ReportService {
                                           "unable to run emptyDataSource jasperReport",
                                           e);
             }
-            // TODO TAK: make sure that getEngine will return null if is not set
+            //TODO TAK: make sure that getEngine will return null if is not set
+            //TODO Tak: reportId AND repositoryId is required now
         } else if (m_repo.getEngine(reportId).equals("null")) {
 
             try {
@@ -434,6 +440,7 @@ public class JasperReportService implements ReportService {
         HashMap<String, Object> jrReportParms;
 
         try {
+            //TODO Tak: reportId AND repositoryId is required now
             jasperReport = JasperCompileManager.compileReport(m_repo.getTemplateStream(reportId));
         } catch (JRException e) {
             log.error("unable to compile jasper report", e);
@@ -443,6 +450,7 @@ public class JasperReportService implements ReportService {
         jrReportParms = buildJRparameters(reportParms,
                                           jasperReport.getParameters());
 
+        //TODO Tak: reportId AND repositoryId is required now
         if ("jdbc".equalsIgnoreCase(m_repo.getEngine(reportId))) {
             Connection connection;
             try {
@@ -464,6 +472,7 @@ public class JasperReportService implements ReportService {
                                           e);
             }
             // TODO TAK: Make sure that null is set if nothing else is set...
+            //TODO Tak: reportId AND repositoryId is required now
         } else if ("null".equalsIgnoreCase(m_repo.getEngine(reportId))) {
             try {
                 jasperPrint = JasperFillManager.fillReport(jasperReport,
