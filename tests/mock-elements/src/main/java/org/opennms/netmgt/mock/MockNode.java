@@ -31,6 +31,8 @@ package org.opennms.netmgt.mock;
 
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -97,6 +99,15 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
      */
     public String getLabel() {
         return m_label;
+    }
+
+    /**
+     * <p>setLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     */
+    public void setLabel(String label) {
+        m_label = label;
     }
 
     // model
@@ -204,6 +215,16 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
     public Event createDeleteEvent() {
         return MockEventUtil.createNodeDeletedEvent("Test", this);
     }
-    
 
+    /**
+     * <p>createNodeLabelChangedEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    public Event createNodeLabelChangedEvent(String newLabel) {
+        EventBuilder event = MockEventUtil.createEventBuilder("Test", EventConstants.NODE_LABEL_CHANGED_EVENT_UEI);
+        event.setNodeid(m_nodeid);
+        event.addParam(EventConstants.PARM_NODE_LABEL, newLabel);
+        return event.getEvent();
+    }
 }
