@@ -29,21 +29,28 @@
 package org.opennms.web.alarm.filter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.filter.Filter;
+import org.opennms.web.filter.SubstringFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -361,9 +368,62 @@ public class WebAlarmRepositoryFilterTest {
         assertEquals(1, alarms.length);
     }
     
+    @Test
+    @Transactional
+    public void testParmsLikeFilter() {
+        List<OnmsEvent> events = m_dbPopulator.getEventDao().findAll();
+        assertNotNull(events);
+        OnmsEvent event = events.get(0);
+        
+        List<OnmsDistPoller> pollers = m_dbPopulator.getDistPollerDao().findAll();
+        assertNotNull(pollers);
+        OnmsDistPoller poller = pollers.get(0);
+        
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
+        alarm.setLastEvent(event);
+        alarm.setSeverityId(3);
+        alarm.setDistPoller(poller);
+        alarm.setCounter(100);
+        alarm.setEventParms("url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=rtc(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        
+        AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
+        alarmDao.save(alarm);
+        alarmDao.flush();
+        
+        AlarmCriteria criteria = new AlarmCriteria(new ParmFilterLike("user=rtc"));
+        Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
+        assertEquals(1, alarms.length);
+    }
+    
     private AlarmCriteria getCriteria(Filter...filters){
         return new AlarmCriteria(filters);
     }
+    
+    private class ParmFilterLike extends SubstringFilter{
+        
+        /** Constant <code>TYPE="msgmatchany"</code> */
+        public static final String TYPE = "msgmatchany";
+        
+        public ParmFilterLike(String parm) {
+            super(TYPE, "eventParms", "eventParms", parm);
+            // TODO Auto-generated constructor stub
+        }
 
+        @Override
+        public String getTextDescription() {
+            StringBuffer buffer = new StringBuffer("parm containing \"");
+            buffer.append(getValue());
+            buffer.append("\"");
+
+            return buffer.toString();
+        }
+        
+        /** {@inheritDoc} */
+        public boolean equals(Object obj) {
+            return this.toString().equals(obj.toString());
+        }
+        
+    }
     
 }
