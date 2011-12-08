@@ -390,7 +390,7 @@ public class WebAlarmRepositoryFilterTest {
         alarmDao.save(alarm);
         alarmDao.flush();
         
-        AlarmCriteria criteria = new AlarmCriteria(new EventParmFilterLike("user=rtc"));
+        AlarmCriteria criteria = new AlarmCriteria(new EventParmLikeFilter("user=rtc"));
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
     }

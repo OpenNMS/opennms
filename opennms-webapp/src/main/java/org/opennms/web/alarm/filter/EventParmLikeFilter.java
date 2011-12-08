@@ -2,12 +2,12 @@ package org.opennms.web.alarm.filter;
 
 import org.opennms.web.filter.SubstringFilter;
 
-public class EventParmFilterLike extends SubstringFilter {
+public class EventParmLikeFilter extends SubstringFilter {
 
     /** Constant <code>TYPE="msgmatchany"</code> */
     public static final String TYPE = "parmmatchany";
     
-    public EventParmFilterLike(String parm) {
+    public EventParmLikeFilter(String parm) {
         super(TYPE, "eventParms", "eventParms", parm);
     }
 
