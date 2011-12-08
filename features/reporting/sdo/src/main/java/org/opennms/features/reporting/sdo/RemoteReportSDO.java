@@ -12,6 +12,7 @@ public class RemoteReportSDO {
 	private String m_description;
 	private String m_displayName;
 	private String m_reportService;
+	private boolean m_executable; 
 	private boolean m_online;
 
 	@XmlElement(name = "description")
@@ -49,6 +50,11 @@ public class RemoteReportSDO {
 		return m_online;
 	}
 
+	@XmlElement(name = "executable")
+	public boolean getExecutable() {
+		return m_executable;
+	}
+	
 	public void setDescription(String description) {
 		m_description = description;
 	}
@@ -69,6 +75,10 @@ public class RemoteReportSDO {
 		m_online = online;
 	}
 
+	public void setExecutable(boolean executable) {
+		m_executable = executable;
+	}
+	
 	public void setReportService(String reportService) {
 		m_reportService = reportService;
 	}

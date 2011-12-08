@@ -51,4 +51,19 @@ public class DefaultRemoteRepositoryConfigDao implements
     public String getRepositoryName() {
         return readConfig().getRepositoryName();
     }
+
+    @Override
+    public String getRepositoryDescription() {
+        return readConfig().getRepositoryDescription();
+    }
+
+    @Override
+    public String getRepositoryManagementURL() {
+        return readConfig().getRepositoryManagementURL();
+    }
+
+    @Override
+    public String getRepositoryId() {
+        return readConfig().getRepositoryId();
+    }
 }
