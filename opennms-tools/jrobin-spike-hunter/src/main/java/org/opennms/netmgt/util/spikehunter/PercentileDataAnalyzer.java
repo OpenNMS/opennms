@@ -51,6 +51,12 @@ public class PercentileDataAnalyzer implements DataAnalyzer {
 		if (m_verbose) {
 			SpikeHunter.printToUser("After removing NaN values, " + sortedValues.size() + " values are left");
 		}
+		if (sortedValues.isEmpty()) {
+		    m_percentileValue = 0;
+		    m_lowestValue = 0;
+		    m_highestValue = 0;
+		    return;
+		}
 		Collections.sort(sortedValues);
 		float N = new Float(sortedValues.size());
 		int rankInt = Math.round(new Float((N / 100) * m_percentileNumber + 0.5));
