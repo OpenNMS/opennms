@@ -50,7 +50,6 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.filter.Filter;
-import org.opennms.web.filter.SubstringFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -391,39 +390,13 @@ public class WebAlarmRepositoryFilterTest {
         alarmDao.save(alarm);
         alarmDao.flush();
         
-        AlarmCriteria criteria = new AlarmCriteria(new ParmFilterLike("user=rtc"));
+        AlarmCriteria criteria = new AlarmCriteria(new EventParmFilterLike("user=rtc"));
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
     }
     
     private AlarmCriteria getCriteria(Filter...filters){
         return new AlarmCriteria(filters);
-    }
-    
-    private class ParmFilterLike extends SubstringFilter{
-        
-        /** Constant <code>TYPE="msgmatchany"</code> */
-        public static final String TYPE = "msgmatchany";
-        
-        public ParmFilterLike(String parm) {
-            super(TYPE, "eventParms", "eventParms", parm);
-            // TODO Auto-generated constructor stub
-        }
-
-        @Override
-        public String getTextDescription() {
-            StringBuffer buffer = new StringBuffer("parm containing \"");
-            buffer.append(getValue());
-            buffer.append("\"");
-
-            return buffer.toString();
-        }
-        
-        /** {@inheritDoc} */
-        public boolean equals(Object obj) {
-            return this.toString().equals(obj.toString());
-        }
-        
     }
     
 }
