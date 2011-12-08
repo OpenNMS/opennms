@@ -354,7 +354,7 @@ final class ConvertToEvent {
 
         // Time to verify UEI matching.
 
-        final List<UeiMatch> ueiMatch = ueiList.getUeiMatchCollection();
+        final List<UeiMatch> ueiMatch = ueiList == null ? ueiList : ueiList.getUeiMatchCollection();
         if (ueiMatch == null) {
             log.warn("No ueiList configured.");
         } else {
@@ -444,7 +444,7 @@ final class ConvertToEvent {
 
         // Time to verify if we need to hide the message
         boolean doHide = false;
-        final List<HideMatch> hideMatch = hideMessage.getHideMatchCollection();
+        final List<HideMatch> hideMatch = hideMessage == null ? null : hideMessage.getHideMatchCollection();
         if (hideMatch == null) {
             log.warn("No hideMessage configured.");
         } else {
