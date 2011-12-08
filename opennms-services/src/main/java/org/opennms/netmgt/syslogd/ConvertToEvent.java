@@ -254,7 +254,8 @@ final class ConvertToEvent {
         // Time to verify UEI matching.
 
         final String fullText = message.getFullText();
-        
+        final String matchedText = message.getMatchedMessage();
+
         final List<UeiMatch> ueiMatch = ueiList.getUeiMatchCollection();
         if (ueiMatch == null) {
             LogUtils.warnf(ConvertToEvent.class, "No ueiList configured.");
@@ -267,7 +268,7 @@ final class ConvertToEvent {
                                                   matchHostAddr(uei.getHostaddrMatch(), message.getHostAddress());
                 
                 if (otherStuffMatches && uei.getMatch().getType().equals("substr")) {
-                    if (matchSubstring(discardUei, bldr, fullText, uei)) {
+                    if (matchSubstring(discardUei, bldr, matchedText, uei)) {
                         break;
                     }
                 } else if (otherStuffMatches && (uei.getMatch().getType().startsWith("regex"))) {
@@ -443,7 +444,13 @@ final class ConvertToEvent {
             LogUtils.debugf(ConvertToEvent.class, "Unable to create pattern for expression '%s'", expression);
             return false;
         } else {
-            msgMat = msgPat.matcher(message.getFullText());
+            final String text;
+            if (message.getMatchedMessage() != null) {
+                text = message.getMatchedMessage();
+            } else {
+                text = message.getFullText();
+            }
+            msgMat = msgPat.matcher(text);
         }
         if ((msgMat != null) && (msgMat.find())) {
             if (discardUei.equals(uei.getUei())) {

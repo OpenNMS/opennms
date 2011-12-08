@@ -165,18 +165,15 @@ public class CustomSyslogParser extends SyslogParser {
         final Matcher m = pattern.matcher(message);
 
         /*
-        * We matched on a regexp for host/message pair.
-        * This can be a forwarded message as in BSD Style
-        * or syslog-ng.
-        * We assume that the host is given to us
-        * as an IP/Hostname and that the resolver
-        * on the ONMS host actually can resolve the
-        * node to match against nodeId.
+         * We matched on a regexp for host/message pair.
+         * This can be a forwarded message as in BSD Style
+         * or syslog-ng.
          */
 
         if (m.matches()) {
 
             final String matchedMessage = m.group(m_matchingGroupMessage);
+            syslogMessage.setMatchedMessage(matchedMessage);
 
             if (LogUtils.isTraceEnabled(this)) {
                 LogUtils.tracef(this, "Syslog message '%s' matched regexp '%s'", message, m_forwardingPattern);

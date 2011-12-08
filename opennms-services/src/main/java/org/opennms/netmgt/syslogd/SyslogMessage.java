@@ -94,6 +94,7 @@ public class SyslogMessage {
     private Integer m_processId;
     private String m_messageId;
     private String m_message;
+    private String m_matchedMessage;
     private String m_fullText;
     
     public SyslogMessage() {
@@ -199,6 +200,15 @@ public class SyslogMessage {
         m_message = message;
     }
 
+    public String getMatchedMessage() {
+        return m_matchedMessage == null? m_message : m_matchedMessage;
+    }
+
+    public void setMatchedMessage(final String matchedMessage) {
+        m_fullText = null;
+        m_matchedMessage = matchedMessage;
+    }
+
     public int getPriorityField() {
         return ((m_facility & LOG_FACMASK) | m_severity);
     }
@@ -239,4 +249,5 @@ public class SyslogMessage {
             .append("message", m_message)
             .toString();
     }
+
 }
