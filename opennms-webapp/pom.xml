@@ -147,6 +147,28 @@
           </classpathContainers>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+            <execution>
+                <id>attach-artifacts</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>attach-artifact</goal>
+                </goals>
+                <configuration>
+                    <artifacts>
+                        <artifact>
+                            <file>target/opennms-webapp-1.9.94-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.9.94-SNAPSHOT.jar</file>
+                            <type>jar</type>
+                        </artifact>
+                    </artifacts>
+                </configuration>
+            </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <profiles>
