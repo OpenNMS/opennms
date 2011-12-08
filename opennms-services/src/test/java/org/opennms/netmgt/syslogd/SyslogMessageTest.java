@@ -234,5 +234,19 @@ public class SyslogMessageTest {
         assertEquals(null, message.getProcessId());
         assertEquals("ID47", message.getMessageID());
     }
+    
+    @Test
+    public void testRfc5424Nms5051() throws Exception {
+        SyslogParser parser = Rfc5424SyslogParser.getParser("<85>1 2011-11-15T14:42:18+01:00 hostname sudo - - - pam_unix(sudo:auth): authentication failure; logname=username uid=0 euid=0 tty=/dev/pts/0 ruser=username rhost= user=username");
+        assertTrue(parser.find());
+        SyslogMessage message = parser.parse();
+        assertEquals(SyslogFacility.AUTHPRIV, message.getFacility());
+        assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
+        assertEquals(1, message.getVersion().intValue());
+        assertEquals("hostname", message.getHostName());
+        assertEquals("sudo", message.getProcessName());
+        assertEquals(null, message.getProcessId());
+        assertEquals(null, message.getMessageID());
+    }
 
 }
