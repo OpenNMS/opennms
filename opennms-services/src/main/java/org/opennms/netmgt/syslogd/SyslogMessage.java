@@ -36,57 +36,27 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 
 public class SyslogMessage {
-    // Priorities.
-    public static final int LOG_EMERG = 0; // system is unusable
-    public static final int LOG_ALERT = 1; // action must be taken immediately
-    public static final int LOG_CRIT = 2; // critical conditions
-    public static final int LOG_ERR = 3; // error conditions
-    public static final int LOG_WARNING = 4; // warning conditions
-    public static final int LOG_NOTICE = 5; // normal but significant condition
-    public static final int LOG_INFO = 6; // informational
-    public static final int LOG_DEBUG = 7; // debug-level messages
-    public static final int LOG_PRIMASK = 0x0007; // mask to extract priority
+    private static final ThreadLocal<DateFormat> m_dateFormat = new ThreadLocal<DateFormat>() {
+        protected DateFormat initialValue() {
+            final DateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return dateFormat;
+        }
+    };
 
-    // Facilities.
-    public static final int LOG_KERN = (0 << 3); // kernel messages
-    public static final int LOG_USER = (1 << 3); // random user-level messages
-    public static final int LOG_MAIL = (2 << 3); // mail system
-    public static final int LOG_DAEMON = (3 << 3); // system daemons
-    public static final int LOG_AUTH = (4 << 3); // security/authorization
-    public static final int LOG_SYSLOG = (5 << 3); // internal syslogd use
-    public static final int LOG_LPR = (6 << 3); // line printer subsystem
-    public static final int LOG_NEWS = (7 << 3); // network news subsystem
-    public static final int LOG_UUCP = (8 << 3); // UUCP subsystem
-    public static final int LOG_CRON = (15 << 3); // clock daemon
-    // Other codes through 15 reserved for system use.
-    public static final int LOG_LOCAL0 = (16 << 3); // reserved for local use
-    public static final int LOG_LOCAL1 = (17 << 3); // reserved for local use
-    public static final int LOG_LOCAL2 = (18 << 3); // reserved for local use
-    public static final int LOG_LOCAL3 = (19 << 3); // reserved for local use
-    public static final int LOG_LOCAL4 = (20 << 3); // reserved for local use
-    public static final int LOG_LOCAL5 = (21 << 3); // reserved for local use
-    public static final int LOG_LOCAL6 = (22 << 3); // reserved for local use
-    public static final int LOG_LOCAL7 = (23 << 3); // reserved for local use
-    public static final int LOG_FACMASK = 0x03F8; // mask to extract facility
+    private static final ThreadLocal<DateFormat> m_rfc3339Format = new ThreadLocal<DateFormat>() {
+        protected DateFormat initialValue() {
+            final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return dateFormat;
+        }
+    };
 
-    // Option flags.
-    public static final int LOG_PID = 0x01; // log the pid with each message
-    public static final int LOG_CONS = 0x02; // log on the console if errors
-    public static final int LOG_NDELAY = 0x08; // don't delay open
-    public static final int LOG_NOWAIT = 0x10; // don't wait for console forks
-
-    private static final DateFormat m_dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss");
-    private static final DateFormat m_rfc3339Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-    static {
-        m_dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        m_rfc3339Format.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
-
-    private int m_facility;
-    private int m_severity;
+    private SyslogFacility m_facility;
+    private SyslogSeverity m_severity;
     private Integer m_version;
     private Date m_date;
     private String m_hostname;
@@ -103,28 +73,28 @@ public class SyslogMessage {
     public SyslogMessage(final int facility, final int severity, final Date date, String hostname, final String processName, final Integer processId, final String message) {
         this();
 
-        m_facility = facility;
-        m_severity = severity;
+        m_facility = SyslogFacility.getFacility(facility);
+        m_severity = SyslogSeverity.getSeverity(severity);
         m_date = date;
         m_processName = processName;
         m_processId = processId;
         m_message = message;
     }
 
-    public int getFacility() {
+    public SyslogFacility getFacility() {
         return m_facility;
     }
 
-    public void setFacility(final int facility) {
+    public void setFacility(final SyslogFacility facility) {
         m_fullText = null;
         m_facility = facility;
     }
 
-    public int getSeverity() {
+    public SyslogSeverity getSeverity() {
         return m_severity;
     }
 
-    public void setSeverity(final int severity) {
+    public void setSeverity(final SyslogSeverity severity) {
         m_fullText = null;
         m_severity = severity;
     }
@@ -158,8 +128,13 @@ public class SyslogMessage {
 
     public String getHostAddress() {
         if (m_hostname != null) {
-            final InetAddress address = InetAddressUtils.addr(m_hostname);
-            return InetAddressUtils.str(address).replace("/", "");
+            try {
+                final InetAddress address = InetAddressUtils.addr(m_hostname);
+                return InetAddressUtils.str(address).replace("/", "");
+            } catch (final IllegalArgumentException e) {
+                LogUtils.debugf(this, e, "Unable to resolve hostname '%s' in syslog message.", m_hostname);
+                return null;
+            }
         }
         return null;
     }
@@ -210,17 +185,20 @@ public class SyslogMessage {
     }
 
     public int getPriorityField() {
-        return ((m_facility & LOG_FACMASK) | m_severity);
+        if (m_severity != null && m_facility != null) {
+            return m_severity.getPriority(m_facility);
+        }
+        return 0;
     }
 
     public String getSyslogFormattedDate() {
         if (m_date == null) return null;
-        return m_dateFormat.format(m_date);
+        return m_dateFormat.get().format(m_date);
     }
 
     public String getRfc3339FormattedDate() {
         if (m_date == null) return null;
-        return m_rfc3339Format.format(m_date);
+        return m_rfc3339Format.get().format(m_date);
     }
 
     public String getFullText() {

@@ -350,6 +350,7 @@ public class SnmpCollector implements ServiceCollector {
                 
                 /*
                  * FIXME: Should we even be doing this? I say we get rid of this force rescan thingie
+                 * {@see http://issues.opennms.org/browse/NMS-1057}
                  */
                 if (System.getProperty("org.opennms.netmgt.collectd.SnmpCollector.forceRescan", "false").equalsIgnoreCase("true")
                         && collectionSet.rescanNeeded()) {

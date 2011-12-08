@@ -41,6 +41,8 @@ public class Rfc5424SyslogParser extends SyslogParser {
     //                                                                <PRI>VERSION            TIMESTAMP    HOST   APP    PROC     MSGID  STRUCTURED   MSG
     private static final Pattern m_rfc5424Pattern = Pattern.compile("^<(\\d{1,3})>(\\d{0,2}?) (\\S+T\\S+) (\\S*) (\\S*) (\\d+|-) (\\S*) ((?:\\[.*?\\])*|-)(?: (?:BOM)?(.*?))?$", Pattern.MULTILINE);
 
+    private static final Pattern m_dateWithOffset = Pattern.compile("^(.*[\\-\\+]\\d\\d):?(\\d\\d)$");
+
     protected Rfc5424SyslogParser(final String text) {
         super(text);
     }
@@ -65,8 +67,8 @@ public class Rfc5424SyslogParser extends SyslogParser {
         final SyslogMessage message = new SyslogMessage();
         try {
             int priorityField = Integer.parseInt(matcher.group(1));
-            message.setFacility(getFacility(priorityField));
-            message.setSeverity(getSeverity(priorityField));
+            message.setFacility(SyslogFacility.getFacilityForCode(priorityField));
+            message.setSeverity(SyslogSeverity.getSeverityForCode(priorityField));
         } catch (final NumberFormatException e) {
             LogUtils.debugf(this, e, "Unable to parse priority field '%s'", matcher.group(1));
         }
@@ -123,9 +125,15 @@ public class Rfc5424SyslogParser extends SyslogParser {
                 }
             }
         } else {
-            final String first = dateString.substring(0, dateString.lastIndexOf('-'));
-            final String last = dateString.substring(dateString.lastIndexOf('-'));
-            final String newString = first + last.replace(":", "");
+            final Matcher matcher = m_dateWithOffset.matcher(dateString);
+            final String newString;
+            if (matcher.find()) {
+                newString = matcher.group(1) + matcher.group(2);
+            } else {
+                final String first = dateString.substring(0, dateString.lastIndexOf('-'));
+                final String last = dateString.substring(dateString.lastIndexOf('-'));
+                newString = first + last.replace(":", "");
+            }
             try {
                 final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
                 return df.parse(newString);

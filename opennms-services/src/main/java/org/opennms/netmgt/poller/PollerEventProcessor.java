@@ -129,6 +129,9 @@ final class PollerEventProcessor implements EventListener {
         // nodeDeleted
         ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
 
+        // nodeLabelChanged
+        ueiList.add(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI);
+
         // duplicateNodeDeleted
         ueiList.add(EventConstants.DUP_NODE_DELETED_EVENT_UEI);
 
@@ -357,6 +360,31 @@ final class PollerEventProcessor implements EventListener {
        
     }
 
+    private void nodeLabelChangedHandler(Event event) {
+        Long nodeId = event.getNodeid();
+
+        // Extract node label from the event parms
+        for (Parm parm : event.getParmCollection()) {
+            String parmName = parm.getParmName();
+            Value parmValue = parm.getValue();
+            if (parmValue == null) {
+                continue;
+            } else {
+                if (parmName.equals(EventConstants.PARM_NODE_LABEL)) {
+                    String label = parmValue.getContent();
+                    LogUtils.debugf(this, "nodeLabelChangedHandler: parmName: %s /parmContent: %s", parmName, label);
+                    PollableNode node = getNetwork().getNode(nodeId.intValue());
+                    if (node == null) {
+                        LogUtils.warnf(this, "nodeLabelChangedHandler: nodeid %d does not exist in pollable node map, unable to update node label.", nodeId);
+                    } else {
+                        node.setNodeLabel(label);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * 
      */
@@ -530,6 +558,11 @@ final class PollerEventProcessor implements EventListener {
             } else {
                 interfaceReparentedHandler(event);
             }
+        } else if (event.getUei().equals(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI)) {
+            if (event.getNodeid() < 0) {
+                LogUtils.infof(this, "PollerEventProcessor: no node or interface found, discarding event");
+            }
+            nodeLabelChangedHandler(event);
         } else if (event.getUei().equals(EventConstants.NODE_DELETED_EVENT_UEI) || event.getUei().equals(EventConstants.DUP_NODE_DELETED_EVENT_UEI)) {
             if (event.getNodeid() < 0) {
                 LogUtils.infof(this, "PollerEventProcessor: no node or interface found, discarding event");

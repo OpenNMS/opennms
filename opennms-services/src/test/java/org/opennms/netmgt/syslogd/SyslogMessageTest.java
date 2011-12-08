@@ -71,8 +71,8 @@ public class SyslogMessageTest {
         assertTrue(parser.find());
         final SyslogMessage message = parser.parse();
 
-        assertEquals(0, message.getFacility());
-        assertEquals(6, message.getSeverity());
+        assertEquals(SyslogFacility.KERNEL, message.getFacility());
+        assertEquals(SyslogSeverity.INFORMATIONAL, message.getSeverity());
         assertEquals("test", message.getMessageID());
         assertEquals("127.0.0.1", message.getHostName());
         assertEquals("OpenNMS", message.getProcessName());
@@ -110,8 +110,8 @@ public class SyslogMessageTest {
 
         LogUtils.debugf(this, "got message: %s", message);
 
-        assertEquals(21, message.getFacility());
-        assertEquals(5, message.getSeverity());
+        assertEquals(SyslogFacility.LOCAL5, message.getFacility());
+        assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
         assertEquals(null, message.getMessageID());
         assertEquals(date, message.getDate());
         assertEquals("10.13.110.116", message.getHostName());
@@ -127,8 +127,8 @@ public class SyslogMessageTest {
         SyslogMessage message = parser.parse();
         final Date date = new Date(1167609600000L);
 
-        assertEquals(0, message.getFacility());
-        assertEquals(6, message.getSeverity());
+        assertEquals(SyslogFacility.KERNEL, message.getFacility());
+        assertEquals(SyslogSeverity.INFORMATIONAL, message.getSeverity());
         assertEquals("test", message.getMessageID());
         assertEquals(date, message.getDate());
         assertEquals("127.0.0.1", message.getHostName());
@@ -144,8 +144,8 @@ public class SyslogMessageTest {
         SyslogMessage message = parser.parse();
         final Date date = new Date(1167609600000L);
 
-        assertEquals(0, message.getFacility());
-        assertEquals(6, message.getSeverity());
+        assertEquals(SyslogFacility.KERNEL, message.getFacility());
+        assertEquals(SyslogSeverity.INFORMATIONAL, message.getSeverity());
         assertEquals("test", message.getMessageID());
         assertEquals(date, message.getDate());
         assertEquals("127.0.0.1", message.getHostName());
@@ -161,8 +161,8 @@ public class SyslogMessageTest {
         SyslogMessage message = parser.parse();
         final Date date = new Date(1323259326000L);
 
-        assertEquals(21, message.getFacility());
-        assertEquals(5, message.getSeverity());
+        assertEquals(SyslogFacility.LOCAL5, message.getFacility());
+        assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
         assertEquals(null, message.getMessageID());
         assertEquals(date, message.getDate());
         assertEquals("10.13.110.116", message.getHostName());
@@ -179,8 +179,8 @@ public class SyslogMessageTest {
         final Date date = new Date(1065910455000L);
 
         assertEquals(1, message.getVersion().intValue());
-        assertEquals(4, message.getFacility());
-        assertEquals(2, message.getSeverity());
+        assertEquals(SyslogFacility.AUTH, message.getFacility());
+        assertEquals(SyslogSeverity.CRITICAL, message.getSeverity());
         assertEquals(date, message.getDate());
         assertEquals("mymachine.example.com", message.getHostName());
         assertEquals("su", message.getProcessName());
@@ -195,8 +195,8 @@ public class SyslogMessageTest {
         SyslogMessage message = parser.parse();
         final Date date = new Date(1065910455003L);
 
-        assertEquals(20, message.getFacility());
-        assertEquals(5, message.getSeverity());
+        assertEquals(SyslogFacility.LOCAL4, message.getFacility());
+        assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
         assertEquals(1, message.getVersion().intValue());
         assertEquals(date, message.getDate());
         assertEquals("192.0.2.1", message.getHostName());
@@ -211,8 +211,8 @@ public class SyslogMessageTest {
         SyslogParser parser = Rfc5424SyslogParser.getParser("<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] BOMAn application event log entry...");
         assertTrue(parser.find());
         SyslogMessage message = parser.parse();
-        assertEquals(20, message.getFacility());
-        assertEquals(5, message.getSeverity());
+        assertEquals(SyslogFacility.LOCAL4, message.getFacility());
+        assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
         assertEquals(1, message.getVersion().intValue());
         assertEquals("mymachine.example.com", message.getHostName());
         assertEquals("evntslog", message.getProcessName());
@@ -226,13 +226,27 @@ public class SyslogMessageTest {
         SyslogParser parser = Rfc5424SyslogParser.getParser("<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"][examplePriority@32473 class=\"high\"]");
         assertTrue(parser.find());
         SyslogMessage message = parser.parse();
-        assertEquals(20, message.getFacility());
-        assertEquals(5, message.getSeverity());
+        assertEquals(SyslogFacility.LOCAL4, message.getFacility());
+        assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
         assertEquals(1, message.getVersion().intValue());
         assertEquals("mymachine.example.com", message.getHostName());
         assertEquals("evntslog", message.getProcessName());
         assertEquals(null, message.getProcessId());
         assertEquals("ID47", message.getMessageID());
+    }
+    
+    @Test
+    public void testRfc5424Nms5051() throws Exception {
+        SyslogParser parser = Rfc5424SyslogParser.getParser("<85>1 2011-11-15T14:42:18+01:00 hostname sudo - - - pam_unix(sudo:auth): authentication failure; logname=username uid=0 euid=0 tty=/dev/pts/0 ruser=username rhost= user=username");
+        assertTrue(parser.find());
+        SyslogMessage message = parser.parse();
+        assertEquals(SyslogFacility.AUTHPRIV, message.getFacility());
+        assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
+        assertEquals(1, message.getVersion().intValue());
+        assertEquals("hostname", message.getHostName());
+        assertEquals("sudo", message.getProcessName());
+        assertEquals(null, message.getProcessId());
+        assertEquals(null, message.getMessageID());
     }
 
 }

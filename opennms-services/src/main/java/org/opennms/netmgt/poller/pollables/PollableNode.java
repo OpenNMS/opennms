@@ -107,7 +107,7 @@ public class PollableNode extends PollableContainer {
     }
     
     private final int m_nodeId;
-    private final String m_nodeLabel;
+    private String m_nodeLabel;
     private final Lock m_lock = new Lock();
 
     /**
@@ -141,7 +141,15 @@ public class PollableNode extends PollableContainer {
         return m_nodeLabel;
     }
 
-    
+    /**
+     * <p>setNodeLabel</p>
+     *
+     * @param nodeLabel a {@link java.lang.String} object.
+     */
+    public void setNodeLabel(String nodeLabel) {
+        m_nodeLabel = nodeLabel;
+    }
+
     /**
      * <p>createInterface</p>
      *
