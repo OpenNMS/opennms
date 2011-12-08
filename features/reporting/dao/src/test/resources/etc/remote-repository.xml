@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report-repository-config>
+    <active>true</active>
+    <repository-id>cioreporting</repository-id>
+    <repository-name>OpenNMS Connect CIO-Reporting</repository-name>
+	<repository-description>OpenNMS.com provides high value reports for CIO needs.</repository-description>
+    <repository-management-url>http://www.opennms.com</repository-management-url>
+    <login-user>patrick</login-user>
+    <login-repo-password>bateman</login-repo-password>
+    <uri>http://localhost:8080/opennms/connect/rest/repo/</uri>
+</report-repository-config>
