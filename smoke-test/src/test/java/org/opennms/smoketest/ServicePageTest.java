@@ -91,7 +91,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         String nodeForNode = setTreeFieldsAndSave("nodeEditForm", type("nodeLabel", "localNode"));
         selenium.waitForPageToLoad("30000");
         
-        selenium.click("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface for Scanning]']");
+        selenium.click("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface]']");
         selenium.waitForPageToLoad("30000");
 
         setTreeFieldsAndSave("nodeEditForm", type("ipAddr", "::1"));
