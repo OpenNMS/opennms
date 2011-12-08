@@ -169,4 +169,9 @@ public class DefaultRemoteRepository implements ReportRepository {
     public void setConfig(RemoteRepositoryConfigDao config) {
         m_config = config;
     }
+
+    @Override
+    public String getRepositoryId() {
+        return m_config.getRepositoryId();
+    }
 }

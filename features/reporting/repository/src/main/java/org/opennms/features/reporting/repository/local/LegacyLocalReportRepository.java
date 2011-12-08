@@ -46,4 +46,8 @@ public class LegacyLocalReportRepository implements ReportRepository {
         return m_localJasperReportsDao.getTemplateStream(id);
     }
 
+    @Override
+    public String getRepositoryId() {
+        return "Local Report-Repository";
+    }
 }

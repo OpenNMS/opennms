@@ -2,20 +2,20 @@
 <simple-jasper-reports>
     
     <simple-jasper-report>
-        <description>your description here</description>
-        <display-name>REST your display name here</display-name>
-        <engine>wtf fucking engine here</engine>
         <id>423</id>
+        <display-name>sample display-name</display-name>
+        <description>sample description</description>
+        <engine>null</engine>
         <online>true</online>
         <report-service>jasperReportService</report-service>
         <template>file:///tmp/resource-uri-test.jrxml</template>
     </simple-jasper-report>
    
     <simple-jasper-report>
-        <description>Na der 23 Reprot halt</description>
-        <display-name>REST Der 23 Report</display-name>
-        <engine>HalloEngine</engine>
         <id>23</id>
+        <display-name>more sample display-name</display-name>
+        <description>more sample description</description>
+        <engine>jdbc</engine>
         <online>true</online>
         <report-service>jasperReportService</report-service>
         <template>file:///tmp/resource-uri-test.jrxml</template>

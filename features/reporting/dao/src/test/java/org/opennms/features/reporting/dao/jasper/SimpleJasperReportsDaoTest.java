@@ -7,7 +7,7 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
+import org.opennms.features.reporting.model.jasperreport.SimpleJasperReportDefinition;
 
 public class SimpleJasperReportsDaoTest {
 
@@ -24,12 +24,18 @@ public class SimpleJasperReportsDaoTest {
     @Test
     public void getValuesForSampleReportTest() {
         this.m_dao = new SimpleJasperReportsDao();
-        for (BasicReportDefinition report : m_dao.getReports()) {
-            assertEquals("423", report.getId());
-            assertEquals("your display name here", report.getDisplayName());
-        }
+        assertEquals(2, m_dao.getReports().size());
+        
+        SimpleJasperReportDefinition report = (SimpleJasperReportDefinition) m_dao.getReports().get(0);
+        
+        assertEquals("423", report.getId());
+        assertEquals("sample display-name", report.getDisplayName());
+        assertEquals("file:///tmp/resource-uri-test.jrxml", report.getTemplate());
 
-        assertEquals("file:///tmp/foo.txt", m_dao.getTemplateLocation("423"));
-        assertEquals(1, m_dao.getReports().size());
+        report = (SimpleJasperReportDefinition) m_dao.getReports().get(1);
+        assertEquals("23", report.getId());
+        assertEquals("more sample display-name", report.getDisplayName());
+        assertEquals("file:///tmp/resource-uri-test.jrxml", report.getTemplate());
+ 
     }
 }

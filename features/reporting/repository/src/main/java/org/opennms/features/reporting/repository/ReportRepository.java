@@ -39,4 +39,6 @@ public interface ReportRepository {
     String getEngine(String id);
     
     InputStream getTemplateStream(String id);
+
+    String getRepositoryId();
 }
