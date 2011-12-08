@@ -4,7 +4,7 @@ import org.opennms.web.filter.SubstringFilter;
 
 public class EventParmLikeFilter extends SubstringFilter {
 
-    /** Constant <code>TYPE="msgmatchany"</code> */
+    /** Constant <code>TYPE="parmmatchany"</code> */
     public static final String TYPE = "parmmatchany";
     
     public EventParmLikeFilter(String parm) {

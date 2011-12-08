@@ -41,6 +41,7 @@ import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
+import org.opennms.web.alarm.filter.EventParmLikeFilter;
 import org.opennms.web.alarm.filter.ExactUEIFilter;
 import org.opennms.web.alarm.filter.IPAddrLikeFilter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
@@ -144,6 +145,8 @@ public abstract class AlarmUtil extends Object {
             filter = new AfterLastEventTimeFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(AfterFirstEventTimeFilter.TYPE)) {
             filter = new AfterFirstEventTimeFilter(WebSecurityUtils.safeParseLong(value));
+        } else if (type.equals(EventParmLikeFilter.TYPE)) {
+            filter = new EventParmLikeFilter(value);
         }
 
         return filter;
