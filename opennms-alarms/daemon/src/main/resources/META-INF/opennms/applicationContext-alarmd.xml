@@ -25,16 +25,6 @@
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
-  <!-- // by default, we don't want any northbounders enabled
-  <bean id="httpNorthbounder" class="org.opennms.netmgt.alarmd.api.support.http.HttpNorthbounder">
-  </bean>
-  <onmsgi:service id="httpNorthbounderService" ref="httpNorthbounder" interface="org.opennms.netmgt.alarmd.api.Northbounder" />
-
-  <bean id="jmsNorthbounder" class="org.opennms.netmgt.alarmd.api.support.jms.JmsNorthbounder">
-  </bean>
-  <onmsgi:service id="jmsNorthbounderService" ref="jmsNorthbounder" interface="org.opennms.netmgt.alarmd.api.Northbounder" />
-  -->
-
   <onmsgi:list id="northbounderList" interface="org.opennms.netmgt.alarmd.api.Northbounder">
     <onmsgi:listener ref="daemon" bind-method="onNorthbounderRegistered" unbind-method="onNorthbounderUnregistered" />
   </onmsgi:list>
