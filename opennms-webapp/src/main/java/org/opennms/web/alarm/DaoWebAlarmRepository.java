@@ -186,6 +186,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         alarm.suppressedTime = onmsAlarm.getSuppressedTime();
         alarm.acknowledgeUser = onmsAlarm.getAckUser();
         alarm.acknowledgeTime = onmsAlarm.getAckTime();
+        alarm.parms = onmsAlarm.getEventParms();
 
         alarm.nodeLabel = onmsAlarm.getNode() != null ? onmsAlarm.getNode().getLabel() : ""; 
         alarm.serviceName = onmsAlarm.getServiceType() != null ? onmsAlarm.getServiceType().getName() : "";
