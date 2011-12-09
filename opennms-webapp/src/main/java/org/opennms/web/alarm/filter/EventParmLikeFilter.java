@@ -8,13 +8,14 @@ public class EventParmLikeFilter extends SubstringFilter {
     public static final String TYPE = "parmmatchany";
     
     public EventParmLikeFilter(String parm) {
-        super(TYPE, "eventParms", "eventParms", parm);
+        super(TYPE, "eventParms", "eventParms", parm + "(string,text)");
     }
 
     @Override
     public String getTextDescription() {
-        String[] parms = getValue().split("=");
-        StringBuffer buffer = new StringBuffer(parms[0] + "= \"");
+        String strippedType = getValue().replace("(string,text)", "");
+        String[] parms = strippedType.split("=");
+        StringBuffer buffer = new StringBuffer(parms[0] + "=\"");
         buffer.append(parms[parms.length - 1]);
         buffer.append("\"");
 
@@ -26,16 +27,10 @@ public class EventParmLikeFilter extends SubstringFilter {
         return this.toString().equals(obj.toString());
     }
     
-    /** {@inheritDoc} */
     @Override
-    public String getBoundValue(String value) {
-        return '%' + value + "(string,text)%";
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public String formatValue(String value) {
-        return super.formatValue('%'+value+"(string,text)%");
+    public String getDescription() {
+        return TYPE + "=" + getValueString().replace("(string,text)", "");
+        
     }
 
 }

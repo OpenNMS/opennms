@@ -50,7 +50,6 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.filter.Filter;
-import org.opennms.web.filter.NoSubstringFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -391,7 +390,20 @@ public class WebAlarmRepositoryFilterTest {
         alarmDao.save(alarm);
         alarmDao.flush();
         
-        AlarmCriteria criteria = new AlarmCriteria(new EventParmLikeFilter("user=rtc"));
+        OnmsAlarm alarm2 = new OnmsAlarm();
+        alarm2.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
+        alarm2.setLastEvent(event);
+        alarm2.setSeverityId(3);
+        alarm2.setDistPoller(poller);
+        alarm2.setCounter(100);
+        alarm2.setEventParms("componentType=serviceElement(string,text);url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=rtcbomb(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        
+        alarmDao.save(alarm2);
+        alarmDao.flush();
+        
+        EventParmLikeFilter eventParmFilter = new EventParmLikeFilter("user=rtc");
+        assertEquals("user=\"rtc\"", eventParmFilter.getTextDescription());
+        AlarmCriteria criteria = new AlarmCriteria(eventParmFilter);
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
     }
@@ -413,7 +425,7 @@ public class WebAlarmRepositoryFilterTest {
         alarm.setSeverityId(3);
         alarm.setDistPoller(poller);
         alarm.setCounter(100);
-        alarm.setEventParms("url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=rtc(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        alarm.setEventParms("componentType=service(string,text);url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=rtc(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
         
         AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
         alarmDao.save(alarm);
@@ -425,49 +437,22 @@ public class WebAlarmRepositoryFilterTest {
         alarm2.setSeverityId(3);
         alarm2.setDistPoller(poller);
         alarm2.setCounter(100);
-        alarm2.setEventParms("url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=admin(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        alarm2.setEventParms("componentType=serviceElement(string,text);url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=admin(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
         
         alarmDao.save(alarm2);
         alarmDao.flush();
         
-        AlarmCriteria criteria = new AlarmCriteria(new NegativeEventParmLikeFilter("user=rtc"));
+        NegativeEventParmLikeFilter parmFilter = new NegativeEventParmLikeFilter("user=rtc");
+        assertEquals("user is not \"rtc\"", parmFilter.getTextDescription());
+        
+        AlarmCriteria criteria = new AlarmCriteria(parmFilter);
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
+        
     }
     
     private AlarmCriteria getCriteria(Filter...filters){
         return new AlarmCriteria(filters);
-    }
-    
-    private class NegativeEventParmLikeFilter extends NoSubstringFilter {
-        
-        public static final String TYPE = "noparmmatchany";
-        
-        public NegativeEventParmLikeFilter(String value) {
-            super(TYPE, "eventParms", "eventParms", value);
-        }
-
-        @Override
-        public String getTextDescription() {
-            String[] parms = getValue().split("=");
-            StringBuffer buffer  = new StringBuffer(parms[0] + " is not  \"");
-            buffer.append(parms[parms.length - 1]);
-            buffer.append("\"");
-            return buffer.toString();
-        }
-        
-        /** {@inheritDoc} */
-        @Override
-        public String getBoundValue(String value) {
-            return '%' + value + "(string,text)%";
-        }
-        
-        /** {@inheritDoc} */
-        @Override
-        public String formatValue(String value) {
-            return super.formatValue('%'+value+"(string,text)%");
-        }
-        
     }
     
 }
