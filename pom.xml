@@ -103,7 +103,7 @@
     <module>opennms-bootstrap</module>
     <module>opennms-model</module>
     <module>opennms-ackd</module>
-    <module>opennms-alarmd</module>
+    <module>opennms-alarms</module>
     <module>opennms-config-utils</module>
     <module>opennms-config-tester</module>
     <module>opennms-dao</module>

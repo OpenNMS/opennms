@@ -425,7 +425,7 @@ public final class IfSnmpCollector implements Runnable {
         }
 
         if (walker.failed()) {
-            log().error("IfSnmpCollector: walker failed with error message:" + walker.getErrorMessage());
+            log().info("IfSnmpCollector: walker failed with error message:" + walker.getErrorMessage());
         }
 
         // Log any failures
