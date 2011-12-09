@@ -354,7 +354,7 @@ final class ConvertToEvent {
 
         // Time to verify UEI matching.
 
-        final List<UeiMatch> ueiMatch = ueiList == null ? ueiList : ueiList.getUeiMatchCollection();
+        final List<UeiMatch> ueiMatch = ueiList == null? null : ueiList.getUeiMatchCollection();
         if (ueiMatch == null) {
             log.warn("No ueiList configured.");
         } else {
