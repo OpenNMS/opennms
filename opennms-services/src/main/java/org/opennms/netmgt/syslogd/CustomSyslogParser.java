@@ -39,6 +39,7 @@ import org.opennms.netmgt.config.SyslogdConfigFactory;
 public class CustomSyslogParser extends SyslogParser {
     private static final Pattern m_messageIdPattern = Pattern.compile("^((\\S+):\\s*)");
     private static final Pattern m_datePattern = Pattern.compile("^((\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s+)");
+    private static final Pattern m_oldDatePattern = Pattern.compile("^\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+");
 
     private Pattern m_forwardingPattern;
     private int m_matchingGroupHost;
@@ -85,8 +86,8 @@ public class CustomSyslogParser extends SyslogParser {
 
         LogUtils.tracef(this, "priority code = %d", priCode);
 
-        syslogMessage.setFacility(SyslogDefs.extractFacility(priCode));
-        syslogMessage.setSeverity(SyslogDefs.extractPriority(priCode));
+        syslogMessage.setFacility(SyslogFacility.getFacilityForCode(priCode));
+        syslogMessage.setSeverity(SyslogSeverity.getSeverityForCode(priCode));
 
         message = message.substring(rbIdx + 1, message.length());
 
@@ -98,20 +99,13 @@ public class CustomSyslogParser extends SyslogParser {
             message = message.substring(idMatcher.group(1).length() - 1);
         }
 
-        // Check to see if message looks non-standard.
-        // In this case, it means that there is not a standard
-        // date in the front of the message text.
-        boolean stdMsg = true;
-
         LogUtils.tracef(this, "message = %s", message);
-        if (message.length() < 16) {
-            stdMsg = false;
-        } else if (message.charAt(3) != ' ' || message.charAt(6) != ' '
-                || message.charAt(9) != ':' || message.charAt(12) != ':'
-                || message.charAt(15) != ' ') {
-            stdMsg = false;
+        
+        Matcher oldDateMatcher = m_oldDatePattern.matcher(message);
+        if (!oldDateMatcher.find()) {
+            oldDateMatcher = null;
         }
-        LogUtils.tracef(this, "stdMsg = %s", Boolean.toString(stdMsg));
+        LogUtils.tracef(this, "stdMsg = %s", Boolean.toString(oldDateMatcher != null));
         
         if (!this.find()) {
             if (traceEnabled()) {
@@ -122,7 +116,7 @@ public class CustomSyslogParser extends SyslogParser {
 
         String timestamp;
 
-        if (!stdMsg) {
+        if (oldDateMatcher == null) {
             final Matcher stampMatcher = m_datePattern.matcher(message);
             if (stampMatcher.find()) {
                 timestamp = stampMatcher.group(2);
@@ -137,11 +131,11 @@ public class CustomSyslogParser extends SyslogParser {
                 }
             }
         } else {
-            timestamp = message.substring(0, 15);
-            message = message.substring(16);
+            timestamp = oldDateMatcher.group(1);
+            message = oldDateMatcher.replaceFirst("");
         }
 
-        LogUtils.tracef(this, "Timestamp = %s", timestamp);
+        LogUtils.tracef(this, "timestamp = %s", timestamp);
         syslogMessage.setDate(parseDate(timestamp));
         
         // These 2 debugs will aid in analyzing the regexes as syslog seems
@@ -165,18 +159,15 @@ public class CustomSyslogParser extends SyslogParser {
         final Matcher m = pattern.matcher(message);
 
         /*
-        * We matched on a regexp for host/message pair.
-        * This can be a forwarded message as in BSD Style
-        * or syslog-ng.
-        * We assume that the host is given to us
-        * as an IP/Hostname and that the resolver
-        * on the ONMS host actually can resolve the
-        * node to match against nodeId.
+         * We matched on a regexp for host/message pair.
+         * This can be a forwarded message as in BSD Style
+         * or syslog-ng.
          */
 
         if (m.matches()) {
 
             final String matchedMessage = m.group(m_matchingGroupMessage);
+            syslogMessage.setMatchedMessage(matchedMessage);
 
             if (LogUtils.isTraceEnabled(this)) {
                 LogUtils.tracef(this, "Syslog message '%s' matched regexp '%s'", message, m_forwardingPattern);

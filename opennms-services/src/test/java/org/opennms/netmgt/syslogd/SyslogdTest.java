@@ -45,7 +45,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -73,7 +72,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
@@ -193,7 +193,6 @@ public class SyslogdTest {
     }
 
     @Test
-    @Ignore
     public void testMyPatternsSyslogNG() {
         SyslogClient s = null;
         try {
@@ -403,7 +402,7 @@ public class SyslogdTest {
 
     @Test
 	public void testRegexUEIRewrite() throws Exception {
-//        MockLogAppender.setupLogging(true, "TRACE");
+        MockLogAppender.setupLogging(true, "TRACE");
         doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for bar",
                       m_localhost, "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
                       "100 out of 666 tests failed for bar");
