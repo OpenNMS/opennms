@@ -13,8 +13,9 @@ public class EventParmLikeFilter extends SubstringFilter {
 
     @Override
     public String getTextDescription() {
-        StringBuffer buffer = new StringBuffer("parm containing \"");
-        buffer.append(getValue());
+        String[] parms = getValue().split("=");
+        StringBuffer buffer = new StringBuffer(parms[0] + "= \"");
+        buffer.append(parms[parms.length - 1]);
         buffer.append("\"");
 
         return buffer.toString();
@@ -23,6 +24,18 @@ public class EventParmLikeFilter extends SubstringFilter {
     /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return this.toString().equals(obj.toString());
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String getBoundValue(String value) {
+        return '%' + value + "(string,text)%";
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String formatValue(String value) {
+        return super.formatValue('%'+value+"(string,text)%");
     }
 
 }
