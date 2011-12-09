@@ -47,10 +47,4 @@ public interface Northbounder {
     
     public void stop() throws NorthbounderException;
     
-    public void fetch(String query) throws NorthbounderException;
-    
-    public void sync(Alarm alarm) throws NorthbounderException; 
-    
-    public void syncAll() throws NorthbounderException;
-        
 }

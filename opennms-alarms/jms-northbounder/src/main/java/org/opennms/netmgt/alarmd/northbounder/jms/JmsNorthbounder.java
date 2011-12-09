@@ -110,27 +110,4 @@ public class JmsNorthbounder extends AbstractNorthbounder {
         m_template = new JmsTemplate(m_connectionFactory);
     }
     
-    /**
-     * This method should be overridden in the implementation with a call to super.sync(alarm);
-     */
-    @Override
-    public void sync(Alarm alarm) throws NorthbounderException {
-    }
-    
-    /**
-     * This method should be overridden in the implementation with a call to super.sync(alarm);
-     */
-    @Override
-    public void fetch(String query) throws NorthbounderException {
-    }
-    
-    /**
-     * This method should be overridden in the implementation with a call to super.sync(alarm);
-     */
-    @Override
-    public void syncAll() throws NorthbounderException {
-        
-    }
-
-
 }

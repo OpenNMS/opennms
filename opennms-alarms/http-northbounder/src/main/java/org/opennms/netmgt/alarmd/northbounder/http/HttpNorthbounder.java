@@ -224,31 +224,6 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         return parms;
     }
     
-    /**
-     * FIXME: Forcing the developer to call super()
-     * This method should be overridden in the implementation with a call to super.sync(alarm);
-     */
-    @Override
-    public void sync(Alarm alarm) throws NorthbounderException {
-    }
-    
-    /**
-     * FIXME: Forcing the developer to call super()
-     * This method should be overridden in the implementation with a call to super.sync(alarm);
-     */
-    @Override
-    public void fetch(String query) throws NorthbounderException {
-    }
-    
-    /**
-     * FIXME: Forcing the developer to call super()
-     * This method should be overridden in the implementation with a call to super.sync(alarm);
-     */
-    @Override
-    public void syncAll() throws NorthbounderException {
-        
-    }
-
     public HttpNorthbounderConfig getConfig() {
         return m_config;
     }

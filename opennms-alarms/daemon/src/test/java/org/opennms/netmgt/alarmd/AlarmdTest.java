@@ -102,18 +102,6 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
         public void stop() throws NorthbounderException {
         }
 
-        @Override
-        public void fetch(String query) throws NorthbounderException {
-        }
-
-        @Override
-        public void sync(Alarm alarm) throws NorthbounderException {
-        }
-
-        @Override
-        public void syncAll() throws NorthbounderException {
-        }
-        
         public boolean isInitialized() {
             return m_startCalled;
         }

@@ -63,18 +63,6 @@ public class AbstractNorthbounderTest {
         }
 
         @Override
-        public void fetch(String query) throws NorthbounderException {
-        }
-
-        @Override
-        public void sync(Alarm alarm) throws NorthbounderException {
-        }
-
-        @Override
-        public void syncAll() throws NorthbounderException {
-        }
-
-        @Override
         protected boolean accepts(Alarm alarm) {
             m_acceptsCalled.countDown();
             return m_accepting;
