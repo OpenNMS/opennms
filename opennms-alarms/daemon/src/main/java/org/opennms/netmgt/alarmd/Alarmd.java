@@ -31,9 +31,8 @@ package org.opennms.netmgt.alarmd;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.alarmd.api.Alarm;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
-import org.opennms.netmgt.alarmd.api.support.NorthboundAlarm;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -77,7 +76,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
         OnmsAlarm alarm = m_persister.persist(e);
         
         if (alarm != null) {
-            Alarm a = new NorthboundAlarm(alarm);
+        	NorthboundAlarm a = new NorthboundAlarm(alarm);
 
             for (Northbounder nbi : m_northboundInterfaces) {
                 nbi.onAlarm(a);

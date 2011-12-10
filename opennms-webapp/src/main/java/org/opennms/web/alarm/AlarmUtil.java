@@ -49,6 +49,7 @@ import org.opennms.web.alarm.filter.InterfaceFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
 import org.opennms.web.alarm.filter.NegativeAcknowledgedByFilter;
+import org.opennms.web.alarm.filter.NegativeEventParmLikeFilter;
 import org.opennms.web.alarm.filter.NegativeExactUEIFilter;
 import org.opennms.web.alarm.filter.NegativeInterfaceFilter;
 import org.opennms.web.alarm.filter.NegativeNodeFilter;
@@ -150,6 +151,8 @@ public abstract class AlarmUtil extends Object {
             filter = new AfterFirstEventTimeFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(EventParmLikeFilter.TYPE)) {
             filter = new EventParmLikeFilter(value);
+        } else if(type.equals(NegativeEventParmLikeFilter.TYPE)) {
+            filter = new NegativeEventParmLikeFilter(value);
         }
 
         return filter;

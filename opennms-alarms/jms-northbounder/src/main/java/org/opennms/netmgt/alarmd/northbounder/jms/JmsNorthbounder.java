@@ -36,7 +36,7 @@ import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.Session;
 
-import org.opennms.netmgt.alarmd.api.Alarm;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,20 +73,20 @@ public class JmsNorthbounder extends AbstractNorthbounder {
     //private JmsNorthbounderConfig m_config;
     
     @Override
-    public boolean accepts(Alarm alarm) {
+    public boolean accepts(NorthboundAlarm alarm) {
         return true;
     }
 
 
 
     @Override
-    public void forwardAlarms(List<Alarm> alarms) throws NorthbounderException {
+    public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {
         
-        for (final Alarm alarm : alarms) {
+        for (NorthboundAlarm alarm : alarms) {
             m_template.convertAndSend(alarm);
         }
         
-        for (final Alarm alarm : alarms) {
+        for (final NorthboundAlarm alarm : alarms) {
             m_template.send(m_queue, new MessageCreator() {
 
                 @Override
@@ -101,7 +101,7 @@ public class JmsNorthbounder extends AbstractNorthbounder {
     }
     
 
-    protected String convertAlarmToXml(Alarm alarm) {
+    protected String convertAlarmToXml(NorthboundAlarm alarm) {
         return "This is a test alarm.";
     }
 

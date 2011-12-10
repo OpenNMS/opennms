@@ -30,7 +30,7 @@ package org.opennms.netmgt.alarmd.api.support;
 
 import java.util.List;
 
-import org.opennms.netmgt.alarmd.api.Alarm;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 
@@ -48,20 +48,25 @@ import org.opennms.netmgt.alarmd.api.NorthbounderException;
  * @author <a mailto:david@opennms.org>David Hustace</a>
  */
 
-public abstract class AbstractNorthbounder implements Northbounder, Runnable {
+public abstract class AbstractNorthbounder implements Northbounder, Runnable, StatusFactory<NorthboundAlarm> {
     
-    private String m_name;
-
-    protected AbstractNorthbounder(String name) {
-        setName(name);
-    }
+    private final String m_name;
+    private final AlarmQueue<NorthboundAlarm> m_queue;
 
     private Thread m_thread;
     private volatile boolean m_stopped = true;
 
-    private AlarmQueue m_queue = new AlarmQueue();
     private long m_retryInterval = 1000;
     
+    protected AbstractNorthbounder(String name) {
+    	m_name = name;
+    	m_queue = new AlarmQueue<NorthboundAlarm>(this);
+    }
+
+    public String getName() {
+        return m_name;
+    }
+
     public void setNaglesDelay (long delay) {
         m_queue.setNaglesDelay(delay);
     }
@@ -96,20 +101,20 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable {
     }
     
     @Override
-    public final void onAlarm(Alarm alarm) throws NorthbounderException {
+    public final void onAlarm(NorthboundAlarm alarm) throws NorthbounderException {
         if (accepts(alarm)) {
             m_queue.accept(alarm);
         }
     };
     
     
-    protected abstract boolean accepts(Alarm alarm);
+    protected abstract boolean accepts(NorthboundAlarm alarm);
 
-    protected void preserve(Alarm alarm) throws NorthbounderException {
+    protected void preserve(NorthboundAlarm alarm) throws NorthbounderException {
         m_queue.preserve(alarm);
     }
 
-    protected void discard(Alarm alarm) throws NorthbounderException {
+    protected void discard(NorthboundAlarm alarm) throws NorthbounderException {
         m_queue.discard(alarm);
     }
     
@@ -128,7 +133,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable {
 
             while(!m_stopped) {
 
-                List<Alarm> alarmsToForward = m_queue.getAlarmsToForward();
+                List<NorthboundAlarm> alarmsToForward = m_queue.getAlarmsToForward();
                 
                 try {
                     forwardAlarms(alarmsToForward);
@@ -149,14 +154,12 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable {
         
     }
     
-    public abstract void forwardAlarms(List<Alarm> alarms) throws NorthbounderException;
+    @Override
+	public NorthboundAlarm createSyncLostMessage() {
+    	return NorthboundAlarm.SYNC_LOST_ALARM;
+	}
 
-    public String getName() {
-        return m_name;
-    }
+	public abstract void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException;
 
-    public void setName(String name) {
-        m_name = name;
-    }
 
 }

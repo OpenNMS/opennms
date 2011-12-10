@@ -30,11 +30,10 @@ package org.opennms.netmgt.alarmd.api;
 
 
 
+
 /**
  * North bound Interface API
  * 
- * FIXME: these fetch, sync, and sycncAll API calls need some helper functions in the abstraction
- *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
@@ -43,7 +42,7 @@ public interface Northbounder {
 
     public void start() throws NorthbounderException;
     
-    public void onAlarm(Alarm alarm) throws NorthbounderException;
+    public void onAlarm(NorthboundAlarm alarm) throws NorthbounderException;
     
     public void stop() throws NorthbounderException;
     
