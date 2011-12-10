@@ -35,10 +35,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.opennms.netmgt.alarmd.api.Alarm;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
-import org.opennms.netmgt.alarmd.api.support.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
 
 /**
@@ -51,7 +50,7 @@ public class AbstractNorthbounderTest {
     
     public static class TestNorthbounder extends AbstractNorthbounder {
 
-        private List<Alarm> m_alarms;
+        private List<NorthboundAlarm> m_alarms;
         private boolean m_accepting;
         
         private CountDownLatch m_forwardAlarmsCalled = new CountDownLatch(1);
@@ -63,13 +62,13 @@ public class AbstractNorthbounderTest {
         }
 
         @Override
-        protected boolean accepts(Alarm alarm) {
+        protected boolean accepts(NorthboundAlarm alarm) {
             m_acceptsCalled.countDown();
             return m_accepting;
         }
 
         @Override
-        public void forwardAlarms(List<Alarm> alarms)
+        public void forwardAlarms(List<NorthboundAlarm> alarms)
                 throws NorthbounderException {
             
             m_alarms = alarms;
@@ -86,7 +85,7 @@ public class AbstractNorthbounderTest {
         }
 
         
-        public List<Alarm> getAlarms() {
+        public List<NorthboundAlarm> getAlarms() {
             return m_alarms;
         }
 
@@ -108,7 +107,7 @@ public class AbstractNorthbounderTest {
         
         tnb.start();
         
-        Alarm a = createNorthboundAlarm(1);
+        NorthboundAlarm a = createNorthboundAlarm(1);
         
         tnb.onAlarm(a);
 
@@ -147,9 +146,9 @@ public class AbstractNorthbounderTest {
         tnb.setNaglesDelay(500);
         tnb.start();
         
-        Alarm a1 = createNorthboundAlarm(1);
-        Alarm a2 = createNorthboundAlarm(2);
-        Alarm a3 = createNorthboundAlarm(3);
+        NorthboundAlarm a1 = createNorthboundAlarm(1);
+        NorthboundAlarm a2 = createNorthboundAlarm(2);
+        NorthboundAlarm a3 = createNorthboundAlarm(3);
         
         tnb.onAlarm(a1);
         Thread.sleep(100);
@@ -170,13 +169,12 @@ public class AbstractNorthbounderTest {
 
     }
     
-    private Alarm createNorthboundAlarm(int alarmid) {
+    private NorthboundAlarm createNorthboundAlarm(int alarmid) {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(alarmid);
         alarm.setUei("uei.opennms.org/test/httpNorthBounder");
         
-        Alarm a = new NorthboundAlarm(alarm);
-        return a;
+        return new NorthboundAlarm(alarm);
     }
     
 

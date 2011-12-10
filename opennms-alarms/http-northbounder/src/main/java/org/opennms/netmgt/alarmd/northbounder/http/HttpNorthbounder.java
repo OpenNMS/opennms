@@ -64,7 +64,7 @@ import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.alarmd.api.Alarm;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.http.HttpNorthbounderConfig.HttpMethod;
@@ -93,7 +93,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
     
 
     @Override
-    public boolean accepts(Alarm alarm) {
+    public boolean accepts(NorthboundAlarm alarm) {
         if (m_config.getAcceptableUeis() == null || m_config.getAcceptableUeis().contains(alarm.getUei())) {
             return true;
         }
@@ -102,7 +102,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
 
     
     @Override
-    public void forwardAlarms(List<Alarm> alarms) throws NorthbounderException {
+    public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {
         
         LogUtils.infof(this, "Forwarding %i alarms", alarms.size());
         

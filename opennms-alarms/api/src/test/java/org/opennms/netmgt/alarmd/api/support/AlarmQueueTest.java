@@ -33,9 +33,8 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import org.junit.Test;
-import org.opennms.netmgt.alarmd.api.Alarm;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.support.AlarmQueue;
-import org.opennms.netmgt.alarmd.api.support.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
 
 /**
@@ -45,22 +44,21 @@ import org.opennms.netmgt.model.OnmsAlarm;
  * @author <a mailto:david@opennms.org>David Hustace</a>
  *
  */
-public class AlarmQueueTest {
+public class AlarmQueueTest implements StatusFactory<NorthboundAlarm>{
 
     public int alarmNumber = 0;
     
-    private Alarm createAlarm() {
+    private NorthboundAlarm createAlarm() {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(++alarmNumber);
         alarm.setUei("uei.opennms.org/test/httpNorthBounder");
         
-        Alarm a = new NorthboundAlarm(alarm);
-        return a;
+        return new NorthboundAlarm(alarm);
     }
     
     @Test
     public void testRegularForwarding() throws InterruptedException {
-        AlarmQueue queue = new AlarmQueue();
+        AlarmQueue<NorthboundAlarm> queue = new AlarmQueue<NorthboundAlarm>(this);
         queue.setMaxBatchSize(3);
         queue.init();
     
@@ -68,7 +66,7 @@ public class AlarmQueueTest {
         queue.preserve(createAlarm());
         queue.accept(createAlarm());
         
-        List<Alarm> alarms = queue.getAlarmsToForward();
+        List<NorthboundAlarm> alarms = queue.getAlarmsToForward();
         assertNotNull(alarms);
         assertEquals(3, alarms.size());
         
@@ -95,7 +93,7 @@ public class AlarmQueueTest {
     }
 
     public void testFailure() throws InterruptedException {
-        AlarmQueue queue = new AlarmQueue();
+        AlarmQueue<NorthboundAlarm> queue = new AlarmQueue<NorthboundAlarm>(this);
         queue.setMaxBatchSize(3);
         queue.init();
     
@@ -103,7 +101,7 @@ public class AlarmQueueTest {
         queue.preserve(createAlarm()); // 2
         queue.accept(createAlarm());  // 3
         
-        List<Alarm> alarms = queue.getAlarmsToForward();
+        List<NorthboundAlarm> alarms = queue.getAlarmsToForward();
         assertNotNull(alarms);
         assertEquals(3, alarms.size());
         
@@ -165,9 +163,14 @@ public class AlarmQueueTest {
         
     }
 
-    private void assertPreservedAlarm(List<Alarm> alarms, int index, int id) {
+    private void assertPreservedAlarm(List<NorthboundAlarm> alarms, int index, int id) {
         assertTrue(alarms.get(index).isPreserved());
         assertEquals(id, alarms.get(index).getId().intValue());
     }
+
+	@Override
+	public NorthboundAlarm createSyncLostMessage() {
+		return NorthboundAlarm.SYNC_LOST_ALARM;
+	}
 
 }

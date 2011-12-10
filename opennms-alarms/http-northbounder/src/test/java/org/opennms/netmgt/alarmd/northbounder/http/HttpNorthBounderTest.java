@@ -32,8 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.annotations.JUnitHttpServer;
-import org.opennms.netmgt.alarmd.api.Alarm;
-import org.opennms.netmgt.alarmd.api.support.NorthboundAlarm;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.northbounder.http.HttpNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.http.HttpNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.http.HttpNorthbounderConfig.HttpMethod;
@@ -68,7 +67,7 @@ public class HttpNorthBounderTest {
         alarm.setId(1);
         alarm.setUei("uei.opennms.org/test/httpNorthBounder");
         
-        Alarm a = new NorthboundAlarm(alarm);
+        NorthboundAlarm a = new NorthboundAlarm(alarm);
 //        List<Alarm> alarms = Arrays.asList(a);
 //        
 //        nb.forwardAlarms(alarms);

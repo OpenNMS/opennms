@@ -45,7 +45,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.alarmd.api.Alarm;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.dao.NodeDao;
@@ -86,7 +86,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
     public class MockNorthbounder implements Northbounder {
 
         private boolean m_startCalled = false;
-        private List<Alarm> m_alarms = new ArrayList<Alarm>();
+        private List<NorthboundAlarm> m_alarms = new ArrayList<NorthboundAlarm>();
 
         @Override
         public void start() throws NorthbounderException {
@@ -94,7 +94,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
         }
 
         @Override
-        public void onAlarm(final Alarm alarm) throws NorthbounderException {
+        public void onAlarm(final NorthboundAlarm alarm) throws NorthbounderException {
             m_alarms.add(alarm);
         }
 
@@ -106,7 +106,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
             return m_startCalled;
         }
         
-        public List<Alarm> getAlarms() {
+        public List<NorthboundAlarm> getAlarms() {
             return m_alarms;
         }
     }
@@ -304,7 +304,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
         MockNode node = m_mockNetwork.getNode(1);
         sendNodeDownEvent("%nodeid%", node);
 
-        final List<Alarm> alarms = m_northbounder.getAlarms();
+        final List<NorthboundAlarm> alarms = m_northbounder.getAlarms();
         assertTrue(alarms.size() > 0);
     }
     
