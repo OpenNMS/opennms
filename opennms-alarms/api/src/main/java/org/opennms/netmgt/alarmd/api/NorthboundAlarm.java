@@ -49,11 +49,28 @@ public class NorthboundAlarm implements Preservable {
 	
 	public static final NorthboundAlarm SYNC_LOST_ALARM = new NorthboundAlarm(-1, "uei.opennms.org/alarmd/northbounderSyncLost");
 
+	public enum AlarmType {
+		PROBLEM,
+		RESOLUTION,
+		NOTIFICATION;
+		
+		static AlarmType toAlarmType(final int alarmType) {
+			if (alarmType == OnmsAlarm.PROBLEM_TYPE) {
+				return PROBLEM;
+			} else if (alarmType == OnmsAlarm.RESOLUTION_TYPE) {
+				return RESOLUTION;
+			} else {
+				return NOTIFICATION;
+			}
+		}
+	}
+	
+	
     private final Integer m_id;
     private final String m_uei;
     private final Date m_ackTime;
     private final String m_ackUser;
-    private final Integer m_alarmType;
+    private final AlarmType m_alarmType;
     private final String m_appDn;
     private final String m_clearKey;
     private final Integer m_count;
@@ -134,7 +151,7 @@ public class NorthboundAlarm implements Preservable {
         
         m_ackTime = alarm.getAlarmAckTime();
         m_ackUser = alarm.getAlarmAckUser();
-        m_alarmType = alarm.getAlarmType();
+        m_alarmType = alarm.getAlarmType() == null ? null : AlarmType.toAlarmType(alarm.getAlarmType());
         m_appDn = alarm.getApplicationDN();
         m_clearKey = alarm.getClearKey();
         m_count = alarm.getCounter();
@@ -188,7 +205,7 @@ public class NorthboundAlarm implements Preservable {
 		return m_ackUser;
 	}
 
-	public Integer getAlarmType() {
+	public AlarmType getAlarmType() {
 		return m_alarmType;
 	}
 
