@@ -46,6 +46,31 @@ get_hash_from_rpm() {
 	rpm -qi opennms 2>&1 | grep http://opennms.git.sourceforge.net | sed -e 's,^.*shortlog;h=,,'
 }
 
+clean_maven() {
+	banner "Cleaning out old Maven files"
+
+	# delete things older than a week
+	if [ -d "$HOME/.m2/repository" ]; then
+		find "${HOME}/.m2/repository" -depth -ctime +7 -type f -print -exec rm {} \; >/dev/null
+		find "${HOME}/.m2/repository" -depth -type d -print | while read LINE; do
+			rmdir "$LINE" 2>/dev/null || :
+		done
+		BAD_JARS=`find "${HOME}/.m2/repository" -depth -type f -name \*.jar | xargs file | grep text | cut -d: -f1`
+		if [ -n "$BAD_JARS" ]; then
+			rm -f $BAD_JARS
+		fi
+		rm -f "${HOME}/.m2/repository/repository.xml"
+	fi
+}
+
+clean_yum() {
+	banner "Cleaning out old YUM RPMs."
+
+	# find RPMs more than a few days old and delete them
+	find /var/cache/yum -type f -name \*.rpm -mtime +1 -print0 | xargs -0 rm -v -f
+	# yum clean all
+}
+
 reset_database() {
 	banner "Resetting OpenNMS Database"
 
@@ -57,7 +82,8 @@ reset_opennms() {
 
 	/etc/init.d/opennms stop
 
-	yum clean all || :
+	clean_yum || die "Unable to clean up old RPM files."
+
 	rpm -qa --queryformat='%{name}\n' | grep -E '^opennms' | xargs yum -y remove
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms /etc/yum.repos.d/opennms*
 	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-testing-rhel5.noarch.rpm
@@ -145,6 +171,7 @@ stop_opennms() {
 
 
 # DO IT!
+clean_maven
 reset_opennms
 reset_database
 get_source
