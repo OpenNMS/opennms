@@ -13,7 +13,7 @@ public class NodeListPageTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertTrue(selenium.isTextPresent("<h3>Nodes</h3>"));
+        assertTrue(selenium.getHtmlSource().contains("<h3>Nodes</h3>"));
     }
     
     @Test
