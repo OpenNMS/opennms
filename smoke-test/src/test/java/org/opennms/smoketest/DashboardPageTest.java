@@ -8,7 +8,7 @@ public class DashboardPageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
     	super.setUp();
         selenium.click("link=Dashboard");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
@@ -19,7 +19,7 @@ public class DashboardPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Resource Graphs"));
         assertTrue(selenium.isTextPresent("24 Hour Availability"));
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
 }

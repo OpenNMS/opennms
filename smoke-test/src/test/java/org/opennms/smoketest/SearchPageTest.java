@@ -9,7 +9,7 @@ public class SearchPageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
         super.setUp();
         selenium.click("link=Search");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
@@ -36,7 +36,7 @@ public class SearchPageTest extends OpenNMSSeleniumTestCase {
      @Test
      public void testAllLinks() {
         selenium.click("link=All nodes");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         long endTime = System.currentTimeMillis() + 30000;
         while(System.currentTimeMillis() < endTime){
             if(selenium.isTextPresent("Nodes")){
@@ -47,18 +47,18 @@ public class SearchPageTest extends OpenNMSSeleniumTestCase {
             }
         }
         selenium.click("//div[@id='content']/div/h2/a[2]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=All nodes and their interfaces");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Nodes and their interfaces"));
         assertTrue(selenium.isElementPresent("link=Hide interfaces"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=All nodes with asset info");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Assets"));
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
 }

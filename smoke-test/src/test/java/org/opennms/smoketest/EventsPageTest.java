@@ -8,7 +8,7 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
     	super.setUp();
         selenium.click("link=Events");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
@@ -28,15 +28,15 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
     @Test 
     public void testAllLinks() {
         selenium.click("link=All events");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Ack"));
         assertTrue(selenium.isTextPresent("Event(s) outstanding"));
         assertTrue(selenium.isTextPresent("Event Text"));
         assertTrue(selenium.isElementPresent("link=Interface"));
         selenium.click("css=a[title=Events System Page]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=Advanced Search");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Advanced Event Search"));
         assertTrue(selenium.isTextPresent("Searching Instructions"));
         assertTrue(selenium.isTextPresent("Advanced Event Search"));
@@ -44,9 +44,9 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isElementPresent("name=limit"));
         assertTrue(selenium.isElementPresent("css=input[type=submit]"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
 }

@@ -9,7 +9,7 @@ public class SurveillancePageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
         super.setUp();
         selenium.click("link=Surveillance");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
@@ -27,6 +27,6 @@ public class SurveillancePageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Nodes Down"));
         assertTrue(selenium.isTextPresent("DEV"));
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 }

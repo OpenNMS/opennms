@@ -8,7 +8,7 @@ public class AssetsPageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
     	super.setUp();
         selenium.click("link=Assets");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
@@ -29,12 +29,12 @@ public class AssetsPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testAllLinks() {
         selenium.click("link=All nodes with asset info");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Assets"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
 }

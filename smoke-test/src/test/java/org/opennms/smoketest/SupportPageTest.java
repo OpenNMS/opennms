@@ -8,7 +8,7 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
     	super.setUp();
         selenium.click("link=Support");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
@@ -38,17 +38,17 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testAllLinks() {
         selenium.click("link=About the OpenNMS Web Console");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("OpenNMS Web Console"));
         assertTrue(selenium.isTextPresent("License and Copyright"));
         assertTrue(selenium.isTextPresent("OSI Certified Open Source Software"));
         assertTrue(selenium.isTextPresent("Version:"));
         selenium.goBack();
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isElementPresent("//a[@href='http://www.opennms.org/documentation/ReleaseNotesStable.html#whats-new']"));
         assertTrue(selenium.isElementPresent("//a[@href='http://www.opennms.org/wiki/']"));
         selenium.click("link=Generate a System Report");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Plugins"));
         assertTrue(selenium.isTextPresent("Report Type"));
         assertTrue(selenium.isElementPresent("name=formatter"));
@@ -56,11 +56,11 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Output"));
         assertTrue(selenium.isTextPresent("Choose which plugins to enable:"));
         selenium.goBack();
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isElementPresent("//a[@href='http://issues.opennms.org/']"));
         assertTrue(selenium.isElementPresent("//a[@href='irc://irc.freenode.net/%23opennms']"));
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
 }

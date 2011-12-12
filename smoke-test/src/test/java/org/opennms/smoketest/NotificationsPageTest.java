@@ -10,7 +10,7 @@ public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
     	super.setUp();
         selenium.click("link=Notifications");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
@@ -40,29 +40,29 @@ public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testAllLinks() {
         selenium.click("link=Your outstanding notices");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("admin was notified"));
         assertTrue(selenium.isElementPresent("link=[Remove all]"));
         assertTrue(selenium.isElementPresent("link=Sent Time"));
         assertTrue(selenium.isElementPresent("//input[@value='Acknowledge Notices']"));
         selenium.click("link=Notices");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=All outstanding notices");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("only outstanding notices"));
         assertTrue(selenium.isElementPresent("link=Respond Time"));
         assertTrue(selenium.isElementPresent("css=input[type=button]"));
         selenium.click("link=Notices");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=All acknowledged notices");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("only acknowledged notices"));
         assertTrue(selenium.isElementPresent("link=Node"));
         assertTrue(selenium.isElementPresent("css=input[type=submit]"));
         selenium.click("link=Notices");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
 }
