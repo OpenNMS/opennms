@@ -8,17 +8,17 @@ public class InstrumentationLogReaderPageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
         super.setUp();
         selenium.click("link=Instrumentation Log Reader");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
     public void testInstrumentationLogReaderPage() throws Exception {
         selenium.type("name=searchString", "test");
         selenium.click("css=input[type=submit]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertEquals("test", selenium.getValue("name=searchString"));
         selenium.click("css=form > input[type=submit]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertEquals("", selenium.getValue("name=searchString"));
         assertTrue(selenium.isTextPresent("Service"));
         assertTrue(selenium.isTextPresent("Threads Used:"));
@@ -31,24 +31,24 @@ public class InstrumentationLogReaderPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testSortingLinks() {
         selenium.click("link=Collections");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isElementPresent("link=Collections ^"));
         selenium.click("link=Collections ^");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isElementPresent("link=Collections v"));
         selenium.click("link=Average Successful Collection Time");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isElementPresent("link=Average Successful Collection Time ^"));
         selenium.click("link=Average Successful Collection Time ^");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isElementPresent("link=Average Successful Collection Time v"));
         selenium.click("link=Average Persistence Time");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isElementPresent("link=Average Persistence Time ^"));
         selenium.click("link=Average Persistence Time ^");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isElementPresent("link=Average Persistence Time v"));
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 }

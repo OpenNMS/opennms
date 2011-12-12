@@ -266,7 +266,7 @@ public class HypericAckProcessor implements AckProcessor {
 
         // Only consider alarms that are above severity NORMAL
         // {@see org.opennms.netmgt.model.OnmsSeverity}
-        criteria.add(Restrictions.gt("severityId", 3));
+        criteria.add(Restrictions.gt("severity", OnmsSeverity.NORMAL));
 
         // TODO Figure out how to query by parameters (maybe necessary)
 

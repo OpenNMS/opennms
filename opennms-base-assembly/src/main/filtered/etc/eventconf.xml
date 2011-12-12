@@ -2098,6 +2098,8 @@
   <event-file>events/Xerox-V2.events.xml</event-file>
   <event-file>events/Xerox.events.xml</event-file>
 
+  <event-file>events/ncs-component.events.xml</event-file>
+
   <event-file>events/asset-management.events.xml</event-file>
   <event-file>events/Standard.events.xml</event-file>
   <event-file>events/default.events.xml</event-file>

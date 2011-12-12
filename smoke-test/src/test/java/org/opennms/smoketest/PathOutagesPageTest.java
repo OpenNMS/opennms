@@ -8,7 +8,7 @@ public class PathOutagesPageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
     	super.setUp();
         selenium.click("link=Path Outages");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
@@ -17,7 +17,7 @@ public class PathOutagesPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Critical Path IP"));
         assertTrue(selenium.isTextPresent("# of Nodes"));
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
 }
