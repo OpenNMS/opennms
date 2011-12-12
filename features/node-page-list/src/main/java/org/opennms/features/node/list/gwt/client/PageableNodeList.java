@@ -265,8 +265,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     public void onPhysicalInterfaceSelected(PhysicalInterfaceSelectionEvent event) {
         StringBuilder urlBuilder = new StringBuilder();
         urlBuilder.append(getBaseHref() + "element/snmpinterface.jsp");
-        urlBuilder.append("?node" + getNodeId());
-        urlBuilder.append("&ifindex" + event.getIfIndex());
+        urlBuilder.append("?node=" + getNodeId());
+        urlBuilder.append("&ifindex=" + event.getIfIndex());
         
         Location.assign(urlBuilder.toString());
     }
