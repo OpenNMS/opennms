@@ -23,7 +23,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         selenium.type("name=j_password", "admin");
         selenium.click("name=Login");
         selenium.waitForPageToLoad("30000");
-        selenium.click("link=Admin");
+        selenium.open("/opennms/admin/index.jsp");
         selenium.waitForPageToLoad("30000");
     }
 
