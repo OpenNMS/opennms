@@ -30,20 +30,17 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
 /**
  * OpenNMS severity enumeration.
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  */
-@Embeddable
+// @Embeddable
 public enum OnmsSeverity implements Serializable {
     // Keep this ordered by ID so we can use the internal enum compareTo
     INDETERMINATE(1, "Indeterminate", "lightblue"),
@@ -54,24 +51,20 @@ public enum OnmsSeverity implements Serializable {
     MAJOR(6, "Major", "orange"),
     CRITICAL(7, "Critical", "red");
     
-    /** Constant <code>m_idMap</code> */
     private static final Map<Integer, OnmsSeverity> m_idMap; 
-    private static final List<Integer> m_ids;
     
     private int m_id;
     private String m_label;
     private String m_color;
 
     static {
-        m_ids = new ArrayList<Integer>(values().length);
         m_idMap = new HashMap<Integer, OnmsSeverity>(values().length);
-        for (OnmsSeverity severity : values()) {
-            m_ids.add(severity.getId());
+        for (final OnmsSeverity severity : values()) {
             m_idMap.put(severity.getId(), severity);
         }
     }
 
-    private OnmsSeverity(int id, String label, String color) {
+    private OnmsSeverity(final int id, final String label, final String color) {
         m_id = id;
         m_label = label;
         m_color = color;
@@ -82,8 +75,13 @@ public enum OnmsSeverity implements Serializable {
      *
      * @return a int.
      */
+    @Transient
     public int getId() {
         return m_id;
+    }
+    
+    public void setId(final int id) {
+        
     }
     
     /**
@@ -91,6 +89,7 @@ public enum OnmsSeverity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Transient
     public String getLabel() {
         return m_label;
     }
@@ -100,6 +99,7 @@ public enum OnmsSeverity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Transient
     public String getColor() {
         return m_color;
     }
@@ -110,7 +110,7 @@ public enum OnmsSeverity implements Serializable {
      * @param other a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      * @return a boolean.
      */
-    public boolean isLessThan(OnmsSeverity other) {
+    public boolean isLessThan(final OnmsSeverity other) {
         return compareTo(other) < 0;
     }
 
@@ -120,7 +120,7 @@ public enum OnmsSeverity implements Serializable {
      * @param other a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      * @return a boolean.
      */
-    public boolean isLessThanOrEqual(OnmsSeverity other) {
+    public boolean isLessThanOrEqual(final OnmsSeverity other) {
         return compareTo(other) <= 0;
     }
 
@@ -130,7 +130,7 @@ public enum OnmsSeverity implements Serializable {
      * @param other a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      * @return a boolean.
      */
-    public boolean isGreaterThan(OnmsSeverity other) {
+    public boolean isGreaterThan(final OnmsSeverity other) {
         return compareTo(other) > 0;
     }
     
@@ -140,7 +140,7 @@ public enum OnmsSeverity implements Serializable {
      * @param other a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      * @return a boolean.
      */
-    public boolean isGreaterThanOrEqual(OnmsSeverity other) {
+    public boolean isGreaterThanOrEqual(final OnmsSeverity other) {
         return compareTo(other) >= 0;
     }
     
@@ -150,7 +150,7 @@ public enum OnmsSeverity implements Serializable {
      * @param id a int.
      * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      */
-    public static OnmsSeverity get(int id) {
+    public static OnmsSeverity get(final int id) {
         if (m_idMap.containsKey(id)) {
             return m_idMap.get(id);
         } else {
@@ -164,8 +164,8 @@ public enum OnmsSeverity implements Serializable {
      * @param label a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      */
-    public static OnmsSeverity get(String label) {
-        for (Integer key : m_idMap.keySet()) {
+    public static OnmsSeverity get(final String label) {
+        for (final Integer key : m_idMap.keySet()) {
             if (m_idMap.get(key).getLabel().equals(label)) {
                 return m_idMap.get(key);
             }
@@ -179,7 +179,7 @@ public enum OnmsSeverity implements Serializable {
  * @param sev a {@link org.opennms.netmgt.model.OnmsSeverity} object.
  * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
  */
-public static OnmsSeverity escalate(OnmsSeverity sev) {
+public static OnmsSeverity escalate(final OnmsSeverity sev) {
         if (sev.isLessThan(OnmsSeverity.CRITICAL)) {
             return OnmsSeverity.get(sev.getId()+1);
         } else {

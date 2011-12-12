@@ -44,6 +44,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.hibernate.FetchMode;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
@@ -196,6 +197,11 @@ public class AlarmRestService extends OnmsRestService {
 
 	    criteria.setFetchMode("firstEvent", FetchMode.JOIN);
 	    criteria.setFetchMode("lastEvent", FetchMode.JOIN);
+	    
+        criteria.createAlias("node", "node", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("node.snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("node.ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
+
 	    return getDistinctIdCriteria(OnmsAlarm.class, criteria);
 	}
 }
