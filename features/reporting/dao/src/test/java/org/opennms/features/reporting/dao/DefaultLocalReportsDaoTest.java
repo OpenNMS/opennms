@@ -7,8 +7,11 @@ import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultLocalReportsDaoTest {
+    Logger logger = LoggerFactory.getLogger(DefaultLocalReportsDaoTest.class.getSimpleName());
     
     @Before
     public void setup() {
@@ -26,7 +29,7 @@ public class DefaultLocalReportsDaoTest {
                 File.separator + 
                 "local-reports.xml";
         
-        System.out.println(pathToConfigXml);
+        logger.debug("'{}'", pathToConfigXml);
         
         
         File testFile = new File(pathToConfigXml);
@@ -45,7 +48,7 @@ public class DefaultLocalReportsDaoTest {
         assertEquals(18, m_dao.getReports().size());
         
 //        for (BasicReportDefinition report : m_dao.getReports()) {
-//            System.out.println(report.getDisplayName());
+//            logger.debug(report.getDisplayName());
 //        }
     }
 }

@@ -42,8 +42,8 @@ import org.opennms.api.reporting.ReportService;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
+import org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
-import org.opennms.features.reporting.repository.global.MetaReportRepository;
 import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.ReportCatalogEntry;
@@ -58,7 +58,7 @@ public class DefaultReportStoreService implements ReportStoreService {
     private ReportCatalogDao m_reportCatalogDao;
     private ReportServiceLocator m_reportServiceLocator;
     
-    private MetaReportRepository m_repo = new GlobalReportRepository();
+    private GlobalReportRepository m_repo = new DefaultGlobalReportRepository();
     
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
     

@@ -42,7 +42,6 @@ public class SimpleJasperReportDefinition implements BasicReportDefinition,
     public String getReportService() {
         return m_reportService;
     }
-    @Override
     public String getRepositoryId() {
         return m_repositoryId;
     }

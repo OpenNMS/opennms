@@ -52,8 +52,8 @@ import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.features.reporting.repository.ReportRepository;
+import org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
-import org.opennms.features.reporting.repository.global.MetaReportRepository;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
@@ -70,7 +70,7 @@ public class JasperReportService implements ReportService {
 
     private static final String STRING_INPUT_TYPE = "org.opennms.report.stringInputType";
 
-    private MetaReportRepository m_repo = new GlobalReportRepository();
+    private GlobalReportRepository m_repo = new DefaultGlobalReportRepository();
 
     private final ThreadCategory log;
 
@@ -86,11 +86,11 @@ public class JasperReportService implements ReportService {
         ThreadCategory.setPrefix(oldPrefix);
     }
 
-    public MetaReportRepository getMetaReportRepository() {
+    public GlobalReportRepository getMetaReportRepository() {
         return m_repo;
     }
 
-    public void setMetaReportRepository(MetaReportRepository repo) {
+    public void setMetaReportRepository(GlobalReportRepository repo) {
         m_repo = repo;
     }
 

@@ -8,9 +8,13 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.reporting.model.jasperreport.SimpleJasperReportDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleJasperReportsDaoTest {
 
+    Logger logger = LoggerFactory.getLogger(SimpleJasperReportsDaoTest.class.getSimpleName());
+    
     private SimpleJasperReportsDao m_dao;
 
     @Before

@@ -30,8 +30,8 @@ package org.opennms.reporting.core.svclayer.support;
 
 
 import org.opennms.api.reporting.ReportService;
+import org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
-import org.opennms.features.reporting.repository.global.MetaReportRepository;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
 import org.springframework.context.ApplicationContext;
@@ -44,7 +44,7 @@ public class DefaultReportServiceLocator implements ApplicationContextAware, Rep
 
     private ApplicationContext m_applicationContext;
     
-    private MetaReportRepository m_repo = new GlobalReportRepository();
+    private GlobalReportRepository m_repo = new DefaultGlobalReportRepository();
     
     /** {@inheritDoc} */
     public ReportService getReportService(String reportServiceName) throws ReportServiceLocatorException {

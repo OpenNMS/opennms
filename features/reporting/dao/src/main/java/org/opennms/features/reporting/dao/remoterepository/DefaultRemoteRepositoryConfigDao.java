@@ -5,10 +5,14 @@ import java.io.File;
 import javax.xml.bind.JAXB;
 
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultRemoteRepositoryConfigDao implements
         RemoteRepositoryConfigDao {
 
+    Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDao.class.getSimpleName());
+    
     private final String REMOTE_REPOSITORY_XML = System.getProperty("opennms.home")
             + File.separator
             + "etc"
@@ -21,8 +25,8 @@ public class DefaultRemoteRepositoryConfigDao implements
         try {
             config = JAXB.unmarshal(new File(REMOTE_REPOSITORY_XML), RemoteRepositoryConfig.class);
         } catch (Exception e) {
-            // TODO Tak: logging and fail safety
-            System.out.println("fail to unmarshal: " + REMOTE_REPOSITORY_XML);
+            logger.error("fail to unmarshal file '{}', '{}'", REMOTE_REPOSITORY_XML, e.getMessage());
+            e.printStackTrace();
         }
         return config;
     }

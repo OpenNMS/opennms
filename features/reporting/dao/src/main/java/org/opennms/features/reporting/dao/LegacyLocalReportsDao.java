@@ -8,10 +8,13 @@ import javax.xml.bind.JAXB;
 
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //TODO Tak: add Interface for BasicReportDataProvider
 public class LegacyLocalReportsDao implements LocalReportsDao {
 
+    private Logger logger = LoggerFactory.getLogger(LegacyLocalReportsDao.class.getSimpleName());
     private final String LOCAL_REPORTS_CONFIG_XML = 
             System.getProperty("opennms.home") + 
             File.separator + 
@@ -25,9 +28,9 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
         try {
             m_reports = JAXB.unmarshal(new File(LOCAL_REPORTS_CONFIG_XML), LegacyLocalReportsDefinition.class);
         }catch (Exception e) {
-            // TODO Tak: logging and fail safety
-            System.out.println(LegacyLocalReportsDao.class.getName() + " Unmarshal Failed! for " + LOCAL_REPORTS_CONFIG_XML);
-            System.out.println(LegacyLocalReportsDao.class.getName() + " Returning blank new LegacyLocalReportsDefinition");
+            // TODO Tak: fail safety
+            logger.error("Unmarshal Failed! for '{}'", LOCAL_REPORTS_CONFIG_XML);
+            logger.error("Returning blank new LegacyLocalReportsDefinition");
             e.printStackTrace();
             m_reports = new LegacyLocalReportsDefinition();
         }

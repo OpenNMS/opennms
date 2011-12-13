@@ -8,8 +8,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LegacyLocalReportRepositoryTest {
+    Logger logger = LoggerFactory.getLogger(LegacyLocalReportRepositoryTest.class.getSimpleName());
     ReportRepository m_repo = new LegacyLocalReportRepository();
     
     @BeforeClass
@@ -21,17 +24,15 @@ public class LegacyLocalReportRepositoryTest {
     public void reportIdsWitchRepositoryIdsTest() {
         assertEquals("local", m_repo.getRepositoryId());
         BasicReportDefinition report = m_repo.getReports().get(0);
-//        System.out.println(report.getId());
-//        System.out.println(m_repo.getDisplayName(report.getId()));
+        logger.debug(report.getId());
+        logger.debug(m_repo.getDisplayName(report.getId()));
     }
     
     @Test
     public void getReportsTest() {
         List<BasicReportDefinition> reports = m_repo.getReports();
         for (BasicReportDefinition report : reports) {
-            System.out.println(report.getId() + "\t" + report.getDisplayName() + "\t" + report.getReportService());
+            logger.debug("'{}' \t '{}'", report.getId(), report.getReportService());
         }
-    }
-    
-    
+    }  
 }

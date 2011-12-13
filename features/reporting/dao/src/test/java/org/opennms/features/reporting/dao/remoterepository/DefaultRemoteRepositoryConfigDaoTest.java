@@ -1,11 +1,14 @@
 package org.opennms.features.reporting.dao.remoterepository;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultRemoteRepositoryConfigDaoTest {
-
+    Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDaoTest.class.getSimpleName());
     //TODO Tak: create useful test...
     @Test
     public void unmarshallRemoteRepositoryConfigTest() {

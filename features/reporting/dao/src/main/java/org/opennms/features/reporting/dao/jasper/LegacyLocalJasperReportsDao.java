@@ -9,9 +9,13 @@ import javax.xml.bind.JAXB;
 
 import org.opennms.features.reporting.model.jasperreport.JasperReportDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
 
+    Logger logger = LoggerFactory.getLogger(LegacyLocalJasperReportsDao.class.getSimpleName());
+    
     private final String LOCAL_JASPER_REPORTS_CONFIG_XML = System.getProperty("opennms.home")
             + File.separator
             + "etc"
@@ -33,7 +37,8 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
             reports = JAXB.unmarshal(new File(LOCAL_JASPER_REPORTS_CONFIG_XML),
                                      LocalJasperReports.class);
         } catch (Exception e) {
-            // TODO Tak: logging and fail safety
+            logger.error("Faild to unmarshal file '{}', '{}'", LOCAL_JASPER_REPORTS_CONFIG_XML, e);
+            e.printStackTrace();
         }
     }
 
@@ -68,7 +73,7 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
                                                                         LOCAL_JASPER_REPORTS_TEMPLATE_FOLDER
                                                                                 + report.getTemplate()));
                 } catch (FileNotFoundException e) {
-                    // TODO Tak: logging and fail safety
+                    logger.error("Template file '{}' at folder '{}' not found", report.getTemplate(), LOCAL_JASPER_REPORTS_TEMPLATE_FOLDER);
                     e.printStackTrace();
                 }
             }

@@ -10,9 +10,13 @@ import java.io.InputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultLocalJasperReportsDaoTest {
 
+    Logger logger = LoggerFactory.getLogger(DefaultLocalJasperReportsDaoTest.class.getSimpleName());
+    
     private LegacyLocalJasperReportsDao m_defaultLocalJasperReportsDao;
     
     @Before
