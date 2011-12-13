@@ -48,6 +48,7 @@ import java.util.Map.Entry;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.JUnitHttpServerExecutionListener;
@@ -142,6 +143,7 @@ public class PageSequenceMonitorTest {
     }
 
     @Test
+    @Ignore
     public void testHttps() throws Exception {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
@@ -178,6 +180,7 @@ public class PageSequenceMonitorTest {
 	}
 	
     @Test
+    @Ignore
 	public void testVirtualHost() throws Exception {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
@@ -192,6 +195,7 @@ public class PageSequenceMonitorTest {
 	}
     
     @Test
+    @Ignore
     public void testVirtualHostBadBehaviorForWordpressPlugin() throws Exception {
         m_params.put("page-sequence", "" +
                 "<?xml version=\"1.0\"?>" +
