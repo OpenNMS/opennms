@@ -2,7 +2,7 @@
 -- OPENNMS-MIB       module definition
 --
 
--- Copyright (C) 2005-2008 by The OpenNMS Group, Inc.
+-- Copyright (C) 2005-2011 by The OpenNMS Group, Inc.
 
 
 -- Version 1.0 - 2005-01-13: 	The main purpose of this first version of
@@ -24,19 +24,37 @@
 --  							Added Objects openNMS-eventsAlarms OpenNMS-AlarmId and openNMS-synchronizing to 
 --                             	host information regarding alarms and synchronization
 --								Removed openNMS- unneeded prefix
---
+
+-- Version 2.0 - 2011-12-13:    Converted to SMIv2.  Future revision history entries
+--                              should be added inside the MODULE-IDENTITY module, not
+--                              in these comments.
 
 OPENNMS-MIB DEFINITIONS ::= BEGIN
 IMPORTS
-   OBJECT-TYPE FROM RFC-1212
-   DisplayString FROM RFC1213-MIB
-   enterprises FROM RFC1155-SMI
-   TRAP-TYPE FROM RFC-1215;
+   MODULE-IDENTITY, OBJECT-TYPE,
+   NOTIFICATION-TYPE, enterprises FROM SNMPv2-SMI
+   DisplayString FROM SNMPv2-TC;
 
-openNMS			OBJECT IDENTIFIER
-							::= { enterprises 5813 }
+openNMS MODULE-IDENTITY
+    LAST-UPDATED "201112130000Z"		-- 13 December 2011
+    ORGANIZATION "The OpenNMS Group, Inc."
+    CONTACT-INFO "Tarus Balog
+                  The OpenNMS Group, Inc.
+                  112 Fawn Forest Lane
+                  Pittsboro NC 27312
+                  Phone: +1 919 533 0160
+                  Email: tarus@opennms.com"
+    DESCRIPTION
+     "The MIB module for OpenNMS, the world's first enterprise-grade
+      open-source network management application platform"
+-- Revision history
 
-traps			OBJECT IDENTIFIER
+    REVISION "201112130000Z"
+    DESCRIPTION
+     "This is the first SMIv2 version of this MIB. Welcome to the 21st century."
+    ::= { enterprises 5813 }
+
+onmsLegacyTraps		OBJECT IDENTIFIER
 							::= { openNMS 1 }
 
 data			OBJECT IDENTIFIER
@@ -56,8 +74,8 @@ eventsAlarms	OBJECT IDENTIFIER
 
 dbid		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the database ID for the event. Each
 			event in OpenNMS is assigned a unique, sequential
 			eventid. Unless the database is cleared, the 
@@ -66,29 +84,29 @@ dbid		OBJECT-TYPE
 
 distPoller	OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the distributed poller name for the event."
 	::= { events 2 }
 
 create-time	OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the time the event was created in the database."
 	::= { events 3 }
 
 master-station	OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the name of the master station for the event."
 	::= { events 4 }
 
 uei		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the Unique Event Identifier (UEI) for the event.
 			 The UEI is a string that should be descriptive and unique
 			 for each event type that OpenNMS handles."
@@ -96,16 +114,16 @@ uei		OBJECT-TYPE
 
 source		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the source of the event, usually the OpenNMS process
 			name, such as Capsd or Trapd."
 	::= { events 7 }
 
 nodeid		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the Node ID for the event. Node IDs are simply
 			a handle that OpenNMS uses to group interfaces and services
 			together, and each node should represent an actual device."
@@ -113,31 +131,31 @@ nodeid		OBJECT-TYPE
 
 time		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the time the event occurred."
 	::= { events 9 }
 
 host		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the host for the event. In most cases it will
 			represent the OpenNMS instance that generated it."
 	::= { events 10 }
 
 interface		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the interface for the event. It should contain
 			the IP address of the interface that caused the event."
 	::= { events 11 }
 
 snmphost		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the SNMP host for the event. In the case of
 			an SNMP Trap that was received by OpenNMS, it will 
 			reflect the device that generated the trap. In the
@@ -148,8 +166,8 @@ snmphost		OBJECT-TYPE
 
 service		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the name of the service (ICMP, SSH, HTTP, etc.)
 			that is associated with the event. For example, a failed 
 			web server may generate a nodeLostService event. In that
@@ -158,39 +176,39 @@ service		OBJECT-TYPE
 
 descr		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the verbose description of the event."
 	::= { events 16 }
 
 logmsg		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"The log message is a short, usually one sentence, description of
 			the event suitable for displaying in a log or table."
 	::= { events 17 }
 
 severity		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This is the severity of the event, one of CLEARED,
 			INDETERMINATE, NORMAL, WARNING, MINOR, MAJOR or CRITICAL."
 	::= { events 18 }
 
 pathoutage	OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		optional
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"The pathoutage field in the event has yet to be implemented,
 			but it will be stored here when available."
 	::= { events 19 }
 
 operinst		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"It is possible to associate operator instructions with
 			events in OpenNMS. If this information is available, it 
 			will be stored here."
@@ -198,8 +216,8 @@ operinst		OBJECT-TYPE
 
 ifresolve		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"An attempt will be made to resolve the FQDN of
 			the IP address in OpenNMS-event-interface and
 			if successful, the value returned will be stored here."
@@ -207,8 +225,8 @@ ifresolve		OBJECT-TYPE
 
 nodelabel		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"This will contain the name of the node as known by OpenNMS. 
 			This is based solely on OpenNMS-event-nodeid and can be
 			considered an authoritative way to identify the device from
@@ -232,32 +250,32 @@ nodelabel		OBJECT-TYPE
 
 tl1amRawMessage	OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION
 				"The raw TL1 autonomous message in its entirety."
 	::= { tl1AutonomousMessage 1 }
 	
 tl1amAlarmCode	OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION
 				"The ASCII alarm-code for this TL1 autonomous message."
 	::= { tl1AutonomousMessage 2 }
 
 tl1amAutonomousTag	OBJECT-TYPE
 	SYNTAX			DisplayString
-	ACCESS			read-only
-	STATUS			mandatory
+	MAX-ACCESS		read-only
+	STATUS			current
 	DESCRIPTION
 				"The ASCII autonomous-tag for this TL1 autonomous message."
 	::= { tl1AutonomousMessage 3 }
 
 tl1amVerb		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION
 				"The ASCII verb for this TL1 autonomous message.
 				Should always be REPT."
@@ -265,16 +283,16 @@ tl1amVerb		OBJECT-TYPE
 
 tl1amAutoBlock	OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION
 				"The ASCII auto-block for this TL1 autonomous message."
 	::= { tl1AutonomousMessage 5 }
 
 tl1amAID		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION
 				"The ASCII AID (access identifier) for this TL1 autonomous
 				message, as parsed from the auto-block."
@@ -282,8 +300,8 @@ tl1amAID		OBJECT-TYPE
 
 tl1amAdditionalParams	OBJECT-TYPE
 	SYNTAX				DisplayString
-	ACCESS				read-only
-	STATUS				mandatory
+	MAX-ACCESS			read-only
+	STATUS				current
 	DESCRIPTION
 						"The additional parameters for this TL1 autonomous message,
 						as parsed from the auto-block."
@@ -291,24 +309,23 @@ tl1amAdditionalParams	OBJECT-TYPE
 
 alarmId		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"The unique alarm identifier."
 	::= { eventsAlarms 1 } 
  
 synchronizing		OBJECT-TYPE
 	SYNTAX		DisplayString
-	ACCESS		read-only
-	STATUS		mandatory
+	MAX-ACCESS	read-only
+	STATUS		current
 	DESCRIPTION 	"flag indicating if the alarm is due to 
                          a synchronization session (SYNC) or not (null)"
 	::= { eventsAlarms 2 }
 
 -- Trap definitions
 
-eventTrap		TRAP-TYPE
-	ENTERPRISE traps
-	VARIABLES {
+eventTrap		NOTIFICATION-TYPE
+	OBJECTS {
 		dbid,
 		distPoller,
 		create-time,
@@ -329,16 +346,16 @@ eventTrap		TRAP-TYPE
 		ifresolve,
 		nodelabel
 		}
+	STATUS		current
 	DESCRIPTION 
 	"This is the definition of the generic OpenNMS trap sent from the
 	scriptd process. Key variables are uei (which tells what type
 	of OpenNMS event this was), interface (the IP address of the interface
 	that caused the event) and severity."
-	::= 1
+	::= { onmsLegacyTraps 1 }
 
-tl1AutonomousMessageTrap	TRAP-TYPE
-	ENTERPRISE traps
-	VARIABLES {
+tl1AutonomousMessageTrap	NOTIFICATION-TYPE
+	OBJECTS {
 		nodeid,
 		time,
 		host,
@@ -353,16 +370,16 @@ tl1AutonomousMessageTrap	TRAP-TYPE
 		tl1amAID,
 		tl1amAdditionalParams
 	}
+	STATUS		current
 	DESCRIPTION
 		"This trap is used to convey the contents of a TL1 autonomous message
 		received from a TL1 NE or a north-bound TL1 EMS. Managers receiving
 		this trap may need to perform additional analysis of its varbinds in
 		order to realize value from this trap."
-	::= 2
+	::= { onmsLegacyTraps 2 }
 
-alarmTrap	TRAP-TYPE
-	ENTERPRISE traps
-	VARIABLES { 		
+alarmTrap	NOTIFICATION-TYPE
+	OBJECTS { 		
 		dbid,
 		distPoller,
 		create-time,
@@ -385,33 +402,34 @@ alarmTrap	TRAP-TYPE
 		alarmId,
 		synchronizing 
 		}
+	STATUS		current
 	DESCRIPTION		
 		"The OpenNMS alarm SNMP Trap"
 		
-	::=  3 
+	::=  { onmsLegacyTraps 3 }
 
-heartbeatTrap	TRAP-TYPE   
-	ENTERPRISE traps
+heartbeatTrap	NOTIFICATION-TYPE   
+	STATUS		current
 	DESCRIPTION
 		"Trap sent periodically by OpenNMS to keep alive external SNMP Manager"
-	::=  4
+	::=  { onmsLegacyTraps 4 }
              
-startSyncTrap	TRAP-TYPE      
-	ENTERPRISE traps
+startSyncTrap	NOTIFICATION-TYPE      
+	STATUS		current
 	DESCRIPTION
 		"OpenNMS Synchronization Process is starting"
-	::=  5
+	::=  { onmsLegacyTraps 5 }
                                            
-endSyncTrap	TRAP-TYPE      
-	ENTERPRISE traps
+endSyncTrap	NOTIFICATION-TYPE      
+	STATUS		current
 	DESCRIPTION
 		"OpenNMS Synchronization Process is successfully ended"
-	::=  6
+	::=  { onmsLegacyTraps 6 }
                                            
-syncRequestTrap TRAP-TYPE  
-	ENTERPRISE traps
+syncRequestTrap NOTIFICATION-TYPE  
+	STATUS		current
   	DESCRIPTION 
     	"OpenNMS synchronization request" 
-	::=  7
+	::=  { onmsLegacyTraps 7 }
 
 END
