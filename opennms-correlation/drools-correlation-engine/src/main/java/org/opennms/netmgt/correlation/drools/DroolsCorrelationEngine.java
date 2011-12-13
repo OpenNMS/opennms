@@ -179,6 +179,10 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         }
         return objects;
     }
+    
+    public WorkingMemory getWorkingMemory() {
+    	return m_workingMemory;
+    }
 
     /**
      * <p>setName</p>
