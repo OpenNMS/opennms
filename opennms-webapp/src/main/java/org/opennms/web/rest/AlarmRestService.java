@@ -29,6 +29,8 @@
 package org.opennms.web.rest;
 
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -43,12 +45,14 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -78,6 +82,13 @@ public class AlarmRestService extends OnmsRestService {
     @Context
     SecurityContext m_securityContext;
     
+    static final Pattern m_severityPattern;
+
+    static {
+        final String severities = StringUtils.join(OnmsSeverity.names(), "|");
+        m_severityPattern = Pattern.compile("\\s+(\\{alias\\}.)?severity\\s*(\\!\\=|\\<\\>|\\<\\=|\\>\\=|\\=|\\<|\\>)\\s*'?(" + severities + ")'?");
+    }
+
     /**
      * <p>getAlarm</p>
      *
@@ -180,6 +191,8 @@ public class AlarmRestService extends OnmsRestService {
 	}
 
 	private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
+	    translateSeverity(params);
+
 	    OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
 
 	    setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
@@ -195,6 +208,7 @@ public class AlarmRestService extends OnmsRestService {
         );
 	    addFiltersToCriteria(params, criteria, OnmsAlarm.class);
 
+
 	    criteria.setFetchMode("firstEvent", FetchMode.JOIN);
 	    criteria.setFetchMode("lastEvent", FetchMode.JOIN);
 	    
@@ -204,4 +218,27 @@ public class AlarmRestService extends OnmsRestService {
 
 	    return getDistinctIdCriteria(OnmsAlarm.class, criteria);
 	}
+
+    private void translateSeverity(final MultivaluedMap<String, String> params) {
+        final String query = params.getFirst("query");
+        // System.err.println("tranlateSeverity: query = " + query + ", pattern = " + p);
+        if (query != null) {
+            final Matcher m = m_severityPattern.matcher(query);
+            if (m.find()) {
+                // System.err.println("translateSeverity: group(1) = '" + m.group(1) + "', group(2) = '" + m.group(2) + "', group(3) = '" + m.group(3) + "'");
+                final String alias = m.group(1);
+                final String comparator = m.group(2);
+                final String severity = m.group(3);
+                final OnmsSeverity onmsSeverity = OnmsSeverity.get(severity);
+                // System.err.println("translateSeverity: " + severity + " = " + onmsSeverity);
+                
+                final String newQuery = m.replaceFirst(" " + (alias == null? "" : alias) + "severity " + comparator + " " + onmsSeverity.getId());
+                params.remove("query");
+                params.add("query", newQuery);
+                // System.err.println("translateSeverity: newQuery = '" + newQuery + "'");
+            } else {
+                // System.err.println("translateSeverity: failed to find pattern");
+            }
+        }
+    }
 }
