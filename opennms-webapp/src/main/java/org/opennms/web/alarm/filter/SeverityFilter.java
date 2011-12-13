@@ -35,27 +35,52 @@ import org.opennms.web.filter.SQLType;
 /**
  * Encapsulates severity filtering functionality.
  *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
-public class SeverityFilter extends EqualsFilter<OnmsSeverity> {
+public class SeverityFilter extends EqualsFilter<Integer> {
+    /** Constant <code>TYPE="severity"</code> */
     public static final String TYPE = "severity";
 
-    public SeverityFilter(final OnmsSeverity severity) {
-        super(TYPE, SQLType.SEVERITY, "ALARMS.SEVERITY", "severity", severity);
+    /**
+     * <p>Constructor for SeverityFilter.</p>
+     *
+     * @param severity a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     */
+    public SeverityFilter(OnmsSeverity severity) {
+        super(TYPE, SQLType.INT, "SEVERITY", "severityId", severity.getId());
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
-        return (TYPE + " is " + getValue().getLabel());
+        return (TYPE + "=" + OnmsSeverity.get(getValue()).getLabel());
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmFactory.SeverityFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getSeverity</p>
+     *
+     * @return a int.
+     */
     public int getSeverity() {
-        return getValue().getId();
+        return getValue();
     }
 
-    public boolean equals(final Object obj) {
+    /** {@inheritDoc} */
+    public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }
 }

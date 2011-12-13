@@ -36,8 +36,6 @@ import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -109,7 +107,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private Integer m_counter;
 
     /** persistent field */
-    private OnmsSeverity m_severity = OnmsSeverity.INDETERMINATE;
+    private OnmsSeverity m_severity;
 
     /** persistent field */
     private Date m_firstEventTime;
@@ -430,7 +428,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @param label a {@link java.lang.String} object.
      */
-    public void setSeverityLabel(final String label) {
+    public void setSeverityLabel(String label) {
         m_severity = OnmsSeverity.get(label);
     }
     
@@ -439,8 +437,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      */
-    @Column(name="severity", nullable=false)
-    @Enumerated(EnumType.ORDINAL)
+    @Transient
     @XmlTransient
     public OnmsSeverity getSeverity() {
         return this.m_severity;
@@ -451,7 +448,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @param severity a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      */
-    public void setSeverity(final OnmsSeverity severity) {
+    @Transient
+    public void setSeverity(OnmsSeverity severity) {
         m_severity = severity;
     }
     
@@ -460,7 +458,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link java.lang.Integer} object.
      */
-    @Transient
+    @Column(name="severity", nullable=false)
     @XmlTransient
     public Integer getSeverityId() {
         return this.m_severity.getId();
@@ -471,7 +469,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @param severity a {@link java.lang.Integer} object.
      */
-    public void setSeverityId(final Integer severity) {
+    public void setSeverityId(Integer severity) {
         this.m_severity = OnmsSeverity.get(severity);
     }
     

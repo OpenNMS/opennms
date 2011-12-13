@@ -29,8 +29,6 @@
 package org.opennms.web.alarm;
 
 import java.util.Date;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 
@@ -538,34 +536,5 @@ public class Alarm extends Object {
         return (this.serviceName);
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("id", id)
-            .append("UEI", uei)
-            .append("distPoller", dpName)
-            .append("nodeID", nodeID)
-            .append("nodeLabel", nodeLabel)
-            .append("ipAddress", ipAddr)
-            .append("serviceID", serviceID)
-            .append("reductionKey", reductionKey)
-            .append("count", count)
-            .append("severity", severity)
-            .append("serviceName", serviceName)
-            .append("lastEventID", lastEventID)
-            .append("lastEventTime", lasteventtime)
-            .append("description", description)
-            .append("logMessage", logMessage)
-            .append("operatorInstruction", operatorInstruction)
-            .append("troubleTicket", troubleTicket)
-            .append("troubleTicketState", troubleTicketState)
-            .append("mouseOverText", mouseOverText)
-            .append("suppressedUntil", suppressedUntil)
-            .append("suppressedUser", suppressedUser)
-            .append("suppressedTime", suppressedTime)
-            .append("acknowledgedUser", acknowledgeUser)
-            .append("acknowledgedTime", acknowledgeTime)
-            .append("parms", parms)
-            .toString();
-    }
+
 }
