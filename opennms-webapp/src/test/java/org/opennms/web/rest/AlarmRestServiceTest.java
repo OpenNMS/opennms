@@ -28,10 +28,8 @@
 
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -41,22 +39,55 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	protected void afterServletStart() {
 		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		DatabasePopulator dbp = context.getBean("databasePopulator", DatabasePopulator.class);
-		dbp.populateDatabase();
+		context.getBean("databasePopulator", DatabasePopulator.class).populateDatabase();
 	}
 
 	@Test
 	public void testAlarms() throws Exception {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("orderBy", "lastEventTime");
-		parameters.put("order", "desc");
-		parameters.put("alarmAckUser", "null");
-		parameters.put("limit", "1");
-		String xml = sendRequest(GET, "/alarms", parameters, 200);
+		String xml = sendRequest(GET, "/alarms", parseParamData("orderBy=lastEventTime&order=desc&alarmAckUser=null&limit=1"), 200);
 		assertTrue(xml.contains("This is a test alarm"));
 
-		xml = sendRequest(GET, "/alarms/1", parameters, 200);
+		xml = sendRequest(GET, "/alarms/1", parseParamData("orderBy=lastEventTime&order=desc&alarmAckUser=null&limit=1"), 200);
 		assertTrue(xml.contains("This is a test alarm"));
 		assertTrue(xml.contains("<nodeLabel>node1</nodeLabel>"));
 	}
+
+    @Test
+    public void testAlarmQueryBySeverityEquals() throws Exception {
+        String xml = null;
+        
+        xml = sendRequest(GET, "/alarms", parseParamData("comparator=eq&severity=NORMAL&limit=1"), 200);
+        assertTrue(xml.contains("This is a test alarm"));
+
+        xml = sendRequest(GET, "/alarms", parseParamData("comparator=eq&severity=MAJOR&limit=1"), 200);
+        assertFalse(xml.contains("This is a test alarm"));
+    }
+
+    @Test
+    public void testAlarmQueryBySeverityLessThan() throws Exception {
+        String xml = null;
+
+        xml = sendRequest(GET, "/alarms", parseParamData("comparator=le&severity=NORMAL&limit=1"), 200);
+        assertTrue(xml.contains("This is a test alarm"));
+
+        xml = sendRequest(GET, "/alarms", parseParamData("comparator=lt&severity=NORMAL&limit=1"), 200);
+        assertFalse(xml.contains("This is a test alarm"));
+
+        xml = sendRequest(GET, "/alarms", parseParamData("comparator=lt&severity=WARNING&limit=1"), 200);
+        assertTrue(xml.contains("This is a test alarm"));
+    }
+
+    @Test
+    public void testAlarmQueryBySeverityGreaterThan() throws Exception {
+        String xml = null;
+
+        xml = sendRequest(GET, "/alarms", parseParamData("comparator=ge&severity=NORMAL&limit=1"), 200);
+        assertTrue(xml.contains("This is a test alarm"));
+
+        xml = sendRequest(GET, "/alarms", parseParamData("comparator=gt&severity=NORMAL&limit=1"), 200);
+        assertFalse(xml.contains("This is a test alarm"));
+
+        xml = sendRequest(GET, "/alarms", parseParamData("comparator=gt&severity=CLEARED&limit=1"), 200);
+        assertTrue(xml.contains("This is a test alarm"));
+    }
 }

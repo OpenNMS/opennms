@@ -116,7 +116,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
                     criteria.addOrder(Order.desc("serviceType.name"));
                     break;
                 case SEVERITY:
-                    criteria.addOrder(Order.desc("severityId"));
+                    criteria.addOrder(Order.desc("severity"));
                     break;
                 case REVERSE_COUNT:
                     criteria.addOrder(Order.asc("counter"));
@@ -143,7 +143,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
                     criteria.addOrder(Order.asc("serviceType.name"));
                     break;
                 case REVERSE_SEVERITY:
-                    criteria.addOrder(Order.asc("severityId"));
+                    criteria.addOrder(Order.asc("severity"));
                     break;
                 default:
                     break;
@@ -246,7 +246,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     public int[] countMatchingAlarmsBySeverity(final AlarmCriteria criteria) {
         final int[] alarmCounts = new int[8];
         for (final OnmsSeverity value : OnmsSeverity.values()) {
-            alarmCounts[value.getId()] = m_alarmDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("severityId", value.getId())));
+            alarmCounts[value.getId()] = m_alarmDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("severity", value)));
         }
         return alarmCounts;
     }

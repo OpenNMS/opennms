@@ -106,5 +106,10 @@ public abstract class OneArgFilter<T> extends BaseFilter<T> {
     final public String getSql() {
         return String.format(getSQLTemplate(), formatValue(m_value));
     }
+    
+    @Override
+    public String getTextDescription() {
+        return getDescription();
+    }
 
 }

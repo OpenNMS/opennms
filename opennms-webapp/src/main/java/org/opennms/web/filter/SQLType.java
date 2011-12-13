@@ -32,6 +32,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
 
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.alarm.filter.OnmsSeveritySqlType;
+
 /**
  * <p>SQLType interface.</p>
  *
@@ -41,12 +44,10 @@ import java.util.Date;
  */
 public interface SQLType<T> {
     
-    /** Constant <code>INT</code> */
     public static final SQLType<Integer> INT = new IntegerSqlType();
-    /** Constant <code>STRING</code> */
     public static final SQLType<String> STRING = new StringSqlType();
-    /** Constant <code>DATE</code> */
     public static final SQLType<Date> DATE = new DateSqlType();
+    public static final SQLType<OnmsSeverity> SEVERITY = new OnmsSeveritySqlType();
     
     /**
      * <p>getValueAsString</p>
