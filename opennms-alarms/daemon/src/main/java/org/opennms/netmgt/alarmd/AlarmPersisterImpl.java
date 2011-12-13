@@ -123,7 +123,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         alarm.setReductionKey(event.getAlarmData().getReductionKey());
         alarm.setServiceType(e.getServiceType());
         alarm.setSeverity(OnmsSeverity.get(e.getEventSeverity())); //TODO: what to do?
-        alarm.setSeverityId(e.getEventSeverity());  //TODO: what to do?
         alarm.setSuppressedUntil(e.getEventTime()); //TODO: fix UI to not require this be set
         alarm.setSuppressedTime(e.getEventTime()); //TODO: Fix UI to not require this be set
         //alarm.setTTicketId(e.getEventTTicket());

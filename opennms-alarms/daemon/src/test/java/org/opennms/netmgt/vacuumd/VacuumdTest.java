@@ -50,6 +50,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -59,7 +60,6 @@ import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -89,7 +89,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-alarmd.xml"
+        "classpath:/META-INF/opennms/applicationContext-alarmd.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)

@@ -107,7 +107,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private Integer m_counter;
 
     /** persistent field */
-    private OnmsSeverity m_severity;
+    private OnmsSeverity m_severity = OnmsSeverity.INDETERMINATE;
 
     /** persistent field */
     private Date m_firstEventTime;
@@ -428,7 +428,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @param label a {@link java.lang.String} object.
      */
-    public void setSeverityLabel(String label) {
+    public void setSeverityLabel(final String label) {
         m_severity = OnmsSeverity.get(label);
     }
     
@@ -437,7 +437,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      */
-    @Transient
+    @Column(name="severity", nullable=false)
+    // @Enumerated(EnumType.ORDINAL)
+    @Type(type="org.opennms.netmgt.model.OnmsSeverityUserType")
     @XmlTransient
     public OnmsSeverity getSeverity() {
         return this.m_severity;
@@ -448,8 +450,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @param severity a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      */
-    @Transient
-    public void setSeverity(OnmsSeverity severity) {
+    public void setSeverity(final OnmsSeverity severity) {
         m_severity = severity;
     }
     
@@ -458,7 +459,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link java.lang.Integer} object.
      */
-    @Column(name="severity", nullable=false)
+    @Transient
     @XmlTransient
     public Integer getSeverityId() {
         return this.m_severity.getId();
@@ -469,7 +470,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @param severity a {@link java.lang.Integer} object.
      */
-    public void setSeverityId(Integer severity) {
+    public void setSeverityId(final Integer severity) {
         this.m_severity = OnmsSeverity.get(severity);
     }
     

@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +46,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.filter.Filter;
@@ -62,7 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/daoWebRepositoryTestContext.xml",
-        "classpath:/jdbcWebRepositoryTestContext.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -76,20 +76,12 @@ public class WebAlarmRepositoryFilterTest {
     WebAlarmRepository m_daoAlarmRepo;
     
     @Autowired
-    @Qualifier("jdbc")
-    WebAlarmRepository m_jdbcWebAlarmRepo;
-    
-    @Autowired
     ApplicationContext m_appContext;
     
     @Before
     public void setUp(){
+        MockLogAppender.setupLogging(true);
         m_dbPopulator.populateDatabase();
-    }
-    
-    @After
-    public void tearDown(){
-        
     }
     
     @Test
@@ -98,13 +90,7 @@ public class WebAlarmRepositoryFilterTest {
         Alarm[] alarm = m_daoAlarmRepo.getMatchingAlarms(new AlarmCriteria(new AlarmTypeFilter(3)));
         assertEquals(0, alarm.length);
         
-        alarm = m_jdbcWebAlarmRepo.getMatchingAlarms(new AlarmCriteria(new AlarmTypeFilter(3)));
-        assertEquals(0, alarm.length);
-        
         alarm = m_daoAlarmRepo.getMatchingAlarms(new AlarmCriteria(new AlarmTypeFilter(1)));
-        assertEquals(1, alarm.length);
-        
-        alarm = m_jdbcWebAlarmRepo.getMatchingAlarms(new AlarmCriteria(new AlarmTypeFilter(1)));
         assertEquals(1, alarm.length);
     }
     
@@ -114,13 +100,7 @@ public class WebAlarmRepositoryFilterTest {
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(new AlarmCriteria(new BeforeFirstEventTimeFilter(new Date())));
         assertEquals(1, alarms.length);
         
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(new AlarmCriteria(new BeforeFirstEventTimeFilter(new Date())));
-        assertEquals(1, alarms.length);
-        
         alarms = m_daoAlarmRepo.getMatchingAlarms(new AlarmCriteria(new BeforeLastEventTimeFilter(new Date())));
-        assertEquals(1, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(new AlarmCriteria(new BeforeLastEventTimeFilter(new Date())));
         assertEquals(1, alarms.length);
     }
     
@@ -128,9 +108,6 @@ public class WebAlarmRepositoryFilterTest {
     @Transactional
     public void testBeforeLastEventTime(){
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(new AlarmCriteria(new BeforeLastEventTimeFilter(new Date())));
-        assertEquals(1, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(new AlarmCriteria(new BeforeLastEventTimeFilter(new Date())));
         assertEquals(1, alarms.length);
     }
     
@@ -142,12 +119,6 @@ public class WebAlarmRepositoryFilterTest {
         
         alarms = m_daoAlarmRepo.getMatchingAlarms(new AlarmCriteria(new ExactUEIFilter("uei.opennms.org/test")));
         assertEquals(1, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(new AlarmCriteria(new ExactUEIFilter("test uei")));
-        assertEquals(0, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(new AlarmCriteria(new ExactUEIFilter("uei.opennms.org/test")));
-        assertEquals(1, alarms.length);
     }
     
     @Test
@@ -155,20 +126,14 @@ public class WebAlarmRepositoryFilterTest {
     public void testInterfaceFilter(){
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(new AlarmCriteria(new InterfaceFilter("192.168.1.1")));
         assertEquals(1, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(new AlarmCriteria(new InterfaceFilter("192.168.1.1")));
-        assertEquals(1, alarms.length);
     }
     
     @Test
     @Transactional
     public void testNegativeAcknowledgeByFilter(){
         AlarmCriteria criteria = new AlarmCriteria(new NegativeAcknowledgedByFilter("non user"));
-        
-        Alarm[] alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(1, alarms.length);
-        
-        alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
+
+        Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
     }
     
@@ -180,11 +145,6 @@ public class WebAlarmRepositoryFilterTest {
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
         assertEquals("192.168.1.1", alarms[0].getIpAddress());
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(1, alarms.length);
-        assertEquals("192.168.1.1", alarms[0].getIpAddress());
-        
     }
     
     @Test
@@ -192,10 +152,7 @@ public class WebAlarmRepositoryFilterTest {
     public void testNegativeInterfaceFilter(){
         AlarmCriteria criteria = new AlarmCriteria(new NegativeInterfaceFilter("192.168.1.101"));
         
-        Alarm[] alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(1, alarms.length);
-        
-        alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
+        Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
     }
     
@@ -204,9 +161,6 @@ public class WebAlarmRepositoryFilterTest {
     public void testNegativeNodeFilter(){
         AlarmCriteria criteria = getCriteria(new NegativeNodeFilter(11, m_appContext));
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(1, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
         
         NegativeNodeFilter filter = new NegativeNodeFilter(11, m_appContext);
@@ -219,9 +173,6 @@ public class WebAlarmRepositoryFilterTest {
         AlarmCriteria criteria = getCriteria(new NegativeExactUEIFilter("uei.opennms.org/bogus"));
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(1, alarms.length);
     }
     
     @Test
@@ -230,9 +181,6 @@ public class WebAlarmRepositoryFilterTest {
         AlarmCriteria criteria = getCriteria(new NegativePartialUEIFilter("uei.opennms.org"));
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(0, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(0, alarms.length);
     }
     
@@ -243,9 +191,6 @@ public class WebAlarmRepositoryFilterTest {
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(1, alarms.length);
     }
     
     @Test
@@ -255,33 +200,17 @@ public class WebAlarmRepositoryFilterTest {
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(1, alarms.length);
     }
 
-    /*
-    @Ignore
     @Test
     @Transactional
-    public void testNodeFilter(){
-        AlarmCriteria criteria = getCriteria(new NodeFilter(1));
+    public void testSeverityFilter(){
+        AlarmCriteria criteria = getCriteria(new SeverityFilter(OnmsSeverity.NORMAL));
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(1, alarms.length);
-        
-        criteria = getCriteria(new NodeFilter(100));
-        
-        alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(0, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(0, alarms.length);
+        System.err.println("alarm = " + alarms[0]);
     }
-    */
 
     @Test
     @Transactional
@@ -289,9 +218,6 @@ public class WebAlarmRepositoryFilterTest {
         AlarmCriteria criteria = getCriteria(new NodeNameLikeFilter("mr"));
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(0, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(0, alarms.length);
     }
     
@@ -302,9 +228,6 @@ public class WebAlarmRepositoryFilterTest {
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(1, alarms.length);
     }
     
     @Test
@@ -313,9 +236,6 @@ public class WebAlarmRepositoryFilterTest {
         AlarmCriteria criteria = getCriteria(new ServiceFilter(1));
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(0, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(0, alarms.length);
     }
     
@@ -326,9 +246,6 @@ public class WebAlarmRepositoryFilterTest {
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(0, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(0, alarms.length);
     }
     
     @Test
@@ -338,9 +255,6 @@ public class WebAlarmRepositoryFilterTest {
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
-        
-        //alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        //assertEquals(1, alarms);
     }
     
     @Test
@@ -350,9 +264,6 @@ public class WebAlarmRepositoryFilterTest {
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
-        
-        //alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-        //assertEquals(1, alarms.length);
     }
     
     @Test
@@ -361,9 +272,6 @@ public class WebAlarmRepositoryFilterTest {
         AlarmCriteria criteria = getCriteria(new LogMessageMatchesAnyFilter("log"));
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
-        assertEquals(1, alarms.length);
-        
-        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
     }
     
