@@ -30,7 +30,9 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -156,24 +158,32 @@ public enum OnmsSeverity implements Serializable {
      */
     public static OnmsSeverity get(final String label) {
         for (final Integer key : m_idMap.keySet()) {
-            if (m_idMap.get(key).getLabel().equals(label)) {
+            if (m_idMap.get(key).getLabel().equalsIgnoreCase(label)) {
                 return m_idMap.get(key);
             }
         }
         return OnmsSeverity.INDETERMINATE;
     }
 
-/**
- * <p>escalate</p>
- *
- * @param sev a {@link org.opennms.netmgt.model.OnmsSeverity} object.
- * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
- */
-public static OnmsSeverity escalate(final OnmsSeverity sev) {
+    /**
+     * <p>escalate</p>
+     *
+     * @param sev a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     */
+    public static OnmsSeverity escalate(final OnmsSeverity sev) {
         if (sev.isLessThan(OnmsSeverity.CRITICAL)) {
             return OnmsSeverity.get(sev.getId()+1);
         } else {
             return OnmsSeverity.get(sev.getId());
         }
+    }
+
+    public static List<String> names() {
+        final List<String> names = new ArrayList<String>();
+        for (final OnmsSeverity value : values()) {
+            names.add(value.toString());
+        }
+        return names;
     }
 }
