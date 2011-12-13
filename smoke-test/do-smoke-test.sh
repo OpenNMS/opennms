@@ -66,9 +66,9 @@ clean_maven() {
 clean_yum() {
 	banner "Cleaning out old YUM RPMs."
 
+	yum clean metadata
 	# find RPMs more than a few days old and delete them
 	find /var/cache/yum -type f -name \*.rpm -mtime +1 -print0 | xargs -0 rm -v -f
-	# yum clean all
 }
 
 reset_database() {
