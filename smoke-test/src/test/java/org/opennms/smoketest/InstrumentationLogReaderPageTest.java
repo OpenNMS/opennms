@@ -7,6 +7,8 @@ public class InstrumentationLogReaderPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        selenium.open("/opennms/admin/index.jsp");
+        waitForPageToLoad();
         selenium.click("link=Instrumentation Log Reader");
         waitForPageToLoad();
     }

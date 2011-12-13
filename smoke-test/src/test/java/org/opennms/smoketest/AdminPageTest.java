@@ -135,7 +135,7 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
         waitForPageToLoad();
         assertEquals("Add New Group", selenium.getValue("css=input[type=submit]"));
         assertEquals("Edit Default Foreign Source Definition", selenium.getValue("css=input[type=button]"));
-        assertEquals("Reset Default Foreign Source Definition", selenium.getValue("//input[@value='Reset Default Foreign Source']"));
+        assertEquals("Reset Default Foreign Source Definition", selenium.getValue("//input[@value='Reset Default Foreign Source Definition']"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
         waitForPageToLoad();
         selenium.click("link=Import and Export Asset Information");
