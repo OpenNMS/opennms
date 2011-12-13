@@ -31,6 +31,8 @@ public class DefaultRemoteRepository implements ReportRepository {
     private ApacheHttpClientConfig m_clientConfig;
     private WebResource m_webResource;
 
+    //TODO Tak: add repository id to every report
+    
     public DefaultRemoteRepository() {
 
         m_clientConfig = new DefaultApacheHttpClientConfig();
@@ -57,6 +59,7 @@ public class DefaultRemoteRepository implements ReportRepository {
                 SimpleJasperReportDefinition result = new SimpleJasperReportDefinition();
                 try {
                     BeanUtils.copyProperties(result, report);
+                    result.setId(m_config.getRepositoryId() + "_" + result.getId());
                 } catch (IllegalAccessException e) {
                     logger.debug("getReports IllegalAssessException while copyProperties from '{}' to '{}' with exception.", report, result);
                     logger.error("getReports IllegalAssessException while copyProperties '{}'", e);
@@ -87,6 +90,7 @@ public class DefaultRemoteRepository implements ReportRepository {
                 SimpleJasperReportDefinition result = new SimpleJasperReportDefinition();
                 try {
                     BeanUtils.copyProperties(result, report);
+                    result.setId(m_config.getRepositoryId() + "_" + result.getId());
                 } catch (IllegalAccessException e) {
                     logger.debug("getOnlineReports IllegalAssessException while copyProperties from '{}' to '{}' with exception.", report, result);
                     logger.error("getOnlineReports IllegalAssessException while copyProperties '{}'", e);
@@ -105,6 +109,7 @@ public class DefaultRemoteRepository implements ReportRepository {
 
     @Override
     public String getReportService(String id) {
+        id = id.substring(id.indexOf("_") + 1);
         String result = "";
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()
@@ -116,6 +121,7 @@ public class DefaultRemoteRepository implements ReportRepository {
 
     @Override
     public String getDisplayName(String id) {
+        id = id.substring(id.indexOf("_") + 1);
         String result = "";
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()
@@ -127,6 +133,7 @@ public class DefaultRemoteRepository implements ReportRepository {
 
     @Override
     public String getEngine(String id) {
+        id = id.substring(id.indexOf("_") + 1);
         String result = "";
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()
@@ -138,6 +145,7 @@ public class DefaultRemoteRepository implements ReportRepository {
 
     @Override
     public InputStream getTemplateStream(String id) {
+        id = id.substring(id.indexOf("_") + 1);
         InputStream templateStreamResult = null;
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()

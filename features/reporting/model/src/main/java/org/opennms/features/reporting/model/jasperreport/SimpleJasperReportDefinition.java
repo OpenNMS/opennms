@@ -10,6 +10,7 @@ public class SimpleJasperReportDefinition implements BasicReportDefinition,
         JasperReportDefinition {
 
     private String m_id;
+    private String m_repositoryId;
     private String m_engine;
     private String m_template;
     private String m_description;
@@ -33,17 +34,21 @@ public class SimpleJasperReportDefinition implements BasicReportDefinition,
     public String getId() {
         return m_id;
     }
+    @XmlElement(name = "online")
+    public boolean getOnline() {
+        return m_online;
+    }
     @XmlElement(name = "report-service")
     public String getReportService() {
         return m_reportService;
     }
+    @Override
+    public String getRepositoryId() {
+        return m_repositoryId;
+    }
     @XmlElement(name = "template")
     public String getTemplate() {
         return m_template;
-    }
-    @XmlElement(name = "online")
-    public boolean getOnline() {
-        return m_online;
     }
     public void setDescription(String description) {
         m_description = description;
@@ -68,7 +73,8 @@ public class SimpleJasperReportDefinition implements BasicReportDefinition,
     }
     @Override
     public String toString() {
-        return "SimpleJasperReportDefinition [m_id=" + m_id + ", m_engine="
+        return "SimpleJasperReportDefinition [m_id=" + m_id
+                + ", m_repositoryId=" + m_repositoryId + ", m_engine="
                 + m_engine + ", m_template=" + m_template
                 + ", m_description=" + m_description + ", m_displayName="
                 + m_displayName + ", m_reportService=" + m_reportService

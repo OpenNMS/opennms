@@ -30,7 +30,6 @@ package org.opennms.reporting.core.svclayer.support;
 
 
 import org.opennms.api.reporting.ReportService;
-import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.features.reporting.repository.global.MetaReportRepository;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
@@ -63,7 +62,6 @@ public class DefaultReportServiceLocator implements ApplicationContextAware, Rep
     public ReportService getReportServiceForId(String reportId)
             throws ReportServiceLocatorException {
         
-        //TODO Tak: reportId AND repositoryId is required now
         return getReportService(m_repo.getReportService(reportId));
     }
 

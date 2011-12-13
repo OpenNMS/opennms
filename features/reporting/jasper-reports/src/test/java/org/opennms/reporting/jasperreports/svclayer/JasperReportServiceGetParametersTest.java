@@ -23,7 +23,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 
 public class JasperReportServiceGetParametersTest {
 
@@ -33,7 +32,7 @@ public class JasperReportServiceGetParametersTest {
     public void setUp() {
         System.setProperty("opennms.home", "/opt/opennms");
         service = new JasperReportService();
-        service.setReportRepository(new GlobalReportRepository());
+//        service.setReportRepository(new GlobalReportRepository());
         assertEquals("/opt/opennms", System.getProperty("opennms.home"));
     }
     

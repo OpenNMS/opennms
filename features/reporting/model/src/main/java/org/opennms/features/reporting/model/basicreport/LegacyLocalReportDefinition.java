@@ -18,6 +18,12 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
     private String id;
 
     /**
+     * the name of this report as defined in engine
+     *  configuration
+     */
+    private String repositoryId;
+    
+    /**
      * the name of this report as displayed in the webui
      *  
      */
@@ -136,5 +142,10 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
     @Override
     public void setOnline(boolean online) {
         this.online = online;
+    }
+
+    @Override
+    public String getRepositoryId() {
+        return repositoryId;
     }
 }

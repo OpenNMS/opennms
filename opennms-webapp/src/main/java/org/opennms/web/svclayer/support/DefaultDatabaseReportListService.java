@@ -21,9 +21,11 @@ import java.util.List;
 
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
+import org.opennms.features.reporting.repository.global.MetaReportRepository;
 import org.opennms.features.reporting.repository.ReportRepository;
 
 import org.opennms.web.svclayer.DatabaseReportListService;
+
 /**
  * <p>
  * DefaultDatabaseReportListService class.
@@ -35,49 +37,53 @@ import org.opennms.web.svclayer.DatabaseReportListService;
  */
 public class DefaultDatabaseReportListService implements
         DatabaseReportListService {
-    
-    private ReportRepository m_repo = new GlobalReportRepository();
-    
-     /**
-     * <p>getAll</p>
-     *
+
+    private MetaReportRepository m_metaRepo = new GlobalReportRepository();
+
+    /**
+     * <p>
+     * getAll Reports from all Repositories
+     * </p>
+     * 
      * @return a {@link java.util.List} object.
      */
     public List<DatabaseReportDescription> getAll() {
-        
-        List <DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
-        
-        for(BasicReportDefinition report : m_repo.getReports()) {
-            DatabaseReportDescription summary = new DatabaseReportDescription();
-            summary.setId(report.getId());
-            summary.setDisplayName(report.getDisplayName());
-            summary.setDescription(report.getDescription());
-            allReports.add(summary);
+
+        List<DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
+
+        for (ReportRepository m_repo : m_metaRepo.getRepositoryList()) {
+            for (BasicReportDefinition report : m_repo.getReports()) {
+                DatabaseReportDescription summary = new DatabaseReportDescription();
+                summary.setRepositoryId(m_repo.getRepositoryId());
+                summary.setId(report.getId());
+                summary.setDisplayName(report.getDisplayName());
+                summary.setDescription(report.getDescription());
+                allReports.add(summary);
+            }
         }
-
         return allReports;
-
     }
 
     /**
      * <p>
-     * getAllOnline
+     * getAll Reports from all Repositories
      * </p>
      * 
      * @return a {@link java.util.List} object.
      */
     public List<DatabaseReportDescription> getAllOnline() {
 
-        List <DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
-        
-        for(BasicReportDefinition report : m_repo.getOnlineReports()) {
-            DatabaseReportDescription summary = new DatabaseReportDescription();
-            summary.setId(report.getId());
-            summary.setDisplayName(report.getDisplayName());
-            summary.setDescription(report.getDescription());
-            onlineReports.add(summary);
+        List<DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
+        for (ReportRepository m_repo : m_metaRepo.getRepositoryList()) {
+            for (BasicReportDefinition report : m_repo.getOnlineReports()) {
+                DatabaseReportDescription summary = new DatabaseReportDescription();
+                summary.setRepositoryId(m_repo.getRepositoryId());
+                summary.setId(report.getId());
+                summary.setDisplayName(report.getDisplayName());
+                summary.setDescription(report.getDescription());
+                onlineReports.add(summary);
+            }
         }
-
         return onlineReports;
     }
 }

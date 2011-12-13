@@ -38,6 +38,7 @@ package org.opennms.web.svclayer.support;
 public class DatabaseReportDescription {
     
     private String m_id;
+    private String m_repositoryId;
     private String m_displayName;
     private String m_description;
     
@@ -56,6 +57,22 @@ public class DatabaseReportDescription {
      */
     public void setId(String id) {
         m_id = id;
+    }
+    /**
+     * <p>getRepositoryId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getRepositoryId() {
+        return m_repositoryId;
+    }
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     */
+    public void setRepositoryId(String repositoryId) {
+        m_repositoryId = repositoryId;
     }
     /**
      * <p>getDisplayName</p>

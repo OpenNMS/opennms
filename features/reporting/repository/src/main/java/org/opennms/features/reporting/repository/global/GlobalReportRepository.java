@@ -18,13 +18,30 @@ public class GlobalReportRepository implements MetaReportRepository {
         repositoryList.add(new DefaultRemoteRepository());
     }
 
-    // TODO Tak: Stamp prefixe into reportIDs for each Repository
+    @Override
+    public List<BasicReportDefinition> getAllReports() {
+        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
+        for (ReportRepository repository : repositoryList) {
+            results.addAll(repository.getReports());
+        }
+        return results;
+    }
+    
     @Override
     public List<BasicReportDefinition> getReports(String repoId) {
         List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
         ReportRepository repo = this.getRepositoryById(repoId);
         if (repo != null) {
             results.addAll(repo.getReports());
+        }
+        return results;
+    }
+ 
+    @Override
+    public List<BasicReportDefinition> getAllOnlineReports() {
+        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
+        for (ReportRepository repository : repositoryList) {
+            results.addAll(repository.getOnlineReports());
         }
         return results;
     }
@@ -40,9 +57,9 @@ public class GlobalReportRepository implements MetaReportRepository {
     }
     
     @Override 
-    public String getReportService(String reportId, String repoId) {
+    public String getReportService(String reportId) {
         String result = "";
-        ReportRepository repo = this.getRepositoryById(repoId);
+        ReportRepository repo = this.getRepositoryForReport(reportId);
         if (repo != null) {
             result = repo.getReportService(reportId);
         }
@@ -50,9 +67,9 @@ public class GlobalReportRepository implements MetaReportRepository {
     }
     
     @Override
-    public String getDisplayName(String reportId, String repoId) {
+    public String getDisplayName(String reportId) {
         String result = "";
-        ReportRepository repo = this.getRepositoryById(repoId);
+        ReportRepository repo = this.getRepositoryForReport(reportId);
         if (repo != null) {
             result = repo.getDisplayName(reportId);
         }
@@ -60,9 +77,9 @@ public class GlobalReportRepository implements MetaReportRepository {
     }
     
     @Override
-    public String getEngine(String reportId, String repoId) {
+    public String getEngine(String reportId) {
         String result = "";
-        ReportRepository repo = this.getRepositoryById(repoId);
+        ReportRepository repo = this.getRepositoryForReport(reportId);
         if (repo != null) {
             result = repo.getEngine(reportId);
         }
@@ -70,9 +87,9 @@ public class GlobalReportRepository implements MetaReportRepository {
     }
     
     @Override
-    public InputStream getTemplateStream(String reportId, String repoId) {
+    public InputStream getTemplateStream(String reportId) {
         InputStream templateStream = null;
-        ReportRepository repo = this.getRepositoryById(repoId);
+        ReportRepository repo = this.getRepositoryForReport(reportId);
         if (repo != null) {
             templateStream = repo.getTemplateStream(reportId);
         }
@@ -88,8 +105,9 @@ public class GlobalReportRepository implements MetaReportRepository {
     public void addReportRepositoy(ReportRepository repository) {
         repositoryList.add(repository);
     }
-
-    private ReportRepository getRepositoryById(String repoId) {
+    
+    @Override
+    public ReportRepository getRepositoryById(String repoId) {
         ReportRepository resultRepo = null;
         for (ReportRepository repo : repositoryList) {
             if (repoId.equals(repo.getRepositoryId())) {
@@ -97,5 +115,10 @@ public class GlobalReportRepository implements MetaReportRepository {
             }
         }
         return resultRepo;
+    }
+    
+    private ReportRepository getRepositoryForReport(String reportId) {
+        String repoId = reportId.substring(0, reportId.indexOf("_"));
+        return this.getRepositoryById(repoId);
     }
 }

@@ -16,14 +16,13 @@
 
 package org.opennms.reporting.jasperreports.svclayer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.api.reporting.ReportException;
-import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 
 public class JasperReportServiceGetJprintTest {
 
@@ -34,7 +33,6 @@ public class JasperReportServiceGetJprintTest {
         System.setProperty("opennms.home", "/opt/opennms");
         System.setProperty("opennms.report.dir", "/tmp");
         service = new JasperReportService();
-        service.setReportRepository(new GlobalReportRepository());
     }
     
     @Test

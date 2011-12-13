@@ -119,9 +119,9 @@ public class DefaultReportStoreService implements ReportStoreService {
      */
     public Map<String, Object> getFormatMap() {
         HashMap <String, Object> formatMap = new HashMap<String, Object>();
-        
-        //TODO Tak: m_repo is working on a list of ReportRepository, so getReports needs a RepositoryId and handling of many Repository Instances is needed
-        List <BasicReportDefinition> reports = m_repo.getReports();
+        //TODO Tak: This call will be heavy if many RemoteRepositories are involved. Is this method necessary?
+        //TODO Tak: Not working Repository By Repository
+        List <BasicReportDefinition> reports = m_repo.getAllReports();
         Iterator<BasicReportDefinition> reportIter = reports.iterator();
         while (reportIter.hasNext()) {
             BasicReportDefinition report = reportIter.next();
@@ -136,7 +136,6 @@ public class DefaultReportStoreService implements ReportStoreService {
     /** {@inheritDoc} */
     public void render(Integer id, ReportFormat format, OutputStream outputStream) {
         ReportCatalogEntry catalogEntry = m_reportCatalogDao.get(id);
-        //TODO Tak: reportId AND repositoryId is required now
         String reportServiceName = m_repo.getReportService(catalogEntry.getReportId());
         ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
         log().debug("attempting to rended the report as " + format.toString() + " using " + reportServiceName );

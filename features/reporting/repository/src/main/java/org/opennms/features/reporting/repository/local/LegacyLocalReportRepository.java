@@ -1,6 +1,7 @@
 package org.opennms.features.reporting.repository.local;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.reporting.dao.LegacyLocalReportsDao;
@@ -16,38 +17,54 @@ public class LegacyLocalReportRepository implements ReportRepository {
     
     private LocalJasperReportsDao m_localJasperReportsDao = new LegacyLocalJasperReportsDao();
     
+    private final String REPOSITORY_ID = "local";
+    
     @Override
     public List<BasicReportDefinition> getReports() {
-        return m_localReportsDao.getReports();
+        List<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
+        for (BasicReportDefinition report : m_localReportsDao.getReports()) {
+            report.setId(REPOSITORY_ID + "_" + report.getId());
+            resultList.add(report);
+        }
+        return resultList;
     }
 
     @Override
     public List<BasicReportDefinition> getOnlineReports() {
-        return m_localReportsDao.getOnlineReports();
+        List<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
+        for (BasicReportDefinition report : m_localReportsDao.getOnlineReports()) {
+            report.setId(REPOSITORY_ID + "_" + report.getId());
+            resultList.add(report);
+        }
+        return resultList;
     }
 
     @Override
     public String getReportService(String id) {
+        id = id.substring(id.indexOf("_") +1);
         return m_localReportsDao.getReportService(id);
     }
 
     @Override
-    public String getDisplayName(String id) {
+    public String getDisplayName(String id) { 
+        id = id.substring(id.indexOf("_") +1);
         return m_localReportsDao.getDisplayName(id);
     }
 
     @Override
-    public String getEngine(String id) {
+    public String getEngine(String id) { 
+        id = id.substring(id.indexOf("_") +1);
         return m_localJasperReportsDao.getEngine(id);
     }
 
     @Override
-    public InputStream getTemplateStream(String id) {
+    public InputStream getTemplateStream(String id) { 
+        id = id.substring(id.indexOf("_") +1);
         return m_localJasperReportsDao.getTemplateStream(id);
     }
 
     @Override
     public String getRepositoryId() {
-        return "Local Report-Repository";
+        return REPOSITORY_ID;
     }
 }

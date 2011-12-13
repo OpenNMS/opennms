@@ -1,5 +1,7 @@
 package org.opennms.features.reporting.repository.remote;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import org.junit.Before;
@@ -34,14 +36,23 @@ public class DefaultRemoteRepositoryTest {
             System.out.println(report);
         }
     }
-//TODO Tak: tests deprecated, write new tests
-//    @Test
-//    public void getReportsTest() {
-//        assertEquals("jdbc", m_repo.getEngine("4"));
-//    }
-//
-//    @Test
-//    public void getDisplayTest() {
-//        assertEquals("Eat my shorts!", m_repo.getDisplayName("4"));
-//    } 
+    
+    @Test public void reportIdsStartWithRepositoryIdTest() {
+        List<BasicReportDefinition> reports = m_repo.getReports();
+        //System.out.println("reportIdsStartWithRepositoryIdTest");
+        for(BasicReportDefinition report : reports) {
+            assertTrue(report.getId().startsWith(m_repo.getRepositoryId()));
+            //System.out.println(report.getId());
+            //System.out.println(report.getRepositoryId() + "\n");
+        }
+    }
+    
+    @Test
+    public void reportIdsWithRepoIdgetMappedToRemoteReportTest() {
+        List<BasicReportDefinition> reports = m_repo.getReports();
+        for(BasicReportDefinition report : reports) {
+            assertTrue(m_repo.getDisplayName(report.getId()).length() > 0);
+            //System.out.println(report.getId() + "\t" + m_repo.getDisplayName(report.getId()));
+        }
+    }
 }
