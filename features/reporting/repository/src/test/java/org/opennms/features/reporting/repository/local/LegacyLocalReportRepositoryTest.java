@@ -32,7 +32,7 @@ public class LegacyLocalReportRepositoryTest {
     public void getReportsTest() {
         List<BasicReportDefinition> reports = m_repo.getReports();
         for (BasicReportDefinition report : reports) {
-            logger.debug("'{}' \t '{}'", report.getId(), report.getReportService());
-        }
+	        logger.debug("'{}' \t '{}'", report.getId(), report.getReportService());
+	    }
     }  
 }

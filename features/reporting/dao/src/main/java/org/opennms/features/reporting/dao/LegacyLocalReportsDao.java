@@ -11,7 +11,6 @@ import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefini
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//TODO Tak: add Interface for BasicReportDataProvider
 public class LegacyLocalReportsDao implements LocalReportsDao {
 
     private Logger logger = LoggerFactory.getLogger(LegacyLocalReportsDao.class.getSimpleName());
