@@ -30,7 +30,6 @@ package org.opennms.web.alarm;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
@@ -46,23 +45,21 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
-import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
-import org.opennms.web.filter.Filter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
+@ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath*:/META-INF/opennms/component-service.xml",
-        "classpath:/daoWebRepositoryTestContext.xml"
+        "classpath:/jdbcWebRepositoryTestContext.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DaoWebAlarmRepositoryTest {
+public class JdbcWebAlarmRepositoryTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;
@@ -70,39 +67,30 @@ public class DaoWebAlarmRepositoryTest {
     @Autowired
     WebAlarmRepository m_alarmRepo;
     
+    public void afterPropertiesSet() {
+        assertNotNull(m_dbPopulator);
+        assertNotNull(m_alarmRepo);
+    }
+    
     @Before
     public void setUp(){
-       m_dbPopulator.populateDatabase();
+        m_dbPopulator.populateDatabase();
     }
     
     @After
     public void tearDown(){
         
     }
-    
+   
     @Test
     @Transactional
-    public void testGetAlarmById(){
-        Alarm alarm = m_alarmRepo.getAlarm(1);
-        assertNotNull(alarm);
+    public void testCountMatchingAlarms(){
+        AlarmCriteria criteria = new AlarmCriteria(new AlarmIdFilter(1));
+        int alarms = m_alarmRepo.countMatchingAlarms(criteria);
         
-        assertEquals(1, alarm.id);
-        assertEquals("uei.opennms.org/test", alarm.uei);
-        assertEquals("localhost", alarm.dpName);
-        assertEquals(1, alarm.count);
-        assertEquals(3, alarm.severity.getId());
-        
+        assertEquals(1, alarms);
     }
     
-    @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    public void testCountMatchingAlarms(){
-        int alarms = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)));
-        assertEquals(1, alarms);
-        
-        alarms = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(2)));
-        assertEquals(0, alarms);
-    }
     
     @Test
     @Transactional
@@ -124,52 +112,18 @@ public class DaoWebAlarmRepositoryTest {
     
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    public void testGetMatchingAlarms(){
-        Alarm[] alarms = m_alarmRepo.getMatchingAlarms(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL), new AlarmIdFilter(1)));
+    public void testGetAlarm(){
+        Alarm[] alarms = m_alarmRepo.getMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)));
         assertNotNull(alarms);
         assertEquals(1, alarms.length);
         
-        alarms = m_alarmRepo.getMatchingAlarms(new AlarmCriteria(new SeverityFilter(OnmsSeverity.MAJOR)));
-        assertNotNull(alarms);
-        assertEquals(0, alarms.length);
+        Alarm alarm = m_alarmRepo.getAlarm(1);
+        assertNotNull(alarm);
     }
     
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    public void testGetUnacknowledgedAlarms() {
-        AlarmCriteria acked = new AlarmCriteria(AcknowledgeType.ACKNOWLEDGED, new Filter[0]);
-        AlarmCriteria unacked = new AlarmCriteria(AcknowledgeType.UNACKNOWLEDGED, new Filter[0]);
-        AlarmCriteria all = new AlarmCriteria(AcknowledgeType.BOTH, new Filter[0]);
-        
-        int countAll = m_alarmRepo.countMatchingAlarms(all);
-        int countAcked = m_alarmRepo.countMatchingAlarms(acked);
-        int countUnacked = m_alarmRepo.countMatchingAlarms(unacked);
-        
-        assertEquals(countAll, countAcked + countUnacked);
-        assertTrue(countAll > 0);
-        assertTrue(countAcked == 0);
-        assertTrue(countUnacked > 0);
-        
-        Alarm[] unackedAlarms = m_alarmRepo.getMatchingAlarms(unacked);
-        assertEquals(countUnacked, unackedAlarms.length);
-
-        Alarm[] ackedAlarms = m_alarmRepo.getMatchingAlarms(acked);
-        assertEquals(countAcked, ackedAlarms.length);
-
-        Alarm[] allAlarms = m_alarmRepo.getMatchingAlarms(all);
-        assertEquals(countAll, allAlarms.length);
-        
-        m_alarmRepo.acknowledgeMatchingAlarms("TestUser", new Date(), new AlarmCriteria(new AlarmIdFilter(1)));
-        
-        assertEquals(countAcked+1, m_alarmRepo.countMatchingAlarms(acked));
-        assertEquals(countUnacked-1, m_alarmRepo.countMatchingAlarms(unacked));
-        
-}
-    
-    @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    public void testAcknowledgeUnacknowledge() {
-        
+    public void testAcknowledgeUnacknowledgeMatchingAlarms(){
         String user = "TestUser";
         m_alarmRepo.acknowledgeMatchingAlarms(user, new Date(), new AlarmCriteria(new AlarmIdFilter(1)));
         
@@ -182,48 +136,34 @@ public class DaoWebAlarmRepositoryTest {
         matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter(user)));
         
         assertEquals(0, matchingAlarmCount);
+        
     }
     
     @Test
     @Transactional
-    public void testSort() {
-        
-        for(SortStyle style : SortStyle.values()) {
-            AlarmCriteria sorted = new AlarmCriteria(new Filter[0], style, AcknowledgeType.UNACKNOWLEDGED, 100, 0);
-            Alarm[] alarms = m_alarmRepo.getMatchingAlarms(sorted);
-            assertTrue("Failed to sort with style "+style, alarms.length > 0);
-        }
-    }
-
-    @Test
-    @Transactional
-    public void testSortAndSearchBySameProperty() {
-        
-        Filter[] filters = new Filter[] { new NodeNameLikeFilter("node") };
-        
-        AlarmCriteria sorted = new AlarmCriteria(filters, SortStyle.NODE, AcknowledgeType.UNACKNOWLEDGED, 100, 0);
-        Alarm[] alarms = m_alarmRepo.getMatchingAlarms(sorted);
-        assertTrue("Failed to sort with style "+SortStyle.NODE, alarms.length > 0);
-    }
-
-    @Test
-    @Transactional
-    public void testAcknowledgeUnacknowledgeAllAlarms() {
+    public void testAcknowledgeUnacknowledgeAllAlarms(){
         String user = "TestUser";
-        m_alarmRepo.acknowledgeAll("TestUser", new Date());
+        m_alarmRepo.acknowledgeAll(user, new Date());
         
-        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter(user)));
         assertEquals(1, matchingAlarmCount);
         
         m_alarmRepo.unacknowledgeAll(user);
         
-        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter(user)));
         assertEquals(0, matchingAlarmCount);
     }
     
     @Test
+    @Transactional
+    public void testCountMatchingBySeverity(){
+        int[] matchingAlarmCount = m_alarmRepo.countMatchingAlarmsBySeverity(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL)));
+        assertEquals(8, matchingAlarmCount.length);
+    }
+    
+    @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    public void testEscalateAlarms() {
+    public void testEscalateAlarms(){
         int[] alarmIds = {1};
         m_alarmRepo.escalateAlarms(alarmIds, "TestUser", new Date());
         
@@ -250,8 +190,4 @@ public class DaoWebAlarmRepositoryTest {
         assertEquals(OnmsSeverity.CLEARED.getId(), alarm.severity.getId());
     }
     
-    @Test
-    public void testRepsoitoryWiredIn(){
-        assertNotNull(m_alarmRepo);
-    }
 }
