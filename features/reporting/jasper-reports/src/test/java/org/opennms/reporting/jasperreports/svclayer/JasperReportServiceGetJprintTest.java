@@ -18,6 +18,8 @@ package org.opennms.reporting.jasperreports.svclayer;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 
 import org.junit.Before;
@@ -25,9 +27,9 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.api.reporting.ReportException;
+import org.opennms.api.reporting.ReportFormat;
 
 //TODO tak: Build tests to run in src/test/resources and not in local specific tmp directories
-@Ignore
 public class JasperReportServiceGetJprintTest {
 
     private JasperReportService service;
@@ -35,7 +37,7 @@ public class JasperReportServiceGetJprintTest {
     @BeforeClass
     public static void setUp() {
         System.setProperty("opennms.home", "src/test/resources");
-        System.setProperty("opennms.report.dir", "src/test/resources/report");
+        System.setProperty("opennms.report.dir", "/tmp");
     }
 
     @Before
@@ -43,11 +45,28 @@ public class JasperReportServiceGetJprintTest {
         service = new JasperReportService();
     }
 
+    @Ignore
     @Test
-    public void runReportFromLocalRepoTest() throws ReportException {
-        assertTrue(service.run(new HashMap<String, Object>(), "trivial-report").startsWith("/tmp/trivial-report"));
+    public void runAndRenderTrivialReportTest() throws ReportException {
+        try {
+            service.runAndRender(new HashMap<String, Object>(), "local_trivial-report", ReportFormat.PDF, new FileOutputStream("/tmp/trivial-report.pdf"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
-    
+
+    @Ignore
+    @Test
+    public void runAndRenderSubreportTest() throws ReportException {
+        try {
+            service.runAndRender(new HashMap<String, Object>(), "local_main-subreport-test", ReportFormat.PDF, new FileOutputStream("/tmp/main-subreport.pdf"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+
+    @Ignore
     @Test
     public void runReportFromRemoteRepoTest() throws ReportException {
         assertTrue(service.run(new HashMap<String, Object>(), "REMOTE_trivialJasperReport").startsWith("/tmp/trivial-report"));

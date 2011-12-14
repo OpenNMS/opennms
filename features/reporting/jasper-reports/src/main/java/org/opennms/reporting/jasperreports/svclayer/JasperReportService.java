@@ -55,6 +55,7 @@ import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.springframework.scheduling.quartz.SimpleTriggerBean;
 
 /**
  * <p>
@@ -378,12 +379,14 @@ public class JasperReportService implements ReportService {
         jrReportParms = buildJRparameters(reportParms,
                                           jasperReport.getParameters());
 
+        // Find sub reports and provide sub reports as parameter
+        jrReportParms.putAll(buildSubreport(reportId, jasperReport));
+
         outputFileName = new String(baseDir + "/" + jasperReport.getName()
                 + new SimpleDateFormat("-MMddyyyy-HHmm").format(new Date())
                 + ".jrprint");
         log.debug("jrprint output file: " + outputFileName);
         
-        //TODO Tak: reportId AND repositoryId is required now
         if ("jdbc".equalsIgnoreCase(m_repo.getEngine(reportId))) {
             Connection connection;
             try {
@@ -405,7 +408,6 @@ public class JasperReportService implements ReportService {
                                           e);
             }
             //TODO TAK: make sure that getEngine will return null if is not set
-            //TODO Tak: reportId AND repositoryId is required now
         } else if (m_repo.getEngine(reportId).equals("null")) {
 
             try {
@@ -430,6 +432,42 @@ public class JasperReportService implements ReportService {
         return outputFileName;
     }
 
+
+    /**
+     * Method to find all sub reports as parameter. Compile sub reports and put all compile sub reports in a parameter map.
+     * Returned map is compatible to common jasper report parameter map.
+     * 
+     * @param mainReportId String for specific main report identified by a report id
+     * @param mainReport JasperReport a compiled main report
+     * @return a sub report parameter map as {@link java.util.HashMap<String,Object>} object
+     */
+    private HashMap<String, Object> buildSubreport (String mainReportId, JasperReport mainReport) {
+        String repositoryId = mainReportId.substring(0,mainReportId.indexOf("_"));
+        HashMap<String, Object> subreportMap = new HashMap<String, Object>();
+        JasperReport jr;
+        
+        // Filter parameter for sub reports
+        for (JRParameter parameter : mainReport.getParameters()) {
+            // We need only parameter for Sub reports and we *DON'T* need the default parameter JASPER_REPORT
+            if ("net.sf.jasperreports.engine.JasperReport".equals(parameter.getValueClassName()) && !"JASPER_REPORT".equals(parameter.getName())) {
+                subreportMap.put(parameter.getName(),parameter.getValueClassName());
+            }
+        }
+
+        for (Map.Entry entry : subreportMap.entrySet()) {
+            try {
+                entry.setValue(JasperCompileManager.compileReport(m_repo.getTemplateStream(repositoryId + "_" + entry.getKey())));
+            } catch (JRException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        
+        for (Map.Entry entry : subreportMap.entrySet()) {
+            System.out.println("Key: " + entry.getKey() + " - " + "Value: " + entry.getValue());
+        }
+        return subreportMap;
+    } 
+    
     /** {@inheritDoc} */
     public void runAndRender(HashMap<String, Object> reportParms,
             String reportId, ReportFormat format, OutputStream outputStream)
@@ -449,6 +487,7 @@ public class JasperReportService implements ReportService {
 
         jrReportParms = buildJRparameters(reportParms,
                                           jasperReport.getParameters());
+        jrReportParms.putAll(buildSubreport(reportId, jasperReport));
 
         //TODO Tak: reportId AND repositoryId is required now
         if ("jdbc".equalsIgnoreCase(m_repo.getEngine(reportId))) {
