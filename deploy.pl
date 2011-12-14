@@ -25,12 +25,12 @@ if ($hostname eq "nen") {
 	unshift(@ARGS, "-DaltDeploymentRepository=opennms-snapshot::default::file:///var/www/sites/opennms.org/site/repo/snapshots");
 }
 
-my @command = ($MVN, '-Dmaven.test.skip.exec=true', @ARGS, 'install', 'deploy');
+my @command = ($MVN, '-Dmaven.test.skip.exec=true', @ARGS, 'deploy');
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
 chdir($PREFIX . '/opennms-assemblies');
-@command = ($MVN, '-Dmaven.test.skip.exec=true', '-N', @ARGS, 'install', 'deploy');
+@command = ($MVN, '-Dmaven.test.skip.exec=true', '-N', @ARGS, 'deploy');
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
