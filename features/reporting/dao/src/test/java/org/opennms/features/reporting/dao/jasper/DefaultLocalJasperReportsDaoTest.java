@@ -9,7 +9,6 @@ import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
