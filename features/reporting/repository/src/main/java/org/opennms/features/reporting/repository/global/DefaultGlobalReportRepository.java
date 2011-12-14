@@ -51,7 +51,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      * Logging
      * TODO tak: logging to the right place
      */
-    private Logger logger = LoggerFactory.getLogger(DefaultGlobalReportRepository.class.getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(DefaultGlobalReportRepository.class.getSimpleName());
 
     /**
      * Concatenated repositoryId and reportId by "_"
@@ -61,7 +61,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     /**
      * List for two repository, a local disk and a remote repository.
      */
-    private List<ReportRepository> m_repositoryList;
+    private final List<ReportRepository> m_repositoryList;
 
     /**
      * Default constructor creates local and remote repository.
@@ -105,7 +105,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
         ReportRepository repository = this.getRepositoryById(repositoryId);
         if (repository != null) {
-            results.addAll(repository.getReports());
+			results.addAll(repository.getReports());
         }
         return results;
     }
