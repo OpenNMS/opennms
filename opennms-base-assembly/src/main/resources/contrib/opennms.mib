@@ -33,21 +33,28 @@ OPENNMS-MIB DEFINITIONS ::= BEGIN
 IMPORTS
    MODULE-IDENTITY, OBJECT-TYPE,
    NOTIFICATION-TYPE, enterprises FROM SNMPv2-SMI
-   DisplayString FROM SNMPv2-TC;
+   DisplayString FROM SNMPv2-TC
+   MODULE-COMPLIANCE, OBJECT-GROUP,
+   NOTIFICATION-GROUP                  FROM SNMPv2-CONF;
 
 openNMS MODULE-IDENTITY
-    LAST-UPDATED "201112130000Z"		-- 13 December 2011
+    LAST-UPDATED "201112140000Z"		-- 13 December 2011
     ORGANIZATION "The OpenNMS Group, Inc."
     CONTACT-INFO "Tarus Balog
                   The OpenNMS Group, Inc.
                   112 Fawn Forest Lane
                   Pittsboro NC 27312
                   Phone: +1 919 533 0160
-                  Email: tarus@opennms.com"
+                  Email: tarus@opennms.com
+                  WEB: www.opennms.org"
     DESCRIPTION
      "The MIB module for OpenNMS, the world's first enterprise-grade
       open-source network management application platform"
 -- Revision history
+
+    REVISION "201112140000Z"
+    DESCRIPTION
+     "Integrated conformance groups from Antonio Russo's previous SMIv2 conversion."
 
     REVISION "201112130000Z"
     DESCRIPTION
@@ -56,6 +63,9 @@ openNMS MODULE-IDENTITY
 
 onmsLegacyTraps		OBJECT IDENTIFIER
 							::= { openNMS 1 }
+
+groups 	OBJECT IDENTIFIER
+	::= { openNMS 4 }
 
 data			OBJECT IDENTIFIER
 							::= { openNMS 20 }
@@ -431,5 +441,72 @@ syncRequestTrap NOTIFICATION-TYPE
   	DESCRIPTION 
     	"OpenNMS synchronization request" 
 	::=  { onmsLegacyTraps 7 }
+
+events-Group	OBJECT-GROUP
+	OBJECTS {
+		dbid,
+		distPoller,
+		create-time,
+		master-station,
+		uei,
+		source,
+		nodeid,
+		time,
+		host,
+		interface,
+		snmphost,
+		service,
+		descr,
+		logmsg,
+		severity,
+		pathoutage,
+		operinst,
+		ifresolve,
+		nodelabel
+	}
+	STATUS current
+	DESCRIPTION 
+		"Conformance Group for OpenNMS Events"
+	::= { groups 1 }
+							
+tl1AutonomousMessage-Group	OBJECT-GROUP
+	OBJECTS {
+		tl1amRawMessage,
+		tl1amAlarmCode,
+		tl1amAutonomousTag,
+		tl1amVerb,
+		tl1amAutoBlock,
+		tl1amAID,
+		tl1amAdditionalParams
+	}
+	STATUS current
+	DESCRIPTION 
+		"Conformance Group for TL1 autonomous message"
+	::= { groups 2 }
+
+eventsAlarms-Group	OBJECT-GROUP
+	OBJECTS {
+		alarmId,
+		synchronizing
+	}
+	STATUS current
+	DESCRIPTION 
+		"Conformance Group for OpenNMS Events related to Alarms "
+	::= { groups 3 }																	
+
+traps-Group	NOTIFICATION-GROUP
+	NOTIFICATIONS {
+		eventTrap,
+		tl1AutonomousMessageTrap,
+		alarmTrap, 
+		heartbeatTrap,
+                startSyncTrap, 
+		endSyncTrap, 
+		syncRequestTrap
+	}
+	STATUS current
+	DESCRIPTION 
+		"OpenNMS Notification Group"
+	::= { groups 4 }	
 
 END
