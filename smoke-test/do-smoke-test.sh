@@ -14,6 +14,11 @@ fi
 OPENNMS_HOME=/opt/opennms
 SOURCEDIR="$ME/opennms-source"
 
+PACKAGES="$@"; shift
+if [ -z "$PACKAGES" ]; then
+	PACKAGES="opennms opennms-plugins"
+fi
+
 die() {
 	echo "exiting: $@"
 
@@ -87,7 +92,7 @@ reset_opennms() {
 	rpm -qa --queryformat='%{name}\n' | grep -E '^opennms' | xargs yum -y remove
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms /etc/yum.repos.d/opennms*
 	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-bleeding-rhel5.noarch.rpm
-	yum -y install opennms opennms-plugins || die "Unable to install OpenNMS."
+	yum -y install $PACKAGES || die "Unable to install the following packages: $PACKAGES"
 }
 
 get_source() {
