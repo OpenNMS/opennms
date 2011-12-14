@@ -404,7 +404,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     }
 
     private void importFromResource(final String path) throws Exception {
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource(path));
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource(path), true);
     }
     
     private void anticpateCreationEvents(final MockElement element) {
@@ -1055,7 +1055,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     @Transactional
     public void testImportUtf8() throws Exception {
-        m_provisioner.importModelFromResource(new ClassPathResource("/utf-8.xml"));
+        m_provisioner.importModelFromResource(new ClassPathResource("/utf-8.xml"), true);
         
         assertEquals(1, getNodeDao().countAll());
         // \u00f1 is unicode for n~ 
