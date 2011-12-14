@@ -21,7 +21,7 @@ public class LegacyLocalReportRepositoryTest {
     }
     
     @Test
-    public void reportIdsWitchRepositoryIdsTest() {
+    public void reportIdsWithRepositoryIdsTest() {
         assertEquals("local", m_repo.getRepositoryId());
         BasicReportDefinition report = m_repo.getReports().get(0);
         logger.debug(report.getId());

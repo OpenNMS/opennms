@@ -30,8 +30,6 @@ public class DefaultRemoteRepository implements ReportRepository {
     private ApacheHttpClient m_client;
     private ApacheHttpClientConfig m_clientConfig;
     private WebResource m_webResource;
-
-    //TODO Tak: add repository id to every report
     
     public DefaultRemoteRepository() {
 

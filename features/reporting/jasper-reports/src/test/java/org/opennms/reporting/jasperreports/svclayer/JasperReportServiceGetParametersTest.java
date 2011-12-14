@@ -24,27 +24,21 @@ import org.junit.Test;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.parameter.ReportParameters;
 
+//TODO tak: In JasperReportService we use a DefaultGlobalRepository. Tests have to mockup the GlobalReportRepository
+@Ignore
 public class JasperReportServiceGetParametersTest {
 
     private JasperReportService service;
 
     @Before
     public void setUp() {
-        System.setProperty("opennms.home", "/opt/opennms");
+        System.setProperty("opennms.home", "features/reporting/jasper-reports/src/test/resources");
         service = new JasperReportService();
-//        service.setReportRepository(new GlobalReportRepository());
-        assertEquals("/opt/opennms", System.getProperty("opennms.home"));
+        // service.setReportRepository(new GlobalReportRepository());
     }
-    
-    @Test
-    public void systemPropertyTest() {
-        System.setProperty("opennms.home", "/opt/opennms");
-        assertEquals("/opt/opennms", System.getProperty("opennms.home"));
-    }
-    
+
     @Test
     public void readPropertiesOfTrivialTestReportFromRESTRepoTest() throws ReportException {
-        assertEquals("/opt/opennms", System.getProperty("opennms.home"));
         String id = "REMOTE_trivialJasperReport";
         assertNotNull(service.getParameters(id));
         ReportParameters params = service.getParameters(id);
@@ -83,7 +77,6 @@ public class JasperReportServiceGetParametersTest {
         assertEquals(1, params.getReportParms().size());
     }
     
-    @Ignore
     @Test
     public void readPropertiesOfJasperResourceInputStreamURITest() throws ReportException {
         String id = "REMOTE_jasper-resource-inputstream-uri-test";

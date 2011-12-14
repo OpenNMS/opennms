@@ -17,6 +17,6 @@ public interface GlobalReportRepository {
     public String getEngine(String reportId);
     public InputStream getTemplateStream(String reportId);
     public List<ReportRepository> getRepositoryList();
-    public void addReportRepositoy(ReportRepository repository);
+    public void addReportRepository(ReportRepository repository);
     public ReportRepository getRepositoryById(String repoId);
 }

@@ -38,7 +38,7 @@ import org.opennms.web.svclayer.DatabaseReportListService;
 public class DefaultDatabaseReportListService implements
         DatabaseReportListService {
 
-    private GlobalReportRepository m_metaRepo = new DefaultGlobalReportRepository();
+    private GlobalReportRepository m_globalRepository = new DefaultGlobalReportRepository();
 
     /**
      * <p>
@@ -51,10 +51,10 @@ public class DefaultDatabaseReportListService implements
 
         List<DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
 
-        for (ReportRepository m_repo : m_metaRepo.getRepositoryList()) {
-            for (BasicReportDefinition report : m_repo.getReports()) {
+        for (ReportRepository globalRepository : m_globalRepository.getRepositoryList()) {
+            for (BasicReportDefinition report : globalRepository.getReports()) {
                 DatabaseReportDescription summary = new DatabaseReportDescription();
-                summary.setRepositoryId(m_repo.getRepositoryId());
+                summary.setRepositoryId(globalRepository.getRepositoryId());
                 summary.setId(report.getId());
                 summary.setDisplayName(report.getDisplayName());
                 summary.setDescription(report.getDescription());
@@ -74,7 +74,7 @@ public class DefaultDatabaseReportListService implements
     public List<DatabaseReportDescription> getAllOnline() {
 
         List<DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
-        for (ReportRepository m_repo : m_metaRepo.getRepositoryList()) {
+        for (ReportRepository m_repo : m_globalRepository.getRepositoryList()) {
             for (BasicReportDefinition report : m_repo.getOnlineReports()) {
                 DatabaseReportDescription summary = new DatabaseReportDescription();
                 summary.setRepositoryId(m_repo.getRepositoryId());

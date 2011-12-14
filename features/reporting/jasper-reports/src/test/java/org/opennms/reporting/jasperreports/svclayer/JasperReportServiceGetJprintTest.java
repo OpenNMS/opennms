@@ -21,20 +21,28 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.api.reporting.ReportException;
 
+//TODO tak: Build tests to run in src/test/resources and not in local specific tmp directories
+@Ignore
 public class JasperReportServiceGetJprintTest {
 
     private JasperReportService service;
     
+    @BeforeClass
+    public static void setUp() {
+        System.setProperty("opennms.home", "src/test/resources");
+        System.setProperty("opennms.report.dir", "src/test/resources/report");
+    }
+
     @Before
-    public void setUp() {
-        System.setProperty("opennms.home", "/opt/opennms");
-        System.setProperty("opennms.report.dir", "/tmp");
+    public void initialize () {
         service = new JasperReportService();
     }
-    
+
     @Test
     public void runReportFromLocalRepoTest() throws ReportException {
         assertTrue(service.run(new HashMap<String, Object>(), "trivial-report").startsWith("/tmp/trivial-report"));
