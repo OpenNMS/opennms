@@ -14,8 +14,15 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     @Before
     public void setUp() throws Exception {
-//        DesiredCapabilities capability = DesiredCapabilities.firefox();
-//        WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+        // Google Chrome
+        // System.setProperty("webdriver.chrome.driver", "/Users/ranger/Downloads/chromedriver");
+        // WebDriver driver = new ChromeDriver();
+
+        // Selenium remote server
+        // DesiredCapabilities capability = DesiredCapabilities.firefox();
+        // WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+
+        // Firefox
         WebDriver driver = new FirefoxDriver();
 
         String baseUrl = "http://localhost:8980/";
