@@ -618,6 +618,8 @@ public class EventConstants {
     /** Constant <code>PARM_IMPORT_RESOURCE="importResource"</code> */
     public static final String PARM_IMPORT_RESOURCE = "importResource";
 
+    public static final String PARM_IMPORT_RESCAN_EXISTING = "importRescanExisting";
+    
     /** Constant <code>PARM_ALARM_ID="alarmId"</code> */
     public static final String PARM_ALARM_ID = "alarmId";
     /** Constant <code>PARM_ALARM_UEI="alarmUei"</code> */
