@@ -728,8 +728,6 @@ public class Collectd extends AbstractServiceDaemon implements
                 handleInterfaceDeleted(event);
             } else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
                 handleServiceDeleted(event);
-            } else if (event.getUei().equals(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI)) {
-                handleThresholdConfigurationChanged(event);
             } else if (event.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
                 handleReloadDaemonConfig(event);
             }
@@ -1053,19 +1051,6 @@ public class Collectd extends AbstractServiceDaemon implements
         scheduleForCollection(event);
     }
     
-    /**
-     * Process a threshold configuration change event.  Need to update thresholding visitors to use the new configuration
-     * @param event
-     */
-    private void handleThresholdConfigurationChanged(Event event) {
-        log().debug("handleThresholdConfigurationChanged: Reloading thresholding configuration in collectd");
-        synchronized (m_collectableServices) {
-	        for(CollectableService service: m_collectableServices) {
-	            service.reinitializeThresholding();
-	        }
-        }
-    }
-    
     private void handleReloadDaemonConfig(Event event) {
         final String daemonName = "Threshd";
         boolean isTarget = false;
@@ -1086,26 +1071,39 @@ public class Collectd extends AbstractServiceDaemon implements
             }
             EventBuilder ebldr = null;
             try {
+                // Reloading Factories
                 if (targetFile.equals(thresholdsFile)) {
                     ThresholdingConfigFactory.reload();
                 }
                 if (targetFile.equals(threshdFile)) {
                     ThreshdConfigFactory.reload();
                 }
+                // Sending the threshold configuration change event
                 ebldr = new EventBuilder(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI, "Collectd");
                 getEventIpcManager().sendNow(ebldr.getEvent());
+                // Updating thresholding visitors to use the new configuration
+                log().debug("handleReloadDaemonConfig: Reloading thresholding configuration in collectd");
+                synchronized (m_collectableServices) {
+                    for(CollectableService service: m_collectableServices) {
+                        service.reinitializeThresholding();
+                    }
+                }
+                // Preparing successful event
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
                 ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
             } catch (Throwable e) {
-                log().error("handleReloadDaemonConfig: Error reloading configuration: " + e, e);
+                // Preparing failed event
+                log().error("handleReloadDaemonConfig: Error reloading/processing thresholds configuration: " + e.getMessage(), e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
                 ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
-                ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(1, 128));
+                ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
             }
-            if (ebldr != null) {
-                getEventIpcManager().sendNow(ebldr.getEvent());
+            finally {
+                if (ebldr != null) {
+                    getEventIpcManager().sendNow(ebldr.getEvent());
+                }
             }
         }
     }
