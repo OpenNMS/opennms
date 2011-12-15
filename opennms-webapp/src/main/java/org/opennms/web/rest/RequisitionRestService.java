@@ -597,17 +597,20 @@ public class RequisitionRestService extends OnmsRestService {
     @PUT
     @Path("{foreignSource}/import")
     @Transactional
-    public Response importRequisition(@PathParam("foreignSource") String foreignSource, @QueryParam("suppressOutput") Boolean suppressOutput) {
+    public Response importRequisition(@PathParam("foreignSource") String foreignSource, @QueryParam("suppressOutput") Boolean suppressOutput, @QueryParam("rescanExisting") Boolean rescanExisting) {
         log().debug("importing requisition for foreign source " + foreignSource);
 
-        Requisition req = getActiveRequisition(foreignSource);
-        String url = getActiveUrl(foreignSource).toString();
-        EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
+        final Requisition req = getActiveRequisition(foreignSource);
+        final String url = getActiveUrl(foreignSource).toString();
+        final EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
         bldr.addParam(EventConstants.PARM_URL, url);
+        if (rescanExisting != null) {
+            bldr.addParam(EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
+        }
         
         try {
             m_eventProxy.send(bldr.getEvent());
-        } catch (EventProxyException e) {
+        } catch (final EventProxyException e) {
             throw new DataAccessResourceFailureException("Unable to send event to import group "+foreignSource, e);
         }
         

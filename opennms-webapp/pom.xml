@@ -275,6 +275,11 @@
       <artifactId>batik-util</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.soa</artifactId>
+        <scope>provided</scope>
+    </dependency>
 
     <!-- direct dependencies that should be in WEB-INF/lib -->
     <dependency>
