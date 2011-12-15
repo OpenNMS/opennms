@@ -62,7 +62,6 @@ public class ConstantTimeKeeper implements TimeKeeper {
         return m_date;
     }
 
-    @Override
     public TimeZone getTimeZone() {
         return TimeZone.getDefault();
     }
