@@ -11,13 +11,14 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.local.LegacyLocalReportRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+@Ignore
 public class GlobalReportRepositoryTest {
 
 	Logger logger = LoggerFactory.getLogger(GlobalReportRepositoryTest.class.getSimpleName());

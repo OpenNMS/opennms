@@ -20,7 +20,7 @@ public class DefaultRemoteRepositoryTest {
 
     @BeforeClass
      public static void setup(){
-        System.setProperty("opennms.home", "src/test/resources");
+        System.setProperty("opennms.home", "features/reporting/repository/src/test/resources");
     }
     
     @Before
@@ -64,5 +64,10 @@ public class DefaultRemoteRepositoryTest {
             assertTrue(m_defaultRemoteRepository.getDisplayName(report.getId()).length() > 0);
             logger.debug("'{}' \t '{}'", report.getId(), m_defaultRemoteRepository.getDisplayName(report.getId()));
         }
+    }
+
+    @Test
+    public void catchUniformExceptionTest() {
+        String report = m_defaultRemoteRepository.getReportService("nicht_hier");
     }
 }

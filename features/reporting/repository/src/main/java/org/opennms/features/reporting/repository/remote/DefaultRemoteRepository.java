@@ -1,10 +1,10 @@
 package org.opennms.features.reporting.repository.remote;
 
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.client.apache.ApacheHttpClient;
+import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
+import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import org.apache.commons.beanutils.BeanUtils;
 import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao;
 import org.opennms.features.reporting.dao.remoterepository.RemoteRepositoryConfigDao;
@@ -15,11 +15,10 @@ import org.opennms.features.reporting.sdo.RemoteReportSDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jersey.api.client.GenericType;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache.ApacheHttpClient;
-import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
-import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 // TODO Tak: SSL Auth and Session-Handling(create/destroy)
 public class DefaultRemoteRepository implements ReportRepository {
@@ -30,15 +29,14 @@ public class DefaultRemoteRepository implements ReportRepository {
     private ApacheHttpClient m_client;
     private ApacheHttpClientConfig m_clientConfig;
     private WebResource m_webResource;
-    
-    public DefaultRemoteRepository() {
 
+    public DefaultRemoteRepository() {
         m_clientConfig = new DefaultApacheHttpClientConfig();
         m_clientConfig.getState().setCredentials(null,
-                                                 "localhost",
-                                                 8080,
-                                                 m_config.getLoginUser(),
-                                                 m_config.getLoginRepoPassword());
+                m_config.getURI().getHost(),
+                m_config.getURI().getPort(),
+                m_config.getLoginUser(),
+                m_config.getLoginRepoPassword());
         m_client = ApacheHttpClient.create(m_clientConfig);
     }
 
@@ -48,10 +46,18 @@ public class DefaultRemoteRepository implements ReportRepository {
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()
                     + "getReports");
-            List<RemoteReportSDO> webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {});
+            List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
+            try {
+                webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
+                });
+            } catch (Exception e) {
+                logger.error("Error requesting report template from repository. Error message: '{}'", e.getMessage());
+                e.printStackTrace();
+            }
+
             logger.debug("getReports got '{}' RemoteReportSDOs",
-                         webCallResult.size());
-            
+                    webCallResult.size());
+
             //TODO Tak: clean that up
             for (RemoteReportSDO report : webCallResult) {
                 SimpleJasperReportDefinition result = new SimpleJasperReportDefinition();
@@ -77,13 +83,18 @@ public class DefaultRemoteRepository implements ReportRepository {
     @Override
     public List<BasicReportDefinition> getOnlineReports() {
         List<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
+        List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()
                     + "getOnlineReports");
+            try {
+                webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>(){});
+            } catch (Exception e) {
+                logger.error("Error requesting online reports. Error message: '{}'", e.getMessage());
+                e.printStackTrace();
+            }
 
-            List<RemoteReportSDO> webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {});
-            
-          //TODO Tak: clean that up
+            //TODO Tak: clean that up
             for (RemoteReportSDO report : webCallResult) {
                 SimpleJasperReportDefinition result = new SimpleJasperReportDefinition();
                 try {
@@ -112,7 +123,12 @@ public class DefaultRemoteRepository implements ReportRepository {
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()
                     + "getReportService/" + id);
-            result = m_webResource.get(String.class);
+            try {
+                result = m_webResource.get(String.class);
+            } catch (Exception e) {
+                logger.error("Error requesting report service by id. Error message: '{}'", e.getMessage());
+                e.printStackTrace();
+            }
         }
         return result;
     }
@@ -124,7 +140,12 @@ public class DefaultRemoteRepository implements ReportRepository {
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()
                     + "getDisplayName/" + id);
-            result = m_webResource.get(String.class);
+            try {
+                result = m_webResource.get(String.class);
+            } catch (Exception e) {
+                logger.error("Error requesting display name by id. Error message: '{}'", e.getMessage());
+                e.printStackTrace();
+            }
         }
         return result;
     }
@@ -136,7 +157,12 @@ public class DefaultRemoteRepository implements ReportRepository {
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()
                     + "getEngine/" + id);
-            result = m_webResource.get(String.class);
+            try {
+                result = m_webResource.get(String.class);
+            } catch (Exception e) {
+                logger.error("Error requesting engine by id. Error message: '{}'", e.getMessage());
+                e.printStackTrace();
+            }
         }
         return result;
     }
@@ -148,7 +174,12 @@ public class DefaultRemoteRepository implements ReportRepository {
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_config.getURI()
                     + "getTemplateStream/" + id);
-            templateStreamResult = m_webResource.get(InputStream.class);
+            try {
+                templateStreamResult = m_webResource.get(InputStream.class);
+            } catch (Exception e) {
+                logger.error("Error requesting template stream by id. Error message: '{}'", e.getMessage());
+                e.printStackTrace();
+            }
         }
         return templateStreamResult;
     }
@@ -158,7 +189,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             if (m_config.isRepositoryActive()) {
             } else {
                 logger.debug("RemoteRepository '{}' is NOT activated.",
-                             m_config.getRepositoryName());
+                        m_config.getRepositoryName());
                 return false;
             }
         } else {

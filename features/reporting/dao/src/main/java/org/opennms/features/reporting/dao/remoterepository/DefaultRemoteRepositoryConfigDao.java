@@ -1,6 +1,7 @@
 package org.opennms.features.reporting.dao.remoterepository;
 
 import java.io.File;
+import java.net.URI;
 
 import javax.xml.bind.JAXB;
 
@@ -37,7 +38,7 @@ public class DefaultRemoteRepositoryConfigDao implements
     }
 
     @Override
-    public String getURI() {
+    public URI getURI() {
         return readConfig().getURI();
     }
 

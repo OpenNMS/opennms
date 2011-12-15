@@ -1,6 +1,7 @@
 package org.opennms.features.reporting.model.remoterepository;
 
 import javax.xml.bind.annotation.*;
+import java.net.URI;
 
 /**
  * Class RemoteRepositoryConfig.
@@ -12,7 +13,7 @@ import javax.xml.bind.annotation.*;
 public class RemoteRepositoryConfig {
 
     private Boolean m_repositoryActive;
-    private String m_URI;
+    private URI m_URI;
     private String m_loginUser;
     private String m_loginRepoPassword;
     private String m_repositoryName;
@@ -38,7 +39,7 @@ public class RemoteRepositoryConfig {
     public String getRepositoryName() {
         return m_repositoryName;
     }
-    public String getURI() {
+    public URI getURI() {
         return m_URI;
     }
     public Boolean isRepositoryActive() {
@@ -73,7 +74,7 @@ public class RemoteRepositoryConfig {
         m_repositoryName = repositoryName;
     }
     @XmlElement(name = "uri")
-    public void setURI(String uri) {
+    public void setURI(URI uri) {
         m_URI = uri;
     }
     @Override
