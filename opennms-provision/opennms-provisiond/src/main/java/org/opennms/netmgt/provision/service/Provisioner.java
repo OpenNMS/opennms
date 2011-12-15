@@ -379,7 +379,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @param rescanExisting TODO
      * @throws java.lang.Exception if any.
      */
-    protected void importModelFromResource(final Resource resource, final boolean rescanExisting) throws Exception {
+    protected void importModelFromResource(final Resource resource, final Boolean rescanExisting) throws Exception {
     	importModelFromResource(resource, rescanExisting, new NoOpProvisionMonitor());
     }
 
@@ -391,12 +391,12 @@ public class Provisioner implements SpringServiceDaemon {
      * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object.
      * @throws java.lang.Exception if any.
      */
-    protected void importModelFromResource(final Resource resource, final boolean rescanExisting, final ProvisionMonitor monitor) throws Exception {
+    protected void importModelFromResource(final Resource resource, final Boolean rescanExisting, final ProvisionMonitor monitor) throws Exception {
         doImport(resource, rescanExisting, monitor, new ImportManager());
     }
 
     //FIXME? ImportManager is not used.
-    private void doImport(final Resource resource, boolean rescanExisting, final ProvisionMonitor monitor, final ImportManager importManager) throws Exception {
+    private void doImport(final Resource resource, Boolean rescanExisting, final ProvisionMonitor monitor, final ImportManager importManager) throws Exception {
         
         final LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
         doImport.setAttribute("resource", resource);
