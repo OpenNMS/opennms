@@ -29,22 +29,14 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMock;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
 import org.opennms.netmgt.collectd.BasePersister;
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -64,11 +56,11 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 /**
- * The Class XmlCollectorTest.
+ * The Abstract Class for Testing the XML Collector.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlCollectorTest {
+public abstract class AbcstractXmlCollectorTest {
 
     /** The Constant TEST_SNMP_DIRECTORY. */
     private static final String TEST_SNMP_DIRECTORY = "target/snmp/";
@@ -102,12 +94,36 @@ public class XmlCollectorTest {
         m_eventProxy = EasyMock.createMock(EventProxy.class);
 
         m_xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
-        Resource resource = new FileSystemResource("src/test/resources/xml-datacollection-config.junit.xml");
+        Resource resource = new FileSystemResource(getXmlConfigFileName());
         m_xmlCollectionDao.setConfigResource(resource);
         m_xmlCollectionDao.afterPropertiesSet();
+        MockDocumentBuilder.setXmlFileName(getXmlSampleFileName());
 
         EasyMock.replay(m_collectionAgent, m_eventProxy);
     }
+
+    /**
+     * Gets the XML configuration DAO.
+     *
+     * @return the XML configuration DAO
+     */
+    public XmlDataCollectionConfigDaoJaxb getConfigDao() {
+        return m_xmlCollectionDao;
+    }
+
+    /**
+     * Gets the test XML sample file name.
+     *
+     * @return the test XML sample file name
+     */
+    public abstract String getXmlSampleFileName();
+
+    /**
+     * Gets the test XML configuration file name.
+     *
+     * @return the test XML configuration file name
+     */
+    public abstract String getXmlConfigFileName();
 
     /**
      * Tear down.
@@ -121,46 +137,13 @@ public class XmlCollectorTest {
     }
 
     /**
-     * Test time parser.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testTimeParser() throws Exception {
-        String pattern = "yyyy-MM-dd'T'HH:mm:ssZ";
-        String value = "2011-10-25T00:45:00-05:00";
-        long expectedTimestamp = 1319521500000l;
-        DateTimeFormatter dtf = DateTimeFormat.forPattern(pattern);
-        DateTime dateTime = dtf.parseDateTime(value);
-        Date date = dateTime.toDate();
-        Assert.assertEquals(expectedTimestamp, date.getTime());
-
-        MockDefaultXmlCollectionHandler handler = new MockDefaultXmlCollectionHandler();
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        date = handler.getTimeStamp(MockDocumentBuilder.getXmlDocument(), xpath, m_xmlCollectionDao.getDataCollectionByName("3GPP").getXmlSources().get(0).getXmlGroups().get(0));
-        Assert.assertEquals(expectedTimestamp, date.getTime());
-    }
-
-    /**
-     * Test XML collector with Standard handler.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testDefaultXmlCollector() throws Exception {
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("collection", "3GPP");
-        parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
-        doTest(parameters);
-    }
-
-    /**
-     * Do test.
+     * Executes collector test.
      *
      * @param parameters the parameters
+     * @param expectedFiles the expected amount of JRB files
      * @throws Exception the exception
      */
-    private void doTest(Map<String, Object> parameters) throws Exception {
+    public void executeCollectorTest(Map<String, Object> parameters, int expectedFiles) throws Exception {
         XmlCollector collector = new XmlCollector();
         collector.setXmlCollectionDao(m_xmlCollectionDao);
         collector.initialize(m_collectionAgent, parameters);
@@ -169,8 +152,10 @@ public class XmlCollectorTest {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository()); // storeByGroup=true;
+        BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection"))); // storeByGroup=true;
         collectionSet.visit(persister);
+        
+        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { "jrb" }, true).size());
     }
 
     /**
@@ -179,24 +164,14 @@ public class XmlCollectorTest {
      * @return the RRD repository
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private RrdRepository createRrdRepository() throws IOException {
-        XmlRrd rrd = m_xmlCollectionDao.getDataCollectionByName("3GPP").getXmlRrd();
+    private RrdRepository createRrdRepository(String collection) throws IOException {
+        XmlRrd rrd = m_xmlCollectionDao.getDataCollectionByName(collection).getXmlRrd();
         RrdRepository repository = new RrdRepository();
-        repository.setRrdBaseDir(getRrdDirectory());
+        repository.setRrdBaseDir(new File(TEST_SNMP_DIRECTORY));
         repository.setHeartBeat(rrd.getStep() * 2);
         repository.setStep(rrd.getStep());
         repository.setRraList(rrd.getXmlRras());
         return repository;
-    }
-
-    /**
-     * Gets the RRD directory.
-     *
-     * @return the RRD directory
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    private File getRrdDirectory() throws IOException {
-        return new File(TEST_SNMP_DIRECTORY);
     }
 
 }

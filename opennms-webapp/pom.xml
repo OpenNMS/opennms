@@ -275,6 +275,11 @@
       <artifactId>batik-util</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.soa</artifactId>
+        <scope>provided</scope>
+    </dependency>
 
     <!-- FIXME: Does this even need to be here? I had to switch it from provided
          to runtime or it interfered with GWT. -->

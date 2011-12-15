@@ -36,6 +36,7 @@ import org.w3c.dom.Document;
 
 /**
  * The Mock Class for DefaultXmlCollectionHandler.
+ * <p>This file is created in order to avoid calling a real server to retrieve a valid file and  parse a provided sample file through MockDocumentBuilder</p>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */

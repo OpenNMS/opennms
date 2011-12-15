@@ -41,7 +41,7 @@ import org.w3c.dom.Document;
 public class MockDocumentBuilder {
 
     /** The XML file name. */
-    public static String m_xmlFileName = "src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml";
+    public static String m_xmlFileName;
 
     /**
      * Instantiates a new mock document builder.
@@ -54,6 +54,8 @@ public class MockDocumentBuilder {
      * @return the XML document
      */
     public static Document getXmlDocument() {
+        if (m_xmlFileName == null)
+            return null;
         Document doc = null;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
