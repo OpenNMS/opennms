@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDAO;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +18,18 @@ import org.slf4j.LoggerFactory;
 public class DefaultRemoteRepositoryTest {
     private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryTest.class.getSimpleName());
     private DefaultRemoteRepository m_defaultRemoteRepository;
-
+    private static final String OPENNMS_HOME = "src/test/resources";
+    
     @BeforeClass
      public static void setup(){
-        System.setProperty("opennms.home", "src/test/resources");
+        System.setProperty("opennms.home", OPENNMS_HOME);
+        assertEquals(OPENNMS_HOME, System.getProperty("opennms.home"));
     }
     
     @Before
     public void initialize() {
-        m_defaultRemoteRepository = new DefaultRemoteRepository();
+        //TODO Tak: GANZ BÖSER CODE ZU GEFÄHRLICH FÜR ALLE OHNE UMLAUTE!
+        m_defaultRemoteRepository = new DefaultRemoteRepository(new DefaultRemoteRepositoryConfigDAO().getActiveRepositories().get(0), "423");
         assertNotNull(System.getProperty("opennms.home"));
     }
     
