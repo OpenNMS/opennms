@@ -12,7 +12,7 @@ public class DefaultRemoteRepositoryConfigDaoTest {
     //TODO Tak: create useful test...
     @Test
     public void unmarshallRemoteRepositoryConfigTest() {
-        System.setProperty("opennms.home", "features/reporting/dao/src/test/resources");
+        System.setProperty("opennms.home", "src/test/resources");
         RemoteRepositoryConfigDao m_dao = new DefaultRemoteRepositoryConfigDao();
         assertTrue(m_dao.isRepositoryActive());
         assertEquals("patrick", m_dao.getLoginUser());
