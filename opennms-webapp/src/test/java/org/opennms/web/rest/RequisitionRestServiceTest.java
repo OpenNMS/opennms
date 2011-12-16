@@ -340,7 +340,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         final MockEventProxy eventProxy = getEventProxy();
         eventProxy.resetEvents();
 
-        sendRequest(PUT, "/requisitions/test/import?rescanExisting=false", 200);
+        sendRequest(PUT, "/requisitions/test/import", parseParamData("rescanExisting=false"), 200);
 
         assertEquals(1, eventProxy.getEvents().size());
         final Event event = eventProxy.getEvents().get(0);
