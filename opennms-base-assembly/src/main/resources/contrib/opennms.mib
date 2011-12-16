@@ -38,7 +38,7 @@ IMPORTS
    NOTIFICATION-GROUP                  FROM SNMPv2-CONF;
 
 openNMS MODULE-IDENTITY
-    LAST-UPDATED "201112140000Z"		-- 13 December 2011
+    LAST-UPDATED "201112160000Z"		-- 16 December 2011
     ORGANIZATION "The OpenNMS Group, Inc."
     CONTACT-INFO "Tarus Balog
                   The OpenNMS Group, Inc.
@@ -51,6 +51,10 @@ openNMS MODULE-IDENTITY
      "The MIB module for OpenNMS, the world's first enterprise-grade
       open-source network management application platform"
 -- Revision history
+
+    REVISION "201112160000Z"
+    DESCRIPTION
+     "Added syslogMessageTrap, correlatedEventTrap, and supporting objects."
 
     REVISION "201112140000Z"
     DESCRIPTION
@@ -78,6 +82,12 @@ eventsSpecific	OBJECT IDENTIFIER
 							
 tl1AutonomousMessage	OBJECT IDENTIFIER
 							::= { eventsSpecific 1 }
+
+syslogMessageObjects	OBJECT IDENTIFIER
+							::= { eventsSpecific 2 }
+
+correlatedEventObjects	OBJECT IDENTIFIER
+							::= { eventsSpecific 3 }
 
 eventsAlarms	OBJECT IDENTIFIER
 	::= { data 3 }														
@@ -317,6 +327,104 @@ tl1amAdditionalParams	OBJECT-TYPE
 						as parsed from the auto-block."
 	::= { tl1AutonomousMessage 7 }
 
+--
+-- Objects in support of syslog-derived event traps
+--
+
+syslogFacilityName	OBJECT-TYPE
+	SYNTAX			DisplayString
+	MAX-ACCESS		read-only
+	STATUS			current
+	DESCRIPTION
+						"The name of the facility from which this syslog message
+						originated, e.g.: kernel, auth, mail..."
+	::= { syslogMessageObjects 1 }
+
+syslogSeverityName	OBJECT-TYPE
+	SYNTAX			DisplayString
+	MAX-ACCESS		read-only
+	STATUS			current
+	DESCRIPTION
+						"The name of the severity of this syslog message,
+						e.g.: Debug, Info, Error..."
+	::= { syslogMessageObjects 2 }
+
+syslogSeverityTimestamp	OBJECT-TYPE
+	SYNTAX			DisplayString
+	MAX-ACCESS		read-only
+	STATUS			current
+	DESCRIPTION
+						"The timestamp of this syslog message from the originating
+						sender, if provided, in format: MMM dd HH:mm:ss"
+	::= { syslogMessageObjects 3 }
+
+syslogSeverityProcessName	OBJECT-TYPE
+	SYNTAX			DisplayString
+	MAX-ACCESS		read-only
+	STATUS			current
+	DESCRIPTION
+						"The process that sent this syslog message from the originating
+						sender, if provided, e.g.: init, named, sendmail..."
+	::= { syslogMessageObjects 4 }
+
+syslogSeverityProcessID	OBJECT-TYPE
+	SYNTAX			INTEGER
+	MAX-ACCESS		read-only
+	STATUS			current
+	DESCRIPTION
+						"The numeric PID of the process that sent this syslog message 
+						from the originating sender, if provided."
+	::= { syslogMessageObjects 5 }
+
+syslogMessageBody	OBJECT-TYPE
+	SYNTAX			DisplayString
+	MAX-ACCESS		read-only
+	STATUS			current
+	DESCRIPTION
+						"The body of this syslog message with protocol metadata
+						(timestamp, severity, priority, process name and PID) removed."
+	::= { syslogMessageObjects 6 }
+
+--
+-- Objects in support of correlated event-based traps
+--
+
+correlationEngineName	OBJECT-TYPE
+	SYNTAX			DisplayString
+	MAX-ACCESS		read-only
+	STATUS			current
+	DESCRIPTION
+						"The name of the OpenNMS correlation engine responsible for
+						the correlation that led to the event corresponding to this
+						trap, e.g. Drools"
+	::= { correlatedEventObjects 1 }
+
+correlationRuleSetName	OBJECT-TYPE
+	SYNTAX			DisplayString
+	MAX-ACCESS		read-only
+	STATUS			current
+	DESCRIPTION
+						"The name of the correlation rule set responsible for
+						the correlation that led to the event corresponding to this
+						trap. In combination with correlationEngineName, identifies
+						the specific rule set that led to the creation of the event
+						corresponding to this trap."
+	::= { correlatedEventObjects 2 }
+
+correlationComments	OBJECT-TYPE
+	SYNTAX			DisplayString
+	MAX-ACCESS		read-only
+	STATUS			current
+	DESCRIPTION
+						"Contains optional comments from the correlation rule set
+						to aid the operator in interpreting the event corresponding
+						to this trap."
+	::= { correlatedEventObjects 3 }
+
+--
+-- Objects in support of alarm-based traps
+--
+
 alarmId		OBJECT-TYPE
 	SYNTAX		DisplayString
 	MAX-ACCESS	read-only
@@ -423,24 +531,78 @@ heartbeatTrap	NOTIFICATION-TYPE
 	DESCRIPTION
 		"Trap sent periodically by OpenNMS to keep alive external SNMP Manager"
 	::=  { onmsLegacyTraps 4 }
-             
+
 startSyncTrap	NOTIFICATION-TYPE      
 	STATUS		current
 	DESCRIPTION
 		"OpenNMS Synchronization Process is starting"
 	::=  { onmsLegacyTraps 5 }
-                                           
+
 endSyncTrap	NOTIFICATION-TYPE      
 	STATUS		current
 	DESCRIPTION
 		"OpenNMS Synchronization Process is successfully ended"
 	::=  { onmsLegacyTraps 6 }
-                                           
+
 syncRequestTrap NOTIFICATION-TYPE  
 	STATUS		current
   	DESCRIPTION 
     	"OpenNMS synchronization request" 
 	::=  { onmsLegacyTraps 7 }
+
+syslogMessageTrap	NOTIFICATION-TYPE
+	OBJECTS {
+		nodeid,
+		time,
+		host,
+		interface,
+		service,
+		severity,
+		syslogFacilityName,
+		syslogSeverityName,
+		syslogSeverityTimestamp,
+		syslogSeverityProcessName,
+		syslogSeverityProcessID,
+		syslogMessageBody
+	}
+	STATUS		current
+	DESCRIPTION
+		"This trap is used to convey the contents of a syslog message
+		received from a remote system. Managers receiving should be able
+		to reconstruct all information present in the original syslog message
+		based on the values of the trap's varbinds."
+	::= { onmsLegacyTraps 8 }
+
+correlatedEventTrap	NOTIFICATION-TYPE
+	OBJECTS {
+		dbid,
+		distPoller,
+		create-time,
+		master-station,
+		uei,
+		source,
+		nodeid,
+		time,
+		host,
+		interface,
+		snmphost,
+		service,
+		descr,
+		logmsg,
+		severity,
+		pathoutage,
+		operinst,
+		ifresolve,
+		nodelabel,
+		correlationEngineName,
+		correlationRuleSetName,
+		correlationComments
+	}
+	STATUS		current
+	DESCRIPTION
+		"This trap is used to convey the contents of an OpenNMS event
+		that was created as the output of a correlation rule set."
+	::= { onmsLegacyTraps 9 }
 
 events-Group	OBJECT-GROUP
 	OBJECTS {
@@ -468,7 +630,7 @@ events-Group	OBJECT-GROUP
 	DESCRIPTION 
 		"Conformance Group for OpenNMS Events"
 	::= { groups 1 }
-							
+
 tl1AutonomousMessage-Group	OBJECT-GROUP
 	OBJECTS {
 		tl1amRawMessage,
@@ -492,7 +654,7 @@ eventsAlarms-Group	OBJECT-GROUP
 	STATUS current
 	DESCRIPTION 
 		"Conformance Group for OpenNMS Events related to Alarms "
-	::= { groups 3 }																	
+	::= { groups 3 }
 
 traps-Group	NOTIFICATION-GROUP
 	NOTIFICATIONS {
@@ -502,11 +664,37 @@ traps-Group	NOTIFICATION-GROUP
 		heartbeatTrap,
                 startSyncTrap, 
 		endSyncTrap, 
-		syncRequestTrap
+		syncRequestTrap,
+		syslogMessageTrap
 	}
 	STATUS current
 	DESCRIPTION 
 		"OpenNMS Notification Group"
-	::= { groups 4 }	
+	::= { groups 4 }
+
+syslogMessageGroup	OBJECT-GROUP
+	OBJECTS {
+		syslogFacilityName,
+		syslogSeverityName,
+		syslogSeverityTimestamp,
+		syslogSeverityProcessName,
+		syslogSeverityProcessID,
+		syslogMessageBody
+	}
+	STATUS current
+	DESCRIPTION 
+		"Notification group for syslog message-derived traps"
+	::= { groups 5 }
+
+correlatedEventsGroup	OBJECT-GROUP
+	OBJECTS {
+		correlationEngineName,
+		correlationRuleSetName,
+		correlationComments
+	}
+	STATUS current
+	DESCRIPTION 
+		"Notification group for correlated event-based traps"
+	::= { groups 6 }
 
 END
