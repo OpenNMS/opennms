@@ -346,7 +346,7 @@ public class FilterParser {
         String actual = m_lexer.nextToken();
         assertNotEnd(actual, "Expected " + expected);
         if (!expected.equals(actual)) {
-            parseError("Unexpted token " + actual + ".  Expected " + expected);
+            parseError("Unexpected token " + actual + ".  Expected " + expected);
             return null;
         }
         return actual;
