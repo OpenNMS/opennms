@@ -78,10 +78,10 @@ import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
  */
 public abstract class AbstractSpringJerseyRestTestCase {
 
-    static String GET = "GET";
-    static String POST = "POST";
-    static String DELETE = "DELETE";
-    static String PUT = "PUT";
+    public static String GET = "GET";
+    public static String POST = "POST";
+    public static String DELETE = "DELETE";
+    public static String PUT = "PUT";
     
     String contextPath = "/opennms/rest";
     
