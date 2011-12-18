@@ -56,6 +56,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
+import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
+import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -570,7 +573,22 @@ public class WillItUnmarshalTest {
     public void testJdbcDataCollectionConfiguration() throws Exception {
         unmarshalJaxb("jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class);
     }
+
+    @Test
+    public void testLocalJasperReportsConfiguration() throws Exception {
+        unmarshalJaxb("local-jasper-reports.xml", LocalJasperReports.class);
+    }
+
+    @Test
+    public void testLocalReportsXmlConfiguration() throws Exception {
+        unmarshalJaxb("local-reports.xml", LegacyLocalReportsDefinition.class);
+    }
     
+    @Test
+    public void testRemoteRepositoryXmlConfiguration() throws Exception {
+        unmarshalJaxb("remote-repository.xml", RemoteRepositoryConfig.class);
+    }
+
     @Test
     public void testCheckAllDaemonXmlConfigFilesTested() {
         File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");

@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDAO;
 
 public class DefaultRemoteRepositoryConfigDaoTest {
     Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDaoTest.class);

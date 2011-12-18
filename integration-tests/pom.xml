@@ -56,5 +56,9 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.model</artifactId>
+    </dependency>
   </dependencies>
 </project>
