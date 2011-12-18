@@ -24,7 +24,7 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 public class DefaultRemoteRepository implements ReportRepository {
 
     private RemoteRepositoryDefinition m_RemoteRepositoryDefintion;
-    private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepository.class.getSimpleName());
+    private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepository.class);
     private final String JASPER_REPORTS_VERSION;
 
     private ApacheHttpClient m_client;

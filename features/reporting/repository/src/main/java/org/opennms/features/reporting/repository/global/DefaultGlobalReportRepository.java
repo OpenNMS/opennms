@@ -54,7 +54,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      * Logging
      * TODO tak: logging to the right place
      */
-    private final Logger logger = LoggerFactory.getLogger(DefaultGlobalReportRepository.class.getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(DefaultGlobalReportRepository.class);
 
     
     private final RemoteRepositoryConfigDAO m_remoteRepositoryConfigDAO = new DefaultRemoteRepositoryConfigDAO();

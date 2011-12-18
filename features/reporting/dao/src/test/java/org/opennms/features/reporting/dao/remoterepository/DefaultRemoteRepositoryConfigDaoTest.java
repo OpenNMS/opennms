@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DefaultRemoteRepositoryConfigDaoTest {
-    Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDaoTest.class.getSimpleName());
+    Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDaoTest.class);
     private static final String OPENNMS_HOME = "src/test/resources";
     private DefaultRemoteRepositoryConfigDAO m_dao;
     private RemoteRepositoryDefinition m_remoteRepositoryDefinition;

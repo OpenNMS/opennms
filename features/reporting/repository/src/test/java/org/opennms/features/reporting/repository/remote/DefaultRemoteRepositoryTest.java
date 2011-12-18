@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 // TODO tak: test needs a full working remote repository server with configuration
 @Ignore
 public class DefaultRemoteRepositoryTest {
-    private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryTest.class.getSimpleName());
+    private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryTest.class);
     private DefaultRemoteRepository m_defaultRemoteRepository;
     private static final String OPENNMS_HOME = "src/test/resources";
     

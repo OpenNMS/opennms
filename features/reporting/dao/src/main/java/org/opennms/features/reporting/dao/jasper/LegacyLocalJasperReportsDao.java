@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
 
-    Logger logger = LoggerFactory.getLogger(LegacyLocalJasperReportsDao.class.getSimpleName());
+    Logger logger = LoggerFactory.getLogger(LegacyLocalJasperReportsDao.class);
     
     private final String LOCAL_JASPER_REPORTS_CONFIG_XML = System.getProperty("opennms.home")
             + File.separator

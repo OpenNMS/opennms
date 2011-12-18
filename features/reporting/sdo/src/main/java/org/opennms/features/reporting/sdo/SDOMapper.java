@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class SDOMapper {
 	
-	private static Logger logger = LoggerFactory.getLogger(SDOMapper.class.getSimpleName());
+	private static Logger logger = LoggerFactory.getLogger(SDOMapper.class);
 	
 	public static RemoteReportSDO getSDO(Object bean) {
 		RemoteReportSDO reportResult = new RemoteReportSDO();

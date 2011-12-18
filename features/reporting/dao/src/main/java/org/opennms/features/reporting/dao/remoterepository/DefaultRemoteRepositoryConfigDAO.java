@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultRemoteRepositoryConfigDAO implements
         RemoteRepositoryConfigDAO {
 
-    Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDAO.class.getSimpleName());
+    Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDAO.class);
     
     private final String REMOTE_REPOSITORY_XML = System.getProperty("opennms.home")
             + File.separator

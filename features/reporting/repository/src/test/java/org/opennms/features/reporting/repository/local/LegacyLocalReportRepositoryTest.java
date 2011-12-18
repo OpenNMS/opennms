@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LegacyLocalReportRepositoryTest {
-    Logger logger = LoggerFactory.getLogger(LegacyLocalReportRepositoryTest.class.getSimpleName());
+    Logger logger = LoggerFactory.getLogger(LegacyLocalReportRepositoryTest.class);
     ReportRepository m_repo = new LegacyLocalReportRepository();
     
     @BeforeClass

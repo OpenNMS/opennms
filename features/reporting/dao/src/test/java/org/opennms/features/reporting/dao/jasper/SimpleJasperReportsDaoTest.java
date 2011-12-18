@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public class SimpleJasperReportsDaoTest {
 
-    Logger logger = LoggerFactory.getLogger(SimpleJasperReportsDaoTest.class.getSimpleName());
+    Logger logger = LoggerFactory.getLogger(SimpleJasperReportsDaoTest.class);
     
     private SimpleJasperReportsDao m_dao;
 

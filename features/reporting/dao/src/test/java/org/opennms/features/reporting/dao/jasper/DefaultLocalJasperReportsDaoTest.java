@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class DefaultLocalJasperReportsDaoTest {
 
-    Logger logger = LoggerFactory.getLogger(DefaultLocalJasperReportsDaoTest.class.getSimpleName());
+    Logger logger = LoggerFactory.getLogger(DefaultLocalJasperReportsDaoTest.class);
     
     private LegacyLocalJasperReportsDao m_defaultLocalJasperReportsDao;
     

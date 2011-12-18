@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 //TODO Tak: check this test and handel remote-repository connections
 public class GlobalReportRepositoryTest {
 
-	Logger logger = LoggerFactory.getLogger(GlobalReportRepositoryTest.class.getSimpleName());
+	Logger logger = LoggerFactory.getLogger(GlobalReportRepositoryTest.class);
 
 	private GlobalReportRepository globalRepo;
 	private static final String OPENNMS_HOME = "src/test/resources";

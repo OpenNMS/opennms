@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public class LegacyLocalReportsDao implements LocalReportsDao {
 
-    private Logger logger = LoggerFactory.getLogger(LegacyLocalReportsDao.class.getSimpleName());
+    private Logger logger = LoggerFactory.getLogger(LegacyLocalReportsDao.class);
     private final String LOCAL_REPORTS_CONFIG_XML = 
             System.getProperty("opennms.home") + 
             File.separator + 

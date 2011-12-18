@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DefaultLocalReportsDaoTest {
-    Logger logger = LoggerFactory.getLogger(DefaultLocalReportsDaoTest.class.getSimpleName());
+    Logger logger = LoggerFactory.getLogger(DefaultLocalReportsDaoTest.class);
     
     @Before
     public void setup() {

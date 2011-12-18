@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 public class LegacyLocalReportRepository implements ReportRepository {
 
-	private Logger logger = LoggerFactory.getLogger(LegacyLocalReportRepository.class.getSimpleName());
+	private Logger logger = LoggerFactory.getLogger(LegacyLocalReportRepository.class);
 
 	private LocalReportsDao m_localReportsDao = new LegacyLocalReportsDao();
 
