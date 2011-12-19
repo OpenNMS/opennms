@@ -87,8 +87,7 @@ public class PercentileDataAnalyzer implements DataAnalyzer {
 		}
 		Collections.sort(sortedValues);
 		float N = new Float(sortedValues.size());
-		int rankInt = Math.round(new Float((N / 100) * m_percentileNumber + 0.5));
-		//BigDecimal rankBD = new BigDecimal((N / 100) * m_percentileNumber + 0.5).round(mc);
+		int rankInt = getPercentilePossition(N);
 		if (m_verbose) {
 			SpikeHunter.printToUser("Rank of Nth percentile value (N=" + m_percentileNumber + ") is " + rankInt);
 		}
@@ -97,6 +96,34 @@ public class PercentileDataAnalyzer implements DataAnalyzer {
 		m_highestValue = sortedValues.get(sortedValues.size()-1);
 	}
 	
+	/*
+	 * According with the Apache Commons Math (3.0-SNAPSHOT), the percentile should be calculated according with the following rules:
+	 * 
+	 * 1) Let n be the length of the (sorted) array and 0 < p <= 100 be the desired percentile.
+	 * 2) If n = 1 return the unique array element (regardless of the value of p); otherwise
+	 * 3) Compute the estimated percentile position pos = p * (n + 1) / 100 and the difference, d between pos and floor(pos) (i.e. the fractional part of pos).
+	 * 4) If pos < 1 return the smallest element in the array.
+	 * 5) Else if pos >= n return the largest element in the array.
+	 * 6) Else let lower be the element in position floor(pos) in the array and let upper be the next element in the array. Return lower + d * (upper - lower)
+	 * 
+	 * Source: http://commons.apache.org/math/apidocs/org/apache/commons/math/stat/descriptive/rank/Percentile.html
+	 * 
+	 */
+	public int getPercentilePossition(float n) {
+	    if (n == 0)
+	        return 0;
+	    if (n == 1)
+	        return 1;
+	    double pos = m_percentileNumber * (n + 1) / 100;
+	    if (pos < 1) {
+	        return 0;
+	    }
+	    if (pos >= n) {
+	        return (int)n - 1;
+	    }
+	    return Math.round(new Float((n / 100) * m_percentileNumber + 0.5));
+	}
+
 	public String toString() {
 		return "Nth-percentile analyzer (N=" + m_percentileNumber + ", P_N=" + ((m_percentileValue != Double.NaN) ? m_percentileValue : "not yet calculated") + ", lowest=" + m_lowestValue + ", highest=" + m_highestValue + ")";
 	}
