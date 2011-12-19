@@ -558,17 +558,17 @@ public class ConfigTesterTest {
 
 	@Test
     public void testLocalJasperReportsConfig() {
-        testConfigFile("local-jasper-reports.xml");
+	    ignoreConfigFile("local-jasper-reports.xml");
 	}
 	
 	@Test
     public void testLocalReportsConfig() {
-        testConfigFile("local-reports.xml");
+	    ignoreConfigFile("local-reports.xml");
     }
 	
 	@Test
     public void testRemoteRepositoyConfig() {
-        testConfigFile("remote-repository.xml");
+	    ignoreConfigFile("remote-repository.xml");
     }
     
 	
