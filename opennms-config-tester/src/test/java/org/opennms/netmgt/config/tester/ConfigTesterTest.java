@@ -555,12 +555,28 @@ public class ConfigTesterTest {
     public void testXmppConfiguration() {
         ignoreConfigFile("xmpp-configuration.properties");
     }
+
+	@Test
+    public void testLocalJasperReportsConfig() {
+        testConfigFile("local-jasper-reports.xml");
+	}
+	
+	@Test
+    public void testLocalReportsConfig() {
+        testConfigFile("local-reports.xml");
+    }
+	
+	@Test
+    public void testRemoteRepositoyConfig() {
+        testConfigFile("remote-repository.xml");
+    }
+    
 	
 	@Test
 	public void testAllConfigs() {
 		ConfigTester.main(new String[] { "-a" });
 	}
-
+	
 	private void testConfigFile(String file) {
 		/*
 		 * Add to the tested list first, so if we get a test failure
