@@ -49,6 +49,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
+import org.opennms.web.rest.support.InetAddressTypeEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -218,6 +219,7 @@ public class OnmsRestService {
 		}
 		BeanWrapper wrapper = new BeanWrapperImpl(objectClass);
 		wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
+		wrapper.registerCustomEditor(java.net.InetAddress.class, new InetAddressTypeEditor());
 		
 		List<Criterion> criteriaList = new ArrayList<Criterion>();
 		
@@ -229,11 +231,16 @@ public class OnmsRestService {
     			} else if ("notnull".equals(stringValue)) {
     				criteriaList.add(Restrictions.isNotNull(key));
     			} else {
-    				@SuppressWarnings("unchecked")
-					Object thisValue=wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+    				
+					Object thisValue;
     				if ("node.id".equals(key)) {
     					thisValue = Integer.valueOf(stringValue);
+    				}else if("contains".equals(key)) {
+    				    thisValue = stringValue;
+    				}else {
+    				    thisValue = convertIfNecessary(wrapper, key, stringValue);
     				}
+    				
     				LogUtils.warnf(this, "key = %s, propertyType = %s", key, wrapper.getPropertyType(key));
     				switch(op) {
     		   		case EQ:
@@ -285,6 +292,11 @@ public class OnmsRestService {
 		    }
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+    private Object convertIfNecessary(BeanWrapper wrapper, String key, String stringValue) {
+        return wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+    }
 
     /**
      * Does ordering processing; pulled out to a separate method for visual clarity.  Configures ordering as defined in addFiltersToCriteria
@@ -433,7 +445,7 @@ public class OnmsRestService {
             if (wrapper.isWritableProperty(propertyName)) {
                 Object value = null;
                 String stringValue = params.getFirst(key);
-                value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(propertyName));
+                value = convertIfNecessary(wrapper, propertyName, stringValue);
                 wrapper.setPropertyValue(propertyName, value);
             }
         }
