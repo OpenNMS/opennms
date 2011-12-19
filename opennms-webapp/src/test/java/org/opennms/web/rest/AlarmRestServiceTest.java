@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -51,6 +52,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	private DatabasePopulator m_databasePopulator;
 
     protected void afterServletStart() {
+        MockLogAppender.setupLogging(true, "DEBUG");
 		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
         m_databasePopulator.populateDatabase();

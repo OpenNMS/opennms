@@ -31,19 +31,11 @@ package org.opennms.web.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsUserList;
-import org.opennms.test.mock.MockLogAppender;
 
 public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase {
-
-    @Before
-    public void setUp() throws Throwable {
-        super.setUp();
-        MockLogAppender.setupLogging(true, "DEBUG");
-    }
 
     @Test
     public void testUser() throws Exception {
