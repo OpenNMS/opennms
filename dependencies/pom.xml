@@ -57,7 +57,7 @@
 
     <springWebFlowVersion>2.0.9.RELEASE</springWebFlowVersion>
 
-    <springSecurityVersion>2.0.6.RELEASE</springSecurityVersion>
+    <springSecurityVersion>2.0.7.RELEASE</springSecurityVersion>
 
     <springLdapVersion>1.2.1</springLdapVersion>
 
