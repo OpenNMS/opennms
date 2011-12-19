@@ -1,2 +1,4 @@
 src/main/webapp/
 .gwt/
+NodePageListTest-dev.launch
+NodePageListTest-prod.launch
