@@ -35,7 +35,10 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -43,10 +46,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.directory.shared.ldap.util.ToStringBuilder;
+import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.stats.AlarmStatisticsService;
-import org.opennms.netmgt.dao.stats.StatisticsContainer;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -66,6 +72,8 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Transactional
 public class AlarmStatsRestService extends AlarmRestServiceBase {
 
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
     // private static Logger s_log = LoggerFactory.getLogger(AlarmStatsRestService.class);
 
 	@Autowired
@@ -75,80 +83,165 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     UriInfo m_uriInfo;
 
     @GET
-    public AlarmStatisticsList getStats() {
-        final AlarmStatisticsList stats = new AlarmStatisticsList();
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public AlarmStatistics getStats() {
+        return getStats(null);
+    }
 
-        final OnmsCriteria queryFilters = getQueryFilters(m_uriInfo.getQueryParameters(), true);
+    @GET
+    @Path("/by-severity")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public AlarmStatisticsBySeverity getStatsForEachSeverity(@QueryParam("severities") final String severitiesString) {
+        final AlarmStatisticsBySeverity stats = new AlarmStatisticsBySeverity();
 
-        final int count = m_statisticsService.getTotalCount(queryFilters);
-        stats.setCount(count);
+        String[] severities = StringUtils.split(severitiesString, ",");
+        if (severities == null || severities.length == 0) {
+            severities = OnmsSeverity.names().toArray(EMPTY_STRING_ARRAY);
+        }
+
+        for (final String severityName : severities) {
+            final OnmsSeverity severity = OnmsSeverity.get(severityName);
+
+            final AlarmStatistics stat = getStats(severity);
+            stat.setSeverity(severity);
+            stats.add(stat);
+        }
+        
+        return stats;
+    }
+    
+    protected AlarmStatistics getStats(final OnmsSeverity severity) {
+        final AlarmStatistics stats = new AlarmStatistics();
+
+        final OnmsCriteria criteria;
+        if (severity == null) {
+            criteria = getQueryFilters(m_uriInfo.getQueryParameters(), true);
+        } else {
+            criteria = new OnmsCriteria(OnmsAlarm.class);
+            criteria.add(Restrictions.eq("severity", severity));
+        }
+        final int count = m_statisticsService.getTotalCount(criteria);
         stats.setTotalCount(count);
-        stats.setAcknowledgedCount(m_statisticsService.getAcknowledgedCount(queryFilters));
+        stats.setAcknowledgedCount(m_statisticsService.getAcknowledgedCount(criteria));
 
-        stats.setNewestAcknowledged(getNewestAcknowledged());
-        stats.setNewestUnacknowledged(getNewestUnacknowledged());
-        stats.setOldestAcknowledged(getOldestAcknowledged());
-        stats.setOldestUnacknowledged(getOldestUnacknowledged());
+        stats.setNewestAcknowledged(getNewestAcknowledged(severity));
+        stats.setNewestUnacknowledged(getNewestUnacknowledged(severity));
+        stats.setOldestAcknowledged(getOldestAcknowledged(severity));
+        stats.setOldestUnacknowledged(getOldestUnacknowledged(severity));
 
         return stats;
     }
 
-    protected OnmsAlarm getNewestAcknowledged() {
+    protected OnmsAlarm getNewestAcknowledged(final OnmsSeverity severity) {
         final MultivaluedMap<String,String> parameters = m_uriInfo.getQueryParameters();
         translateSeverity(m_uriInfo.getQueryParameters());
         parameters.putSingle("orderBy", "lastEventTime");
         parameters.putSingle("order", "desc");
         parameters.putSingle("limit", "1");
+        // TODO: HACK!
+        if (severity != null) {
+            parameters.remove("severities");
+            parameters.putSingle("comparator", "eq");
+            parameters.putSingle("severity", severity.toString());
+        }
         return m_statisticsService.getAcknowledged(getQueryFilters(parameters));
     }
 
-    private OnmsAlarm getNewestUnacknowledged() {
+    private OnmsAlarm getNewestUnacknowledged(final OnmsSeverity severity) {
         final MultivaluedMap<String,String> parameters = m_uriInfo.getQueryParameters();
         translateSeverity(m_uriInfo.getQueryParameters());
         parameters.putSingle("orderBy", "lastEventTime");
         parameters.putSingle("order", "desc");
         parameters.putSingle("limit", "1");
+        // TODO: HACK!
+        if (severity != null) {
+            parameters.remove("severities");
+            parameters.putSingle("comparator", "eq");
+            parameters.putSingle("severity", severity.toString());
+        }
         return m_statisticsService.getUnacknowledged(getQueryFilters(parameters));
     }
 
-    protected OnmsAlarm getOldestAcknowledged() {
+    protected OnmsAlarm getOldestAcknowledged(final OnmsSeverity severity) {
         final MultivaluedMap<String,String> parameters = m_uriInfo.getQueryParameters();
         translateSeverity(m_uriInfo.getQueryParameters());
         parameters.putSingle("orderBy", "lastEventTime");
-        parameters.putSingle("order", "ast");
+        parameters.putSingle("order", "asc");
         parameters.putSingle("limit", "1");
+        // TODO: HACK!
+        if (severity != null) {
+            parameters.remove("severities");
+            parameters.putSingle("comparator", "eq");
+            parameters.putSingle("severity", severity.toString());
+        }
         return m_statisticsService.getAcknowledged(getQueryFilters(parameters));
     }
 
-    private OnmsAlarm getOldestUnacknowledged() {
+    private OnmsAlarm getOldestUnacknowledged(final OnmsSeverity severity) {
         final MultivaluedMap<String,String> parameters = m_uriInfo.getQueryParameters();
         translateSeverity(m_uriInfo.getQueryParameters());
         parameters.putSingle("orderBy", "lastEventTime");
-        parameters.putSingle("order", "ast");
+        parameters.putSingle("order", "asc");
         parameters.putSingle("limit", "1");
+        // TODO: HACK!
+        if (severity != null) {
+            parameters.remove("severities");
+            parameters.putSingle("comparator", "eq");
+            parameters.putSingle("severity", severity.toString());
+        }
         return m_statisticsService.getUnacknowledged(getQueryFilters(parameters));
     }
 
     @Entity
-    @XmlRootElement(name = "alarms")
-    public static class AlarmStatisticsList extends LinkedList<StatisticsContainer> {
-        private static final long serialVersionUID = 5956738313189529009L;
+    @XmlRootElement(name = "severities")
+    public static class AlarmStatisticsBySeverity {
+        private List<AlarmStatistics> m_stats = new LinkedList<AlarmStatistics>();
 
+        @XmlElement(name="alarmStatistics")
+        public List<AlarmStatistics> getStats() {
+            return m_stats;
+        }
+
+        public void setStats(final List<AlarmStatistics> stats) {
+            m_stats = stats;
+        }
+        
+        public void add(final AlarmStatistics stats) {
+            m_stats.add(stats);
+        }
+        
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this)
+                .append("alarmStatistics", m_stats)
+                .toString();
+        }
+    }
+    
+    @Entity
+    @XmlRootElement(name = "alarmStatistics")
+    public static class AlarmStatistics {
         private int m_totalCount = 0;
         private int m_acknowledgedCount = 0;
+        private OnmsSeverity m_severity = null;
+
         private OnmsAlarm m_newestAcknowledged;
         private OnmsAlarm m_newestUnacknowledged;
         private OnmsAlarm m_oldestAcknowledged;
         private OnmsAlarm m_oldestUnacknowledged;
 
-        @XmlAttribute(name="count")
-        public int getCount() {
-            return this.size();
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this)
+                .append("totalCount", m_totalCount)
+                .append("acknowledgedCount", m_acknowledgedCount)
+                .append("unacknowledgedCount", getUnacknowledgedCount())
+                .append("newestAcknowledged", m_newestAcknowledged)
+                .append("newestUnacknowledged", m_newestUnacknowledged)
+                .append("oldestAcknowledged", m_oldestAcknowledged)
+                .append("oldestUnacknowledged", m_oldestUnacknowledged)
+                .toString();
         }
-
-        // The property has a getter "" but no setter. For unmarshalling, please define setters.
-        public void setCount(final int count) {}
-
         @XmlAttribute(name="totalCount")
         public int getTotalCount() {
             return m_totalCount;
@@ -173,7 +266,16 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         }
         
         public void setUnacknowledgedCount(final int count) {}
+
+        @XmlAttribute(name="severity")
+        public OnmsSeverity getSeverity() {
+            return m_severity;
+        }
         
+        public void setSeverity(final OnmsSeverity severity) {
+            m_severity = severity;
+        }
+
         @XmlElementWrapper(name="newestAcked")
         @XmlElement(name="alarm")
         public List<OnmsAlarm> getNewestAcknowledged() {
