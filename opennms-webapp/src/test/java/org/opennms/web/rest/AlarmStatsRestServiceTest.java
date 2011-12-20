@@ -1,5 +1,6 @@
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -59,6 +60,29 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
         assertTrue(xml.contains(" totalCount=\"3\""));
         assertTrue(xml.contains(" unacknowledgedCount=\"1\""));
         assertTrue(xml.contains(" acknowledgedCount=\"2\""));
+    }
+
+    @Test
+    public void testGetAlarmStatsSeverityList() throws Exception {
+        createAlarm(OnmsSeverity.CLEARED, "admin");
+        createAlarm(OnmsSeverity.MAJOR, "admin");
+        createAlarm(OnmsSeverity.CRITICAL, "admin");
+        createAlarm(OnmsSeverity.CRITICAL, null);
+        createAlarm(OnmsSeverity.MINOR, null);
+        createAlarm(OnmsSeverity.NORMAL, null);
+
+        String xml = sendRequest(GET, "/stats/alarms/by-severity", 200);
+
+        assertTrue(xml.contains("<severities>"));
+        assertTrue(xml.contains("<alarmStatistics"));
+        assertTrue(xml.contains("severity="));
+        
+        xml = sendRequest(GET, "/stats/alarms/by-severity", parseParamData("severities=MINOR,NORMAL"), 200);
+        
+        assertFalse(xml.contains("CLEARED"));
+        assertFalse(xml.contains("CRITICAL"));
+        assertTrue(xml.contains("MINOR"));
+        assertTrue(xml.contains("NORMAL"));
     }
 
     private void createAlarm(final OnmsSeverity severity, final String ackUser) {
