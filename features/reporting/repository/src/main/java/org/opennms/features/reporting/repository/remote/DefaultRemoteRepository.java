@@ -50,7 +50,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         ArrayList<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
-                    + "getReports");
+                    + "reports");
             List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
             try {
                 webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
@@ -97,7 +97,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
-                    + "getOnlineReports");
+                    + "onlineReports");
             try {
                 webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
                 });
@@ -140,7 +140,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         String result = "";
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
-                    + "getReportService/" + id);
+                    + "reportService/" + id);
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
@@ -158,7 +158,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         String result = "";
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
-                    + "getDisplayName/" + id);
+                    + "displayName/" + id);
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
@@ -176,7 +176,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         String result = "";
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
-                    + "getEngine/" + id);
+                    + "engine/" + id);
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
@@ -194,7 +194,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         InputStream templateStreamResult = null;
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
-                    + "getTemplateStream/" + id);
+                    + "templateStream/" + id);
             try {
                 templateStreamResult = m_webResource.get(InputStream.class);
             } catch (Exception e) {
