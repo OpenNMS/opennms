@@ -32,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsGroupList;
@@ -40,9 +39,8 @@ import org.opennms.test.mock.MockLogAppender;
 
 public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
-    @Before
-    public void setUp() throws Throwable {
-        super.setUp();
+    @Override
+    protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
     }
 

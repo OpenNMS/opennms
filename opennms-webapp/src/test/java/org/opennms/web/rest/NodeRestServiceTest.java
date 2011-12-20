@@ -43,7 +43,6 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
@@ -60,13 +59,12 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     private static int m_nodeCounter = 0;
 
-    @Before
-    public void setUp() throws Throwable {
-        super.setUp();
+    @Override
+    protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging();
         m_nodeCounter = 0;
     }
-
+    
     @Test
     public void testNode() throws Exception {
         // Testing POST

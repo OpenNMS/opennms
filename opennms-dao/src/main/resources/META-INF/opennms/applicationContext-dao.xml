@@ -339,4 +339,6 @@
     <constructor-arg ref="jdbcTemplate" />
   </bean>
 
+  <bean id="alarmStatisticsService" class="org.opennms.netmgt.dao.stats.AlarmStatisticsService" />
+
 </beans>
