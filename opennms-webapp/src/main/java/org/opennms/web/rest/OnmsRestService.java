@@ -48,6 +48,7 @@ import org.hibernate.criterion.Subqueries;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.web.rest.support.InetAddressTypeEditor;
 import org.springframework.beans.BeanWrapper;
@@ -67,7 +68,7 @@ public class OnmsRestService {
 
 	protected static final int DEFAULT_LIMIT = 10;
 
-	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE, CONTAINS }
+	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, IPLIKE, GT, LT, GE, LE, CONTAINS }
 
 	private List<Order> m_ordering = new ArrayList<Order>();
 	private Integer m_limit = null;
@@ -215,6 +216,8 @@ public class OnmsRestService {
 				op=ComparisonOperation.NE;
 			} else if (comparatorLabel.equals("contains")) {
 			    op=ComparisonOperation.CONTAINS;
+			} else if (comparatorLabel.equals("iplike")) {
+			    op=ComparisonOperation.IPLIKE;
 			}
 		}
 		BeanWrapper wrapper = new BeanWrapperImpl(objectClass);
@@ -235,7 +238,7 @@ public class OnmsRestService {
 					Object thisValue;
     				if ("node.id".equals(key)) {
     					thisValue = Integer.valueOf(stringValue);
-    				}else if("contains".equals(key)) {
+    				}else if(op == ComparisonOperation.CONTAINS || op == ComparisonOperation.IPLIKE) {
     				    thisValue = stringValue;
     				}else {
     				    thisValue = convertIfNecessary(wrapper, key, stringValue);
@@ -269,6 +272,10 @@ public class OnmsRestService {
     					break;
     		   		case CONTAINS:
     		   		    criteriaList.add(Restrictions.ilike(key, stringValue, MatchMode.ANYWHERE));
+    		   		    break;
+    		   		case IPLIKE:
+    		   		    criteriaList.add(OnmsRestrictions.ipLike(stringValue));
+    		   		    break;
     				}
     			}
 		    }
