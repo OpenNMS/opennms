@@ -119,7 +119,9 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
      * @param value a {@link java.lang.Double} object.
      * @return a {@link java.lang.String} object.
      */
-    protected String formatValue(Double value) {
+    protected String formatValue(double value) {
+        if (Double.isNaN(value)) // When reconfiguring thresholds, the value is set to NaN.
+            return "NaN";
         String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##");
         DecimalFormat valueFormatter = new DecimalFormat(pattern);
         return valueFormatter.format(value);
