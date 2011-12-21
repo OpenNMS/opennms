@@ -150,21 +150,22 @@
           <% Map<String, Notification> noticeMap = new TreeMap<String, Notification>(m_notificationFactory.getNotifications());
              for(String key : noticeMap.keySet()) {
                Notification curNotif = (Notification)noticeMap.get(key);
+               String ekey = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(key);
           %>
           <tr>
             <td>
-              <input type="button" value="Edit" onclick="javascript:editNotice('<%=key%>')"/>
+              <input type="button" value="Edit" onclick="javascript:editNotice('<%=ekey%>')"/>
             </td>
             <td>
-              <input type="button" value="Delete"  onclick="javascript:deleteNotice('<%=key%>')"/>
+              <input type="button" value="Delete"  onclick="javascript:deleteNotice('<%=ekey%>')"/>
             </td>
             <td>
               <%if (curNotif.getStatus().equals("on")) { %>
-                <input type="radio" value="Off" onclick="javascript:setStatus('<%=key%>','off')"/>Off
-                <input type="radio" value="On" CHECKED onclick="javascript:setStatus('<%=key%>','on')"/>On
+                <input type="radio" value="Off" onclick="javascript:setStatus('<%=ekey%>','off')"/>Off
+                <input type="radio" value="On" CHECKED onclick="javascript:setStatus('<%=ekey%>','on')"/>On
               <% } else { %>
-                <input type="radio" value="Off" CHECKED onclick="javascript:setStatus('<%=key%>','off')"/>Off
-                <input type="radio" value="On" onclick="javascript:setStatus('<%=key%>','on')"/>On
+                <input type="radio" value="Off" CHECKED onclick="javascript:setStatus('<%=ekey%>','off')"/>Off
+                <input type="radio" value="On" onclick="javascript:setStatus('<%=ekey%>','on')"/>On
               <% } %>
             </td>
             <td>
