@@ -38,7 +38,7 @@ IMPORTS
    NOTIFICATION-GROUP                  FROM SNMPv2-CONF;
 
 openNMS MODULE-IDENTITY
-    LAST-UPDATED "201112160000Z"		-- 16 December 2011
+    LAST-UPDATED "201112210000Z"		-- 21 December 2011
     ORGANIZATION "The OpenNMS Group, Inc."
     CONTACT-INFO "Tarus Balog
                   The OpenNMS Group, Inc.
@@ -51,6 +51,12 @@ openNMS MODULE-IDENTITY
      "The MIB module for OpenNMS, the world's first enterprise-grade
       open-source network management application platform"
 -- Revision history
+
+    REVISION "201112210000Z"
+    DESCRIPTION
+     "Corrected errors in object names syslogTimestamp, syslogProcessName,
+     and  syslogProcessID"
+
 
     REVISION "201112160000Z"
     DESCRIPTION
@@ -349,7 +355,7 @@ syslogSeverityName	OBJECT-TYPE
 						e.g.: Debug, Info, Error..."
 	::= { syslogMessageObjects 2 }
 
-syslogSeverityTimestamp	OBJECT-TYPE
+syslogTimestamp	OBJECT-TYPE
 	SYNTAX			DisplayString
 	MAX-ACCESS		read-only
 	STATUS			current
@@ -358,7 +364,7 @@ syslogSeverityTimestamp	OBJECT-TYPE
 						sender, if provided, in format: MMM dd HH:mm:ss"
 	::= { syslogMessageObjects 3 }
 
-syslogSeverityProcessName	OBJECT-TYPE
+syslogProcessName	OBJECT-TYPE
 	SYNTAX			DisplayString
 	MAX-ACCESS		read-only
 	STATUS			current
@@ -367,7 +373,7 @@ syslogSeverityProcessName	OBJECT-TYPE
 						sender, if provided, e.g.: init, named, sendmail..."
 	::= { syslogMessageObjects 4 }
 
-syslogSeverityProcessID	OBJECT-TYPE
+syslogProcessID	OBJECT-TYPE
 	SYNTAX			INTEGER
 	MAX-ACCESS		read-only
 	STATUS			current
@@ -560,9 +566,9 @@ syslogMessageTrap	NOTIFICATION-TYPE
 		severity,
 		syslogFacilityName,
 		syslogSeverityName,
-		syslogSeverityTimestamp,
-		syslogSeverityProcessName,
-		syslogSeverityProcessID,
+		syslogTimestamp,
+		syslogProcessName,
+		syslogProcessID,
 		syslogMessageBody
 	}
 	STATUS		current
@@ -676,9 +682,9 @@ syslogMessageGroup	OBJECT-GROUP
 	OBJECTS {
 		syslogFacilityName,
 		syslogSeverityName,
-		syslogSeverityTimestamp,
-		syslogSeverityProcessName,
-		syslogSeverityProcessID,
+		syslogTimestamp,
+		syslogProcessName,
+		syslogProcessID,
 		syslogMessageBody
 	}
 	STATUS current
