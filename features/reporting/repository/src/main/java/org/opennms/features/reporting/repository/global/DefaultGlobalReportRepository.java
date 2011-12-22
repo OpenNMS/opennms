@@ -43,13 +43,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>DefaultGlobalReportRepository class.</p>
- *
+ * <p>DefaultGlobalReportRepository.java</p>
+ * 
  * @author <a href="mailto:markus@opennms.org">Markus Neumann</a>
- * @version $Id: $
+ *
+ * @version $Id: $ 
  */
-public class DefaultGlobalReportRepository implements GlobalReportRepository {
-
+public class DefaultGlobalReportRepository implements GlobalReportRepository { 
+    
     /**
      * Logging
      * TODO tak: logging to the right place

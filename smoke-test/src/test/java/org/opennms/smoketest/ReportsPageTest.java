@@ -33,7 +33,19 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isElementPresent("css=input[type=submit]"));
         assertTrue(selenium.isElementPresent("//input[@value='KSC Reports']"));
      }
-        
+     
+     @Test
+     public void testDownloadSampleReport() {
+    	 selenium.click("link=Database Reports");
+         assertTrue(selenium.isElementPresent("link=Online reports"));
+    	 selenium.click("link=Online reports");
+    	 assertTrue(selenium.isTextPresent("Kochwurst sample JasperReport"));
+    	 selenium.click("link=execute");
+    	 selenium.click("id=run");
+    	 selenium.waitForPageToLoad("300000");
+    	 selenium.goBack();
+     }
+     
       @Test
       public void testAllLinks() {
         selenium.click("link=Resource Graphs");
