@@ -55,22 +55,28 @@ public interface ReportRepository {
     /**
      * <p>getReportService</p>
      *
-     * @param id a {@link java.lang.String} object.
+     * @param reportId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    String getReportService(String id);
+    String getReportService(String reportId);
     
     /**
      * <p>getDisplayName</p>
      *
-     * @param id a {@link java.lang.String} object.
+     * @param reportId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    String getDisplayName(String id);
+    String getDisplayName(String reportId);
 
-    String getEngine(String id);
+    String getEngine(String reportId);
     
-    InputStream getTemplateStream(String id);
+    InputStream getTemplateStream(String reportId);
 
     String getRepositoryId();
+    
+    String getRepositoryName();
+    
+    String getRepositoryDescription();
+    
+    String getManagementUrl();
 }

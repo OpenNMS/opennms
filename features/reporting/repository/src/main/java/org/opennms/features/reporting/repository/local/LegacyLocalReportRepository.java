@@ -53,6 +53,12 @@ public class LegacyLocalReportRepository implements ReportRepository {
 	private LocalJasperReportsDao m_localJasperReportsDao = new LegacyLocalJasperReportsDao();
 
 	private final String REPOSITORY_ID = "local";
+    
+    private final String REPOSITORY_NAME="Legacy local repository";
+    
+    private final String REPOSITORY_DESCRIPTION="Providing OpenNMS community reports from local disk.";
+    
+    private final String MANAGEMENT_URL ="http://localhost/manageLegacyLocalRepositoy";
 
 	@Override
 	public List<BasicReportDefinition> getReports() {
@@ -122,4 +128,19 @@ public class LegacyLocalReportRepository implements ReportRepository {
 	public String getRepositoryId() {
 		return REPOSITORY_ID;
 	}
+
+    @Override
+    public String getRepositoryName() {
+        return REPOSITORY_NAME;
+    }
+
+    @Override
+    public String getRepositoryDescription() {
+        return REPOSITORY_DESCRIPTION;
+    }
+
+    @Override
+    public String getManagementUrl() {
+        return MANAGEMENT_URL;
+    }
 }
