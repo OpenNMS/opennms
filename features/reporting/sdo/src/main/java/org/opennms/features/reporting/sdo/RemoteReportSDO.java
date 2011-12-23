@@ -40,7 +40,7 @@ public class RemoteReportSDO {
     private String m_description;
     private String m_displayName;
     private String m_reportService;
-    private boolean m_executable;
+    private boolean m_active;
     private boolean m_online;
     private boolean m_subreport;
 
@@ -84,9 +84,9 @@ public class RemoteReportSDO {
         return m_subreport;
     }
 
-    @XmlElement(name = "executable")
-    public boolean getExecutable() {
-        return m_executable;
+    @XmlElement(name = "active")
+    public boolean getActive() {
+        return m_active;
     }
 
     public void setDescription(String description) {
@@ -113,8 +113,8 @@ public class RemoteReportSDO {
         m_subreport = subreport;
     }
     
-    public void setExecutable(boolean executable) {
-        m_executable = executable;
+    public void setActice(boolean active) {
+        m_active = active;
     }
 
     public void setReportService(String reportService) {
@@ -130,7 +130,7 @@ public class RemoteReportSDO {
         return "RemoteReportSDO [m_id=" + m_id + ", m_engine=" + m_engine
                 + ", m_template=" + m_template + ", m_description="
                 + m_description + ", m_displayName=" + m_displayName
-                + ", m_reportService=" + m_reportService + ", m_executable="
-                + m_executable + ", m_online=" + m_online + "]";
+                + ", m_reportService=" + m_reportService + ", m_active="
+                + m_active + ", m_online=" + m_online + "]";
     }
 }
