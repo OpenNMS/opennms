@@ -64,6 +64,55 @@ public class DefaultDatabaseReportListService implements
         return allReports;
     }
 
+    @Override
+    public List<ReportRepositoryDescription> getActiveRepositories() {
+        List<ReportRepositoryDescription> result = new ArrayList<ReportRepositoryDescription>();
+        List<ReportRepository> reportRepositoryList = new ArrayList<ReportRepository>();
+
+        reportRepositoryList = m_globalRepository.getRepositoryList();
+
+        for (ReportRepository repository : reportRepositoryList) {
+            ReportRepositoryDescription reportRepositoryDescription = new ReportRepositoryDescription();
+            reportRepositoryDescription.setId(repository.getRepositoryId());
+            reportRepositoryDescription.setDescription(repository.getRepositoryDescription());
+            reportRepositoryDescription.setDisplayName(repository.getRepositoryName());
+            reportRepositoryDescription.setManagementUrl(repository.getManagementUrl());
+            result.add(reportRepositoryDescription);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<DatabaseReportDescription> getOnlineReportsByRepositoryId(String repositoryId) {
+        List<DatabaseReportDescription> onlineReportList = new ArrayList<DatabaseReportDescription>();
+
+        for (BasicReportDefinition reportDefinition : m_globalRepository.getRepositoryById(repositoryId).getOnlineReports()) {
+                DatabaseReportDescription summary = new DatabaseReportDescription();
+                summary.setRepositoryId(reportDefinition.getRepositoryId());
+                summary.setId(reportDefinition.getId());
+                summary.setDisplayName(reportDefinition.getDisplayName());
+                summary.setDescription(reportDefinition.getDescription());
+                onlineReportList.add(summary);
+        }
+        return onlineReportList;
+    }
+
+    @Override
+    public List<DatabaseReportDescription> getReportsByRepositoryId(String repositoryId) {
+        List<DatabaseReportDescription> reportList = new ArrayList<DatabaseReportDescription>();
+
+        for (BasicReportDefinition reportDefinition : m_globalRepository.getRepositoryById(repositoryId).getReports()) {
+            DatabaseReportDescription summary = new DatabaseReportDescription();
+            summary.setRepositoryId(reportDefinition.getRepositoryId());
+            summary.setId(reportDefinition.getId());
+            summary.setDisplayName(reportDefinition.getDisplayName());
+            summary.setDescription(reportDefinition.getDescription());
+            reportList.add(summary);
+        }
+        return reportList;
+    }
+
     /**
      * <p>
      * getAll Reports from all Repositories

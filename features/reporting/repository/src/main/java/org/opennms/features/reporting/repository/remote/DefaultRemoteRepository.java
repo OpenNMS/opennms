@@ -59,7 +59,7 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 //TODO Tak: SSL Auth and Session-Handling(create/destroy)
 public class DefaultRemoteRepository implements ReportRepository {
 
-    private RemoteRepositoryDefinition m_RemoteRepositoryDefintion;
+    private RemoteRepositoryDefinition m_remoteRepositoryDefintion;
     private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepository.class);
     private final String JASPER_REPORTS_VERSION;
 
@@ -70,14 +70,14 @@ public class DefaultRemoteRepository implements ReportRepository {
     public DefaultRemoteRepository(
             RemoteRepositoryDefinition remoteRepositoryDefinition,
             String jasperReportsVersion) {
-        this.m_RemoteRepositoryDefintion = remoteRepositoryDefinition;
+        this.m_remoteRepositoryDefintion = remoteRepositoryDefinition;
         this.JASPER_REPORTS_VERSION = jasperReportsVersion;
         m_clientConfig = new DefaultApacheHttpClientConfig();
         m_clientConfig.getState().setCredentials(null,
-                                                 m_RemoteRepositoryDefintion.getURI().getHost(),
-                                                 m_RemoteRepositoryDefintion.getURI().getPort(),
-                                                 m_RemoteRepositoryDefintion.getLoginUser(),
-                                                 m_RemoteRepositoryDefintion.getLoginRepoPassword());
+                m_remoteRepositoryDefintion.getURI().getHost(),
+                m_remoteRepositoryDefintion.getURI().getPort(),
+                m_remoteRepositoryDefintion.getLoginUser(),
+                m_remoteRepositoryDefintion.getLoginRepoPassword());
         m_client = ApacheHttpClient.create(m_clientConfig);
     }
 
@@ -85,7 +85,7 @@ public class DefaultRemoteRepository implements ReportRepository {
     public List<BasicReportDefinition> getReports() {
         ArrayList<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
                     + "reports");
             List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
             try {
@@ -105,7 +105,7 @@ public class DefaultRemoteRepository implements ReportRepository {
                 SimpleJasperReportDefinition result = new SimpleJasperReportDefinition();
                 try {
                     BeanUtils.copyProperties(result, report);
-                    result.setId(m_RemoteRepositoryDefintion.getRepositoryId()
+                    result.setId(m_remoteRepositoryDefintion.getRepositoryId()
                             + "_" + result.getId());
                 } catch (IllegalAccessException e) {
                     logger.debug("getReports IllegalAssessException while copyProperties from '{}' to '{}' with exception.",
@@ -132,7 +132,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         List<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
         List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
                     + "onlineReports");
             try {
                 webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
@@ -148,7 +148,7 @@ public class DefaultRemoteRepository implements ReportRepository {
                 SimpleJasperReportDefinition result = new SimpleJasperReportDefinition();
                 try {
                     BeanUtils.copyProperties(result, report);
-                    result.setId(m_RemoteRepositoryDefintion.getRepositoryId()
+                    result.setId(m_remoteRepositoryDefintion.getRepositoryId()
                             + "_" + result.getId());
                 } catch (IllegalAccessException e) {
                     logger.debug("getOnlineReports IllegalAssessException while copyProperties from '{}' to '{}' with exception.",
@@ -171,16 +171,16 @@ public class DefaultRemoteRepository implements ReportRepository {
     }
 
     @Override
-    public String getReportService(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+    public String getReportService(String reportId) {
+        reportId = reportId.substring(reportId.indexOf("_") + 1);
         String result = "";
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
-                    + "reportService/" + id);
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
+                    + "reportService/" + reportId);
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
-                logger.error("Error requesting report service by id. Error message: '{}'",
+                logger.error("Error requesting report service by report id. Error message: '{}'",
                              e.getMessage());
                 e.printStackTrace();
             }
@@ -189,16 +189,16 @@ public class DefaultRemoteRepository implements ReportRepository {
     }
 
     @Override
-    public String getDisplayName(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+    public String getDisplayName(String reportId) {
+        reportId = reportId.substring(reportId.indexOf("_") + 1);
         String result = "";
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
-                    + "displayName/" + id);
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
+                    + "displayName/" + reportId);
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
-                logger.error("Error requesting display name by id. Error message: '{}'",
+                logger.error("Error requesting display name by report id. Error message: '{}'",
                              e.getMessage());
                 e.printStackTrace();
             }
@@ -207,12 +207,12 @@ public class DefaultRemoteRepository implements ReportRepository {
     }
 
     @Override
-    public String getEngine(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+    public String getEngine(String reportId) {
+        reportId = reportId.substring(reportId.indexOf("_") + 1);
         String result = "";
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
-                    + "engine/" + id);
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
+                    + "engine/" + reportId);
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
@@ -225,12 +225,12 @@ public class DefaultRemoteRepository implements ReportRepository {
     }
 
     @Override
-    public InputStream getTemplateStream(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+    public InputStream getTemplateStream(String reportId) {
+        reportId = reportId.substring(reportId.indexOf("_") + 1);
         InputStream templateStreamResult = null;
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_RemoteRepositoryDefintion.getURI()
-                    + "templateStream/" + id);
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
+                    + "templateStream/" + reportId);
             try {
                 templateStreamResult = m_webResource.get(InputStream.class);
             } catch (Exception e) {
@@ -243,11 +243,11 @@ public class DefaultRemoteRepository implements ReportRepository {
     }
 
     private Boolean isConfigOk() {
-        if (m_RemoteRepositoryDefintion != null) {
-            if (m_RemoteRepositoryDefintion.isRepositoryActive()) {
+        if (m_remoteRepositoryDefintion != null) {
+            if (m_remoteRepositoryDefintion.isRepositoryActive()) {
             } else {
                 logger.debug("RemoteRepository '{}' is NOT activated.",
-                             m_RemoteRepositoryDefintion.getRepositoryName());
+                             m_remoteRepositoryDefintion.getRepositoryName());
                 return false;
             }
         } else {
@@ -258,16 +258,31 @@ public class DefaultRemoteRepository implements ReportRepository {
     }
 
     public RemoteRepositoryDefinition getConfig() {
-        return this.m_RemoteRepositoryDefintion;
+        return this.m_remoteRepositoryDefintion;
     }
 
     public void setConfig(RemoteRepositoryDefinition remoteRepositoryDefintion) {
-        this.m_RemoteRepositoryDefintion = remoteRepositoryDefintion;
+        this.m_remoteRepositoryDefintion = remoteRepositoryDefintion;
     }
 
     @Override
     public String getRepositoryId() {
-        return this.m_RemoteRepositoryDefintion.getRepositoryId();
+        return this.m_remoteRepositoryDefintion.getRepositoryId();
+    }
+
+    @Override
+    public String getRepositoryName() {
+        return this.m_remoteRepositoryDefintion.getRepositoryName();
+    }
+
+    @Override
+    public String getRepositoryDescription() {
+        return this.m_remoteRepositoryDefintion.getRepositoryDescription();
+    }
+
+    @Override
+    public String getManagementUrl() {
+        return this.m_remoteRepositoryDefintion.getRepositoryManagementURL();
     }
 
     public String getJASPER_REPORTS_VERSION() {

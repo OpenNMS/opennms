@@ -28,24 +28,17 @@
 
 package org.opennms.web.svclayer.support;
 
-/**
- * <p>DatabaseReportDescription class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public class DatabaseReportDescription {
+public class ReportRepositoryDescription {
     
     private String m_id;
-    private String m_repositoryId;
     private String m_displayName;
     private String m_description;
+    private String m_managementUrl;
     
     /**
      * <p>getId</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link String} object.
      */
     public String getId() {
         return m_id;
@@ -53,31 +46,16 @@ public class DatabaseReportDescription {
     /**
      * <p>setId</p>
      *
-     * @param id a {@link java.lang.String} object.
+     * @param id a {@link String} object.
      */
     public void setId(String id) {
         m_id = id;
     }
-    /**
-     * <p>getRepositoryId</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getRepositoryId() {
-        return m_repositoryId;
-    }
-    /**
-     * <p>setId</p>
-     *
-     * @param repositoryId a {@link java.lang.String} object.
-     */
-    public void setRepositoryId(String repositoryId) {
-        m_repositoryId = repositoryId;
-    }
+
     /**
      * <p>getDisplayName</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link String} object.
      */
     public String getDisplayName() {
         return m_displayName;
@@ -85,15 +63,16 @@ public class DatabaseReportDescription {
     /**
      * <p>setDisplayName</p>
      *
-     * @param displayName a {@link java.lang.String} object.
+     * @param displayName a {@link String} object.
      */
+
     public void setDisplayName(String displayName) {
         m_displayName = displayName;
     }
     /**
      * <p>getDescription</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link String} object.
      */
     public String getDescription() {
         return m_description;
@@ -101,11 +80,26 @@ public class DatabaseReportDescription {
     /**
      * <p>setDescription</p>
      *
-     * @param description a {@link java.lang.String} object.
+     * @param description a {@link String} object.
      */
     public void setDescription(String description) {
         m_description = description;
     }
-    
 
+    /**
+     * <p>getManagementUrl</p>
+     *
+     * @return a {@link String} object.
+     */
+    public String getManagementUrl() {
+        return m_managementUrl;
+    }
+    /**
+     * <p>setManagementUrl</p>
+     *
+     * @param managementUrl a {@link String} object.
+     */
+    public void setManagementUrl(String managementUrl) {
+        m_managementUrl = managementUrl;
+    }
 }
