@@ -1708,7 +1708,7 @@ public class ThresholdingVisitorTest {
         if (value != null) {
             String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##"); // See Bug 3427
             DecimalFormat valueFormatter = new DecimalFormat(pattern);
-            bldr.addParam("value", valueFormatter.format(value));
+            bldr.addParam("value", value.isNaN() ? "NaN" : valueFormatter.format(value));
         }
 
         bldr.addParam("instance", instance);
