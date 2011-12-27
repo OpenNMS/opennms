@@ -36,11 +36,31 @@ package org.opennms.web.svclayer.support;
  * @since 1.8.1
  */
 public class DatabaseReportDescription {
-    
+
+    /**
+     * Id of a report template
+     */
     private String m_id;
+
+    /**
+     * Id of the repository
+     */
     private String m_repositoryId;
+
+    /**
+     * Display name for a report template
+     */
     private String m_displayName;
+
+    /**
+     * Description for a report template
+     */
     private String m_description;
+
+    /**
+     * Defines if a report is allowed to be accessed by report repository.
+     */
+    private Boolean m_allowAccess;
     
     /**
      * <p>getId</p>
@@ -106,6 +126,4 @@ public class DatabaseReportDescription {
     public void setDescription(String description) {
         m_description = description;
     }
-    
-
 }

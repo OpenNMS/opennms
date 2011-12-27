@@ -52,23 +52,15 @@ import java.util.LinkedHashMap;
  */
 public class OnlineReportListController extends AbstractController {
 
+    /**
+     * Service provides report templates from different repositories
+     */
     private DatabaseReportListService m_reportListService;
+
+    /**
+     * Page size for paging in the UI
+     */
     private int m_pageSize;
-    
-/*    *//** {@inheritDoc} *//*
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request,
-                                                 HttpServletResponse response) throws Exception {
-        ModelAndView modelAndView = new ModelAndView("report/database/onlineList");
-        PagedListHolder<DatabaseReportDescription> pagedListHolder = new PagedListHolder<DatabaseReportDescription>(m_reportListService.getAllOnline());
-        pagedListHolder.setPageSize(m_pageSize);
-        int page = ServletRequestUtils.getIntParameter(request, "p", 0);
-        pagedListHolder.setPage(page);
-        modelAndView.addObject("pagedListHolder", pagedListHolder);
-
-        return modelAndView;
-
-    }*/
 
     /** {@inheritDoc} */
     @Override

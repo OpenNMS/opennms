@@ -45,41 +45,50 @@
 	<jsp:param name="breadcrumb" value="Batch Reports" />
 </jsp:include>
 
+<%--
 <jsp:useBean id="pagedListHolder" scope="request"
 	type="org.springframework.beans.support.PagedListHolder" />
 <c:url value="/report/database/batchList.htm" var="pagedLink">
 	<c:param name="p" value="~" />
 </c:url>
-
+--%>
 
 <c:choose>
-	<c:when test="${empty pagedListHolder.pageList}">
+	<c:when test="${empty repositoryList}">
 		<p>No batch reports are defined</p>
 	</c:when>
-
 	<c:otherwise>
-		<element:pagedList pagedListHolder="${pagedListHolder}"
-			pagedLink="${pagedLink}" />
-
-		<div class="spacer"><!--  --></div>
+	    <c:forEach var="mapEntry" items="${repositoryList}">
+		<c:url value="/report/database/batchList.htm" var="pagedLink">
+		    <c:param name="p_${mapEntry.key.id}" value="~" />
+		</c:url>
+		<div class="spacer" style="height: 15px"><!--  --></div>
+		<%-- <h3 class="o-box"><c:out value="${mapEntry.key.displayName}" /></h3> --%>
 		<table>
+			<thead>
+			    <tr>
+				<td colspan="2" style="padding: 0px 0px"><h3 class="o-box" style="margin-top: 0px 0px 0px 0px; border: 0px;"><c:out value="${mapEntry.key.displayName}" /></td>
+				<td width="150px"><element:pagedList pagedListHolder="${mapEntry.value}" pagedLink="${pagedLink}" /></td>
+			    </tr>
+			</thead>
 			<thead>
 				<tr>
 					<th>name</th>
 					<th>description</th>
-					<th>action</th>
+					<th style="text-align: center">action</th>
 				</tr>
 			</thead>
 			<%-- // show only current page worth of data --%>
-			<c:forEach items="${pagedListHolder.pageList}" var="report">
+			<c:forEach items="${mapEntry.value.pageList}" var="report">
 				<tr>
 					<td>${report.displayName}</td>
 					<td>${report.description}</td>
-					<td> <a href="report/database/batchReport.htm?reportId=${report.id}&schedule=false">execute</a>
+					<td align="center"><a href="report/database/batchReport.htm?reportId=${report.id}&schedule=false">execute</a>
 					<a href="report/database/batchReport.htm?reportId=${report.id}&schedule=true">schedule</a></td>
 				</tr>
 			</c:forEach>
 		</table>
+	    </c:forEach>
 	</c:otherwise>
 </c:choose>
 
