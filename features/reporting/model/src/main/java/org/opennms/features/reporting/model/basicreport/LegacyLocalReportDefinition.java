@@ -28,11 +28,12 @@
 
 package org.opennms.features.reporting.model.basicreport;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class Report.
- * 
+ *
  * @version $Revision$ $Date$
  */
 
@@ -41,40 +42,44 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
 
     /**
      * the name of this report as defined in engine
-     *  configuration
+     * configuration
      */
-    private String id;
+    private String m_id;
 
     /**
      * the name of this report as defined in engine
-     *  configuration
+     * configuration
      */
-    private String repositoryId;
-    
+    private String m_repositoryId;
+
     /**
      * the name of this report as displayed in the webui
-     *  
      */
-    private String displayName;
+    private String m_displayName;
 
     /**
      * the name of the engine to use to process and
-     *  render this report
+     * render this report
      */
-    private String reportService;
+    private String m_reportService;
 
     /**
-     * report description
+     * report m_description
      */
-    private String description;
+    private String m_description;
 
     /**
      * determines if the report may be executed and immediately
-     *  displayed in the browser. If not set OpenNMS assumes that
+     * displayed in the browser. If not set OpenNMS assumes that
      * the report
-     *  must be executed in batch mode.
+     * must be executed in batch mode.
      */
-    private boolean online;
+    private boolean m_online;
+
+    /**
+     * Define the access to this report.
+     */
+    private boolean m_allowAccess;
 
     /* (non-Javadoc)
      * @see org.opennms.features.reporting.model.BasicReportDefinition#getDescription()
@@ -82,7 +87,7 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
     @Override
     @XmlAttribute(name = "description")
     public String getDescription() {
-        return this.description;
+        return this.m_description;
     }
 
     /* (non-Javadoc)
@@ -91,7 +96,7 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
     @Override
     @XmlAttribute(name = "display-name")
     public String getDisplayName() {
-        return this.displayName;
+        return this.m_displayName;
     }
 
     /* (non-Javadoc)
@@ -100,7 +105,7 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
     @Override
     @XmlAttribute(name = "id")
     public String getId() {
-        return this.id;
+        return this.m_id;
     }
 
     /* (non-Javadoc)
@@ -109,7 +114,7 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
     @Override
     @XmlAttribute(name = "online")
     public boolean getOnline() {
-        return this.online;
+        return this.m_online;
     }
 
     /* (non-Javadoc)
@@ -118,18 +123,7 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
     @Override
     @XmlAttribute(name = "report-service")
     public String getReportService() {
-        return this.reportService;
-    }
-
-    @Override
-    public String toString() {
-        return "Report{" +
-                "id='" + id + '\'' +
-                ", displayName='" + displayName + '\'' +
-                ", reportService='" + reportService + '\'' +
-                ", description='" + description + '\'' +
-                ", online=" + online +
-                '}';
+        return this.m_reportService;
     }
 
     /* (non-Javadoc)
@@ -137,7 +131,7 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
      */
     @Override
     public void setId(String id) {
-        this.id = id;
+        this.m_id = id;
     }
 
     /* (non-Javadoc)
@@ -145,7 +139,7 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
      */
     @Override
     public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+        this.m_displayName = displayName;
     }
 
     /* (non-Javadoc)
@@ -153,7 +147,7 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
      */
     @Override
     public void setReportService(String reportService) {
-        this.reportService = reportService;
+        this.m_reportService = reportService;
     }
 
     /* (non-Javadoc)
@@ -161,19 +155,26 @@ public class LegacyLocalReportDefinition implements BasicReportDefinition {
      */
     @Override
     public void setDescription(String description) {
-        this.description = description;
+        this.m_description = description;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.features.reporting.model.BasicReportDefinition#setOnline(boolean)
-     */
+    @Override
+    public boolean getAllowAccess() {
+        return m_allowAccess;
+    }
+
+    @Override
+    public void setAllowAccess(boolean allowAccess) {
+        m_allowAccess = allowAccess;
+    }
+
     @Override
     public void setOnline(boolean online) {
-        this.online = online;
+        this.m_online = online;
     }
 
     @Override
     public String getRepositoryId() {
-        return repositoryId;
+        return m_repositoryId;
     }
 }

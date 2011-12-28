@@ -60,7 +60,12 @@ public class DatabaseReportDescription {
     /**
      * Defines if a report is allowed to be accessed by report repository.
      */
-    private Boolean m_allowAccess;
+    private boolean m_allowAccess;
+
+    /**
+     * Configuration as online report
+     */
+    private boolean m_isOnline;
     
     /**
      * <p>getId</p>
@@ -125,5 +130,45 @@ public class DatabaseReportDescription {
      */
     public void setDescription(String description) {
         m_description = description;
+    }
+
+    /**
+     * <p>setIsOnline</p>
+     * Set isOnline property to define if a report can be executed instantly from the WebUI.
+     *  
+     * @param isOnline a {@link boolean} object.
+     */
+    public void setIsOnline(boolean isOnline) {
+        m_isOnline = isOnline;
+    }
+
+    /**
+     * <p>getIsOnline</p>
+     * Get isOnline property for instant report execution.
+     * 
+     * @return a {@link boolean} object.
+     */
+    public boolean getIsOnline() {
+        return m_isOnline;
+    }
+
+    /**
+     * <p>setAllowAccess</p>
+     * Set allowAccess for report execution permission. 
+     * 
+     * @param allowAccess a {@link boolean} object.
+     */
+    public void setAllowAccess(boolean allowAccess) {
+        m_allowAccess = allowAccess;
+    }
+
+    /**
+     * <p>getAllowAccess</p>
+     * Get allowAccess for report execution permission.
+     * 
+     * @return a {@link boolean} object
+     */
+    public boolean getAllowAccess() {
+        return m_allowAccess;
     }
 }

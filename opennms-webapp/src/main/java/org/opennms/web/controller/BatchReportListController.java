@@ -49,6 +49,7 @@ import java.util.Map;
  * @version $Id: $
  * @since 1.8.1
  */
+@Deprecated
 public class BatchReportListController extends AbstractController {
 
     private DatabaseReportListService m_reportListService;

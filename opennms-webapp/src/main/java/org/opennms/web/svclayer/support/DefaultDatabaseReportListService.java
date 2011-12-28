@@ -47,6 +47,7 @@ public class DefaultDatabaseReportListService implements
      * 
      * @return a {@link java.util.List} object.
      */
+    @Deprecated
     public List<DatabaseReportDescription> getAll() {
 
         List<DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
@@ -58,6 +59,8 @@ public class DefaultDatabaseReportListService implements
                 summary.setId(report.getId());
                 summary.setDisplayName(report.getDisplayName());
                 summary.setDescription(report.getDescription());
+                summary.setIsOnline(report.getOnline());
+                summary.setAllowAccess(report.getAllowAccess());
                 allReports.add(summary);
             }
         }
@@ -93,6 +96,8 @@ public class DefaultDatabaseReportListService implements
                 summary.setId(reportDefinition.getId());
                 summary.setDisplayName(reportDefinition.getDisplayName());
                 summary.setDescription(reportDefinition.getDescription());
+                summary.setIsOnline(reportDefinition.getOnline());
+                summary.setAllowAccess(reportDefinition.getAllowAccess());
                 onlineReportList.add(summary);
         }
         return onlineReportList;
@@ -108,6 +113,8 @@ public class DefaultDatabaseReportListService implements
             summary.setId(reportDefinition.getId());
             summary.setDisplayName(reportDefinition.getDisplayName());
             summary.setDescription(reportDefinition.getDescription());
+            summary.setIsOnline(reportDefinition.getOnline());
+            summary.setAllowAccess(reportDefinition.getAllowAccess());
             reportList.add(summary);
         }
         return reportList;
@@ -120,6 +127,7 @@ public class DefaultDatabaseReportListService implements
      * 
      * @return a {@link java.util.List} object.
      */
+    @Deprecated
     public List<DatabaseReportDescription> getAllOnline() {
 
         List<DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
@@ -130,6 +138,8 @@ public class DefaultDatabaseReportListService implements
                 summary.setId(report.getId());
                 summary.setDisplayName(report.getDisplayName());
                 summary.setDescription(report.getDescription());
+                summary.setIsOnline(report.getOnline());
+                summary.setAllowAccess(report.getAllowAccess());
                 onlineReports.add(summary);
             }
         }

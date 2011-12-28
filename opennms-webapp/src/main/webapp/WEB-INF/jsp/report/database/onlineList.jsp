@@ -42,23 +42,23 @@
 		value="<a href='report/index.jsp'>Reports</a>" />
 	<jsp:param name="breadcrumb" 
 		value="<a href='report/database/index.htm'>Database</a>" />
-	<jsp:param name="breadcrumb" value="Online Reports" />
+	<jsp:param name="breadcrumb" value="List Reports" />
 </jsp:include>
 <%--
 <jsp:useBean id="pagedListHolder" scope="request"
 	type="org.springframework.beans.support.PagedListHolder" />
-<c:url value="/report/database/onlineList.htm" var="pagedLink">
+<c:url value="/report/database/reportList.htm" var="pagedLink">
 	<c:param name="p" value="~" />
 </c:url>
 --%>
 <c:choose>
 	<c:when test="${empty repositoryList}">
-		<p>No repositories with online reports available.</p>
+		<p>No repositories with reports available.</p>
 	</c:when>
 
 	<c:otherwise>
 	    <c:forEach var="mapEntry" items="${repositoryList}">
-		<c:url value="/report/database/onlineList.htm" var="pagedLink">
+		<c:url value="/report/database/reportList.htm" var="pagedLink">
 		    <c:param name="p_${mapEntry.key.id}" value="~" />
 		</c:url>
 
@@ -83,7 +83,15 @@
 				<tr>
 					<td>${report.displayName}</td>
 					<td>${report.description}</td>
-					<td align="center"><a href="report/database/onlineReport.htm?reportId=${report.id}">execute</a></td>
+                    <td>${report.isOnline}</td>
+                    <c:choose>
+                        <c:when test="${report.isOnline}">
+                            <td align="center"><a href="report/database/onlineReport.htm?reportId=${report.id}">execute</a></td>
+                        </c:when>
+                        <c:otherwise>
+                            <td>&nbsp;</td>
+                        </c:otherwise>
+                    </c:choose>
 				</tr>
 			</c:forEach>
 		</table>

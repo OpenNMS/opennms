@@ -755,7 +755,8 @@ tr.CellStatus td.nobright
         text-align: right;
         margin-top: 5px;
         margin-bottom: 5px;
-        font-size: 70%;        float: right;
+        font-size: 90%;
+        float: right;
 }
 
 .pagination span.page-sep {
@@ -811,7 +812,7 @@ li.pagination {
 }
 
 .stdform p select, .stdform p input, .stdform p option, .stdform p options {
-	font-size: 70%;
+	font-size: 100%;
 }
 
 .stdform .indent {
@@ -820,4 +821,63 @@ li.pagination {
 
 .onms-table td{
     background: #ffffff;
+}
+
+/* Style for list reports */
+
+#o-repository-title {
+	background-image: url(../images/headingbg.png);
+	background-repeat: repeat-x;
+	background-position: center center;
+	color: #fff;
+	font-size: 1em;
+	font-weight: bold;
+}
+
+#o-report-subscribe {
+	font-weight: bold;
+	color: #a20200;
+}
+
+#o-report-online, #o-report-deliver, #o-report-schedule {
+	width: 24px;
+	height: 24px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+#o-report-online a {
+	background:url(../images/reportOnline_grey.png);
+	background-repeat:no-repeat;
+	width: 24px;
+	height: 24px;
+	display:block;
+}
+
+#o-report-online a:hover {
+	background: url(../images/reportOnline.png);
+}
+
+#o-report-deliver a {
+	background:url(../images/reportDeliver_grey.png);
+	background-repeat:no-repeat;
+	width: 24px;
+	height: 24px;
+	display:block;
+}
+
+#o-report-deliver a:hover {
+	background: url(../images/reportDeliver.png);
+}
+
+#o-report-schedule a {
+	background:url(../images/reportSchedule_grey.png);
+	background-repeat:no-repeat;
+	width: 24px;
+	height: 24px;
+	display:block;
+}
+
+#o-report-schedule a:hover {
+	background: url(../images/reportSchedule.png);
 }

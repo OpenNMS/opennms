@@ -38,10 +38,8 @@
   <jsp:param name="title" value="Database Reports" />
   <jsp:param name="headTitle" value="Database Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" 
-		value="<a href='report/database/index.htm'>Database</a>" />
-  <jsp:param name="breadcrumb" 
-		value="<a href='report/database/onlineList.htm'>Online Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='report/database/index.htm'>Database</a>" />
+  <jsp:param name="breadcrumb" value="<a href='report/database/reportList.htm'>List Reports</a>" />
   <jsp:param name="breadcrumb" value="run"/>
 </jsp:include>
 

@@ -45,6 +45,7 @@ public class SimpleJasperReportDefinition implements BasicReportDefinition,
     private String m_displayName;
     private String m_reportService;
     private boolean m_online;
+    private boolean m_allowAccess;
     
     @XmlElement(name = "description")
     public String getDescription() {
@@ -80,6 +81,17 @@ public class SimpleJasperReportDefinition implements BasicReportDefinition,
     public void setDescription(String description) {
         m_description = description;
     }
+
+    @Override
+    public boolean getAllowAccess() {
+        return m_allowAccess;
+    }
+
+    @Override
+    public void setAllowAccess(boolean allowAccess) {
+        m_allowAccess = allowAccess;
+    }
+
     public void setDisplayName(String displayName) {
         m_displayName = displayName;
     }
@@ -98,6 +110,7 @@ public class SimpleJasperReportDefinition implements BasicReportDefinition,
     public void setTemplate(String template) {
         m_template = template;
     }
+
     @Override
     public String toString() {
         return "SimpleJasperReportDefinition [m_id=" + m_id

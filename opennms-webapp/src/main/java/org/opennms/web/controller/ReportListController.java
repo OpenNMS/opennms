@@ -28,10 +28,6 @@
 
 package org.opennms.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.sun.tools.jdi.*;
 import org.opennms.web.svclayer.DatabaseReportListService;
 import org.opennms.web.svclayer.support.DatabaseReportDescription;
 import org.opennms.web.svclayer.support.ReportRepositoryDescription;
@@ -40,8 +36,10 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * <p>OnlineReportListController class.</p>
@@ -50,8 +48,7 @@ import java.util.LinkedHashMap;
  * @version $Id: $
  * @since 1.8.1
  */
-@Deprecated
-public class OnlineReportListController extends AbstractController {
+public class ReportListController extends AbstractController {
 
     /**
      * Service provides report templates from different repositories
@@ -69,13 +66,13 @@ public class OnlineReportListController extends AbstractController {
                                                  HttpServletResponse response) throws Exception {
         Map<ReportRepositoryDescription, PagedListHolder<DatabaseReportDescription>> repositoryList = new LinkedHashMap<ReportRepositoryDescription, PagedListHolder <DatabaseReportDescription>>();
         for (ReportRepositoryDescription reportRepositoryDescription : m_reportListService.getActiveRepositories()) {
-            PagedListHolder<DatabaseReportDescription> pageListholder = new PagedListHolder<DatabaseReportDescription>(m_reportListService.getOnlineReportsByRepositoryId(reportRepositoryDescription.getId()));
+            PagedListHolder<DatabaseReportDescription> pageListholder = new PagedListHolder<DatabaseReportDescription>(m_reportListService.getReportsByRepositoryId(reportRepositoryDescription.getId()));
             pageListholder.setPageSize(m_pageSize);
             int page = ServletRequestUtils.getIntParameter(request,"p_" + reportRepositoryDescription.getId(),0);
             pageListholder.setPage(page);
             repositoryList.put(reportRepositoryDescription, pageListholder);
         }
-        return new ModelAndView("report/database/onlineList","repositoryList", repositoryList);
+        return new ModelAndView("report/database/reportList","repositoryList", repositoryList);
     }
 
     /**

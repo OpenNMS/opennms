@@ -47,6 +47,7 @@ public interface DatabaseReportListService {
      *
      * @return a {@link java.util.List} object.
      */
+    @Deprecated
     List<DatabaseReportDescription> getAll();
     
     /**
@@ -54,6 +55,7 @@ public interface DatabaseReportListService {
      *
      * @return a {@link java.util.List} object.
      */
+    @Deprecated
     List<DatabaseReportDescription> getAllOnline();
 
     List<ReportRepositoryDescription> getActiveRepositories();

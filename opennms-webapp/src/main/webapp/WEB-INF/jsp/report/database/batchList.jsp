@@ -38,20 +38,10 @@
 <jsp:include page="/includes/header.jsp" flush="false">
   <jsp:param name="title" value="List Reports" />
   <jsp:param name="headTitle" value="List Reports" />
-	<jsp:param name="breadcrumb"
-		value="<a href='report/index.jsp'>Reports</a>" />
-	<jsp:param name="breadcrumb" 
-		value="<a href='report/database/index.htm'>Database</a>" />
-	<jsp:param name="breadcrumb" value="Batch Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='report/database/index.htm'>Database</a>" />
+  <jsp:param name="breadcrumb" value="Batch Reports" />
 </jsp:include>
-
-<%--
-<jsp:useBean id="pagedListHolder" scope="request"
-	type="org.springframework.beans.support.PagedListHolder" />
-<c:url value="/report/database/batchList.htm" var="pagedLink">
-	<c:param name="p" value="~" />
-</c:url>
---%>
 
 <c:choose>
 	<c:when test="${empty repositoryList}">

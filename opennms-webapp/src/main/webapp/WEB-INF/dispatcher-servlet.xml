@@ -510,11 +510,18 @@
   	<property name="databaseReportListService" ref="databaseReportListService"/>
   	<property name="pageSize" value="10"/>
   </bean>
-  
+
+  <!-- Replaced by ReportListController
   <bean name="/report/database/onlineList.htm"
   		class="org.opennms.web.controller.OnlineReportListController">
   	<property name="databaseReportListService" ref="databaseReportListService"/>
   	<property name="pageSize" value="10"/>
+  </bean -->
+
+  <bean name="/report/database/reportList.htm"
+          class="org.opennms.web.controller.ReportListController">
+    <property name="databaseReportListService" ref="databaseReportListService"/>
+    <property name="pageSize" value="10"/>
   </bean>
   
   <bean name="/report/database/batchReport.htm" 
