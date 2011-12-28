@@ -64,7 +64,6 @@ public class DatabaseReportListController extends AbstractController {
         modelAndView.addObject("pagedListHolder", pagedListHolder);  
 
         return modelAndView;
-        
     }
 
     /**
