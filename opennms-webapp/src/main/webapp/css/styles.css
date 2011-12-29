@@ -837,6 +837,8 @@ li.pagination {
 #o-report-subscribe {
 	font-weight: bold;
 	color: #a20200;
+	text-align: center;
+	width:20px;
 }
 
 #o-report-online, #o-report-deliver, #o-report-schedule {

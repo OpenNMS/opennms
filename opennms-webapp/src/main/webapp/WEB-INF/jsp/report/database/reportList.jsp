@@ -29,18 +29,18 @@
 
 --%>
 
-<%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib tagdir="/WEB-INF/tags/element" prefix="element"%>
+<%@ taglib tagdir="/WEB-INF/tags/element" prefix="element" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-    <jsp:param name="title" value="List Reports" />
-    <jsp:param name="headTitle" value="List Reports" />
-    <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-    <jsp:param name="breadcrumb" value="<a href='report/database/index.htm'>Database</a>" />
-    <jsp:param name="breadcrumb" value="List Reports" />
+    <jsp:param name="title" value="List Reports"/>
+    <jsp:param name="headTitle" value="List Reports"/>
+    <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>"/>
+    <jsp:param name="breadcrumb" value="<a href='report/database/index.htm'>Database</a>"/>
+    <jsp:param name="breadcrumb" value="List Reports"/>
 </jsp:include>
 
 <c:choose>
@@ -51,44 +51,51 @@
     <c:otherwise>
         <c:forEach var="mapEntry" items="${repositoryList}">
             <c:url value="/report/database/reportList.htm" var="pagedLink">
-                <c:param name="p_${mapEntry.key.id}" value="~" />
+                <c:param name="p_${mapEntry.key.id}" value="~"/>
             </c:url>
 
             <div class="spacer" style="height: 15px"><!--  --></div>
+
+            <element:pagedList pagedListHolder="${mapEntry.value}" pagedLink="${pagedLink}"/>
             <table>
                 <thead>
                 <tr>
-                    <td colspan="2" id="o-repository-title"><c:out value="${mapEntry.key.displayName}" /></td>
-                    <td colspan="3"><element:pagedList pagedListHolder="${mapEntry.value}" pagedLink="${pagedLink}" /></td>
+                    <td colspan="5" id="o-repository-title"><c:out value="${mapEntry.key.displayName}"/></td>
                 </tr>
-                </thead>
-                <thead>
                 <tr>
-                    <th>name</th>
-                    <th>description</th>
-                    <th style="text-align: center" colspan="3">action</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th colspan="3" style="width: 1px; text-align: center;">Action</th>
                 </tr>
                 </thead>
                     <%-- // show only current page worth of data --%>
                 <c:forEach items="${mapEntry.value.pageList}" var="report">
                     <tr>
-                        <td width="20%">${report.displayName}</td>
+                        <td width="25%">${report.displayName}</td>
                         <td>${report.description}</td>
                         <c:choose>
                             <c:when test="${report.allowAccess}">
                                 <c:choose>
                                     <c:when test="${report.isOnline}">
-                                        <td id="o-report-online"><a href="report/database/onlineReport.htm?reportId=${report.id}" title="Execute this report instantly" /></td>
+                                        <td id="o-report-online"><a
+                                                href="report/database/onlineReport.htm?reportId=${report.id}"
+                                                title="Execute this report instantly"/></td>
                                     </c:when>
                                     <c:otherwise>
-                                        <td width="24px">&nbsp;</td>
+                                        <td>&nbsp;</td>
                                     </c:otherwise>
                                 </c:choose>
-                                <td id="o-report-deliver"><a href="report/database/batchReport.htm?reportId=${report.id}&schedule=false" title="Deliver report to file system or via e-mail"></a></td>
-                                <td id="o-report-schedule"><a href="report/database/batchReport.htm?reportId=${report.id}&schedule=true" title="Create a schedule for this report"/></td>
+                                <td id="o-report-deliver"><a
+                                        href="report/database/batchReport.htm?reportId=${report.id}&schedule=false"
+                                        title="Deliver report to file system or via e-mail"/></td>
+                                <td id="o-report-schedule"><a
+                                        href="report/database/batchReport.htm?reportId=${report.id}&schedule=true"
+                                        title="Create a schedule for this report"/></td>
                             </c:when>
                             <c:otherwise>
-                                <td><a href="${report.managementUrl}" id="o-report-subscribe">Subscribe this report ... </a></td>
+                                <td colspan="3" id="o-report-subscribe"><a href="${mapEntry.key.managementUrl}"
+                                                                           id="o-report-subscribe">Get this report!</a>
+                                </td>
                             </c:otherwise>
                         </c:choose>
                     </tr>
@@ -97,5 +104,4 @@
         </c:forEach>
     </c:otherwise>
 </c:choose>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/footer.jsp" flush="false"/>
