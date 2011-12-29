@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<remoteRepositoryConfig jasperReportsVersion="4.2.3">
+<remoteRepositoryConfig jasperReportsVersion="3.7.6">
 	<remoteRepository>
 		<active>true</active>
 		<id>cioreporting</id>
