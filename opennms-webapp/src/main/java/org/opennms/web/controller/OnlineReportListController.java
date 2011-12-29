@@ -28,10 +28,6 @@
 
 package org.opennms.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.sun.tools.jdi.*;
 import org.opennms.web.svclayer.DatabaseReportListService;
 import org.opennms.web.svclayer.support.DatabaseReportDescription;
 import org.opennms.web.svclayer.support.ReportRepositoryDescription;
@@ -40,8 +36,10 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * <p>OnlineReportListController class.</p>
