@@ -86,7 +86,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         ArrayList<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
-                    + "reports");
+                    + "reports" + "/" + JASPER_REPORTS_VERSION);
             List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
             try {
                 webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
@@ -133,7 +133,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
-                    + "onlineReports");
+                    + "onlineReports" + "/" + JASPER_REPORTS_VERSION);
             try {
                 webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
                 });
@@ -274,7 +274,7 @@ public class DefaultRemoteRepository implements ReportRepository {
     public String getRepositoryName() {
         return this.m_remoteRepositoryDefintion.getRepositoryName();
     }
-
+    
     @Override
     public String getRepositoryDescription() {
         return this.m_remoteRepositoryDefintion.getRepositoryDescription();
