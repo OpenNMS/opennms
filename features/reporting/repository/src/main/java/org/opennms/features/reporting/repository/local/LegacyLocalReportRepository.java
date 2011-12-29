@@ -68,6 +68,8 @@ public class LegacyLocalReportRepository implements ReportRepository {
 			try {
 				BeanUtils.copyProperties(resultReport, report);
 				resultReport.setId(REPOSITORY_ID + "_" + report.getId());
+                // Community reports are allowed by default, no permission restriction
+                resultReport.setAllowAccess(true);
 			} catch (IllegalAccessException e) {
 				logger.error("IllegalAccessException during BeanUtils.copyProperties for BasicReportDefinion '{}'", e.getMessage());
 				e.printStackTrace();
@@ -88,6 +90,8 @@ public class LegacyLocalReportRepository implements ReportRepository {
 			try {
 				BeanUtils.copyProperties(resultReport, report);
 				resultReport.setId(REPOSITORY_ID + "_" + report.getId());
+                // Community reports are allowed by default, no permission restriction
+                resultReport.setAllowAccess(true);
 			} catch (IllegalAccessException e) {
 				logger.error("IllegalAccessException during BeanUtils.copyProperties for BasicReportDefinion '{}'", e.getMessage());
 				e.printStackTrace();
