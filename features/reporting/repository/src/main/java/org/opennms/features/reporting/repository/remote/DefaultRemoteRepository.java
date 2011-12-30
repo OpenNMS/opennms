@@ -1,29 +1,17 @@
 /*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * This file is part of OpenNMS(R). Copyright (C) 2007-2011 The OpenNMS Group,
+ * Inc. OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc. OpenNMS(R)
+ * is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version. OpenNMS(R) is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details. You should have received a copy of the GNU General Public
+ * License along with OpenNMS(R). If not, see: http://www.gnu.org/licenses/
+ * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
+ * http://www.opennms.org/ http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.reporting.repository.remote;
@@ -49,11 +37,12 @@ import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 
 /**
- * <p>DefaultRemoteRepository.java</p>
- *
+ * <p>
+ * DefaultRemoteRepository.java
+ * </p>
+ * 
  * @author <a href="mailto:markus@opennms.com">Markus Neumann</a>
- *
- * @version $Id: $ 
+ * @version $Id: $
  */
 
 public class DefaultRemoteRepository implements ReportRepository {
@@ -73,55 +62,30 @@ public class DefaultRemoteRepository implements ReportRepository {
         this.JASPER_REPORTS_VERSION = jasperReportsVersion;
         m_clientConfig = new DefaultApacheHttpClientConfig();
         m_clientConfig.getState().setCredentials(null,
-                m_remoteRepositoryDefintion.getURI().getHost(),
-                m_remoteRepositoryDefintion.getURI().getPort(),
-                m_remoteRepositoryDefintion.getLoginUser(),
-                m_remoteRepositoryDefintion.getLoginRepoPassword());
+                                                 m_remoteRepositoryDefintion.getURI().getHost(),
+                                                 m_remoteRepositoryDefintion.getURI().getPort(),
+                                                 m_remoteRepositoryDefintion.getLoginUser(),
+                                                 m_remoteRepositoryDefintion.getLoginRepoPassword());
         m_client = ApacheHttpClient.create(m_clientConfig);
     }
 
     @Override
     public List<BasicReportDefinition> getReports() {
-        ArrayList<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
-                    + "reports" + "/" + JASPER_REPORTS_VERSION);
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "reports" + "/" + JASPER_REPORTS_VERSION);
             List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
             try {
-                webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
-                });
+                webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {});
             } catch (Exception e) {
-                logger.error("Error requesting report template from repository. Error message: '{}'",
-                             e.getMessage());
+                logger.error("Error requesting report template from repository. Error message: '{}'", e.getMessage());
                 e.printStackTrace();
             }
 
-            logger.debug("getReports got '{}' RemoteReportSDOs",
-                         webCallResult.size());
-
-            // TODO Tak: clean that up
-            for (RemoteReportSDO report : webCallResult) {
-                SimpleJasperReportDefinition result = new SimpleJasperReportDefinition();
-                try {
-                    BeanUtils.copyProperties(result, report);
-                    result.setId(m_remoteRepositoryDefintion.getRepositoryId()
-                            + "_" + result.getId());
-                } catch (IllegalAccessException e) {
-                    logger.debug("getReports IllegalAssessException while copyProperties from '{}' to '{}' with exception.",
-                                 report, result);
-                    logger.error("getReports IllegalAssessException while copyProperties '{}'",
-                                 e);
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    logger.debug("getReports InvocationTargetException while copyProperties from '{}' to '{}' with exception.",
-                                 report, result);
-                    logger.error("getReports InvocationTargetException while copyProperties '{}'",
-                                 e);
-                    e.printStackTrace();
-                }
-                resultReports.add(result);
-                logger.debug("getReports got: '{}'", report.toString());
-            }
+            logger.debug("getReports got '{}' RemoteReportSDOs", webCallResult.size());
+            
+            resultReports = this.mapSDOListToBasicReportList(webCallResult);
+            
         }
         return resultReports;
     }
@@ -131,40 +95,15 @@ public class DefaultRemoteRepository implements ReportRepository {
         List<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
         List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
-                    + "onlineReports" + "/" + JASPER_REPORTS_VERSION);
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "onlineReports" + "/" + JASPER_REPORTS_VERSION);
             try {
-                webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
-                });
+                webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {});
             } catch (Exception e) {
-                logger.error("Error requesting online reports. Error message: '{}'",
-                             e.getMessage());
+                logger.error("Error requesting online reports. Error message: '{}'", e.getMessage());
                 e.printStackTrace();
             }
 
-            // TODO Tak: clean that up
-            for (RemoteReportSDO report : webCallResult) {
-                SimpleJasperReportDefinition result = new SimpleJasperReportDefinition();
-                try {
-                    BeanUtils.copyProperties(result, report);
-                    result.setId(m_remoteRepositoryDefintion.getRepositoryId()
-                            + "_" + result.getId());
-                } catch (IllegalAccessException e) {
-                    logger.debug("getOnlineReports IllegalAssessException while copyProperties from '{}' to '{}' with exception.",
-                                 report, result);
-                    logger.error("getOnlineReports IllegalAssessException while copyProperties '{}'",
-                                 e);
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    logger.debug("getOnlineReports InvocationTargetException while copyProperties from '{}' to '{}' with exception.",
-                                 report, result);
-                    logger.error("getOnlineReports InvocationTargetException while copyProperties '{}'",
-                                 e);
-                    e.printStackTrace();
-                }
-                resultReports.add(result);
-                logger.debug("getOnlineReports got: '{}'", report.toString());
-            }
+            resultReports = this.mapSDOListToBasicReportList(webCallResult);
         }
         return resultReports;
     }
@@ -174,13 +113,11 @@ public class DefaultRemoteRepository implements ReportRepository {
         reportId = reportId.substring(reportId.indexOf("_") + 1);
         String result = "";
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
-                    + "reportService/" + reportId);
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "reportService/" + reportId);
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
-                logger.error("Error requesting report service by report id. Error message: '{}'",
-                             e.getMessage());
+                logger.error("Error requesting report service by report id. Error message: '{}'", e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -192,13 +129,11 @@ public class DefaultRemoteRepository implements ReportRepository {
         reportId = reportId.substring(reportId.indexOf("_") + 1);
         String result = "";
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
-                    + "displayName/" + reportId);
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "displayName/" + reportId);
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
-                logger.error("Error requesting display name by report id. Error message: '{}'",
-                             e.getMessage());
+                logger.error("Error requesting display name by report id. Error message: '{}'", e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -210,13 +145,11 @@ public class DefaultRemoteRepository implements ReportRepository {
         reportId = reportId.substring(reportId.indexOf("_") + 1);
         String result = "";
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
-                    + "engine/" + reportId);
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "engine/" + reportId);
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
-                logger.error("Error requesting engine by id. Error message: '{}'",
-                             e.getMessage());
+                logger.error("Error requesting engine by id. Error message: '{}'", e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -228,13 +161,11 @@ public class DefaultRemoteRepository implements ReportRepository {
         reportId = reportId.substring(reportId.indexOf("_") + 1);
         InputStream templateStreamResult = null;
         if (isConfigOk()) {
-            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI()
-                    + "templateStream/" + reportId);
+            m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "templateStream/" + reportId);
             try {
                 templateStreamResult = m_webResource.get(InputStream.class);
             } catch (Exception e) {
-                logger.error("Error requesting template stream by id. Error message: '{}'",
-                             e.getMessage());
+                logger.error("Error requesting template stream by id. Error message: '{}'", e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -245,8 +176,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         if (m_remoteRepositoryDefintion != null) {
             if (m_remoteRepositoryDefintion.isRepositoryActive()) {
             } else {
-                logger.debug("RemoteRepository '{}' is NOT activated.",
-                             m_remoteRepositoryDefintion.getRepositoryName());
+                logger.debug("RemoteRepository '{}' is NOT activated.", m_remoteRepositoryDefintion.getRepositoryName());
                 return false;
             }
         } else {
@@ -256,6 +186,30 @@ public class DefaultRemoteRepository implements ReportRepository {
         return true;
     }
 
+    private List<BasicReportDefinition> mapSDOListToBasicReportList(List<RemoteReportSDO> remoteReportSDOList) {
+        List<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
+        for (RemoteReportSDO report : remoteReportSDOList) {
+            SimpleJasperReportDefinition result = new SimpleJasperReportDefinition();
+            try {
+                BeanUtils.copyProperties(result, report);
+                result.setId(m_remoteRepositoryDefintion.getRepositoryId()
+                        + "_" + result.getId());
+            } catch (IllegalAccessException e) {
+                logger.debug("SDO to BasicReport mapping IllegalAssessException while copyProperties from '{}' to '{}' with exception.", report, result);
+                logger.error("SDO to BasicReport mapping IllegalAssessException while copyProperties '{}'", e);
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                logger.debug("SDO to BasicReport mapping InvocationTargetException while copyProperties from '{}' to '{}' with exception.", report, result);
+                logger.error("SDO to BasicReport mapping InvocationTargetException while copyProperties '{}'", e);
+                e.printStackTrace();
+            }
+
+            logger.debug("SDO to BasicReport mapping got: '{}'", report.toString());
+            resultList.add(result);
+        }
+        return resultList;
+    }
+    
     public RemoteRepositoryDefinition getConfig() {
         return this.m_remoteRepositoryDefintion;
     }
@@ -273,7 +227,7 @@ public class DefaultRemoteRepository implements ReportRepository {
     public String getRepositoryName() {
         return this.m_remoteRepositoryDefintion.getRepositoryName();
     }
-    
+
     @Override
     public String getRepositoryDescription() {
         return this.m_remoteRepositoryDefintion.getRepositoryDescription();
