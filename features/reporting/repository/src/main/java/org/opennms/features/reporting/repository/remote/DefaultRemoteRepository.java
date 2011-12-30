@@ -51,12 +51,11 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 /**
  * <p>DefaultRemoteRepository.java</p>
  *
- * @author <a href="mailto:markus@opennms.org">Markus Neumann</a>
+ * @author <a href="mailto:markus@opennms.com">Markus Neumann</a>
  *
  * @version $Id: $ 
  */
 
-//TODO Tak: SSL Auth and Session-Handling(create/destroy)
 public class DefaultRemoteRepository implements ReportRepository {
 
     private RemoteRepositoryDefinition m_remoteRepositoryDefintion;

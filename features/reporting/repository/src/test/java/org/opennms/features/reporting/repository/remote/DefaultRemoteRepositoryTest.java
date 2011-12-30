@@ -57,7 +57,7 @@ public class DefaultRemoteRepositoryTest {
     @Before
     public void initialize() {
         //TODO Tak: GANZ BÖSER CODE ZU GEFÄHRLICH FÜR ALLE OHNE UMLAUTE!
-        m_defaultRemoteRepository = new DefaultRemoteRepository(new DefaultRemoteRepositoryConfigDAO().getActiveRepositories().get(0), "423");
+        m_defaultRemoteRepository = new DefaultRemoteRepository(new DefaultRemoteRepositoryConfigDAO().getActiveRepositories().get(0), "3.7.6");
         assertNotNull(System.getProperty("opennms.home"));
     }
     

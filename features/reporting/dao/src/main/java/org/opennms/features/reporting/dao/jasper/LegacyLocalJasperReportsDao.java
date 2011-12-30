@@ -50,7 +50,6 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
             + File.separator
             + "local-jasper-reports.xml";
 
-    //TODO Tak: move out of dao
     private final String LOCAL_JASPER_REPORTS_TEMPLATE_FOLDER = System.getProperty("opennms.home")
             + File.separator
             + "etc"

@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 /**
  * <p>DefaultGlobalReportRepository.java</p>
  * 
- * @author <a href="mailto:markus@opennms.org">Markus Neumann</a>
+ * @author <a href="mailto:markus@opennms.com">Markus Neumann</a>
  *
  * @version $Id: $ 
  */
@@ -53,7 +53,6 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     
     /**
      * Logging
-     * TODO tak: logging to the right place
      */
     private final Logger logger = LoggerFactory.getLogger(DefaultGlobalReportRepository.class);
 
