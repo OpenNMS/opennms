@@ -134,7 +134,6 @@ public class JasperReportService implements ReportService {
         Map<?, ?> defaultValues = null;
 
         try {
-            //TODO Tak: reportId AND repositoryId is required now
             jasperReport = JasperCompileManager.compileReport(m_repo.getTemplateStream(reportId));
             defaultValues = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport,
                                                                                              null);
@@ -379,7 +378,6 @@ public class JasperReportService implements ReportService {
         HashMap<String, Object> jrReportParms;
 
         try {
-            //TODO Tak: reportId AND repositoryId is required now
             jasperReport = JasperCompileManager.compileReport(m_repo.getTemplateStream(reportId));
         } catch (JRException e) {
             log.error("unable to compile jasper report", e);
@@ -417,7 +415,6 @@ public class JasperReportService implements ReportService {
                                           "unable to run emptyDataSource jasperReport",
                                           e);
             }
-            //TODO TAK: make sure that getEngine will return null if is not set
         } else if (m_repo.getEngine(reportId).equals("null")) {
 
             try {
@@ -451,10 +448,10 @@ public class JasperReportService implements ReportService {
      * @param mainReport JasperReport a compiled main report
      * @return a sub report parameter map as {@link java.util.HashMap<String,Object>} object
      */
+    @SuppressWarnings("unchecked")
     private HashMap<String, Object> buildSubreport (String mainReportId, JasperReport mainReport) {
         String repositoryId = mainReportId.substring(0,mainReportId.indexOf("_"));
         HashMap<String, Object> subreportMap = new HashMap<String, Object>();
-        JasperReport jr;
         
         // Filter parameter for sub reports
         for (JRParameter parameter : mainReport.getParameters()) {
@@ -464,7 +461,7 @@ public class JasperReportService implements ReportService {
             }
         }
 
-        for (Map.Entry entry : subreportMap.entrySet()) {
+        for (@SuppressWarnings("rawtypes") Map.Entry entry : subreportMap.entrySet()) {
             try {
                 entry.setValue(JasperCompileManager.compileReport(m_repo.getTemplateStream(repositoryId + "_" + entry.getKey())));
             } catch (JRException e) {
@@ -472,7 +469,7 @@ public class JasperReportService implements ReportService {
             }
         }
         
-        for (Map.Entry entry : subreportMap.entrySet()) {
+        for (@SuppressWarnings("rawtypes") Map.Entry entry : subreportMap.entrySet()) {
             System.out.println("Key: " + entry.getKey() + " - " + "Value: " + entry.getValue());
         }
         return subreportMap;
@@ -488,7 +485,6 @@ public class JasperReportService implements ReportService {
         HashMap<String, Object> jrReportParms;
 
         try {
-            //TODO Tak: reportId AND repositoryId is required now
             jasperReport = JasperCompileManager.compileReport(m_repo.getTemplateStream(reportId));
         } catch (JRException e) {
             log.error("unable to compile jasper report", e);
@@ -499,7 +495,6 @@ public class JasperReportService implements ReportService {
                                           jasperReport.getParameters());
         jrReportParms.putAll(buildSubreport(reportId, jasperReport));
 
-        //TODO Tak: reportId AND repositoryId is required now
         if ("jdbc".equalsIgnoreCase(m_repo.getEngine(reportId))) {
             Connection connection;
             try {
@@ -520,8 +515,6 @@ public class JasperReportService implements ReportService {
                                           "unable to run or render jdbc jasperReport",
                                           e);
             }
-            // TODO TAK: Make sure that null is set if nothing else is set...
-            //TODO Tak: reportId AND repositoryId is required now
         } else if ("null".equalsIgnoreCase(m_repo.getEngine(reportId))) {
             try {
                 jasperPrint = JasperFillManager.fillReport(jasperReport,
