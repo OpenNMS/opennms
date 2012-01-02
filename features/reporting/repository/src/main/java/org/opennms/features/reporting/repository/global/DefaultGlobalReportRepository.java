@@ -32,8 +32,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDAO;
-import org.opennms.features.reporting.dao.remoterepository.RemoteRepositoryConfigDAO;
+import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao;
+import org.opennms.features.reporting.dao.remoterepository.RemoteRepositoryConfigDao;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
@@ -57,7 +57,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     private final Logger logger = LoggerFactory.getLogger(DefaultGlobalReportRepository.class);
 
     
-    private final RemoteRepositoryConfigDAO m_remoteRepositoryConfigDAO = new DefaultRemoteRepositoryConfigDAO();
+    private final RemoteRepositoryConfigDao m_remoteRepositoryConfigDao = new DefaultRemoteRepositoryConfigDao();
     /**
      * Concatenated repositoryId and reportId by "_"
      */
@@ -82,8 +82,8 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         /**
          * A remote repository for each remote repository from RemoteRepositoryConfig.
          */
-        for (RemoteRepositoryDefinition repositoryDefinition : m_remoteRepositoryConfigDAO.getActiveRepositories()) {
-            this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, m_remoteRepositoryConfigDAO.getJasperReportsVersion()));
+        for (RemoteRepositoryDefinition repositoryDefinition : m_remoteRepositoryConfigDao.getActiveRepositories()) {
+            this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, m_remoteRepositoryConfigDao.getJasperReportsVersion()));
         }
     }
 

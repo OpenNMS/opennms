@@ -40,10 +40,10 @@ import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDef
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultRemoteRepositoryConfigDAO implements
-        RemoteRepositoryConfigDAO {
+public class DefaultRemoteRepositoryConfigDao implements
+        RemoteRepositoryConfigDao {
 
-    Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDAO.class);
+    Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDao.class);
     
     private final String REMOTE_REPOSITORY_XML = System.getProperty("opennms.home")
             + File.separator
@@ -103,7 +103,7 @@ public class DefaultRemoteRepositoryConfigDAO implements
         return this.getRepositoryById(repositoryID).getRepositoryManagementURL();
     }
 
-    //TODO Tak: How to failsafe this?
+    //TODO Tak: How to fail safe this?
     public RemoteRepositoryDefinition getRepositoryById(String repositoryID) {
         RemoteRepositoryDefinition result = null;
         for(RemoteRepositoryDefinition repository : this.getAllRepositories()) {

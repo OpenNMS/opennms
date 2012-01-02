@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDAO;
+import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +56,8 @@ public class DefaultRemoteRepositoryTest {
     
     @Before
     public void initialize() {
-        //TODO Tak: GANZ BÖSER CODE ZU GEFÄHRLICH FÜR ALLE OHNE UMLAUTE!
-        m_defaultRemoteRepository = new DefaultRemoteRepository(new DefaultRemoteRepositoryConfigDAO().getActiveRepositories().get(0), "3.7.6");
+        //TODO Tak: Jasper version is hard coded
+        m_defaultRemoteRepository = new DefaultRemoteRepository(new DefaultRemoteRepositoryConfigDao().getActiveRepositories().get(0), "3.7.6");
         assertNotNull(System.getProperty("opennms.home"));
     }
     

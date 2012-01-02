@@ -33,7 +33,7 @@ import java.util.List;
 
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 
-public interface RemoteRepositoryConfigDAO {
+public interface RemoteRepositoryConfigDao {
     public Boolean isRepositoryActive(String repositoryID);
     public URI getURI(String repositoryID);
     public String getLoginUser(String repositoryID);

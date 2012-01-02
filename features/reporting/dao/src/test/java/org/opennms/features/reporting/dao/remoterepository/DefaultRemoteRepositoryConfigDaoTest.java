@@ -40,12 +40,11 @@ import org.junit.Test;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDAO;
 
 public class DefaultRemoteRepositoryConfigDaoTest {
     Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDaoTest.class);
     private static final String OPENNMS_HOME = "src/test/resources";
-    private DefaultRemoteRepositoryConfigDAO m_dao;
+    private DefaultRemoteRepositoryConfigDao m_dao;
     private RemoteRepositoryDefinition m_remoteRepositoryDefinition;
     
     
@@ -57,7 +56,7 @@ public class DefaultRemoteRepositoryConfigDaoTest {
     
     @Before
     public void init() {
-        m_dao = new DefaultRemoteRepositoryConfigDAO();
+        m_dao = new DefaultRemoteRepositoryConfigDao();
         assertNotNull(m_dao);
         m_remoteRepositoryDefinition = m_dao.getRepositoryById("cioreporting");
         assertNotNull(m_remoteRepositoryDefinition);
