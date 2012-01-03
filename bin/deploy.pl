@@ -29,7 +29,7 @@ my @command = ($MVN, '-Dmaven.test.skip.exec=true', @ARGS, 'deploy');
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
-chdir($PREFIX . '/../opennms-assemblies');
+chdir($PREFIX . '/opennms-assemblies');
 @command = ($MVN, '-Dmaven.test.skip.exec=true', '-N', @ARGS, 'deploy');
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
