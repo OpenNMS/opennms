@@ -22,6 +22,10 @@ $JAVA_HOME     = undef;
 $VERBOSE       = undef;
 @ARGS          = ();
 
+# If we were called from bin, remove the /bin so we're always
+# rooted in the top-of-tree
+$PREFIX =~ s#/bin/?$##;
+
 # path to git executable
 $GIT = `which git 2>/dev/null`;
 chomp($GIT);
