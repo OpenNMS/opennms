@@ -50,14 +50,14 @@
         <mibObj oid=".1.3.6.1.4.1.674.10892.1.600.60.1.9" instance="powerUsageIndex" alias="powerUsagePeakWatts"  type="integer" />
       </group>
 
-      <group name="dell-rac-chassis" ifType="ignore">
+      <group name="dell-rac-chassis" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.1.1.8"  instance="drsChassisIndex" alias="drsWattsPeakUsage" type="integer" />
         <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.1.1.10" instance="drsChassisIndex" alias="drsWattsMinUsage"  type="integer" />
         <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.1.1.13" instance="drsChassisIndex" alias="drsWattsReading"   type="integer" />
         <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.1.1.14" instance="drsChassisIndex" alias="drsAmpsReading"    type="integer" />
       </group>
 
-      <group name="dell-rac-psu" ifType="ignore">
+      <group name="dell-rac-psu" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.2.1.1" instance="drsPSUIndex" alias="drsPSUChassisIndex" type="string" />
         <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.2.1.3" instance="drsPSUIndex" alias="drsPSULocation"     type="string" />
         <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.2.1.5" instance="drsPSUIndex" alias="drsPSUVoltsReading" type="integer" />

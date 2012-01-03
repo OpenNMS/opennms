@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.directory.shared.ldap.util.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.stats.AlarmStatisticsService;
 import org.opennms.netmgt.model.OnmsAlarm;
