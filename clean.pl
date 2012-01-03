@@ -8,7 +8,7 @@ use vars qw(
 	$PREFIX
 );
 $PREFIX = abs_path(dirname($0));
-require($PREFIX . "/functions.pl");
+require($PREFIX . "/bin/functions.pl");
 
 
 my @command = ($MVN, 'clean');
