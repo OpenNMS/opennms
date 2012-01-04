@@ -77,6 +77,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
 	 */
 	private ICMPEchoPacket m_response = null;
 
+	private int m_packetsize;
     /**
      * The callback to use when this object is ready to do something
      */
@@ -106,24 +107,25 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     private AtomicBoolean m_processed = new AtomicBoolean(false);
     
 
-    PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
+    PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, int packetsize, ThreadCategory logger, PingResponseCallback cb) {
         m_id = new PingRequestId(addr, tid, sequenceId);
         m_retries    = retries;
         m_timeout    = timeout;
         m_log        = logger;
+        m_packetsize = packetsize;
         m_callback   = new LogPrefixPreservingCallbackAdapter(cb);
     }
     
-    PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, tid, sequenceId, timeout, retries, ThreadCategory.getInstance(PingRequest.class), cb);
+    PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, int packetsize, PingResponseCallback cb) {
+        this(addr, tid, sequenceId, timeout, retries, packetsize, ThreadCategory.getInstance(PingRequest.class), cb);
     }
     
-    PingRequest(InetAddress addr, short sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, s_nextTid++, sequenceId, timeout, retries, cb);
+    PingRequest(InetAddress addr, short sequenceId, long timeout, int retries, int packetsize, PingResponseCallback cb) {
+        this(addr, s_nextTid++, sequenceId, timeout, retries, packetsize, cb);
     }
     
-    PingRequest(InetAddress addr, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, DEFAULT_SEQUENCE_ID, timeout, retries, cb);
+    PingRequest(InetAddress addr, long timeout, int retries, int packetsize, PingResponseCallback cb) {
+        this(addr, DEFAULT_SEQUENCE_ID, timeout, retries, packetsize, cb);
     }
     
 
@@ -172,6 +174,10 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         return m_timeout;
     }
     
+    public int getPacketsize() {
+        return m_packetsize;
+    }
+
     /**
      * <p>getRequest</p>
      *
@@ -238,7 +244,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      */
     public void createRequestPacket() {
         m_expiration = System.currentTimeMillis() + m_timeout;
-        ICMPEchoPacket iPkt = new ICMPEchoPacket(getTid());
+        ICMPEchoPacket iPkt = new ICMPEchoPacket(getTid(),getPacketsize());
         iPkt.setIdentity(FILTER_ID);
         iPkt.setSequenceId(getSequenceId());
         iPkt.computeChecksum();
@@ -276,7 +282,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
             PingRequest returnval = null;
             if (this.isExpired()) {
                 if (this.getRetries() > 0) {
-                    returnval = new PingRequest(getAddress(), getTid(), getSequenceId(), getTimeout(), getRetries() - 1, log(), m_callback);
+                    returnval = new PingRequest(getAddress(), getTid(), getSequenceId(), getTimeout(), getRetries() - 1, getPacketsize(), log(), m_callback);
                     log().debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
                 } else {
                     log().debug(System.currentTimeMillis()+": Ping Request Timed out "+this);

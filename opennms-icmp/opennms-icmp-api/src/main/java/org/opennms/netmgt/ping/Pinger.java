@@ -37,6 +37,7 @@ package org.opennms.netmgt.ping;
 
 import static org.opennms.netmgt.ping.PingConstants.DEFAULT_RETRIES;
 import static org.opennms.netmgt.ping.PingConstants.DEFAULT_TIMEOUT;
+import static org.opennms.netmgt.ping.PingConstants.DEFAULT_PACKETSIZE;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -142,14 +143,30 @@ public class Pinger {
      * @param host a {@link java.net.InetAddress} object.
      * @param timeout a long.
      * @param retries a int.
+     * @param packetsize the size in byte of the ICMP packet
+     * @param sequenceId a short.
+     * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
+     * @throws java.lang.Exception if any.
+     */
+    public static void ping(InetAddress host, long timeout, int retries, int packetsize, short sequenceId, PingResponseCallback cb) throws Exception {
+        initialize();
+        s_pingTracker.sendRequest(new PingRequest(host, sequenceId, timeout, retries, packetsize, cb));
+	}
+
+    /**
+     * <p>ping</p>
+     *
+     * @param host a {@link java.net.InetAddress} object.
+     * @param timeout a long.
+     * @param retries a int.
      * @param sequenceId a short.
      * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
      * @throws java.lang.Exception if any.
      */
     public static void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws Exception {
-        initialize();
-        s_pingTracker.sendRequest(new PingRequest(host, sequenceId, timeout, retries, cb));
-	}
+        Pinger.ping(host, timeout, retries, DEFAULT_PACKETSIZE, sequenceId, cb);
+        }
+
 
     /**
      * This method is used to ping a remote host to test for ICMP support. If
@@ -169,11 +186,17 @@ public class Pinger {
      */
     public static Long ping(InetAddress host, long timeout, int retries) throws Exception {
         SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
-        Pinger.ping(host, timeout, retries, (short)1, cb);
+        Pinger.ping(host, timeout, retries, DEFAULT_PACKETSIZE, (short)1, cb);
         cb.waitFor();
         return cb.getResponseTime();
     }
     
+    public static Long ping(InetAddress host, long timeout, int retries, int packetsize) throws Exception {
+        SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
+        Pinger.ping(host, timeout, retries, packetsize, (short)1, cb);
+        cb.waitFor();
+        return cb.getResponseTime();
+    }
 
 	/**
 	 * Ping a remote host, using the default number of retries and timeouts.
@@ -186,7 +209,7 @@ public class Pinger {
 	 */
 	public static Long ping(InetAddress host) throws Exception {
         SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
-        Pinger.ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES, (short)1, cb);
+        Pinger.ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES, DEFAULT_PACKETSIZE, (short)1, cb);
         cb.waitFor();
         return cb.getResponseTime();
 	}
@@ -210,7 +233,7 @@ public class Pinger {
         }
         
         for (int i = 0; i < count; i++) {
-            PingRequest request = new PingRequest(host, (short) i, timeout, 0, cb);
+            PingRequest request = new PingRequest(host, (short) i, timeout, DEFAULT_PACKETSIZE, 0, cb);
             s_pingTracker.sendRequest(request);
             Thread.sleep(pingInterval);
         }
