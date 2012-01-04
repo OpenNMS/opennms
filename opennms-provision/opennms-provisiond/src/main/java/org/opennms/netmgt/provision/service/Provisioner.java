@@ -28,18 +28,6 @@
 
 package org.opennms.netmgt.provision.service;
 
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.InetAddressUtils;
@@ -54,17 +42,29 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
-import org.opennms.netmgt.provision.service.dns.DnsUrlFactory;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
+import org.opennms.netmgt.provision.service.vmware.VMwareUrlFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.Assert;
+
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
@@ -205,12 +205,17 @@ public class Provisioner implements SpringServiceDaemon {
 
         //since this class depends on the Import Schedule, the UrlFactory should already
         //be registered in the URL class.. but, just in-case...
+//        try {
+//            new URL("dns://localhost/localhost");
+//        } catch (MalformedURLException e) {
+//            URL.setURLStreamHandlerFactory(new DnsUrlFactory());
+//        }
+
         try {
             new URL("dns://localhost/localhost");
         } catch (MalformedURLException e) {
-            URL.setURLStreamHandlerFactory(new DnsUrlFactory());
+            URL.setURLStreamHandlerFactory(new VMwareUrlFactory());
         }
-            
     }
     
     /**

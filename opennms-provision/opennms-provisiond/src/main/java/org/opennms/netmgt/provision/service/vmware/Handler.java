@@ -26,26 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.service.dns;
+package org.opennms.netmgt.provision.service.vmware;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
 
 /**
- * <p>VMwareUrlFactory class.</p>
+ * <p>Handler class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public class DnsUrlFactory implements URLStreamHandlerFactory {
+public class Handler extends URLStreamHandler {
 
-    /** {@inheritDoc} */
-    public URLStreamHandler createURLStreamHandler(String protocol) {
-        if (DnsRequisitionUrlConnection.PROTOCOL.equals(protocol)) {
-            return new Handler();
-        } else {
-            return null;
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected URLConnection openConnection(URL u) throws IOException {
+
+        return new VMwareRequisitionUrlConnection(u);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parseURL(URL u, String spec, int start, int limit) {
+        super.parseURL(u, spec, start, limit);
+    }
+
 
 }

@@ -26,7 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.service.dns;
+package org.opennms.netmgt.provision.service.vmware;
+
+import org.opennms.netmgt.provision.service.dns.DnsRequisitionUrlConnection;
 
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
@@ -37,14 +39,19 @@ import java.net.URLStreamHandlerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class DnsUrlFactory implements URLStreamHandlerFactory {
+public class VMwareUrlFactory implements URLStreamHandlerFactory {
 
     /** {@inheritDoc} */
+    //TODO Ronny: We didn't know if this is REALLY? the way to register different URLStreamHandler
     public URLStreamHandler createURLStreamHandler(String protocol) {
-        if (DnsRequisitionUrlConnection.PROTOCOL.equals(protocol)) {
-            return new Handler();
+        if (VMwareRequisitionUrlConnection.PROTOCOL.equals(protocol)) {
+            return new org.opennms.netmgt.provision.service.vmware.Handler();
         } else {
-            return null;
+            if (DnsRequisitionUrlConnection.PROTOCOL.equals(protocol)) {
+                return new org.opennms.netmgt.provision.service.dns.Handler();
+            } else {
+                return null;
+            }
         }
     }
 
