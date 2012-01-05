@@ -32,7 +32,7 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
 /**
- * <p>VMwareUrlFactory class.</p>
+ * <p>DnsUrlFactory class.</p>
  *
  * @author ranger
  * @version $Id: $

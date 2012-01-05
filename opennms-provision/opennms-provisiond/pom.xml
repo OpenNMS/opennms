@@ -116,11 +116,5 @@
       <scope>test</scope>
     </dependency>
     
-    <!-- VMware Infrastructure API --> 
-    <dependency>
-      <groupId>com.vmware</groupId>
-      <artifactId>vijava</artifactId>
-      <version>520110926</version>
-    </dependency>
   </dependencies>
 </project>

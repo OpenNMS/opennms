@@ -28,18 +28,6 @@
 
 package org.opennms.netmgt.provision.service.dns;
 
-import org.apache.commons.io.IOExceptionWithCause;
-import org.apache.commons.lang.StringUtils;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.xbill.DNS.*;
-
-import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +42,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBException;
+
+import org.apache.commons.io.IOExceptionWithCause;
+import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.xbill.DNS.ARecord;
+import org.xbill.DNS.AAAARecord;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.TSIG;
+import org.xbill.DNS.Type;
+import org.xbill.DNS.ZoneTransferException;
+import org.xbill.DNS.ZoneTransferIn;
 
 /**
  * Implementation of <code>java.net.URLConnection</code> for handling

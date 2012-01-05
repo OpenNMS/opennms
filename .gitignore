@@ -11,7 +11,3 @@ target
 .springBeans
 .DS_Store
 build.properties
-*.iml
-*.ipr
-*.iws
-.gitignore
