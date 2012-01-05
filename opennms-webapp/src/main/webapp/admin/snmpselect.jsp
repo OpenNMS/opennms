@@ -76,16 +76,9 @@
 	<jsp:param name="location" value="admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Select SNMP Interfaces" />
-	<jsp:param value="true" name="enableExtJS"/>
 </jsp:include>
 
-<script type='text/javascript' src='js/opennms/ux/EditorPageableGrid.js'></script>
-<script type='text/javascript' src='js/opennms/ux/EditorSNMPInterfaceGrid.js'></script>
-<script type='text/javascript' src='js/SNMPCollectionView.js'></script>
 <script type="text/javascript" >
-	Ext.onReady(function(){
-		snmpCollectionViewInit("snmp-grid", <%=nodeId%>);
-	});
 	
 	function applyChanges() {
 		if (confirm("Are you sure you want to proceed? This action can be undone by returning to this page.")) {
@@ -137,7 +130,7 @@
 	<h3 class="o-box">Choose SNMP Interfaces for Data Collection</h3>
 
 	<p>
-		Listed below are all the interfaces discovered for the selected node. If
+		Listed below are all the known interfaces for the selected node. If
 		snmpStorageFlag is set to "select" for a collection scheme that includes
 		the interface marked as "Primary", only the interfaces checked below will have
 		their collected SNMP data stored. This has no effect if snmpStorageFlag is
@@ -160,7 +153,9 @@
 	<%=listNodeName(nodeId, nodeLabel)%>
 	<br/>
 	
-	<div id="snmp-grid"></div>
+	<opennms:snmpSelectList id="selectList"></opennms:snmpSelectList>
+	<!-- For IE -->
+	<div name="opennms-snmpSelectList" id="selectList-ie"></div>
 	<% if (interfaces.size() > 0) { %>
 	<%-- <table class="standardfirst">
 		<tr>

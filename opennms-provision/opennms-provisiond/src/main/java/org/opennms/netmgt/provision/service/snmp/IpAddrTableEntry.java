@@ -30,8 +30,6 @@ package org.opennms.netmgt.provision.service.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.core.utils.InetAddressUtils;
-
 /**
  * <P>
  * The IpAddrTableEntry class is designed to hold all the MIB-II information for
@@ -142,8 +140,8 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
      *
      * @return a {@link java.net.InetAddress} object.
      */
-    public String getIpAdEntNetMask() {
-        return InetAddressUtils.str(getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_NETMASK));
+    public InetAddress getIpAdEntNetMask() {
+        return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_NETMASK);
     }
     
     /**

@@ -35,11 +35,11 @@ import java.util.HashSet;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.mock.snmp.MockSnmpValue;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue;
 import org.opennms.test.mock.MockLogAppender;
 
 public class RescanProcessorTest extends TestCase {
@@ -57,12 +57,11 @@ public class RescanProcessorTest extends TestCase {
         int ifIndex = 10;
         
         RescanProcessor.setQueuedRescansTracker(new HashSet<Integer>());
-        RescanProcessor processor = new RescanProcessor(nodeId, false, null, null);
         
         IfTableEntry ifTableEntry = new IfTableEntry();
-        ifTableEntry.storeResult(new SnmpResult(SnmpObjId.get(".1.3.6.1.2.1.2.2.1.5"), new SnmpInstId("0"), new TestSnmpValue.StringSnmpValue("")));
+        ifTableEntry.storeResult(new SnmpResult(SnmpObjId.get(".1.3.6.1.2.1.2.2.1.5"), new SnmpInstId("0"), new MockSnmpValue.StringSnmpValue("")));
         DbSnmpInterfaceEntry dbSnmpInterfaceEntry = DbSnmpInterfaceEntry.create(nodeId, ifIndex);
-        processor.updateSpeed(ifIndex, ifTableEntry, null, dbSnmpInterfaceEntry);
+        RescanProcessor.updateSpeed(ifIndex, ifTableEntry, null, dbSnmpInterfaceEntry);
         
         assertEquals("DbSnmpInterfaceEntry ifSpeed value", 0, dbSnmpInterfaceEntry.getSpeed());
     }

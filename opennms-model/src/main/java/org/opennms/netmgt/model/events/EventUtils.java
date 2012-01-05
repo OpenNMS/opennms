@@ -459,12 +459,6 @@ public abstract class EventUtils {
         return b.toString();
     }
 
-    /**
-     * <p>toString</p>
-     *
-     * @param parms a {@link org.opennms.netmgt.xml.event.Parms} object.
-     * @return a {@link java.lang.String} object.
-     */
     public static String toString(Collection<Parm> parms) {
         if (parms.size() == 0) {
             return "Parms: (none)\n";

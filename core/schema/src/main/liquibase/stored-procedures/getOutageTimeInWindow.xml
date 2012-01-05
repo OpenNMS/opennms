@@ -89,6 +89,10 @@ CREATE OR REPLACE FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,tim
    END;
 ' LANGUAGE 'plpgsql';
 </createProcedure>
+
+<rollback>
+  <sql>DROP FUNCTION IF EXISTS getOutageTimeInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone);</sql>
+</rollback>
 </changeSet>
 
 </databaseChangeLog>

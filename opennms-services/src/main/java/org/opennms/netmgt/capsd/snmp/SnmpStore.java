@@ -51,7 +51,7 @@ public class SnmpStore extends AbstractSnmpStore {
      * class.
      * </P>
      */
-    protected NamedSnmpVar[] ms_elemList = null;
+    protected final NamedSnmpVar[] ms_elemList;
 
     /**
      * <p>Constructor for SnmpStore.</p>

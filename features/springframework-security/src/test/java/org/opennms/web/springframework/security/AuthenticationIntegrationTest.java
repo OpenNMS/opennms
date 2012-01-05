@@ -28,32 +28,57 @@
 
 package org.opennms.web.springframework.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.Arrays;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.test.ThrowableAnticipator;
+import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.Authentication;
 import org.springframework.security.BadCredentialsException;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.providers.dao.DaoAuthenticationProvider;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.util.Assert;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/org/opennms/web/springframework/security/AuthenticationIntegrationTest-context.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class AuthenticationIntegrationTest implements InitializingBean {
 
-public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSpringContextTests {
+    @Autowired
+    private UserManager m_userManager;
+
+	@Autowired
 	private DaoAuthenticationProvider m_provider; 
 
-	@Override
-	protected String[] getConfigLocations() {
-		return new String[] {
-                "org/opennms/web/springframework/security/applicationContext-authenticationIntegrationTest.xml"
-        		};
+	@Before
+	public void setUp() {
+	    MockLogAppender.setupLogging(true, "DEBUG");
 	}
 	
-	public void setDaoAuthenticationProvider(DaoAuthenticationProvider provider) {
-		m_provider = provider;
-	}
-	public DaoAuthenticationProvider getDaoAuthenticationProvider() {
-		return m_provider;
-	}
-	
+	@Test
 	public void testAuthenticateAdmin() {
 	    Authentication authentication = new UsernamePasswordAuthenticationToken("admin", "admin");
 		Authentication authenticated = m_provider.authenticate(authentication);
@@ -65,6 +90,7 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 		assertEquals("GrantedAuthorities two name", "ROLE_ADMIN", authorities[1].getAuthority());
 	}
 	
+	@Test
 	public void testAuthenticateRtc() {
 		Authentication authentication = new UsernamePasswordAuthenticationToken("rtc", "rtc");
 		Authentication authenticated = m_provider.authenticate(authentication);
@@ -75,7 +101,14 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 		assertEquals("GrantedAuthorities one name", "ROLE_RTC", authorities[0].getAuthority());
 	}
 	
-	public void testAuthenticateTempUser() {
+	@Test
+	public void testAuthenticateTempUser() throws Exception {
+        OnmsUser user = new OnmsUser("tempuser");
+	    user.setFullName("Temporary User");
+	    user.setPassword("18126E7BD3F84B3F3E4DF094DEF5B7DE");
+	    user.setDutySchedule(Arrays.asList("MoTuWeThFrSaSu800-2300"));
+	    m_userManager.save(user);
+
 		Authentication authentication = new UsernamePasswordAuthenticationToken("tempuser", "mike");
 		Authentication authenticated = m_provider.authenticate(authentication);
 		assertNotNull("authenticated Authentication object not null", authenticated);
@@ -85,6 +118,7 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 		assertEquals("GrantedAuthorities zero role", "ROLE_USER", authorities[0].getAuthority());
 	}
 	
+	@Test
 	public void testAuthenticateBadUsername() {
 		Authentication authentication = new UsernamePasswordAuthenticationToken("badUsername", "admin");
 		
@@ -98,6 +132,7 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 		ta.verifyAnticipated();
 	}
 	
+	@Test
 	public void testAuthenticateBadPassword() {
 		Authentication authentication = new UsernamePasswordAuthenticationToken("admin", "badPassword");
 
@@ -110,4 +145,9 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 		}
 		ta.verifyAnticipated();
 	}
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(m_provider);
+    }
 }

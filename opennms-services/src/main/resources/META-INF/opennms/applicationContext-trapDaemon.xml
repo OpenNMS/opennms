@@ -12,6 +12,7 @@
     <property name="processor" ref="processor"/>
     <property name="snmpTrapAddress" ref="snmpTrapAddress"/>
     <property name="snmpTrapPort" ref="snmpTrapPort"/>
+    <property name="snmpV3Users" ref="snmpV3Users"/>
   </bean>
   
   <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
@@ -48,6 +49,8 @@
   <bean id="snmpTrapAddress" factory-bean="trapdConfig" factory-method="getSnmpTrapAddress"/>
   
   <bean id="snmpTrapPort" factory-bean="trapdConfig" factory-method="getSnmpTrapPort"/>
+
+  <bean id="snmpV3Users" factory-bean="trapdConfig" factory-method="getSnmpV3Users"/>
   
   <tx:annotation-driven/>
 </beans>

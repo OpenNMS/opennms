@@ -79,7 +79,6 @@ public class EventConfData extends Object {
      * 
      * @return true if the event matches the passed key
      */
-    @SuppressWarnings("unchecked")
     private boolean eventMatchesKey(EventKey eventKey, org.opennms.netmgt.xml.event.Event event) {
         // go through the key elements and see if this event will match
         boolean maskMatch = true;
@@ -88,7 +87,8 @@ public class EventConfData extends Object {
         while (keysetIter.hasNext() && maskMatch) {
             String key = keysetIter.next();
 
-            List maskValues = (List) eventKey.get(key);
+            @SuppressWarnings("unchecked")
+            List<String> maskValues = (List<String>) eventKey.get(key);
 
             // get the event value for this key
             String eventvalue = EventKey.getMaskElementValue(event, key);

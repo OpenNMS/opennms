@@ -18,26 +18,55 @@
     <dependency>
       <groupId>net.jradius</groupId>
       <artifactId>jradius-core</artifactId>
-      <version>1.0.0-20080911</version>
+      <version>1.1.4</version>
+      <exclusions>
+	<exclusion>
+	  <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>net.sf.ehcache</groupId>
+          <artifactId>ehcache-terracotta</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.terracotta</groupId>
+          <artifactId>terracotta-toolkit-1.0-runtime</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>net.jradius</groupId>
       <artifactId>jradius-dictionary</artifactId>
-      <version>1.0.0-20080911</version>
+      <version>1.1.4</version>
+      <exclusions>
+	<exclusion>
+	  <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>net.sf.ehcache</groupId>
+          <artifactId>ehcache-terracotta</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.terracotta</groupId>
+          <artifactId>terracotta-toolkit-1.0-runtime</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.gnu</groupId>
-      <artifactId>gnu-crypto</artifactId>
-      <version>2.0.1</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
     </dependency>
   </dependencies>
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <id>coova</id>
+      <name>Coova Repository</name>
+      <url>http://maven.opennms.org/content/groups/coova-release</url>
     </repository>
   </repositories>
 </project>

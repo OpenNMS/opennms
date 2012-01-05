@@ -31,6 +31,7 @@ package org.opennms.netmgt.threshd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -62,6 +63,7 @@ import org.junit.Test;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.GenericIndexResource;
@@ -127,7 +129,6 @@ public class ThresholdingVisitorTest {
     @Before
     public void setUp() throws Exception {
         // Resets Counters Cache Data
-        System.setProperty("org.opennms.thresholds.filtersReloadEnabled", "false");
         CollectionResourceWrapper.s_cache.clear();
 
         // This is set at ERROR because JEXL prints some harmless, expected warning messages
@@ -211,8 +212,8 @@ public class ThresholdingVisitorTest {
                     retVal = compareStrings(e1.getService(), e2.getService());
                 }
                 if (retVal == 0) {
-                    List<Parm> anticipatedParms = e1.getParms().getParmCollection();
-                    List<Parm> receivedParms = e2.getParms().getParmCollection();
+                    List<Parm> anticipatedParms = e1.getParmCollection();
+                    List<Parm> receivedParms = e2.getParmCollection();
                     Collections.sort(anticipatedParms, m_parmComparator);
                     Collections.sort(receivedParms, m_parmComparator);
                     if (anticipatedParms.size() != receivedParms.size()) {
@@ -377,7 +378,7 @@ public class ThresholdingVisitorTest {
      * - test-thresholds-2.xml
      */
     @Test
-    public void testReloadConfiguration() throws Exception {
+    public void testReloadThresholdsConfig() throws Exception {
         ThresholdingVisitor visitor = createVisitor();
         
         // Step 1: No events
@@ -394,6 +395,117 @@ public class ThresholdingVisitorTest {
         addHighThresholdEvent(1, 4000, 2000, 4500, "Unknown", null, "freeMem", null, null);
         runGaugeDataTest(visitor, 4500);
         verifyEvents(0);
+    }
+
+    /*
+     * Use case A:
+     * 
+     * I have 5 nodes. The current threshd-config matches 2 of them. The new threshd-config will match the other 2, by
+     * adding a new threshold package. For example: n1 y n2 belongs to category CAT1, n2, n3 y n4 belongs to category CAT2.
+     * The initial configuration is related with CAT1 and the new package is related with CAT2. In both cases, n5 should
+     * never match any threshold package.
+     * 
+     * Use case B:
+     * 
+     * I have a package with SNMP thresholds. Then update the package by adding HTTP thresholds. The test node should
+     * support both services.
+     * 
+     * IMPORTANT:
+     *     The reload should be do it first, then notify all visitors (I think this is the current behavior)
+     *     The reload should not be executed inside the visitor because every collector thread has their own visitor.
+     */
+    @Test
+    public void testReloadThreshdConfig() throws Exception {
+        String baseIpAddress = "10.0.0.";
+
+        // Initialize Mock Network
+        MockNetwork network = new MockNetwork();
+        network.setCriticalService("ICMP");
+        for (int i=1; i<=5; i++) {
+            String ipAddress = baseIpAddress + i;
+            network.addNode(i, "testNode-" + ipAddress);
+            network.addInterface(ipAddress);
+            network.setIfAlias("eth0");
+            network.addService("ICMP");
+            network.addService("SNMP");
+            if (i == 5) {
+                network.addService("HTTP"); // Adding HTTP on node 5
+            }
+        }
+        MockDatabase db = new MockDatabase();
+        db.populate(network);
+        db.update("insert into categories (categoryid, categoryname) values (?, ?)", 10, "CAT1");
+        db.update("insert into categories (categoryid, categoryname) values (?, ?)", 11, "CAT2");
+        for (int i=1; i<=5; i++) {
+            db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", i);
+            db.update("update node set nodesysoid=? where nodeid=?", ".1.3.6.1.4.1.9.1.222", i);
+        }
+        for (int i=1; i<=2; i++) {
+            db.update("insert into category_node values (?, ?)", 10, i);
+        }
+        for (int i=3; i<=5; i++) {
+            db.update("insert into category_node values (?, ?)", 11, i);
+        }
+        DataSourceFactory.setInstance(db);
+
+        // Initialize Filter DAO
+        System.setProperty("opennms.home", "src/test/resources");
+        DatabaseSchemaConfigFactory.init();
+        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+        jdbcFilterDao.setDataSource(db);
+        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+        jdbcFilterDao.afterPropertiesSet();
+        FilterDaoFactory.setInstance(jdbcFilterDao);
+
+        // Initialize Factories
+        initFactories("/threshd-configuration-reload-use-case-a.xml","/test-thresholds-reload-use-cases.xml");
+
+        // Initialize Thresholding Visitors
+        System.err.println("-----------------------------------------------------------------------------------");
+        Map<String,Object> params = new HashMap<String,Object>();
+        params.put("thresholding-enabled", "true");
+        List<ThresholdingVisitor> visitors = new ArrayList<ThresholdingVisitor>();
+        for (int i=1; i<=5; i++) {
+            String ipAddress = baseIpAddress + i;
+            ThresholdingVisitor visitor = ThresholdingVisitor.create(i, ipAddress, "SNMP", getRepository(), params);
+            assertNotNull(visitor);
+            visitors.add(visitor);
+            if (i == 5) {
+                ThresholdingVisitor httpVisitor = ThresholdingVisitor.create(i, ipAddress, "HTTP", getRepository(), params);
+                assertNotNull(httpVisitor);
+                visitors.add(httpVisitor);
+            }
+        }
+        System.err.println("-----------------------------------------------------------------------------------");
+
+        // Check Visitors
+        for (int i=0; i<2; i++) { // Nodes n1 and n2 has thresholds defined on one threshold group.
+            assertTrue(visitors.get(i).hasThresholds());
+            assertEquals(1, visitors.get(i).getThresholdGroups().size());
+        }
+        for (int i=2; i<6; i++) { // Nodes n3, n4 and n5 should not have thresholds defined.
+            assertFalse(visitors.get(i).hasThresholds());
+            assertEquals(0, visitors.get(i).getThresholdGroups().size());
+        }
+
+        // Re-Initialize Factories
+        initFactories("/threshd-configuration-reload-use-case-b.xml","/test-thresholds-reload-use-cases.xml");
+
+        // Reload state on each visitor
+        System.err.println("-----------------------------------------------------------------------------------");
+        for (ThresholdingVisitor visitor : visitors) {
+            visitor.reload();
+        }
+        System.err.println("-----------------------------------------------------------------------------------");
+
+        // Check Visitors
+        for (int i=0; i<6; i++) {
+            assertTrue(visitors.get(i).hasThresholds());
+            assertEquals(1, visitors.get(i).getThresholdGroups().size());
+            if (i == 5) {
+                assertEquals("web-services", visitors.get(i).getThresholdGroups().get(0).getName());
+            }
+        }
     }
 
     /*
@@ -570,7 +682,7 @@ public class ThresholdingVisitorTest {
         ThresholdingVisitor visitor = createVisitor();
         
         // Add Events
-        String lowThresholdUei = "uei.opennms.org/threshold/lowThresholdExceeded";
+        String lowThresholdUei = EventConstants.LOW_THRESHOLD_EVENT_UEI;
         String highExpression = "(((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)";
         String lowExpression = "(100-((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)";
         addHighThresholdEvent(1, 30, 25, 50, "/opt", "1", highExpression, null, null);
@@ -734,12 +846,12 @@ public class ThresholdingVisitorTest {
         String expression = "hrStorageSize-hrStorageUsed";
 
         // Trigger Low Threshold
-        addEvent("uei.opennms.org/threshold/lowThresholdExceeded", "127.0.0.1", "SNMP", 1, 10.0, 15.0, 5.0, "/opt", "1", expression, null, null);
+        addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 10.0, 15.0, 5.0, "/opt", "1", expression, null, null);
         runFileSystemDataTest(visitor, 1, "/opt", 95, 100);
         verifyEvents(0);
 
         // Rearm Low Threshold and Trigger High Threshold
-        addEvent("uei.opennms.org/threshold/lowThresholdRearmed", "127.0.0.1", "SNMP", 1, 10.0, 15.0, 60.0, "/opt", "1", expression, null, null);
+        addEvent(EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "SNMP", 1, 10.0, 15.0, 60.0, "/opt", "1", expression, null, null);
         addHighThresholdEvent(1, 50, 45, 60, "/opt", "1", expression, null, null);
         runFileSystemDataTest(visitor, 1, "/opt", 40, 100);
         verifyEvents(0);
@@ -841,28 +953,19 @@ public class ThresholdingVisitorTest {
      */
     @Test
     public void testBug3720() throws Exception {
-        System.setProperty("org.opennms.thresholds.filtersReloadEnabled", "true");
         runTestForBug3554();
         
         // Validate FilterDao Calls
-        int numOfPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage().length;
-        int expectedCalls = numOfPackages * 26; // Not sure why is 5^2+1
+        HashSet<String> filters = new HashSet<String>();
+        for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
+            filters.add(pkg.getFilter().getContent());
+        }
+        int expectedCalls = filters.size(); // The number of different filter rules defined across all threshold packages.
         LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
         int count = 0;
         String expectedMsgHeader = "createPackageIpMap: package ";
         for (LoggingEvent e : events) {
             if (e.getMessage().toString().startsWith(expectedMsgHeader))
-                count++;
-        }
-        assertEquals("expecting " + expectedCalls + " events", expectedCalls, count);
-        
-        // Validate number of re-initializations
-        expectedCalls = 25; // 5 nodes => 5^2 times
-        events = MockLogAppender.getEventsGreaterOrEqual(Level.INFO);
-        count = 0;
-        expectedMsgHeader = "getThresholdGroupNames: re-initializing filters.";
-        for (LoggingEvent e : events) {
-            if (e.getMessage().toString().equals(expectedMsgHeader))
                 count++;
         }
         assertEquals("expecting " + expectedCalls + " events", expectedCalls, count);
@@ -879,7 +982,7 @@ public class ThresholdingVisitorTest {
     public void testBug3748() throws Exception {
         initFactories("/threshd-configuration-bug3748.xml","/test-thresholds-bug3748.xml");
         // Absolute threshold evaluator doesn't show threshold and rearm levels on the event.
-        addEvent("uei.opennms.org/threshold/absoluteChangeExceeded", "127.0.0.1", "SNMP", 1, null, null, 6.0, "Unknown", null, "freeMem", null, null);
+        addEvent(EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 6.0, "Unknown", null, "freeMem", null, null);
         ThresholdingVisitor visitor = createVisitor();
         runGaugeDataTest(visitor, 2); // Set initial value
         runGaugeDataTest(visitor, 6); // Increment the value above configured threshold level: 6 - lastValue > 3, where lastValue=2
@@ -892,8 +995,8 @@ public class ThresholdingVisitorTest {
         Long ifSpeed = 10000000l;
         String ifName = "wlan0";
         initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
         ThresholdingVisitor visitor = createVisitor();
         visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
         runInterfaceResource(visitor, "0.0.0.0", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
@@ -1000,7 +1103,7 @@ public class ThresholdingVisitorTest {
             assertEquals("Interface (nodeId/ipAddr=1/127.0.0.1) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", e.getMessage());
         assertTrue(triggerEvents.size() == 1);
 
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, "no_ifLabel", "127.0.0.1[http]", "http", "no_ifLabel", null);
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, "no_ifLabel", "127.0.0.1[http]", "http", "no_ifLabel", null);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.sendAllEvents();
@@ -1029,7 +1132,7 @@ public class ThresholdingVisitorTest {
         assertTrue(thresholdingSet.hasThresholds(attributes));
         List<Event> triggerEvents = thresholdingSet.applyThresholds("StrafePing", attributes);
         assertTrue(triggerEvents.size() == 1);
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "StrafePing", 1, 50.0, 25.0, 60.0, ifName, "127.0.0.1[StrafePing]", "loss", "eth0", null);
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "StrafePing", 1, 50.0, 25.0, 60.0, ifName, "127.0.0.1[StrafePing]", "loss", "eth0", null);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.sendAllEvents();
@@ -1264,8 +1367,8 @@ public class ThresholdingVisitorTest {
         }
 
         // Validate Events
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString());
-        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "127.0.0.1", "HTTP", 5, 100.0, 50.0, 40.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString());
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString());
+        addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 40.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString());
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.add(rearmEvents);
@@ -1576,11 +1679,11 @@ public class ThresholdingVisitorTest {
     }
 
     private void addHighThresholdEvent(int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
     }
 
     private void addHighRearmEvent(int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
-        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "127.0.0.1", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
+        addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
     }
 
     private void addEvent(String uei, String ipaddr, String service, Integer trigger, Double threshold, Double rearm, Double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
@@ -1605,7 +1708,7 @@ public class ThresholdingVisitorTest {
         if (value != null) {
             String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##"); // See Bug 3427
             DecimalFormat valueFormatter = new DecimalFormat(pattern);
-            bldr.addParam("value", valueFormatter.format(value));
+            bldr.addParam("value", value.isNaN() ? "NaN" : valueFormatter.format(value));
         }
 
         bldr.addParam("instance", instance);
@@ -1651,7 +1754,7 @@ public class ThresholdingVisitorTest {
         assertEquals("NodeIDs must match", anticipated.getNodeid(), received.getNodeid());
         assertEquals("interfaces must match", anticipated.getInterface(), received.getInterface());
         assertEquals("services must match", anticipated.getService(), received.getService());
-        compareParms(anticipated.getParms().getParmCollection(), received.getParms().getParmCollection());
+        compareParms(anticipated.getParmCollection(), received.getParmCollection());
     }
 
     private void compareParms(List<Parm> anticipatedParms, List<Parm> receivedParms) {

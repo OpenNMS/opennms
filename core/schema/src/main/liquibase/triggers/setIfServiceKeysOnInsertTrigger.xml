@@ -59,6 +59,14 @@ CREATE TRIGGER setIfServiceKeysOnInsertTrigger
    ON outages FOR EACH ROW
    EXECUTE PROCEDURE setIfServiceKeysOnInsert();
 </createProcedure>
+
+<rollback>
+  <sql>
+    DROP TRIGGER IF EXISTS setIfServiceKeysOnInsertTrigger on outages;
+    DROP FUNCTION IF EXISTS setIfServiceKeysOnInsert();
+  </sql>
+</rollback>
+
 </changeSet>
 
 </databaseChangeLog>

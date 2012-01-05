@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
@@ -42,6 +43,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessor;
@@ -102,6 +104,8 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 	private String m_snmpTrapAddress;
 
     private Integer m_snmpTrapPort;
+
+    private List<SnmpV3User> m_snmpV3Users;
 
     private boolean m_registeredForTraps;
 
@@ -165,7 +169,7 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
         try {
         	InetAddress address = getInetAddress();
     		LogUtils.infof(this, "Listening on %s:%d", address == null ? "[all interfaces]" : InetAddressUtils.str(address), getSnmpTrapPort());
-            SnmpUtils.registerForTraps(this, this, address, getSnmpTrapPort());
+            SnmpUtils.registerForTraps(this, this, address, getSnmpTrapPort(), getSnmpV3Users());
             m_registeredForTraps = true;
 
             LogUtils.debugf(this, "init: Creating the trap session");
@@ -400,4 +404,13 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
     public void setSnmpTrapPort(int snmpTrapPort) {
         m_snmpTrapPort = snmpTrapPort;
     }
+
+    public List<SnmpV3User> getSnmpV3Users() {
+        return m_snmpV3Users;
+    }
+
+    public void setSnmpV3Users(List<SnmpV3User> snmpV3Users) {
+        this.m_snmpV3Users = snmpV3Users;
+    }
+
 }

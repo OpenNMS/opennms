@@ -142,11 +142,10 @@ public class MockNetworkTest extends TestCase {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public void visitService(MockService service) {
             m_serviceCount++;
             ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getSvcName());
-            PollStatus pollResult = monitor.poll(service, new HashMap());
+            PollStatus pollResult = monitor.poll(service, new HashMap<String, Object>());
             assertEquals(m_expectedStatus, pollResult);
         }
     }
@@ -376,12 +375,11 @@ public class MockNetworkTest extends TestCase {
 
     }
     
-    @SuppressWarnings("unchecked")
     public void testInvalidPoll() throws UnknownHostException {
         m_network.resetInvalidPollCount();
         MonitoredService svc = new MockMonitoredService(99, "InvalidNode", InetAddressUtils.addr("1.1.1.1"), "ICMP");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
-        monitor.poll(svc, new HashMap());
+        monitor.poll(svc, new HashMap<String, Object>());
         assertEquals(1, m_network.getInvalidPollCount());
 
     }

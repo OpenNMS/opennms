@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collectd.ExcludeRange;
 import org.opennms.netmgt.config.collectd.IncludeRange;
@@ -298,8 +299,7 @@ public class CollectdPackage {
 				putIpList(ipList);
 			}
 		} catch (Throwable t) {
-		    log().error("createPackageIpMap: failed to map package: "
-		            + pkg.getName() + " to an IP List: " + t, t);
+		    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
 		}
 	}
 

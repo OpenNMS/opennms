@@ -47,7 +47,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.test.mock.MockUtil;
 
 /**
@@ -580,14 +579,13 @@ public abstract class MockEventUtil {
      * @param e2 a {@link org.opennms.netmgt.xml.event.Event} object.
      * @return a boolean.
      */
-    public static boolean eventsMatch(Event e1, Event e2) {
-        if (e1 == e2) {
+    public static boolean eventsMatch(final Event e1, final Event e2) {
+    	if (e1 == e2) {
             return true;
         }
         if (e1 == null || e2 == null) {
             return false;
         }
-
         if (e1.getUei() != e2.getUei() && (e1.getUei() == null || e2.getUei() == null || !e1.getUei().equals(e2.getUei()))) {
 			return false;
         }
@@ -627,20 +625,20 @@ public abstract class MockEventUtil {
             return false;
         }
         
-        if (e1.getParms() != null || e2.getParms() != null) {
-            if (e1.getParms() == null || e2.getParms() == null) {
+        if (e1.getParmCollection() != null || e2.getParmCollection() != null) {
+            if (e1.getParmCollection() == null || e2.getParmCollection() == null) {
                 return false;
             }
             
-            Parms p1 = e1.getParms();
-            Parms p2 = e2.getParms();
+            List<Parm> p1 = e1.getParmCollection();
+            List<Parm> p2 = e2.getParmCollection();
             
-            if (p1.getParmCount() != p2.getParmCount()) {
+            if (p1.size() != p2.size()) {
                 return false;
             }
             
-            Map<String, String> m1 = convertParmsToMap(p1.getParmCollection());
-            Map<String, String> m2 = convertParmsToMap(p2.getParmCollection());
+            Map<String, String> m1 = convertParmsToMap(p1);
+            Map<String, String> m2 = convertParmsToMap(p2);
 
             if (!m1.equals(m2)) {
                 return false;

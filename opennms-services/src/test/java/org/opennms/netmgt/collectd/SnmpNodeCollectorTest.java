@@ -33,7 +33,7 @@ import java.net.InetAddress;
 
 import junit.framework.TestSuite;
 
-import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
+import org.opennms.core.test.snmp.SnmpTestSuiteUtils;
 
 public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
 

@@ -62,7 +62,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
     @Autowired
     AckService m_ackService;
     
-    private OnmsCriteria getOnmsCriteria(final NotificationCriteria notificationCriteria){
+    private static final OnmsCriteria getOnmsCriteria(final NotificationCriteria notificationCriteria){
         final OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
@@ -76,9 +76,6 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
                    criteria.add(Restrictions.isNull("answeredBy")); 
                 }
                 // AcknowledgeType.BOTH just adds no restriction
-            }
-
-            public void visitGroupBy() throws RuntimeException {
             }
 
             public void visitFilter(Filter filter) throws RuntimeException {

@@ -102,7 +102,7 @@ public interface NetworkInterface<T> {
      *                Thrown if the passed key is empty or null.
      * @see java.util.Map#get(java.lang.Object)
      */
-    public Object getAttribute(String property);
+    public <V> V getAttribute(String property);
 
     /**
      * <P>

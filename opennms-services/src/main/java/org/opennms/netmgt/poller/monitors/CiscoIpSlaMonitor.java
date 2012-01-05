@@ -50,16 +50,19 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
+ * <p>
  * This class is used to monitor if a particular Cisco IP-SLA runs within
  * thresholds and has no timeouts. The configured IP-SLA is monitored by the
  * specified "ip sla tag"
+ * </p>
+ * <p>
+ * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
+ * </p>
  *
  * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
  * @version $Id: $
  */
 
-// this does snmp and there relies on the snmp configuration so it is not
-// distributable
 @Distributable(DistributionContext.DAEMON)
 final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
     /**
@@ -381,7 +384,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
                              "Number operator used on a non-number "
                                      + e.getMessage());
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.WARN, "Invalid Snmp Criteria: "
+            status = logDown(Level.WARN, "Invalid SNMP Criteria: "
                     + e.getMessage());
         } catch (Throwable t) {
             status = logDown(Level.WARN,

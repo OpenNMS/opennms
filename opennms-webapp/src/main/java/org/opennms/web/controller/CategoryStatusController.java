@@ -28,50 +28,27 @@
 
 package org.opennms.web.controller;
 
-import java.util.Collection;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.opennms.web.svclayer.catstatus.model.StatusSection;
-import org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService;
+import org.opennms.web.svclayer.catstatus.CategoryStatusService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  * <p>CategoryStatusController class.</p>
  *
  * @author fastjay
- * @version $Id: $
- * @since 1.8.1
  */
-public class CategoryStatusController extends AbstractController {
+@Controller
+@RequestMapping("/catstatus.htm")
+public class CategoryStatusController {
 
-	DefaultCategoryStatusService m_categorystatusservice;
-	Collection <StatusSection>statusSections;
-	
-	/** {@inheritDoc} */
-	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest arg0,
-			HttpServletResponse arg1) throws Exception {
-		
-		statusSections = m_categorystatusservice.getCategoriesStatus(); 
-		ModelAndView modelAndView = new ModelAndView("displayCategoryStatus","statusTree",statusSections);
-		
-		return modelAndView;
-	}
+    @Autowired
+	private CategoryStatusService m_categorystatusservice;
 
-	
-	/**
-	 * <p>setCategoryStatusService</p>
-	 *
-	 * @param categoryStatusService a {@link org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService} object.
-	 */
-	public void setCategoryStatusService(DefaultCategoryStatusService categoryStatusService){
-		
-		m_categorystatusservice = categoryStatusService;
-		
-		
+	@RequestMapping(method = RequestMethod.GET)
+	public ModelAndView handleRequestInternal() throws Exception {
+		return new ModelAndView("displayCategoryStatus", "statusTree", m_categorystatusservice.getCategoriesStatus());
 	}
-	
 }

@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
@@ -121,7 +121,7 @@ public class ProvisionServiceTest implements InitializingBean {
      *  
      * 4. for each node in group C
      *    
-     *     A. 'preprocess' == gatherAdditionalData == get snmp data
+     *     A. 'preprocess' == gatherAdditionalData == get SNMP data
      *     B. 'persist' == store spec file data + gathered data to db
      *     
      * 5. for each node in group B

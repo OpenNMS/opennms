@@ -42,7 +42,7 @@ import java.util.List;
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
- * @deprecated Use the User class instead
+ * @deprecated Use the OnmsUser class instead
  * @since 1.8.1
  */
 public class UserInfo extends Object implements Cloneable {

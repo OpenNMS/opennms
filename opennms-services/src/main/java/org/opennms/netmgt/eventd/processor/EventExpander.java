@@ -49,7 +49,7 @@ import org.springframework.util.Assert;
 
 /**
  * <P>
- * This class is responsible for looking up the matching evenconf entry for an
+ * This class is responsible for looking up the matching eventconf entry for an
  * event and loading info from the eventconf match to the event. This class is
  * also responsible for the event parm expansion
  * </P>
@@ -90,13 +90,6 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class EventExpander implements EventProcessor, InitializingBean {
     private EventConfDao m_eventConfDao;
@@ -336,7 +329,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
 
     /**
      * This method is used to transform a forward event configuration instance
-     * into a forward event instance. This is used when the incomming event does
+     * into a forward event instance. This is used when the incoming event does
      * not have any forward information and the information from the
      * configuration object is copied.
      * 
@@ -383,8 +376,8 @@ public final class EventExpander implements EventProcessor, InitializingBean {
      * information in the passed information. The
      * {@link EventConfDao EventConfDao} instance is
      * consulted to find a matching configured event. The lookup algorithm
-     * favors SNMP information if avaialable, and then defaults to the event's
-     * Universal Event Identfier.
+     * favors SNMP information if available, and then defaults to the event's
+     * Universal Event Identifier.
      * </p>
      * 
      * @param event
@@ -396,7 +389,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
      *                Thrown if the event parameter that was passed is null.
      * 
      */
-    private org.opennms.netmgt.xml.eventconf.Event lookup(Event event) {
+    public static org.opennms.netmgt.xml.eventconf.Event lookup(EventConfDao dao, Event event) {
         if (event == null) {
             throw new NullPointerException("Invalid argument, the event parameter must not be null");
         }
@@ -411,13 +404,13 @@ public final class EventExpander implements EventProcessor, InitializingBean {
         // lookup based on the event mask, (defaults to UEI
         // if there is no mask specified)
         //
-        eConf = m_eventConfDao.findByEvent(event);
+        eConf = dao.findByEvent(event);
 
         if (eConf == null) {
             //
             // take the configuration of the default event
             //
-            eConf = m_eventConfDao.findByUei(DEFAULT_EVENT_UEI);
+            eConf = dao.findByUei(DEFAULT_EVENT_UEI);
         }
 
         return eConf;
@@ -559,15 +552,15 @@ public final class EventExpander implements EventProcessor, InitializingBean {
      * </p>
      *
      * <p>
-     * Any secure fields that exists in the incomming event are cleared during
+     * Any secure fields that exists in the incoming event are cleared during
      * expansion.
      * </p>
      *
      * @param e
-     *            The event to expand if necesary.
+     *            The event to expand if necessary.
      */
     public synchronized void expandEvent(Event e) {
-        org.opennms.netmgt.xml.eventconf.Event econf = lookup(e);
+        org.opennms.netmgt.xml.eventconf.Event econf = lookup(m_eventConfDao, e);
 
         if (econf != null) {
             if (m_eventConfDao.isSecureTag("mask")) {
@@ -583,7 +576,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 e.setUei(econf.getUei());
             }
 
-            // Copy the Snmp Information
+            // Copy the SNMP information
             //
             if (e.getSnmp() == null && econf.getSnmp() != null) {
                 e.setSnmp(transform(econf.getSnmp()));
@@ -660,7 +653,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 }
             }
 
-            // Convert the auto acknowledgement
+            // Convert the auto acknowledgment
             //
             if (m_eventConfDao.isSecureTag("autoacknowledge")) {
                 e.setAutoacknowledge(null);

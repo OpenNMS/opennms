@@ -241,7 +241,7 @@ public final class DbIpInterfaceEntry {
 
         names.append(") VALUES (").append(values).append(')');
         if (log().isDebugEnabled()) {
-            log().debug("DbIpInterfaceEntry.insert: SQL insert statment = " + names.toString());
+            log().debug("DbIpInterfaceEntry.insert: SQL insert statement for interface [" + m_nodeId + "," + m_ipAddr + "] = " + names.toString());
         }
 
         // create the Prepared statement and then start setting the result values

@@ -102,7 +102,7 @@ public class Maskelement implements Serializable {
     public void addMevalue(
             final java.lang.String vMevalue)
     throws java.lang.IndexOutOfBoundsException {
-        this._mevalueList.add(vMevalue);
+        this._mevalueList.add(vMevalue.intern());
     }
 
     /**
@@ -117,7 +117,7 @@ public class Maskelement implements Serializable {
             final int index,
             final java.lang.String vMevalue)
     throws java.lang.IndexOutOfBoundsException {
-        this._mevalueList.add(index, vMevalue);
+        this._mevalueList.add(index, vMevalue.intern());
     }
 
     /**
@@ -252,7 +252,7 @@ public class Maskelement implements Serializable {
      */
     public void setMename(
             final java.lang.String mename) {
-        this._mename = mename;
+        this._mename = mename.intern();
     }
 
     /**
@@ -272,7 +272,7 @@ public class Maskelement implements Serializable {
             throw new IndexOutOfBoundsException("setMevalue: Index value '" + index + "' not in range [0.." + (this._mevalueList.size() - 1) + "]");
         }
         
-        this._mevalueList.set(index, vMevalue);
+        this._mevalueList.set(index, vMevalue.intern());
     }
 
     /**
@@ -286,7 +286,7 @@ public class Maskelement implements Serializable {
         _mevalueList.clear();
         
         for (int i = 0; i < vMevalueArray.length; i++) {
-                this._mevalueList.add(vMevalueArray[i]);
+                this._mevalueList.add(vMevalueArray[i].intern());
         }
     }
 
@@ -300,8 +300,9 @@ public class Maskelement implements Serializable {
             final java.util.List<java.lang.String> vMevalueList) {
         // copy vector
         this._mevalueList.clear();
-        
-        this._mevalueList.addAll(vMevalueList);
+        for (final String value : vMevalueList) {
+            this._mevalueList.add(value.intern());
+        }
     }
 
     /**
@@ -313,7 +314,10 @@ public class Maskelement implements Serializable {
      */
     public void setMevalueCollection(
             final java.util.List<java.lang.String> mevalueList) {
-        this._mevalueList = mevalueList;
+        this._mevalueList.clear();
+        for (final String value : mevalueList) {
+            this._mevalueList.add(value.intern());
+        }
     }
 
     public String toString() {

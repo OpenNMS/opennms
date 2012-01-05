@@ -246,7 +246,7 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         Event event = evaluator.getEventForState(Status.TRIGGERED, new Date(), 10.0, null);
         assertNotNull("should have created an event", event);
         assertEquals("UEIs should be the same", EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
-        assertNotNull("event should have parms", event.getParms());
+        assertNotNull("event should have parms", event.getParmCollection());
         parmPresentAndValueNonNull(event, "instance");
         parmPresentWithValue(event, "value", "10.0");
         parmPresentWithValue(event, "previousValue", "8.0");
@@ -256,7 +256,7 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         event = evaluator.getEventForState(Status.TRIGGERED, new Date(), 10.0, new MockCollectionResourceWrapper("testInstance"));
         assertNotNull("should have created an event", event);
         assertEquals("UEIs should be the same", EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
-        assertNotNull("event should have parms", event.getParms());
+        assertNotNull("event should have parms", event.getParmCollection());
         parmPresentWithValue(event, "instance", "testInstance");
         parmPresentWithValue(event, "value", "10.0");
         parmPresentWithValue(event, "previousValue", "8.0");

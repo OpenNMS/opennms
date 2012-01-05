@@ -47,6 +47,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -162,8 +163,9 @@ public class Event implements Serializable {
 	/**
 	 * The varbinds from the trap
 	 */
-	@XmlElement(name = "parms")
-	private Parms _parms;
+	@XmlElementWrapper(name="parms")
+	@XmlElement(name="parm")
+	private List<Parm> _parms;
 
 	/**
 	 * The event description
@@ -274,11 +276,11 @@ public class Event implements Serializable {
 
 	public Event() {
 		super();
-		this._autoactionList = new ArrayList<Autoaction>();
-		this._operactionList = new ArrayList<Operaction>();
-		this._loggroupList = new ArrayList<String>();
-		this._forwardList = new ArrayList<Forward>();
-		this._scriptList = new ArrayList<Script>();
+		_autoactionList = new ArrayList<Autoaction>();
+		_operactionList = new ArrayList<Operaction>();
+		_loggroupList = new ArrayList<String>();
+		_forwardList = new ArrayList<Forward>();
+		_scriptList = new ArrayList<Script>();
 	}
 
 	// -----------/
@@ -294,7 +296,7 @@ public class Event implements Serializable {
 	 */
 	public void addAutoaction(final Autoaction vAutoaction)
 			throws IndexOutOfBoundsException {
-		this._autoactionList.add(vAutoaction);
+		_autoactionList.add(vAutoaction);
 	}
 
 	/**
@@ -306,7 +308,7 @@ public class Event implements Serializable {
 	 *             if the index given is outside the bounds of the collection
 	 */
 	public void addAutoaction(final int index, final Autoaction vAutoaction) throws IndexOutOfBoundsException {
-		this._autoactionList.add(index, vAutoaction);
+		_autoactionList.add(index, vAutoaction);
 	}
 
 	/**
@@ -317,7 +319,7 @@ public class Event implements Serializable {
 	 *             if the index given is outside the bounds of the collection
 	 */
 	public void addForward(final Forward vForward) throws IndexOutOfBoundsException {
-		this._forwardList.add(vForward);
+		_forwardList.add(vForward);
 	}
 
 	/**
@@ -329,7 +331,7 @@ public class Event implements Serializable {
 	 *             if the index given is outside the bounds of the collection
 	 */
 	public void addForward(final int index, final Forward vForward) throws IndexOutOfBoundsException {
-		this._forwardList.add(index, vForward);
+		_forwardList.add(index, vForward);
 	}
 
 	/**
@@ -340,7 +342,7 @@ public class Event implements Serializable {
 	 *             if the index given is outside the bounds of the collection
 	 */
 	public void addLoggroup(final String vLoggroup) throws IndexOutOfBoundsException {
-		this._loggroupList.add(vLoggroup);
+		_loggroupList.add(vLoggroup);
 	}
 
 	/**
@@ -352,7 +354,7 @@ public class Event implements Serializable {
 	 *             if the index given is outside the bounds of the collection
 	 */
 	public void addLoggroup(final int index, final String vLoggroup) throws IndexOutOfBoundsException {
-		this._loggroupList.add(index, vLoggroup);
+		_loggroupList.add(index, vLoggroup);
 	}
 
 	/**
@@ -363,9 +365,16 @@ public class Event implements Serializable {
 	 *             if the index given is outside the bounds of the collection
 	 */
 	public void addOperaction(final Operaction vOperaction) throws IndexOutOfBoundsException {
-		this._operactionList.add(vOperaction);
+		_operactionList.add(vOperaction);
 	}
 
+	public void addParm(final Parm parm) {
+	    if (_parms == null) {
+	        _parms = new ArrayList<Parm>();
+	    }
+	    _parms.add(parm);
+	}
+	
 	/**
 	 * 
 	 * 
@@ -375,7 +384,7 @@ public class Event implements Serializable {
 	 *             if the index given is outside the bounds of the collection
 	 */
 	public void addOperaction(final int index, final Operaction vOperaction) throws IndexOutOfBoundsException {
-		this._operactionList.add(index, vOperaction);
+		_operactionList.add(index, vOperaction);
 	}
 
 	/**
@@ -386,7 +395,7 @@ public class Event implements Serializable {
 	 *             if the index given is outside the bounds of the collection
 	 */
 	public void addScript(final Script vScript) throws IndexOutOfBoundsException {
-		this._scriptList.add(vScript);
+		_scriptList.add(vScript);
 	}
 
 	/**
@@ -398,7 +407,7 @@ public class Event implements Serializable {
 	 *             if the index given is outside the bounds of the collection
 	 */
 	public void addScript(final int index, final Script vScript) throws IndexOutOfBoundsException {
-		this._scriptList.add(index, vScript);
+		_scriptList.add(index, vScript);
 	}
 
 	/**
@@ -410,13 +419,13 @@ public class Event implements Serializable {
 	/**
      */
 	public void deleteIfIndex() {
-		this._ifIndex = null;
+		_ifIndex = null;
 	}
 
 	/**
      */
 	public void deleteNodeid() {
-		this._nodeid = null;
+		_nodeid = null;
 	}
 
 	/**
@@ -425,7 +434,7 @@ public class Event implements Serializable {
 	 * @return an Enumeration over all possible elements of this collection
 	 */
 	public Enumeration<Autoaction> enumerateAutoaction() {
-		return Collections.enumeration(this._autoactionList);
+		return Collections.enumeration(_autoactionList);
 	}
 
 	/**
@@ -434,7 +443,7 @@ public class Event implements Serializable {
 	 * @return an Enumeration over all possible elements of this collection
 	 */
 	public Enumeration<Forward> enumerateForward() {
-		return Collections.enumeration(this._forwardList);
+		return Collections.enumeration(_forwardList);
 	}
 
 	/**
@@ -443,7 +452,7 @@ public class Event implements Serializable {
 	 * @return an Enumeration over all possible elements of this collection
 	 */
 	public Enumeration<String> enumerateLoggroup() {
-		return Collections.enumeration(this._loggroupList);
+		return Collections.enumeration(_loggroupList);
 	}
 
 	/**
@@ -452,7 +461,7 @@ public class Event implements Serializable {
 	 * @return an Enumeration over all possible elements of this collection
 	 */
 	public Enumeration<Operaction> enumerateOperaction() {
-		return Collections.enumeration(this._operactionList);
+		return Collections.enumeration(_operactionList);
 	}
 
 	/**
@@ -461,7 +470,7 @@ public class Event implements Serializable {
 	 * @return an Enumeration over all possible elements of this collection
 	 */
 	public Enumeration<Script> enumerateScript() {
-		return Collections.enumeration(this._scriptList);
+		return Collections.enumeration(_scriptList);
 	}
 
 	/**
@@ -471,7 +480,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'AlarmData'.
 	 */
 	public AlarmData getAlarmData() {
-		return this._alarmData;
+		return _alarmData;
 	}
 
 	/**
@@ -482,7 +491,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Autoacknowledge'.
 	 */
 	public Autoacknowledge getAutoacknowledge() {
-		return this._autoacknowledge;
+		return _autoacknowledge;
 	}
 
 	/**
@@ -496,8 +505,8 @@ public class Event implements Serializable {
 	 */
 	public Autoaction getAutoaction(final int index) throws IndexOutOfBoundsException {
 		// check bounds for index
-		if (index < 0 || index >= this._autoactionList.size()) {
-			throw new IndexOutOfBoundsException("getAutoaction: Index value '" + index + "' not in range [0.." + (this._autoactionList.size() - 1) + "]");
+		if (index < 0 || index >= _autoactionList.size()) {
+			throw new IndexOutOfBoundsException("getAutoaction: Index value '" + index + "' not in range [0.." + (_autoactionList.size() - 1) + "]");
 		}
 
 		return _autoactionList.get(index);
@@ -514,7 +523,7 @@ public class Event implements Serializable {
 	 * @return this collection as an Array
 	 */
 	public Autoaction[] getAutoaction() {
-		return this._autoactionList.toArray(new Autoaction[0]);
+		return _autoactionList.toArray(new Autoaction[0]);
 	}
 
 	/**
@@ -524,7 +533,7 @@ public class Event implements Serializable {
 	 * @return a reference to the Vector backing this class
 	 */
 	public List<Autoaction> getAutoactionCollection() {
-		return this._autoactionList;
+		return _autoactionList;
 	}
 
 	/**
@@ -533,7 +542,7 @@ public class Event implements Serializable {
 	 * @return the size of this collection
 	 */
 	public int getAutoactionCount() {
-		return this._autoactionList.size();
+		return _autoactionList.size();
 	}
 
 	/**
@@ -543,7 +552,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Correlation'.
 	 */
 	public Correlation getCorrelation() {
-		return this._correlation;
+		return _correlation;
 	}
 
 	/**
@@ -553,7 +562,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'CreationTime'.
 	 */
 	public String getCreationTime() {
-		return this._creationTime;
+		return _creationTime;
 	}
 
 	/**
@@ -563,7 +572,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Dbid'.
 	 */
 	public Integer getDbid() {
-		return this._dbid == null ? 0 : this._dbid;
+		return _dbid == null ? 0 : _dbid;
 	}
 
 	/**
@@ -573,7 +582,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Descr'.
 	 */
 	public String getDescr() {
-		return this._descr;
+		return _descr;
 	}
 
 	/**
@@ -582,7 +591,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'DistPoller'.
 	 */
 	public String getDistPoller() {
-		return this._distPoller;
+		return _distPoller;
 	}
 
 	/**
@@ -596,8 +605,8 @@ public class Event implements Serializable {
 	 */
 	public Forward getForward(final int index) throws IndexOutOfBoundsException {
 		// check bounds for index
-		if (index < 0 || index >= this._forwardList.size()) {
-			throw new IndexOutOfBoundsException("getForward: Index value '" + index + "' not in range [0.." + (this._forwardList.size() - 1) + "]");
+		if (index < 0 || index >= _forwardList.size()) {
+			throw new IndexOutOfBoundsException("getForward: Index value '" + index + "' not in range [0.." + (_forwardList.size() - 1) + "]");
 		}
 
 		return _forwardList.get(index);
@@ -614,7 +623,7 @@ public class Event implements Serializable {
 	 * @return this collection as an Array
 	 */
 	public Forward[] getForward() {
-		return this._forwardList.toArray(new Forward[0]);
+		return _forwardList.toArray(new Forward[0]);
 	}
 
 	/**
@@ -624,7 +633,7 @@ public class Event implements Serializable {
 	 * @return a reference to the Vector backing this class
 	 */
 	public List<Forward> getForwardCollection() {
-		return this._forwardList;
+		return _forwardList;
 	}
 
 	/**
@@ -633,7 +642,7 @@ public class Event implements Serializable {
 	 * @return the size of this collection
 	 */
 	public int getForwardCount() {
-		return this._forwardList.size();
+		return _forwardList.size();
 	}
 
 	/**
@@ -643,7 +652,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Host'.
 	 */
 	public String getHost() {
-		return this._host;
+		return _host;
 	}
 
 	/**
@@ -653,7 +662,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'IfAlias'.
 	 */
 	public String getIfAlias() {
-		return this._ifAlias;
+		return _ifAlias;
 	}
 
 	/**
@@ -663,7 +672,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'IfIndex'.
 	 */
 	public Integer getIfIndex() {
-		return this._ifIndex == null ? 0 : this._ifIndex;
+		return _ifIndex == null ? 0 : _ifIndex;
 	}
 
 	/**
@@ -673,16 +682,16 @@ public class Event implements Serializable {
 	 * @return the value of field 'Interface'.
 	 */
 	public String getInterface() {
-		if (this._interfaceString == null) {
-			this._interfaceString = str(this._interfaceAddress);
+		if (_interfaceString == null) {
+			_interfaceString = str(_interfaceAddress);
 		}
-		return this._interfaceString;
+		return _interfaceString;
 	}
 
 	// just to be sure
 	@XmlTransient
 	public InetAddress getInterfaceAddress() {
-		return this._interfaceAddress;
+		return _interfaceAddress;
 	}
 
 	/**
@@ -695,8 +704,8 @@ public class Event implements Serializable {
 	 */
 	public String getLoggroup(final int index) throws IndexOutOfBoundsException {
 		// check bounds for index
-		if (index < 0 || index >= this._loggroupList.size()) {
-			throw new IndexOutOfBoundsException("getLoggroup: Index value '" + index + "' not in range [0.." + (this._loggroupList.size() - 1) + "]");
+		if (index < 0 || index >= _loggroupList.size()) {
+			throw new IndexOutOfBoundsException("getLoggroup: Index value '" + index + "' not in range [0.." + (_loggroupList.size() - 1) + "]");
 		}
 
 		return _loggroupList.get(index);
@@ -713,7 +722,7 @@ public class Event implements Serializable {
 	 * @return this collection as an Array
 	 */
 	public String[] getLoggroup() {
-		return this._loggroupList.toArray(new String[0]);
+		return _loggroupList.toArray(new String[0]);
 	}
 
 	/**
@@ -723,7 +732,7 @@ public class Event implements Serializable {
 	 * @return a reference to the Vector backing this class
 	 */
 	public List<String> getLoggroupCollection() {
-		return this._loggroupList;
+		return _loggroupList;
 	}
 
 	/**
@@ -732,7 +741,7 @@ public class Event implements Serializable {
 	 * @return the size of this collection
 	 */
 	public int getLoggroupCount() {
-		return this._loggroupList.size();
+		return _loggroupList.size();
 	}
 
 	/**
@@ -742,7 +751,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Logmsg'.
 	 */
 	public Logmsg getLogmsg() {
-		return this._logmsg;
+		return _logmsg;
 	}
 
 	/**
@@ -752,7 +761,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Mask'.
 	 */
 	public Mask getMask() {
-		return this._mask;
+		return _mask;
 	}
 
 	/**
@@ -762,7 +771,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'MasterStation'.
 	 */
 	public String getMasterStation() {
-		return this._masterStation;
+		return _masterStation;
 	}
 
 	/**
@@ -773,7 +782,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Mouseovertext'.
 	 */
 	public String getMouseovertext() {
-		return this._mouseovertext;
+		return _mouseovertext;
 	}
 
 	/**
@@ -783,7 +792,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Nodeid'.
 	 */
 	public Long getNodeid() {
-		return this._nodeid == null ? 0 : this._nodeid;
+		return _nodeid == null ? 0 : _nodeid;
 	}
 
 	/**
@@ -797,8 +806,8 @@ public class Event implements Serializable {
 	 */
 	public Operaction getOperaction(final int index) throws IndexOutOfBoundsException {
 		// check bounds for index
-		if (index < 0 || index >= this._operactionList.size()) {
-			throw new IndexOutOfBoundsException("getOperaction: Index value '" + index + "' not in range [0.." + (this._operactionList.size() - 1) + "]");
+		if (index < 0 || index >= _operactionList.size()) {
+			throw new IndexOutOfBoundsException("getOperaction: Index value '" + index + "' not in range [0.." + (_operactionList.size() - 1) + "]");
 		}
 
 		return _operactionList.get(index);
@@ -815,7 +824,7 @@ public class Event implements Serializable {
 	 * @return this collection as an Array
 	 */
 	public Operaction[] getOperaction() {
-		return (Operaction[]) this._operactionList.toArray(new Operaction[0]);
+		return (Operaction[]) _operactionList.toArray(new Operaction[0]);
 	}
 
 	/**
@@ -825,7 +834,7 @@ public class Event implements Serializable {
 	 * @return a reference to the Vector backing this class
 	 */
 	public List<Operaction> getOperactionCollection() {
-		return this._operactionList;
+		return _operactionList;
 	}
 
 	/**
@@ -834,7 +843,7 @@ public class Event implements Serializable {
 	 * @return the size of this collection
 	 */
 	public int getOperactionCount() {
-		return this._operactionList.size();
+		return _operactionList.size();
 	}
 
 	/**
@@ -844,26 +853,14 @@ public class Event implements Serializable {
 	 * @return the value of field 'Operinstruct'.
 	 */
 	public String getOperinstruct() {
-		return this._operinstruct;
+		return _operinstruct;
 	}
 
-	/**
-	 * Returns the value of field 'parms'. The field 'parms' has the following
-	 * description: The varbinds from the trap
-	 * 
-	 * @deprecated Use {@link #getParmCollection()} instead
-	 * 
-	 * @return the value of field 'Parms'.
-	 */
-	public Parms getParms() {
-		return this._parms;
-	}
-	
 	/**
 	 * Returns the Collection of parms for this event
 	 */
     public List<Parm> getParmCollection() {
-        return getParms() == null ? Collections.<Parm>emptyList() : getParms().getParmCollection();
+        return _parms == null ? Collections.<Parm>emptyList() : _parms;
     }
 
 
@@ -874,7 +871,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Pathoutage'.
 	 */
 	public String getPathoutage() {
-		return this._pathoutage;
+		return _pathoutage;
 	}
 
 	/**
@@ -887,8 +884,8 @@ public class Event implements Serializable {
 	 */
 	public Script getScript(final int index) throws IndexOutOfBoundsException {
 		// check bounds for index
-		if (index < 0 || index >= this._scriptList.size()) {
-			throw new IndexOutOfBoundsException("getScript: Index value '" + index + "' not in range [0.." + (this._scriptList.size() - 1) + "]");
+		if (index < 0 || index >= _scriptList.size()) {
+			throw new IndexOutOfBoundsException("getScript: Index value '" + index + "' not in range [0.." + (_scriptList.size() - 1) + "]");
 		}
 
 		return _scriptList.get(index);
@@ -905,7 +902,7 @@ public class Event implements Serializable {
 	 * @return this collection as an Array
 	 */
 	public Script[] getScript() {
-		return this._scriptList.toArray(new Script[0]);
+		return _scriptList.toArray(new Script[0]);
 	}
 
 	/**
@@ -915,7 +912,7 @@ public class Event implements Serializable {
 	 * @return a reference to the Vector backing this class
 	 */
 	public List<Script> getScriptCollection() {
-		return this._scriptList;
+		return _scriptList;
 	}
 
 	/**
@@ -924,7 +921,7 @@ public class Event implements Serializable {
 	 * @return the size of this collection
 	 */
 	public int getScriptCount() {
-		return this._scriptList.size();
+		return _scriptList.size();
 	}
 
 	/**
@@ -934,7 +931,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Service'.
 	 */
 	public String getService() {
-		return this._service;
+		return _service;
 	}
 
 	/**
@@ -944,7 +941,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Severity'.
 	 */
 	public String getSeverity() {
-		return this._severity;
+		return _severity;
 	}
 
 	/**
@@ -954,7 +951,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Snmp'.
 	 */
 	public Snmp getSnmp() {
-		return this._snmp;
+		return _snmp;
 	}
 
 	/**
@@ -964,7 +961,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Snmphost'.
 	 */
 	public String getSnmphost() {
-		return this._snmphost;
+		return _snmphost;
 	}
 
 	/**
@@ -973,7 +970,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Source'.
 	 */
 	public String getSource() {
-		return this._source;
+		return _source;
 	}
 
 	/**
@@ -986,7 +983,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Time'.
 	 */
 	public String getTime() {
-		return this._time;
+		return _time;
 	}
 
 	/**
@@ -996,7 +993,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Tticket'.
 	 */
 	public Tticket getTticket() {
-		return this._tticket;
+		return _tticket;
 	}
 
 	/**
@@ -1006,7 +1003,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Uei'.
 	 */
 	public String getUei() {
-		return this._uei;
+		return _uei;
 	}
 
 	/**
@@ -1015,7 +1012,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Uuid'.
 	 */
 	public String getUuid() {
-		return this._uuid;
+		return _uuid;
 	}
 
 	/**
@@ -1033,7 +1030,7 @@ public class Event implements Serializable {
 	 * @return true if at least one IfIndex has been added
 	 */
 	public boolean hasIfIndex() {
-		return this._ifIndex != null;
+		return _ifIndex != null;
 	}
 
 	/**
@@ -1042,7 +1039,7 @@ public class Event implements Serializable {
 	 * @return true if at least one Nodeid has been added
 	 */
 	public boolean hasNodeid() {
-		return this._nodeid != null;
+		return _nodeid != null;
 	}
 
 	/**
@@ -1051,7 +1048,7 @@ public class Event implements Serializable {
 	 * @return an Iterator over all possible elements in this collection
 	 */
 	public Iterator<Autoaction> iterateAutoaction() {
-		return this._autoactionList.iterator();
+		return _autoactionList.iterator();
 	}
 
 	/**
@@ -1060,7 +1057,7 @@ public class Event implements Serializable {
 	 * @return an Iterator over all possible elements in this collection
 	 */
 	public Iterator<Forward> iterateForward() {
-		return this._forwardList.iterator();
+		return _forwardList.iterator();
 	}
 
 	/**
@@ -1069,7 +1066,7 @@ public class Event implements Serializable {
 	 * @return an Iterator over all possible elements in this collection
 	 */
 	public Iterator<String> iterateLoggroup() {
-		return this._loggroupList.iterator();
+		return _loggroupList.iterator();
 	}
 
 	/**
@@ -1078,7 +1075,7 @@ public class Event implements Serializable {
 	 * @return an Iterator over all possible elements in this collection
 	 */
 	public Iterator<Operaction> iterateOperaction() {
-		return this._operactionList.iterator();
+		return _operactionList.iterator();
 	}
 
 	/**
@@ -1087,37 +1084,37 @@ public class Event implements Serializable {
 	 * @return an Iterator over all possible elements in this collection
 	 */
 	public Iterator<Script> iterateScript() {
-		return this._scriptList.iterator();
+		return _scriptList.iterator();
 	}
 
 	/**
      */
 	public void removeAllAutoaction() {
-		this._autoactionList.clear();
+		_autoactionList.clear();
 	}
 
 	/**
      */
 	public void removeAllForward() {
-		this._forwardList.clear();
+		_forwardList.clear();
 	}
 
 	/**
      */
 	public void removeAllLoggroup() {
-		this._loggroupList.clear();
+		_loggroupList.clear();
 	}
 
 	/**
      */
 	public void removeAllOperaction() {
-		this._operactionList.clear();
+		_operactionList.clear();
 	}
 
 	/**
      */
 	public void removeAllScript() {
-		this._scriptList.clear();
+		_scriptList.clear();
 	}
 
 	/**
@@ -1137,7 +1134,7 @@ public class Event implements Serializable {
 	 * @return the element removed from the collection
 	 */
 	public Autoaction removeAutoactionAt(final int index) {
-		return this._autoactionList.remove(index);
+		return _autoactionList.remove(index);
 	}
 
 	/**
@@ -1157,7 +1154,7 @@ public class Event implements Serializable {
 	 * @return the element removed from the collection
 	 */
 	public Forward removeForwardAt(final int index) {
-		return this._forwardList.remove(index);
+		return _forwardList.remove(index);
 	}
 
 	/**
@@ -1177,7 +1174,7 @@ public class Event implements Serializable {
 	 * @return the element removed from the collection
 	 */
 	public String removeLoggroupAt(final int index) {
-		return this._loggroupList.remove(index);
+		return _loggroupList.remove(index);
 	}
 
 	/**
@@ -1197,7 +1194,7 @@ public class Event implements Serializable {
 	 * @return the element removed from the collection
 	 */
 	public Operaction removeOperactionAt(final int index) {
-		return this._operactionList.remove(index);
+		return _operactionList.remove(index);
 	}
 
 	/**
@@ -1217,7 +1214,7 @@ public class Event implements Serializable {
 	 * @return the element removed from the collection
 	 */
 	public Script removeScriptAt(final int index) {
-		return this._scriptList.remove(index);
+		return _scriptList.remove(index);
 	}
 
 	/**
@@ -1228,7 +1225,7 @@ public class Event implements Serializable {
 	 *            the value of field 'alarmData'.
 	 */
 	public void setAlarmData(final AlarmData alarmData) {
-		this._alarmData = alarmData;
+		_alarmData = alarmData;
 	}
 
 	/**
@@ -1240,7 +1237,7 @@ public class Event implements Serializable {
 	 *            the value of field 'autoacknowledge'.
 	 */
 	public void setAutoacknowledge(final Autoacknowledge autoacknowledge) {
-		this._autoacknowledge = autoacknowledge;
+		_autoacknowledge = autoacknowledge;
 	}
 
 	/**
@@ -1253,11 +1250,11 @@ public class Event implements Serializable {
 	 */
 	public void setAutoaction(final int index, final Autoaction vAutoaction) throws IndexOutOfBoundsException {
 		// check bounds for index
-		if (index < 0 || index >= this._autoactionList.size()) {
-			throw new IndexOutOfBoundsException("setAutoaction: Index value '" + index + "' not in range [0.." + (this._autoactionList.size() - 1) + "]");
+		if (index < 0 || index >= _autoactionList.size()) {
+			throw new IndexOutOfBoundsException("setAutoaction: Index value '" + index + "' not in range [0.." + (_autoactionList.size() - 1) + "]");
 		}
 
-		this._autoactionList.set(index, vAutoaction);
+		_autoactionList.set(index, vAutoaction);
 	}
 
 	/**
@@ -1270,7 +1267,7 @@ public class Event implements Serializable {
 		_autoactionList.clear();
 
 		for (int i = 0; i < vAutoactionArray.length; i++) {
-			this._autoactionList.add(vAutoactionArray[i]);
+			_autoactionList.add(vAutoactionArray[i]);
 		}
 	}
 
@@ -1283,9 +1280,9 @@ public class Event implements Serializable {
 	 */
 	public void setAutoaction(final List<Autoaction> vAutoactionList) {
 		// copy vector
-		this._autoactionList.clear();
+		_autoactionList.clear();
 
-		this._autoactionList.addAll(vAutoactionList);
+		_autoactionList.addAll(vAutoactionList);
 	}
 
 	/**
@@ -1298,7 +1295,7 @@ public class Event implements Serializable {
 	 *            the Vector to set.
 	 */
 	public void setAutoactionCollection(final List<Autoaction> autoactionList) {
-		this._autoactionList = autoactionList;
+		_autoactionList = autoactionList;
 	}
 
 	/**
@@ -1309,7 +1306,7 @@ public class Event implements Serializable {
 	 *            the value of field 'correlation'.
 	 */
 	public void setCorrelation(final Correlation correlation) {
-		this._correlation = correlation;
+		_correlation = correlation;
 	}
 
 	/**
@@ -1320,7 +1317,7 @@ public class Event implements Serializable {
 	 *            the value of field 'creationTime'.
 	 */
 	public void setCreationTime(final String creationTime) {
-		this._creationTime = creationTime;
+		_creationTime = creationTime;
 	}
 
 	/**
@@ -1330,8 +1327,8 @@ public class Event implements Serializable {
 	 * @param dbid
 	 *            the value of field 'dbid'.
 	 */
-	public void setDbid(final int dbid) {
-		this._dbid = dbid;
+	public void setDbid(final Integer dbid) {
+		_dbid = dbid;
 	}
 
 	/**
@@ -1342,7 +1339,7 @@ public class Event implements Serializable {
 	 *            the value of field 'descr'.
 	 */
 	public void setDescr(final String descr) {
-		this._descr = descr;
+		_descr = descr;
 	}
 
 	/**
@@ -1352,7 +1349,7 @@ public class Event implements Serializable {
 	 *            the value of field 'distPoller'.
 	 */
 	public void setDistPoller(final String distPoller) {
-		this._distPoller = distPoller;
+		_distPoller = distPoller;
 	}
 
 	/**
@@ -1365,11 +1362,11 @@ public class Event implements Serializable {
 	 */
 	public void setForward(final int index, final Forward vForward) throws IndexOutOfBoundsException {
 		// check bounds for index
-		if (index < 0 || index >= this._forwardList.size()) {
-			throw new IndexOutOfBoundsException("setForward: Index value '" + index + "' not in range [0.." + (this._forwardList.size() - 1) + "]");
+		if (index < 0 || index >= _forwardList.size()) {
+			throw new IndexOutOfBoundsException("setForward: Index value '" + index + "' not in range [0.." + (_forwardList.size() - 1) + "]");
 		}
 
-		this._forwardList.set(index, vForward);
+		_forwardList.set(index, vForward);
 	}
 
 	/**
@@ -1382,7 +1379,7 @@ public class Event implements Serializable {
 		_forwardList.clear();
 
 		for (int i = 0; i < vForwardArray.length; i++) {
-			this._forwardList.add(vForwardArray[i]);
+			_forwardList.add(vForwardArray[i]);
 		}
 	}
 
@@ -1395,9 +1392,9 @@ public class Event implements Serializable {
 	 */
 	public void setForward(final List<Forward> vForwardList) {
 		// copy vector
-		this._forwardList.clear();
+		_forwardList.clear();
 
-		this._forwardList.addAll(vForwardList);
+		_forwardList.addAll(vForwardList);
 	}
 
 	/**
@@ -1410,7 +1407,7 @@ public class Event implements Serializable {
 	 *            the Vector to set.
 	 */
 	public void setForwardCollection(final List<Forward> forwardList) {
-		this._forwardList = forwardList;
+		_forwardList = forwardList;
 	}
 
 	/**
@@ -1421,7 +1418,7 @@ public class Event implements Serializable {
 	 *            the value of field 'host'.
 	 */
 	public void setHost(final String host) {
-		this._host = host;
+		_host = host;
 	}
 
 	/**
@@ -1432,7 +1429,7 @@ public class Event implements Serializable {
 	 *            the value of field 'ifAlias'.
 	 */
 	public void setIfAlias(final String ifAlias) {
-		this._ifAlias = ifAlias;
+		_ifAlias = ifAlias;
 	}
 
 	/**
@@ -1443,7 +1440,7 @@ public class Event implements Serializable {
 	 *            the value of field 'ifIndex'.
 	 */
 	public void setIfIndex(final Integer ifIndex) {
-		this._ifIndex = ifIndex;
+		_ifIndex = ifIndex;
 	}
 
 	/**
@@ -1454,13 +1451,13 @@ public class Event implements Serializable {
 	 * @param interface the value of field 'interface'.
 	 */
 	public void setInterface(final String _interface) {
-		this._interfaceAddress = addr(_interface);
-		this._interfaceString = null;
+		_interfaceAddress = addr(_interface);
+		_interfaceString = null;
 	}
 
 	public void setInterfaceAddress(final InetAddress _interface) {
-		this._interfaceAddress = _interface;
-		this._interfaceString = null;
+		_interfaceAddress = _interface;
+		_interfaceString = null;
 	}
 
 	/**
@@ -1473,11 +1470,11 @@ public class Event implements Serializable {
 	 */
 	public void setLoggroup(final int index, final String vLoggroup) throws IndexOutOfBoundsException {
 		// check bounds for index
-		if (index < 0 || index >= this._loggroupList.size()) {
-			throw new IndexOutOfBoundsException("setLoggroup: Index value '" + index + "' not in range [0.." + (this._loggroupList.size() - 1) + "]");
+		if (index < 0 || index >= _loggroupList.size()) {
+			throw new IndexOutOfBoundsException("setLoggroup: Index value '" + index + "' not in range [0.." + (_loggroupList.size() - 1) + "]");
 		}
 
-		this._loggroupList.set(index, vLoggroup);
+		_loggroupList.set(index, vLoggroup);
 	}
 
 	/**
@@ -1490,7 +1487,7 @@ public class Event implements Serializable {
 		_loggroupList.clear();
 
 		for (int i = 0; i < vLoggroupArray.length; i++) {
-			this._loggroupList.add(vLoggroupArray[i]);
+			_loggroupList.add(vLoggroupArray[i]);
 		}
 	}
 
@@ -1503,9 +1500,9 @@ public class Event implements Serializable {
 	 */
 	public void setLoggroup(final List<String> vLoggroupList) {
 		// copy vector
-		this._loggroupList.clear();
+		_loggroupList.clear();
 
-		this._loggroupList.addAll(vLoggroupList);
+		_loggroupList.addAll(vLoggroupList);
 	}
 
 	/**
@@ -1518,7 +1515,7 @@ public class Event implements Serializable {
 	 *            the Vector to set.
 	 */
 	public void setLoggroupCollection(final List<String> loggroupList) {
-		this._loggroupList = loggroupList;
+		_loggroupList = loggroupList;
 	}
 
 	/**
@@ -1529,7 +1526,7 @@ public class Event implements Serializable {
 	 *            the value of field 'logmsg'.
 	 */
 	public void setLogmsg(final Logmsg logmsg) {
-		this._logmsg = logmsg;
+		_logmsg = logmsg;
 	}
 
 	/**
@@ -1540,7 +1537,7 @@ public class Event implements Serializable {
 	 *            the value of field 'mask'.
 	 */
 	public void setMask(final Mask mask) {
-		this._mask = mask;
+		_mask = mask;
 	}
 
 	/**
@@ -1551,7 +1548,7 @@ public class Event implements Serializable {
 	 *            the value of field 'masterStation'.
 	 */
 	public void setMasterStation(final String masterStation) {
-		this._masterStation = masterStation;
+		_masterStation = masterStation;
 	}
 
 	/**
@@ -1563,7 +1560,7 @@ public class Event implements Serializable {
 	 *            the value of field 'mouseovertext'.
 	 */
 	public void setMouseovertext(final String mouseovertext) {
-		this._mouseovertext = mouseovertext;
+		_mouseovertext = mouseovertext;
 	}
 
 	/**
@@ -1574,7 +1571,7 @@ public class Event implements Serializable {
 	 *            the value of field 'nodeid'.
 	 */
 	public void setNodeid(final Long nodeid) {
-		this._nodeid = nodeid;
+		_nodeid = nodeid;
 	}
 
 	/**
@@ -1587,11 +1584,11 @@ public class Event implements Serializable {
 	 */
 	public void setOperaction(final int index, final Operaction vOperaction) throws IndexOutOfBoundsException {
 		// check bounds for index
-		if (index < 0 || index >= this._operactionList.size()) {
-			throw new IndexOutOfBoundsException("setOperaction: Index value '" + index + "' not in range [0.." + (this._operactionList.size() - 1) + "]");
+		if (index < 0 || index >= _operactionList.size()) {
+			throw new IndexOutOfBoundsException("setOperaction: Index value '" + index + "' not in range [0.." + (_operactionList.size() - 1) + "]");
 		}
 
-		this._operactionList.set(index, vOperaction);
+		_operactionList.set(index, vOperaction);
 	}
 
 	/**
@@ -1604,7 +1601,7 @@ public class Event implements Serializable {
 		_operactionList.clear();
 
 		for (int i = 0; i < vOperactionArray.length; i++) {
-			this._operactionList.add(vOperactionArray[i]);
+			_operactionList.add(vOperactionArray[i]);
 		}
 	}
 
@@ -1617,9 +1614,9 @@ public class Event implements Serializable {
 	 */
 	public void setOperaction(final List<Operaction> vOperactionList) {
 		// copy vector
-		this._operactionList.clear();
+		_operactionList.clear();
 
-		this._operactionList.addAll(vOperactionList);
+		_operactionList.addAll(vOperactionList);
 	}
 
 	/**
@@ -1632,7 +1629,7 @@ public class Event implements Serializable {
 	 *            the Vector to set.
 	 */
 	public void setOperactionCollection(final List<Operaction> operactionList) {
-		this._operactionList = operactionList;
+		_operactionList = operactionList;
 	}
 
 	/**
@@ -1643,18 +1640,11 @@ public class Event implements Serializable {
 	 *            the value of field 'operinstruct'.
 	 */
 	public void setOperinstruct(final String operinstruct) {
-		this._operinstruct = operinstruct;
+		_operinstruct = operinstruct;
 	}
 
-	/**
-	 * Sets the value of field 'parms'. The field 'parms' has the following
-	 * description: The varbinds from the trap
-	 * 
-	 * @param parms
-	 *            the value of field 'parms'.
-	 */
-	public void setParms(final Parms parms) {
-		this._parms = parms;
+	public void setParmCollection(final List<Parm> parms) {
+	    _parms = parms;
 	}
 
 	/**
@@ -1665,7 +1655,7 @@ public class Event implements Serializable {
 	 *            the value of field 'pathoutage'.
 	 */
 	public void setPathoutage(final String pathoutage) {
-		this._pathoutage = pathoutage;
+		_pathoutage = pathoutage;
 	}
 
 	/**
@@ -1678,11 +1668,11 @@ public class Event implements Serializable {
 	 */
 	public void setScript(final int index, final Script vScript) throws IndexOutOfBoundsException {
 		// check bounds for index
-		if (index < 0 || index >= this._scriptList.size()) {
-			throw new IndexOutOfBoundsException("setScript: Index value '" + index + "' not in range [0.." + (this._scriptList.size() - 1) + "]");
+		if (index < 0 || index >= _scriptList.size()) {
+			throw new IndexOutOfBoundsException("setScript: Index value '" + index + "' not in range [0.." + (_scriptList.size() - 1) + "]");
 		}
 
-		this._scriptList.set(index, vScript);
+		_scriptList.set(index, vScript);
 	}
 
 	/**
@@ -1695,7 +1685,7 @@ public class Event implements Serializable {
 		_scriptList.clear();
 
 		for (int i = 0; i < vScriptArray.length; i++) {
-			this._scriptList.add(vScriptArray[i]);
+			_scriptList.add(vScriptArray[i]);
 		}
 	}
 
@@ -1708,9 +1698,9 @@ public class Event implements Serializable {
 	 */
 	public void setScript(final List<Script> vScriptList) {
 		// copy vector
-		this._scriptList.clear();
+		_scriptList.clear();
 
-		this._scriptList.addAll(vScriptList);
+		_scriptList.addAll(vScriptList);
 	}
 
 	/**
@@ -1723,7 +1713,7 @@ public class Event implements Serializable {
 	 *            the Vector to set.
 	 */
 	public void setScriptCollection(final List<Script> scriptList) {
-		this._scriptList = scriptList;
+		_scriptList = scriptList;
 	}
 
 	/**
@@ -1734,7 +1724,7 @@ public class Event implements Serializable {
 	 *            the value of field 'service'.
 	 */
 	public void setService(final String service) {
-		this._service = service;
+		_service = service;
 	}
 
 	/**
@@ -1745,7 +1735,7 @@ public class Event implements Serializable {
 	 *            the value of field 'severity'.
 	 */
 	public void setSeverity(final String severity) {
-		this._severity = severity;
+		_severity = severity;
 	}
 
 	/**
@@ -1756,7 +1746,7 @@ public class Event implements Serializable {
 	 *            the value of field 'snmp'.
 	 */
 	public void setSnmp(final Snmp snmp) {
-		this._snmp = snmp;
+		_snmp = snmp;
 	}
 
 	/**
@@ -1767,7 +1757,7 @@ public class Event implements Serializable {
 	 *            the value of field 'snmphost'.
 	 */
 	public void setSnmphost(final String snmphost) {
-		this._snmphost = snmphost;
+		_snmphost = snmphost;
 	}
 
 	/**
@@ -1777,7 +1767,7 @@ public class Event implements Serializable {
 	 *            the value of field 'source'.
 	 */
 	public void setSource(final String source) {
-		this._source = source;
+		_source = source;
 	}
 
 	/**
@@ -1791,7 +1781,7 @@ public class Event implements Serializable {
 	 *            the value of field 'time'.
 	 */
 	public void setTime(final String time) {
-		this._time = time;
+		_time = time;
 	}
 
 	/**
@@ -1802,7 +1792,7 @@ public class Event implements Serializable {
 	 *            the value of field 'tticket'.
 	 */
 	public void setTticket(final Tticket tticket) {
-		this._tticket = tticket;
+		_tticket = tticket;
 	}
 
 	/**
@@ -1813,7 +1803,7 @@ public class Event implements Serializable {
 	 *            the value of field 'uei'.
 	 */
 	public void setUei(final String uei) {
-		this._uei = uei;
+		_uei = uei;
 	}
 
 	/**
@@ -1823,7 +1813,7 @@ public class Event implements Serializable {
 	 *            the value of field 'uuid'.
 	 */
 	public void setUuid(final String uuid) {
-		this._uuid = uuid;
+		_uuid = uuid;
 	}
 
 	public String toString() {

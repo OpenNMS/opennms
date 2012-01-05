@@ -35,14 +35,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
 
 /**
  * <p>DefaultCapsdConfigManager class.</p>
@@ -63,18 +62,6 @@ public class DefaultCapsdConfigManager extends CapsdConfigManager {
         super();
     }
   
-    /**
-     * <p>Constructor for DefaultCapsdConfigManager.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public DefaultCapsdConfigManager(Reader rdr) throws MarshalException, ValidationException {
-        super(rdr);
-    }
-
     /**
      * <p>Constructor for DefaultCapsdConfigManager.</p>
      *

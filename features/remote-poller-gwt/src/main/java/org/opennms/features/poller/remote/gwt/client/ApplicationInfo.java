@@ -46,6 +46,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @since 1.8.1
  */
 public class ApplicationInfo implements Serializable, IsSerializable, Comparable<ApplicationInfo> {
+	private static final long serialVersionUID = -9015282422845077117L;
 	private Integer m_id;
 	private String m_name;
 	private Set<GWTMonitoredService> m_services;

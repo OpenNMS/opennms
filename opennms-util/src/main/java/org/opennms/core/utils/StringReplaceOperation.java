@@ -48,8 +48,9 @@ public abstract class StringReplaceOperation {
         if (spec == null) spec = "";
         Matcher specMatcher = Pattern.compile("^s/([^/]+)/([^/]*)/$").matcher(spec);
         if (specMatcher.matches()) {
-            m_pattern = specMatcher.group(1);
-            m_replacement = specMatcher.group(2);
+            // Intern these strings to save RAM
+            m_pattern = specMatcher.group(1).intern();
+            m_replacement = specMatcher.group(2).intern();
         } else {
             throw new IllegalArgumentException("Specification '" + spec + "' is invalid; must be of the form s/pattern/replacement/ with no trailing modifiers");
         }

@@ -44,6 +44,9 @@ import java.util.TreeSet;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 public class LocationMonitorState implements Serializable, IsSerializable {
+
+	private static final long serialVersionUID = -7846127073655210004L;
+
 	private Set<GWTLocationMonitor> m_monitorsStarted = new HashSet<GWTLocationMonitor>();
 	private Set<GWTLocationMonitor> m_monitorsStopped = new HashSet<GWTLocationMonitor>();
 	private Set<GWTLocationMonitor> m_monitorsDisconnected = new HashSet<GWTLocationMonitor>();

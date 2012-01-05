@@ -41,6 +41,7 @@ import java.util.TreeMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockService;
@@ -99,7 +100,7 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
         </event>
          */
         
-        EventBuilder bldr = new EventBuilder("uei.opennms.org/threshold/highThresholdExceeded", "testExpandNotifParms");
+        EventBuilder bldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "testExpandNotifParms");
 
         bldr.setDescription("High threshold exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
         bldr.setLogMessage("High threshold exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");

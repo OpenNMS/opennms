@@ -49,6 +49,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  * @version $Id: $
  * @since 1.8.1
  */
+@SuppressWarnings("deprecation")
 public class AdminRancidCloginDeleteController extends SimpleFormController {
     
     InventoryService m_inventoryService;

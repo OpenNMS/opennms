@@ -11,6 +11,22 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -22,8 +38,10 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name="mask")
+@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("serial")
-public class Mask implements java.io.Serializable {
+public class Mask implements Serializable {
 
 
       //--------------------------/
@@ -33,12 +51,14 @@ public class Mask implements java.io.Serializable {
     /**
      * The mask element
      */
-    private java.util.List<org.opennms.netmgt.xml.eventconf.Maskelement> _maskelementList;
+	@XmlElement(name="maskelement")
+    private List<Maskelement> m_maskelementList;
 
     /**
      * The varbind element
      */
-    private java.util.List<org.opennms.netmgt.xml.eventconf.Varbind> _varbindList;
+	@XmlElement(name="varbind")
+    private List<Varbind> m_varbindList;
 
 
       //----------------/
@@ -47,8 +67,8 @@ public class Mask implements java.io.Serializable {
 
     public Mask() {
         super();
-        this._maskelementList = new java.util.ArrayList<org.opennms.netmgt.xml.eventconf.Maskelement>();
-        this._varbindList = new java.util.ArrayList<org.opennms.netmgt.xml.eventconf.Varbind>();
+        this.m_maskelementList = new ArrayList<Maskelement>();
+        this.m_varbindList = new ArrayList<Varbind>();
     }
 
 
@@ -64,9 +84,9 @@ public class Mask implements java.io.Serializable {
      * given is outside the bounds of the collection
      */
     public void addMaskelement(
-            final org.opennms.netmgt.xml.eventconf.Maskelement vMaskelement)
+            final Maskelement vMaskelement)
     throws java.lang.IndexOutOfBoundsException {
-        this._maskelementList.add(vMaskelement);
+        this.m_maskelementList.add(vMaskelement);
     }
 
     /**
@@ -79,9 +99,9 @@ public class Mask implements java.io.Serializable {
      */
     public void addMaskelement(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Maskelement vMaskelement)
+            final Maskelement vMaskelement)
     throws java.lang.IndexOutOfBoundsException {
-        this._maskelementList.add(index, vMaskelement);
+        this.m_maskelementList.add(index, vMaskelement);
     }
 
     /**
@@ -92,9 +112,9 @@ public class Mask implements java.io.Serializable {
      * given is outside the bounds of the collection
      */
     public void addVarbind(
-            final org.opennms.netmgt.xml.eventconf.Varbind vVarbind)
+            final Varbind vVarbind)
     throws java.lang.IndexOutOfBoundsException {
-        this._varbindList.add(vVarbind);
+        this.m_varbindList.add(vVarbind);
     }
 
     /**
@@ -107,9 +127,9 @@ public class Mask implements java.io.Serializable {
      */
     public void addVarbind(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Varbind vVarbind)
+            final Varbind vVarbind)
     throws java.lang.IndexOutOfBoundsException {
-        this._varbindList.add(index, vVarbind);
+        this.m_varbindList.add(index, vVarbind);
     }
 
     /**
@@ -118,9 +138,9 @@ public class Mask implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<org.opennms.netmgt.xml.eventconf.Maskelement> enumerateMaskelement(
+    public Enumeration<Maskelement> enumerateMaskelement(
     ) {
-        return java.util.Collections.enumeration(this._maskelementList);
+        return Collections.enumeration(this.m_maskelementList);
     }
 
     /**
@@ -129,9 +149,9 @@ public class Mask implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<org.opennms.netmgt.xml.eventconf.Varbind> enumerateVarbind(
+    public Enumeration<Varbind> enumerateVarbind(
     ) {
-        return java.util.Collections.enumeration(this._varbindList);
+        return Collections.enumeration(this.m_varbindList);
     }
 
     /**
@@ -149,19 +169,19 @@ public class Mask implements java.io.Serializable {
         if (obj instanceof Mask) {
         
             Mask temp = (Mask)obj;
-            if (this._maskelementList != null) {
-                if (temp._maskelementList == null) return false;
-                else if (!(this._maskelementList.equals(temp._maskelementList))) 
+            if (this.m_maskelementList != null) {
+                if (temp.m_maskelementList == null) return false;
+                else if (!(this.m_maskelementList.equals(temp.m_maskelementList))) 
                     return false;
             }
-            else if (temp._maskelementList != null)
+            else if (temp.m_maskelementList != null)
                 return false;
-            if (this._varbindList != null) {
-                if (temp._varbindList == null) return false;
-                else if (!(this._varbindList.equals(temp._varbindList))) 
+            if (this.m_varbindList != null) {
+                if (temp.m_varbindList == null) return false;
+                else if (!(this.m_varbindList.equals(temp.m_varbindList))) 
                     return false;
             }
-            else if (temp._varbindList != null)
+            else if (temp.m_varbindList != null)
                 return false;
             return true;
         }
@@ -175,18 +195,18 @@ public class Mask implements java.io.Serializable {
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.opennms.netmgt.xml.eventconf.Maskelement at the given
+     * Maskelement at the given
      * index
      */
-    public org.opennms.netmgt.xml.eventconf.Maskelement getMaskelement(
+    public Maskelement getMaskelement(
             final int index)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._maskelementList.size()) {
-            throw new IndexOutOfBoundsException("getMaskelement: Index value '" + index + "' not in range [0.." + (this._maskelementList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_maskelementList.size()) {
+            throw new IndexOutOfBoundsException("getMaskelement: Index value '" + index + "' not in range [0.." + (this.m_maskelementList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.xml.eventconf.Maskelement) _maskelementList.get(index);
+        return (Maskelement) m_maskelementList.get(index);
     }
 
     /**
@@ -198,10 +218,10 @@ public class Mask implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public org.opennms.netmgt.xml.eventconf.Maskelement[] getMaskelement(
+    public Maskelement[] getMaskelement(
     ) {
-        org.opennms.netmgt.xml.eventconf.Maskelement[] array = new org.opennms.netmgt.xml.eventconf.Maskelement[0];
-        return (org.opennms.netmgt.xml.eventconf.Maskelement[]) this._maskelementList.toArray(array);
+        Maskelement[] array = new Maskelement[0];
+        return (Maskelement[]) this.m_maskelementList.toArray(array);
     }
 
     /**
@@ -211,9 +231,9 @@ public class Mask implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<org.opennms.netmgt.xml.eventconf.Maskelement> getMaskelementCollection(
+    public List<Maskelement> getMaskelementCollection(
     ) {
-        return this._maskelementList;
+        return this.m_maskelementList;
     }
 
     /**
@@ -223,7 +243,7 @@ public class Mask implements java.io.Serializable {
      */
     public int getMaskelementCount(
     ) {
-        return this._maskelementList.size();
+        return this.m_maskelementList.size();
     }
 
     /**
@@ -233,17 +253,17 @@ public class Mask implements java.io.Serializable {
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.opennms.netmgt.xml.eventconf.Varbind at the given index
+     * Varbind at the given index
      */
-    public org.opennms.netmgt.xml.eventconf.Varbind getVarbind(
+    public Varbind getVarbind(
             final int index)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._varbindList.size()) {
-            throw new IndexOutOfBoundsException("getVarbind: Index value '" + index + "' not in range [0.." + (this._varbindList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_varbindList.size()) {
+            throw new IndexOutOfBoundsException("getVarbind: Index value '" + index + "' not in range [0.." + (this.m_varbindList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.xml.eventconf.Varbind) _varbindList.get(index);
+        return (Varbind) m_varbindList.get(index);
     }
 
     /**
@@ -255,10 +275,10 @@ public class Mask implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public org.opennms.netmgt.xml.eventconf.Varbind[] getVarbind(
+    public Varbind[] getVarbind(
     ) {
-        org.opennms.netmgt.xml.eventconf.Varbind[] array = new org.opennms.netmgt.xml.eventconf.Varbind[0];
-        return (org.opennms.netmgt.xml.eventconf.Varbind[]) this._varbindList.toArray(array);
+        Varbind[] array = new Varbind[0];
+        return (Varbind[]) this.m_varbindList.toArray(array);
     }
 
     /**
@@ -268,9 +288,9 @@ public class Mask implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<org.opennms.netmgt.xml.eventconf.Varbind> getVarbindCollection(
+    public List<Varbind> getVarbindCollection(
     ) {
-        return this._varbindList;
+        return this.m_varbindList;
     }
 
     /**
@@ -280,7 +300,7 @@ public class Mask implements java.io.Serializable {
      */
     public int getVarbindCount(
     ) {
-        return this._varbindList.size();
+        return this.m_varbindList.size();
     }
 
     /**
@@ -293,17 +313,8 @@ public class Mask implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
+        return new HashCodeBuilder(17,37).append(getMaskelement()).append(getVarbind()).toHashCode();
         
-        long tmp;
-        if (_maskelementList != null) {
-           result = 37 * result + _maskelementList.hashCode();
-        }
-        if (_varbindList != null) {
-           result = 37 * result + _varbindList.hashCode();
-        }
-        
-        return result;
     }
 
     /**
@@ -327,9 +338,9 @@ public class Mask implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<org.opennms.netmgt.xml.eventconf.Maskelement> iterateMaskelement(
+    public Iterator<Maskelement> iterateMaskelement(
     ) {
-        return this._maskelementList.iterator();
+        return this.m_maskelementList.iterator();
     }
 
     /**
@@ -338,9 +349,9 @@ public class Mask implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<org.opennms.netmgt.xml.eventconf.Varbind> iterateVarbind(
+    public Iterator<Varbind> iterateVarbind(
     ) {
-        return this._varbindList.iterator();
+        return this.m_varbindList.iterator();
     }
 
     /**
@@ -353,7 +364,7 @@ public class Mask implements java.io.Serializable {
      * object is an invalid instance according to the schema
      */
     public void marshal(
-            final java.io.Writer out)
+            final Writer out)
     throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
         Marshaller.marshal(this, out);
     }
@@ -362,7 +373,7 @@ public class Mask implements java.io.Serializable {
      * 
      * 
      * @param handler
-     * @throws java.io.IOException if an IOException occurs during
+     * @throws IOException if an IOException occurs during
      * marshaling
      * @throws org.exolab.castor.xml.ValidationException if this
      * object is an invalid instance according to the schema
@@ -371,7 +382,7 @@ public class Mask implements java.io.Serializable {
      */
     public void marshal(
             final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    throws IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
         Marshaller.marshal(this, handler);
     }
 
@@ -379,14 +390,14 @@ public class Mask implements java.io.Serializable {
      */
     public void removeAllMaskelement(
     ) {
-        this._maskelementList.clear();
+        this.m_maskelementList.clear();
     }
 
     /**
      */
     public void removeAllVarbind(
     ) {
-        this._varbindList.clear();
+        this.m_varbindList.clear();
     }
 
     /**
@@ -396,8 +407,8 @@ public class Mask implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeMaskelement(
-            final org.opennms.netmgt.xml.eventconf.Maskelement vMaskelement) {
-        boolean removed = _maskelementList.remove(vMaskelement);
+            final Maskelement vMaskelement) {
+        boolean removed = m_maskelementList.remove(vMaskelement);
         return removed;
     }
 
@@ -407,10 +418,10 @@ public class Mask implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public org.opennms.netmgt.xml.eventconf.Maskelement removeMaskelementAt(
+    public Maskelement removeMaskelementAt(
             final int index) {
-        java.lang.Object obj = this._maskelementList.remove(index);
-        return (org.opennms.netmgt.xml.eventconf.Maskelement) obj;
+        java.lang.Object obj = this.m_maskelementList.remove(index);
+        return (Maskelement) obj;
     }
 
     /**
@@ -420,8 +431,8 @@ public class Mask implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeVarbind(
-            final org.opennms.netmgt.xml.eventconf.Varbind vVarbind) {
-        boolean removed = _varbindList.remove(vVarbind);
+            final Varbind vVarbind) {
+        boolean removed = m_varbindList.remove(vVarbind);
         return removed;
     }
 
@@ -431,10 +442,10 @@ public class Mask implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public org.opennms.netmgt.xml.eventconf.Varbind removeVarbindAt(
+    public Varbind removeVarbindAt(
             final int index) {
-        java.lang.Object obj = this._varbindList.remove(index);
-        return (org.opennms.netmgt.xml.eventconf.Varbind) obj;
+        java.lang.Object obj = this.m_varbindList.remove(index);
+        return (Varbind) obj;
     }
 
     /**
@@ -447,14 +458,14 @@ public class Mask implements java.io.Serializable {
      */
     public void setMaskelement(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Maskelement vMaskelement)
+            final Maskelement vMaskelement)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._maskelementList.size()) {
-            throw new IndexOutOfBoundsException("setMaskelement: Index value '" + index + "' not in range [0.." + (this._maskelementList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_maskelementList.size()) {
+            throw new IndexOutOfBoundsException("setMaskelement: Index value '" + index + "' not in range [0.." + (this.m_maskelementList.size() - 1) + "]");
         }
         
-        this._maskelementList.set(index, vMaskelement);
+        this.m_maskelementList.set(index, vMaskelement);
     }
 
     /**
@@ -463,12 +474,12 @@ public class Mask implements java.io.Serializable {
      * @param vMaskelementArray
      */
     public void setMaskelement(
-            final org.opennms.netmgt.xml.eventconf.Maskelement[] vMaskelementArray) {
+            final Maskelement[] vMaskelementArray) {
         //-- copy array
-        _maskelementList.clear();
+        m_maskelementList.clear();
         
         for (int i = 0; i < vMaskelementArray.length; i++) {
-                this._maskelementList.add(vMaskelementArray[i]);
+                this.m_maskelementList.add(vMaskelementArray[i]);
         }
     }
 
@@ -479,11 +490,11 @@ public class Mask implements java.io.Serializable {
      * @param vMaskelementList the Vector to copy.
      */
     public void setMaskelement(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Maskelement> vMaskelementList) {
+            final List<Maskelement> vMaskelementList) {
         // copy vector
-        this._maskelementList.clear();
+        this.m_maskelementList.clear();
         
-        this._maskelementList.addAll(vMaskelementList);
+        this.m_maskelementList.addAll(vMaskelementList);
     }
 
     /**
@@ -494,8 +505,8 @@ public class Mask implements java.io.Serializable {
      * @param maskelementList the Vector to set.
      */
     public void setMaskelementCollection(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Maskelement> maskelementList) {
-        this._maskelementList = maskelementList;
+            final List<Maskelement> maskelementList) {
+        this.m_maskelementList = maskelementList;
     }
 
     /**
@@ -508,14 +519,14 @@ public class Mask implements java.io.Serializable {
      */
     public void setVarbind(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Varbind vVarbind)
+            final Varbind vVarbind)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._varbindList.size()) {
-            throw new IndexOutOfBoundsException("setVarbind: Index value '" + index + "' not in range [0.." + (this._varbindList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_varbindList.size()) {
+            throw new IndexOutOfBoundsException("setVarbind: Index value '" + index + "' not in range [0.." + (this.m_varbindList.size() - 1) + "]");
         }
         
-        this._varbindList.set(index, vVarbind);
+        this.m_varbindList.set(index, vVarbind);
     }
 
     /**
@@ -524,12 +535,12 @@ public class Mask implements java.io.Serializable {
      * @param vVarbindArray
      */
     public void setVarbind(
-            final org.opennms.netmgt.xml.eventconf.Varbind[] vVarbindArray) {
+            final Varbind[] vVarbindArray) {
         //-- copy array
-        _varbindList.clear();
+        m_varbindList.clear();
         
         for (int i = 0; i < vVarbindArray.length; i++) {
-                this._varbindList.add(vVarbindArray[i]);
+                this.m_varbindList.add(vVarbindArray[i]);
         }
     }
 
@@ -540,11 +551,11 @@ public class Mask implements java.io.Serializable {
      * @param vVarbindList the Vector to copy.
      */
     public void setVarbind(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Varbind> vVarbindList) {
+            final List<Varbind> vVarbindList) {
         // copy vector
-        this._varbindList.clear();
+        this.m_varbindList.clear();
         
-        this._varbindList.addAll(vVarbindList);
+        this.m_varbindList.addAll(vVarbindList);
     }
 
     /**
@@ -555,8 +566,8 @@ public class Mask implements java.io.Serializable {
      * @param varbindList the Vector to set.
      */
     public void setVarbindCollection(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Varbind> varbindList) {
-        this._varbindList = varbindList;
+            final List<Varbind> varbindList) {
+        this.m_varbindList = varbindList;
     }
 
     /**
@@ -567,12 +578,12 @@ public class Mask implements java.io.Serializable {
      * null or if any SAXException is thrown during marshaling
      * @throws org.exolab.castor.xml.ValidationException if this
      * object is an invalid instance according to the schema
-     * @return the unmarshaled org.opennms.netmgt.xml.eventconf.Mask
+     * @return the unmarshaled Mask
      */
-    public static org.opennms.netmgt.xml.eventconf.Mask unmarshal(
-            final java.io.Reader reader)
+    public static Mask unmarshal(
+            final Reader reader)
     throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.eventconf.Mask) Unmarshaller.unmarshal(org.opennms.netmgt.xml.eventconf.Mask.class, reader);
+        return (Mask) Unmarshaller.unmarshal(Mask.class, reader);
     }
 
     /**

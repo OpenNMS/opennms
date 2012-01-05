@@ -65,17 +65,16 @@ import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
-import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.databaseReports.DatabaseReports;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
-import org.opennms.netmgt.config.dhcpd.DhcpdConfiguration;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.groups.Groupinfo;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
+import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
 import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.config.linkd.LinkdConfiguration;
@@ -86,8 +85,6 @@ import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfigur
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.opennms.netmgt.config.notifications.Notifications;
-import org.opennms.netmgt.config.nsclient.NsclientConfig;
-import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -120,8 +117,6 @@ import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
-import org.opennms.netmgt.config.xmpConfig.XmpConfig;
-import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
@@ -261,11 +256,11 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testDataCollectionConfiguration() throws Exception {
-        unmarshal("datacollection-config.xml", DatacollectionConfig.class);
+        unmarshalJaxb("datacollection-config.xml", DatacollectionConfig.class);
     }
     @Test
     public void testExampleOldDataCollectionConfiguration() throws Exception {
-        unmarshalExample("old-datacollection-config.xml", DatacollectionConfig.class);
+        unmarshalJaxbExample("old-datacollection-config.xml", DatacollectionConfig.class);
     }
     @Test
     public void testDestinationPaths() throws Exception {
@@ -274,10 +269,6 @@ public class WillItUnmarshalTest {
     @Test
     public void testExampleDestinationPaths() throws Exception {
         unmarshalExample("destinationPaths.xml", DestinationPaths.class);
-    }
-    @Test
-    public void testDhcpdConfiguration() throws Exception {
-        unmarshal("dhcpd-configuration.xml", DhcpdConfiguration.class);
     }
     @Test
     public void testDiscoveryConfiguration() throws Exception {
@@ -366,18 +357,6 @@ public class WillItUnmarshalTest {
     @Test
     public void testExampleNotifications() throws Exception {
         unmarshalExample("notifications.xml", Notifications.class);
-    }
-    @Test
-    public void testNsclientConfiguration() throws Exception {
-        unmarshal("nsclient-config.xml", NsclientConfig.class);
-    }
-    @Test
-    public void testExampleNsclientConfiguration() throws Exception {
-        unmarshalExample("nsclient-config.xml", NsclientConfig.class);
-    }
-    @Test
-    public void testNsclientDataCollectionConfiguration() throws Exception {
-        unmarshal("nsclient-datacollection-config.xml", NsclientDatacollectionConfig.class);
     }
     @Test
     public void testOpennmsDatasources() throws Exception {
@@ -580,14 +559,6 @@ public class WillItUnmarshalTest {
         unmarshalExample("rancid-configuration.xml", RancidConfiguration.class);
     }
     @Test
-    public void testXmpConfig() throws Exception {
-        unmarshal("xmp-config.xml", XmpConfig.class);
-    }
-    @Test
-    public void testXmpDatacollectionConfig() throws Exception {
-        unmarshal("xmp-datacollection-config.xml", XmpDatacollectionConfig.class);
-    }
-    @Test
     public void testMicroblogConfiguration() throws Exception {
         unmarshal("microblog-configuration.xml", MicroblogConfiguration.class);
     }
@@ -635,6 +606,7 @@ public class WillItUnmarshalTest {
         allXml.remove("correlation-engine.xml");
         allXml.remove("drools-engine.xml");
         allXml.remove("nodeParentRules-context.xml");
+        allXml.remove("nsclient-config.xml");
         if (allXml.size() > 0) {
             List<String> files = new ArrayList<String>(allXml);
             Collections.sort(files);
@@ -705,10 +677,9 @@ public class WillItUnmarshalTest {
         for (File includedGroupFile : includedGroupFiles) {
             try {
                 // Be conservative about what we ship, so don't be lenient
-                LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
                 Resource resource = new FileSystemResource(includedGroupFile);
                 System.out.println("Unmarshalling: " + resource.getURI());
-                CastorUtils.unmarshal(DatacollectionGroup.class, resource);
+                JaxbUtils.unmarshal(DatacollectionGroup.class, resource);
             } catch (Throwable t) {
                 throw new RuntimeException("Failed to unmarshal " + includedGroupFile + ": " + t, t);
             }

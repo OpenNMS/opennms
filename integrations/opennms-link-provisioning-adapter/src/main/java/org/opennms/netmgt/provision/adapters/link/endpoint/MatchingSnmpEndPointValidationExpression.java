@@ -68,7 +68,7 @@ public class MatchingSnmpEndPointValidationExpression extends EndPointValidation
     public void validate(EndPoint endPoint) throws EndPointStatusException {
         SnmpValue snmpValue = endPoint.get(m_oid);
         if(snmpValue == null) {
-            throw new EndPointStatusException("unable to validate endpoint " + endPoint + ": could not retreive a value from snmp agent that matches " + m_value);
+            throw new EndPointStatusException("unable to validate endpoint " + endPoint + ": could not retreive a value from SNMP agent that matches " + m_value);
         }
         String value = snmpValue.toString();
         if(value != null && value.matches(m_value)) {

@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
@@ -146,5 +147,8 @@ public abstract class AbstractCollectionResource implements CollectionResource {
         return null;
     }
     
+    public TimeKeeper getTimeKeeper() {
+        return null;
+    }
 
 }

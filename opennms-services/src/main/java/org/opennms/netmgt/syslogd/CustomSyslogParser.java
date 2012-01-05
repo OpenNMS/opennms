@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,98 +37,181 @@ import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 
 public class CustomSyslogParser extends SyslogParser {
-    private static final Pattern m_syslogPattern = Pattern.compile("^<(\\d{1,3})>(\\d{0,2}) ?(\\S+?):? (?:(\\d\\d\\d\\d-\\d\\d-\\d\\d) )?(?:(\\S+) )(?:(\\S+?)(?:\\[(\\d+)\\])?: ){0,1}(\\S.*?)$", Pattern.MULTILINE);
-    private static Pattern m_forwardingPattern;
-    private static int m_matchingGroupHost;
-    private static int m_matchingGroupMessage;
+    private static final Pattern m_messageIdPattern = Pattern.compile("^((\\S+):\\s*)");
+    private static final Pattern m_datePattern = Pattern.compile("^((\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s+)");
+    private static final Pattern m_oldDatePattern = Pattern.compile("^\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+");
+
+    private Pattern m_forwardingPattern;
+    private int m_matchingGroupHost;
+    private int m_matchingGroupMessage;
 
     protected CustomSyslogParser(final String text) throws SyslogParserException {
         super(text);
-        if (m_forwardingPattern == null) {
-            final SyslogdConfig config = SyslogdConfigFactory.getInstance();
-            final String forwardingRegexp = config.getForwardingRegexp();
-            if (forwardingRegexp == null || forwardingRegexp.length() == 0) {
-                throw new SyslogParserException("no forwarding regular expression defined");
-            }
-            m_forwardingPattern = Pattern.compile(forwardingRegexp, Pattern.MULTILINE);
-            m_matchingGroupHost = config.getMatchingGroupHost();
-            m_matchingGroupMessage = config.getMatchingGroupMessage();
+
+        final SyslogdConfig config = SyslogdConfigFactory.getInstance();
+        final String forwardingRegexp = config.getForwardingRegexp();
+        if (forwardingRegexp == null || forwardingRegexp.length() == 0) {
+            throw new SyslogParserException("no forwarding regular expression defined");
         }
+        m_forwardingPattern = Pattern.compile(forwardingRegexp, Pattern.MULTILINE);
+        m_matchingGroupHost = config.getMatchingGroupHost();
+        m_matchingGroupMessage = config.getMatchingGroupMessage();
     }
 
     public static SyslogParser getParser(final String text) throws SyslogParserException {
         return new CustomSyslogParser(text);
     }
 
-    protected Pattern getPattern() {
-        return m_forwardingPattern;
-    }
-
     public SyslogMessage parse() throws SyslogParserException {
+        final SyslogMessage syslogMessage = new SyslogMessage();
+
+        String message = getText();
+
+        int lbIdx = message.indexOf('<');
+        int rbIdx = message.indexOf('>');
+
+        if (lbIdx < 0 || rbIdx < 0 || lbIdx >= (rbIdx - 1)) {
+            LogUtils.warnf(this, "Syslogd received an unparsable message!");
+        }
+
+        int priCode = 0;
+        String priStr = message.substring(lbIdx + 1, rbIdx);
+
+        try {
+            priCode = Integer.parseInt(priStr);
+        } catch (final NumberFormatException ex) {
+            LogUtils.debugf(this, "ERROR Bad priority code '%s'", priStr);
+
+        }
+
+        LogUtils.tracef(this, "priority code = %d", priCode);
+
+        syslogMessage.setFacility(SyslogFacility.getFacilityForCode(priCode));
+        syslogMessage.setSeverity(SyslogSeverity.getSeverityForCode(priCode));
+
+        message = message.substring(rbIdx + 1, message.length());
+
+        final Matcher idMatcher = m_messageIdPattern.matcher(message);
+        if (idMatcher.find()) {
+            final String messageId = idMatcher.group(2);
+            LogUtils.tracef(this, "found message ID '%s'", messageId);
+            syslogMessage.setMessageID(messageId);
+            message = message.substring(idMatcher.group(1).length() - 1);
+        }
+
+        LogUtils.tracef(this, "message = %s", message);
+        
+        Matcher oldDateMatcher = m_oldDatePattern.matcher(message);
+        if (!oldDateMatcher.find()) {
+            oldDateMatcher = null;
+        }
+        LogUtils.tracef(this, "stdMsg = %s", Boolean.toString(oldDateMatcher != null));
+        
         if (!this.find()) {
             if (traceEnabled()) {
-                LogUtils.tracef(this, "'%s' did not match '%s'", m_forwardingPattern, getText());
+                LogUtils.tracef(this, "Lenient Syslog pattern '%s' did not match '%s'", getPattern(), getText());
             }
             return null;
         }
 
-        final Matcher forwardingMatcher = getMatcher();
+        String timestamp;
 
-        final SyslogMessage message = new SyslogMessage();
-
-        final Matcher syslogMatcher = m_syslogPattern.matcher(getText());
-        if (syslogMatcher.matches()) {
-            try {
-                int priorityField = Integer.parseInt(syslogMatcher.group(1));
-                message.setFacility(getFacility(priorityField));
-                message.setSeverity(getSeverity(priorityField));
-            } catch (final NumberFormatException e) {
-                LogUtils.debugf(this, e, "Unable to parse priority field '%s' from text: %s", syslogMatcher.group(1), getText());
-            }
-
-            final String version = syslogMatcher.group(2);
-            if (version != null && version.length() > 0) {
+        if (oldDateMatcher == null) {
+            final Matcher stampMatcher = m_datePattern.matcher(message);
+            if (stampMatcher.find()) {
+                timestamp = stampMatcher.group(2);
+                LogUtils.tracef(this, "found timestamp '%s'", timestamp);
+//                message = message.substring(stampMatcher.group(1).length());
+            } else {
                 try {
-                    message.setVersion(Integer.parseInt(version));
-                } catch (final NumberFormatException e) {
-                    LogUtils.debugf(this, e, "Unable to parse version field '%s' from text: %s", version, getText());
+                    timestamp = SyslogTimeStamp.getInstance().format(new Date());
+                } catch (IllegalArgumentException ex) {
+                    LogUtils.debugf(this, "ERROR INTERNAL DATE ERROR!");
+                    timestamp = "";
                 }
             }
+        } else {
+            timestamp = oldDateMatcher.group(1);
+            message = oldDateMatcher.replaceFirst("");
+        }
 
-            message.setMessageID(syslogMatcher.group(3));
+        LogUtils.tracef(this, "timestamp = %s", timestamp);
+        syslogMessage.setDate(parseDate(timestamp));
+        
+        // These 2 debugs will aid in analyzing the regexes as syslog seems
+        // to differ a lot depending on implementation or message structure.
+
+        if (LogUtils.isTraceEnabled(this)) {
+            LogUtils.tracef(this, "message = %s", message);
+            LogUtils.tracef(this, "pattern = %s", m_forwardingPattern);
+            LogUtils.tracef(this, "host group = %d", m_matchingGroupHost);
+            LogUtils.tracef(this, "message group = %d", m_matchingGroupMessage);
+        }
+
+        // We will also here find out if, the host needs to
+        // be replaced, the message matched to a UEI, and
+        // last if we need to actually hide the message.
+        // this being potentially helpful in avoiding showing
+        // operator a password or other data that should be
+        // confidential.
+
+        final Pattern pattern = m_forwardingPattern;
+        final Matcher m = pattern.matcher(message);
+
+        /*
+         * We matched on a regexp for host/message pair.
+         * This can be a forwarded message as in BSD Style
+         * or syslog-ng.
+         */
+
+        if (m.matches()) {
+
+            final String matchedMessage = m.group(m_matchingGroupMessage);
+            syslogMessage.setMatchedMessage(matchedMessage);
+
+            if (LogUtils.isTraceEnabled(this)) {
+                LogUtils.tracef(this, "Syslog message '%s' matched regexp '%s'", message, m_forwardingPattern);
+                LogUtils.tracef(this, "Found host '%s'", m.group(m_matchingGroupHost));
+                LogUtils.tracef(this, "Found message '%s'", matchedMessage);
+            }
+
+            syslogMessage.setHostName(m.group(m_matchingGroupHost));
             
+            message = matchedMessage;
+        } else {
+            LogUtils.debugf(this, "Regexp not matched: %s", message);            
+            return null;
+        }
+
+        lbIdx = message.indexOf('[');
+        rbIdx = message.indexOf(']');
+        final int colonIdx = message.indexOf(':');
+        final int spaceIdx = message.indexOf(' ');
+
+        int processId = 0;
+        String processName = "";
+        String processIdStr = "";
+
+        if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
+            processName = message.substring(0, lbIdx);
+            processIdStr = message.substring(lbIdx + 1, rbIdx);
+            message = message.substring(colonIdx + 2);
+
             try {
-                final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                message.setDate(df.parse(syslogMatcher.group(4)));
-            } catch (final Exception e) {
-                LogUtils.debugf(this, e, "Unable to parse date '%s' from text: %s", syslogMatcher.group(4), getText());
+                processId = Integer.parseInt(processIdStr);
+            } catch (NumberFormatException ex) {
+                LogUtils.debugf(this, "Bad process id '%s'", processIdStr);
+                processId = 0;
             }
-
-            message.setHostName(syslogMatcher.group(5));
-
-            message.setProcessName(syslogMatcher.group(6));
-            if (syslogMatcher.group(7) != null) {
-                try {
-                    final Integer pid = Integer.parseInt(syslogMatcher.group(7));
-                    message.setProcessId(pid);
-                } catch (final NumberFormatException nfe) {
-                    LogUtils.debugf(this, nfe, "Unable to parse '%s' as a process ID.", syslogMatcher.group(7));
-                }
-            }
-            message.setMessage(syslogMatcher.group(8));
+        } else if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
+            processName = message.substring(0, colonIdx);
+            message = message.substring(colonIdx + 2);
         }
 
-        if (message.getDate() == null) {
-            message.setDate(new Date());
-        }
-        if (message.getHostName() == null) {
-            message.setHostName(forwardingMatcher.group(m_matchingGroupHost));
-        }
-        if (message.getMessage() == null) {
-            message.setMessage(forwardingMatcher.group(m_matchingGroupMessage));
-        }
+        syslogMessage.setProcessId(processId);
+        syslogMessage.setProcessName(processName);
+        syslogMessage.setMessage(message);
 
-        return message;
+        return syslogMessage;
     }
 }

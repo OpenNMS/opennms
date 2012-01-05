@@ -29,23 +29,31 @@
 package org.opennms.netmgt.provision.scan.snmp;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.provision.ScanContext;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.mock.MockLogAppender;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
+})
+@JUnitSnmpAgent(host=SnmpNodeScannerTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties")
 public class SnmpNodeScannerTest {
+	static final String TEST_IP_ADDRESS = "172.20.1.205";
+	
+	@Autowired
+	private SnmpPeerFactory m_snmpPeerFactory;
     
     /**
      * @author brozow
@@ -110,54 +118,22 @@ public class SnmpNodeScannerTest {
     }
 
     private InetAddress m_agentAddress;
-    private SnmpAgentConfig m_agentConfig;
     private MockScanContext m_scanContext;
-    private MockSnmpAgent m_agent;
-    private static final Integer AGENT_PORT = 9161;
     
-    private SnmpAgentConfigFactory snmpAgentConfigFactory() {
-        return snmpAgentConfigFactory(m_agentConfig);
-    }
-    
-    private SnmpAgentConfigFactory snmpAgentConfigFactory(final SnmpAgentConfig config) {
-        return new SnmpAgentConfigFactory() {
-
-            public SnmpAgentConfig getAgentConfig(InetAddress address) {
-                assertEquals(config.getAddress(), address);
-                return config;
-            }
-            
-        };
-    }
-
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        m_agentAddress = InetAddress.getLocalHost();
-        
-        m_agent = MockSnmpAgent.createAgentAndRun(
-            new ClassPathResource("org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties"),
-            InetAddressUtils.str(m_agentAddress)+"/"+AGENT_PORT
-        );
-        
-        m_agentConfig = new SnmpAgentConfig(m_agentAddress);
-        m_agentConfig.setPort(AGENT_PORT);
-        
+        m_agentAddress = InetAddressUtils.addr(TEST_IP_ADDRESS);
         m_scanContext = new MockScanContext(m_agentAddress);
 
     }
 
-    @After
-    public void tearDown() throws Exception {
-        m_agent.shutDownAndWait();
-    }
-    
     @Test
     public void testScan() throws Exception {
 
-        SnmpNodeScanner scanner = new SnmpNodeScanner();
-        scanner.setSnmpAgentConfigFactory(snmpAgentConfigFactory());
+    	final SnmpNodeScanner scanner = new SnmpNodeScanner();
+        scanner.setSnmpAgentConfigFactory(m_snmpPeerFactory);
         scanner.init();
         scanner.scan(m_scanContext);
         
@@ -166,23 +142,5 @@ public class SnmpNodeScannerTest {
         assertEquals("Darwin brozow.local 7.9.0 Darwin Kernel Version 7.9.0: Wed Mar 30 20:11:17 PST 2005; root:xnu/xnu-517.12.7.obj~1/RELEASE_PPC  Power Macintosh", m_scanContext.getSysDescription());
         assertEquals("Unknown", m_scanContext.getSysLocation());
         assertEquals("root@@no.where", m_scanContext.getSysContact());
-    }
-
-    @Test
-    @Ignore("this will only work on the OpenNMS internal network ;)")
-    public void testOpennmsRouter() throws Exception {
-        InetAddress agent = InetAddressUtils.addr("172.20.1.1");
-        MockScanContext context = new MockScanContext(agent);
-        SnmpNodeScanner scanner = new SnmpNodeScanner();
-        SnmpAgentConfig ac = new SnmpAgentConfig(agent);
-        scanner.setSnmpAgentConfigFactory(snmpAgentConfigFactory(ac));
-        scanner.init();
-        scanner.scan(context);
-
-        assertTrue(context.getSysDescription().startsWith("Cisco IOS Software, C870 Software"));
-        assertEquals(".1.3.6.1.4.1.9.1.569", context.getSysObjectId());
-        assertEquals("", context.getSysContact());
-        assertEquals("", context.getSysLocation());
-        assertEquals("internal.opennms.com", context.getSysName());
     }
 }

@@ -45,7 +45,7 @@ public class Main {
             ApplicationContext appContext = new ClassPathXmlApplicationContext("/META-INF/modelImport-appContext.xml");
             Provisioner importer = (Provisioner)appContext.getBean("modelImporter");
             Resource resource = new FileSystemResource(args[0]);
-            importer.importModelFromResource(resource);            
+            importer.importModelFromResource(resource, true);            
         } catch (Throwable e) {
             e.printStackTrace();
         }

@@ -261,7 +261,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
                 "Y",
                 e.getTticket() == null ? "" : e.getTticket().getContent(),
                 Integer.valueOf(e.getTticket() == null ? "0" : e.getTticket().getState()),
-                e.getParms() == null ? null : Parameter.format(e.getParms()),
+                Parameter.format(e)
         };
         e.setDbid(eventId.intValue());
         update("insert into events (" +

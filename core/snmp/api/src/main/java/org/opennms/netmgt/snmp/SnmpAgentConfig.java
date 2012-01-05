@@ -31,8 +31,10 @@ package org.opennms.netmgt.snmp;
 import java.net.InetAddress;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 
 /**
@@ -61,8 +63,8 @@ public class SnmpAgentConfig extends SnmpConfiguration {
 
     public String toString() {
         StringBuffer buff = new StringBuffer("AgentConfig[");
-        buff.append("Address: "+getAddress());
-        buff.append(", ProxyForAddress: "+getProxyFor());
+        buff.append("Address: "+InetAddressUtils.str(m_address));
+        buff.append(", ProxyForAddress: "+InetAddressUtils.str(m_proxyFor));
         buff.append(", Port: "+getPort());
         buff.append(", Community: "+getReadCommunity());
         buff.append(", Timeout: "+getTimeout());
@@ -93,6 +95,7 @@ public class SnmpAgentConfig extends SnmpConfiguration {
         m_address = address;
     }
 
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     public InetAddress getProxyFor() {
         return m_proxyFor;
     }
@@ -101,4 +104,10 @@ public class SnmpAgentConfig extends SnmpConfiguration {
         m_proxyFor = address;
     }
     
+    @XmlTransient
+    public InetAddress getEffectiveAddress() {
+    	if (m_proxyFor == null) return m_address;
+    	return m_proxyFor;
+    }
+
 }

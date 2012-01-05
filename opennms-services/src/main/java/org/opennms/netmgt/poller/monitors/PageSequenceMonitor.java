@@ -28,20 +28,15 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -51,14 +46,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLContextSpi;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSessionContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.http.Header;
@@ -88,6 +76,9 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
+import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
+import org.opennms.core.utils.HttpResponseRange;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.ParameterMap;
@@ -108,7 +99,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  * of the HTTP service on remote interfaces. The class implements the ServiceMonitor interface
  * that allows it to be used along with other plug-ins by the service poller framework.
  *
- * @author ranger
+ * @author <a mailto:brozow@opennms.org>Mathew Brozowski</a>
  * @version $Id: $
  */
 @Distributable
@@ -142,7 +133,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
     }
     
     private static final int DEFAULT_SEQUENCE_RETRY = 0;
-    
+
+    //FIXME: This should be wired with Spring
     // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
     // is available to JSSE
     static {
@@ -162,93 +154,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
         public PageSequenceMonitorException(String message, Throwable cause) {
             super(message, cause);
-        }
-    }
-
-    private static final class EmptyKeyRelaxedTrustProvider extends Provider {
-        private static final long serialVersionUID = -543349021655585769L;
-
-        protected EmptyKeyRelaxedTrustProvider() {
-            super(EmptyKeyRelaxedTrustSSLContext.ALGORITHM + "Provider", 1.0, null);
-            put(
-                "SSLContext." + EmptyKeyRelaxedTrustSSLContext.ALGORITHM,
-                EmptyKeyRelaxedTrustSSLContext.class.getName()
-            );
-        }
-    }
-
-    public static final class EmptyKeyRelaxedTrustSSLContext extends SSLContextSpi {
-        public static final String ALGORITHM = "EmptyKeyRelaxedTrust";
-
-        private final SSLContext m_delegate;
-
-        public EmptyKeyRelaxedTrustSSLContext() {
-            SSLContext customContext = null;
-
-            try {
-                // Use a blank list of key managers so no SSL keys will be available
-                KeyManager[] keyManager = null;
-                TrustManager[] trustManagers = { new X509TrustManager() {
-
-                    public void checkClientTrusted(X509Certificate[] chain,
-                            String authType) throws CertificateException {
-                        // Perform no checks
-                    }
-
-                    public void checkServerTrusted(X509Certificate[] chain,
-                            String authType) throws CertificateException {
-                        // Perform no checks
-                    }
-
-                    public X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }}
-                };
-                customContext = SSLContext.getInstance("SSL");
-                customContext.init(keyManager, trustManagers, new java.security.SecureRandom());
-            } catch (NoSuchAlgorithmException e) {
-                // Should never happen
-                ThreadCategory.getInstance(this.getClass()).error("Could not find SSL algorithm in JVM", e);
-            } catch (KeyManagementException e) {
-                // Should never happen
-                ThreadCategory.getInstance(this.getClass()).error("Could not find SSL algorithm in JVM", e);
-            }
-            m_delegate = customContext;
-        }
-
-        @Override
-        protected SSLEngine engineCreateSSLEngine() {
-            return m_delegate.createSSLEngine();
-        }
-
-        @Override
-        protected SSLEngine engineCreateSSLEngine(String arg0, int arg1) {
-            return m_delegate.createSSLEngine(arg0, arg1);
-        }
-
-        @Override
-        protected SSLSessionContext engineGetClientSessionContext() {
-            return m_delegate.getClientSessionContext();
-        }
-
-        @Override
-        protected SSLSessionContext engineGetServerSessionContext() {
-            return m_delegate.getServerSessionContext();
-        }
-
-        @Override
-        protected SSLServerSocketFactory engineGetServerSocketFactory() {
-            return m_delegate.getServerSocketFactory();
-        }
-
-        @Override
-        protected javax.net.ssl.SSLSocketFactory engineGetSocketFactory() {
-            return m_delegate.getSocketFactory();
-        }
-
-        @Override
-        protected void engineInit(KeyManager[] km, TrustManager[] tm, SecureRandom arg2) throws KeyManagementException {
-            // Don't do anything, we've already initialized everything in the constructor
         }
     }
 
@@ -323,42 +228,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
         private ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
-        }
-    }
-
-    public static class HttpResponseRange {
-        private static final Pattern RANGE_PATTERN = Pattern.compile("([1-5][0-9][0-9])(?:-([1-5][0-9][0-9]))?");
-        private final int m_begin;
-        private final int m_end;
-
-        HttpResponseRange(String rangeSpec) {
-            Matcher matcher = RANGE_PATTERN.matcher(rangeSpec);
-            if (!matcher.matches()) {
-                throw new IllegalArgumentException("Invalid range spec: " + rangeSpec);
-            }
-
-            String beginSpec = matcher.group(1);
-            String endSpec = matcher.group(2);
-
-            m_begin = Integer.parseInt(beginSpec);
-
-            if (endSpec == null) {
-                m_end = m_begin;
-            } else {
-                m_end = Integer.parseInt(endSpec);
-            }
-        }
-
-        public boolean contains(int responseCode) {
-            return (m_begin <= responseCode && responseCode <= m_end);
-        }
-
-        public String toString() {
-            if (m_begin == m_end) {
-                return Integer.toString(m_begin);
-            } else {
-                return Integer.toString(m_begin) + '-' + Integer.toString(m_end);
-            }
         }
     }
 
@@ -468,15 +337,13 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
                 if ("https".equals(uri.getScheme())) {
                     if (Boolean.parseBoolean(m_page.getDisableSslVerification())) {
-                        SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
-                        Scheme https = registry.getScheme("https");
+                        final SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
+                        final Scheme https = registry.getScheme("https");
+
                         // Override the trust validation with a lenient implementation
-                        SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM));
+                        final SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
-                        // @see http://hc.apache.org/httpcomponents-client-4.0.1/tutorial/html/connmgmt.html
-                        factory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-                        Scheme lenient = new Scheme(https.getName(), factory, https.getDefaultPort());
+                        final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
                         // This will replace the existing "https" schema
                         registry.register(lenient);
                     }
@@ -486,8 +353,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     method.setQueryParameters(expandParms(svc));
                 }
 
-                if (m_page.getUserInfo() != null) {
-                    String userInfo = m_page.getUserInfo();
+                if (getUserInfo() != null) {
+                    String userInfo = getUserInfo();
                     String[] streetCred = userInfo.split(":", 2);
                     if (streetCred.length == 2) {
                         client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
@@ -728,6 +595,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         private final HttpParams m_clientParams;
         private final HttpPageSequence m_pageSequence;
 
+        @SuppressWarnings("unchecked")
         PageSequenceMonitorParameters(Map<String, String> parameterMap) {
             m_parameterMap = parameterMap;
             String pageSequence = getStringParm("page-sequence", null);
@@ -751,14 +619,15 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return m_pageSequence;
         }
 
-        @SuppressWarnings("deprecation")
         PageSequence parsePageSequence(String sequenceString) {
             try {
-                return CastorUtils.unmarshal(PageSequence.class, new StringReader(sequenceString));
+                return CastorUtils.unmarshal(PageSequence.class, new ByteArrayInputStream(sequenceString.getBytes("UTF-8")));
             } catch (MarshalException e) {
                 throw new IllegalArgumentException("Unable to parse page-sequence for HttpMonitor: " + e + "\nConfig: " + sequenceString, e);
             } catch (ValidationException e) {
                 throw new IllegalArgumentException("Unable to validate page-sequence for HttpMonitor: " + e + "\nConfig: " + sequenceString, e);
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalArgumentException("UTF-8 encoding not supported", e);
             }
 
         }

@@ -37,11 +37,13 @@ import org.opennms.gwt.web.ui.asset.client.tools.DisclosurePanelCookie;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSet;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetDateBox;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetListBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetPasswordBox;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetSuggestBox;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextArea;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextBox;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextDisplay;
 import org.opennms.gwt.web.ui.asset.client.tools.validation.StringAsIntegerValidator;
+import org.opennms.gwt.web.ui.asset.client.tools.validation.StringBasicValidator;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
 
@@ -198,9 +200,9 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
 	@UiField
 	FieldSetTextBox sUserName;
 	@UiField
-	FieldSetTextBox sPassword;
+	FieldSetPasswordBox sPassword;
 	@UiField
-	FieldSetTextBox sEnablePassword;
+	FieldSetPasswordBox sEnablePassword;
 	@UiField
 	FieldSetListBox sConnection;
 	@UiField
@@ -249,6 +251,14 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
 
 	public AssetNodePageImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
+		
+		//avoid whitespaces and umlauts at categroiefields to prevent config-file problems
+		sDisplayCat.addWarningValidator(new StringBasicValidator());
+		sNotificationCat.addWarningValidator(new StringBasicValidator());
+		sThresholdCat.addWarningValidator(new StringBasicValidator());
+		sPollerCat.addWarningValidator(new StringBasicValidator());
+		sAssetCategory.addWarningValidator(new StringBasicValidator());
+		
 		sRackUnitHight.addErrorValidator(new StringAsIntegerValidator());
 		sNumpowersupplies.addErrorValidator(new StringAsIntegerValidator());
 		sInputpower.addErrorValidator(new StringAsIntegerValidator());

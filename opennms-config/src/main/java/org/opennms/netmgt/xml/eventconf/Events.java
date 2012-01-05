@@ -11,6 +11,18 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -19,28 +31,36 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
-@SuppressWarnings("serial")
+@XmlRootElement(name="events")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Events implements java.io.Serializable {
-
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 6134329533420532982L;
+
+    /**
      * Global settings for this configuration
      */
-    private org.opennms.netmgt.xml.eventconf.Global _global;
+	@XmlElement(name="global", required=false)
+    private Global m_global;
 
     /**
      * Field _eventList.
      */
-    private java.util.List<org.opennms.netmgt.xml.eventconf.Event> _eventList;
+	@XmlElement(name="event", required=true)
+    private List<Event> m_eventList;
 
     /**
      * Field _eventFileList.
      */
-    private java.util.List<java.lang.String> _eventFileList;
+	@XmlElement(name="event-file", required=false)
+    private List<String> m_eventFileList;
 
 
       //----------------/
@@ -49,8 +69,8 @@ public class Events implements java.io.Serializable {
 
     public Events() {
         super();
-        this._eventList = new java.util.ArrayList<org.opennms.netmgt.xml.eventconf.Event>();
-        this._eventFileList = new java.util.ArrayList<java.lang.String>();
+        this.m_eventList = new ArrayList<Event>();
+        this.m_eventFileList = new ArrayList<String>();
     }
 
 
@@ -62,13 +82,13 @@ public class Events implements java.io.Serializable {
      * 
      * 
      * @param vEvent
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addEvent(
-            final org.opennms.netmgt.xml.eventconf.Event vEvent)
-    throws java.lang.IndexOutOfBoundsException {
-        this._eventList.add(vEvent);
+            final Event vEvent)
+    throws IndexOutOfBoundsException {
+        this.m_eventList.add(vEvent);
     }
 
     /**
@@ -76,27 +96,27 @@ public class Events implements java.io.Serializable {
      * 
      * @param index
      * @param vEvent
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addEvent(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Event vEvent)
-    throws java.lang.IndexOutOfBoundsException {
-        this._eventList.add(index, vEvent);
+            final Event vEvent)
+    throws IndexOutOfBoundsException {
+        this.m_eventList.add(index, vEvent);
     }
 
     /**
      * 
      * 
      * @param vEventFile
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addEventFile(
-            final java.lang.String vEventFile)
-    throws java.lang.IndexOutOfBoundsException {
-        this._eventFileList.add(vEventFile);
+            final String vEventFile)
+    throws IndexOutOfBoundsException {
+        this.m_eventFileList.add(vEventFile);
     }
 
     /**
@@ -104,14 +124,14 @@ public class Events implements java.io.Serializable {
      * 
      * @param index
      * @param vEventFile
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addEventFile(
             final int index,
-            final java.lang.String vEventFile)
-    throws java.lang.IndexOutOfBoundsException {
-        this._eventFileList.add(index, vEventFile);
+            final String vEventFile)
+    throws IndexOutOfBoundsException {
+        this.m_eventFileList.add(index, vEventFile);
     }
 
     /**
@@ -120,9 +140,9 @@ public class Events implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<org.opennms.netmgt.xml.eventconf.Event> enumerateEvent(
+    public Enumeration<Event> enumerateEvent(
     ) {
-        return java.util.Collections.enumeration(this._eventList);
+        return Collections.enumeration(this.m_eventList);
     }
 
     /**
@@ -131,46 +151,46 @@ public class Events implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<java.lang.String> enumerateEventFile(
+    public Enumeration<String> enumerateEventFile(
     ) {
-        return java.util.Collections.enumeration(this._eventFileList);
+        return Collections.enumeration(this.m_eventFileList);
     }
 
     /**
-     * Overrides the java.lang.Object.equals method.
+     * Overrides the Object.equals method.
      * 
      * @param obj
      * @return true if the objects are equal.
      */
     @Override()
     public boolean equals(
-            final java.lang.Object obj) {
+            final Object obj) {
         if ( this == obj )
             return true;
         
         if (obj instanceof Events) {
         
             Events temp = (Events)obj;
-            if (this._global != null) {
-                if (temp._global == null) return false;
-                else if (!(this._global.equals(temp._global))) 
+            if (this.m_global != null) {
+                if (temp.m_global == null) return false;
+                else if (!(this.m_global.equals(temp.m_global))) 
                     return false;
             }
-            else if (temp._global != null)
+            else if (temp.m_global != null)
                 return false;
-            if (this._eventList != null) {
-                if (temp._eventList == null) return false;
-                else if (!(this._eventList.equals(temp._eventList))) 
+            if (this.m_eventList != null) {
+                if (temp.m_eventList == null) return false;
+                else if (!(this.m_eventList.equals(temp.m_eventList))) 
                     return false;
             }
-            else if (temp._eventList != null)
+            else if (temp.m_eventList != null)
                 return false;
-            if (this._eventFileList != null) {
-                if (temp._eventFileList == null) return false;
-                else if (!(this._eventFileList.equals(temp._eventFileList))) 
+            if (this.m_eventFileList != null) {
+                if (temp.m_eventFileList == null) return false;
+                else if (!(this.m_eventFileList.equals(temp.m_eventFileList))) 
                     return false;
             }
-            else if (temp._eventFileList != null)
+            else if (temp.m_eventFileList != null)
                 return false;
             return true;
         }
@@ -181,20 +201,20 @@ public class Events implements java.io.Serializable {
      * Method getEvent.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.opennms.netmgt.xml.eventconf.Event at the given index
+     * Event at the given index
      */
-    public org.opennms.netmgt.xml.eventconf.Event getEvent(
+    public Event getEvent(
             final int index)
-    throws java.lang.IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._eventList.size()) {
-            throw new IndexOutOfBoundsException("getEvent: Index value '" + index + "' not in range [0.." + (this._eventList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_eventList.size()) {
+            throw new IndexOutOfBoundsException("getEvent: Index value '" + index + "' not in range [0.." + (this.m_eventList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.xml.eventconf.Event) _eventList.get(index);
+        return (Event) m_eventList.get(index);
     }
 
     /**
@@ -206,10 +226,10 @@ public class Events implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public org.opennms.netmgt.xml.eventconf.Event[] getEvent(
+    public Event[] getEvent(
     ) {
-        org.opennms.netmgt.xml.eventconf.Event[] array = new org.opennms.netmgt.xml.eventconf.Event[0];
-        return (org.opennms.netmgt.xml.eventconf.Event[]) this._eventList.toArray(array);
+        Event[] array = new Event[0];
+        return (Event[]) this.m_eventList.toArray(array);
     }
 
     /**
@@ -219,9 +239,9 @@ public class Events implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<org.opennms.netmgt.xml.eventconf.Event> getEventCollection(
+    public List<Event> getEventCollection(
     ) {
-        return this._eventList;
+        return this.m_eventList;
     }
 
     /**
@@ -231,26 +251,26 @@ public class Events implements java.io.Serializable {
      */
     public int getEventCount(
     ) {
-        return this._eventList.size();
+        return this.m_eventList.size();
     }
 
     /**
      * Method getEventFile.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
-     * @return the value of the java.lang.String at the given index
+     * @return the value of the String at the given index
      */
-    public java.lang.String getEventFile(
+    public String getEventFile(
             final int index)
-    throws java.lang.IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._eventFileList.size()) {
-            throw new IndexOutOfBoundsException("getEventFile: Index value '" + index + "' not in range [0.." + (this._eventFileList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_eventFileList.size()) {
+            throw new IndexOutOfBoundsException("getEventFile: Index value '" + index + "' not in range [0.." + (this.m_eventFileList.size() - 1) + "]");
         }
         
-        return (java.lang.String) _eventFileList.get(index);
+        return (String) m_eventFileList.get(index);
     }
 
     /**
@@ -262,10 +282,10 @@ public class Events implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public java.lang.String[] getEventFile(
+    public String[] getEventFile(
     ) {
-        java.lang.String[] array = new java.lang.String[0];
-        return (java.lang.String[]) this._eventFileList.toArray(array);
+        String[] array = new String[0];
+        return (String[]) this.m_eventFileList.toArray(array);
     }
 
     /**
@@ -275,9 +295,9 @@ public class Events implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<java.lang.String> getEventFileCollection(
+    public List<String> getEventFileCollection(
     ) {
-        return this._eventFileList;
+        return this.m_eventFileList;
     }
 
     /**
@@ -287,7 +307,7 @@ public class Events implements java.io.Serializable {
      */
     public int getEventFileCount(
     ) {
-        return this._eventFileList.size();
+        return this.m_eventFileList.size();
     }
 
     /**
@@ -297,13 +317,13 @@ public class Events implements java.io.Serializable {
      * 
      * @return the value of field 'Global'.
      */
-    public org.opennms.netmgt.xml.eventconf.Global getGlobal(
+    public Global getGlobal(
     ) {
-        return this._global;
+        return this.m_global;
     }
 
     /**
-     * Overrides the java.lang.Object.hashCode method.
+     * Overrides the Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming
      * Language Guide</b> by Joshua Bloch, Chapter 3
@@ -312,20 +332,8 @@ public class Events implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_global != null) {
-           result = 37 * result + _global.hashCode();
-        }
-        if (_eventList != null) {
-           result = 37 * result + _eventList.hashCode();
-        }
-        if (_eventFileList != null) {
-           result = 37 * result + _eventFileList.hashCode();
-        }
-        
-        return result;
+        return new HashCodeBuilder(17,37).append(getGlobal()).append(getEventCollection()).
+          append(getEventFileCollection()).toHashCode();
     }
 
     /**
@@ -349,9 +357,9 @@ public class Events implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<org.opennms.netmgt.xml.eventconf.Event> iterateEvent(
+    public Iterator<Event> iterateEvent(
     ) {
-        return this._eventList.iterator();
+        return this.m_eventList.iterator();
     }
 
     /**
@@ -360,9 +368,9 @@ public class Events implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<java.lang.String> iterateEventFile(
+    public Iterator<String> iterateEventFile(
     ) {
-        return this._eventFileList.iterator();
+        return this.m_eventFileList.iterator();
     }
 
     /**
@@ -401,14 +409,14 @@ public class Events implements java.io.Serializable {
      */
     public void removeAllEvent(
     ) {
-        this._eventList.clear();
+        this.m_eventList.clear();
     }
 
     /**
      */
     public void removeAllEventFile(
     ) {
-        this._eventFileList.clear();
+        this.m_eventFileList.clear();
     }
 
     /**
@@ -418,8 +426,8 @@ public class Events implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeEvent(
-            final org.opennms.netmgt.xml.eventconf.Event vEvent) {
-        boolean removed = _eventList.remove(vEvent);
+            final Event vEvent) {
+        boolean removed = m_eventList.remove(vEvent);
         return removed;
     }
 
@@ -429,10 +437,10 @@ public class Events implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public org.opennms.netmgt.xml.eventconf.Event removeEventAt(
+    public Event removeEventAt(
             final int index) {
-        java.lang.Object obj = this._eventList.remove(index);
-        return (org.opennms.netmgt.xml.eventconf.Event) obj;
+        Object obj = this.m_eventList.remove(index);
+        return (Event) obj;
     }
 
     /**
@@ -442,8 +450,8 @@ public class Events implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeEventFile(
-            final java.lang.String vEventFile) {
-        boolean removed = _eventFileList.remove(vEventFile);
+            final String vEventFile) {
+        boolean removed = m_eventFileList.remove(vEventFile);
         return removed;
     }
 
@@ -453,10 +461,10 @@ public class Events implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public java.lang.String removeEventFileAt(
+    public String removeEventFileAt(
             final int index) {
-        java.lang.Object obj = this._eventFileList.remove(index);
-        return (java.lang.String) obj;
+        Object obj = this.m_eventFileList.remove(index);
+        return (String) obj;
     }
 
     /**
@@ -464,19 +472,19 @@ public class Events implements java.io.Serializable {
      * 
      * @param index
      * @param vEvent
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void setEvent(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Event vEvent)
-    throws java.lang.IndexOutOfBoundsException {
+            final Event vEvent)
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._eventList.size()) {
-            throw new IndexOutOfBoundsException("setEvent: Index value '" + index + "' not in range [0.." + (this._eventList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_eventList.size()) {
+            throw new IndexOutOfBoundsException("setEvent: Index value '" + index + "' not in range [0.." + (this.m_eventList.size() - 1) + "]");
         }
         
-        this._eventList.set(index, vEvent);
+        this.m_eventList.set(index, vEvent);
     }
 
     /**
@@ -485,12 +493,12 @@ public class Events implements java.io.Serializable {
      * @param vEventArray
      */
     public void setEvent(
-            final org.opennms.netmgt.xml.eventconf.Event[] vEventArray) {
+            final Event[] vEventArray) {
         //-- copy array
-        _eventList.clear();
+        m_eventList.clear();
         
         for (int i = 0; i < vEventArray.length; i++) {
-                this._eventList.add(vEventArray[i]);
+                this.m_eventList.add(vEventArray[i]);
         }
     }
 
@@ -501,11 +509,11 @@ public class Events implements java.io.Serializable {
      * @param vEventList the Vector to copy.
      */
     public void setEvent(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Event> vEventList) {
+            final List<Event> vEventList) {
         // copy vector
-        this._eventList.clear();
+        this.m_eventList.clear();
         
-        this._eventList.addAll(vEventList);
+        this.m_eventList.addAll(vEventList);
     }
 
     /**
@@ -516,8 +524,8 @@ public class Events implements java.io.Serializable {
      * @param eventList the Vector to set.
      */
     public void setEventCollection(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Event> eventList) {
-        this._eventList = eventList;
+            final List<Event> eventList) {
+        this.m_eventList = eventList;
     }
 
     /**
@@ -525,19 +533,19 @@ public class Events implements java.io.Serializable {
      * 
      * @param index
      * @param vEventFile
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void setEventFile(
             final int index,
-            final java.lang.String vEventFile)
-    throws java.lang.IndexOutOfBoundsException {
+            final String vEventFile)
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._eventFileList.size()) {
-            throw new IndexOutOfBoundsException("setEventFile: Index value '" + index + "' not in range [0.." + (this._eventFileList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_eventFileList.size()) {
+            throw new IndexOutOfBoundsException("setEventFile: Index value '" + index + "' not in range [0.." + (this.m_eventFileList.size() - 1) + "]");
         }
         
-        this._eventFileList.set(index, vEventFile);
+        this.m_eventFileList.set(index, vEventFile);
     }
 
     /**
@@ -546,12 +554,12 @@ public class Events implements java.io.Serializable {
      * @param vEventFileArray
      */
     public void setEventFile(
-            final java.lang.String[] vEventFileArray) {
+            final String[] vEventFileArray) {
         //-- copy array
-        _eventFileList.clear();
+        m_eventFileList.clear();
         
         for (int i = 0; i < vEventFileArray.length; i++) {
-                this._eventFileList.add(vEventFileArray[i]);
+                this.m_eventFileList.add(vEventFileArray[i]);
         }
     }
 
@@ -562,11 +570,11 @@ public class Events implements java.io.Serializable {
      * @param vEventFileList the Vector to copy.
      */
     public void setEventFile(
-            final java.util.List<java.lang.String> vEventFileList) {
+            final List<String> vEventFileList) {
         // copy vector
-        this._eventFileList.clear();
+        this.m_eventFileList.clear();
         
-        this._eventFileList.addAll(vEventFileList);
+        this.m_eventFileList.addAll(vEventFileList);
     }
 
     /**
@@ -577,8 +585,8 @@ public class Events implements java.io.Serializable {
      * @param eventFileList the Vector to set.
      */
     public void setEventFileCollection(
-            final java.util.List<java.lang.String> eventFileList) {
-        this._eventFileList = eventFileList;
+            final List<String> eventFileList) {
+        this.m_eventFileList = eventFileList;
     }
 
     /**
@@ -589,8 +597,8 @@ public class Events implements java.io.Serializable {
      * @param global the value of field 'global'.
      */
     public void setGlobal(
-            final org.opennms.netmgt.xml.eventconf.Global global) {
-        this._global = global;
+            final Global global) {
+        this.m_global = global;
     }
 
     /**
@@ -602,12 +610,12 @@ public class Events implements java.io.Serializable {
      * @throws org.exolab.castor.xml.ValidationException if this
      * object is an invalid instance according to the schema
      * @return the unmarshaled
-     * org.opennms.netmgt.xml.eventconf.Events
+     * Events
      */
-    public static org.opennms.netmgt.xml.eventconf.Events unmarshal(
+    public static Events unmarshal(
             final java.io.Reader reader)
     throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.eventconf.Events) Unmarshaller.unmarshal(org.opennms.netmgt.xml.eventconf.Events.class, reader);
+        return (Events) Unmarshaller.unmarshal(Events.class, reader);
     }
 
     /**

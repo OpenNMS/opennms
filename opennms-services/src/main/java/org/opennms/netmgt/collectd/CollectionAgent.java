@@ -80,8 +80,9 @@ public interface CollectionAgent extends NetworkInterface<InetAddress>,StorageSt
 
     /**
      * <p>validateAgent</p>
+     * @throws CollectionInitializationException 
      */
-    public abstract void validateAgent();
+    public abstract void validateAgent() throws CollectionInitializationException;
 
     /**
      * <p>toString</p>

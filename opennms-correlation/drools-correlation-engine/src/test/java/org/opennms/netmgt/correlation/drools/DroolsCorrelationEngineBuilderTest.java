@@ -41,7 +41,7 @@ import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -73,7 +73,7 @@ public class DroolsCorrelationEngineBuilderTest implements InitializingBean {
     public void testIt() throws Exception {
         List<CorrelationEngine> engines = m_mockCorrelator.getEngines();
         assertNotNull(engines);
-        assertEquals(2, m_mockCorrelator.getEngines().size());
+        assertEquals(3, m_mockCorrelator.getEngines().size());
         assertTrue(engines.get(0) instanceof DroolsCorrelationEngine);
         assertTrue(m_mockCorrelator.findEngineByName("locationMonitorRules") instanceof DroolsCorrelationEngine);
         DroolsCorrelationEngine engine = (DroolsCorrelationEngine) m_mockCorrelator.findEngineByName("locationMonitorRules");

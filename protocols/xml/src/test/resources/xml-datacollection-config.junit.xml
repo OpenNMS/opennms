@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<xml-datacollection-config rrdRepository="target/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/xml-datacollection">
+    <xml-collection name="3GPP">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:8928</rra>
+            <rra>RRA:AVERAGE:0.5:12:8784</rra>
+            <rra>RRA:MIN:0.5:12:8784</rra>
+            <rra>RRA:MAX:0.5:12:8784</rra>
+        </rrd>
+        <xml-source url="sftp.3gpp://opennms:Op3nNMS!@{ipaddr}/opt/3gpp/data/?step={step}&amp;neId={foreignId}">
+            <xml-group name="ga-msg" resource-type="gaMsg"
+                key-xpath="@measObjLdn"
+                resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='ga|msg']/measValue"
+                timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
+                timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
+                <xml-object name="suspect" type="STRING" xpath="suspect" />
+                <xml-object name="VSCdrsXferSucc" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.GTPP.CdrsXferSucc -->
+                <xml-object name="VSGtpMsgXferCgfSucc" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.GTPP.GtpMsgXferCgfSucc -->
+                <xml-object name="VSCdrsXferFail_FQAF" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.GTPP.CdrsXferFail_FQAF -->
+                <xml-object name="VSCdrsXferFail_NRAV" type="GAUGE" xpath="r[@p=4]" /> <!-- VS.GTPP.CdrsXferFail_NRAV -->
+                <xml-object name="VSCdrsXferFail_RQNF" type="GAUGE" xpath="r[@p=5]" /> <!-- VS.GTPP.CdrsXferFail_RQNF -->
+                <xml-object name="VSCdrsXferFail_SYSF" type="GAUGE" xpath="r[@p=6]" /> <!-- VS.GTPP.CdrsXferFail_SYSF -->
+                <xml-object name="VSCdrsXferFail_VNSU" type="GAUGE" xpath="r[@p=7]" /> <!-- VS.GTPP.CdrsXferFail_VNSU -->
+                <xml-object name="VSGtpMsgXferCgfFail" type="GAUGE" xpath="r[@p=8]" /> <!-- VS.GTPP.GtpMsgXferCgfFail -->
+                <xml-object name="VSCgfDrtTimeouts" type="GAUGE" xpath="r[@p=9]" /> <!-- VS.GTPP.CgfDrtTimeouts -->
+                <xml-object name="VSCgfRedirectReq" type="GAUGE" xpath="r[@p=10]" /> <!-- VS.GTPP.CgfRedirectReq -->
+            </xml-group>
+            <xml-group name="gb-bssgp" resource-type="gbBssgp"
+                key-xpath="@measObjLdn"
+                resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='gb|bssgp']/measValue"
+                timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
+                timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
+                <xml-object name="suspect" type="STRING" xpath="suspect" />
+                <xml-object name="NSECurrentNbrBvcs" type="GAUGE" xpath="r[@p=1]" /> <!-- NSE.CurrentNbrBvcs -->
+                <xml-object name="PTPBVCOctetsRx" type="GAUGE" xpath="r[@p=2]" /> <!-- PTPBVC.OctetsRx -->
+                <xml-object name="PTPBVCOctetsTx" type="GAUGE" xpath="r[@p=3]" /> <!-- PTPBVC.OctetsTx -->
+                <xml-object name="PTPBVCPdusRx" type="GAUGE" xpath="r[@p=4]" /> <!-- PTPBVC.PdusRx -->
+                <xml-object name="PTPBVCPdusTx" type="GAUGE" xpath="r[@p=5]" /> <!-- PTPBVC.PdusTx -->
+                <xml-object name="SIGBVCOctetsRx" type="GAUGE" xpath="r[@p=6]" /> <!-- SIGBVC.OctetsRx -->
+                <xml-object name="SIGBVCOctetsTx" type="GAUGE" xpath="r[@p=7]" /> <!-- SIGBVC.OctetsTx -->
+                <xml-object name="SIGBVCPdusRx" type="GAUGE" xpath="r[@p=8]" /> <!-- SIGBVC.PdusRx -->
+                <xml-object name="SIGBVCPdusTx" type="GAUGE" xpath="r[@p=9]" /> <!-- SIGBVC.PdusTx -->
+                <xml-object name="SIGBVCRimOctetsRx" type="GAUGE" xpath="r[@p=10]" /> <!-- SIGBVC.RimOctetsRx -->
+                <xml-object name="SIGBVCRimOctetsTx" type="GAUGE" xpath="r[@p=11]" /> <!-- SIGBVC.RimOctetsTx -->
+                <xml-object name="SIGBVCRimPdusRx" type="GAUGE" xpath="r[@p=12]" /> <!-- SIGBVC.RimPdusRx -->
+                <xml-object name="SIGBVCRimPdusTx" type="GAUGE" xpath="r[@p=13]" /> <!-- SIGBVC.RimPdusTx -->
+            </xml-group>
+            <xml-group name="platform-network-Network" resource-type="platformNetworkNetwork"
+                key-xpath="@measObjLdn"
+                resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='platform-network|Network']/measValue"
+                timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
+                timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
+                <xml-object name="suspect" type="STRING" xpath="suspect" />
+                <xml-object name="IncomingPackets" type="GAUGE" xpath="r[@p=1]" /> <!-- Incoming-packets -->
+                <xml-object name="OutgoingPackets" type="GAUGE" xpath="r[@p=2]" /> <!-- Outgoing-packets -->
+                <xml-object name="IncomingBytes" type="GAUGE" xpath="r[@p=3]" /> <!-- Incoming-bytes -->
+                <xml-object name="OutgoingBytes" type="GAUGE" xpath="r[@p=4]" /> <!-- Outgoing-bytes -->
+                <xml-object name="droppedRx" type="GAUGE" xpath="r[@p=5]" /> <!-- dropped-packets-rx -->
+                <xml-object name="droppedTx" type="GAUGE" xpath="r[@p=6]" /> <!-- dropped-packets-tx -->
+            </xml-group>
+            <xml-group name="platform-network-Routing" resource-type="platformNetworkRouting"
+                key-xpath="@measObjLdn"
+                resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='platform-network|Routing']/measValue"
+                timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
+                timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
+                <xml-object name="suspect" type="STRING" xpath="suspect" />
+                <xml-object name="OSPFSent" type="GAUGE" xpath="r[@p=1]" /> <!-- OSPF-updates-sent -->
+                <xml-object name="OSPFRcvd" type="GAUGE" xpath="r[@p=2]" /> <!-- OSPF-updates-rcvd -->
+                <xml-object name="OSPFEntries" type="GAUGE" xpath="r[@p=3]" /> <!-- OSPF-entries -->
+                <xml-object name="OSPFSize" type="GAUGE" xpath="r[@p=4]" /> <!-- OSPF-size -->
+                <xml-object name="StaticEntrs" type="GAUGE" xpath="r[@p=5]" /> <!-- Static-routing-entrs -->
+                <xml-object name="StaticSize" type="GAUGE" xpath="r[@p=6]" /> <!-- Static-routing-size -->
+                <xml-object name="RIPSent" type="GAUGE" xpath="r[@p=7]" /> <!-- RIP-updates-sent -->
+                <xml-object name="RIPReceived" type="GAUGE" xpath="r[@p=8]" /> <!-- RIP-updates-received -->
+                <xml-object name="RIPEntries" type="GAUGE" xpath="r[@p=9]" /> <!-- RIP-entries -->
+                <xml-object name="RIPSize" type="GAUGE" xpath="r[@p=10]" /> <!-- RIP-size -->
+            </xml-group>
+            <xml-group name="platform-system-resource" resource-type="platformSystemResource"
+                key-xpath="@measObjLdn"
+                resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='platform-system|resource']/measValue"
+                timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
+                timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
+                <xml-object name="suspect" type="STRING" xpath="suspect" />
+                <xml-object name="cpuUtilization" type="GAUGE" xpath="r[@p=1]" /> <!-- cpu-utilization -->
+                <xml-object name="memoryUtilization" type="GAUGE" xpath="r[@p=2]" /> <!-- memory-utilization -->
+            </xml-group>
+        </xml-source>
+    </xml-collection>
+ </xml-datacollection-config>

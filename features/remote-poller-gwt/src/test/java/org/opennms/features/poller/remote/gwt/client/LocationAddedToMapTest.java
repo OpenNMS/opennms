@@ -50,9 +50,9 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdat
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.utils.BoundsBuilder;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.IncrementalCommand;
 
 import de.novanic.eventservice.client.event.RemoteEventService;
 
@@ -150,10 +150,10 @@ public class LocationAddedToMapTest {
         }
     }
     
-    private class TestCommandExecutor implements CommandExecutor{
+    private class TestCommandExecutor implements CommandExecutor {
         
         private List<Object> m_commands = new LinkedList<Object>();
-        public void schedule(IncrementalCommand command) {
+        public void schedule(Scheduler.RepeatingCommand command) {
             m_commands.add(command);
         }
         
@@ -176,7 +176,7 @@ public class LocationAddedToMapTest {
                     ((Command) o).execute();
                     iterator.remove();
                 }else {
-                    IncrementalCommand command = (IncrementalCommand) o;
+                    Scheduler.RepeatingCommand command = (Scheduler.RepeatingCommand)o;
                     if(!command.execute()) {
                         iterator.remove();
                     }

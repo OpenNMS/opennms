@@ -47,7 +47,7 @@ public abstract class PingerFactory {
      */
     public static Pinger getInstance() {
         if (m_pinger == null) {
-            String pingerClassName = System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
+            String pingerClassName = System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jni6.Jni6Pinger");
             Class<? extends Pinger> clazz = null;
             try {
                 clazz = Class.forName(pingerClassName).asSubclass(Pinger.class);

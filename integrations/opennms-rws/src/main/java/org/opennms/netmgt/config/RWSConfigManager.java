@@ -30,7 +30,6 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -66,19 +65,6 @@ abstract public class RWSConfigManager implements RWSConfig {
     public RWSConfigManager() {
     }
     
-    /**
-     * <p>Constructor for RWSConfigManager.</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    public RWSConfigManager(final Reader reader) throws MarshalException, ValidationException, IOException {
-        reloadXML(reader);
-    }
-
     /**
      * <p>Constructor for RWSConfigManager.</p>
      *
@@ -217,24 +203,6 @@ abstract public class RWSConfigManager implements RWSConfig {
             return (m_config.getStandbyUrlCount() > 0);
         } finally {
             getReadLock().unlock();
-        }
-    }
-
-    /**
-     * <p>reloadXML</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    protected void reloadXML(final Reader reader) throws MarshalException, ValidationException, IOException {
-        getWriteLock().lock();
-        try {
-            m_config = CastorUtils.unmarshal(RwsConfiguration.class, reader);
-        } finally {
-            getWriteLock().unlock();
         }
     }
 

@@ -59,8 +59,7 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    public OnmsWbemObjectImpl wmiExecMethod(String methodName, List params, List namedValueSet) {
+    public OnmsWbemObjectImpl wmiExecMethod(String methodName, List<?> params, List<?> namedValueSet) {
         return null; // TODO IMPLEMENT THIS METHOD
     }
 

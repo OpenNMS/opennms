@@ -31,13 +31,14 @@ package org.opennms.web.svclayer;
 import static org.easymock.EasyMock.createMock;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.web.services.PollerService;
 import org.opennms.web.svclayer.support.DefaultDemandPollService;
@@ -47,6 +48,7 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:META-INF/opennms/applicationContext-dao.xml",
+        "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:org/opennms/web/svclayer/applicationContext-svclayer.xml",
@@ -66,10 +68,10 @@ public class DefaultPollServiceIntegrationTest {
     @Test
     @Ignore
     public void testPollMonitoredService() {
-        PollerService api = createMock(PollerService.class);
+        final PollerService api = createMock(PollerService.class);
         ((DefaultDemandPollService)m_demandPollService).setPollerAPI(api);
 
-        DemandPoll poll = m_demandPollService.pollMonitoredService(1, "192.168.2.100", 1, 1);
+        final DemandPoll poll = m_demandPollService.pollMonitoredService(1, addr("192.168.2.100"), 1, 1);
         assertNotNull("DemandPoll should not be null", poll);
         assertTrue("Polled service addr doesn't match...", poll.getId() >= 1);
     }

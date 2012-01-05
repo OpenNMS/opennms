@@ -16,6 +16,10 @@
 		</sqlCheck>
 	</preConditions>
 	<createSequence sequenceName="opennmsnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="opennmsnxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="nodenxtid">
@@ -26,6 +30,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="nodenxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="nodenxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="servicenxtid">
@@ -36,6 +44,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="servicenxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="servicenxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="eventsnxtid">
@@ -46,6 +58,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="eventsnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="eventsnxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="alarmsnxtid">
@@ -56,6 +72,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="alarmsnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="alarmsnxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="outagenxtid">
@@ -66,6 +86,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="outagenxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="outagenxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="notifynxtid">
@@ -76,6 +100,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="notifynxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="notifynxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="vulnnxtid">
@@ -86,6 +114,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="vulnnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="vulnnxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="catnxtid">
@@ -96,6 +128,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="catnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="catnxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="usernotifnxtid">
@@ -106,6 +142,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="usernotifnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="usernotifnxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="demandpollnxtid">
@@ -116,6 +156,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="demandpollnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="demandpollnxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="pollresultnxtid">
@@ -126,6 +170,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="pollresultnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="pollresultnxtid" />
+	</rollback>
 </changeSet>
 
 <changeSet runOnChange="false" author="rangerrick" id="mapnxtid">
@@ -136,6 +184,10 @@
 		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="mapnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="mapnxtid" />
+	</rollback>
 </changeSet>
 
 </databaseChangeLog>

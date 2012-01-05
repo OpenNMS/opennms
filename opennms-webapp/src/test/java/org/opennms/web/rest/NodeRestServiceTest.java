@@ -43,7 +43,6 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
@@ -60,13 +59,12 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     private static int m_nodeCounter = 0;
 
-    @Before
-    public void setUp() throws Throwable {
-        super.setUp();
+    @Override
+    protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging();
         m_nodeCounter = 0;
     }
-
+    
     @Test
     public void testNode() throws Exception {
         // Testing POST
@@ -225,6 +223,21 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendRequest(DELETE, url, 200);
         sendRequest(GET, url, 204);
     }
+    
+    @Test
+    public void testIpInterfaceLimit() throws Exception{
+        createTwoIpInterface();
+        String url = "/nodes/1/ipinterfaces";
+        String xml = sendRequest(GET, url, parseParamData("limit=1"), 200);
+        assertTrue(xml.contains("count=\"1\""));
+        
+        url += "/10.10.10.10";
+        sendPut(url, "isManaged=U");
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("isManaged=\"U\""));
+        sendRequest(DELETE, url, 200);
+        sendRequest(GET, url, 204);
+    }
 
     @Test
     public void testSnmpInterface() throws Exception {
@@ -317,6 +330,23 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         "<hostName>TestMachine" + m_nodeCounter + "</hostName>" +
         "</ipInterface>";
         sendPost("/nodes/1/ipinterfaces", ipInterface);
+    }
+    
+    
+    protected void createTwoIpInterface() throws Exception {
+        createNode();
+        String ipInterface = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
+        "<ipAddress>10.10.10.10</ipAddress>" +
+        "<hostName>TestMachine" + m_nodeCounter + "</hostName>" +
+        "</ipInterface>";
+        sendPost("/nodes/1/ipinterfaces", ipInterface);
+        
+        String ipInterface2 = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
+        "<ipAddress>10.10.10.11</ipAddress>" +
+        "<hostName>TestMachine" + (m_nodeCounter + 1) + "</hostName>" +
+        "</ipInterface>";
+        sendPost("/nodes/1/ipinterfaces", ipInterface2);
+        
     }
 
 }

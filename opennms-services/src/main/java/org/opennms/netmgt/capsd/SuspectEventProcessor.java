@@ -45,10 +45,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.IfCollector.SupportedProtocol;
 import org.opennms.netmgt.capsd.snmp.IfTable;
@@ -183,9 +183,7 @@ final class SuspectEventProcessor implements Runnable {
         List<String> ipaddrsOfNewNode = new ArrayList<String>();
         List<String> ipaddrsOfOldNode = new ArrayList<String>();
 
-        Iterator<IfTableEntry> iter = ifTable.getEntries().iterator();
-        while (iter.hasNext()) {
-            IfTableEntry ifEntry = iter.next();
+        for (IfTableEntry ifEntry : ifTable) {
 
             if (ifEntry.getIfIndex() == null) {
                 log().debug("getExistingNodeEntry:  Breaking from loop");
@@ -780,7 +778,7 @@ final class SuspectEventProcessor implements Runnable {
 
         boolean addedSnmpInterfaceEntry = false;
 
-        for (IfTableEntry ifte : snmpc.getIfTable().getEntries()) {
+        for (IfTableEntry ifte : snmpc.getIfTable()) {
             // index
             if (ifte.getIfIndex() == null) {
                 continue;
@@ -807,7 +805,7 @@ final class SuspectEventProcessor implements Runnable {
                 DbSnmpInterfaceEntry.create(nodeId, xifIndex);
 
             if (addrs == null) {
-                // No IP associeated with the interface
+                // No IP associated with the interface
                 snmpEntry.setCollect("N");
 
             } else {
@@ -1551,7 +1549,7 @@ final class SuspectEventProcessor implements Runnable {
             throws SQLException {
         List<InetAddress> priSnmpAddrs = new ArrayList<InetAddress>();
 
-        log().debug("getPrimarySnmpInterfaceFromDb: retrieving primary snmp interface(s) from DB for node "
+        log().debug("getPrimarySnmpInterfaceFromDb: retrieving primary SNMP interface(s) from DB for node "
                 + node.getNodeId());
         InetAddress oldPrimarySnmpIf = null;
 
@@ -1568,7 +1566,7 @@ final class SuspectEventProcessor implements Runnable {
                 log().debug("getPrimarySnmpInterfaceFromDb: String oldPrimaryAddr = " + oldPrimaryAddr);
                 if (oldPrimaryAddr != null) {
                     oldPrimarySnmpIf = addr(oldPrimaryAddr);
-                    log().debug("getPrimarySnmpInterfaceFromDb: old primary Snmp interface is " + oldPrimaryAddr);
+                    log().debug("getPrimarySnmpInterfaceFromDb: old primary SNMP interface is " + oldPrimaryAddr);
                     priSnmpAddrs.add(oldPrimarySnmpIf);
                 }
             }

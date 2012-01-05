@@ -136,12 +136,12 @@ GROUP BY
 		<groupHeader>
 			<band height="31">
 				<staticText>
-					<reportElement style="Table-Header" x="0" y="10" width="60" height="20"/>
+					<reportElement style="Table-Header" x="0" y="10" width="76" height="20"/>
 					<textElement verticalAlignment="Middle"/>
 					<text><![CDATA[node label:]]></text>
 				</staticText>
 				<textField>
-					<reportElement style="Table-Header" x="60" y="10" width="240" height="20"/>
+					<reportElement style="Table-Header" x="76" y="10" width="224" height="20"/>
 					<textElement verticalAlignment="Middle"/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
 				</textField>

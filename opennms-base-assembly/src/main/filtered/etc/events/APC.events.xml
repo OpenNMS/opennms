@@ -30,6 +30,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -61,6 +62,7 @@ of its rated capacity.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -91,6 +93,7 @@ of its rated capacity.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -123,6 +126,7 @@ for necessary action cannot be guaranteed.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -216,6 +220,7 @@ to 'sleep' and immediately cut power to the load.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -246,6 +251,7 @@ to 'sleep' and immediately cut power to the load.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/upsOnBattery:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -338,6 +344,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/lowBattery:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -399,6 +406,7 @@ to the load will be cut off.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -430,6 +438,7 @@ to the load has been restored.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/upsSleeping:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -806,6 +815,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -836,6 +846,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/batteryPackCommLost:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -1026,6 +1037,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/upsOverload:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -1176,6 +1188,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/upsDischarged:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -1484,6 +1497,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -1514,6 +1528,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/badVoltage:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -1544,6 +1559,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -1574,6 +1590,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/chargerFailure:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -2357,6 +2374,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -2393,6 +2411,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/abnormalCondition:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -4252,6 +4271,7 @@ The second variable is the 32-character name of the source which is no longer av
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -4294,6 +4314,7 @@ The second variable is the 32-character name of the source which has been restor
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/atsLostRedundancy:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>

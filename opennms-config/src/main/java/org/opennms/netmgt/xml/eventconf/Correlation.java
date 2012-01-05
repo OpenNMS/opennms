@@ -11,6 +11,19 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -19,6 +32,8 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name="correlation")
+@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("serial")
 public class Correlation implements java.io.Serializable {
 
@@ -31,32 +46,38 @@ public class Correlation implements java.io.Serializable {
      * The state determines if event is
      *  correlated
      */
-    private java.lang.String _state = "off";
+	@XmlAttribute(name="state")
+    private String m_state;
 
     /**
      * The correlation path
      */
-    private java.lang.String _path = "suppressDuplicates";
+	@XmlAttribute(name="path")
+    private String m_path;
 
     /**
-     * A cancelling UEI for this event
+     * A canceling UEI for this event
      */
-    private java.util.List<java.lang.String> _cueiList;
+	@XmlElement(name="cuei")
+    private List<String> m_cueiList;
 
     /**
      * The minimum count for this event
      */
-    private java.lang.String _cmin;
+	@XmlElement(name="cmin")
+    private String m_cmin;
 
     /**
      * The maximum count for this event
      */
-    private java.lang.String _cmax;
+	@XmlElement(name="cmax")
+    private String m_cmax;
 
     /**
      * The correlation time for this event
      */
-    private java.lang.String _ctime;
+	@XmlElement(name="ctime")
+    private String m_ctime;
 
 
       //----------------/
@@ -65,9 +86,7 @@ public class Correlation implements java.io.Serializable {
 
     public Correlation() {
         super();
-        setState("off");
-        setPath("suppressDuplicates");
-        this._cueiList = new java.util.ArrayList<java.lang.String>();
+        this.m_cueiList = new ArrayList<String>();
     }
 
 
@@ -83,9 +102,9 @@ public class Correlation implements java.io.Serializable {
      * given is outside the bounds of the collection
      */
     public void addCuei(
-            final java.lang.String vCuei)
+            final String vCuei)
     throws java.lang.IndexOutOfBoundsException {
-        this._cueiList.add(vCuei);
+        this.m_cueiList.add(vCuei);
     }
 
     /**
@@ -98,9 +117,9 @@ public class Correlation implements java.io.Serializable {
      */
     public void addCuei(
             final int index,
-            final java.lang.String vCuei)
+            final String vCuei)
     throws java.lang.IndexOutOfBoundsException {
-        this._cueiList.add(index, vCuei);
+        this.m_cueiList.add(index, vCuei);
     }
 
     /**
@@ -109,9 +128,9 @@ public class Correlation implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<java.lang.String> enumerateCuei(
+    public Enumeration<String> enumerateCuei(
     ) {
-        return java.util.Collections.enumeration(this._cueiList);
+        return Collections.enumeration(this.m_cueiList);
     }
 
     /**
@@ -129,47 +148,47 @@ public class Correlation implements java.io.Serializable {
         if (obj instanceof Correlation) {
         
             Correlation temp = (Correlation)obj;
-            if (this._state != null) {
-                if (temp._state == null) return false;
-                else if (!(this._state.equals(temp._state))) 
+            if (this.m_state != null) {
+                if (temp.m_state == null) return false;
+                else if (!(this.m_state.equals(temp.m_state))) 
                     return false;
             }
-            else if (temp._state != null)
+            else if (temp.m_state != null)
                 return false;
-            if (this._path != null) {
-                if (temp._path == null) return false;
-                else if (!(this._path.equals(temp._path))) 
+            if (this.m_path != null) {
+                if (temp.m_path == null) return false;
+                else if (!(this.m_path.equals(temp.m_path))) 
                     return false;
             }
-            else if (temp._path != null)
+            else if (temp.m_path != null)
                 return false;
-            if (this._cueiList != null) {
-                if (temp._cueiList == null) return false;
-                else if (!(this._cueiList.equals(temp._cueiList))) 
+            if (this.m_cueiList != null) {
+                if (temp.m_cueiList == null) return false;
+                else if (!(this.m_cueiList.equals(temp.m_cueiList))) 
                     return false;
             }
-            else if (temp._cueiList != null)
+            else if (temp.m_cueiList != null)
                 return false;
-            if (this._cmin != null) {
-                if (temp._cmin == null) return false;
-                else if (!(this._cmin.equals(temp._cmin))) 
+            if (this.m_cmin != null) {
+                if (temp.m_cmin == null) return false;
+                else if (!(this.m_cmin.equals(temp.m_cmin))) 
                     return false;
             }
-            else if (temp._cmin != null)
+            else if (temp.m_cmin != null)
                 return false;
-            if (this._cmax != null) {
-                if (temp._cmax == null) return false;
-                else if (!(this._cmax.equals(temp._cmax))) 
+            if (this.m_cmax != null) {
+                if (temp.m_cmax == null) return false;
+                else if (!(this.m_cmax.equals(temp.m_cmax))) 
                     return false;
             }
-            else if (temp._cmax != null)
+            else if (temp.m_cmax != null)
                 return false;
-            if (this._ctime != null) {
-                if (temp._ctime == null) return false;
-                else if (!(this._ctime.equals(temp._ctime))) 
+            if (this.m_ctime != null) {
+                if (temp.m_ctime == null) return false;
+                else if (!(this.m_ctime.equals(temp.m_ctime))) 
                     return false;
             }
-            else if (temp._ctime != null)
+            else if (temp.m_ctime != null)
                 return false;
             return true;
         }
@@ -182,9 +201,9 @@ public class Correlation implements java.io.Serializable {
      * 
      * @return the value of field 'Cmax'.
      */
-    public java.lang.String getCmax(
+    public String getCmax(
     ) {
-        return this._cmax;
+        return this.m_cmax;
     }
 
     /**
@@ -193,9 +212,9 @@ public class Correlation implements java.io.Serializable {
      * 
      * @return the value of field 'Cmin'.
      */
-    public java.lang.String getCmin(
+    public String getCmin(
     ) {
-        return this._cmin;
+        return this.m_cmin;
     }
 
     /**
@@ -205,9 +224,9 @@ public class Correlation implements java.io.Serializable {
      * 
      * @return the value of field 'Ctime'.
      */
-    public java.lang.String getCtime(
+    public String getCtime(
     ) {
-        return this._ctime;
+        return this.m_ctime;
     }
 
     /**
@@ -216,17 +235,17 @@ public class Correlation implements java.io.Serializable {
      * @param index
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
-     * @return the value of the java.lang.String at the given index
+     * @return the value of the String at the given index
      */
-    public java.lang.String getCuei(
+    public String getCuei(
             final int index)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._cueiList.size()) {
-            throw new IndexOutOfBoundsException("getCuei: Index value '" + index + "' not in range [0.." + (this._cueiList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_cueiList.size()) {
+            throw new IndexOutOfBoundsException("getCuei: Index value '" + index + "' not in range [0.." + (this.m_cueiList.size() - 1) + "]");
         }
         
-        return (java.lang.String) _cueiList.get(index);
+        return (String) m_cueiList.get(index);
     }
 
     /**
@@ -238,10 +257,10 @@ public class Correlation implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public java.lang.String[] getCuei(
+    public String[] getCuei(
     ) {
-        java.lang.String[] array = new java.lang.String[0];
-        return (java.lang.String[]) this._cueiList.toArray(array);
+        String[] array = new String[0];
+        return (String[]) this.m_cueiList.toArray(array);
     }
 
     /**
@@ -251,9 +270,9 @@ public class Correlation implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<java.lang.String> getCueiCollection(
+    public List<String> getCueiCollection(
     ) {
-        return this._cueiList;
+        return this.m_cueiList;
     }
 
     /**
@@ -263,7 +282,7 @@ public class Correlation implements java.io.Serializable {
      */
     public int getCueiCount(
     ) {
-        return this._cueiList.size();
+        return this.m_cueiList.size();
     }
 
     /**
@@ -272,9 +291,9 @@ public class Correlation implements java.io.Serializable {
      * 
      * @return the value of field 'Path'.
      */
-    public java.lang.String getPath(
+    public String getPath(
     ) {
-        return this._path;
+        return this.m_path;
     }
 
     /**
@@ -284,44 +303,20 @@ public class Correlation implements java.io.Serializable {
      * 
      * @return the value of field 'State'.
      */
-    public java.lang.String getState(
+    public String getState(
     ) {
-        return this._state;
+        return this.m_state;
     }
 
     /**
      * Overrides the java.lang.Object.hashCode method.
      * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
      * @return a hash code value for the object.
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_state != null) {
-           result = 37 * result + _state.hashCode();
-        }
-        if (_path != null) {
-           result = 37 * result + _path.hashCode();
-        }
-        if (_cueiList != null) {
-           result = 37 * result + _cueiList.hashCode();
-        }
-        if (_cmin != null) {
-           result = 37 * result + _cmin.hashCode();
-        }
-        if (_cmax != null) {
-           result = 37 * result + _cmax.hashCode();
-        }
-        if (_ctime != null) {
-           result = 37 * result + _ctime.hashCode();
-        }
-        
-        return result;
+        return new HashCodeBuilder(17,37).append(getCmax()).append(getCmin()).append(getCtime()).
+        	append(getCueiCollection()).append(getPath()).append(getState()).toHashCode();
     }
 
     /**
@@ -345,9 +340,9 @@ public class Correlation implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<java.lang.String> iterateCuei(
+    public Iterator<String> iterateCuei(
     ) {
-        return this._cueiList.iterator();
+        return this.m_cueiList.iterator();
     }
 
     /**
@@ -386,7 +381,7 @@ public class Correlation implements java.io.Serializable {
      */
     public void removeAllCuei(
     ) {
-        this._cueiList.clear();
+        this.m_cueiList.clear();
     }
 
     /**
@@ -396,8 +391,8 @@ public class Correlation implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeCuei(
-            final java.lang.String vCuei) {
-        boolean removed = _cueiList.remove(vCuei);
+            final String vCuei) {
+        boolean removed = m_cueiList.remove(vCuei);
         return removed;
     }
 
@@ -407,10 +402,10 @@ public class Correlation implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public java.lang.String removeCueiAt(
+    public String removeCueiAt(
             final int index) {
-        java.lang.Object obj = this._cueiList.remove(index);
-        return (java.lang.String) obj;
+        java.lang.Object obj = this.m_cueiList.remove(index);
+        return (String) obj;
     }
 
     /**
@@ -420,8 +415,8 @@ public class Correlation implements java.io.Serializable {
      * @param cmax the value of field 'cmax'.
      */
     public void setCmax(
-            final java.lang.String cmax) {
-        this._cmax = cmax;
+            final String cmax) {
+        this.m_cmax = cmax;
     }
 
     /**
@@ -431,8 +426,8 @@ public class Correlation implements java.io.Serializable {
      * @param cmin the value of field 'cmin'.
      */
     public void setCmin(
-            final java.lang.String cmin) {
-        this._cmin = cmin;
+            final String cmin) {
+        this.m_cmin = cmin;
     }
 
     /**
@@ -442,8 +437,8 @@ public class Correlation implements java.io.Serializable {
      * @param ctime the value of field 'ctime'.
      */
     public void setCtime(
-            final java.lang.String ctime) {
-        this._ctime = ctime;
+            final String ctime) {
+        this.m_ctime = ctime;
     }
 
     /**
@@ -456,14 +451,14 @@ public class Correlation implements java.io.Serializable {
      */
     public void setCuei(
             final int index,
-            final java.lang.String vCuei)
+            final String vCuei)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._cueiList.size()) {
-            throw new IndexOutOfBoundsException("setCuei: Index value '" + index + "' not in range [0.." + (this._cueiList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_cueiList.size()) {
+            throw new IndexOutOfBoundsException("setCuei: Index value '" + index + "' not in range [0.." + (this.m_cueiList.size() - 1) + "]");
         }
         
-        this._cueiList.set(index, vCuei);
+        this.m_cueiList.set(index, vCuei);
     }
 
     /**
@@ -472,12 +467,12 @@ public class Correlation implements java.io.Serializable {
      * @param vCueiArray
      */
     public void setCuei(
-            final java.lang.String[] vCueiArray) {
+            final String[] vCueiArray) {
         //-- copy array
-        _cueiList.clear();
+        m_cueiList.clear();
         
         for (int i = 0; i < vCueiArray.length; i++) {
-                this._cueiList.add(vCueiArray[i]);
+                this.m_cueiList.add(vCueiArray[i]);
         }
     }
 
@@ -488,11 +483,11 @@ public class Correlation implements java.io.Serializable {
      * @param vCueiList the Vector to copy.
      */
     public void setCuei(
-            final java.util.List<java.lang.String> vCueiList) {
+            final List<String> vCueiList) {
         // copy vector
-        this._cueiList.clear();
+        this.m_cueiList.clear();
         
-        this._cueiList.addAll(vCueiList);
+        this.m_cueiList.addAll(vCueiList);
     }
 
     /**
@@ -503,8 +498,8 @@ public class Correlation implements java.io.Serializable {
      * @param cueiList the Vector to set.
      */
     public void setCueiCollection(
-            final java.util.List<java.lang.String> cueiList) {
-        this._cueiList = cueiList;
+            final List<String> cueiList) {
+        this.m_cueiList = cueiList;
     }
 
     /**
@@ -514,8 +509,8 @@ public class Correlation implements java.io.Serializable {
      * @param path the value of field 'path'.
      */
     public void setPath(
-            final java.lang.String path) {
-        this._path = path;
+            final String path) {
+        this.m_path = path.intern();
     }
 
     /**
@@ -526,8 +521,8 @@ public class Correlation implements java.io.Serializable {
      * @param state the value of field 'state'.
      */
     public void setState(
-            final java.lang.String state) {
-        this._state = state;
+            final String state) {
+        this.m_state = state.intern();
     }
 
     /**

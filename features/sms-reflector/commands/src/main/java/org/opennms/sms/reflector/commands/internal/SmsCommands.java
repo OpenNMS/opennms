@@ -415,7 +415,6 @@ public class SmsCommands implements CommandProvider, BundleContextAware
      * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
      * @return a {@link java.lang.Object} object.
      */
-    @SuppressWarnings("unchecked")
     public Object _paxLog(CommandInterpreter intp) {
 
         try {
@@ -425,7 +424,10 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             String prefix = intp.nextArgument();
 
             Configuration config = m_configAdmin.getConfiguration("org.ops4j.pax.logging", null);
-            Dictionary properties = config.getProperties();
+            
+            // Unavoidable due to OSGi Configuration API
+            @SuppressWarnings("unchecked")
+            Dictionary<Object,Object> properties = config.getProperties();
             if (level == null) {
                 if (properties == null) {
                     intp.println("Not current configuration");

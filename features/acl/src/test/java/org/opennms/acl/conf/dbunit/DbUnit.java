@@ -49,6 +49,8 @@ import java.sql.SQLException;
 
 import org.dbunit.DBTestCase;
 import org.dbunit.DatabaseUnitException;
+import org.dbunit.DefaultDatabaseTester;
+import org.dbunit.IDatabaseTester;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
@@ -72,9 +74,7 @@ public abstract class DbUnit extends DBTestCase {
                 Class.forName(config.getDbDriver());
                 jdbcConnection = DriverManager.getConnection(config.getDbUrl(), config.getDbUser(), config.getDbPass());
                 dbConn = new DatabaseConnection(jdbcConnection);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -82,12 +82,8 @@ public abstract class DbUnit extends DBTestCase {
 
     }
 
-    public IDatabaseConnection getConnection() throws Exception {
-
-        if (null == dbConn) {
-            dbConn = setUpConnection();
-        }
-        return dbConn;
+    public IDatabaseTester newDatabaseTester() throws Exception {
+    	return new DefaultDatabaseTester(setUpConnection());
     }
 
     public static void main(String[] args) throws Exception {

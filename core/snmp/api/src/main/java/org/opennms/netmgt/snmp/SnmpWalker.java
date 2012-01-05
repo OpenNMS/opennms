@@ -30,8 +30,9 @@ package org.opennms.netmgt.snmp;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
 
 
@@ -48,7 +49,7 @@ public abstract class SnmpWalker {
     private final String m_name;
     private final CollectionTracker m_tracker;
 
-    private final BarrierSignaler m_signal;
+    private final CountDownLatch m_signal;
 
     private InetAddress m_address;
     private WalkerPduBuilder m_pduBuilder;
@@ -60,7 +61,7 @@ public abstract class SnmpWalker {
     
     protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, int maxRepititions, CollectionTracker tracker) {
         m_address = address;
-        m_signal = new BarrierSignaler(1);
+        m_signal = new CountDownLatch(1);
         
         m_name = name;
 
@@ -156,7 +157,7 @@ public abstract class SnmpWalker {
         try {
             close();
         } catch (IOException e) {
-            log().error(getName()+": Unexpected Error occured closing snmp session for: "+m_address, e);
+            log().error(getName()+": Unexpected Error occured closing SNMP session for: "+m_address, e);
         }
     }
 
@@ -171,7 +172,7 @@ public abstract class SnmpWalker {
             notifyAll();
         }
         if (m_signal != null) {
-            m_signal.signalAll();
+            m_signal.countDown();
         }
     }
 
@@ -180,11 +181,11 @@ public abstract class SnmpWalker {
     }
 
     public void waitFor() throws InterruptedException {
-        m_signal.waitFor();
+        m_signal.await();
     }
     
     public void waitFor(long timeout) throws InterruptedException {
-        m_signal.waitFor(timeout);
+        m_signal.await(timeout, TimeUnit.MILLISECONDS);
     }
     
     protected boolean processErrors(int errorStatus, int errorIndex) {

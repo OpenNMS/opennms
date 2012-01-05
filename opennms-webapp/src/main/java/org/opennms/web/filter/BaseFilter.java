@@ -88,7 +88,7 @@ public abstract class BaseFilter<T> implements Filter {
      *
      * @return a {@link java.lang.String} object.
      */
-    public final String getDescription() {
+    public String getDescription() {
         return m_filterName+"="+getValueString();
     }
     

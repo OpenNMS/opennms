@@ -103,12 +103,12 @@ public class SyntaxToEvent {
      * @param value a {@link org.opennms.netmgt.snmp.SnmpValue} object.
      * @return a {@link org.opennms.netmgt.xml.event.Parm} object.
      */
-    public static Parm processSyntax(String name, SnmpValue value) {
-        Value val = new Value();
+    public static Parm processSyntax(final String name, final SnmpValue value) {
+    	final Value val = new Value();
 
         boolean found = false;
         for (int i = 0; i < m_syntaxToEvents.length; i++) {
-            if (m_syntaxToEvents[i].getTypeId() == -1 || m_syntaxToEvents[i].getTypeId()== value.getType()) {
+            if (m_syntaxToEvents[i].getTypeId() == -1 || m_syntaxToEvents[i].getTypeId() == value.getType()) {
                 val.setType(m_syntaxToEvents[i].getType());
                 String encoding = null;
                 if (value.isDisplayable()) {
@@ -134,7 +134,7 @@ public class SyntaxToEvent {
             throw new IllegalStateException("Internal error: fell through the " + "bottom of the loop.  The syntax-to-events array might not have a " + "catch-all for Object");
         }
 
-        Parm parm = new Parm();
+        final Parm parm = new Parm();
         parm.setParmName(name);
         parm.setValue(val);
 

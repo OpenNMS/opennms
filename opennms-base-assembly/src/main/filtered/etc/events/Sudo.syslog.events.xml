@@ -1,0 +1,116 @@
+<events>
+    <!-- Begin syslog event definitions for sudo  -->
+    <event>
+        <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/notAuthorizedOnHost</uei>
+        <event-label>sudo-defined event: user not authorized on host for command</event-label>
+        <descr>
+            &lt;p&gt;A user attempted to use sudo to run a command not allowed for that user on that host &lt;br&gt;
+            Attempting user: %parm[user]% &lt;br&gt;
+            Target user: %parm[targetUser]% &lt;br&gt;
+            Command: %parm[command]% &lt;br&gt;
+            TTY: %parm[tty]% &lt;br&gt;
+            Working directory: %parm[workingDirectory]% &lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;User %parm[user]% not authorized on host %nodelabel% to sudo command %parm[command]% &lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%:%parm[command]%" alarm-type="3" auto-clean="false" />
+    </event>
+    <event>
+        <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/commandNotAllowed</uei>
+        <event-label>sudo-defined event: command not allowed for user</event-label>
+        <descr>
+            &lt;p&gt;A user attempted to use sudo to run a command not allowed for that user &lt;br&gt;
+            Attempting user: %parm[user]% &lt;br&gt;
+            Target user: %parm[targetUser]% &lt;br&gt;
+            Command: %parm[command]% &lt;br&gt;
+            TTY: %parm[tty]% &lt;br&gt;
+            Working directory: %parm[workingDirectory]% &lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;User %parm[user]% not allowed to sudo command %parm[command]% &lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%:%parm[command]%" alarm-type="3" auto-clean="false" />
+    </event>
+    <event>
+        <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/userNotInSudoers</uei>
+        <event-label>sudo-defined event: user not in sudoers</event-label>
+        <descr>
+            &lt;p&gt;A user attempted to use sudo who was not in sudoers &lt;br&gt;
+            Attempting user: %parm[user]% &lt;br&gt;
+            Target user: %parm[targetUser]% &lt;br&gt;
+            Command: %parm[command]% &lt;br&gt;
+            TTY: %parm[tty]% &lt;br&gt;
+            Working directory: %parm[workingDirectory]% &lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;User %parm[user]% not in sudoers but tried to use sudo &lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%:%parm[command]%" alarm-type="3" auto-clean="false" />
+    </event>
+    <event>
+        <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/incorrectPassword</uei>
+        <event-label>sudo-defined event: incorrect password</event-label>
+        <descr>
+            &lt;p&gt;A user failed to authenticate to the sudo utility&lt;br&gt;
+            Attempting user: %parm[user]% &lt;br&gt;
+            Target user: %parm[targetUser]% &lt;br&gt;
+            Command: %parm[command]% &lt;br&gt;
+            TTY: %parm[tty]% &lt;br&gt;
+            Working directory: %parm[workingDirectory]% &lt;br&gt;
+            Failure count: %parm[attempts]% &lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;User %parm[user]% failed %parm[attempts]% times to sudo %parm[command]% as user %[targetUser]% &lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%:%parm[command]%" alarm-type="3" auto-clean="false" />
+    </event>
+    <event>
+        <uei>uei.opennms.org/vendor/toddcmiller/syslog/sudo/unknownMessage</uei>
+        <event-label>sudo-defined event: unknown message</event-label>
+        <descr>
+            &lt;p&gt;The sudo utility at %interface% generated a Syslog Message.&lt;br&gt;
+            Node ID: %nodeid%&lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;An unknown sudo syslog message has been received &lt;/p&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%:%parm[command]%" alarm-type="3" auto-clean="false" />
+    </event>
+</events>

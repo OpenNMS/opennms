@@ -36,7 +36,7 @@ import org.opennms.protocols.snmp.asn1.AsnEncoder;
 
 /**
  * <p>
- * This SnmpIPAddress is used to extend the Snmp Octet String SMI class. This is
+ * This SnmpIPAddress is used to extend the SNMP Octet String SMI class. This is
  * normally used to transmit IP Addresses with a length of 4 bytes.
  * </p>
  * 

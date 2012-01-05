@@ -28,7 +28,7 @@
                 rrdRepository = "${install.share.dir}/rrd/snmp/">
                 <threshold type="high" ds-name="avgBusy5"  ds-type="node" ds-label="" value="80" rearm="50" trigger="3"/>
                 <threshold type="relativeChange" ds-name="cscoMemPoolUtl5Min"  ds-type="ciscoMemoryPoolType" ds-label="cscoMemoryPoolName" value="0.25" rearm="0.0" trigger="1"/>
-                <threshold type="high" ds-name="cvmTempStatusValue" ds-type="ciscoEnvMonTemperatureStatusIndex" ds-label="cvmTempStatusDescr" value="40.0" rearm="37.0" trigger="3"/>
+                <threshold type="high" ds-name="cvmTempStatusValue" ds-type="ciscoEnvMonTemperatureStatusIndex" ds-label="cvmTempStatusDescr" value="55.0" rearm="50.0" trigger="3"/>
                 <threshold type="relativeChange" ds-name="cvmTempStatusValue" ds-type="ciscoEnvMonTemperatureStatusIndex" ds-label="cvmTempStatusDescr" value="0.2" rearm="0.0" trigger="1"/>
         </group>
         

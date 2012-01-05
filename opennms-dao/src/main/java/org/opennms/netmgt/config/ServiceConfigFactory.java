@@ -32,13 +32,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 
@@ -93,18 +92,6 @@ public final class ServiceConfigFactory {
         InputStream cfgStream = new FileInputStream(new File(configFile));
         m_config = CastorUtils.unmarshal(ServiceConfiguration.class, cfgStream);
         cfgStream.close();
-    }
-    
-    /**
-     * <p>Constructor for ServiceConfigFactory.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public ServiceConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(ServiceConfiguration.class, rdr);
     }
 
     /**

@@ -8,98 +8,89 @@
   <artifactId>opennms-detector-simple</artifactId>
   <name>OpenNMS Simple Detectors</name>
   <dependencies>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-provision-api</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-icmp-api</artifactId>
-  	</dependency>
-	<dependency>
-		<groupId>org.opennms</groupId>
-		<artifactId>opennms-icmp-jni</artifactId>
-		<scope>test</scope>
-	</dependency>
     <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-icmp-jna</artifactId>
-        <scope>test</scope>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jna</artifactId>
+      <scope>test</scope>
     </dependency>
 
-  	<dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jcifs-dependencies</artifactId>
       <type>pom</type>
-  	</dependency>
-  	<dependency>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
       <type>pom</type>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms.dependencies</groupId>
-  		<artifactId>spring-test-dependencies</artifactId>
-  		<scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-test</artifactId>
-  		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-config</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-config-utils</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-dao</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-services</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>mock-snmp-agent</artifactId>
-  		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-mock-simpleserver</artifactId>
-  		<version>${project.version}</version>
-  		<scope>test</scope>
-  	</dependency>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-mock-simpleserver</artifactId>
+    </dependency>
    <dependency>
      <groupId>org.opennms</groupId>
      <artifactId>opennms-dao</artifactId>
      <type>test-jar</type>
-     <scope>test</scope>
    </dependency>
-    <dependency>
-	  <groupId>org.opennms.core.test-api</groupId>
-	  <artifactId>org.opennms.core.test-api.http</artifactId>
-      <scope>test</scope>
-    </dependency>
-  	<dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-dependencies</artifactId>
-      <type>pom</type>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-detector-lineoriented</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.phonebook</artifactId>
+     <groupId>org.opennms.core.test-api</groupId>
+     <artifactId>org.opennms.core.test-api.http</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>org.opennms.core.test-api</groupId>
+     <artifactId>org.opennms.core.test-api.snmp</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>org.opennms.dependencies</groupId>
+     <artifactId>spring-dependencies</artifactId>
+     <type>pom</type>
+   </dependency>
+   <dependency>
+     <groupId>org.opennms</groupId>
+     <artifactId>opennms-detector-lineoriented</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>org.opennms.features</groupId>
+     <artifactId>org.opennms.features.phonebook</artifactId>
    </dependency>
 
   </dependencies>

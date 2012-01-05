@@ -68,7 +68,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
@@ -78,10 +77,7 @@ import org.opennms.netmgt.xml.event.Value;
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @deprecated No longer used - see ThresholdingVisitor
- * @version $Id: $
  */
 public abstract class JMXThresholder implements ServiceThresholder {
     /**
@@ -167,7 +163,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
-    public void initialize(Map parameters) {
+    public void initialize(Map<?,?> parameters) {
     }
 
     /**
@@ -189,7 +185,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
      */
-    public void initialize(ThresholdNetworkInterface iface, Map parameters) {
+    public void initialize(ThresholdNetworkInterface iface, Map<?,?> parameters) {
         // Get interface address from NetworkInterface
         if (iface.getType() != NetworkInterface.TYPE_INET) {
             throw new RuntimeException("Unsupported interface type, only TYPE_INET currently supported");
@@ -378,7 +374,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      *
      * Perform threshold checking.
      */
-    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map parameters) {
+    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map<?,?> parameters) {
         ThreadCategory log = log();
         String dsDir = serviceName;
 
@@ -402,18 +398,18 @@ public abstract class JMXThresholder implements ServiceThresholder {
         }
 
         // RRD Repository attribute
-        String repository = (String) iface.getAttribute(RRD_REPOSITORY_KEY);
+        String repository = iface.getAttribute(RRD_REPOSITORY_KEY);
         if (log.isDebugEnabled()) {
             log.debug("check: rrd repository=" + repository);
         }
 
         // Nodeid attribute
-        Integer nodeId = (Integer) iface.getAttribute(NODE_ID_KEY);
+        Integer nodeId = iface.getAttribute(NODE_ID_KEY);
 
         // node and interface ThresholdEntity map attributes
-        Map<Object,ThresholdEntity> nodeMap   = (Map<Object,ThresholdEntity>) iface.getAttribute(NODE_THRESHOLD_MAP_KEY);
-        Map<String,ThresholdEntity> baseIfMap = (Map<String,ThresholdEntity>) iface.getAttribute(BASE_IF_THRESHOLD_MAP_KEY);
-        Map<String,Map<String,ThresholdEntity>> allIfMap  = (Map<String, Map<String, ThresholdEntity>>)iface.getAttribute(ALL_IF_THRESHOLD_MAP_KEY);
+        Map<Object,ThresholdEntity> nodeMap   = iface.getAttribute(NODE_THRESHOLD_MAP_KEY);
+        Map<String,ThresholdEntity> baseIfMap = iface.getAttribute(BASE_IF_THRESHOLD_MAP_KEY);
+        Map<String,Map<String,ThresholdEntity>> allIfMap  = iface.getAttribute(ALL_IF_THRESHOLD_MAP_KEY);
 
         // -----------------------------------------------------------
         // 
@@ -688,9 +684,9 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 String ifAddr = ifDataMap.get("ipaddr");
                 event.setInterfaceAddress(InetAddressUtils.addr(ifAddr));
             }
-            
+
             // Add appropriate parms
-            Parms eventParms = event.getParms();
+            final List<Parm> eventParms = event.getParmCollection();
             
             Parm eventParm;
             Value parmValue;
@@ -701,7 +697,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 parmValue = new Value();
                 parmValue.setContent(ifDataMap.get("iflabel"));
                 eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+                eventParms.add(eventParm);
             }
     
             events.addEvent(event);

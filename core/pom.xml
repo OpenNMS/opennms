@@ -13,7 +13,6 @@
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-3</version>
         <configuration>
           <descriptors>
             <descriptor>src/assemble/bin.xml</descriptor>
@@ -25,7 +24,7 @@
   <modules>
     <module>api</module>
     <module>build</module>
-    <module>jicmpv6</module>
+    <module>icmp-jna</module>
     <module>lib</module>
     <module>runtime</module>
     <module>schema</module>

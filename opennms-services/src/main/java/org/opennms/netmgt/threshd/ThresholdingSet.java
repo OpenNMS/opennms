@@ -56,23 +56,22 @@ import org.opennms.netmgt.xml.event.Event;
  * <p>Abstract ThresholdingSet class.</p>
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- * @version $Id: $
  */
-public abstract class ThresholdingSet {
+public class ThresholdingSet {
     
-    int m_nodeId;
-    String m_hostAddress;
-    String m_serviceName;
-    RrdRepository m_repository;
+    protected final int m_nodeId;
+    protected final String m_hostAddress;
+    protected final String m_serviceName;
+    protected final RrdRepository m_repository;
     
-    ThresholdsDao m_thresholdsDao;
-    ThreshdConfigManager m_configManager;
+    protected ThresholdsDao m_thresholdsDao;
+    protected ThreshdConfigManager m_configManager;
     
-    boolean m_initialized = false;    
-    boolean m_hasThresholds = false;
+    protected boolean m_initialized = false;
+    protected boolean m_hasThresholds = false;
     
-    List<ThresholdGroup> m_thresholdGroups;
-    List<String> m_scheduledOutages;
+    protected List<ThresholdGroup> m_thresholdGroups = new LinkedList<ThresholdGroup>();
+    protected final List<String> m_scheduledOutages = new ArrayList<String>();
 
     /**
      * <p>Constructor for ThresholdingSet.</p>
@@ -85,10 +84,9 @@ public abstract class ThresholdingSet {
      */
     public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {
         m_nodeId = nodeId;
-        m_hostAddress = hostAddress;
-        m_serviceName = serviceName;
-        m_repository = repository;      
-        m_scheduledOutages = new ArrayList<String>();
+        m_hostAddress = (hostAddress == null ? null : hostAddress.intern());
+        m_serviceName = (serviceName == null ? null : serviceName.intern());
+        m_repository = repository;
         initThresholdsDao();
         initialize();
     }
@@ -98,7 +96,7 @@ public abstract class ThresholdingSet {
      */
     protected void initialize() {
         List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
-        m_thresholdGroups = new LinkedList<ThresholdGroup>();
+        m_thresholdGroups.clear();
         for (String groupName : groupNameList) {
             try {
                 ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
@@ -395,19 +393,9 @@ public abstract class ThresholdingSet {
             }
 
             // Is the interface in the package?
-            if (log().isDebugEnabled()) {
+            if (log().isDebugEnabled())
                 log().debug("getThresholdGroupNames: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
-            }
-            boolean foundInPkg = m_configManager.interfaceInPackage(hostAddress, pkg);
-            if (!foundInPkg && Boolean.getBoolean("org.opennms.thresholds.filtersReloadEnabled")) {
-                // The interface might be a newly added one, rebuild the package
-                // to ipList mapping and again to verify if the interface is in
-                // the package.
-                log().info("getThresholdGroupNames: re-initializing filters.");
-                m_configManager.rebuildPackageIpListMap();
-                foundInPkg = m_configManager.interfaceInPackage(hostAddress, pkg);
-            }
-            if (!foundInPkg) {
+            if (!m_configManager.interfaceInPackage(hostAddress, pkg)) {
                 if (log().isDebugEnabled())
                     log().debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 continue;
@@ -452,7 +440,7 @@ public abstract class ThresholdingSet {
         }
     }
 
-    private Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
+    private static Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
         Map<String, Set<ThresholdEntity>> entityMap = null;
         if ("node".equals(resourceType)) {
             entityMap = thresholdGroup.getNodeResourceType().getThresholdMap();
@@ -485,8 +473,8 @@ public abstract class ThresholdingSet {
      *
      * @return a {@link org.opennms.core.utils.ThreadCategory} object.
      */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    protected static ThreadCategory log() {
+        return ThreadCategory.getInstance(ThresholdingSet.class);
     }
 
 }

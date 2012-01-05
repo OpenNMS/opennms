@@ -58,16 +58,20 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.opennms.bootstrap.Bootstrap;
+import org.opennms.core.schema.ExistingResourceAccessor;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.ConnectionFactoryUtil;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 /*
@@ -144,7 +148,7 @@ public class Installer {
         loadProperties();
         parseArguments(argv);
 
-        boolean doDatabase = (m_update_database || m_do_inserts || m_update_iplike || m_update_unicode || m_fix_constraint);
+        final boolean doDatabase = (m_update_database || m_do_inserts || m_update_iplike || m_update_unicode || m_fix_constraint);
 
         if (!doDatabase && m_tomcat_conf == null && !m_install_webapp && m_library_search_path == null) {
             usage(options, m_commandLine, "Nothing to do.  Use -h for help.", null);
@@ -152,17 +156,17 @@ public class Installer {
         }
 
         if (doDatabase) {
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+        	final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
             
-            Reader fr = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
-            JdbcDataSource adminDsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(fr, ADMIN_DATA_SOURCE_NAME);
-            DataSource adminDs = new SimpleDataSource(adminDsConfig);
-            fr.close();
+            InputStream is = new FileInputStream(cfgFile);
+            final JdbcDataSource adminDsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(is, ADMIN_DATA_SOURCE_NAME);
+            final DataSource adminDs = new SimpleDataSource(adminDsConfig);
+            is.close();
 
-            fr = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
-            JdbcDataSource dsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(fr, OPENNMS_DATA_SOURCE_NAME);
-            DataSource ds = new SimpleDataSource(dsConfig);
-            fr.close();
+            is = new FileInputStream(cfgFile);
+            final JdbcDataSource dsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(is, OPENNMS_DATA_SOURCE_NAME);
+            final DataSource ds = new SimpleDataSource(dsConfig);
+            is.close();
 
             m_installerDb.setForce(m_force);
             m_installerDb.setIgnoreNotNull(m_ignore_not_null);
@@ -195,8 +199,9 @@ public class Installer {
 
         if (!Boolean.getBoolean("skip-native")) {
             String icmp_path = findLibrary("jicmp", m_library_search_path, false);
+            String icmp6_path = findLibrary("jicmp6", m_library_search_path, false);
             String jrrd_path = findLibrary("jrrd", m_library_search_path, false);
-            writeLibraryConfig(icmp_path, jrrd_path);
+            writeLibraryConfig(icmp_path, icmp6_path, jrrd_path);
         }
         
         /*
@@ -237,11 +242,18 @@ public class Installer {
         
         handleConfigurationChanges();
 
+        final GenericApplicationContext context = new GenericApplicationContext();
+        context.setClassLoader(Bootstrap.loadClasses(new File(m_opennms_home), true));
+
         if (m_update_database) {
             m_installerDb.databaseSetUser();
             m_installerDb.disconnect();
-            System.out.println("- Migrating/creating database:");
-            m_migrator.migrate(m_migration);
+
+            for (final Resource resource : context.getResources("classpath*:/changelog.xml")) {
+                System.out.println("- Running migration for changelog: " + resource.getDescription());
+                m_migration.setAccessor(new ExistingResourceAccessor(resource));
+                m_migrator.migrate(m_migration);
+            }
         }
 
         if (m_update_unicode) {
@@ -366,7 +378,7 @@ public class Installer {
          * Do this if we want to merge our properties with the system
          * properties...
          */
-        Properties sys = System.getProperties();
+        final Properties sys = System.getProperties();
         m_properties.putAll(sys);
 
         m_opennms_home = fetchProperty("install.dir");
@@ -378,7 +390,7 @@ public class Installer {
         m_install_servletdir = fetchProperty("install.servlet.dir");
         m_import_dir = fetchProperty("importer.requisition.dir");
 
-        String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
+        final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
 
         if (pg_lib_dir != null) {
             m_installerDb.setPostgresPlPgsqlLocation(pg_lib_dir + File.separator + "plpgsql");
@@ -389,19 +401,18 @@ public class Installer {
         m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
     }
 
-    private void loadEtcPropertiesFile(String propertiesFile)
-            throws IOException {
+    private void loadEtcPropertiesFile(final String propertiesFile) throws IOException {
         try {
-            Properties opennmsProperties = new Properties();
-            InputStream ois = new FileInputStream(m_etc_dir + File.separator + propertiesFile);
+        	final Properties opennmsProperties = new Properties();
+        	final InputStream ois = new FileInputStream(m_etc_dir + File.separator + propertiesFile);
             opennmsProperties.load(ois);
             // We only want to put() things that weren't already overridden in installer.properties
-            for (Entry<Object,Object> p : opennmsProperties.entrySet()) {
+            for (final Entry<Object,Object> p : opennmsProperties.entrySet()) {
                 if (!m_properties.containsKey(p.getKey())) {
                     m_properties.put(p.getKey(), p.getValue());
                 }
             }
-        } catch(FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             System.out.println("WARNING: unable to load " + m_etc_dir + File.separator + propertiesFile);
         }
     }
@@ -1041,7 +1052,9 @@ public class Installer {
                     "/usr/lib",
                     "/usr/local/lib",
                     "/opt/NMSjicmp/lib/32",
-                    "/opt/NMSjicmp/lib/64"
+                    "/opt/NMSjicmp/lib/64",
+                    "/opt/NMSjicmp6/lib/32",
+                    "/opt/NMSjicmp6/lib/64"
             };
             for (final String entry : defaults) {
                 searchPaths.add(entry);
@@ -1102,15 +1115,20 @@ public class Installer {
      * <p>writeLibraryConfig</p>
      *
      * @param jicmp_path a {@link java.lang.String} object.
+     * @param jicmp6_path TODO
      * @param jrrd_path a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-    public void writeLibraryConfig(final String jicmp_path, final String jrrd_path)
+    public void writeLibraryConfig(final String jicmp_path, final String jicmp6_path, final String jrrd_path)
             throws IOException {
         Properties libraryProps = new Properties();
 
         if (jicmp_path != null && jicmp_path.length() != 0) {
             libraryProps.put("opennms.library.jicmp", jicmp_path);
+        }
+
+        if (jicmp6_path != null && jicmp6_path.length() != 0) {
+            libraryProps.put("opennms.library.jicmp6", jicmp6_path);
         }
 
         if (jrrd_path != null && jrrd_path.length() != 0) {
@@ -1153,18 +1171,16 @@ public class Installer {
             pinger = PingerFactory.getInstance();
         
         } catch (UnsatisfiedLinkError e) {
-            System.out.println("UnsatisfiedLinkError while creating an "
-                    + "ICMP Pinger.  Most likely failed to load "
-                    + "libjicmp.so.  Try setting the property "
-                    + "'opennms.library.jicmp' to point at the "
-                    + "full path name of the libjicmp.so shared "
-                    + "library or switch to using the JnaPinger"
-                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
+            System.out.println("UnsatisfiedLinkError while creating an ICMP Pinger.  Most likely failed to load "
+                    + "libjicmp.so.  Try setting the property 'opennms.library.jicmp' to point at the "
+                    + "full path name of the libjicmp.so shared library or switch to using the JnaPinger "
+                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')\n"
+                    + "You can also set the 'opennms.library.jicmp6' property in the same manner to specify "
+                    + "the location of the JICMP6 library.");
             throw e;
         } catch (NoClassDefFoundError e) {
-            System.out.println("NoClassDefFoundError while creating an "
-                    + "IcmpSocket.  Most likely failed to load "
-                    + "libjicmp.so.");
+            System.out.println("NoClassDefFoundError while creating an IcmpSocket.  Most likely failed to load libjicmp.so" +
+            		"or libjicmp6.so.");
             throw e;
         } catch (Exception e) {
             System.out.println("Exception while creating an Pinger.");

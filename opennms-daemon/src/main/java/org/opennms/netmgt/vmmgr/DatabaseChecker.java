@@ -38,9 +38,9 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.springframework.core.io.FileSystemResource;
@@ -150,12 +150,12 @@ public class DatabaseChecker {
                 final Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUserName(), dataSource.getPassword());
                 connection.close();
             } catch (final Throwable t) {
-                final String errorMessage = "Unable to connect to data source '%s' with username '%s', check opennms-datasources.xml and your database permissions.";
+                final String errorMessage = "Unable to connect to data source '%s' at URL '%s' with username '%s', check opennms-datasources.xml and your database permissions.";
                 if (m_required.contains(name)) {
-                    LogUtils.errorf(this, errorMessage, name, dataSource.getUserName());
+                    LogUtils.errorf(this, errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
                     throw new InvalidDataSourceException("Data source '" + name + "' failed.", t);
                 } else {
-                    LogUtils.warnf(this, errorMessage, name, dataSource.getUserName());
+                    LogUtils.warnf(this, errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
                 }
             }
         }

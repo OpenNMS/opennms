@@ -36,8 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
-import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
+import org.opennms.netmgt.dao.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
@@ -46,7 +45,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * <p>This {@link TestExecutionListener} looks for the {@link JUnitCollector} annotation
@@ -92,12 +90,12 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         testContext.setAttribute("rrdDirectory", m_snmpRrdDirectory);
 
         // set up the collection configuration factory
-        if (config.datacollectionType().equalsIgnoreCase("http")) {
+        if ("http".equalsIgnoreCase(config.datacollectionType()) || "https".equalsIgnoreCase(config.datacollectionType())) {
         	is = ConfigurationTestUtils.getInputStreamForResourceWithReplacements(testContext.getTestInstance(), config.datacollectionConfig(), new String[] { "%rrdRepository%", m_snmpRrdDirectory.getAbsolutePath() });
             HttpCollectionConfigFactory factory = new HttpCollectionConfigFactory(is);
             HttpCollectionConfigFactory.setInstance(factory);
             HttpCollectionConfigFactory.init();
-        } else if (config.datacollectionType().equalsIgnoreCase("snmp")) {
+        } else if ("snmp".equalsIgnoreCase(config.datacollectionType())) {
             Resource r = ConfigurationTestUtils.getSpringResourceForResourceWithReplacements(testContext.getTestInstance(), config.datacollectionConfig(), new String[] { "%rrdRepository%", m_snmpRrdDirectory.getAbsolutePath() });
             DefaultDataCollectionConfigDao dataCollectionDao = new DefaultDataCollectionConfigDao();
             dataCollectionDao.setConfigResource(r);
@@ -135,7 +133,7 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         }
 
         if (m_fileAnticipator.isInitialized()) {
-            m_fileAnticipator.deleteExpected();
+            m_fileAnticipator.deleteExpected(true);
         }
 
         deleteChildDirectories(m_snmpRrdDirectory);

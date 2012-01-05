@@ -99,7 +99,7 @@ public class SnmpVarBind extends Object implements SnmpSyntax, Cloneable, Serial
     /**
      * Constructs a variable with the passed name and value. The name and value
      * are duplicated so that any further changes to the passed data will not
-     * affect the snmp variable.
+     * affect the SNMP variable.
      * 
      * @param name
      *            The object identifier name

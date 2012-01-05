@@ -67,36 +67,11 @@
                         </c:choose>
                       </c:forEach>];
       
-      Ext.onReady(function(){
-          var kscCombo = new Ext.form.ComboBox({
-                triggerAction: 'all',
-                displayField: 'value',
-                valueField: 'id',
-                lazyRender:true,
-                mode: 'local',
-                store: new Ext.data.Store({
-                    data: kscComboData,
-                    reader: new Ext.data.ArrayReader({
-                        fields: Ext.data.Record.create([
-                                {name: 'id', mapping: 0},
-                                {name: 'value', mapping: 1}
-                        ]),
-                        idIndex: 0
-                    })
-                }),
-                renderTo:'ksc-combo',
-                emptyText:"-- Choose A Report to View --",
-                width:220,
-                onSelect:chooseKSCBoxChange
-            })
-          });
-
-      function chooseKSCBoxChange(record){
-    	    window.location="KSC/customView.htm?type=custom&report=" + record.data.id;
-      }
+      
       </script>
       
     </c:otherwise>
   </c:choose>
-  <div id="ksc-combo"></div>
+  <opennms:kscReportCombobox id="kscReportCombobox"></opennms:kscReportCombobox>
+  <div name="opennms-kscReportCombobox" id="kscReportCombobox-ie"></div>
 </div>

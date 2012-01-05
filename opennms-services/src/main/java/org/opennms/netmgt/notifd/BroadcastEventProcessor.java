@@ -586,6 +586,7 @@ public final class BroadcastEventProcessor implements EventListener {
                         }
 
                         try {
+                            log().info(String.format("Inserting notification #%d into database: %s", noticeId, paramMap.get(NotificationManager.PARAM_SUBJECT)));
                             getNotificationManager().insertNotice(noticeId, paramMap, queueID, notification);
                         } catch (SQLException e) {
                             log().error("Failed to enter notification into database, exiting this notification", e);

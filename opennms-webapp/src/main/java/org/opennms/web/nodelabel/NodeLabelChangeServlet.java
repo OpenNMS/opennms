@@ -55,15 +55,11 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * Changes the label of a node, throws an event signalling that change, and then
+ * Changes the label of a node, throws an event signaling that change, and then
  * redirects the user to a web page displaying that node's details.
  *
- * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
+ * @author <A HREF="larry@opennms.org">Larry Karnowski</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class NodeLabelChangeServlet extends HttpServlet {
 

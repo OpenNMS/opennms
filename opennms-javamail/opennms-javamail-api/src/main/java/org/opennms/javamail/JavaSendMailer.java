@@ -162,21 +162,21 @@ public class JavaSendMailer extends JavaMailer2 {
      * the actual javamail properties.  This is here to preserve the backwards compatibility but configuration
      * will probably change soon.
      * 
-     * FIXME definitely will change soon, will be depreciated
+     * FIXME definitely will change soon, will be deprecated
      * 
      * @throws IOException
      */    
     private void configureProperties(Properties sendmailConfigDefinedProps, boolean useJmProps) {
         
         //this loads the properties from the old style javamail-configuration.properties
-        //TODO: depreciate this
+        //TODO: deprecate this
         Properties props = null;
         try {
             props = JavaMailerConfig.getProperties();
             
             /* These strange properties from javamail-configuration.properties need to be translated into actual javax.mail properties
              * FIXME: The precedence of the properties file vs. the SendmailConfiguration should probably be addressed here
-             * FIXME: if using a valid sendmail config, it probably doesn't make since to use any of these properties
+             * FIXME: if using a valid sendmail config, it probably doesn't make sense to use any of these properties
              */
             if (useJmProps) {
                 m_config.setDebug(PropertiesUtils.getProperty(props, "org.opennms.core.utils.debug", m_config.getDebug()));

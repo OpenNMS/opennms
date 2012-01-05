@@ -35,6 +35,7 @@ import java.util.Map;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
@@ -112,7 +113,7 @@ public class CoreImportActivities {
      * @return a {@link org.opennms.netmgt.provision.service.operations.ImportOperationsManager} object.
      */
     @Activity( lifecycle = "import", phase = "audit", schedulingHint="import" )
-    public ImportOperationsManager auditNodes(Requisition specFile) {
+    public ImportOperationsManager auditNodes(final Requisition specFile, final Boolean rescanExisting) {
         info("Auditing nodes for requisition %s", specFile);
 
         // @ipv6
@@ -120,8 +121,8 @@ public class CoreImportActivities {
         
         String foreignSource = specFile.getForeignSource();
         Map<String, Integer> foreignIdsToNodes = m_provisionService.getForeignIdToNodeIdMap(foreignSource);
-        
-        ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, m_provisionService);
+
+        ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, m_provisionService, rescanExisting);
         
         opsMgr.setForeignSource(foreignSource);
         opsMgr.auditNodes(specFile);
@@ -145,11 +146,12 @@ public class CoreImportActivities {
         final Collection<ImportOperation> operations = opsMgr.getOperations();
         
         for(final ImportOperation op : operations) {
-            LifeCycleInstance nodeScan = currentPhase.createNestedLifeCycle("nodeImport");
+            final LifeCycleInstance nodeScan = currentPhase.createNestedLifeCycle("nodeImport");
 
             debug("Created lifecycle %s for operation %s", nodeScan, op);
             
             nodeScan.setAttribute("operation", op);
+            nodeScan.setAttribute("rescanExisting", opsMgr.getRescanExisting());
             nodeScan.trigger();
         }
 
@@ -163,11 +165,15 @@ public class CoreImportActivities {
      * @param operation a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
      */
     @Activity( lifecycle = "nodeImport", phase = "scan", schedulingHint="import" )
-    public void scanNode(ImportOperation operation) {
-        info("Running scan phase of %s", operation);
-        operation.scan();
-
-        LogUtils.infof(this, "Finished Running scan phase of "+operation);
+    public void scanNode(final ImportOperation operation, final Boolean rescanExisting) {
+        if (rescanExisting == null || rescanExisting) {
+            info("Running scan phase of %s", operation);
+            operation.scan();
+    
+            info("Finished Running scan phase of %s", operation);
+        } else {
+            info("Skipping scan phase of %s, because the %s parameter was set during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
+        }
     }
     
     /**
@@ -178,9 +184,9 @@ public class CoreImportActivities {
     @Activity( lifecycle = "nodeImport", phase = "persist" , schedulingHint = "import" )
     public void persistNode(ImportOperation operation) {
 
-        LogUtils.infof(this, "Running persist phase of "+operation);
+        info("Running persist phase of %s", operation);
         operation.persist();
-        LogUtils.infof(this, "Finished Running persist phase of "+operation);
+        info("Finished Running persist phase of %s", operation);
 
     }
     
@@ -193,7 +199,7 @@ public class CoreImportActivities {
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "import" )
     public void relateNodes(final BatchTask currentPhase, final Requisition requisition) {
         
-        LogUtils.infof(this, "Running relate phase");
+        info("Running relate phase");
         
         RequisitionVisitor visitor = new AbstractRequisitionVisitor() {
             @Override

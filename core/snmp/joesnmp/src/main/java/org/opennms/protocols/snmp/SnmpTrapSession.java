@@ -96,7 +96,7 @@ public final class SnmpTrapSession extends Object {
     private SnmpPortal m_portal;
 
     /**
-     * ASN.1 codec used to encode/decode snmp traps that are sent and received
+     * ASN.1 codec used to encode/decode SNMP traps that are sent and received
      * by this session.
      */
     private AsnEncoder m_encoder;
@@ -418,7 +418,7 @@ public final class SnmpTrapSession extends Object {
         byte[] buf = new byte[16 * 1024];
 
         //
-        // encode the snmp version
+        // encode the SNMP version
         //
         SnmpInt32 version = new SnmpInt32(parms.getVersion());
         offset = version.encodeASN(buf, offset, encoder);
@@ -523,7 +523,7 @@ public final class SnmpTrapSession extends Object {
         byte[] buf = new byte[16 * 1024];
 
         //
-        // encode the snmp version
+        // encode the SNMP version
         //
         SnmpInt32 version = new SnmpInt32(parms.getVersion());
         offset = version.encodeASN(buf, offset, encoder);

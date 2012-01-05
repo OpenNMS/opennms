@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.opennms.core.utils.ThreadCategory;
@@ -55,6 +56,7 @@ import org.opennms.web.map.MapsException;
 import org.opennms.web.map.MapsManagementException;
 import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.db.datasources.DataSourceInterface;
+import org.opennms.web.map.view.Command;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VElementInfo;
@@ -75,13 +77,13 @@ public class ManagerDefaultImpl implements Manager {
 
     private class AlarmInfo {
         int status;
-        float severity;
+        int severity;
 
-        public float getSeverity() {
+        public int getSeverity() {
             return severity;
         }
 
-        public void setSeverity(float severity) {
+        public void setSeverity(int severity) {
             this.severity = severity;
         }
 
@@ -93,7 +95,7 @@ public class ManagerDefaultImpl implements Manager {
             this.status = status;
         }
 
-        AlarmInfo(int status, float severity) {
+        AlarmInfo(int status, int severity) {
             super();
             this.status = status;
             this.severity = severity;
@@ -122,6 +124,8 @@ public class ManagerDefaultImpl implements Manager {
     private List<VElementInfo> elemInfo = new ArrayList<VElementInfo>();
 
     private List<VMapInfo> mapInfo = new ArrayList<VMapInfo>();
+    
+    private HashMap<String, Command> commandmap = new HashMap<String, Command>();
 
     /**
      * <p>Getter for the field <code>filter</code>.</p>
@@ -268,6 +272,7 @@ public class ManagerDefaultImpl implements Manager {
      */
     public void deleteMap() throws MapNotFoundException, MapsException {
         deleteMap(sessionMap.getId());
+        
     }
 
     /**
@@ -838,6 +843,17 @@ public class ManagerDefaultImpl implements Manager {
     synchronized public void deleteMap(VMap map) throws MapsException,
             MapNotFoundException {
         deleteMap(map.getId());
+        deleteFromMapInfo(map.getId());
+    }
+    
+    private void deleteFromMapInfo(int mapId) {
+        List<VMapInfo> mapinfolist = new ArrayList<VMapInfo>();
+        for (VMapInfo vmapinfo: mapInfo) {
+            if (vmapinfo.getId() != mapId )
+                mapinfolist.add(vmapinfo);
+        }
+        mapInfo.clear();
+        mapInfo.addAll(mapinfolist);
     }
 
     /**
@@ -1043,7 +1059,9 @@ public class ManagerDefaultImpl implements Manager {
             Vector<Integer> deletedNodeids,
             java.util.Map<Integer, AlarmInfo> outagedNodes,
             java.util.Map<Integer, Double> avails) throws MapsException {
+        
         VElement ve = mapElement.clone();
+        
         if (log.isDebugEnabled()) {
             log.debug("refresh: parsing VElement ID " + ve.getId()
                     + ve.getType() + ", label:" + ve.getLabel()
@@ -1052,176 +1070,190 @@ public class ManagerDefaultImpl implements Manager {
                     + " outagedNode: " + outagedNodes.keySet().toString());
         }
 
-        double elementAvail = mapsPropertiesFactory.getDisabledAvail().getMin();
-        int elementStatus = mapsPropertiesFactory.getDefaultStatus().getId();
-        float elementSeverity = mapsPropertiesFactory.getDefaultSeverity().getId();
-        String calculateSeverityAs = mapsPropertiesFactory.getSeverityMapAs();
+        if (ve.isNode())
+            return refreshNodeElement(ve, nodesBySource, deletedNodeids,outagedNodes,avails);
+        else 
+            return refreshMapElement(ve,nodesBySource, deletedNodeids,outagedNodes,avails);
+    }
+    
+    private VElement refreshNodeElement(VElement ve, Set<Integer> nodesBySource,
+            Vector<Integer> deletedNodeids,
+            java.util.Map<Integer, AlarmInfo> outagedNodes,
+            java.util.Map<Integer, Double> avails) throws MapsException {
+    
 
-        // get status, severity and availability: for each node, look for
-        // alternative data
-        // sources; if no source is found or if the data is not retrieved, use
-        // opennms.
-        if (dbManager.isElementNotDeleted(ve.getId(), ve.getType())) {
-            elementAvail = mapsPropertiesFactory.getUndefinedAvail().getMin();
-            elementStatus = mapsPropertiesFactory.getUnknownStatus().getId();
-            elementSeverity = mapsPropertiesFactory.getIndeterminateSeverity().getId();
-            log.warn("The element type: " + ve.getType() + " with id="
-                    + ve.getId() + " was deleted");
-        } else if (ve.isNode()) {
-            if (deletedNodeids.contains(new Integer(ve.getId()))) {
-                elementAvail = mapsPropertiesFactory.getUndefinedAvail().getMin();
-                elementStatus = mapsPropertiesFactory.getUnknownStatus().getId();
-                elementSeverity = mapsPropertiesFactory.getIndeterminateSeverity().getId();
-            } else { // if the node isn't deleted
-                if (nodesBySource.contains(new Integer(ve.getId()))) {
-                    Object id = new Integer(ve.getId());
-                    log.debug("getting status from alternative source "
+        if (deletedNodeids.contains(new Integer(ve.getId())) ) {
+            ve.setAvail(mapsPropertiesFactory.getUndefinedAvail().getMin());
+            ve.setStatus(mapsPropertiesFactory.getUnknownStatus().getId());
+            ve.setSeverity(mapsPropertiesFactory.getIndeterminateSeverity().getId());
+            log.warn("refresh: The node with id="
+                     + ve.getId() + " has been deleted");
+            return ve;
+        }
+        
+        ve.setAvail(mapsPropertiesFactory.getDisabledAvail().getMin());
+        ve.setStatus(mapsPropertiesFactory.getDefaultStatus().getId());
+        ve.setSeverity(mapsPropertiesFactory.getDefaultSeverity().getId());
+
+        if (nodesBySource.contains(new Integer(ve.getId()))) {
+            Object id = new Integer(ve.getId());
+            log.debug("refresh: getting status from alternative source "
                             + dataSource.getClass().getName());
-                    int status = mapsPropertiesFactory.getStatus(dataSource.getStatus(id));
-                    if (status >= 0) {
-                        elementStatus = status;
-                        log.debug("got status from alternative source. Value is "
-                                + elementStatus);
-                    }
-
-                    int sev = mapsPropertiesFactory.getSeverity(dataSource.getSeverity(id));
-                    if (sev >= 0) {
-                        elementSeverity = sev;
-                        log.debug("got severity from alternative source. Value is "
-                                + sev);
-                    }
-                    if (mapsPropertiesFactory.isAvailEnabled()) {
-                        double avail = dataSource.getAvailability(id);
-                        if (avail >= 0) {
-                            elementAvail = avail;
-                            log.debug("got availability from alternative source. Value is "
-                                    + avail);
-                        }
-                    }
-                } else {
-                    AlarmInfo oi = outagedNodes.get(new Integer(ve.getId()));
-                    if (oi != null) {
-                        elementStatus = oi.getStatus();
-                        elementSeverity = oi.getSeverity();
-                    }
-                    if (mapsPropertiesFactory.isAvailEnabled()
-                            && (new Integer(ve.getId()) != null)
-                            && (avails.get(new Integer(ve.getId())) != null)) {
-                        elementAvail = avails.get(new Integer(ve.getId())).doubleValue();
-                    }
-
-                }
-            } // end of nodes deleted
-        } else { // the element is a Map
-            log.debug("Calculating severity for submap Element " + ve.getId()
-                    + " using '" + calculateSeverityAs + "' mode.");
-            Set<Integer> nodesonve = getNodeidsOnElement(ve);
-            if (nodesonve != null && nodesonve.size() > 0) {
-                log.debug("found nodes on Map element :"
-                        + nodesonve.toString());
-                elementAvail = mapsPropertiesFactory.getDisabledAvail().getMin();
-                float sev = 0;
-                if (calculateSeverityAs.equalsIgnoreCase("worst")
-                        || calculateSeverityAs.equalsIgnoreCase("best")) {
-                    sev = mapsPropertiesFactory.getDefaultSeverity().getId();
-                }
-                Iterator<Integer> ite = nodesonve.iterator();
-                while (ite.hasNext()) {
-                    Integer nextNodeId = ite.next();
-                    if (deletedNodeids.contains(nextNodeId)) {
-                        elementAvail += mapsPropertiesFactory.getUndefinedAvail().getMin();
-                        elementStatus = mapsPropertiesFactory.getUnknownStatus().getId();
-                        elementSeverity = mapsPropertiesFactory.getIndeterminateSeverity().getId();
-                    } else { // if the node isn't deleted
-                        if (nodesBySource.contains(nextNodeId)) {
-                            int st = mapsPropertiesFactory.getStatus(dataSource.getStatus(nextNodeId));
-                            if (st >= 0) {
-                                if (st < elementStatus) {
-                                    elementStatus = st;
-                                }
-                                log.debug("got status from alternative source. Value is "
-                                        + st);
-                            }
-
-                            int tempSeverity = mapsPropertiesFactory.getSeverity(dataSource.getSeverity(nextNodeId));
-                            if (tempSeverity >= 0) {
-                                log.debug("got severity from alternative source. Value is "
-                                        + tempSeverity);
-                                if (calculateSeverityAs.equalsIgnoreCase("avg")) {
-                                    sev += tempSeverity;
-                                } else if (calculateSeverityAs.equalsIgnoreCase("worst")) {
-                                    if (sev > tempSeverity) {
-                                        sev = tempSeverity;
-                                    }
-                                } else if (calculateSeverityAs.equalsIgnoreCase("best")) {
-                                    if (sev < tempSeverity) {
-                                        sev = tempSeverity;
-                                    }
-                                }
-                            }
-                            if (mapsPropertiesFactory.isAvailEnabled()) {
-                                double avail = dataSource.getAvailability(nextNodeId);
-                                if (avail >= 0) {
-                                    elementAvail += avail;
-                                    log.debug("got availability from alternative source. Value is "
-                                            + avail);
-                                }
-                            }
-                        } else {
-                            AlarmInfo oi = outagedNodes.get(nextNodeId);
-                            if (oi != null) {
-                                elementStatus = oi.getStatus();
-                                float tempSeverity = oi.getSeverity();
-                                if (tempSeverity >= 0) {
-                                    if (calculateSeverityAs.equalsIgnoreCase("avg")) {
-                                        sev += tempSeverity;
-                                    } else if (calculateSeverityAs.equalsIgnoreCase("worst")) {
-                                        if (sev > tempSeverity) {
-                                            sev = tempSeverity;
-                                        }
-                                    } else if (calculateSeverityAs.equalsIgnoreCase("best")) {
-                                        if (sev < tempSeverity) {
-                                            sev = tempSeverity;
-                                        }
-                                    }
-                                }
-                            }
-                            if (mapsPropertiesFactory.isAvailEnabled()
-                                    && (nextNodeId != null)
-                                    && (avails.get(nextNodeId) != null)) {
-                                elementAvail += avails.get(nextNodeId).doubleValue();
-                            }
-
-                        }
-                    }
-                }
-                if (calculateSeverityAs.equalsIgnoreCase("avg")) {
-                    elementSeverity = sev / nodesonve.size();
-                } else {
-                    elementSeverity = sev;
-                }
-                // calculate availability as average of all nodes on element
-                if (elementAvail > 0) {
-                    elementAvail = elementAvail / nodesonve.size();
-                }
-
-            } else {
-                log.debug("no nodes on Map element found");
+            int status = mapsPropertiesFactory.getStatus(dataSource.getStatus(id));
+            log.debug("refresh: got status from alternative source. Value is "
+                      + status);
+           if (status >= 0) {
+                ve.setStatus(status);
             }
-        }
 
-        if (log.isDebugEnabled()) {
-            log.debug("refreshElement: element avail/status/severity "
-                    + elementAvail + "/" + elementStatus + "/"
-                    + elementSeverity);
+            int sev = mapsPropertiesFactory.getSeverity(dataSource.getSeverity(id));
+            log.debug("refresh: got severity from alternative source. Value is "
+                      + sev);
+            if (sev >= 0) {
+                ve.setSeverity(sev);
+            }
+            if (mapsPropertiesFactory.isAvailEnabled()) {
+                double avail = dataSource.getAvailability(id);
+                log.debug("refresh: got availability from alternative source. Value is "
+                          + avail);
+                if (avail >= 0) {
+                    ve.setAvail(avail);
+                }
+            }
+            return ve;
+        } 
+       
+        AlarmInfo oi = outagedNodes.get(new Integer(ve.getId()));
+        if (oi != null) {
+            ve.setStatus(oi.getStatus());
+            ve.setSeverity(oi.getSeverity());
         }
+        if (mapsPropertiesFactory.isAvailEnabled()
+                && (new Integer(ve.getId()) != null)
+                && (avails.get(new Integer(ve.getId())) != null)) {
+            ve.setAvail(avails.get(new Integer(ve.getId())).doubleValue());
+        }
+        return ve;
+    } 
 
-        ve.setAvail(elementAvail);
-        ve.setStatus(elementStatus);
-        ve.setSeverity(new BigDecimal(elementSeverity + 1 / 2).intValue());
+
+    private VElement refreshMapElement(VElement ve, Set<Integer> nodesBySource,
+            Vector<Integer> deletedNodeids,
+            java.util.Map<Integer, AlarmInfo> outagedNodes,
+            java.util.Map<Integer, Double> avails) throws MapsException {
+
+        if (dbManager.isElementDeleted(ve.getId(), ve.getType())) {
+            ve.setAvail(mapsPropertiesFactory.getUndefinedAvail().getMin());
+            ve.setStatus(mapsPropertiesFactory.getUnknownStatus().getId());
+            ve.setSeverity(mapsPropertiesFactory.getIndeterminateSeverity().getId());
+            log.warn("refresh: The map with id="
+                     + ve.getId() + " was deleted");
+            return ve;
+        } 
+        //reset status
+        ve.setStatus(-1);
+        Set<Integer> nodesonve = getNodeidsOnElement(ve);
+        log.debug("refresh: found nodes on Map element :"
+                  + nodesonve.toString());
+        if (nodesonve.size() == 0) return ve;
+            
+        for (Integer nextNodeId : nodesonve) {
+            log.debug("refresh: Iterating on Map nodes with nodeid = " + nextNodeId);
+            double avail = 100/nodesonve.size();
+            int status = mapsPropertiesFactory.getDefaultStatus().getId();
+            int severity = mapsPropertiesFactory.getDefaultSeverity().getId();
+            
+            if (deletedNodeids.contains(nextNodeId)) {
+                severity = mapsPropertiesFactory.getIndeterminateSeverity().getId(); 
+                status = mapsPropertiesFactory.getUnknownStatus().getId();
+            } else if (nodesBySource.contains(nextNodeId)) {
+                int srcstatus = mapsPropertiesFactory.getStatus(dataSource.getStatus(nextNodeId));
+                if (srcstatus >= 0)
+                    status =srcstatus;
+                log.debug("refresh: got status from alternative source. Value is "
+                          + srcstatus);
+                int srcseverity = mapsPropertiesFactory.getSeverity(dataSource.getSeverity(nextNodeId));
+                if (srcseverity >= 0)
+                    severity = srcseverity;
+                log.debug("refresh: got severity from alternative source. Value is "
+                          + srcseverity);
+                if (mapsPropertiesFactory.isAvailEnabled()) {
+                    double srcavail = dataSource.getAvailability(nextNodeId);
+                    if (srcavail >= 0 )
+                        avail = srcavail/nodesonve.size();
+                    log.debug("refresh: got availability from alternative source. Value is "
+                              + srcavail);
+                }
+            } else {
+                AlarmInfo oi = outagedNodes.get(nextNodeId);
+                if (oi != null) {
+                    status = oi.getStatus();
+                    severity = oi.getSeverity();
+                }
+                if (mapsPropertiesFactory.isAvailEnabled()
+                            && (nextNodeId != null)
+                            && (avails.get(nextNodeId) != null)) {
+                    avail = avails.get(nextNodeId).doubleValue()/nodesonve.size();
+                }
+            }
+            ve=recalculateMapElementStatus(ve, severity,status, avail);
+        }
+                
+        
+        return recalculateSeverity(ve, nodesonve.size());
+
+    }
+
+    private VElement recalculateSeverity(VElement ve, int size) {
+
+        if (mapsPropertiesFactory.getSeverityMapAs().equalsIgnoreCase("avg")) 
+           ve.setSeverity(new BigDecimal(ve.getSeverity()/size + 1 / 2).intValue());
+        if (!mapsPropertiesFactory.isAvailEnabled())
+            ve.setAvail(mapsPropertiesFactory.getDisabledAvail().getMin());            
         return ve;
     }
 
+    private VElement recalculateMapElementStatus(VElement ve, int severity, int status, double avail) {
+        log.debug("recalculateMapElementStatus: previuos severity =  " + ve.getSeverity());
+        log.debug("recalculateMapElementStatus: previous status = " + ve.getStatus());
+        log.debug("recalculateMapElementStatus: previuos avail = " + ve.getAvail()); 
+        
+        log.debug("recalculateMapElementStatus: current node severity =  " + severity);
+        log.debug("recalculateMapElementStatus: current node status = " + status);
+        log.debug("recalculateMapElementStatus: current node avail = " + avail);        
+        
+        if (ve.getStatus() == -1 ) {
+            ve.setStatus(status);
+            ve.setSeverity(severity);
+            ve.setAvail(avail);
+            log.debug("recalculateMapElementStatus: first iteration setting the upper map status to first node status");
+        } else {
+            String calculateSeverityAs = mapsPropertiesFactory.getSeverityMapAs();
+            log.debug("recalculateMapElementStatus: calculate severity as: " + calculateSeverityAs);
+            if (calculateSeverityAs.equalsIgnoreCase("avg")) {
+                ve.setSeverity(severity+ve.getSeverity());
+                if (ve.getStatus() > status)
+                    ve.setStatus(status);
+            } else if (calculateSeverityAs.equalsIgnoreCase("worst")) {
+                if (ve.getSeverity() > severity)
+                    ve.setSeverity(severity);
+                if (ve.getStatus() > status)
+                    ve.setStatus(status);
+            } else if (calculateSeverityAs.equalsIgnoreCase("best")) {
+                if (ve.getSeverity() < severity) 
+                    ve.setSeverity(severity);
+                if (ve.getStatus() < status)
+                    ve.setStatus(status);
+            }
+            ve.setAvail(ve.getAvail()+avail);
+        }
+        log.debug("recalculateMapElementStatus: updated severity =  " + ve.getSeverity());
+        log.debug("recalculateMapElementStatus: updated status = " + ve.getStatus());
+        log.debug("recalculateMapElementStatus: updated avail = " + ve.getAvail());
+
+        return ve;
+    }
+        
     private java.util.Map<Integer, AlarmInfo> getAlarmedNodes()
             throws MapsException {
 
@@ -1263,7 +1295,7 @@ public class ManagerDefaultImpl implements Manager {
                 }
             } else {
                 int curStatus = alarmStatus;
-                float curSeverity = alarmSeverity;
+                int curSeverity = alarmSeverity;
                 alarminfo = new AlarmInfo(curStatus, curSeverity);
             }
             alarmedNodes.put(new Integer(veleminfo.getId()), alarminfo);
@@ -1651,4 +1683,43 @@ public class ManagerDefaultImpl implements Manager {
             throw new MapsException(e);
         }
     }
+
+    @Override
+    public String execCommand(final Command command) {
+        String key= UUID.randomUUID().toString();
+        commandmap.put(key, command);
+        return key;
+    }
+
+    @Override
+    public Command getCommand(String id) {
+        return commandmap.get(id);
+    }
+
+    @Override
+    public void removeCommand(String id) {
+        commandmap.remove(id);
+    }
+
+    @Override
+    public boolean checkCommandExecution() {
+        List<String> keytoremove = new ArrayList<String>();
+        for (String key: commandmap.keySet()) {
+            Command c = commandmap.get(key);
+            if (c.runned() && !c.scheduledToRemove())
+                c.scheduleToRemove();
+            if (c.runned() && c.scheduledToRemove())
+                keytoremove.add(key);
+        }
+        for (String key: keytoremove) {
+            commandmap.remove(key);
+        }
+        
+        if ( commandmap.size() > 5 )
+            return false;
+        return true;
+        
+    }
+    
+    
 }

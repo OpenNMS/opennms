@@ -34,6 +34,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -66,12 +67,17 @@ public class IPAddressTableTracker extends TableTracker {
     public static final SnmpObjId IP_ADDRESS_LAST_CHANGED_INDEX = SnmpObjId.get(IP_ADDRESS_TABLE_ENTRY, "9");
     public static final SnmpObjId IP_ADDRESS_ROW_STATUS_INDEX = SnmpObjId.get(IP_ADDRESS_TABLE_ENTRY, "10");
     public static final SnmpObjId IP_ADDRESS_STORAGE_TYPE_INDEX = SnmpObjId.get(IP_ADDRESS_TABLE_ENTRY, "11");
-	public static final int TYPE_IPV4 = 1;
-	public static final int TYPE_IPV6 = 2;
+    public static final int TYPE_IPV4 = 1;
+    public static final int TYPE_IPV6 = 2;
+
+    private static final int IP_ADDRESS_TYPE_UNICAST = 1;
+    // private static final int IP_ADDRESS_TYPE_ANYCAST = 2;
+    // private static final int IP_ADDRESS_TYPE_BROADCAST = 3;
 
     private static SnmpObjId[] s_tableColumns = new SnmpObjId[] {
         IP_ADDRESS_IF_INDEX,
-        IP_ADDRESS_PREFIX_INDEX
+        IP_ADDRESS_PREFIX_INDEX,
+        IP_ADDRESS_TYPE_INDEX
     };
     
     class IPAddressRow extends SnmpRowResult {
@@ -87,57 +93,114 @@ public class IPAddressTableTracker extends TableTracker {
         }
         
         public String getIpAddress() {
-        	final SnmpResult result = getResult(IP_ADDRESS_IF_INDEX);
-        	final int[] instanceIds = result.getInstance().getIds();
-        	
-        	final int addressType = instanceIds[0];
-        	final int addressLength = instanceIds[1];
-			if (addressType == TYPE_IPV4 || addressType == TYPE_IPV6) {
-				final InetAddress address = getInetAddress(instanceIds, 2, addressLength);
-				return str(address);
-			}
+            final SnmpResult result = getResult(IP_ADDRESS_IF_INDEX);
+            SnmpInstId instance = result.getInstance();
+            final int[] instanceIds = instance.getIds();
+
+            final int addressType = instanceIds[0];
+            int addressIndex = 2;
+            int addressLength = instanceIds[1];
+            // Begin NMS-4906 Lame Force 10 agent!
+            if (addressType == TYPE_IPV4 && instanceIds.length != 6) {
+                LogUtils.warnf(this, "BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                addressIndex = instanceIds.length - 4;
+                addressLength = 4;
+            }
+            if (addressType == TYPE_IPV6 && instanceIds.length != 18) {
+                LogUtils.warnf(this, "BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                addressIndex = instanceIds.length - 16;
+                addressLength = 16;
+            }
+            // End NMS-4906 Lame Force 10 agent!
+
+            if (addressIndex < 0 || addressIndex + addressLength > instanceIds.length) {
+                LogUtils.warnf(this, "BAD AGENT: Returned instanceId %s does not enough bytes to contain address!. Skipping.", instance);
+                return null;
+            }
+
+            if (addressType == TYPE_IPV4 || addressType == TYPE_IPV6) {
+                final InetAddress address = getInetAddress(instanceIds, addressIndex, addressLength);
+                return str(address);
+            }
             return null;
         }
 
-        private String getNetMask() {
-        	final SnmpValue value = getValue(IP_ADDRESS_PREFIX_INDEX);
-        	
-        	final SnmpObjId netmaskRef = value.toSnmpObjId().getInstance(IP_ADDRESS_PREFIX_ORIGIN_INDEX);
-        	
-        	final int[] rawIds = netmaskRef.getIds();
-        	final int addressType = rawIds[1];
-        	final int addressLength = rawIds[2];
-        	final InetAddress address = getInetAddress(rawIds, 3, addressLength);
-        	final int mask = rawIds[rawIds.length - 1];
-
-			if (addressType == TYPE_IPV4 || addressType == TYPE_IPV6) {
-				return str(address) + "/" + mask;
-        	} else {
-        		LogUtils.warnf(this, "unknown address type, expected 1 (IPv4) or 2 (IPv6), but got %d", addressType);
-        		return null;
-        	}
+        public Integer getType() {
+            final SnmpValue value = getValue(IP_ADDRESS_TYPE_INDEX);
+            return value.toInt();
         }
 
-		public OnmsIpInterface createInterfaceFromRow() {
-            
-        	final Integer ifIndex = getIfIndex();
-        	final String ipAddr = getIpAddress();
-        	final String netMask = getNetMask();
-            
-        	LogUtils.debugf(this, "createInterfaceFromRow: ifIndex = %s, ipAddress = %s, netmask = %s", ifIndex, ipAddr, netMask);
+        private InetAddress getNetMask() {
+            final SnmpValue value = getValue(IP_ADDRESS_PREFIX_INDEX);
 
-        	final OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
+            final SnmpInstId netmaskRef = value.toSnmpObjId().getInstance(IP_ADDRESS_PREFIX_ORIGIN_INDEX);
+
+            // See bug NMS-5036
+            // {@see http://issues.opennms.org/browse/NMS-5036}
+            if (netmaskRef == null) {
+                LogUtils.warnf(this, "BAD AGENT: Null netmask instanceId");
+                return null;
+            }
+
+            final int[] rawIds = netmaskRef.getIds();
+            final int addressType = rawIds[1];
+            final int mask = rawIds[rawIds.length - 1];
+            int addressLength = rawIds[2];
+            int addressIndex = 3;
+            // Begin NMS-4906 Lame Force 10 agent!
+            if (addressType == TYPE_IPV4 && rawIds.length != 1+6+1) {
+                LogUtils.warnf(this, "BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                addressIndex = rawIds.length - (4+1);
+                addressLength = 4;
+            }
+            if (addressType == TYPE_IPV6 && rawIds.length != 1+18+1) {
+                LogUtils.warnf(this, "BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                addressIndex = rawIds.length - (16 + 1);
+                addressLength = 16;
+            }
+            // End NMS-4906 Lame Force 10 agent!
+            if (addressIndex < 0 || addressIndex + addressLength > rawIds.length) {
+                LogUtils.warnf(this, "BAD AGENT: Returned instanceId %s does not enough bytes to contain address!. Skipping.", netmaskRef);
+                return null;
+            }
+
+            //final InetAddress address = getInetAddress(rawIds, addressIndex, addressLength);
+
+            if (addressType == TYPE_IPV4) {
+                return InetAddressUtils.convertCidrToInetAddressV4(mask);
+            } else if (addressType == TYPE_IPV6) {
+                return InetAddressUtils.convertCidrToInetAddressV6(mask);
+            } else {
+                LogUtils.warnf(this, "unknown address type, expected 1 (IPv4) or 2 (IPv6), but got %d", addressType);
+                return null;
+            }
+        }
+
+        public OnmsIpInterface createInterfaceFromRow() {
+
+            final Integer ifIndex = getIfIndex();
+            final String ipAddr = getIpAddress();
+            final Integer type = getType();
+            final InetAddress netMask = getNetMask();
+
+            LogUtils.debugf(this, "createInterfaceFromRow: ifIndex = %s, ipAddress = %s, type = %s, netmask = %s", ifIndex, ipAddr, type, netMask);
+
+            if (type != IP_ADDRESS_TYPE_UNICAST || ipAddr == null) {
+                return null;
+            }
+
+            final OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
             snmpIface.setNetMask(netMask);
             snmpIface.setCollectionEnabled(true);
-            
+
             final OnmsIpInterface iface = new OnmsIpInterface(ipAddr, null);
             iface.setSnmpInterface(snmpIface);
-            
+
             iface.setIfIndex(ifIndex);
-        	final String hostName = normalize(ipAddr);
-        	LogUtils.debugf(this, "setIpHostName: %s", hostName);
-        	iface.setIpHostName(hostName == null? ipAddr : hostName);
-            
+            final String hostName = normalize(ipAddr);
+            LogUtils.debugf(this, "setIpHostName: %s", hostName);
+            iface.setIpHostName(hostName == null? ipAddr : hostName);
+
             return iface;
         }
 

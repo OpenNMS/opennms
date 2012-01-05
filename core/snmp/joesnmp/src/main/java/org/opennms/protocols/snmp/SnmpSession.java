@@ -347,7 +347,7 @@ public class SnmpSession extends Object {
         byte[] buf = new byte[16 * 1024];
 
         //
-        // encode the snmp version
+        // encode the SNMP version
         //
         SnmpInt32 version = new SnmpInt32(parms.getVersion());
         offset = version.encodeASN(buf, offset, m_encoder);
@@ -416,7 +416,7 @@ public class SnmpSession extends Object {
         byte[] buf = new byte[16 * 1024];
 
         //
-        // encode the snmp version
+        // encode the SNMP version
         //
         SnmpInt32 version = new SnmpInt32(parms.getVersion());
         offset = version.encodeASN(buf, offset, m_encoder);

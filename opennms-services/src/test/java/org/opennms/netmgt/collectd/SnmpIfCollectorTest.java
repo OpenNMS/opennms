@@ -35,9 +35,9 @@ import junit.framework.TestSuite;
 
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.core.test.snmp.SnmpTestSuiteUtils;
 import org.opennms.netmgt.model.OnmsEntity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
 
 
 public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
@@ -141,7 +141,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         assertInterfaceMibObjectsPresent(collector.getCollectionSet(), 1);
     }
 
-    private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException {
+    private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException, CollectionInitializationException {
         initializeAgent();
         
         SnmpIfCollector collector = new SnmpIfCollector(InetAddress.getLocalHost(), getCollectionSet().getCombinedIndexedAttributes(), getCollectionSet());

@@ -44,9 +44,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
@@ -508,17 +508,21 @@ public class Collectd extends AbstractServiceDaemon implements
                     sb.append(" collection, scheduled");
                     log().debug(sb.toString());
                 }
-            } catch (RuntimeException rE) {
+            } catch (CollectionInitializationException e) {
                 sb = new StringBuffer();
                 sb.append("scheduleInterface: Unable to schedule ");
                 sb.append(iface);
                 sb.append('/');
                 sb.append(svcName);
                 sb.append(", reason: ");
-                sb.append(rE.getMessage());
-                if (log().isDebugEnabled()) {
-                    log().debug(sb.toString(), rE);
-                } else if (log().isInfoEnabled()) {
+                sb.append(e.getMessage());
+
+                // Only log the stack trace if TRACE level logging is enabled.
+                // Fixes bug NMS-3324.
+                // http://issues.opennms.org/browse/NMS-3324
+                if (log().isTraceEnabled()) {
+                    log().trace(sb.toString(), e);
+                } else {
                     log().info(sb.toString());
                 }
             } catch (Throwable t) {
@@ -531,7 +535,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 sb.append(t);
                 log().error(sb.toString(), t);
             }
-        } // end while more specifications  exist
+        } // end while more specifications exist
         
         } finally {
             instrumentation().endScheduleInterface(iface.getNode().getId(), ipAddress, svcName);
@@ -724,8 +728,6 @@ public class Collectd extends AbstractServiceDaemon implements
                 handleInterfaceDeleted(event);
             } else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
                 handleServiceDeleted(event);
-            } else if (event.getUei().equals(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI)) {
-                handleThresholdConfigurationChanged(event);
             } else if (event.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
                 handleReloadDaemonConfig(event);
             }
@@ -777,7 +779,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * @param event
      *            The event to process.
      */
-    private void handleConfigureSNMP(Event event) {
+    private void handleConfigureSNMP(final Event event) {
         if (log().isDebugEnabled()) {
             log().debug("configureSNMPHandler: processing configure SNMP event..."+event);
         }
@@ -1049,19 +1051,6 @@ public class Collectd extends AbstractServiceDaemon implements
         scheduleForCollection(event);
     }
     
-    /**
-     * Process a threshold configuration change event.  Need to update thresholding visitors to use the new configuration
-     * @param event
-     */
-    private void handleThresholdConfigurationChanged(Event event) {
-        log().debug("handleThresholdConfigurationChanged: Reloading thresholding configuration in collectd");
-        synchronized (m_collectableServices) {
-	        for(CollectableService service: m_collectableServices) {
-	            service.reinitializeThresholding();
-	        }
-        }
-    }
-    
     private void handleReloadDaemonConfig(Event event) {
         final String daemonName = "Threshd";
         boolean isTarget = false;
@@ -1082,24 +1071,39 @@ public class Collectd extends AbstractServiceDaemon implements
             }
             EventBuilder ebldr = null;
             try {
-                if (targetFile.equals(thresholdsFile))
+                // Reloading Factories
+                if (targetFile.equals(thresholdsFile)) {
                     ThresholdingConfigFactory.reload();
-                if (targetFile.equals(threshdFile))
+                }
+                if (targetFile.equals(threshdFile)) {
                     ThreshdConfigFactory.reload();
+                }
+                // Sending the threshold configuration change event
                 ebldr = new EventBuilder(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI, "Collectd");
                 getEventIpcManager().sendNow(ebldr.getEvent());
+                // Updating thresholding visitors to use the new configuration
+                log().debug("handleReloadDaemonConfig: Reloading thresholding configuration in collectd");
+                synchronized (m_collectableServices) {
+                    for(CollectableService service: m_collectableServices) {
+                        service.reinitializeThresholding();
+                    }
+                }
+                // Preparing successful event
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
                 ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
             } catch (Throwable e) {
-                log().error("handleReloadDaemonConfig: Error reloading configuration: " + e, e);
+                // Preparing failed event
+                log().error("handleReloadDaemonConfig: Error reloading/processing thresholds configuration: " + e.getMessage(), e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
                 ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
-                ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(1, 128));
+                ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
             }
-            if (ebldr != null) {
-                getEventIpcManager().sendNow(ebldr.getEvent());
+            finally {
+                if (ebldr != null) {
+                    getEventIpcManager().sendNow(ebldr.getEvent());
+                }
             }
         }
     }

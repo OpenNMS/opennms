@@ -27,12 +27,10 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
-      <scope>test</scope>
       <type>pom</type>
     </dependency>
   </dependencies>
@@ -41,7 +39,6 @@
      <plugin>
        <groupId>org.apache.felix</groupId>
        <artifactId>maven-bundle-plugin</artifactId>
-       <version>1.4.3</version>
        <extensions>true</extensions>
        <configuration>
          <instructions>

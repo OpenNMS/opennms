@@ -30,7 +30,6 @@ package org.opennms.netmgt.collectd;
 
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.test.ThrowableAnticipator;

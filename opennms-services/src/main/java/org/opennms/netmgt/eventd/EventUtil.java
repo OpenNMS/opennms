@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,7 +53,6 @@ import org.opennms.netmgt.capsd.DbSnmpInterfaceEntry;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Tticket;
 import org.opennms.netmgt.xml.event.Value;
@@ -319,9 +319,8 @@ public final class EventUtil {
 		if (encoding.equals(EventConstants.XML_ENCODING_TEXT)) {
 			result = pvalue.getContent();
 		} else if (encoding.equals(EventConstants.XML_ENCODING_BASE64)) {
-			// This probably doesn't work; not all binary data will be convertible into
-			// a valid String value.
-			result = new String(Base64.decodeBase64(pvalue.getContent().toCharArray()));
+			byte[] bytes = Base64.decodeBase64(pvalue.getContent().toCharArray());
+			result = "0x"+toHexString(bytes);
 		} else if (encoding.equals(EventConstants.XML_ENCODING_MAC_ADDRESS)) {
 			result = pvalue.getContent();
 		} else {
@@ -329,6 +328,16 @@ public final class EventUtil {
 		}
 		
 		return result.trim();
+	}
+	
+	public static String toHexString(byte[] data) {
+		final StringBuffer b = new StringBuffer();
+		for (int i = 0; i < data.length; ++i) {
+			final int x = (int) data[i] & 0xff;
+			if (x < 16) b.append("0");
+			b.append(Integer.toString(x, 16).toLowerCase());
+		}
+		return b.toString();
 	}
 
 	/**
@@ -652,32 +661,28 @@ public final class EventUtil {
      * @param event
      * @return All event parameter values as a String
      */
-    private static String getAllParamValues(Event event) {
-        String retParmVal = null;
+    private static String getAllParamValues(final Event event) {
         if (event.getParmCollection().size() < 1) {
             return null;
         } else {
-            StringBuffer ret = new StringBuffer();
+            final StringBuffer ret = new StringBuffer();
 
-            for (Parm evParm : event.getParmCollection()) {
-                String parmName = evParm.getParmName();
-                if (parmName == null)
-                    continue;
+            for (final Parm evParm : event.getParmCollection()) {
+                final String parmName = evParm.getParmName();
+                if (parmName == null) continue;
 
-                Value parmValue = evParm.getValue();
-                if (parmValue == null)
-                    continue;
+                final Value parmValue = evParm.getValue();
+                if (parmValue == null) continue;
 
-                String parmValueStr = getValueAsString(parmValue);
+                final String parmValueStr = getValueAsString(parmValue);
                 if (ret.length() != 0) {
                     ret.append(SPACE_DELIM);
                 }
 
-                ret.append(parmName.trim() + NAME_VAL_DELIM + "\""
-                           + parmValueStr + "\"");
+                ret.append(parmName.trim()).append(NAME_VAL_DELIM).append("\"").append(parmValueStr).append("\"");
             }
 
-            return ret.toString();
+            return ret.toString().intern();
         }
     }
 
@@ -690,9 +695,9 @@ public final class EventUtil {
      */
     private static String getNumParmName(String parm, Event event) {
         String retParmVal = null;
-        Parms eventParms = event.getParms();
+        final List<Parm> parms = event.getParmCollection();
         int end = parm.lastIndexOf(PARM_END_SUFFIX);
-        if (end != -1 && eventParms != null) {
+        if (end != -1 && parms != null && parms.size() > 0) {
         	// Get the string between the '#' and ']'
         	String parmSpec = parm.substring(PARM_NAME_NUMBERED_PREFIX_LENGTH, end);
             String eparmnum = null;
@@ -720,8 +725,8 @@ public final class EventUtil {
         		retParmVal = null;
         	}
     
-        	if (parmNum > 0 && parmNum <= eventParms.getParmCount()) {
-        		Parm evParm = eventParms.getParm(parmNum - 1);
+        	if (parmNum > 0 && parmNum <= parms.size()) {
+        	    final Parm evParm = parms.get(parmNum - 1);
     
         		// get parm name
         		String eparmname = evParm.getParmName();
@@ -793,9 +798,9 @@ public final class EventUtil {
      */
     private static String getNumParmValue(String parm, Event event) {
         String retParmVal = null;
-        Parms eventParms = event.getParms();
+        final List<Parm> parms = event.getParmCollection();
         int end = parm.lastIndexOf(PARM_END_SUFFIX);
-        if (end != -1 && eventParms != null) {
+        if (end != -1 && parms != null && parms.size() > 0) {
         	// Get the value between the '#' and ']'
         	String eparmname = parm.substring(PARM_NUM_PREFIX_LENGTH, end);
         	int parmNum = -1;
@@ -806,8 +811,8 @@ public final class EventUtil {
         		retParmVal = null;
         	}
 
-        	if (parmNum > 0 && parmNum <= eventParms.getParmCount()) {
-        		Parm evParm = eventParms.getParm(parmNum - 1);
+        	if (parmNum > 0 && parmNum <= parms.size()) {
+        	    final Parm evParm = parms.get(parmNum - 1);
 
         		// get parm value
         		Value eparmval = evParm.getValue();

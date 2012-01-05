@@ -72,7 +72,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     private final EventResourceLoader m_resourceLoader = new EventResourceLoader();
     
     /**
-     * Relative URL for the programatic store configuration, relative to the
+     * Relative URL for the programmatic store configuration, relative to the
      * root configuration resource (which must be resolvable to a URL).
      */
     private String m_programmaticStoreRelativeUrl = DEFAULT_PROGRAMMATIC_STORE_RELATIVE_URL;

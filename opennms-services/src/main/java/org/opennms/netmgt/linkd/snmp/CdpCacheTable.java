@@ -38,7 +38,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * <P>
  * CdpCacheTable uses a SnmpSession to collect the CdpCache table
  * entries. It implements the SnmpHandler to receive notifications when a reply
- * is received/error occurs in the SnmpSession used to send requests /recieve
+ * is received/error occurs in the SnmpSession used to send requests/receive
  * replies.
  * </P>
  *
@@ -69,4 +69,3 @@ public class CdpCacheTable extends SnmpTable<CdpCacheTableEntry> {
     }
 
 }
-

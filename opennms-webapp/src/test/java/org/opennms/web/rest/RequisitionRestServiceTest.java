@@ -28,17 +28,20 @@
 
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import javax.xml.ws.WebServiceException;
+import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.test.context.ContextConfiguration;
 
 
@@ -74,8 +77,8 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
             "</model-import>";
 
         try {
-        	sendPost("/requisitions", req);
-        } catch (final WebServiceException e) {
+        	sendPost("/requisitions", req, 400);
+        } catch (final Exception e) {
         	assertTrue("exception should say 'c' has duplicates", e.getMessage().contains("Duplicate nodes found on foreign source test: c (2 found)"));
         }
     }
@@ -112,6 +115,23 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     }
 
     @Test
+    public void testAddExistingNode() throws Exception {
+        createRequisition();
+
+        String url = "/requisitions/test/nodes";
+
+        // attempt to add existing node
+        sendPost(url, "<node xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" node-label=\"shoe\" parent-node-label=\"david\" foreign-id=\"4243\" />");
+        
+        // get list of nodes
+        String xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("<node "));
+        assertTrue(xml.contains("node-label="));
+        assertTrue("Expected only 1 node", xml.contains("count=\"1\""));
+        
+    }
+
+    @Test
     public void testNodeInterfaces() throws Exception {
         createRequisition();
         
@@ -141,7 +161,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("descr=\"Total Crap\""));
         assertTrue(xml.contains("snmp-primary=\"P\""));
-
+ 
         // delete interface
         xml = sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 204);
@@ -301,6 +321,34 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         assertTrue("validator should expect only elements", ex.getMessage().contains("content type is element-only"));
     }
 
+    @Test
+    public void testImport() throws Exception {
+        createRequisition();
+        
+        final MockEventProxy eventProxy = getEventProxy();
+        eventProxy.resetEvents();
+
+        sendRequest(PUT, "/requisitions/test/import", 200);
+
+        assertEquals(1, eventProxy.getEvents().size());
+    }
+
+    @Test
+    public void testImportNoRescan() throws Exception {
+        createRequisition();
+        
+        final MockEventProxy eventProxy = getEventProxy();
+        eventProxy.resetEvents();
+
+        sendRequest(PUT, "/requisitions/test/import", parseParamData("rescanExisting=false"), 200);
+
+        assertEquals(1, eventProxy.getEvents().size());
+        final Event event = eventProxy.getEvents().get(0);
+        final List<Parm> parms = event.getParmCollection();
+        assertEquals(2, parms.size());
+        assertEquals("false", parms.get(1).getValue().getContent());
+    }
+
     private void createRequisition() throws Exception {
         String req =
             "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +
@@ -326,4 +374,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         sendPost("/requisitions", req);
     }
 
+    private MockEventProxy getEventProxy() {
+        return getBean("eventProxy", MockEventProxy.class);
+    }
 }

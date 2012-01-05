@@ -181,10 +181,11 @@ public abstract class RrdUtils {
 
         String completePath = directory + File.separator + fileName;
 
-        log().info("createRRD: creating RRD file " + completePath);
-
         try {
             Object def = getStrategy().createDefinition(creator, directory, rrdName, step, dataSources, rraList);
+            if (def != null) {
+                log().info("createRRD: creating RRD file " + completePath);
+            }             
             getStrategy().createFile(def);
             return true;
         } catch (Throwable e) {

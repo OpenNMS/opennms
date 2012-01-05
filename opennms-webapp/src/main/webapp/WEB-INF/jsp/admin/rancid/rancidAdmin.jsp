@@ -259,10 +259,10 @@
 	 </form>
 	 </c:when>
 	 <c:otherwise>
-		<h3>Clogin Info (Provisioned Node)</h3>
+		<h3>Clogin Info (Requisitioned Node)</h3>
 		<table class="o-box">
 			<tr>
-			 	<th width="50%">Provisioning group: </th>
+			 	<th width="50%">Requisition: </th>
 			 	<td>${model.foreignSource}
 					<a href="admin/provisioningGroups.htm">(provisioning)</a>
 					<a href="asset/modify.jsp?node=${model.db_id}">(asset)</a>
@@ -327,13 +327,13 @@
         </p>
         
        <p><b>Clogin Info</b>:  Modify the data according to the authentication information.
-        	Click <b>doOk</b> to commit changes to Rancid. 
-            Also you are able to overwrite the clogin data in .cloginrc by default unless the opennms.rancidIntegrationUseOnlyRancidAdapter 
+        	Click <b>OK</b> to commit changes to Rancid. 
+            Also you are able to override the clogin data in .cloginrc by default unless the opennms.rancidIntegrationUseOnlyRancidAdapter 
             property is set to <em>true</em> in opennms.properties.
-        	In the case the node was provisioned the <b>Clogin</b> box shows the Foreign Source
-            under which the node was provisioned.
-            Click on (asset) page or on group (provisiong) page to modify asset information for the node.
-            It must reimported the Foreign Source group to modify the Clogin information on Rancid.
+        	In the case the node was requisitioned the <b>Clogin</b> box shows the name of the
+            requisition under which the node was added.
+            Click on the asset page or edit the requisition to modify asset information for the node.
+            You must re-synchronize the requisition to modify the Clogin information in Rancid.
         </p>
                 
 

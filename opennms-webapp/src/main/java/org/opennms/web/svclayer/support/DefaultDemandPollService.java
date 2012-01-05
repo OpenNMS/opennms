@@ -28,6 +28,7 @@
 
 package org.opennms.web.svclayer.support;
 
+import java.net.InetAddress;
 import java.util.Date;
 
 import org.opennms.netmgt.dao.DemandPollDao;
@@ -43,14 +44,6 @@ import org.opennms.web.svclayer.DemandPollService;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultDemandPollService implements DemandPollService {
 	
@@ -63,7 +56,7 @@ public class DefaultDemandPollService implements DemandPollService {
 	 *
 	 * @param demandPollDao a {@link org.opennms.netmgt.dao.DemandPollDao} object.
 	 */
-	public void setDemandPollDao(DemandPollDao demandPollDao) {
+	public void setDemandPollDao(final DemandPollDao demandPollDao) {
 		m_demandPollDao = demandPollDao;
 	}
 	
@@ -72,7 +65,7 @@ public class DefaultDemandPollService implements DemandPollService {
 	 *
 	 * @param pollerAPI a {@link org.opennms.web.services.PollerService} object.
 	 */
-	public void setPollerAPI(PollerService pollerAPI) {
+	public void setPollerAPI(final PollerService pollerAPI) {
 		m_pollerService = pollerAPI;
 	}
 	
@@ -81,18 +74,17 @@ public class DefaultDemandPollService implements DemandPollService {
 	 *
 	 * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
 	 */
-	public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
+	public void setMonitoredServiceDao(final MonitoredServiceDao monitoredServiceDao) {
 		m_monitoredServiceDao = monitoredServiceDao;
 	}
-	
-	/** {@inheritDoc} */
-	public DemandPoll pollMonitoredService(int nodeId, String ipAddr, int ifIndex, int serviceId) {
-		DemandPoll demandPoll = new DemandPoll();
+
+	public DemandPoll pollMonitoredService(final int nodeId, final InetAddress ipAddr, final int ifIndex, final int serviceId) {
+	    final DemandPoll demandPoll = new DemandPoll();
 		demandPoll.setRequestTime(new Date());
 		
 		m_demandPollDao.save(demandPoll);
 		
-		OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, ipAddr, ifIndex, serviceId);
+		final OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, ipAddr, ifIndex, serviceId);
 		
 		if (monSvc == null) {
 			throw new RuntimeException("Service doesn't exist: "+monSvc);
@@ -102,7 +94,7 @@ public class DefaultDemandPollService implements DemandPollService {
 	}
 
 	/** {@inheritDoc} */
-	public DemandPoll getUpdatedResults(int pollId) {
+	public DemandPoll getUpdatedResults(final int pollId) {
 		return m_demandPollDao.get(pollId);
 	}
 

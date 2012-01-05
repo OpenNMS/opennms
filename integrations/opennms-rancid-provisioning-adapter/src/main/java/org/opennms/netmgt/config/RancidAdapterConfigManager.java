@@ -218,7 +218,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
                             m_pkgIpMap.put(pkg, ipList);
                         }
                     } catch (final Throwable t) {
-                        LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP list.", pkg.getName());
+                        LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
                     }
         
                 }
@@ -616,7 +616,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
 
     /**
-     * This method is used to rebuild the package agaist iplist mapping when
+     * This method is used to rebuild the package against iplist mapping when
      * needed. When a node gained service event occurs, poller has to determine
      * which package the ip/service combination is in, but if the interface is a
      * newly added one, the package iplist should be rebuilt so that poller

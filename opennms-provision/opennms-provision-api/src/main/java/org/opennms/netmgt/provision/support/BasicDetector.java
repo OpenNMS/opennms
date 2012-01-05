@@ -30,7 +30,6 @@ package org.opennms.netmgt.provision.support;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
@@ -87,8 +86,8 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     	final int port = getPort();
     	final int retries = getRetries();
         final int timeout = getTimeout();
-        LogUtils.infof(this, "Address: %s || port: %s || \n", address, getPort());
-        detectorMonitor.start(this, "Checking address: %s for %s capability", address, getServiceName());
+        LogUtils.infof(this, "Address: %s || port: %s || \n", ipAddr, getPort());
+        detectorMonitor.start(this, "Checking address: %s for %s capability", ipAddr, getServiceName());
 
         final Client<Request, Response> client = getClient();
         for (int attempts = 0; attempts <= retries; attempts++) {
@@ -103,19 +102,17 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
                 
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
-                detectorMonitor.info(this, cE, "%s: Excpetion attempting to connect to address: %s port %d, attempt #%s",getServiceName(), ipAddr,port, attempts);
+                detectorMonitor.info(this, cE, "%s: Unabled to connect to address: %s port %d, attempt #%s",getServiceName(), ipAddr,port, attempts);
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 detectorMonitor.info(this, e, "%s: No route to address %s was available", getServiceName(), ipAddr);
-                throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // Expected exception
                 detectorMonitor.info(this, e, "%s: Did not connect to to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
             } catch (IOException e) {
                 detectorMonitor.info(this, e, "%s: An unexpected I/O exception occured contacting address %s port %d",getServiceName(), ipAddr, port);
             } catch (Throwable t) {
-                detectorMonitor.failure(this, "%s: Failed to detect %s on address %s port %d", getServiceName(), getServiceName(), ipAddr, port);
-                detectorMonitor.error(this, t, "%s: An undeclared throwable exception was caught contating address %s port %d", getServiceName(), ipAddr, port);
+                detectorMonitor.info(this, t, "%s: Unexpected error trying to detect %s on address %s port %d", getServiceName(), getServiceName(), ipAddr, port);
             } finally {
                 client.close();
             }

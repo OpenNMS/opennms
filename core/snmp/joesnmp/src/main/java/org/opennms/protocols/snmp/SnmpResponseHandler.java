@@ -50,11 +50,11 @@ public final class SnmpResponseHandler implements SnmpHandler {
      * The method that handles a returned packet from the remote agent.
      * 
      * @param sess
-     *            The snmp session that received the result.
+     *            The SNMP session that received the result.
      * @param command
-     *            The snmp command.
+     *            The SNMP command.
      * @param pkt
-     *            The snmp packet that was received.
+     *            The SNMP packet that was received.
      */
     public void snmpReceivedPdu(SnmpSession sess, int command, SnmpPduPacket pkt) {
         if (pkt.getCommand() == SnmpPduPacket.RESPONSE) {
@@ -72,7 +72,7 @@ public final class SnmpResponseHandler implements SnmpHandler {
      * This method is invoked when an internal error occurs on the SNMP session.
      * 
      * @param sess
-     *            The snmp session that received the result.
+     *            The SNMP session that received the result.
      * @param err
      *            The err.
      * @param obj
@@ -89,9 +89,9 @@ public final class SnmpResponseHandler implements SnmpHandler {
      * particular packet.
      * 
      * @param sess
-     *            The snmp session that received the result.
+     *            The SNMP session that received the result.
      * @param pkt
-     *            The snmp packet that was received.
+     *            The SNMP packet that was received.
      */
     public void snmpTimeoutError(SnmpSession sess, SnmpSyntax pkt) {
         synchronized (this) {
@@ -104,7 +104,7 @@ public final class SnmpResponseHandler implements SnmpHandler {
     }
 
     /**
-     * Returns the recovered snmp system object identifier, if any. If one was
+     * Returns the recovered SNMP system object identifier, if any. If one was
      * not returned then a null value is returned to the caller.
      * 
      */

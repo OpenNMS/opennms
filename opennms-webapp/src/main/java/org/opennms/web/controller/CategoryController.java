@@ -28,11 +28,20 @@
 
 package org.opennms.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.config.surveillanceViews.Category;
+import org.opennms.netmgt.config.surveillanceViews.ColumnDef;
+import org.opennms.netmgt.config.surveillanceViews.Columns;
+import org.opennms.netmgt.config.surveillanceViews.RowDef;
+import org.opennms.netmgt.config.surveillanceViews.Rows;
+import org.opennms.netmgt.config.surveillanceViews.View;
+import org.opennms.netmgt.config.surveillanceViews.Views;
+import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.web.svclayer.AdminCategoryService;
 import org.opennms.web.svclayer.support.DefaultAdminCategoryService.EditModel;
@@ -51,6 +60,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class CategoryController extends AbstractController {
 
     private AdminCategoryService m_adminCategoryService;
+    private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
 
     /** {@inheritDoc} */
     @Override
@@ -133,8 +143,43 @@ public class CategoryController extends AbstractController {
 
 
         List<OnmsCategory> sortedCategories = m_adminCategoryService.findAllCategories();
+        List<String> surveillanceCategories = getAllSurveillanceViewCategories();
+         
+        ModelAndView modelAndView = new ModelAndView("/admin/categories");
+        modelAndView.addObject("categories", sortedCategories);
+        modelAndView.addObject("surveillanceCategories",surveillanceCategories);
+        
+        return modelAndView; //new ModelAndView("/admin/categories", "categories", sortedCategories);
+    }
 
-        return new ModelAndView("/admin/categories", "categories", sortedCategories);
+    private List<String> getAllSurveillanceViewCategories() {
+        List<String> categoryNames = new ArrayList<String>();
+        Views views = getSurveillanceViewConfigDao().getViews();
+        
+        for(View view : views.getViewCollection()) {
+            Rows rows = view.getRows();
+            for(RowDef row : rows.getRowDefCollection()) {
+                List<Category> categoryCollection = row.getCategoryCollection();
+                addCategoryNames(categoryNames, categoryCollection);
+            }
+            
+            Columns columns = view.getColumns();
+            for(ColumnDef column : columns.getColumnDefCollection()) {
+                List<Category> categoryCollection = column.getCategoryCollection();
+                addCategoryNames(categoryNames, categoryCollection);
+            }
+            
+        }
+        
+        return categoryNames;
+    }
+
+    private void addCategoryNames(List<String> categoryNames, List<Category> categoryCollection) {
+        for(Category category : categoryCollection) {
+            if(!categoryNames.contains(category.getName())) {
+                categoryNames.add(category.getName());
+            }
+        }
     }
 
     /**
@@ -153,6 +198,14 @@ public class CategoryController extends AbstractController {
      */
     public void setAdminCategoryService(AdminCategoryService adminCategoryService) {
         m_adminCategoryService = adminCategoryService;
+    }
+
+    public void setSurveillanceViewConfigDao(SurveillanceViewConfigDao surveillanceConfigDao) {
+        m_surveillanceViewConfigDao = surveillanceConfigDao;
+    }
+
+    public SurveillanceViewConfigDao getSurveillanceViewConfigDao() {
+        return m_surveillanceViewConfigDao;
     }
 
 }

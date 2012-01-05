@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.config;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.isInetAddressInRange;
+import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -45,7 +48,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
-import static org.opennms.core.utils.InetAddressUtils.*;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
@@ -67,24 +69,6 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
  * @version $Id: $
  */
 abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfacePollerConfig {
-
-    /**
-     * <p>Constructor for SnmpInterfacePollerConfigManager.</p>
-     *
-     * @author <a href="mailto:david@opennms.org">David Hustace</a>
-     * @param reader a {@link java.io.Reader} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    public SnmpInterfacePollerConfigManager(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
-        m_localServer = localServer;
-        m_verifyServer = verifyServer;
-        reloadXML(reader);
-    }
 
     /**
      * <p>Constructor for SnmpInterfacePollerConfigManager.</p>
@@ -180,21 +164,6 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      */
     protected synchronized void reloadXML(InputStream stream) throws MarshalException, ValidationException, IOException {
         m_config = CastorUtils.unmarshal(SnmpInterfacePollerConfiguration.class, stream);
-        createUrlIpMap();
-        createPackageIpListMap();
-    }
-
-    /**
-     * <p>reloadXML</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(SnmpInterfacePollerConfiguration.class, reader);
         createUrlIpMap();
         createPackageIpListMap();
     }

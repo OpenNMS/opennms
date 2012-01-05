@@ -30,6 +30,7 @@ package org.opennms.netmgt.capsd;
 
 import java.io.File;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.OpenNMSIntegrationTestCase;
@@ -84,7 +85,7 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
     
     @Override
     protected void onSetUpBeforeTransaction() throws Exception {
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), getLocalHostAddress()+"/9161");
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), InetAddressUtils.getLocalHostAddressAsString()+"/9161");
     }
     
     
@@ -118,7 +119,7 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
                 " write-community=\"private\"\n" + 
                 " port=\"161\"\n" +
                 " version=\"v1\">\n" +
-                "   <definition version=\"v2c\" port=\"9161\" read-community=\"public\" proxy-host=\""+getLocalHostAddress()+"\">\n" + 
+                "   <definition version=\"v2c\" port=\"9161\" read-community=\"public\" proxy-host=\""+InetAddressUtils.getLocalHostAddressAsString()+"\">\n" + 
                 "      <specific>172.20.1.201</specific>\n" +
                 "      <specific>172.20.1.204</specific>\n" +
                 "   </definition>\n" + 

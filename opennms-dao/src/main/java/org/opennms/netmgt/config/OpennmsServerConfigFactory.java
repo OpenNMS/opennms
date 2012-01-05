@@ -32,12 +32,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.core.utils.ConfigFileConstants;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -59,26 +57,6 @@ public final class OpennmsServerConfigFactory extends OpennmsServerConfigManager
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
-
-    /**
-     * <p>Constructor for OpennmsServerConfigFactory.</p>
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public OpennmsServerConfigFactory(final Reader rdr) throws IOException, MarshalException, ValidationException {
-        super(rdr);
-
-    }
 
     /**
      * <p>Constructor for OpennmsServerConfigFactory.</p>
@@ -114,7 +92,7 @@ public final class OpennmsServerConfigFactory extends OpennmsServerConfigManager
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_SERVER_CONFIG_FILE_NAME);
 
-        Reader cfgIn = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
+        InputStream cfgIn = new FileInputStream(cfgFile);
         m_singleton = new OpennmsServerConfigFactory(cfgIn);
         cfgIn.close();
 

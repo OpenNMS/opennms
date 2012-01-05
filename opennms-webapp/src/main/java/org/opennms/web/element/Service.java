@@ -28,19 +28,10 @@
 
 package org.opennms.web.element;
 
-/**
- * <p>Service class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 public class Service {
     private int m_id;
     
     private int m_nodeId;
-
-    private int m_ifIndex;
 
     private String m_ipAddr;
 
@@ -55,38 +46,6 @@ public class Service {
     private String m_notify;
 
     private char m_status;
-
-    /**
-     * <p>Constructor for Service.</p>
-     */
-    public Service() {
-    }
-
-    /**
-     * <p>Constructor for Service.</p>
-     *
-     * @param id a int.
-     * @param nodeid a int.
-     * @param ifindex a int.
-     * @param ipaddr a {@link java.lang.String} object.
-     * @param serviceid a int.
-     * @param serviceName a {@link java.lang.String} object.
-     * @param lastGood a {@link java.lang.String} object.
-     * @param lastFail a {@link java.lang.String} object.
-     * @param notify a {@link java.lang.String} object.
-     * @param status a char.
-     */
-    public Service(int id, int nodeid, String ipaddr, int serviceid, String serviceName, String lastGood, String lastFail, String notify, char status) {
-        setId(id);
-        setNodeId(nodeid);
-        setIpAddress(ipaddr);
-        setServiceId(serviceid);
-        setServiceName(serviceName);
-        setLastGood(lastGood);
-        setLastFail(lastFail);
-        setNotify(notify);
-        setStatus(status);
-    }
 
     /**
      * <p>getId</p>

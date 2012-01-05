@@ -116,6 +116,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
 
         getServletContext().addInitParameter("contextConfigLocation", 
                 "classpath:/org/opennms/web/rest/applicationContext-test.xml " +
+                "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml " +
                 "classpath*:/META-INF/opennms/component-service.xml " +
                 "classpath*:/META-INF/opennms/component-dao.xml " +
                 "classpath:/META-INF/opennms/applicationContext-reportingCore.xml " +
@@ -192,6 +193,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
                 long startMillis = System.currentTimeMillis() - 12000;
                 long totalTime = new Date().getTime() - startMillis;
                 TimeChunker timeChunker = new TimeChunker((int)totalTime, new Date(System.currentTimeMillis() - 12000), new Date());
+                @SuppressWarnings("unused") // increment the time segment
                 final TimeChunk timeChunk = timeChunker.getNextSegment();
                 Collection<OnmsLocationSpecificStatus> allStatusChanges = m_locationMonitorDao.getStatusChangesForApplicationBetween(new Date(startMillis), new Date(), "IPv6");
                 

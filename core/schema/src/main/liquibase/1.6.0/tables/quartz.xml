@@ -217,6 +217,8 @@
 	</changeSet>
 
 	<changeSet author="rangerrick" id="qrtz_locks-data" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM qrtz_locks WHERE lock_name='TRIGGER_ACCESS'</sqlCheck>
 		</preConditions> 

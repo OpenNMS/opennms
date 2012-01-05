@@ -100,7 +100,8 @@ public class OnmsDistPoller implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Id @Column(name="dpName")
+    @Id 
+    @Column(name="dpName", nullable=false)
     public String getName() {
         return m_name;
     }

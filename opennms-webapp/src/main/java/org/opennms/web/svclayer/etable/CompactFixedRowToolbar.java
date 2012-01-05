@@ -169,6 +169,7 @@ public class CompactFixedRowToolbar extends CustomizableTwoColumnRowLayout {
 			}
 
 			if (showExports) {
+				@SuppressWarnings("unchecked")
 				Iterator<Export> iterator = model.getExportHandler().getExports()
 						.iterator();
 				for (Iterator<Export> iter = iterator; iter.hasNext();) {

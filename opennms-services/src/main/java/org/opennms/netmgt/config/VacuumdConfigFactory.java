@@ -31,15 +31,14 @@ package org.opennms.netmgt.config;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.ActionEvent;
 import org.opennms.netmgt.config.vacuumd.AutoEvent;
@@ -82,18 +81,6 @@ public final class VacuumdConfigFactory {
      */
     private VacuumdConfiguration m_config;
 
-    /**
-     * <p>Constructor for VacuumdConfigFactory.</p>
-     *
-     * @param rdr Reader
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    @Deprecated
-    public VacuumdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(VacuumdConfiguration.class, rdr);
-    }
-    
     /**
      * <p>Constructor for VacuumdConfigFactory.</p>
      *

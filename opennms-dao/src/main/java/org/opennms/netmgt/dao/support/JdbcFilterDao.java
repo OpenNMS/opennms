@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.filter.Table;
@@ -214,7 +215,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
     /** {@inheritDoc} */
     public Map<InetAddress, Set<String>> getIPAddressServiceMap(final String rule) throws FilterParseException {
-    	final Map<InetAddress, Set<String>> ipServices = new TreeMap<InetAddress, Set<String>>();
+        final Map<InetAddress, Set<String>> ipServices = new TreeMap<InetAddress, Set<String>>(new InetAddressComparator());
         String sqlString;
 
         LogUtils.debugf(this, "Filter.getIPAddressServiceMap(%s)", rule);
@@ -240,13 +241,15 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             if (rset != null) {
                 // Iterate through the result and build the array list
                 while (rset.next()) {
-                	final InetAddress ipaddr = addr(rset.getString(1));
+                    final InetAddress ipaddr = addr(rset.getString(1));
 
-                    if (!ipServices.containsKey(ipaddr)) {
-                        ipServices.put(ipaddr, new TreeSet<String>());
+                    if (ipaddr != null) {
+                        if (!ipServices.containsKey(ipaddr)) {
+                            ipServices.put(ipaddr, new TreeSet<String>());
+                        }
+
+                        ipServices.get(ipaddr).add(rset.getString(2));
                     }
-
-                    ipServices.get(ipaddr).add(rset.getString(2));
                 }
             }
 
@@ -256,9 +259,12 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         } catch (final SQLException e) {
             LogUtils.warnf(this, e, "SQL Exception occurred getting IP Service List.");
             throw new FilterParseException("SQL Exception occurred getting IP Service List: " + e.getLocalizedMessage(), e);
-        } catch (final Throwable e) {
-            LogUtils.errorf(this, e, "Exception getting database connection.");
-            throw new UndeclaredThrowableException(e);
+        } catch (final RuntimeException e) {
+            LogUtils.errorf(this, e, "Unexpected exception getting database connection.");
+            throw e;
+        } catch (final Error e) {
+            LogUtils.errorf(this, e, "Unexpected exception getting database connection.");
+            throw e;
         } finally {
             d.cleanUp();
         }

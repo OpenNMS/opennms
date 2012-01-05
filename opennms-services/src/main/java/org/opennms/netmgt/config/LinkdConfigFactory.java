@@ -34,14 +34,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.ConfigFileConstants;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -75,27 +74,6 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
      * Loaded version
      */
     private long m_currentVersion = -1L;
-
-    /**
-     * Private constructor
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @param currentVersion a long.
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    public LinkdConfigFactory(final long currentVersion, final Reader reader) throws MarshalException, ValidationException, IOException {
-        super(reader);
-        m_currentVersion = currentVersion;
-    }
 
     /**
      * <p>Constructor for LinkdConfigFactory.</p>

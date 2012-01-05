@@ -29,10 +29,9 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
@@ -118,7 +117,7 @@ final class CollectableService implements ReadyRunnable {
      * @param schedulingCompletedFlag a {@link org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      */
-    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr) {
+    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr) throws CollectionInitializationException {
         m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
@@ -253,11 +252,7 @@ final class CollectableService implements ReadyRunnable {
         builder.setNodeid(m_nodeId);
         builder.setInterface(m_agent.getInetAddress());
         builder.setService(m_spec.getServiceName());
-        try {
-            builder.setHost(InetAddress.getLocalHost().getHostAddress());
-        } catch (UnknownHostException ex) {
-            builder.setHost("unresolved.host");
-        }
+        builder.setHost(InetAddressUtils.getLocalHostName());
         
         if (reason != null) {
             builder.addParam("reason", reason);
@@ -365,7 +360,7 @@ final class CollectableService implements ReadyRunnable {
          * Perform data collection.
          */
 	private void doCollection() throws CollectionException {
-		log().info("run: starting new collection for " + getHostAddress() + "/" + m_spec.getServiceName());
+		log().info("run: starting new collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
 		CollectionSet result = null;
 		try {
 		    result = m_spec.collect(m_agent);
@@ -386,7 +381,7 @@ final class CollectableService implements ReadyRunnable {
                         if (m_thresholdVisitor != null) {
                             if (m_thresholdVisitor.isNodeInOutage()) {
                                 log().info("run: the threshold processing will be skipped because the node " + m_nodeId + " is on a scheduled outage.");
-                            } else {
+                            } else if (m_thresholdVisitor.hasThresholds()) {
                                 result.visit(m_thresholdVisitor);
                             }
                         }
@@ -398,10 +393,13 @@ final class CollectableService implements ReadyRunnable {
                         }
                     }
                 } catch (CollectionException e) {
+                    log().warn("run: failed collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
                     throw e;
 		} catch (Throwable t) {
+                    log().warn("run: failed collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
                     throw new CollectionException("An undeclared throwable was caught during data collection for interface " + getHostAddress() +"/"+ m_spec.getServiceName(), t);
 		}
+		log().info("run: finished collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
 	}
 
 	/**
@@ -444,7 +442,7 @@ final class CollectableService implements ReadyRunnable {
                     reinitialize(newIface);
                     if (log().isDebugEnabled())
                         log().debug("Completed reinitializing "+this.getServiceName()+" collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
-                } catch (RuntimeException rE) {
+                } catch (CollectionInitializationException rE) {
                     log().warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
                     log().error("Uncaught exception, failed to intialize interface " + getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
@@ -551,7 +549,7 @@ final class CollectableService implements ReadyRunnable {
                     reinitialize(m_updates.getUpdatedInterface());
                     if (log().isDebugEnabled())
                         log().debug("Completed reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
-                } catch (RuntimeException rE) {
+                } catch (CollectionInitializationException rE) {
                     log().warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
                     log().error("Uncaught exception, failed to initialize interface " + getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
@@ -570,7 +568,7 @@ final class CollectableService implements ReadyRunnable {
     	return ThreadCategory.getInstance(getClass());
     }
 
-    private void reinitialize(OnmsIpInterface newIface) {
+    private void reinitialize(OnmsIpInterface newIface) throws CollectionInitializationException {
         m_spec.release(m_agent);
         m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao,
                                                 m_transMgr);

@@ -36,8 +36,10 @@ import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.opennms.mock.snmp.MockSnmpValue;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class TestAgent {
@@ -86,7 +88,7 @@ public class TestAgent {
         for (Entry<Object, Object> entry : mibData.entrySet()) {
             SnmpObjId objId = SnmpObjId.get(entry.getKey().toString());
             
-            setAgentValue(objId, TestSnmpValue.parseMibValue(entry.getValue().toString()));
+            setAgentValue(objId, SnmpUtils.parseMibValue(entry.getValue().toString()));
         }
     }
 
@@ -139,7 +141,7 @@ public class TestAgent {
             throw new AgentNoSuchNameException(errIndex);
         }
             
-        return TestSnmpValue.NO_SUCH_OBJECT;
+        return MockSnmpValue.NO_SUCH_OBJECT;
     }
     
     SnmpValue handleNoSuchInstance(SnmpObjId reqObjId, int errIndex) {
@@ -147,7 +149,7 @@ public class TestAgent {
             throw new AgentNoSuchNameException(errIndex);
         }
         
-        return TestSnmpValue.NO_SUCH_INSTANCE;
+        return MockSnmpValue.NO_SUCH_INSTANCE;
     }
 
     SnmpValue getVarBindValue(SnmpObjId objId, int errIndex) {
@@ -177,7 +179,7 @@ public class TestAgent {
             throw new AgentNoSuchNameException(errIndex);
         }
         
-        return new TestVarBind(lastOid, TestSnmpValue.END_OF_MIB);
+        return new TestVarBind(lastOid, MockSnmpValue.END_OF_MIB);
     }
 
     TestVarBind getResponseVarBind(SnmpObjId objId, int errIndex) {

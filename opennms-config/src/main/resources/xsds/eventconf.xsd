@@ -188,6 +188,12 @@
           </annotation>
         </element>
 
+        <element maxOccurs="1" minOccurs="0" ref="this:filters">
+          <annotation>
+            <documentation>The event filters to be applied to the event data</documentation>
+          </annotation>
+        </element>
+
       </sequence>
       
     </complexType>
@@ -247,6 +253,29 @@
           </annotation>
         </element>
       </sequence>
+    </complexType>
+  </element>
+
+  <element name="filters">
+    <annotation>
+      <documentation>The filters for the event, contains one or more filter tags.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:filter"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="filter">
+    <annotation>
+      <documentation>The mask element</documentation>
+    </annotation>
+
+       <complexType>
+      <attribute name="eventparm"     type="string" use="required" />
+      <attribute name="pattern"       type="string" use="required" />
+      <attribute name="replacement"   type="string" use="required" />
     </complexType>
   </element>
 
@@ -432,7 +461,7 @@
   <element name="autoacknowledge">
     <annotation>
       <documentation>The autoacknowledge information for the user with state
-      controlling if event is marked acknoledged when inserted into the
+      controlling if event is marked acknowledged when inserted into the
       database</documentation>
     </annotation>
 

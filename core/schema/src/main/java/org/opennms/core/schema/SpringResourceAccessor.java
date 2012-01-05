@@ -44,6 +44,10 @@ import org.springframework.core.io.ResourceLoader;
 public class SpringResourceAccessor implements ResourceAccessor {
     private ResourceLoader m_resourceLoader = new DefaultResourceLoader();
 
+    public SpringResourceAccessor() {
+        
+    }
+    
     /** {@inheritDoc} */
     public InputStream getResourceAsStream(final String file) throws IOException {
     	final Resource resource = getResource(file);

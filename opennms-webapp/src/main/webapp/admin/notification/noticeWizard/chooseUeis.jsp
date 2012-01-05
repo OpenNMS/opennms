@@ -37,7 +37,7 @@
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.notifications.*,
 		org.opennms.core.utils.BundleLists,
-		org.opennms.netmgt.ConfigFileConstants,
+		org.opennms.core.utils.ConfigFileConstants,
 		java.io.*,
 		org.opennms.netmgt.xml.eventconf.Event
 	"

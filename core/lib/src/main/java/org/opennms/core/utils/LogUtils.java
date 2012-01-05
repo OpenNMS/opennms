@@ -28,8 +28,6 @@
 
 package org.opennms.core.utils;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -41,25 +39,7 @@ import org.slf4j.Logger;
  * @author ranger
  * @version $Id: $
  */
-public class LogUtils {
-    private static class SizeLimitedHashMap extends LinkedHashMap<Object,Logger> {
-        /**
-         * 
-         */
-        private static final long serialVersionUID = -4975818830985716843L;
-        private int m_maxSize;
-        
-        public SizeLimitedHashMap(final int size) {
-            super(size, 0.75f, true);
-            m_maxSize = size;
-        }
-
-        public boolean removeEldestEntry(final Map.Entry<Object,Logger> entry) {
-            return size() > m_maxSize;
-        }
-    }
-
-    private static final SizeLimitedHashMap m_hot = new SizeLimitedHashMap(100);
+public abstract class LogUtils {
 
     /**
      * <p>tracef</p>
@@ -289,12 +269,6 @@ public class LogUtils {
 
 	private static Logger getLogger(final Object logee) {
        Logger log;
-	    synchronized(m_hot) {
-	        log = m_hot.get(logee);
-	        if (log != null) {
-	            return log;
-	        }
-	    }
         if (logee instanceof Class<?>) {
             log = ThreadCategory.getSlf4jInstance((Class<?>)logee);
         } else if (logee instanceof String) {
@@ -302,7 +276,6 @@ public class LogUtils {
         } else {
             log = ThreadCategory.getSlf4jInstance(logee.getClass());
         }
-        m_hot.put(logee, log);
         return log;
     }
 

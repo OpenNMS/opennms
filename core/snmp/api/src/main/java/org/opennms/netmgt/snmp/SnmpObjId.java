@@ -217,8 +217,8 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
         return new SnmpObjId(objId, instance);
     }
 
-    public boolean isPrefixOf(SnmpObjId other) {
-        if (length() > other.length())
+    public boolean isPrefixOf(final SnmpObjId other) {
+    	if (other == null || length() > other.length())
             return false;
         
         for(int i = 0; i < m_ids.length; i++) {

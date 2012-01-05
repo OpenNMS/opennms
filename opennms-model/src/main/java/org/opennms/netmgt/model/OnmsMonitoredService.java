@@ -34,7 +34,9 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -60,7 +62,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Where;
-import org.opennms.core.utils.InetAddressUtils;
 import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "service")
@@ -107,6 +108,20 @@ Comparable<OnmsMonitoredService> {
 
     private Set<OnmsApplication> m_applications = new LinkedHashSet<OnmsApplication>();
 
+	private static final Map<String, String> STATUS_MAP;
+	
+	static {
+        STATUS_MAP = new HashMap<String, String>();
+        STATUS_MAP.put("A", "Managed");
+        STATUS_MAP.put("U", "Unmanaged");
+        STATUS_MAP.put("D", "Deleted");
+        STATUS_MAP.put("F", "Forced Unmanaged");
+        STATUS_MAP.put("N", "Not Monitored");
+        STATUS_MAP.put("R", "Rescan to Resume");
+        STATUS_MAP.put("S", "Rescan to Suspend");
+        STATUS_MAP.put("X", "Remotely Monitored");
+	}
+
     /**
      * <p>Constructor for OnmsMonitoredService.</p>
      */
@@ -132,6 +147,7 @@ Comparable<OnmsMonitoredService> {
      * @return a {@link java.lang.Integer} object.
      */
     @Id
+    @Column(nullable=false)
     @XmlAttribute(name="id")
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")    
@@ -261,6 +277,11 @@ Comparable<OnmsMonitoredService> {
     public void setStatus(String status) {
         m_status = status;
     }
+    
+    @Transient
+    public String getStatusLong() {
+    	return STATUS_MAP.get(getStatus());
+    }
 
     /**
      * <p>getSource</p>
@@ -361,14 +382,18 @@ Comparable<OnmsMonitoredService> {
      */
     public String toString() {
         return new ToStringCreator(this)
-        .append("ipAddr", InetAddressUtils.str(getIpAddress()))
-        .append("ifindex", getIfIndex())
-        .append("lastgood", getLastGood())
-        .append("lastfail", getLastFail())
-        .append("qualifier", getQualifier())
-        .append("status", getStatus())
-        .append("source", getSource())
-        .append("notify", getNotify())
+        .append("id", m_id)
+        .append("lastGood", m_lastGood)
+        .append("lastFail", m_lastFail)
+        .append("qualifier", m_qualifier)
+        .append("status", m_status)
+        .append("source", m_source)
+        .append("notify", m_notify)
+        .append("serviceType", m_serviceType)
+        // cannot include these since the require db queries
+//        .append("ipInterface", m_ipInterface)
+//        .append("currentOutages", m_currentOutages)
+//        .append("applications", m_applications)
         .toString();
     }
 
@@ -517,7 +542,7 @@ Comparable<OnmsMonitoredService> {
             setQualifier(scanned.getQualifier());
         }
 
-        if (hasNewValue(scanned.getStatus(), getStatus())) {
+        if (hasNewStatusValue(scanned.getStatus(), getStatus())) {
             setStatus(scanned.getStatus());
         }
         
@@ -530,4 +555,13 @@ Comparable<OnmsMonitoredService> {
         }
 
     }
+
+	private boolean hasNewStatusValue(String newStatus, String oldStatus) 
+	{
+		/*
+		 * Don't overwrite the 'Not Monitored' in the database when provisioning the
+		 * node.  The Poller will update it when scheduling it packages.
+		 */
+		return !"N".equals(oldStatus) && newStatus != null && !newStatus.equals(oldStatus);
+	}
 }

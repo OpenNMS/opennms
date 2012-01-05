@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<nsclient-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
+  <nsclient-collection name="default">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+
+    <wpms>
+      <!--  A group for collecting processor stats.
+        Check the keyvalue "% Processor Time" - if it's there (should be) collect this whole group.
+      Check every recheckInterval milliseconds (3600000 = 1hr) -->
+      <wpm name="Processor" keyvalue="\Processor(_Total)\% Processor Time" recheckInterval="3600000">
+      	<!--  Collect these attributes.  Name is the name to pass to NSClient.  
+      	Alias is the local name for the RRD file 
+      	Type is used to convert values around
+      	maxval/minval are optional-->
+      	<attrib name="\Processor(_Total)\% Processor Time" alias="cpuProcTime" type="Gauge"/>
+      	<attrib name="\Processor(_Total)\% Interrupt Time" alias="cpuIntrTime" type="Gauge"/>
+      	<attrib name="\Processor(_Total)\% Privileged Time" alias="cpuPrivTime" type="Gauge"/>
+      	<attrib name="\Processor(_Total)\% User Time" alias="cpuUserTime" type="Gauge"/>
+      </wpm>
+      <wpm name="System" keyvalue="\System\ProcessorQueueLength" recheckInterval="86400000">
+      	<attrib name="\System\ProcessorQueueLength" alias="winProcQueueLength" type="Gauge"/>
+      	<attrib name="\System\Processes" alias="winProcesses" type="Gauge"/>
+      	<attrib name="\System\Threads" alias="winThreads" type="Gauge"/>
+      </wpm>
+      
+      <!-- IIS stats -->
+      <wpm name="IIS" keyvalue="\Web Service(_Total)\Bytes Total/sec" recheckInterval="86400000">
+      	<attrib name="\Web Service(_Total)\Total Bytes Transfered" alias="iisbytes" type="Counter"/>
+      	<attrib name="\Web Service(_Total)\Total CGI Requests" alias="iiscgireq" type="Counter"/>
+      	<attrib name="\Web Service(_Total)\Total Get Requests" alias="iisgetreq" type="Counter"/>
+       	<attrib name="\Web Service(_Total)\Total Head Requests" alias="iisheadreq" type="Counter"/>
+      	<attrib name="\Web Service(_Total)\Total Post Requests" alias="iispostreq" type="Counter"/>
+      	<attrib name="\Web Service(_Total)\Maximum Connections" alias="iismaxconn" type="Gauge"/>
+      </wpm>
+
+      <wpm name="Exchange" keyvalue="\SMTP Server(_Total)\Message Bytes Sent Total" recheckInterval="86400000">
+	<attrib name="\SMTP Server(_Total)\Message Bytes Sent Total" alias="exchangebytessent" type="Counter"/>
+	<attrib name="\SMTP Server(_Total)\Message Bytes Received Total" alias="exchangebytesrecv" type="Counter"/>
+	<attrib name="\SMTP Server(_Total)\Messages Sent Total" alias="exchangemsgsent" type="Counter"/>
+	<attrib name="\SMTP Server(_Total)\Messages Received Total" alias="exchangemsgrecv" type="Counter"/>
+	<attrib name="\SMTP Server(_Total)\Messages Delivered Total" alias="exchangemsgdeliv" type="Counter"/>
+	<attrib name="\SMTP Server(_Total)\% Recipients Local" alias="exchangereciplocal" type="Gauge"/>
+	<attrib name="\SMTP Server(_Total)\% Recipients Remote" alias="exchangerecipremote" type="Gauge"/>
+      </wpm>
+
+      <wpm name="DNS" keyvalue="\DNS\Total Query Received" recheckInterval="86400000">
+	<attrib name="\DNS\Total Query Received" alias="dnsqueryrecv" type="Counter"/>
+	<attrib name="\DNS\Total Response Sent" alias="dnsresponsesent" type="Counter"/>
+      </wpm>
+      <wpm name="SQLServer" keyvalue="\SQLServer:General Statistics\User Connections" recheckInterval="86400000">
+	<attrib name="\SQLServer:General Statistics\User Connections" alias="sqluserconn" type="Gauge"/>
+	<attrib name="\SQLServer:Buffer Manager\Buffer cache hit ratio" alias="sqlbuffhitratio" type="Gauge"/>
+	<attrib name="\SQLServer:Cache Manager(_Total)\Cache Hit Ratio" alias="sqlcachehitratio" type="Gauge"/>
+	<attrib name="\SQLServer:Databases(_Total)\Active Transactions" alias="sqlactivetrans" type="Gauge"/>
+	<attrib name="\SQLServer:Databases(_Total)\Log Cache Hit Ratio" alias="sqllogcachehitratio" type="Gauge"/>
+	<attrib name="\SQLServer:Locks(_Total)\Average Wait Time (ms)" alias="sqllockavgwaittime" type="Gauge"/>
+	<attrib name="\SQLServer:Memory Manager\Connection Memory (KB)" alias="sqlconnmemory" type="Gauge"/>
+	<attrib name="\SQLServer:Memory Manager\Lock Memory (KB)" alias="sqllockmemory" type="Gauge"/>
+	<attrib name="\SQLServer:Memory Manager\Optimizer Memory (KB)" alias="sqloptmemory" type="Gauge"/>
+	<attrib name="\SQLServer:Memory Manager\SQL Cache Memory (KB)" alias="sqlsqlcachememory" type="Gauge"/>
+	<attrib name="\SQLServer:Memory Manager\Target Server Memory(KB)" alias="sqltargetmemory" type="Gauge"/>
+	<attrib name="\SQLServer:Memory Manager\Total Server Memory (KB)" alias="sqltotalmemory" type="Gauge"/>
+      </wpm>
+           <wpm name="Biztalk" keyvalue="\Biztalk Server\Interchanges Received" recheckInterval="86400000">
+	<attrib name="\Biztalk Server\Interchanges Received" alias="biztalkicrecv" type="Counter"/>
+	<attrib name="\Biztalk Server\Synchronous Submissions" alias="biztalksyncsub" type="Counter"/>
+	<attrib name="\Biztalk Server\Asynchronous Submissions" alias="biztalkasyncsub" type="Counter"/>
+      </wpm>
+
+      <wpm name="LiveCommsServer" keyvalue="\LC:SIP - 03 - Requests\SIP - 010 - Incoming MESSAGE Requests" recheckInterval="86400000">
+	<attrib name="\LC:SIP - 00 - Networking\SIP - 014 - Unique users connected directly" alias="lcsusers" type="Gauge"/>
+	<attrib name="\LC:SIP - 03 - Requests\SIP - 010 - Incoming MESSAGE Requests" alias="lcsmessages" type="Counter"/>		
+      </wpm>
+
+      <wpm name="Mailmarshal" keyvalue="\MailMarshal:Engine\Active Threads" recheckInterval="86400000">
+	<attrib name="\MailMarshal:Engine\Viruses Detected" alias="mmvirusdetect" type="Counter"/>
+	<attrib name="\MailMarshal:Receiver\Refused - Rule Imposed" alias="mmruleimposed" type="Counter"/>
+	<attrib name="\MailMarshal:Receiver\Relay Attempts" alias="relayattempts" type="Counter"/>
+      </wpm>
+    </wpms>
+  </nsclient-collection>
+</nsclient-datacollection-config>
+

@@ -65,10 +65,10 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdat
 import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEventHandler;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -116,7 +116,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     }
 
-    public class LocationUpdater implements IncrementalCommand{
+    public class LocationUpdater implements Scheduler.RepeatingCommand {
 
         private Queue<LocationInfo> m_locations;
         private int m_count = 0;

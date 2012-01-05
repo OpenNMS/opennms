@@ -61,6 +61,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public interface ProvisionService {
     
+	
+    public boolean isRequisitionedEntityDeletionEnabled();
 
     /**
      * <p>isDiscoveryEnabled</p>
@@ -166,7 +168,18 @@ public interface ProvisionService {
      */
     @Transactional
     public abstract OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String serviceName);
-    
+
+    /**
+     * <p>updateMonitoredServiceState</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     */
+    @Transactional
+    public abstract OnmsMonitoredService updateMonitoredServiceState(Integer nodeId, String ipAddress, String serviceName);
+
     /**
      * <p>getRequisitionedNode</p>
      *

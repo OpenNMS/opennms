@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller;
 
 import java.io.File;
 
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
@@ -152,6 +153,10 @@ public class LatencyCollectionResource implements CollectionResource {
 
     public String getParent() {
         return m_ipAddress;
+    }
+
+    public TimeKeeper getTimeKeeper() {
+        return null;
     }
 
 }

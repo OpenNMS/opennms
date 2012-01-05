@@ -85,8 +85,8 @@ public class OpenNMSTestCase extends TestCase {
      */
     public String getSnmpConfig() throws IOException {
         return ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "/org/opennms/netmgt/mock/snmp-config.xml",
-                new String[] { "@myVersion@", myVersion() },
-                new String[] { "@myLocalHost@", InetAddressUtils.str(myLocalHost()) }
+                new String[] { "\\$\\{myVersion\\}", myVersion() },
+                new String[] { "\\$\\{myLocalHost\\}", InetAddressUtils.str(myLocalHost()) }
                 );
     }
 

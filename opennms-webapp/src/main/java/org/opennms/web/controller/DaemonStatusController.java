@@ -32,63 +32,44 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.opennms.netmgt.dao.ServiceInfo;
 import org.opennms.web.svclayer.daemonstatus.DaemonStatusService;
-import org.springframework.validation.BindException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
  * <p>DaemonStatusController class.</p>
  *
  * @author SriKumar Kareti
  * @author Tiffani Heeren
- * @version $Id: $
  * @since 1.8.1
  */
-public class DaemonStatusController extends SimpleFormController {
-	 private DaemonStatusService daemonStatusService;
+//@Controller
+//@RequestMapping("/daemonstatus.htm")
+public class DaemonStatusController {
 
-     /**
-      * <p>Setter for the field <code>daemonStatusService</code>.</p>
-      *
-      * @param daemonStatusService a {@link org.opennms.web.svclayer.daemonstatus.DaemonStatusService} object.
-      */
-     public void setDaemonStatusService(DaemonStatusService daemonStatusService) {
-    	 this.daemonStatusService = daemonStatusService;
-     }
+    @Autowired
+	private DaemonStatusService daemonStatusService;
 
-	/** {@inheritDoc} */
-	@Override
-	protected Map<String, Collection<ServiceInfo>> referenceData(HttpServletRequest arg0) throws Exception {
-		// TODO Auto-generated method stub
+	protected Map<String, Collection<ServiceInfo>> referenceData() throws Exception {
 		Map<String, Collection<ServiceInfo>> referenceData = new HashMap<String, Collection<ServiceInfo>>();
 		Collection<ServiceInfo> daemons = daemonStatusService.getCurrentDaemonStatusColl();
-		logger.debug("number of daemons:" + daemons.size());
 		referenceData.put("daemons", daemons);
 		return referenceData;
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse arg1, Object arg2, BindException arg3) throws Exception {
-		// TODO Auto-generated method stub
+	@RequestMapping(method = RequestMethod.POST)
+	public ModelAndView onSubmit() throws Exception {
         // FIXME: This isn't used
-//		Map<String, ServiceInfo> daemons = 
-//			daemonStatusService.performOperationOnDaemons(ServletRequestUtils.getStringParameter(request, "operation"),
-//				ServletRequestUtils.getStringParameters(request, "values"));
-		ModelAndView modelAndView = super.onSubmit(request, arg1, arg2, arg3);
-		modelAndView.addAllObjects(referenceData(request));
+	    /*
+		Map<String, ServiceInfo> daemons = 
+			daemonStatusService.performOperationOnDaemons(ServletRequestUtils.getStringParameter(request, "operation"),
+				ServletRequestUtils.getStringParameters(request, "values"));
+		*/
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addAllObjects(referenceData());
 		return modelAndView;
-	}
-      
-	/** {@inheritDoc} */
-	@Override
-	protected Object formBackingObject(HttpServletRequest arg0) throws Exception {
-		// TODO Auto-generated method stub
-		return super.formBackingObject(arg0);
 	}
 }

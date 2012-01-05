@@ -41,6 +41,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -49,7 +50,6 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.dao.support.JdbcFilterDao;
@@ -120,7 +120,6 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
         OnmsIpInterface ipInterface;
         OnmsMonitoredService service;
         OnmsServiceType serviceType;
-        OnmsCategory category;
 
         OnmsCategory category1 = new OnmsCategory("CategoryOne");
         m_categoryDao.save(category1);

@@ -230,7 +230,9 @@ function handleAddElementResponse(data) {
 	for(var mapswithLoopIndex in addElem.mapsWithLoop){
 		alert("Add Map as Node: Found Loop Adding SubMap with ID " + addElem.mapsWithLoop[mapswithLoopIndex]);
 	}
-
+    // Reset Map and remove links
+	map.clearLinks();
+	
 	// test the map element spaces available
 	var freePoints = getFreePoints();
 	var alerted = false;

@@ -33,7 +33,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -117,17 +116,6 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     /**
      * <p>Constructor for CapsdConfigManager.</p>
      *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public CapsdConfigManager(Reader rdr) throws MarshalException, ValidationException {
-        loadXml(rdr);
-    }
-
-    /**
-     * <p>Constructor for CapsdConfigManager.</p>
-     *
      * @param is a {@link java.io.InputStream} object.
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
@@ -163,18 +151,6 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      */
     protected void loadXml(InputStream is) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(CapsdConfiguration.class, is);
-        loadIncludeUrls();
-    }
-
-    /**
-     * <p>loadXml</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    protected void loadXml(Reader rdr) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(CapsdConfiguration.class, rdr);
         loadIncludeUrls();
     }
 

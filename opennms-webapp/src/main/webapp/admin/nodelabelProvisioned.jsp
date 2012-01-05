@@ -47,10 +47,10 @@
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Node Label Provisioned" />
-  <jsp:param name="headTitle" value="Node Label Provisioned" />
+  <jsp:param name="title" value="Node Label Changed in Requisition" />
+  <jsp:param name="headTitle" value="Node Label Changed in Requisition" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Node Label Provisioned" />
+  <jsp:param name="breadcrumb" value="Node Label Changed in Requisition" />
   <jsp:param name="script" value="<script type='text/javascript' src='js/provisioningGroups.js'></script>" />
 </jsp:include>
 <form action="admin/provisioningGroups.htm" name="takeAction" method="post">
@@ -58,14 +58,14 @@
   <input type="hidden" name="action" value="addGroup" />
   <input type="hidden" name="actionTarget" value="" />
 </form>
-<h3>Node Label Provisioned</h3>
+<h3>Node Label Changed in Requisition</h3>
 <br/>
 <p>
-  This node was created as part of a requisition via the provisioning service.
-  The requested change to the node's label has been made and will be reflected immediately in the requisition, but may not take effect in the database until the next time the node or requisition is rescanned.
+  This node was created as part of a requisition.
+  The requested change to the node's label has been made and will be reflected immediately in the requisition, but will not take effect in the database until the next time the node or requisition is rescanned.
 </p>
 <p>
-  If you want to re-import (or synchronize) the <strong><%=foreignSource%></strong> requisition, click on the "Synchronize" button. That will redirect you to the Provisioning Groups page, after request the requisition import.
+  If you want to re-import (or synchronize) the <strong><%=foreignSource%></strong> requisition, click on the "Synchronize" button. That will redirect you to the Requisitions page, after requesting re-synchronization of the requisition.
 </p>
 <p>
   <br/>

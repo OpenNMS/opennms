@@ -69,6 +69,14 @@ CREATE TRIGGER setIpInterfaceKeysOnInsertTrigger
    ON ifServices FOR EACH ROW
    EXECUTE PROCEDURE setIpInterfaceKeysOnInsert();
 </createProcedure>
+
+<rollback>
+  <sql>
+    DROP TRIGGER IF EXISTS setIpInterfaceKeysOnInsertTrigger on ifServices;
+    DROP FUNCTION IF EXISTS setIpInterfaceKeysOnInsert();
+  </sql>
+</rollback>
+
 </changeSet>
 
 </databaseChangeLog>

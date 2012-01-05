@@ -31,46 +31,17 @@
 
   <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
     <property name="dataSource" ref="dataSource" />
-    <property name="annotatedClasses">
+    <property name="packagesToScan">
       <list>
-        <value>org.opennms.netmgt.model.OnmsDistPoller</value>
-        <value>org.opennms.netmgt.model.OnmsAssetRecord</value>
-        <value>org.opennms.netmgt.model.PathElement</value>
-        <value>org.opennms.netmgt.model.OnmsNode</value>
-        <value>org.opennms.netmgt.model.OnmsIpInterface</value>
-        <value>org.opennms.netmgt.model.OnmsSnmpInterface</value>
-        <value>org.opennms.netmgt.model.OnmsArpInterface</value>
-        <value>org.opennms.netmgt.model.OnmsMonitoredService</value>
-        <value>org.opennms.netmgt.model.OnmsCategory</value>
-        <value>org.opennms.netmgt.model.OnmsServiceType</value>
-        <value>org.opennms.netmgt.model.OnmsOutage</value>
-        <value>org.opennms.netmgt.model.OnmsEvent</value>
-        <value>org.opennms.netmgt.model.OnmsAlarm</value>
-        <value>org.opennms.netmgt.model.OnmsNotification</value>
-        <value>org.opennms.netmgt.model.OnmsUserNotification</value>
-        <value>org.opennms.netmgt.model.OnmsLocationMonitor</value>
-        <value>org.opennms.netmgt.model.OnmsLocationSpecificStatus</value>
-        <value>org.opennms.netmgt.model.PollStatus</value>
-        <value>org.opennms.netmgt.model.OnmsApplication</value>
-        <value>org.opennms.netmgt.model.ResourceReference</value>
-        <value>org.opennms.netmgt.model.StatisticsReportData</value>
-        <value>org.opennms.netmgt.model.StatisticsReport</value>
-        <value>org.opennms.netmgt.model.OnmsMap</value>
-        <value>org.opennms.netmgt.model.OnmsMapElement</value>
-        <value>org.opennms.netmgt.model.DataLinkInterface</value>
-        <value>org.opennms.netmgt.model.OnmsAcknowledgment</value>
-        <value>org.opennms.netmgt.model.OnmsLinkState</value>
-        <value>org.opennms.netmgt.model.ReportCatalogEntry</value>
-        <!--
-        <value>org.opennms.netmgt.model.OnmsUser</value>
-        <value>org.opennms.netmgt.model.OnmsGroup</value>
-        -->
+        <value>org.opennms.netmgt.dao.hibernate</value>
+        <value>org.opennms.netmgt.model</value>
       </list>
     </property>
     <!--  property name="schemaUpdate" value="true">
       </property -->
     <property name="packagesToScan">
       <list>
+        <value>org.opennms.netmgt.dao.hibernate</value>
         <value>org.opennms.netmgt.model</value>
       </list>
     </property>
@@ -88,6 +59,7 @@
 
   <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
     <property name="sessionFactory" ref="sessionFactory" />
+    <property name="nestedTransactionAllowed" value="true"/>
   </bean>
 
   <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
@@ -166,6 +138,26 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
+  <bean id="atInterfaceDao" class="org.opennms.netmgt.dao.hibernate.AtInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="vlanDao" class="org.opennms.netmgt.dao.hibernate.VlanDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="stpNodeDao" class="org.opennms.netmgt.dao.hibernate.StpNodeDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="stpInterfaceDao" class="org.opennms.netmgt.dao.hibernate.StpInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="ipRouteInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpRouteInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
   <!--
   <bean id="userDao" class="org.opennms.netmgt.dao.hibernate.UserDaoHibernate" >
     <property name="sessionFactory" ref="sessionFactory" />
@@ -240,29 +232,62 @@
 
   <bean id="databaseSchemaConfigFactory" class="org.opennms.netmgt.config.DatabaseSchemaConfigFactory" depends-on="databaseSchemaConfigFactory-init" factory-method="getInstance"/>
 
-  <bean id="filterDao" class="org.opennms.netmgt.dao.support.JdbcFilterDao">
-    <property name="dataSource" ref="dataSource" />
-    <property name="databaseSchemaConfigFactory" ref="databaseSchemaConfigFactory" />
-    <property name="nodeDao" ref="nodeDao" />
+  <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.filter.FilterDaoFactory.setInstance</value></property>
+    <property name="arguments">
+      <bean id="jdbcFilterDao" class="org.opennms.netmgt.dao.support.JdbcFilterDao">
+        <property name="dataSource" ref="dataSource" />
+        <property name="databaseSchemaConfigFactory" ref="databaseSchemaConfigFactory" />
+        <property name="nodeDao" ref="nodeDao" />
+      </bean>
+    </property>
   </bean>
-
+  
+  <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
+  
   <bean id="collectdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.init</value></property>
   </bean>
 
   <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory" depends-on="collectdConfig-init" factory-method="getInstance"/>
 
-  <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DataCollectionConfigFactory.init</value></property>
+  <bean id="dataCollectionConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/datacollection-config.xml" />
   </bean>
 
-  <bean id="dataCollectionConfig" class="org.opennms.netmgt.config.DataCollectionConfigFactory" depends-on="dataCollectionConfig-init" factory-method="getInstance"/>
+  <bean id="dataCollectionConfigDirectoryLocation" class="java.lang.String">
+    <constructor-arg value="${opennms.home}/etc/datacollection" />
+  </bean>
+
+  <!-- Default: reload datacollection config every 10 minutes -->
+  <bean id="dataCollectionConfigReloadInterval" class="java.lang.Long">
+    <constructor-arg value="0" />
+  </bean>
+
+  <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.DefaultDataCollectionConfigDao">
+    <property name="configResource" ref="dataCollectionConfigResourceLocation" />
+    <property name="configDirectory" ref="dataCollectionConfigDirectoryLocation" />
+    <property name="reloadCheckInterval" ref="dataCollectionConfigReloadInterval" />
+  </bean>
+
+  <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod">
+      <value>org.opennms.netmgt.config.DataCollectionConfigFactory.setInstance</value>
+    </property>
+    <property name="arguments">
+      <list>
+        <ref bean="dataCollectionConfigDao" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="dataCollectionConfig" class="org.opennms.netmgt.config.DataCollectionConfigFactory" depends-on="dataCollectionConfig-init" factory-method="getInstance" />
 
   <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
     <property name="nodeDao" ref="nodeDao" />
     <property name="locationMonitorDao" ref="locationMonitorDao" />
     <property name="collectdConfig" ref="collectdConfig" />
-    <property name="dataCollectionConfig" ref="dataCollectionConfig" />
+    <property name="dataCollectionConfigDao" ref="dataCollectionConfig" />
     <property name="rrdDirectory" value="${rrd.base.dir}" />
   </bean>
 
@@ -313,5 +338,7 @@
   <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
     <constructor-arg ref="jdbcTemplate" />
   </bean>
+
+  <bean id="alarmStatisticsService" class="org.opennms.netmgt.dao.stats.AlarmStatisticsService" />
 
 </beans>

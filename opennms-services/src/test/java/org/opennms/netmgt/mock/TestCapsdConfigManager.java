@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.mock;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -40,7 +40,7 @@ public class TestCapsdConfigManager extends CapsdConfigManager {
     private String m_xml;
 
     public TestCapsdConfigManager(String xml) throws MarshalException, ValidationException, IOException {
-        super(new StringReader(xml));
+        super(new ByteArrayInputStream(xml.getBytes("UTF-8")));
         save();
     }
 
@@ -51,7 +51,7 @@ public class TestCapsdConfigManager extends CapsdConfigManager {
 
     @Override
     protected void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
-        loadXml(new StringReader(m_xml));
+        loadXml(new ByteArrayInputStream(m_xml.getBytes("UTF-8")));
     }
     
     public String getXml() {

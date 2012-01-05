@@ -39,7 +39,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * This class is designed to collect the necessary SNMP information from the
  * target address and store the collected information. When the class is
  * initially constructed no information is collected. The SNMP Session creating
- * and colletion occurs in the main run method of the instance. This allows the
+ * and collection occurs in the main run method of the instance. This allows the
  * collection to occur in a thread if necessary.
  */
 public final class FdbTableGet {

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.LogUtils.debugf;
 import static org.opennms.core.utils.LogUtils.infof;
 import static org.opennms.core.utils.LogUtils.warnf;
@@ -50,7 +51,7 @@ import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -96,7 +97,7 @@ public class NodeScan implements RunInBatch {
      * @param foreignId a {@link java.lang.String} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
-     * @param agentConfigFactory a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
+     * @param agentConfigFactory a {@link org.opennms.netmgt.config.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
      */
     public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final DefaultTaskCoordinator taskCoordinator) {
@@ -388,6 +389,8 @@ public class NodeScan implements RunInBatch {
         public void detectIpAddressTable(final BatchTask currentPhase) {
         	final OnmsNode node = getNode();
 
+            debugf(this, "Attempting to scan the IPAddress table for node %s", node);
+
 			// mark all provisioned interfaces as 'in need of scanning' so we can mark them
             // as scanned during ipAddrTable processing
             final Set<InetAddress> provisionedIps = new HashSet<InetAddress>();
@@ -396,18 +399,40 @@ public class NodeScan implements RunInBatch {
                     provisionedIps.add(provisioned.getIpAddress());
                 }
             }
-            
+
             final IPAddressTableTracker ipAddressTracker = new IPAddressTableTracker() {
             	@Override
             	public void processIPAddressRow(final IPAddressRow row) {
             		final String ipAddress = row.getIpAddress();
 					infof(this, "Processing IPAddress table row with ipAddr %s", ipAddress);
-            		
-            		if (ipAddress != null && !ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
-                        // mark any provisioned interface as scanned
-                        provisionedIps.remove(ipAddress);
 
-                        OnmsIpInterface iface = row.createInterfaceFromRow();
+					final InetAddress address = addr(ipAddress);
+
+					// skip if it's any number of unusual/local address types
+					if (address == null) return;
+					if (address.isAnyLocalAddress()) {
+						debugf(this, "%s.isAnyLocalAddress() == true, Skipping.", ipAddress);
+						return;
+					}
+					if (address.isLinkLocalAddress()) {
+						debugf(this, "%s.isLinkLocalAddress() == true, Skipping.", ipAddress);
+						return;
+					}
+					if (address.isLoopbackAddress()) {
+						debugf(this, "%s.isLoopbackAddress() == true, Skipping.", ipAddress);
+						return;
+					}
+					if (address.isMulticastAddress()) {
+						debugf(this, "%s.isMulticastAddress() == true, Skipping.", ipAddress);
+						return;
+					}
+
+                    // mark any provisioned interface as scanned
+                    provisionedIps.remove(ipAddress);
+
+                    OnmsIpInterface iface = row.createInterfaceFromRow();
+
+                    if (iface != null) {
                         iface.setIpLastCapsdPoll(getScanStamp());
                         iface.setIsManaged("M");
 
@@ -417,11 +442,11 @@ public class NodeScan implements RunInBatch {
                                 iface = policy.apply(iface);
                             }
                         }
-    
+                        
                         if (iface != null) {
                             currentPhase.add(ipUpdater(currentPhase, iface), "write");
                         }
-            		}
+                    }
             	}
             };
 
@@ -430,6 +455,8 @@ public class NodeScan implements RunInBatch {
         
         public void detectIpInterfaceTable(final BatchTask currentPhase) {
         	final OnmsNode node = getNode();
+
+            debugf(this, "Attempting to scan the IPInterface table for node %s", node);
 
 			// mark all provisioned interfaces as 'in need of scanning' so we can mark them
             // as scanned during ipAddrTable processing
@@ -445,29 +472,50 @@ public class NodeScan implements RunInBatch {
             	public void processIPInterfaceRow(final IPInterfaceRow row) {
             		final String ipAddress = row.getIpAddress();
             		infof(this, "Processing IPInterface table row with ipAddr %s for node %d/%s/%s", ipAddress, node.getId(), node.getForeignSource(), node.getForeignId());
-            		if (ipAddress != null && !ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
 
-                        // mark any provisioned interface as scanned
-                        provisionedIps.remove(ipAddress);
+					final InetAddress address = addr(ipAddress);
 
-                        // save the interface
-                        OnmsIpInterface iface = row.createInterfaceFromRow();
-                        iface.setIpLastCapsdPoll(getScanStamp());
+					// skip if it's any number of unusual/local address types
+					if (address == null) return;
+					if (address.isAnyLocalAddress()) {
+						debugf(this, "%s.isAnyLocalAddress() == true, Skipping.", ipAddress);
+						return;
+					}
+					if (address.isLinkLocalAddress()) {
+						debugf(this, "%s.isLinkLocalAddress() == true, Skipping.", ipAddress);
+						return;
+					}
+					if (address.isLoopbackAddress()) {
+						debugf(this, "%s.isLoopbackAddress() == true, Skipping.", ipAddress);
+						return;
+					}
+					if (address.isMulticastAddress()) {
+						debugf(this, "%s.isMulticastAddress() == true, Skipping.", ipAddress);
+						return;
+					}
 
-                        // add call to the ip interface is managed policies
-                        iface.setIsManaged("M");
+                    // mark any provisioned interface as scanned
+                    provisionedIps.remove(ipAddress);
 
-                        final List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
-                        for(final IpInterfacePolicy policy : policies) {
-                            if (iface != null) {
-                                iface = policy.apply(iface);
-                            }
-                        }
-    
-                        if (iface != null) {
-                            currentPhase.add(ipUpdater(currentPhase, iface), "write");
-                        }
-    
+                    // save the interface
+                    OnmsIpInterface iface = row.createInterfaceFromRow();
+                    
+                    if (iface != null) {
+	                    iface.setIpLastCapsdPoll(getScanStamp());
+	
+	                    // add call to the ip interface is managed policies
+	                    iface.setIsManaged("M");
+	
+	                    final List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
+	                    for(final IpInterfacePolicy policy : policies) {
+	                        if (iface != null) {
+	                            iface = policy.apply(iface);
+	                        }
+	                    }
+	
+	                    if (iface != null) {
+	                        currentPhase.add(ipUpdater(currentPhase, iface), "write");
+	                    }
                     }
                 }
             };
@@ -499,15 +547,17 @@ public class NodeScan implements RunInBatch {
 				        abort("Aborting node scan : Agent failed while scanning the IP address tables : " + walker.getErrorMessage());
 				    } else {
 	      
-				        // After processing the snmp provided interfaces then we need to scan any that 
+				        // After processing the SNMP provided interfaces then we need to scan any that 
 				        // were provisioned but missing from the ip table
 				        for(final InetAddress ipAddr : provisionedIps) {
 				            final OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddr);
-				            iface.setIpLastCapsdPoll(getScanStamp());
-				            iface.setIsManaged("M");
-	      
-				            currentPhase.add(ipUpdater(currentPhase, iface), "write");
-	      
+				            
+				            if (iface != null) {
+					            iface.setIpLastCapsdPoll(getScanStamp());
+					            iface.setIsManaged("M");
+		      
+					            currentPhase.add(ipUpdater(currentPhase, iface), "write");
+				            }
 				        }
 	      
 				        debugf(this, "Finished phase %s", currentPhase);
@@ -541,7 +591,7 @@ public class NodeScan implements RunInBatch {
                     if (snmpIface != null) {
                         final OnmsSnmpInterface snmpIfaceResult = snmpIface;
         
-                        // add call to the snmp interface collection enable policies
+                        // add call to the SNMP interface collection enable policies
         
                         final Runnable r = new Runnable() {
                             public void run() {
@@ -584,7 +634,7 @@ public class NodeScan implements RunInBatch {
                     },
                     new RunInBatch() {
                         public void run(final BatchTask phase) {
-                            detectIpAddressTable(phase);
+                        	detectIpAddressTable(phase);
                         }
                     },
                     new RunInBatch() {

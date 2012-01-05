@@ -68,7 +68,7 @@ public class JMXSecureConnectionFactory
      * @param address a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.protocols.jmx.connectors.Jsr160ConnectionWrapper} object.
      */
-    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address)
+    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<?,?> propertiesMap, InetAddress address)
     {
         Jsr160ConnectionWrapper connectionWrapper = null;
 
@@ -101,7 +101,7 @@ public class JMXSecureConnectionFactory
                         ks = KeyStore.getInstance(KeyStore.getDefaultType());
                         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
                         tmf.init(ks);
-                        X509TrustManager defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
+                        // X509TrustManager defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
                         tm = new AnyServerX509TrustManager();
                         SSLContext ctx = SSLContext.getInstance("TLSv1");
                         ctx.init(null, new TrustManager[]{tm}, null);
@@ -163,7 +163,7 @@ public class JMXSecureConnectionFactory
         public X509Certificate[] getAcceptedIssuers()
         {
             // since client authentication is not supported by this
-            // trust manager, there's no certicate authority trusted
+            // trust manager, there's no certificate authority trusted
             // for authenticating peers
             return new X509Certificate[0];
         }

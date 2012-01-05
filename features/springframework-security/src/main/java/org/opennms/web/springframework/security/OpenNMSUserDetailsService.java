@@ -37,7 +37,7 @@ import org.springframework.security.userdetails.UsernameNotFoundException;
  * <p>OpenNMSUserDetailsService class.</p>
  */
 public class OpenNMSUserDetailsService implements UserDetailsService {
-	private UserDao m_userDao;
+	private SpringSecurityUserDao m_userDao;
 	
 	/** {@inheritDoc} */
 	public UserDetails loadUserByUsername(String username)
@@ -59,9 +59,9 @@ public class OpenNMSUserDetailsService implements UserDetailsService {
 	/**
 	 * <p>setUserDao</p>
 	 *
-	 * @param userDao a {@link org.opennms.web.springframework.security.UserDao} object.
+	 * @param userDao a {@link org.opennms.web.springframework.security.SpringSecurityUserDao} object.
 	 */
-	public void setUserDao(UserDao userDao) {
+	public void setUserDao(SpringSecurityUserDao userDao) {
 		m_userDao = userDao;
 		
 	}
@@ -69,9 +69,9 @@ public class OpenNMSUserDetailsService implements UserDetailsService {
 	/**
 	 * <p>getUserDao</p>
 	 *
-	 * @return a {@link org.opennms.web.springframework.security.UserDao} object.
+	 * @return a {@link org.opennms.web.springframework.security.SpringSecurityUserDao} object.
 	 */
-	public UserDao getUserDao() {
+	public SpringSecurityUserDao getUserDao() {
 		return m_userDao;
 	}
 }

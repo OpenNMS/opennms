@@ -47,7 +47,7 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapList;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -129,8 +129,7 @@ public class OnmsMapRestService extends OnmsRestService {
     @Path("{mapId}")
     public Response deleteMap(@PathParam("mapId") int mapId) {
         OnmsMap map = m_mapDao.get(mapId);
-        if (map == null)
-            throwException(Response.Status.BAD_REQUEST, "deleteMap: Can't find map with id " + mapId);
+        if (map == null) throw getException(Response.Status.BAD_REQUEST, "deleteMap: Can't find map with id " + mapId);
         log().debug("deleteMap: deleting map " + mapId);
         m_mapDao.delete(map);
         return Response.ok().build();
@@ -148,10 +147,9 @@ public class OnmsMapRestService extends OnmsRestService {
     @Path("{mapId}")
     public Response updateMap(@PathParam("mapId") int mapId, MultivaluedMapImpl params) {
         OnmsMap map = m_mapDao.get(mapId);
-        if (map == null)
-            throwException(Response.Status.BAD_REQUEST, "updateMap: Can't find map with id " + mapId);
+        if (map == null) throw getException(Response.Status.BAD_REQUEST, "updateMap: Can't find map with id " + mapId);
         log().debug("updateMap: updating map " + map);
-        BeanWrapper wrapper = new BeanWrapperImpl(map);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(map);
         for(String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
                 String stringValue = params.getFirst(key);

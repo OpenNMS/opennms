@@ -115,7 +115,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
                 if (!a.getClass().getName().equals(b.getClass().getName())) {
                     return false;
                 }
-                if (a instanceof Hashtable) {
+                if (a instanceof Hashtable<?,?>) {
                     if (!hashtablesMatchIgnoringDescriptionKeys(a, b)) {
                         return false;
                     }
@@ -283,7 +283,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         m_anticipated.add(new XmlrpcCall(method, params));
     }
 
-    @SuppressWarnings({ "unchecked" }) 
+    @SuppressWarnings("unchecked")
     public Object execute(String method, Vector vector) {
         if (m_webServer == null) {
             String message = "Hey!  We aren't initialized (anymore)!  "

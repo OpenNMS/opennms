@@ -41,9 +41,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,7 +186,7 @@ public class LinkProvisioningAdapterTest {
         
         replay();
         
-        EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/internal/linkd/dataLinkFailed", null);
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.DATA_LINK_FAILED_EVENT_UEI, null);
         eventBuilder.setParam("endPoint1", END_POINT_1);
         eventBuilder.setParam("endPoint2", END_POINT_2);
         
@@ -206,7 +207,7 @@ public class LinkProvisioningAdapterTest {
         
         replay();
         
-        EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/internal/linkd/dataLinkFailed", null);
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.DATA_LINK_FAILED_EVENT_UEI, null);
         eventBuilder.setParam("endPoint1", END_POINT_2);
         eventBuilder.setParam("endPoint2", END_POINT_1);
         eventBuilder.setCreationTime(new Date());
@@ -229,7 +230,7 @@ public class LinkProvisioningAdapterTest {
         
         replay();
         
-        EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/internal/linkd/dataLinkRestored", null);
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.DATA_LINK_RESTORED_EVENT_UEI, null);
         eventBuilder.setParam("endPoint1", END_POINT_1);
         eventBuilder.setParam("endPoint2", END_POINT_2);
         eventBuilder.setCreationTime(new Date());
@@ -252,7 +253,7 @@ public class LinkProvisioningAdapterTest {
         
         replay();
         
-        EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/internal/linkd/dataLinkRestored", null);
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.DATA_LINK_RESTORED_EVENT_UEI, null);
         eventBuilder.setParam("endPoint1", END_POINT_2);
         eventBuilder.setParam("endPoint2", END_POINT_1);
         eventBuilder.setCreationTime(new Date());

@@ -21,6 +21,17 @@
         <artifactId>gwt-maven-plugin</artifactId>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-clean-plugin</artifactId>
         <version>2.4.1</version>
         <configuration>
@@ -48,19 +59,15 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
         <groupId>org.opennms.core.build</groupId>
-        <artifactId>castor-process-maven-plugin</artifactId>
+        <artifactId>castor-maven-plugin</artifactId>
       </plugin>
 
       <!-- plugin to use to run webapp in an embedded tomcat -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>tomcat-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <configuration>
           <path>/${project.artifactId}</path>
           <port>${web.port}</port>
@@ -150,6 +157,28 @@
             <classpathContainer>com.google.gwt.eclipse.core.GWT_CONTAINER</classpathContainer>
           </classpathContainers>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+            <execution>
+                <id>attach-artifacts</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>attach-artifact</goal>
+                </goals>
+                <configuration>
+                    <artifacts>
+                        <artifact>
+                            <file>target/opennms-webapp-1.11.0-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.11.0-SNAPSHOT.jar</file>
+                            <type>jar</type>
+                        </artifact>
+                    </artifacts>
+                </configuration>
+            </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -257,6 +286,19 @@
       <artifactId>batik-util</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.soa</artifactId>
+        <scope>provided</scope>
+    </dependency>
+
+    <!-- FIXME: Does this even need to be here? I had to switch it from provided
+         to runtime or it interfered with GWT. -->
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
+      <scope>runtime</scope>
+    </dependency> 
 
     <!-- direct dependencies that should be in WEB-INF/lib -->
     <dependency>
@@ -277,33 +319,8 @@
       <artifactId>opennms-rrd-tcp</artifactId>
     </dependency> 
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.system-report</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.availability</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
-    </dependency> 
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-reporting</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>rancid-dependencies</artifactId>
-      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -313,6 +330,16 @@
       <groupId>org.extremecomponents</groupId>
       <artifactId>extremecomponents</artifactId>
     </dependency>
+    <!--
+
+      JMesa is the latest version of the extremecomponents library. We
+      should eventually migrate our code to use it.
+
+    <dependency>
+      <groupId>org.jmesa</groupId>
+      <artifactId>jmesa</artifactId>
+    </dependency>
+    -->
     <dependency>
       <groupId>com.google.collections</groupId>
       <artifactId>google-collections</artifactId>
@@ -352,50 +379,73 @@
       <groupId>struts</groupId>
       <artifactId>struts</artifactId>
     </dependency>
+    <!-- GWT components -->
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.node-page-list</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-suggestion-combobox</artifactId>
+        <type>jar</type>
+        <version>${project.version}</version>
+        <scope>compile</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-graph-resources-list</artifactId>
+        <type>jar</type>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-snmpselect-list</artifactId>
+        <type>jar</type>
+        <version>${project.version}</version>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>mock-snmp-agent</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-	  <groupId>org.opennms.core.test-api</groupId>
-	  <artifactId>org.opennms.core.test-api.http</artifactId>
-      <scope>test</scope>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.directory.server</groupId>
@@ -410,5 +460,6 @@
       <scope>test</scope>
     </dependency>
 
+    
   </dependencies>
 </project>

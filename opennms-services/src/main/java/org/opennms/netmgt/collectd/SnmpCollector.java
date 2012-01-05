@@ -38,6 +38,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -52,10 +53,6 @@ import org.opennms.netmgt.model.events.EventProxy;
  * </P>
  *
  * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public class SnmpCollector implements ServiceCollector {
     /**
@@ -96,7 +93,7 @@ public class SnmpCollector implements ServiceCollector {
     static final String SQL_GET_LATEST_FORCED_RESCAN_EVENTID = "SELECT eventid "
         + "FROM events "
         + "WHERE (nodeid=? OR ipaddr=?) "
-        + "AND eventuei='uei.opennms.org/internal/capsd/forceRescan' "
+        + "AND eventuei='" + EventConstants.FORCE_RESCAN_EVENT_UEI + "' "
         + "ORDER BY eventid DESC " + "LIMIT 1";
 
     /**
@@ -106,7 +103,7 @@ public class SnmpCollector implements ServiceCollector {
     static final String SQL_GET_LATEST_RESCAN_COMPLETED_EVENTID = "SELECT eventid "
         + "FROM events "
         + "WHERE nodeid=? "
-        + "AND eventuei='uei.opennms.org/internal/capsd/rescanCompleted' "
+        + "AND eventuei='" + EventConstants.RESCAN_COMPLETED_EVENT_UEI + "' "
         + "ORDER BY eventid DESC " + "LIMIT 1";
 
     /**
@@ -209,7 +206,7 @@ public class SnmpCollector implements ServiceCollector {
      *                plug-in from functioning.
      */
     public void initialize(Map<String, String> parameters) {
-        initSnmpPeerFactory();
+    	initSnmpPeerFactory();
         //initDataCollectionConfig();
         initDatabaseConnectionFactory();
         
@@ -229,7 +226,7 @@ public class SnmpCollector implements ServiceCollector {
         File f = new File(DataCollectionConfigFactory.getInstance().getRrdPath());
         if (!f.isDirectory()) {
             if (!f.mkdirs()) {
-                throw new RuntimeException("Unable to create RRD file "
+                throw new CollectionInitializationException("Unable to create RRD file "
                                            + "repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
             }
         }
@@ -240,7 +237,7 @@ public class SnmpCollector implements ServiceCollector {
             RrdUtils.initialize();
         } catch (RrdException e) {
             log().error("initializeRrdInterface: Unable to initialize RrdUtils", e);
-            throw new RuntimeException("Unable to initialize RrdUtils", e);
+            throw new CollectionInitializationException("Unable to initialize RrdUtils", e);
         }
     }*/
 
@@ -300,8 +297,9 @@ public class SnmpCollector implements ServiceCollector {
      *
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for data collection.
+     * @throws CollectionInitializationException 
      */
-    public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
+    public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
         agent.validateAgent();
         
         // XXX: Experimental code that creates an OnmsSnmpCollection only once
@@ -352,6 +350,7 @@ public class SnmpCollector implements ServiceCollector {
                 
                 /*
                  * FIXME: Should we even be doing this? I say we get rid of this force rescan thingie
+                 * {@see http://issues.opennms.org/browse/NMS-1057}
                  */
                 if (System.getProperty("org.opennms.netmgt.collectd.SnmpCollector.forceRescan", "false").equalsIgnoreCase("true")
                         && collectionSet.rescanNeeded()) {

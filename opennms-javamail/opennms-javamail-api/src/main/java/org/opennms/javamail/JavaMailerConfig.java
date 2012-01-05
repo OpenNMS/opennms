@@ -40,7 +40,7 @@ import org.opennms.core.utils.ThreadCategory;
 /**
  * Provides access to the default javamail configuration data.
  */
-public class JavaMailerConfig {
+public abstract class JavaMailerConfig {
 
     
     /**

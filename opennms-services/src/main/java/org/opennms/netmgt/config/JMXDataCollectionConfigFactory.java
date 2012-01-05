@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -44,9 +43,9 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.collectd.Attr;
 import org.opennms.netmgt.config.collectd.Attrib;
 import org.opennms.netmgt.config.collectd.CompAttrib;
@@ -132,26 +131,8 @@ public final class JMXDataCollectionConfigFactory {
         initialize(stream);
     }
 
-    //@Deprecated
-    /**
-     * <p>Constructor for JMXDataCollectionConfigFactory.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public JMXDataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-    	initialize(rdr);
-    }
-
     private void initialize(InputStream stream) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(JmxDatacollectionConfig.class, stream);
-        buildCollectionMap();
-    }
-
-    @Deprecated
-    private void initialize(Reader rdr) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(JmxDatacollectionConfig.class, rdr);
         buildCollectionMap();
     }
 

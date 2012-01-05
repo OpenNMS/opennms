@@ -484,7 +484,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             
             // If we don't have an SNMP interface for both, compare by ID
             if (o1.getSnmpInterface() == null || o2.getSnmpInterface() == null) {
-                // List interfaces without snmp interface first
+                // List interfaces without SNMP interface first
                 if (o1.getSnmpInterface() != null) {
                     return -1;
                 } else {

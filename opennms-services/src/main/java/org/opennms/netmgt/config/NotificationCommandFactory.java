@@ -35,7 +35,7 @@ import java.io.InputStream;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.core.utils.ConfigFileConstants;
 
 /**
  * <p>NotificationCommandFactory class.</p>

@@ -28,6 +28,11 @@ CREATE OR REPLACE FUNCTION getPercentAvailabilityInWindow(integer,varchar(16),in
    END;
 ' LANGUAGE 'plpgsql';
 </createProcedure>
+
+<rollback>
+  <sql>DROP FUNCTION IF EXISTS getPercentAvailabilityInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone);</sql>
+</rollback>
+
 </changeSet>
 
 </databaseChangeLog>

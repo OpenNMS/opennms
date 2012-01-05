@@ -155,7 +155,7 @@ public class OnmsMapElement implements Serializable {
      */
     @XmlTransient
     @Id
-    @Column(name="id")
+    @Column(name="id", nullable=false)
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
     public int getId() {

@@ -29,7 +29,6 @@
 package org.opennms.web.filter;
 
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Restrictions;
 
 /**
@@ -52,7 +51,7 @@ public abstract class NotEqualOrNullFilter<T> extends OneArgFilter<T> {
      * @param value a T object.
      * @param <T> a T object.
      */
-    public NotEqualOrNullFilter(String filterType, SQLType<T> type, String fieldName, String propertyName, T value) {
+    public NotEqualOrNullFilter(final String filterType, final SQLType<T> type, final String fieldName, final String propertyName, final T value) {
         super(filterType, type, fieldName, propertyName, value);
     }
 
@@ -62,7 +61,7 @@ public abstract class NotEqualOrNullFilter<T> extends OneArgFilter<T> {
      * @return a {@link org.hibernate.criterion.Criterion} object.
      */
     public Criterion getCriterion() {
-        return Expression.or(Restrictions.ne(getPropertyName(), getValue()), Restrictions.isNull(getPropertyName()));
+        return Restrictions.or(Restrictions.ne(getPropertyName(), getValue()), Restrictions.isNull(getPropertyName()));
     }
     
     /** {@inheritDoc} */

@@ -24,6 +24,8 @@
 		<column name="nodeSysLocation"/>
 		<column name="nodeSysContact"/>
 		<column name="nodeLabel"/>
+		<column name="foreignSource"/>
+		<column name="foreignID"/>
 	</table>
 
 	<table name="categories">
@@ -45,12 +47,14 @@
 		<column name="nodeID" visible="false"/>
 		<column name="ipAddr"/>
 		<column name="ipHostname"/>
-		<column name="isManaged"/>
+		<column name="IsManaged"/>
+		<column name="IsSnmpPrimary"/>
 		<column name="ipStatus"/>
 		<column name="ipLastCapsdPoll"/>
 	</table>
 
 	<table name="snmpInterface">
+		<join column="id" table="ipInterface" table-column="snmpinterfaceid"/>
 		<column name="id" visible="false"/>
 		<column name="nodeID" visible="false"/>
 		<column name="ipAddr" visible="false"/>
@@ -60,8 +64,10 @@
 		<column name="snmpIfDescr"/>
 		<column name="snmpIfType"/>
 		<column name="snmpIfSpeed"/>
+		<column name="snmpIfAlias"/>
 		<column name="snmpIfAdminStatus"/>
 		<column name="snmpIfOperStatus"/>
+		<column name="snmpcollect"/>
 	</table>
 
 	<table name="service">
@@ -72,6 +78,7 @@
 
 	<table name="ifServices">
 		<join column="ipInterfaceId" table="ipInterface" table-column="id"/>
+		<join column="id" table="application_service_map" table-column="ifServiceId"/>
 		<column name="id" visible="false"/>
 		<column name="ipAddr" visible="false"/>
 		<column name="nodeID" visible="false"/>
@@ -143,6 +150,7 @@
 
 	<table name="application_service_map">
 		<join column="ifServiceId" table="ifServices" table-column="id"/>
+		<join column="appId" table="applications" table-column="id"/>
 		<column name="appId" visible="false" />
 		<column name="ifServiceId" visible="false" />
 	</table>

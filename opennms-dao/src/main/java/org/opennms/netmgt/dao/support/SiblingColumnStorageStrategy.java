@@ -62,6 +62,7 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
     /** {@inheritDoc} */
     @Override
     public String getResourceNameFromIndex(CollectionResource resource) {
+        log().debug("Finding the value of sibling column " + m_siblingColumnName + " for resource " + resource.getInstance() + "@" + resource.getParent());
         StringAttributeVisitor visitor = new StringAttributeVisitor(m_siblingColumnName);
         resource.visit(visitor);
         String value = (visitor.getValue() != null ? visitor.getValue() : resource.getInstance());
@@ -81,10 +82,11 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
     
     /** {@inheritDoc} */
     @Override
-    public void setParameters(List<Parameter> parameterCollection) {
+    public void setParameters(List<Parameter> parameterCollection) throws IllegalArgumentException {
         if (parameterCollection == null) {
-            log().fatal("Got a null parameter list, but need one containing a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.");
-            throw new RuntimeException("Got a null parameter list, but need one containing a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.");
+            final String msg ="Got a null parameter list, but need one containing a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.";
+            log().fatal(msg);
+            throw new IllegalArgumentException(msg);
         }
         
         for (Parameter param : parameterCollection) {
@@ -95,13 +97,20 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
             } else if (PARAM_REPLACE_ALL.equals(param.getKey())) {
                 m_replaceOps.add(new ReplaceAllOperation(param.getValue()));
             } else {
-                log().warn("Encountered unsupported parameter key=\"" + param.getKey() + "\". Can accept: " + PARAM_SIBLING_COLUMN_NAME + ", " + PARAM_REPLACE_FIRST + ", " + PARAM_REPLACE_ALL);
+                if (param.getKey().equals("sibling-column-oid")) {
+                    final String msg = "The parameter 'sibling-column-oid' has been deprecated and it is no longer used. You should configure 'sibling-column-name' instead. For this parameter, you should use the name of any MibObj defined as string for the same resource type.";
+                    log().error(msg);
+                    throw new IllegalArgumentException(msg);
+                } else {
+                    log().warn("Encountered unsupported parameter key=\"" + param.getKey() + "\". Can accept: " + PARAM_SIBLING_COLUMN_NAME + ", " + PARAM_REPLACE_FIRST + ", " + PARAM_REPLACE_ALL);
+                }
             }
         }
         
         if (m_siblingColumnName == null) {
-            log().error("The provided parameter list must contain a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.");
-            throw new RuntimeException("The provided parameter list must contain a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.");
+            final String msg = "The provided parameter list must contain a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.";
+            log().error(msg);
+            throw new IllegalArgumentException(msg);
         }
     }
 }

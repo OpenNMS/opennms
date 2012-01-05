@@ -46,11 +46,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -436,8 +436,7 @@ public class TrapHandlerTestCase implements InitializingBean {
                     m_ip, nodeId);
         m_eventMgr.sendNow(event);
 
-        anticipateEvent("uei.opennms.org/internal/discovery/newSuspect",
-                m_ip, nodeId);
+        anticipateEvent(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, m_ip, nodeId);
 
         try {
             Thread.sleep(100);
@@ -486,8 +485,7 @@ public class TrapHandlerTestCase implements InitializingBean {
 
         if (newSuspectOnTrap) {
             // Note: the nodeId will be zero because the node is not known
-            anticipateEvent("uei.opennms.org/internal/discovery/newSuspect",
-                    m_ip, 0);
+            anticipateEvent(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, m_ip, 0);
         }
 
         if (event != null) {

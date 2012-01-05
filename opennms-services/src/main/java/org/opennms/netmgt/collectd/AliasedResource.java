@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
@@ -211,4 +212,7 @@ public class AliasedResource extends SnmpCollectionResource {
         return getDomain() + '/' + getAliasDir();
     }
 
+    public TimeKeeper getTimeKeeper() {
+        return null;
+    }
 }

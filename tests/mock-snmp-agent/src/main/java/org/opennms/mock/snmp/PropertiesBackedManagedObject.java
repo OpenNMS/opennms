@@ -31,16 +31,20 @@ package org.opennms.mock.snmp;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.snmp4j.agent.DefaultMOScope;
 import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.MOScope;
 import org.snmp4j.agent.ManagedObject;
+import org.snmp4j.agent.request.RequestStatus;
 import org.snmp4j.agent.request.SubRequest;
+import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.Null;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.Variable;
@@ -52,9 +56,6 @@ import org.springframework.core.io.Resource;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @version $Id: $
  */
 public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOLoader, Updatable, MOAccess {
     
@@ -62,48 +63,40 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
     private TreeMap<OID, Object> m_vars = null;
     
     private MOScope m_scope = null;
+
+	private Object m_oldValue;
     
     /** {@inheritDoc} */
     public List<ManagedObject> loadMOs(Resource moFile) {
-        Properties props = PropsMockSnmpMOLoaderImpl.loadProperties(moFile);
+    	final Properties props = SnmpUtils.loadProperties(moFile);
 
         m_vars = new TreeMap<OID, Object>();
 
-        for(Entry<Object, Object> e : props.entrySet()) {
-            String key = (String)e.getKey();
-            Object value = e.getValue();
+        for(final Entry<Object, Object> e : props.entrySet()) {
+            final String key = (String)e.getKey();
+            final Object value = e.getValue();
+            if (!key.startsWith(".")) {
+            	LogUtils.debugf(this, "key does not start with '.', probably a linewrap issue in snmpwalk: %s = %s", key, value);
+            	continue;
+            }
             try {
                 m_vars.put(new OID(key), value);
-            } catch (Throwable ex) {
+            } catch (final Throwable ex) {
                 // Catch any malformed OIDs and create a more descriptive error message
-                IllegalArgumentException nfe = new IllegalArgumentException("Could not load OID value: [" + key + "] [" + value + "]");
+            	final IllegalArgumentException nfe = new IllegalArgumentException("Could not load OID value: [" + key + "] [" + value + "]");
                 nfe.initCause(ex);
                 throw nfe;
             }
         }
 
 
-        m_scope = new DefaultMOScope(m_vars.firstKey(),
-                                     true,
-                                     m_vars.lastKey(),
-                                     true
-        );
+        m_scope = new DefaultMOScope(m_vars.firstKey(), true, m_vars.lastKey(), true);
         
         return Collections.singletonList((ManagedObject)this);
     }
     
     /** {@inheritDoc} */
-    public void cleanup(SubRequest request) {
-        throw new UnsupportedOperationException("this object read only");
-    }
-
-    /** {@inheritDoc} */
-    public void commit(SubRequest request) {
-        throw new UnsupportedOperationException("this object read only");
-    }
-
-    /** {@inheritDoc} */
-    public OID find(MOScope range) {
+    public OID find(final MOScope range) {
         if (!m_scope.isOverlapping(range)) {
             return null;
         }
@@ -114,7 +107,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
             first = first.successor();
         }
 
-        SortedMap<OID, Object> tail = m_vars.tailMap(first);
+        final SortedMap<OID, Object> tail = m_vars.tailMap(first);
         if (tail.isEmpty()) {
             return null;
         }
@@ -127,19 +120,19 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
      * @param given a {@link org.snmp4j.smi.OID} object.
      * @return a {@link org.snmp4j.smi.OID} object.
      */
-    public OID findNextOid(OID given) {
+    public OID findNextOid(final OID given) {
         
-        OID next = given.successor();
+    	final OID next = given.successor();
         
-        SortedMap<OID, Object> tail = m_vars.tailMap(next);
+        final SortedMap<OID, Object> tail = m_vars.tailMap(next);
         if (tail.isEmpty()) {
             return null;
         }
         return tail.firstKey();
     }
     
-    private Variable findValueForOID(OID oid) {
-        Object val = m_vars.get(oid);
+    private Variable findValueForOID(final OID oid) {
+    	final Object val = m_vars.get(oid);
         if (val == null) {
             return null;
         } else if (val instanceof Variable) {
@@ -149,11 +142,11 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
     }
 
     /** {@inheritDoc} */
-    public void get(SubRequest request) {
+    public void get(final SubRequest request) {
         getVariable(request, request.getVariableBinding().getOid());
     }
 
-    private void getVariable(SubRequest request, OID oid) {
+    private void getVariable(final SubRequest request, final OID oid) {
         Variable value = findValueForOID(oid);
         VariableBinding vb = request.getVariableBinding();
         vb.setOid(oid);
@@ -171,8 +164,8 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
     }
 
     /** {@inheritDoc} */
-    public boolean next(SubRequest request) {
-        OID nextOid = findNextOid(request.getVariableBinding().getOid());
+    public boolean next(final SubRequest request) {
+    	final OID nextOid = findNextOid(request.getVariableBinding().getOid());
         if (nextOid == null) {
             return false;
         }
@@ -181,17 +174,42 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
     }
 
     /** {@inheritDoc} */
-    public void prepare(SubRequest request) {
-        throw new UnsupportedOperationException("this object read only");
+    public void prepare(final SubRequest request) {
+    	// store the old value, in case we undo it
+    	final VariableBinding vb = request.getVariableBinding();
+    	m_oldValue = m_vars.get(vb.getOid());
+    	final RequestStatus status = request.getStatus();
+		status.setErrorStatus(SnmpConstants.SNMP_ERROR_SUCCESS);
+		status.setPhaseComplete(true);
     }
 
     /** {@inheritDoc} */
-    public void undo(SubRequest request) {
-        throw new UnsupportedOperationException("this object read only");
+    public void commit(final SubRequest request) {
+    	final VariableBinding vb = request.getVariableBinding();
+    	final Variable v = vb.getVariable();
+    	m_vars.put(vb.getOid(), v);
+    	final RequestStatus status = request.getStatus();
+		status.setPhaseComplete(true);
     }
 
     /** {@inheritDoc} */
-    public void updateValue(OID oid, Variable value) {
+    public void cleanup(final SubRequest request) {
+    	m_oldValue = null;
+    	final RequestStatus status = request.getStatus();
+		status.setPhaseComplete(true);
+    }
+
+    /** {@inheritDoc} */
+    public void undo(final SubRequest request) {
+    	m_vars.put(request.getVariableBinding().getOid(), m_oldValue);
+    	m_oldValue = null;
+    	final RequestStatus status = request.getStatus();
+		status.setErrorStatus(SnmpConstants.SNMP_ERROR_SUCCESS);
+		status.setPhaseComplete(true);
+    }
+
+    /** {@inheritDoc} */
+    public void updateValue(final OID oid, final Variable value) {
         m_vars.put(oid, value);
     }
 

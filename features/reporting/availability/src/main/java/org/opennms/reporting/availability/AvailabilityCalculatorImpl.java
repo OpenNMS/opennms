@@ -68,11 +68,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
-    private static final String XML_FORMAT = "xml";
-
     // String of Months
-
-    /** Constant <code>months="new String[] { January, February,March,"{trunked}</code> */
     public static String[] months = new String[] { "January", "February",
             "March", "April", "May", "June", "July", "August", "September",
             "October", "November", "December" };

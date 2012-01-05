@@ -5,7 +5,6 @@
     <version>1.11.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms</groupId>
   <artifactId>opennms-detector-jdbc</artifactId>
   <name>OpenNMS JDBC Detector</name>
   <url>http://www.opennms.org</url>
@@ -20,45 +19,36 @@
       <type>pom</type>
     </dependency>
     <dependency>
-    	<groupId>org.opennms</groupId>
-    	<artifactId>opennms-util</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
-  		<groupId>org.opennms.dependencies</groupId>
-  		<artifactId>spring-test-dependencies</artifactId>
-    	<scope>test</scope>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
-    	<groupId>org.opennms</groupId>
-    	<artifactId>opennms-dao</artifactId>
-    	<type>test-jar</type>
-    	<scope>test</scope>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>mock-snmp-agent</artifactId>
+      <artifactId>opennms-dao</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-	  <groupId>org.opennms.core.test-api</groupId>
-	  <artifactId>org.opennms.core.test-api.http</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.opennms</groupId>
-    	<artifactId>opennms-dao</artifactId>
-    	<scope>test</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.opennms</groupId>
-    	<artifactId>opennms-test</artifactId>
-    	<scope>test</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.opennms</groupId>
-    	<artifactId>opennms-rrd-jrobin</artifactId>
-    	<scope>test</scope>
     </dependency>
   </dependencies>
 </project>

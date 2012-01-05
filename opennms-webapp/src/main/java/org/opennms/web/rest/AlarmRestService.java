@@ -39,7 +39,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -66,7 +65,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @PerRequest
 @Scope("prototype")
 @Path("alarms")
-public class AlarmRestService extends OnmsRestService {
+public class AlarmRestService extends AlarmRestServiceBase {
 
     @Autowired
     private AlarmDao m_alarmDao;
@@ -114,7 +113,7 @@ public class AlarmRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsAlarmCollection getAlarms() {
-        OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
+        OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters(), false)));
 
         //For getting totalCount
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
@@ -162,7 +161,7 @@ public class AlarmRestService extends OnmsRestService {
 			ack="true".equals(formProperties.getFirst("ack"));
 			formProperties.remove("ack");
 		}
-		for (OnmsAlarm alarm : m_alarmDao.findMatching(getQueryFilters(formProperties))) {
+		for (OnmsAlarm alarm : m_alarmDao.findMatching(getQueryFilters(formProperties, false))) {
 			processAlarmAck(alarm, ack);
 		}
 	}
@@ -178,24 +177,4 @@ public class AlarmRestService extends OnmsRestService {
 		m_alarmDao.save(alarm);
 	}
 
-	private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
-	    OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-
-	    setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
-	    addOrdering(params, criteria, false);
-        // Set default ordering
-        addOrdering(
-            new MultivaluedMapImpl(
-                new String[][] { 
-                    new String[] { "orderBy", "lastEventTime" }, 
-                    new String[] { "order", "desc" } 
-                }
-            ), criteria, false
-        );
-	    addFiltersToCriteria(params, criteria, OnmsAlarm.class);
-
-	    criteria.setFetchMode("firstEvent", FetchMode.JOIN);
-	    criteria.setFetchMode("lastEvent", FetchMode.JOIN);
-	    return getDistinctIdCriteria(OnmsAlarm.class, criteria);
-	}
 }

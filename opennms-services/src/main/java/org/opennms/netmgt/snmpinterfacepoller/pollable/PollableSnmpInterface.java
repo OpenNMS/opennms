@@ -33,13 +33,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -67,8 +67,6 @@ public class PollableSnmpInterface implements ReadyRunnable {
         
     private SnmpAgentConfig m_agentConfig;
     
-    private int maxInterfacePerPdu = 0;
-        
     public class SnmpMinimalPollInterface {
         
         final static int IF_UP=1;
@@ -150,11 +148,35 @@ public class PollableSnmpInterface implements ReadyRunnable {
      * @param snmpinterfaces a {@link java.util.List} object.
      */
     public void setSnmpinterfaces(List<OnmsSnmpInterface> snmpinterfaces) {
+    	if (snmpinterfaces == null) {
+    		log().debug("setting snmpinterfaces: got null, thread instantiated but at moment no interface found");
+    		return;
+    	}
+
+    	// ifIndex -> operstatus
+    	final Map<Integer, Integer> oldStatuses = new HashMap<Integer, Integer>();
+    	for (final Integer ifIndex : m_snmpinterfaces.keySet()) {
+    		final OnmsSnmpInterface iface = m_snmpinterfaces.get(ifIndex);
+    		if (iface != null && iface.getIfOperStatus() != null) {
+    			oldStatuses.put(ifIndex, iface.getIfOperStatus());
+    		}
+    	}
+    	
     	m_snmpinterfaces.clear();
         for (OnmsSnmpInterface iface: snmpinterfaces) {
-    		if (iface.getIfAdminStatus().equals(SnmpMinimalPollInterface.IF_UP) && iface.getIfOperStatus().equals(SnmpMinimalPollInterface.IF_DOWN)) 
-    			sendOperDownEvent(iface);
-            m_snmpinterfaces.put(iface.getIfIndex(), iface);            
+        	log().debug("setting snmpinterface:" + iface.toString());
+        	if (iface != null && iface.getIfIndex() != null && iface.getIfIndex() > 0) {
+        		final Integer oldStatus = oldStatuses.get(iface.getIfIndex());
+        		
+                m_snmpinterfaces.put(iface.getIfIndex(), iface);            
+        		if (iface.getIfAdminStatus() != null &&
+        				iface.getIfAdminStatus().equals(SnmpMinimalPollInterface.IF_UP) && 
+        				iface.getIfOperStatus() != null &&
+        				iface.getIfOperStatus().equals(SnmpMinimalPollInterface.IF_DOWN) &&
+        				iface.getIfOperStatus() != oldStatus) {
+        			sendOperDownEvent(iface);
+        		}
+        	}
         }
     }
 
@@ -258,7 +280,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
      */
     public void run() {        
         if (getParent().polling()) {
-            log().info("run: polling snmp interfaces on package/interface " + getParent().getPackageName()+ "/" + getName() + "on primary address: " + getParent().getIpaddress());
+            log().info("run: polling SNMP interfaces on package/interface " + getParent().getPackageName()+ "/" + getName() + "on primary address: " + getParent().getIpaddress());
             if (m_snmpinterfaces == null || m_snmpinterfaces.isEmpty()) {
                 log().debug("No Interface found. Doing nothing");
             } else {
@@ -435,7 +457,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
     }
     
     private ThreadCategory log() {
-        return ThreadCategory.getInstance(PollableService.class);
+        return ThreadCategory.getInstance(PollableSnmpInterface.class);
     }
 
 	/**
@@ -480,17 +502,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
 	 * @return a int.
 	 */
 	public int getMaxInterfacePerPdu() {
-		return maxInterfacePerPdu;
+		return getAgentConfig().getMaxVarsPerPdu();
 	}
-
-	/**
-	 * <p>Setter for the field <code>maxInterfacePerPdu</code>.</p>
-	 *
-	 * @param maxInterfacePerPdu a int.
-	 */
-	public void setMaxInterfacePerPdu(int maxInterfacePerPdu) {
-		this.maxInterfacePerPdu = maxInterfacePerPdu;
-	}
-
 }
 

@@ -45,8 +45,8 @@ import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -376,33 +376,32 @@ public class Provisioner implements SpringServiceDaemon {
      * <p>importModelFromResource</p>
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @param rescanExisting TODO
      * @throws java.lang.Exception if any.
      */
-    protected void importModelFromResource(Resource resource) throws Exception {
-    	importModelFromResource(resource, new NoOpProvisionMonitor());
+    protected void importModelFromResource(final Resource resource, final Boolean rescanExisting) throws Exception {
+    	importModelFromResource(resource, rescanExisting, new NoOpProvisionMonitor());
     }
 
     /**
      * <p>importModelFromResource</p>
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @param rescanExisting TODO
      * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object.
      * @throws java.lang.Exception if any.
      */
-    protected void importModelFromResource(Resource resource, ProvisionMonitor monitor)
-            throws Exception {
-        doImport(resource, monitor, new ImportManager());
+    protected void importModelFromResource(final Resource resource, final Boolean rescanExisting, final ProvisionMonitor monitor) throws Exception {
+        doImport(resource, rescanExisting, monitor, new ImportManager());
     }
 
     //FIXME? ImportManager is not used.
-    private void doImport(Resource resource, final ProvisionMonitor monitor,
-            ImportManager importManager) throws Exception {
+    private void doImport(final Resource resource, Boolean rescanExisting, final ProvisionMonitor monitor, final ImportManager importManager) throws Exception {
         
-        LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
+        final LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
         doImport.setAttribute("resource", resource);
-        
+        doImport.setAttribute("rescanExisting", Boolean.valueOf(rescanExisting));
         doImport.trigger();
-        
         doImport.waitFor();
     }
 
@@ -450,14 +449,15 @@ public class Provisioner implements SpringServiceDaemon {
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei = EventConstants.RELOAD_IMPORT_UEI)
-    public void doImport(Event event) {
-        String url = getEventUrl(event);
-        
+    public void doImport(final Event event) {
+        final String url = getEventUrl(event);
+        final boolean rescanExistingOnImport = getEventRescanExistingOnImport(event);
+
         if (url != null) {
-            doImport(url);
+            doImport(url, rescanExistingOnImport);
         } else {
-            String msg = "reloadImport event requires 'url' paramter";
-            log().error("doImport: "+msg);
+            final String msg = "reloadImport event requires 'url' parameter";
+            log().error("doImport: " + msg);
             send(importFailedEvent(msg, url));
         }
         
@@ -467,8 +467,9 @@ public class Provisioner implements SpringServiceDaemon {
      * <p>doImport</p>
      *
      * @param url a {@link java.lang.String} object.
+     * @param rescanExisting TODO
      */
-    public void doImport(String url) {
+    public void doImport(final String url, final boolean rescanExisting) {
         
         try {
             
@@ -480,7 +481,7 @@ public class Provisioner implements SpringServiceDaemon {
             
             send(importStartedEvent(resource));
     
-            importModelFromResource(resource, m_stats);
+            importModelFromResource(resource, rescanExisting, m_stats);
     
             log().info("Finished Importing: "+m_stats);
     
@@ -638,7 +639,7 @@ public class Provisioner implements SpringServiceDaemon {
             }
             
             if (ebldr != null) {
-                getEventForwarder().sendNow(ebldr.getEvent());
+                m_eventForwarder.sendNow(ebldr.getEvent());
             }
             log().info("handleReloadConfigEvent: configuration reloaded.");
         }
@@ -838,6 +839,12 @@ public class Provisioner implements SpringServiceDaemon {
         return EventUtils.getParm(event, EventConstants.PARM_URL);
     }
 
+    private boolean getEventRescanExistingOnImport(final Event event) {
+        final String rescanExisting = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
+        if (rescanExisting == null) return true;
+        return Boolean.parseBoolean(rescanExisting);
+    }
+    
     /**
      * <p>getStats</p>
      *
@@ -854,7 +861,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     private void send(Event event) {
-        getEventForwarder().sendNow(event);
+        m_eventForwarder.sendNow(event);
     }
 
     private Event importFailedEvent(String msg, String url) {

@@ -55,15 +55,17 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 	
 	private class EngineAdapter implements EventListener {
 		
+		private final String m_name;
 		private final CorrelationEngine m_engine;
 
 		public EngineAdapter(final CorrelationEngine engine) {
 			m_engine = engine;
+			m_name = m_engine.getClass().getSimpleName() + '-' + m_engine.getName() ;
 			m_eventIpcManager.addEventListener(this, m_engine.getInterestingEvents());
 		}
 
 		public String getName() {
-			return m_engine.getClass().getSimpleName();
+			return m_name;
 		}
 
 		public void onEvent(final Event e) {

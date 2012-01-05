@@ -75,7 +75,7 @@ public interface LinkdConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    boolean isInterfaceInPackage(String iface, org.opennms.netmgt.config.linkd.Package pkg);
+    boolean isInterfaceInPackage(InetAddress iface, org.opennms.netmgt.config.linkd.Package pkg);
 
     /**
      * This method is used to determine if the named interface is included in
@@ -93,7 +93,7 @@ public interface LinkdConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    boolean isInterfaceInPackageRange(String iface, org.opennms.netmgt.config.linkd.Package pkg);
+    boolean isInterfaceInPackageRange(InetAddress iface, org.opennms.netmgt.config.linkd.Package pkg);
 
     /**
      * Returns the first package that the ip belongs to, null if none.
@@ -105,18 +105,18 @@ public interface LinkdConfig {
      *            the interface to check
      * @return the first package that the ip belongs to, null if none
      */
-    org.opennms.netmgt.config.linkd.Package getFirstPackageMatch(String ipaddr);
+    org.opennms.netmgt.config.linkd.Package getFirstPackageMatch(InetAddress ipaddr);
 
     /**
-     * Returns true if the ip is part of atleast one package.
+     * Returns true if the IP is part of at least one package.
      *
      * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
+     * filter will only work if the IP is already in the database.
      *
-     * @return true if the ip is part of atleast one package, false otherwise
+     * @return true if the IP is part of at least one package, false otherwise
      * @param ipAddr a {@link java.lang.String} object.
      */
-    List<String> getAllPackageMatches(String ipAddr);
+    List<String> getAllPackageMatches(InetAddress ipAddr);
     
     boolean isAutoDiscoveryEnabled();
 

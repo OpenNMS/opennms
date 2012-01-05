@@ -43,6 +43,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -50,7 +51,6 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -247,7 +247,6 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     public void testGetActiveIPListWithDeletedNode() throws Exception {
         m_transTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus status) {
-                List<InetAddress> list = m_dao.getIPAddressList("ipaddr == '192.168.1.1'");
                 final List<OnmsIpInterface> ifaces = m_interfaceDao.findByIpAddress("192.168.1.1");
                 
                 assertEquals("should be 1 interface", 1, ifaces.size());

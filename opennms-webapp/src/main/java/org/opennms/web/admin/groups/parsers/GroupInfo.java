@@ -40,11 +40,7 @@ import org.opennms.netmgt.config.users.DutySchedule;
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version 1.1.1.1
  * @deprecated Use the Group class instead
- * @since 1.8.1
  */
 public class GroupInfo {
     /**

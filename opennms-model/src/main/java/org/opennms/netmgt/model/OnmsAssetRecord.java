@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -276,6 +276,7 @@ public class OnmsAssetRecord implements Serializable {
      * @return a {@link java.lang.Integer} object.
      */
     @Id
+    @Column(nullable=false)
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")    
     public Integer getId() {
@@ -1596,8 +1597,8 @@ public class OnmsAssetRecord implements Serializable {
         
         //this works because all asset properties are strings
         //if the model dependencies ever change to not include spring, this will break
-        BeanWrapper currentBean = new BeanWrapperImpl(this);
-        BeanWrapper newBean = new BeanWrapperImpl(newRecord);
+        BeanWrapper currentBean = PropertyAccessorFactory.forBeanPropertyAccess(this);
+        BeanWrapper newBean = PropertyAccessorFactory.forBeanPropertyAccess(newRecord);
         PropertyDescriptor[] pds = newBean.getPropertyDescriptors();
         
         for (PropertyDescriptor pd : pds) {

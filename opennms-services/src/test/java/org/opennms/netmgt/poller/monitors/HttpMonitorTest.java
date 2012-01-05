@@ -40,19 +40,18 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
@@ -68,25 +67,6 @@ public class HttpMonitorTest {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-    }
-
-    @Test
-    public void testParms() {
-        Parms eventParms = new Parms();
-        Parm eventParm = new Parm();
-        Value parmValue = new Value();
-
-        assertTrue(eventParms.getParmCount() == 0);
-
-        eventParm.setParmName("test");
-        parmValue.setContent("test value");
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        assertTrue(eventParms.getParmCount() == 1);
-        assertTrue(eventParms.getParm(0).getParmName() == "test");
-        assertTrue(eventParms.getParm(0).getValue().getContent() == "test value");
-
     }
 
     /*
@@ -195,6 +175,68 @@ public class HttpMonitorTest {
         assertNull(status.getReason());
     }
 
+    /**
+     * This throws a java.net.NoRouteToHostException because the {@link InetAddressUtils#UNPINGABLE_ADDRESS} 
+     * address is in an unroutable test range. :-/  Dear reader, if you can find an address that works with
+     * this test, then please replace {@link InetAddressUtils#UNPINGABLE_ADDRESS} inside {@link #callTestTimeout(boolean)}.
+     */
+    @Test
+    @Ignore
+    public void testTimeout() throws UnknownHostException {
+        callTestTimeout(false);
+    }
+
+    /**
+     * <p>
+     * This test works fine because the "Unique Unicast" range for IPv6 is so big,
+     * you can use it for testing, local communications, etc. so it is always routable.
+     * Yay!
+     * </p>
+     * 
+     * <p>
+     * This test was created to test the issue documented in NMS-5028.
+     * </p> 
+     * 
+     * {@see http://issues.opennms.org/browse/NMS-5028}
+     */
+    @Test
+    public void testTimeoutIPv6() throws UnknownHostException {
+        callTestTimeout(true);
+    }
+
+    public void callTestTimeout(boolean preferIPv6) throws UnknownHostException {
+        if (m_runTests == false) return;
+
+        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Parameter p = new Parameter();
+
+        ServiceMonitor monitor = new HttpMonitor();
+        // We need a routable but unreachable address in order to simulate a timeout
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, preferIPv6 ? InetAddressUtils.UNPINGABLE_ADDRESS_IPV6 : InetAddressUtils.UNPINGABLE_ADDRESS, "HTTP");
+
+        p.setKey("port");
+        p.setValue("10342");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("retry");
+        p.setValue("1");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("timeout");
+        p.setValue("500");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("response");
+        p.setValue("100-199");
+        m.put(p.getKey(), p.getValue());
+
+        PollStatus status = monitor.poll(svc, m);
+        MockUtil.println("Reason: "+status.getReason());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
+        assertNotNull(status.getReason());
+        assertTrue(status.getReason().contains("HTTP connection timeout"));
+    }
+
     @Test
     @JUnitHttpServer(port=10342)
     public void testMatchingTextInResponse() throws UnknownHostException {
@@ -285,12 +327,11 @@ public class HttpMonitorTest {
 
         Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
         Parameter p = new Parameter();
-        HttpMonitor monitor = new HttpMonitor();
         p.setKey("basic-authentication");
         p.setValue("Aladdin:open sesame");
         m.put(p.getKey(), p.getValue());
-        assertEquals("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", monitor.determineBasicAuthentication(m));
-        assertFalse( "QWxhZGRpbjpvcZVuIHNlc2FtZQ==".equals(monitor.determineBasicAuthentication(m)));
+        assertEquals("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", HttpMonitor.determineBasicAuthentication(m));
+        assertFalse( "QWxhZGRpbjpvcZVuIHNlc2FtZQ==".equals(HttpMonitor.determineBasicAuthentication(m)));
     }
 
     @Test
@@ -646,6 +687,30 @@ public class HttpMonitorTest {
 
         PollStatus status = monitor.poll(svc, m);
         assertEquals("poll status not available", PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342)
+    public void testNMS2702() throws UnknownHostException {
+        HttpMonitor monitor = new HttpMonitor();
+        Map<String, Object> parameters = Collections.synchronizedMap(new TreeMap<String, Object>());
+        parameters.put("port", "10342");
+        parameters.put("url", "/test-NMS2702.html");
+        parameters.put("retry", "1");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+
+        // Match a string included on Initial Server Response
+        parameters.put("response-text", "~.*OK.*");
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", false);
+        PollStatus status = monitor.poll(svc, parameters);
+        assertTrue(status.isAvailable());
+
+        // Match a string included on Header
+        parameters.put("response-text", "~.*Jetty.*");
+        svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", false);
+        status = monitor.poll(svc, parameters);
+        assertTrue(status.isAvailable());
     }
 
 }

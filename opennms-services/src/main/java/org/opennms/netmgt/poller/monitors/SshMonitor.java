@@ -33,6 +33,8 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.regexp.RE;
+import org.apache.regexp.RESyntaxException;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -76,8 +78,7 @@ final public class SshMonitor extends AbstractServiceMonitor {
      * to Provided that the interface's response is valid we mark the poll status
      * as available and return.
      */
-    @SuppressWarnings("unchecked")
-    public PollStatus poll(InetAddress address, Map parameters) {
+    public PollStatus poll(InetAddress address, Map<String,Object> parameters) {
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
@@ -91,12 +92,18 @@ final public class SshMonitor extends AbstractServiceMonitor {
         ssh.setClientBanner(clientBanner);
 
         RE regex = null;
-        if (match == null && (banner == null || banner.equals("*"))) {
-            regex = null;
-        } else if (match != null) {
-            regex = new RE(match);
-        } else if (banner != null) {
-            regex = new RE(banner);
+        try {
+	        if (match == null && (banner == null || banner.equals("*"))) {
+	            regex = null;
+	        } else if (match != null) {
+	            regex = new RE(match);
+	        } else if (banner != null) {
+	            regex = new RE(banner);
+	        }
+        } catch (final RESyntaxException e) {
+        	final String matchString = match == null? banner : match;
+        	LogUtils.infof(this, "Invalid regular expression for SSH banner match /%s/: %s", matchString, e.getMessage());
+        	LogUtils.debugf(this, e, "Invalid Regular expression for SSH banner match /%s/", matchString);
         }
 
         for (tracker.reset(); tracker.shouldRetry() && !ps.isAvailable(); tracker.nextAttempt()) {
@@ -121,7 +128,7 @@ final public class SshMonitor extends AbstractServiceMonitor {
                 String response = ssh.getServerBanner();
 
                 if (response == null) {
-                    return PollStatus.unavailable("server closed connection before banner was recieved.");
+                    return PollStatus.unavailable("server closed connection before banner was received.");
                 }
 
                 if (regex.match(response)) {

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -539,22 +541,23 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
         String ipaddr = "127.0.0.1";
         if (primaryInterface == null) {
-            log().debug("getSuitableIpForRancid: found null Snmp Primary Interface, getting interfaces");
+            log().debug("getSuitableIpForRancid: found null SNMP Primary Interface, getting interfaces");
             Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
             for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
                 log().debug("getSuitableIpForRancid: trying Interface with id: " + onmsIpInterface.getId());
-                if (onmsIpInterface.getIpAddressAsString() != null) 
-                    ipaddr = onmsIpInterface.getIpAddressAsString();
-                else 
+                if (onmsIpInterface.getIpAddress() != null) {
+                    ipaddr = str(onmsIpInterface.getIpAddress());
+                } else { 
                     log().debug("getSuitableIpForRancid: found null ip address on Interface with id: " + onmsIpInterface.getId());
-
+                }
             }
         } else {        
-            log().debug("getSuitableIpForRancid: found Snmp Primary Interface");
-            if (primaryInterface.getIpAddressAsString() != null )
-                ipaddr = primaryInterface.getIpAddressAsString();
-            else 
+            log().debug("getSuitableIpForRancid: found SNMP Primary Interface");
+            if (primaryInterface.getIpAddress() != null ) {
+                ipaddr = str(primaryInterface.getIpAddress());
+            } else {
                 log().debug("getSuitableIpForRancid: found null ip address on Primary Interface");
+            }
         }
         return ipaddr;
     }
@@ -606,10 +609,18 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     private RancidNodeAuthentication getSuitableRancidNodeAuthentication(OnmsNode node) {
-        // RancidAutentication
+        // RancidAuthentication
         RancidNodeAuthentication r_auth_node = new RancidNodeAuthentication();
         r_auth_node.setDeviceName(node.getLabel());
         OnmsAssetRecord asset_node = node.getAssetRecord();
+
+        // Seth 2011-09-12: Is this possible? I added this as defensive code against issue NMS-4475
+        //
+        // http://issues.opennms.org/browse/NMS-4475
+        //
+        if (asset_node == null) {
+            return r_auth_node;
+        }
 
         if (asset_node.getUsername() != null) {
             r_auth_node.setUser(asset_node.getUsername());
@@ -773,15 +784,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     @EventHandler(uei = EventConstants.RANCID_GROUP_PROCESSING_COMPLETED_UEI)
     public void handleRancidGroupProcessingCompleted(Event e) {
         log().debug("handleRancidGroupProcessingCompleted: get Event uei/id: " + e.getUei() + "/" + e.getDbid());
-        if (e.getParms() != null ) {
-            Iterator<Parm> ite = e.getParms().iterateParm();
-            while (ite.hasNext()) {
-                Parm parm = ite.next();
-                log().debug("handleRancidGroupProcessingCompleted: parm name: " + parm.getParmName());
-                if (parm.getParmName().equals(".1.3.6.1.4.1.31543.1.1.2.1.1.3")) {
-                    updateGroupConfiguration(parm.getValue().getContent());
-                    break;
-                }
+        for (Parm parm : e.getParmCollection()) {
+            log().debug("handleRancidGroupProcessingCompleted: parm name: " + parm.getParmName());
+            if (parm.getParmName().equals(".1.3.6.1.4.1.31543.1.1.2.1.1.3")) {
+                updateGroupConfiguration(parm.getValue().getContent());
+                break;
             }
         }
     }

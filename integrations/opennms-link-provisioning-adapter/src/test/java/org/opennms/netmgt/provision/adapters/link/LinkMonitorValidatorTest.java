@@ -38,7 +38,7 @@ import org.opennms.netmgt.provision.adapters.link.EndPoint;
 import org.opennms.netmgt.provision.adapters.link.EndPointStatusException;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 
@@ -82,8 +82,8 @@ public class LinkMonitorValidatorTest {
     
     @Test
     public void dwoTestAirPair3Validator() throws Exception {
-        expect(m_mockEndPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 1"));
-        expect(m_mockEndPoint.get(AIR_PAIR_R3_DUPLEX_MISMATCH)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 1"));
+        expect(m_mockEndPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL)).andStubReturn(SnmpUtils.parseMibValue("STRING: 1"));
+        expect(m_mockEndPoint.get(AIR_PAIR_R3_DUPLEX_MISMATCH)).andStubReturn(SnmpUtils.parseMibValue("STRING: 1"));
         expect(m_mockEndPoint.getSysOid()).andStubReturn(".1.3.6.1.4.1.7262.1");
 
         replay();
@@ -95,8 +95,8 @@ public class LinkMonitorValidatorTest {
     
     @Test(expected=EndPointStatusException.class)
     public void dwoTestAirPair3FailingValidator() throws Exception {
-        expect(m_mockEndPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 2"));
-        expect(m_mockEndPoint.get(AIR_PAIR_R3_DUPLEX_MISMATCH)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 1"));
+        expect(m_mockEndPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL)).andStubReturn(SnmpUtils.parseMibValue("STRING: 2"));
+        expect(m_mockEndPoint.get(AIR_PAIR_R3_DUPLEX_MISMATCH)).andStubReturn(SnmpUtils.parseMibValue("STRING: 1"));
         expect(m_mockEndPoint.getSysOid()).andStubReturn(".1.3.6.1.4.1.7262.1");
         
         replay();

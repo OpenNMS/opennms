@@ -39,10 +39,10 @@
 <%@ taglib tagdir="/WEB-INF/tags/js" prefix="js" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Provisioning Groups" /> 
-	<jsp:param name="headTitle" value="Provisioning Groups" />
+	<jsp:param name="title" value="Provisioning Requisitions" /> 
+	<jsp:param name="headTitle" value="Provisioning Requisitions" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Groups</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Requisitions</a>" />
 	<jsp:param name="script" value="<script type='text/javascript' src='js/provisioningGroups.js'></script>" />
 </jsp:include>
 
@@ -59,8 +59,8 @@
 <br />
 <form action="${relativeRequestPath}" name="takeAction" method="post"><input type="text" name="groupName" size="20"/><input type="hidden" name="action" value="addGroup" /><input type="hidden" name="actionTarget" value="" />
 <input type="submit" value="Add New Group"/>
-<input type="button" value="Edit Default Foreign Source" onclick="javascript:editForeignSource('default')" />
-<input type="button" value="Reset Default Foreign Source" onclick="javascript:resetDefaultForeignSource()" />
+<input type="button" value="Edit Default Foreign Source Definition" onclick="javascript:editForeignSource('default')" />
+<input type="button" value="Reset Default Foreign Source Definition" onclick="javascript:resetDefaultForeignSource()" />
 </form>
 
 <c:forEach var="foreignSourceName" items="${foreignSourceNames}">
@@ -86,8 +86,8 @@
   <table class="top" border="0">
   	<tr>
   	  <td>
-  	  	Requisition (Provisioning Group):<br />
-  	  	<span style="font-size: smaller">Define node and interface data for synchronization.</span>
+  	  	Requisition:<br />
+  	  	<span style="font-size: smaller">Define node, interface, and service data for synchronization.</span>
   	  </td>
   	  <td>
   	  	<a href="javascript:editRequisition(<js:quote value="${foreignSourceName}"/>)">Edit</a>
@@ -118,7 +118,7 @@
   	</tr>
   	<tr>
   	  <td>
-  	    Foreign Source:<br />
+  	    Foreign Source Definition:<br />
   	    <span style="font-size: smaller">Define scanning behavior for synchronization.</span>
   	  </td>
   	  <td>

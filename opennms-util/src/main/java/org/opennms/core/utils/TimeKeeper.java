@@ -29,27 +29,13 @@
 package org.opennms.core.utils;
 
 import java.util.Date;
+import java.util.TimeZone;
 
-/**
- * <p>TimeKeeper interface.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public interface TimeKeeper {
     
-    /**
-     * <p>getCurrentTime</p>
-     *
-     * @return a long.
-     */
     long getCurrentTime();
     
-    /**
-     * <p>getCurrentDate</p>
-     *
-     * @return a {@link java.util.Date} object.
-     */
     Date getCurrentDate();
 
+    TimeZone getTimeZone();
 }

@@ -48,6 +48,7 @@ import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.logging.LogFactory;
 import liquibase.logging.LogLevel;
+import liquibase.resource.ResourceAccessor;
 
 import org.opennms.core.utils.LogUtils;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -61,10 +62,8 @@ import org.springframework.core.io.ResourceLoader;
  */
 public class Migrator {
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^PostgreSQL (\\d+\\.\\d+)");
-	/** Constant <code>POSTGRES_MIN_VERSION=7.4f</code> */
     public static final float POSTGRES_MIN_VERSION = 7.4f;
-    /** Constant <code>POSTGRES_MAX_VERSION_PLUS_ONE=9.1f</code> */
-    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.1f;
+    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.2f;
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
@@ -459,7 +458,10 @@ public class Migrator {
             connection = m_dataSource.getConnection();
             final DatabaseConnection dbConnection = new JdbcConnection(connection);
 
-            final Liquibase liquibase = new Liquibase( migration.getChangeLog(), new SpringResourceAccessor(), dbConnection );
+            ResourceAccessor accessor = migration.getAccessor();
+            if (accessor == null) accessor = new SpringResourceAccessor();
+            
+            final Liquibase liquibase = new Liquibase( migration.getChangeLog(), accessor, dbConnection );
             liquibase.setChangeLogParameter("install.database.admin.user", migration.getAdminUser());
             liquibase.setChangeLogParameter("install.database.admin.password", migration.getAdminPassword());
             liquibase.setChangeLogParameter("install.database.user", migration.getDatabaseUser());

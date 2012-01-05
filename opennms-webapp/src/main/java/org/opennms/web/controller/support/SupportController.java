@@ -29,13 +29,17 @@
 package org.opennms.web.controller.support;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.rt.CustomField;
 import org.opennms.netmgt.rt.RTQueue;
 import org.opennms.netmgt.rt.RTTicket;
 import org.opennms.netmgt.rt.RTUser;
@@ -148,7 +152,11 @@ public class SupportController extends AbstractController implements Initializin
         results.setUsername(rt.getUsername());
         results.setQueue(queue.getName());
 
-        final RTTicket ticket = new RTTicket(queue.getName(), email, subject, body);
+        List<CustomField> customFields = new ArrayList<CustomField>();
+        customFields.add(new CustomField(m_configDao.getVersionFieldName(), "Version " + Vault.getProperty("version.display"), false));
+        customFields.add(new CustomField(m_configDao.getOSFieldName(), System.getProperty("os.name")+" "+System.getProperty("os.version")+" ("+System.getProperty("os.arch")+")", false));
+        
+        final RTTicket ticket = new RTTicket(queue.getName(), email, subject, body, customFields);
         try {
             final long id = rt.createTicket(ticket);
             results.setSuccess(true);

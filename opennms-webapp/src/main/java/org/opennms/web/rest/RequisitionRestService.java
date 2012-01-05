@@ -41,14 +41,15 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.ValidationException;
-import javax.xml.ws.WebServiceException;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
@@ -219,6 +220,14 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public Requisition getRequisition(@PathParam("foreignSource") String foreignSource) {
         return getActiveRequisition(foreignSource);
+    }
+
+    @GET
+    @Path("{foreignSource}/exists")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String requisitionExists(@PathParam("foreignSource") String foreignSource) {
+        Boolean exists = getActiveRequisition(foreignSource) != null;
+        return exists.toString();
     }
 
     /**
@@ -442,7 +451,7 @@ public class RequisitionRestService extends OnmsRestService {
 			requisition.validate();
 		} catch (final ValidationException e) {
 			LogUtils.debugf(this, e, "error validating incoming requisition with foreign source '%s'", requisition.getForeignSource());
-			throw new WebServiceException(e.getMessage(), e);
+			throw getException(Status.BAD_REQUEST, e.getMessage());
 		}
         debug("addOrReplaceRequisition: Adding requisition %s", requisition.getForeignSource());
         m_pendingForeignSourceRepository.save(requisition);
@@ -588,21 +597,24 @@ public class RequisitionRestService extends OnmsRestService {
     @PUT
     @Path("{foreignSource}/import")
     @Transactional
-    public Response importRequisition(@PathParam("foreignSource") String foreignSource) {
+    public Response importRequisition(@PathParam("foreignSource") String foreignSource, @QueryParam("suppressOutput") Boolean suppressOutput, @QueryParam("rescanExisting") Boolean rescanExisting) {
         log().debug("importing requisition for foreign source " + foreignSource);
 
-        Requisition req = getActiveRequisition(foreignSource);
-        String url = getActiveUrl(foreignSource).toString();
-        EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
+        final Requisition req = getActiveRequisition(foreignSource);
+        final String url = getActiveUrl(foreignSource).toString();
+        final EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
         bldr.addParam(EventConstants.PARM_URL, url);
+        if (rescanExisting != null) {
+            bldr.addParam(EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
+        }
         
         try {
             m_eventProxy.send(bldr.getEvent());
-        } catch (EventProxyException e) {
+        } catch (final EventProxyException e) {
             throw new DataAccessResourceFailureException("Unable to send event to import group "+foreignSource, e);
         }
         
-        return Response.ok(req).build();
+        return suppressOutput == null || suppressOutput == false ? Response.ok(req).build() : Response.ok().build();
     }
     
     /**

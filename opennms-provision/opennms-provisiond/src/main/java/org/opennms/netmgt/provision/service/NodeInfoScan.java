@@ -32,13 +32,14 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.LogUtils.debugf;
+import static org.opennms.core.utils.LogUtils.infof;
 
 import java.net.InetAddress;
 import java.util.List;
 
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.RunInBatch;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
@@ -159,6 +160,7 @@ final class NodeInfoScan implements RunInBatch {
             }
             for(NodePolicy policy : nodePolicies) {
                 if (node != null) {
+                    infof(this, "Applying NodePolicy %s(%s) to %s", policy.getClass(), policy, node.getLabel());
                     node = policy.apply(node);
                 }
             }

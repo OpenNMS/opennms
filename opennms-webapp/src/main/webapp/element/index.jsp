@@ -50,8 +50,9 @@
 
 <%
     Map serviceNameMap = new TreeMap(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
-    Set serviceNameSet = serviceNameMap.keySet();
-    Iterator serviceNameIterator = serviceNameSet.iterator();
+    List serviceNameList = new ArrayList(serviceNameMap.keySet());
+    Collections.sort(serviceNameList);
+    Iterator serviceNameIterator = serviceNameList.iterator();
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -114,7 +115,7 @@
             </form>
             
             <form action="element/nodeList.htm" method="get">
-                    <p align="right">Foreign Source like:
+                    <p align="right">Foreign Source name like:
                         <input type="hidden" name="listInterfaces" value="false"/>
                         <input type="text" name="foreignSource"/>
                         <input type="submit" value="Search"/>
@@ -153,7 +154,7 @@
 				<input type="submit" value="Search" /></p>
         </form>
 		<ul class="plain">
-			<li><a href="asset/nodelist.jsp?column=<%=this.columns[0][1]%>&searchvalue=">All nodes with asset info</a></li>
+			<li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
       </ul>
 		</div>
   </div>

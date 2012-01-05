@@ -39,12 +39,11 @@ import javax.persistence.Table;
 
 import org.springframework.core.style.ToStringCreator;
 
-
+/*
+This is not properly annotated so comment out the annotations so it not discovered during scanning
 @Entity
-/**
- * <p>OnmsServerMap class.</p>
- */
 @Table(name="servermap")
+*/
 public class OnmsServerMap extends OnmsEntity implements Serializable {
 
     /**

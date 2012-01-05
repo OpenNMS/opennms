@@ -41,9 +41,11 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.log4j.BasicConfigurator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.snmp4j.MessageDispatcherImpl;
@@ -110,7 +112,11 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     private boolean m_stopped;
     private List<ManagedObject> m_moList;
     private MockSnmpMOLoader m_moLoader;
+    private IOException m_failure;
+
     private static File BOOT_COUNT_FILE;
+
+	public static boolean allowSetOnMissingOid = false;
 
     // initialize Log4J logging
     static {
@@ -129,6 +135,13 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         BOOT_COUNT_FILE = bootCountFile;
     }
 
+    public MockSnmpAgent(final File confFile, final Resource moFile) {
+        super(BOOT_COUNT_FILE, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
+        m_moLoader = new PropertiesBackedManagedObject();
+        m_moFile = moFile;
+        agent.setWorkerPool(ThreadPool.create("RequestPool", 4));
+    }
+    
     /*
      * Creates the mock agent with files to read and store the boot counter,
      * to read and store the agent configuration, and to read the mocked
@@ -153,12 +166,9 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      * @param bindAddress a {@link java.lang.String} object.
      * @throws IOException 
      */
-    public MockSnmpAgent(File confFile, Resource moFile, String bindAddress) {
-        super(BOOT_COUNT_FILE, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
-        m_moLoader = new PropertiesBackedManagedObject();
+    public MockSnmpAgent(final File confFile, final Resource moFile, final String bindAddress) {
+        this(confFile, moFile);
         m_address = bindAddress;
-        m_moFile = moFile;
-        agent.setWorkerPool(ThreadPool.create("RequestPool", 4));
     }
     
     /**
@@ -178,7 +188,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             throw new RuntimeException("Got IOException while checking for existence of mock object file: " + e, e);
         }
         
-        MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), moFile, bindAddress);
+        final MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), moFile, bindAddress);
         Thread thread = new Thread(agent, agent.getClass().getSimpleName());
         thread.start();
 
@@ -186,7 +196,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             while (!agent.isRunning() && thread.isAlive()) {
                 Thread.sleep(10);
             } 
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             agent.shutDownAndWait();
             throw e;
         }
@@ -194,7 +204,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         if (!thread.isAlive()) {
             agent.m_running = false;
             agent.m_stopped = true;
-            throw new IllegalStateException("agent failed to start--check logs");
+            throw new IllegalStateException("agent failed to start", agent.m_failure);
         }
         
         if (System.getProperty(PROPERTY_SLEEP_ON_CREATE) != null) {
@@ -211,6 +221,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String[] args) {
+    	BasicConfigurator.configure();
         AgentConfigData agentConfig = parseCli(args);
         if (agentConfig == null) {
             System.err.println("Could not parse configuration.");
@@ -234,7 +245,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     public static AgentConfigData parseCli(String[] args) {
         Options opts = new Options();
         opts.addOption("d", "dump-file", true, "Pathname or URL of file containing MIB dump");
-        opts.addOption("l", "listen-addr", true, "IP address to bind to (default: 127.0.0.1)");
+        opts.addOption("l", "listen-addr", true, "IP address to bind to (default: all interfaces)");
         opts.addOption("p", "port", true, "UDP port to listen on (default: 1691)");
         
         String dumpFile = "";
@@ -274,7 +285,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     
     private static void usage(String why, Options opts) {
         System.err.println(why);
-        System.err.println(opts.toString());
+        new HelpFormatter().printHelp("java -jar mock-snmp-agent-jar-with-dependencies.jar -d dump-file [other options]", opts);
+        //System.err.println(opts.toString());
         System.exit(1);
     }
     
@@ -567,9 +579,14 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void initTransportMappings() throws IOException {
-        transportMappings = new TransportMapping[1];
-        transportMappings[0] =
-            new DefaultUdpTransportMapping(new UdpAddress(m_address));
+        try {
+            transportMappings = new TransportMapping[1];
+            transportMappings[0] =
+                new DefaultUdpTransportMapping(new UdpAddress(m_address));
+        } catch (final IOException e) {
+            m_failure = e;
+            throw e;
+        }
     }
 
 
@@ -645,8 +662,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
     }
     
-    private void assertNotNull(String string, Object o) {
-        if (o == null) {
+    private void assertNotNull(final String string, final Object o) {
+    	if (!allowSetOnMissingOid  && o == null) {
             throw new IllegalStateException(string);
         }
     }
@@ -706,7 +723,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      *
      * @param moFile a {@link org.springframework.core.io.Resource} object.
      */
-    public void updateValuesFromResource(Resource moFile) {
+    public void updateValuesFromResource(final Resource moFile) {
         unregisterManagedObjects();
         m_moFile = moFile;
         registerManagedObjects();

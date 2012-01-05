@@ -35,6 +35,7 @@ import static org.easymock.EasyMock.getCurrentArguments;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.Collections;
 import java.util.List;
@@ -142,6 +143,9 @@ public class DemandPollServiceTest extends TestCase {
 			
 		}
 
+                public void lock() {
+		}
+
         public List<DemandPoll> findMatching(OnmsCriteria criteria) {
             throw new UnsupportedOperationException("not yet implemeneted");
         }
@@ -179,7 +183,7 @@ public class DemandPollServiceTest extends TestCase {
 		iface.setSnmpInterface(snmpIface);
 		OnmsMonitoredService monSvc = new OnmsMonitoredService(iface, svcType);
 
-		expect(m_monitoredServiceDao.get(1, "192.168.1.1", 1, 3)).andReturn(monSvc);
+		expect(m_monitoredServiceDao.get(1, addr("192.168.1.1"), 1, 3)).andReturn(monSvc);
 
 		m_pollerService.poll(monSvc, expectedResultId);
 		
@@ -187,7 +191,7 @@ public class DemandPollServiceTest extends TestCase {
 		replay(m_monitoredServiceDao);
 		replay(m_pollerService);
 		
-		DemandPoll result = m_demandPollService.pollMonitoredService(1, "192.168.1.1", 1, 3);
+		DemandPoll result = m_demandPollService.pollMonitoredService(1, addr("192.168.1.1"), 1, 3);
 
 		verify(m_demandPollDao);
 		verify(m_monitoredServiceDao);

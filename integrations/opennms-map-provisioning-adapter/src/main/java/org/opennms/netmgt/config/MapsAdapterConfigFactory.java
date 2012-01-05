@@ -38,8 +38,8 @@ import java.io.Writer;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.ConfigFileConstants;
 
 /**
  * <p>MapsAdapterConfigFactory class.</p>

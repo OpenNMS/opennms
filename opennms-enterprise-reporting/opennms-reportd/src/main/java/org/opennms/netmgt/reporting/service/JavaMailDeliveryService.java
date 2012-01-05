@@ -55,15 +55,19 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
     public void deliverReport(Report report, String fileName) throws ReportDeliveryException {
         try {
 
-            JavaSendMailer sm = new JavaSendMailer(m_JavamailConfigDao.getDefaultSendmailConfig());
+            JavaSendMailer sm = null;
+            String mailer = report.getMailer();
+            LogUtils.debugf(this, "deliverReport with mailer=%s", mailer);
+            if (mailer != null && mailer.length() > 0) {
+                sm = new JavaSendMailer(m_JavamailConfigDao.getSendMailConfig(mailer));
+            } else {
+                sm = new JavaSendMailer(m_JavamailConfigDao.getDefaultSendmailConfig());
+            }
             MimeMessageHelper helper = new MimeMessageHelper(sm.getMessage().getMimeMessage(),true);
                 
-            for(String recipient : report.getRecipientCollection()){
-                helper.addTo(recipient);
-            }
-            
+            helper.setTo(report.getRecipient());
             helper.setSubject("OpenNMS Report: " + report.getReportName());
-            helper.setText("OpenNMS Report: ");
+            helper.setText("OpenNMS Report: "); // FIXME: sm.send() will override this.
                 
             helper.addAttachment(fileName, new File(fileName));
                 

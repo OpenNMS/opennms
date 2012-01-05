@@ -29,17 +29,23 @@
 package org.opennms.web.alarm.filter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.WebAlarmRepository;
@@ -56,7 +62,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/daoWebRepositoryTestContext.xml",
-        "classpath:/jdbcWebRepositoryTestContext.xml"
+        "classpath:/jdbcWebRepositoryTestContext.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -361,9 +368,92 @@ public class WebAlarmRepositoryFilterTest {
         assertEquals(1, alarms.length);
     }
     
+    @Test
+    @Transactional
+    public void testParmsLikeFilter() {
+        List<OnmsEvent> events = m_dbPopulator.getEventDao().findAll();
+        assertNotNull(events);
+        OnmsEvent event = events.get(0);
+        
+        List<OnmsDistPoller> pollers = m_dbPopulator.getDistPollerDao().findAll();
+        assertNotNull(pollers);
+        OnmsDistPoller poller = pollers.get(0);
+        
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
+        alarm.setLastEvent(event);
+        alarm.setSeverityId(3);
+        alarm.setDistPoller(poller);
+        alarm.setCounter(100);
+        alarm.setEventParms("url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=rtc(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        
+        AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
+        alarmDao.save(alarm);
+        alarmDao.flush();
+        
+        OnmsAlarm alarm2 = new OnmsAlarm();
+        alarm2.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
+        alarm2.setLastEvent(event);
+        alarm2.setSeverityId(3);
+        alarm2.setDistPoller(poller);
+        alarm2.setCounter(100);
+        alarm2.setEventParms("componentType=serviceElement(string,text);url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=rtcbomb(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        
+        alarmDao.save(alarm2);
+        alarmDao.flush();
+        
+        EventParmLikeFilter eventParmFilter = new EventParmLikeFilter("user=rtc");
+        assertEquals("user=\"rtc\"", eventParmFilter.getTextDescription());
+        AlarmCriteria criteria = new AlarmCriteria(eventParmFilter);
+        Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
+        assertEquals(1, alarms.length);
+    }
+    
+    @Test
+    @Transactional
+    public void testParmsNotLikeFilter() {
+        List<OnmsEvent> events = m_dbPopulator.getEventDao().findAll();
+        assertNotNull(events);
+        OnmsEvent event = events.get(0);
+        
+        List<OnmsDistPoller> pollers = m_dbPopulator.getDistPollerDao().findAll();
+        assertNotNull(pollers);
+        OnmsDistPoller poller = pollers.get(0);
+        
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
+        alarm.setLastEvent(event);
+        alarm.setSeverityId(3);
+        alarm.setDistPoller(poller);
+        alarm.setCounter(100);
+        alarm.setEventParms("componentType=service(string,text);url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=rtc(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        
+        AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
+        alarmDao.save(alarm);
+        alarmDao.flush();
+        
+        OnmsAlarm alarm2 = new OnmsAlarm();
+        alarm2.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
+        alarm2.setLastEvent(event);
+        alarm2.setSeverityId(3);
+        alarm2.setDistPoller(poller);
+        alarm2.setCounter(100);
+        alarm2.setEventParms("componentType=serviceElement(string,text);url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=admin(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        
+        alarmDao.save(alarm2);
+        alarmDao.flush();
+        
+        NegativeEventParmLikeFilter parmFilter = new NegativeEventParmLikeFilter("user=rtc");
+        assertEquals("user is not \"rtc\"", parmFilter.getTextDescription());
+        
+        AlarmCriteria criteria = new AlarmCriteria(parmFilter);
+        Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
+        assertEquals(1, alarms.length);
+        
+    }
+    
     private AlarmCriteria getCriteria(Filter...filters){
         return new AlarmCriteria(filters);
     }
-
     
 }

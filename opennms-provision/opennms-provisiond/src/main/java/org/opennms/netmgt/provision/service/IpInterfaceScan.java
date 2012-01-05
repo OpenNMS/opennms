@@ -154,6 +154,7 @@ public class IpInterfaceScan implements RunInBatch {
                     
 
                 }
+                getProvisionService().updateMonitoredServiceState(getNodeId(), hostAddress, serviceName); // NMS-3906
             }
 
             public void handleException(final Throwable t) {

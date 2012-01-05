@@ -131,12 +131,15 @@ public class InetNetworkInterface implements NetworkInterface<InetAddress>, Seri
      *                Thrown if the passed key is empty or null.
      * @see java.util.Map#get(java.lang.Object)
      */
-    public synchronized Object getAttribute(String property) {
+    public synchronized <V> V getAttribute(String property) {
         Object rc = null;
         if (m_properties != null)
             rc = m_properties.get(property);
 
-        return rc;
+        // Can't avoid this unchecked cast
+        @SuppressWarnings("unchecked")
+        V retval = (V)rc;
+        return retval;
     }
 
     /**

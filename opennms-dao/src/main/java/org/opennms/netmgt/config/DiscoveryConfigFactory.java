@@ -53,12 +53,12 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.FilteringIterator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorIterator;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
@@ -235,9 +235,9 @@ public final class DiscoveryConfigFactory {
     public void saveConfiguration(final DiscoveryConfiguration configuration) throws MarshalException, ValidationException, IOException {
         getWriteLock().lock();
         try {
-            // marshall to a string first, then write the string to the file. This
+            // marshal to a string first, then write the string to the file. This
             // way the original config
-            // isn't lost if the xml from the marshall is hosed.
+            // isn't lost if the XML from the marshal is hosed.
             final StringWriter stringWriter = new StringWriter();
             Marshaller.marshal(configuration, stringWriter);
             final String xml = stringWriter.toString();

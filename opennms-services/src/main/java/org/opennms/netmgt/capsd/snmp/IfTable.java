@@ -57,14 +57,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
- * @version $Id: $
  */
 public final class IfTable extends SnmpTable<IfTableEntry> {
     
@@ -106,11 +99,7 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      * @return a {@link org.opennms.netmgt.capsd.snmp.IfTableEntry} object.
      */
     public IfTableEntry getEntry(int ifIndex) {
-        if (getEntries() == null) {
-            return null;
-        }
-        
-        for(IfTableEntry entry : getEntries()) {
+        for(IfTableEntry entry : this) {
             Integer ndx = entry.getIfIndex();
             if (ndx != null && ndx.intValue() == ifIndex) {
                 return entry;
@@ -127,10 +116,7 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      * @return a int.
      */
     public int getOperStatus(int ifIndex) {
-        if (getEntries() == null)
-            return -1;
-        
-        for(IfTableEntry entry : getEntries()) {
+        for(IfTableEntry entry : this) {
             Integer ndx = entry.getIfIndex();
             if (ndx != null && ndx.intValue() == ifIndex) {
                 // found it
@@ -151,10 +137,7 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      * @return a int.
      */
     public int getAdminStatus(int ifIndex) {
-        if (getEntries() == null)
-            return -1;
-        
-        for(IfTableEntry entry : getEntries()) {
+        for(IfTableEntry entry : this) {
             Integer ndx = entry.getIfIndex();
             if (ndx != null && ndx.intValue() == ifIndex) {
                 // found it
@@ -175,10 +158,7 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      * @return a int.
      */
     public int getIfType(int ifIndex) {
-        if (getEntries() == null)
-            return -1;
-        
-        for(IfTableEntry entry : getEntries()) {
+        for(IfTableEntry entry : this) {
             Integer ndx = entry.getIfIndex();
             if (ndx != null && ndx.intValue() == ifIndex) {
                 // found it
@@ -200,12 +180,10 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      */
     public String getIfDescr(final int ifIndex) {
         String ifDescr = null;   
-        if (getEntries() != null) {
-            for(IfTableEntry entry : getEntries()) {
-                Integer ndx = entry.getIfIndex();
-                if (ndx != null && ndx.intValue() == ifIndex) {
-                    ifDescr = entry.getIfDescr();
-                }
+        for(IfTableEntry entry : this) {
+            Integer ndx = entry.getIfIndex();
+            if (ndx != null && ndx.intValue() == ifIndex) {
+                ifDescr = entry.getIfDescr();
             }
         }
         return ifDescr;
@@ -219,12 +197,10 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      */
     public Long getIfSpeed(final int ifIndex) {
         Long ifSpeed = null;   
-        if (getEntries() != null) {
-            for(IfTableEntry entry : getEntries()) {
-                Integer ndx = entry.getIfIndex();
-                if (ndx != null && ndx.intValue() == ifIndex) {
-                    ifSpeed = entry.getIfSpeed();
-                }
+        for(IfTableEntry entry : this) {
+            Integer ndx = entry.getIfIndex();
+            if (ndx != null && ndx.intValue() == ifIndex) {
+                ifSpeed = entry.getIfSpeed();
             }
         }
         return ifSpeed;
@@ -238,12 +214,10 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      */
     public String getPhysAddr(final int ifIndex) {
         String physAddr = null;   
-        if (getEntries() != null) {
-            for(IfTableEntry entry : getEntries()) {
-                Integer ndx = entry.getIfIndex();
-                if (ndx != null && ndx.intValue() == ifIndex) {
-                    physAddr = entry.getPhysAddr();
-                }
+        for(IfTableEntry entry : this) {
+            Integer ndx = entry.getIfIndex();
+            if (ndx != null && ndx.intValue() == ifIndex) {
+                physAddr = entry.getPhysAddr();
             }
         }
         return physAddr;

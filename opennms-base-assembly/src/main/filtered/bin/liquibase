@@ -6,20 +6,32 @@ if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
-DB_JAR=`ls -1 $OPENNMS_HOME/lib/postgresql*.jar | sort -u | tail -n 1`
-SCHEMA_JAR=`ls -1 $OPENNMS_HOME/lib/org.opennms.core.schema-*-liquibase.jar | sort -u | tail -n 1`
-export CLASSPATH="$DB_JAR:$SCHEMA_JAR:$CLASSPATH"
+for file in $OPENNMS_HOME/lib/*.jar; do
+	export CLASSPATH="$file:$CLASSPATH"
+done
 
-exec ${install.bin.dir}/runjava -r -- \
+export CLASSPATH=`echo $CLASSPATH | sed -e 's,^:*,,'`
+
+DATABASE_NAME=`grep 'database-name=' $OPENNMS_HOME/etc/opennms-datasources.xml | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
+DATABASE_USER=`grep 'user-name='     $OPENNMS_HOME/etc/opennms-datasources.xml | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
+DATABASE_PASS=`grep 'password='      $OPENNMS_HOME/etc/opennms-datasources.xml | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
+DATABASE_URL=`grep 'url='            $OPENNMS_HOME/etc/opennms-datasources.xml | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
+
+ADMIN_DATABASE_NAME=`grep 'database-name=' $OPENNMS_HOME/etc/opennms-datasources.xml | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
+ADMIN_DATABASE_USER=`grep 'user-name='     $OPENNMS_HOME/etc/opennms-datasources.xml | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
+ADMIN_DATABASE_PASS=`grep 'password='      $OPENNMS_HOME/etc/opennms-datasources.xml | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
+ADMIN_DATABASE_URL=`grep 'url='            $OPENNMS_HOME/etc/opennms-datasources.xml | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
+
+exec $OPENNMS_HOME/bin/runjava -r -- \
 	-Dopennms.home="$OPENNMS_HOME" \
-	-Dinstall.database.admin.user="${install.database.admin.user}" \
-	-Dinstall.database.admin.password="${install.database.admin.password}" \
-	-Dinstall.database.user="${install.database.user}" \
-	-Dinstall.database.name="${install.database.name}" \
+	-Dinstall.database.admin.user="$ADMIN_DATABASE_USER" \
+	-Dinstall.database.admin.password="$ADMIN_DATABASE_PASS" \
+	-Dinstall.database.user="$DATABASE_USER" \
+	-Dinstall.database.name="$DATABASE_PASS" \
 	-jar $OPENNMS_HOME/lib/liquibase*.jar \
 		--classpath="$CLASSPATH" \
-		--url="jdbc:postgresql://localhost:5432/${install.database.name}" \
-		--username="${install.database.user}" \
-		--password="${install.database.password}" \
+		--url="$DATABASE_URL" \
+		--username="$DATABASE_USER" \
+		--password="$DATABASE_PASS" \
 		--includeSystemClasspath=true \
 		"$@"

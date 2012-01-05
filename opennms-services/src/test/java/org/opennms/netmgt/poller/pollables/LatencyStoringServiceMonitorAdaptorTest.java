@@ -51,6 +51,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
@@ -78,8 +79,12 @@ import org.opennms.test.mock.MockLogAppender;
 public class LatencyStoringServiceMonitorAdaptorTest {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     private PollerConfig m_pollerConfig = m_mocks.createMock(PollerConfig.class);
+
+    // Cannot avoid this warning since there is no way to fetch the class object for an interface
+    // that uses generics
+    @SuppressWarnings("unchecked")
     private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
-    
+
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
@@ -185,7 +190,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         DataSourceFactory.setInstance(db);
         Vault.setDataSource(db);
 
-        EventBuilder bldr = new EventBuilder("uei.opennms.org/threshold/highThresholdExceeded", "LatencyStoringServiceMonitorAdaptorTest");
+        EventBuilder bldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "LatencyStoringServiceMonitorAdaptorTest");
         bldr.setNodeid(1);
         bldr.setInterface(addr("127.0.0.1"));
         bldr.setService("ICMP");

@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.notifd.mock;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -42,8 +43,8 @@ import org.opennms.netmgt.config.DestinationPathManager;
 
 public class MockDestinationPathManager extends DestinationPathManager {
     
-    public MockDestinationPathManager(String xmlString) throws MarshalException, ValidationException {
-        Reader reader = new StringReader(xmlString);
+    public MockDestinationPathManager(String xmlString) throws MarshalException, ValidationException, UnsupportedEncodingException {
+        InputStream reader = new ByteArrayInputStream(xmlString.getBytes("UTF-8"));
         parseXML(reader);
     }
 

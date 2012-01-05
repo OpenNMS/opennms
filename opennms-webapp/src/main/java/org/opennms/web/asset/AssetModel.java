@@ -32,7 +32,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,12 +44,8 @@ import org.springframework.util.Assert;
 
 /**
  * <p>AssetModel class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
-public class AssetModel extends Object {
+public class AssetModel {
 
     /**
      * <p>getAsset</p>
@@ -64,8 +59,9 @@ public class AssetModel extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM ASSETS WHERE NODEID=" + nodeId);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ASSETS WHERE NODEID=?");
+            stmt.setInt(1, nodeId);
+            ResultSet rs = stmt.executeQuery();
 
             Asset[] assets = rs2Assets(rs);
 
@@ -96,9 +92,9 @@ public class AssetModel extends Object {
         try {
             Connection conn = Vault.getDbConnection();
             d.watch(conn);
-            Statement stmt = conn.createStatement();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ASSETS");
             d.watch(stmt);
-            ResultSet rs = stmt.executeQuery("SELECT * FROM ASSETS");
+            ResultSet rs = stmt.executeQuery();
             d.watch(rs);
 
             assets = rs2Assets(rs);
@@ -326,6 +322,36 @@ public class AssetModel extends Object {
                 asset.nodeLabel = rs.getString("nodelabel");
                 asset.matchingValue = rs.getString(columnName);
                 asset.columnSearched = columnName;
+
+                list.add(asset);
+            }
+        } finally {
+            d.cleanUp();
+        }
+        
+        return list.toArray(new MatchingAsset[list.size()]);
+    }
+
+    public static MatchingAsset[] searchNodesWithAssets() throws SQLException {
+        List<MatchingAsset> list = new ArrayList<MatchingAsset>();
+
+        final DBUtils d = new DBUtils(AssetModel.class);
+        try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("select nodeid, nodelabel from node where nodeid in (select nodeid from assets where coalesce(manufacturer,'') != '' or coalesce(vendor,'') != '' or coalesce(modelNumber,'') != '' or coalesce(serialNumber,'') != '' or coalesce(description,'') != '' or coalesce(circuitId,'') != '' or coalesce(assetNumber,'') != '' or coalesce(operatingSystem,'') != '' or coalesce(rack,'') != '' or coalesce(slot,'') != '' or coalesce(port,'') != '' or coalesce(region,'') != '' or coalesce(division,'') != '' or coalesce(department,'') != '' or coalesce(address1,'') != '' or coalesce(address2,'') != '' or coalesce(city,'') != '' or coalesce(state,'') != '' or coalesce(zip,'') != '' or coalesce(building,'') != '' or coalesce(floor,'') != '' or coalesce(room,'') != '' or coalesce(vendorPhone,'') != '' or coalesce(vendorFax,'') != '' or coalesce(dateInstalled,'') != '' or coalesce(lease,'') != '' or coalesce(leaseExpires,'') != '' or coalesce(supportPhone,'') != '' or coalesce(maintContract,'') != '' or coalesce(vendorAssetNumber,'') != '' or coalesce(maintContractExpires,'') != '' or coalesce(displayCategory,'') != '' or coalesce(notifyCategory,'') != '' or coalesce(pollerCategory,'') != '' or coalesce(thresholdCategory,'') != '' or coalesce(comment,'') != '' or coalesce(username,'') != '' or coalesce(password,'') != '' or coalesce(enable,'') != '' or coalesce(connection,'') != '' or coalesce(autoenable,'') != '' or coalesce(cpu,'') != '' or coalesce(ram,'') != '' or coalesce(storagectrl,'') != '' or coalesce(hdd1,'') != '' or coalesce(hdd2,'') != '' or coalesce(hdd3,'') != '' or coalesce(hdd4,'') != '' or coalesce(hdd5,'') != '' or coalesce(hdd6,'') != '' or coalesce(numpowersupplies,'') != '' or coalesce(inputpower,'') != '' or coalesce(additionalhardware,'') != '' or coalesce(admin,'') != '' or coalesce(snmpcommunity,'') != '' or coalesce(rackunitheight,'') != '')");
+            d.watch(stmt);
+
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+
+            while (rs.next()) {
+                MatchingAsset asset = new MatchingAsset();
+
+                asset.nodeId = rs.getInt("nodeID");
+                asset.nodeLabel = rs.getString("nodelabel");
+                asset.matchingValue = "";
+                asset.columnSearched = "";
 
                 list.add(asset);
             }

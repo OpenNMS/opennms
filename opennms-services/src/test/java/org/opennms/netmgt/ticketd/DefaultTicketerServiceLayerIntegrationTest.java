@@ -37,11 +37,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.test.DaoTestConfigBean;
@@ -64,7 +64,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
 		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:/META-INF/opennms/applicationContext-troubleTicketer.xml",
-		"classpath:/org/opennms/netmgt/ticketd/applicationContext-configOverride.xml" 
+		"classpath:/org/opennms/netmgt/ticketd/applicationContext-configOverride.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         // Set opennms.ticketer.plugin to a value for unit testing

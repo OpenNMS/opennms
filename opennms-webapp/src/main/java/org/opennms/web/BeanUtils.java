@@ -32,7 +32,8 @@ import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -53,7 +54,7 @@ public class BeanUtils {
     public static Collection<String> getProperties(Object bean) {
         Collection<String> props = new LinkedList<String>();
 
-        BeanWrapperImpl wrapper = new BeanWrapperImpl(bean);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(bean);
         for (PropertyDescriptor pd : wrapper.getPropertyDescriptors()) {
             props.add(pd.getName());
         }
@@ -71,8 +72,8 @@ public class BeanUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> T getPathValue(Object bean, String path, Class<T> expectedClass) {
-        BeanWrapperImpl wrapper = new BeanWrapperImpl(bean);
-        Class propType = wrapper.getPropertyType(path);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(bean);
+        Class<?> propType = wrapper.getPropertyType(path);
         if (propType == null) {
             // we were unable to find the property
             Assert.notNull(propType, "propType in BeanUtils is null path: " + path); //for debug purposes

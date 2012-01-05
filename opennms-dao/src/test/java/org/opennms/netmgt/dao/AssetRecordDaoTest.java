@@ -32,12 +32,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,14 +68,12 @@ public class AssetRecordDaoTest {
 	private DatabasePopulator m_databasePopulator;
 	
     private static boolean m_populated = false;
-    private static DatabasePopulator m_lastPopulator;
     
     @BeforeTransaction
     public void setUp() {
         try {
             if (!m_populated) {
                 m_databasePopulator.populateDatabase();
-                m_lastPopulator = m_databasePopulator;
             }
         } catch (Throwable e) {
             e.printStackTrace(System.err);

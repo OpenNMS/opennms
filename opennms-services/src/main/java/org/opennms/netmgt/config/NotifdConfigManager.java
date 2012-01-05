@@ -30,7 +30,6 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Collection;
 
@@ -46,7 +45,6 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
@@ -64,19 +62,6 @@ public abstract class NotifdConfigManager {
      * 
      */
     protected NotifdConfiguration configuration;
-
-    /**
-     * <p>parseXml</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    public synchronized void parseXml(Reader reader) throws MarshalException, ValidationException, IOException {
-        configuration = CastorUtils.unmarshal(NotifdConfiguration.class, reader);
-    }
 
     /**
      * <p>parseXml</p>
@@ -231,11 +216,7 @@ public abstract class NotifdConfigManager {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean parmmatch = false;
-        Parms parms = event.getParms();
-        if (parms != null && notification.getVarbind() != null && notification.getVarbind().getVbname() != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
+        if (notification.getVarbind() != null && notification.getVarbind().getVbname() != null) {
             String notfValue = null;
             String notfName = notification.getVarbind().getVbname();
 
@@ -248,13 +229,15 @@ public abstract class NotifdConfigManager {
                 parmmatch = true;
             }
 
-            for (Parm parm : parms.getParmCollection()) {
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null)
+            for (final Parm parm : event.getParmCollection()) {
+                final String parmName = parm.getParmName();
+                final Value parmValue = parm.getValue();
+                final String parmContent;
+                if (parmValue == null) {
                     continue;
-                else
+                } else {
                     parmContent = parmValue.getContent();
+                }
 
                 if (parmName.equals(notfName) && parmContent.startsWith(notfValue)) {
                     parmmatch = true;

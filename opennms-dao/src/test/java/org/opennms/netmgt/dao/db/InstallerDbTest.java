@@ -981,7 +981,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
 
     }
 
-    public void XXXtestSetOutageIdOnUpgrade() throws Exception {
+    public void testSetOutageIdOnUpgrade() throws Exception {
         getInstallerDb().createSequences();
         getInstallerDb().updatePlPgsql();
         getInstallerDb().addStoredProcedures();

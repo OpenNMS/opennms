@@ -32,8 +32,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.springframework.security.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  * <p>FrontPageController class.</p>
@@ -41,17 +43,16 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @author ranger
  * @since 1.8.1
  */
-public class FrontPageController extends AbstractController {
+@Controller
+@RequestMapping("/frontPage.htm")
+public class FrontPageController {
 
-    /** {@inheritDoc} */
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    @RequestMapping(method = RequestMethod.GET)
+    protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (request.isUserInRole(Authentication.ROLE_DASHBOARD)) {
             return new ModelAndView("redirect:/dashboard.jsp");
         } else {
             return new ModelAndView("redirect:/index.jsp");
         }
     }
-
 }

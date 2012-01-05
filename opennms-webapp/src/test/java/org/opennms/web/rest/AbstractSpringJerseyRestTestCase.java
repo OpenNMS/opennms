@@ -78,10 +78,10 @@ import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
  */
 public abstract class AbstractSpringJerseyRestTestCase {
 
-    static String GET = "GET";
-    static String POST = "POST";
-    static String DELETE = "DELETE";
-    static String PUT = "PUT";
+    public static String GET = "GET";
+    public static String POST = "POST";
+    public static String DELETE = "DELETE";
+    public static String PUT = "PUT";
     
     String contextPath = "/opennms/rest";
     
@@ -106,13 +106,17 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
         getServletContext().addInitParameter("contextConfigLocation", 
                 "classpath:/org/opennms/web/rest/applicationContext-test.xml " +
+                "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml " +
                 "classpath*:/META-INF/opennms/component-service.xml " +
                 "classpath*:/META-INF/opennms/component-dao.xml " +
                 "classpath:/META-INF/opennms/applicationContext-reportingCore.xml " +
                 "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml " +
                 "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml " +
                 "classpath:/org/opennms/web/rest/applicationContext-mockEventProxy.xml " +
+                "classpath:/applicationContext-jersey-test.xml " +
                 "classpath:/META-INF/opennms/applicationContext-reporting.xml " +
+                "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml " +
+                "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml " +
                 "/WEB-INF/applicationContext-spring-security.xml " +
                 "/WEB-INF/applicationContext-jersey.xml");
         
@@ -272,14 +276,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return retVal;
     }
 
-    protected String sendRequest(String requestType, String url, @SuppressWarnings("unchecked") Map parameters, int expectedStatus) throws Exception {
+    protected String sendRequest(String requestType, String url, Map<?,?> parameters, int expectedStatus) throws Exception {
         final MockHttpServletRequest request = createRequest(requestType, url);
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
         return sendRequest(request, expectedStatus);
     }
     
-    protected String getQueryString(@SuppressWarnings("unchecked") final Map parameters) {
+    protected String getQueryString(final Map<?,?> parameters) {
     	final StringBuffer sb = new StringBuffer();
 
 		try {

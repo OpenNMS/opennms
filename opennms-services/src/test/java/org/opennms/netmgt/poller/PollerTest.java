@@ -529,6 +529,33 @@ public class PollerTest {
 		testElementDeleted(node);
 	}
 
+    // nodeLabelChanged: EventConstants.NODE_LABEL_CHANGED_EVENT_UEI
+    @Test
+    public void testNodeLabelChanged() {
+        MockNode element = m_network.getNode(1);
+        String newLabel = "NEW LABEL";
+        Event event = element.createNodeLabelChangedEvent(newLabel);
+        m_pollerConfig.setNodeOutageProcessingEnabled(false);
+
+        PollAnticipator poll = new PollAnticipator();
+        element.addAnticipator(poll);
+
+        poll.anticipateAllServices(element);
+
+        startDaemons();
+
+        // wait until after the first poll of the services
+        poll.waitForAnticipated(1000L);
+
+        assertEquals("Router", m_poller.getNetwork().getNode(1).getNodeLabel());
+
+        // now delete the node and send a nodeDeleted event
+        element.setLabel(newLabel);
+        m_eventMgr.sendEventToListeners(event);
+
+        assertEquals(newLabel, m_poller.getNetwork().getNode(1).getNodeLabel());
+    }
+
 	public void testOutagesClosedOnDelete(MockElement element) {
 
 		startDaemons();

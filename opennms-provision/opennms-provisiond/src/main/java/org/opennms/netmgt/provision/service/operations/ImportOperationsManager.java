@@ -56,9 +56,10 @@ public class ImportOperationsManager {
     
 	private final List<ImportOperation> m_inserts = new LinkedList<ImportOperation>();
     private final List<ImportOperation> m_updates = new LinkedList<ImportOperation>();
-    private final Map<String, Integer> m_foreignIdToNodeMap;
     
     private final ProvisionService m_provisionService;
+    private final Map<String, Integer> m_foreignIdToNodeMap;
+    private Boolean m_rescanExisting;
     
     private String m_foreignSource;
     
@@ -67,10 +68,12 @@ public class ImportOperationsManager {
      *
      * @param foreignIdToNodeMap a {@link java.util.Map} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+     * @param rescanExisting TODO
      */
-    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ProvisionService provisionService) {
+    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ProvisionService provisionService, final Boolean rescanExisting) {
         m_provisionService = provisionService;
         m_foreignIdToNodeMap = new HashMap<String, Integer>(foreignIdToNodeMap);
+        m_rescanExisting = rescanExisting;
     }
 
     /**
@@ -276,6 +279,10 @@ public class ImportOperationsManager {
         return m_foreignSource;
     }
 
+    public Boolean getRescanExisting() {
+        return m_rescanExisting;
+    }
+    
     /**
      * <p>auditNodes</p>
      *

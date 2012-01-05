@@ -31,7 +31,6 @@ package org.opennms.netmgt.config;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 
 import junit.framework.TestCase;
 
@@ -140,7 +139,7 @@ public class PollerConfigFactoryTest extends TestCase {
         private String m_xml;
 
         public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
-            super(new StringReader(xml), localServer, verifyServer);
+            super(new ByteArrayInputStream(xml.getBytes("UTF-8")), localServer, verifyServer);
             save();
         }
 

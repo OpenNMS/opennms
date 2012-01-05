@@ -32,15 +32,15 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  * This class is used to monitor if a particular Cisco IP-SLA is within a
@@ -111,15 +111,14 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
         boolean status = false;
 
         try {
-            String adminTag = ParameterMap.getKeyedString(parameters,
-                                                          "admin-tag", null);
+            String adminTag = ParameterMap.getKeyedString(parameters, "admin-tag", null);
 
             /*
              * Get configuration parameters This is the string that represents
              * the configured IP-SLA admin tag to be monitored.
              */
             if (adminTag == null) {
-                log().warn("poll: No IP-SLA admin-tag defined! ");
+                log().warn("poll: No IP-SLA admin-tag defined!");
                 return status;
             }
 
@@ -183,11 +182,6 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
                                         + agentConfig);
                 }
 
-                if (adminTag == null) {
-                    log().warn("poll: No admin tag defined! ");
-                    return status;
-                }
-
                 /*
                  * Get two maps one with all configured admin tags and one of
                  * oper state
@@ -239,7 +233,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
                        "Number operator used on a non-number "
                                + e.getMessage());
         } catch (IllegalArgumentException e) {
-            log().warn("Invalid Snmp Criteria: " + e.getMessage());
+            log().warn("Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             log().warn(
                        "Unexpected exception during SNMP poll of interface "

@@ -29,12 +29,12 @@
 package org.opennms.netmgt.config;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -92,24 +92,6 @@ abstract public class PollerConfigManager implements PollerConfig {
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
     
-    /**
-     * <p>Constructor for PollerConfigManager.</p>
-     *
-     * @author <a href="mailto:david@opennms.org">David Hustace</a>
-     * @param reader a {@link java.io.Reader} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    public PollerConfigManager(final Reader reader, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException, IOException {
-        m_localServer = localServer;
-        m_verifyServer = verifyServer;
-        m_config = CastorUtils.unmarshal(PollerConfiguration.class, reader);
-        setUpInternalData();
-    }
-
     /**
      * <p>Constructor for PollerConfigManager.</p>
      *
@@ -464,7 +446,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                     }
                     
                 } catch (final Throwable t) {
-                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP list", pkg.getName());
+                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
                 }
                 
             }
@@ -1115,7 +1097,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 return;
             }
             
-            final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddressAsString();
+            final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+str(monSvc.getIpAddress());
     
             try {
                 final File rrdFile = new File(rrdDir, dsName);

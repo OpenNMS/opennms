@@ -11,6 +11,18 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -19,9 +31,14 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
  */
-@SuppressWarnings("serial")
+@XmlRootElement(name="event")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Event implements java.io.Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2733176689376409920L;
 
       //--------------------------/
      //- Class/Member Variables -/
@@ -31,108 +48,129 @@ public class Event implements java.io.Serializable {
      * The event mask which helps to uniquely identify an
      *  event
      */
-    private org.opennms.netmgt.xml.eventconf.Mask _mask;
+	@XmlElement(name="mask",required=false)
+    private Mask m_mask;
 
     /**
      * The Universal Event Identifier
      */
-    private java.lang.String _uei;
+	@XmlElement(name="uei", required=true)
+    private String m_uei;
 
     /**
      * A human readable name used to identify an event in
      *  the web ui
      */
-    private java.lang.String _eventLabel;
+	@XmlElement(name="event-label", required=true)
+    private String m_eventLabel;
 
     /**
-     * The snmp information from the trap
+     * The SNMP information from the trap
      */
-    private org.opennms.netmgt.xml.eventconf.Snmp _snmp;
+	@XmlElement(name="snmp", required=false)
+    private Snmp m_snmp;
 
     /**
      * The event description
      */
-    private java.lang.String _descr;
+	@XmlElement(name="descr", required=true)
+    private String m_descr;
 
     /**
      * The event logmsg
      */
-    private org.opennms.netmgt.xml.eventconf.Logmsg _logmsg;
+	@XmlElement(name="logmsg", required=true)
+    private Logmsg m_logmsg;
 
     /**
      * The event severity
      */
-    private java.lang.String _severity;
+	@XmlElement(name="severity", required=true)
+    private String m_severity;
 
     /**
      * The event correlation information
      */
-    private org.opennms.netmgt.xml.eventconf.Correlation _correlation;
+	@XmlElement(name="correlation", required=false)
+    private Correlation m_correlation;
 
     /**
      * The operator instruction for this
      *  event
      */
-    private java.lang.String _operinstruct;
+	@XmlElement(name="operinstruct", required=false)
+    private String m_operinstruct;
 
     /**
      * The automatic action to occur when this event
      *  occurs
      */
-    private java.util.List<org.opennms.netmgt.xml.eventconf.Autoaction> _autoactionList;
+	@XmlElement(name="autoaction", required=false)
+    private List<Autoaction> m_autoactionList;
 
     /**
      * The varbind decoding tag used to decode value 
      *  into a string
      */
-    private java.util.List<org.opennms.netmgt.xml.eventconf.Varbindsdecode> _varbindsdecodeList;
+	@XmlElement(name="varbindsdecode", required=false)
+    private List<Varbindsdecode> m_varbindsdecodeList;
 
     /**
      * The operator action to be taken when this event
      *  occurs
      */
-    private java.util.List<org.opennms.netmgt.xml.eventconf.Operaction> _operactionList;
+	@XmlElement(name="operaction", required=false)
+    private List<Operaction> m_operactionList;
 
     /**
      * The autoacknowledge information for the
      *  user
      */
-    private org.opennms.netmgt.xml.eventconf.Autoacknowledge _autoacknowledge;
+	@XmlElement(name="autoacknowledge", required=false)
+    private Autoacknowledge m_autoacknowledge;
 
     /**
      * A logical group with which to associate this
      *  event
      */
-    private java.util.List<java.lang.String> _loggroupList;
+	@XmlElement(name="loggroup", required=false)
+    private List<String> m_loggroupList;
 
     /**
      * The trouble ticket info
      */
-    private org.opennms.netmgt.xml.eventconf.Tticket _tticket;
+	@XmlElement(name="tticket", required=false)
+    private Tticket m_tticket;
 
     /**
      * The forwarding information for this
      *  event
      */
-    private java.util.List<org.opennms.netmgt.xml.eventconf.Forward> _forwardList;
+	@XmlElement(name="forward", required=false)
+    private List<Forward> m_forwardList;
 
     /**
      * The script information for this
      *  event
      */
-    private java.util.List<org.opennms.netmgt.xml.eventconf.Script> _scriptList;
+	@XmlElement(name="script", required=false)
+    private List<Script> m_scriptList;
 
     /**
      * The text to be displayed on a 'mouseOver' event
      *  when this event is displayed in the event browser.
      */
-    private java.lang.String _mouseovertext;
+	@XmlElement(name="mouseovertext", required=false)
+    private String m_mouseovertext;
 
     /**
      * Data used to create an event.
      */
-    private org.opennms.netmgt.xml.eventconf.AlarmData _alarmData;
+	@XmlElement(name="alarm-data", required=false)
+    private AlarmData m_alarmData;
 
+    @XmlElement(name="filters", required=false)
+	private org.opennms.netmgt.xml.eventconf.Filters _filters;
 
       //----------------/
      //- Constructors -/
@@ -140,12 +178,12 @@ public class Event implements java.io.Serializable {
 
     public Event() {
         super();
-        this._autoactionList = new java.util.ArrayList<org.opennms.netmgt.xml.eventconf.Autoaction>();
-        this._varbindsdecodeList = new java.util.ArrayList<org.opennms.netmgt.xml.eventconf.Varbindsdecode>();
-        this._operactionList = new java.util.ArrayList<org.opennms.netmgt.xml.eventconf.Operaction>();
-        this._loggroupList = new java.util.ArrayList<java.lang.String>();
-        this._forwardList = new java.util.ArrayList<org.opennms.netmgt.xml.eventconf.Forward>();
-        this._scriptList = new java.util.ArrayList<org.opennms.netmgt.xml.eventconf.Script>();
+        this.m_autoactionList = new ArrayList<Autoaction>();
+        this.m_varbindsdecodeList = new ArrayList<Varbindsdecode>();
+        this.m_operactionList = new ArrayList<Operaction>();
+        this.m_loggroupList = new ArrayList<String>();
+        this.m_forwardList = new ArrayList<Forward>();
+        this.m_scriptList = new ArrayList<Script>();
     }
 
 
@@ -157,13 +195,13 @@ public class Event implements java.io.Serializable {
      * 
      * 
      * @param vAutoaction
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addAutoaction(
-            final org.opennms.netmgt.xml.eventconf.Autoaction vAutoaction)
-    throws java.lang.IndexOutOfBoundsException {
-        this._autoactionList.add(vAutoaction);
+            final Autoaction vAutoaction)
+    throws IndexOutOfBoundsException {
+        this.m_autoactionList.add(vAutoaction);
     }
 
     /**
@@ -171,27 +209,27 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vAutoaction
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addAutoaction(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Autoaction vAutoaction)
-    throws java.lang.IndexOutOfBoundsException {
-        this._autoactionList.add(index, vAutoaction);
+            final Autoaction vAutoaction)
+    throws IndexOutOfBoundsException {
+        this.m_autoactionList.add(index, vAutoaction);
     }
 
     /**
      * 
      * 
      * @param vForward
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addForward(
-            final org.opennms.netmgt.xml.eventconf.Forward vForward)
-    throws java.lang.IndexOutOfBoundsException {
-        this._forwardList.add(vForward);
+            final Forward vForward)
+    throws IndexOutOfBoundsException {
+        this.m_forwardList.add(vForward);
     }
 
     /**
@@ -199,27 +237,27 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vForward
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addForward(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Forward vForward)
-    throws java.lang.IndexOutOfBoundsException {
-        this._forwardList.add(index, vForward);
+            final Forward vForward)
+    throws IndexOutOfBoundsException {
+        this.m_forwardList.add(index, vForward);
     }
 
     /**
      * 
      * 
      * @param vLoggroup
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addLoggroup(
-            final java.lang.String vLoggroup)
-    throws java.lang.IndexOutOfBoundsException {
-        this._loggroupList.add(vLoggroup);
+            final String vLoggroup)
+    throws IndexOutOfBoundsException {
+        this.m_loggroupList.add(vLoggroup);
     }
 
     /**
@@ -227,27 +265,27 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vLoggroup
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addLoggroup(
             final int index,
-            final java.lang.String vLoggroup)
-    throws java.lang.IndexOutOfBoundsException {
-        this._loggroupList.add(index, vLoggroup);
+            final String vLoggroup)
+    throws IndexOutOfBoundsException {
+        this.m_loggroupList.add(index, vLoggroup);
     }
 
     /**
      * 
      * 
      * @param vOperaction
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addOperaction(
-            final org.opennms.netmgt.xml.eventconf.Operaction vOperaction)
-    throws java.lang.IndexOutOfBoundsException {
-        this._operactionList.add(vOperaction);
+            final Operaction vOperaction)
+    throws IndexOutOfBoundsException {
+        this.m_operactionList.add(vOperaction);
     }
 
     /**
@@ -255,27 +293,27 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vOperaction
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addOperaction(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Operaction vOperaction)
-    throws java.lang.IndexOutOfBoundsException {
-        this._operactionList.add(index, vOperaction);
+            final Operaction vOperaction)
+    throws IndexOutOfBoundsException {
+        this.m_operactionList.add(index, vOperaction);
     }
 
     /**
      * 
      * 
      * @param vScript
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addScript(
-            final org.opennms.netmgt.xml.eventconf.Script vScript)
-    throws java.lang.IndexOutOfBoundsException {
-        this._scriptList.add(vScript);
+            final Script vScript)
+    throws IndexOutOfBoundsException {
+        this.m_scriptList.add(vScript);
     }
 
     /**
@@ -283,27 +321,27 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vScript
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addScript(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Script vScript)
-    throws java.lang.IndexOutOfBoundsException {
-        this._scriptList.add(index, vScript);
+            final Script vScript)
+    throws IndexOutOfBoundsException {
+        this.m_scriptList.add(index, vScript);
     }
 
     /**
      * 
      * 
      * @param vVarbindsdecode
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addVarbindsdecode(
-            final org.opennms.netmgt.xml.eventconf.Varbindsdecode vVarbindsdecode)
-    throws java.lang.IndexOutOfBoundsException {
-        this._varbindsdecodeList.add(vVarbindsdecode);
+            final Varbindsdecode vVarbindsdecode)
+    throws IndexOutOfBoundsException {
+        this.m_varbindsdecodeList.add(vVarbindsdecode);
     }
 
     /**
@@ -311,14 +349,14 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vVarbindsdecode
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void addVarbindsdecode(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Varbindsdecode vVarbindsdecode)
-    throws java.lang.IndexOutOfBoundsException {
-        this._varbindsdecodeList.add(index, vVarbindsdecode);
+            final Varbindsdecode vVarbindsdecode)
+    throws IndexOutOfBoundsException {
+        this.m_varbindsdecodeList.add(index, vVarbindsdecode);
     }
 
     /**
@@ -327,9 +365,9 @@ public class Event implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<org.opennms.netmgt.xml.eventconf.Autoaction> enumerateAutoaction(
+    public Enumeration<Autoaction> enumerateAutoaction(
     ) {
-        return java.util.Collections.enumeration(this._autoactionList);
+        return Collections.enumeration(this.m_autoactionList);
     }
 
     /**
@@ -338,9 +376,9 @@ public class Event implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<org.opennms.netmgt.xml.eventconf.Forward> enumerateForward(
+    public Enumeration<Forward> enumerateForward(
     ) {
-        return java.util.Collections.enumeration(this._forwardList);
+        return Collections.enumeration(this.m_forwardList);
     }
 
     /**
@@ -349,9 +387,9 @@ public class Event implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<java.lang.String> enumerateLoggroup(
+    public Enumeration<String> enumerateLoggroup(
     ) {
-        return java.util.Collections.enumeration(this._loggroupList);
+        return Collections.enumeration(this.m_loggroupList);
     }
 
     /**
@@ -360,9 +398,9 @@ public class Event implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<org.opennms.netmgt.xml.eventconf.Operaction> enumerateOperaction(
+    public Enumeration<Operaction> enumerateOperaction(
     ) {
-        return java.util.Collections.enumeration(this._operactionList);
+        return Collections.enumeration(this.m_operactionList);
     }
 
     /**
@@ -371,9 +409,9 @@ public class Event implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<org.opennms.netmgt.xml.eventconf.Script> enumerateScript(
+    public Enumeration<Script> enumerateScript(
     ) {
-        return java.util.Collections.enumeration(this._scriptList);
+        return Collections.enumeration(this.m_scriptList);
     }
 
     /**
@@ -382,158 +420,165 @@ public class Event implements java.io.Serializable {
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<org.opennms.netmgt.xml.eventconf.Varbindsdecode> enumerateVarbindsdecode(
+    public Enumeration<Varbindsdecode> enumerateVarbindsdecode(
     ) {
-        return java.util.Collections.enumeration(this._varbindsdecodeList);
+        return Collections.enumeration(this.m_varbindsdecodeList);
     }
 
     /**
-     * Overrides the java.lang.Object.equals method.
+     * Overrides the Object.equals method.
      * 
      * @param obj
      * @return true if the objects are equal.
      */
     @Override()
     public boolean equals(
-            final java.lang.Object obj) {
+            final Object obj) {
         if ( this == obj )
             return true;
         
         if (obj instanceof Event) {
         
             Event temp = (Event)obj;
-            if (this._mask != null) {
-                if (temp._mask == null) return false;
-                else if (!(this._mask.equals(temp._mask))) 
+            if (this.m_mask != null) {
+                if (temp.m_mask == null) return false;
+                else if (!(this.m_mask.equals(temp.m_mask))) 
                     return false;
             }
-            else if (temp._mask != null)
+            else if (temp.m_mask != null)
                 return false;
-            if (this._uei != null) {
-                if (temp._uei == null) return false;
-                else if (!(this._uei.equals(temp._uei))) 
+            if (this.m_uei != null) {
+                if (temp.m_uei == null) return false;
+                else if (!(this.m_uei.equals(temp.m_uei))) 
                     return false;
             }
-            else if (temp._uei != null)
+            else if (temp.m_uei != null)
                 return false;
-            if (this._eventLabel != null) {
-                if (temp._eventLabel == null) return false;
-                else if (!(this._eventLabel.equals(temp._eventLabel))) 
+            if (this.m_eventLabel != null) {
+                if (temp.m_eventLabel == null) return false;
+                else if (!(this.m_eventLabel.equals(temp.m_eventLabel))) 
                     return false;
             }
-            else if (temp._eventLabel != null)
+            else if (temp.m_eventLabel != null)
                 return false;
-            if (this._snmp != null) {
-                if (temp._snmp == null) return false;
-                else if (!(this._snmp.equals(temp._snmp))) 
+            if (this.m_snmp != null) {
+                if (temp.m_snmp == null) return false;
+                else if (!(this.m_snmp.equals(temp.m_snmp))) 
                     return false;
             }
-            else if (temp._snmp != null)
+            else if (temp.m_snmp != null)
                 return false;
-            if (this._descr != null) {
-                if (temp._descr == null) return false;
-                else if (!(this._descr.equals(temp._descr))) 
+            if (this.m_descr != null) {
+                if (temp.m_descr == null) return false;
+                else if (!(this.m_descr.equals(temp.m_descr))) 
                     return false;
             }
-            else if (temp._descr != null)
+            else if (temp.m_descr != null)
                 return false;
-            if (this._logmsg != null) {
-                if (temp._logmsg == null) return false;
-                else if (!(this._logmsg.equals(temp._logmsg))) 
+            if (this.m_logmsg != null) {
+                if (temp.m_logmsg == null) return false;
+                else if (!(this.m_logmsg.equals(temp.m_logmsg))) 
                     return false;
             }
-            else if (temp._logmsg != null)
+            else if (temp.m_logmsg != null)
                 return false;
-            if (this._severity != null) {
-                if (temp._severity == null) return false;
-                else if (!(this._severity.equals(temp._severity))) 
+            if (this.m_severity != null) {
+                if (temp.m_severity == null) return false;
+                else if (!(this.m_severity.equals(temp.m_severity))) 
                     return false;
             }
-            else if (temp._severity != null)
+            else if (temp.m_severity != null)
                 return false;
-            if (this._correlation != null) {
-                if (temp._correlation == null) return false;
-                else if (!(this._correlation.equals(temp._correlation))) 
+            if (this.m_correlation != null) {
+                if (temp.m_correlation == null) return false;
+                else if (!(this.m_correlation.equals(temp.m_correlation))) 
                     return false;
             }
-            else if (temp._correlation != null)
+            else if (temp.m_correlation != null)
                 return false;
-            if (this._operinstruct != null) {
-                if (temp._operinstruct == null) return false;
-                else if (!(this._operinstruct.equals(temp._operinstruct))) 
+            if (this.m_operinstruct != null) {
+                if (temp.m_operinstruct == null) return false;
+                else if (!(this.m_operinstruct.equals(temp.m_operinstruct))) 
                     return false;
             }
-            else if (temp._operinstruct != null)
+            else if (temp.m_operinstruct != null)
                 return false;
-            if (this._autoactionList != null) {
-                if (temp._autoactionList == null) return false;
-                else if (!(this._autoactionList.equals(temp._autoactionList))) 
+            if (this.m_autoactionList != null) {
+                if (temp.m_autoactionList == null) return false;
+                else if (!(this.m_autoactionList.equals(temp.m_autoactionList))) 
                     return false;
             }
-            else if (temp._autoactionList != null)
+            else if (temp.m_autoactionList != null)
                 return false;
-            if (this._varbindsdecodeList != null) {
-                if (temp._varbindsdecodeList == null) return false;
-                else if (!(this._varbindsdecodeList.equals(temp._varbindsdecodeList))) 
+            if (this.m_varbindsdecodeList != null) {
+                if (temp.m_varbindsdecodeList == null) return false;
+                else if (!(this.m_varbindsdecodeList.equals(temp.m_varbindsdecodeList))) 
                     return false;
             }
-            else if (temp._varbindsdecodeList != null)
+            else if (temp.m_varbindsdecodeList != null)
                 return false;
-            if (this._operactionList != null) {
-                if (temp._operactionList == null) return false;
-                else if (!(this._operactionList.equals(temp._operactionList))) 
+            if (this.m_operactionList != null) {
+                if (temp.m_operactionList == null) return false;
+                else if (!(this.m_operactionList.equals(temp.m_operactionList))) 
                     return false;
             }
-            else if (temp._operactionList != null)
+            else if (temp.m_operactionList != null)
                 return false;
-            if (this._autoacknowledge != null) {
-                if (temp._autoacknowledge == null) return false;
-                else if (!(this._autoacknowledge.equals(temp._autoacknowledge))) 
+            if (this.m_autoacknowledge != null) {
+                if (temp.m_autoacknowledge == null) return false;
+                else if (!(this.m_autoacknowledge.equals(temp.m_autoacknowledge))) 
                     return false;
             }
-            else if (temp._autoacknowledge != null)
+            else if (temp.m_autoacknowledge != null)
                 return false;
-            if (this._loggroupList != null) {
-                if (temp._loggroupList == null) return false;
-                else if (!(this._loggroupList.equals(temp._loggroupList))) 
+            if (this.m_loggroupList != null) {
+                if (temp.m_loggroupList == null) return false;
+                else if (!(this.m_loggroupList.equals(temp.m_loggroupList))) 
                     return false;
             }
-            else if (temp._loggroupList != null)
+            else if (temp.m_loggroupList != null)
                 return false;
-            if (this._tticket != null) {
-                if (temp._tticket == null) return false;
-                else if (!(this._tticket.equals(temp._tticket))) 
+            if (this.m_tticket != null) {
+                if (temp.m_tticket == null) return false;
+                else if (!(this.m_tticket.equals(temp.m_tticket))) 
                     return false;
             }
-            else if (temp._tticket != null)
+            else if (temp.m_tticket != null)
                 return false;
-            if (this._forwardList != null) {
-                if (temp._forwardList == null) return false;
-                else if (!(this._forwardList.equals(temp._forwardList))) 
+            if (this.m_forwardList != null) {
+                if (temp.m_forwardList == null) return false;
+                else if (!(this.m_forwardList.equals(temp.m_forwardList))) 
                     return false;
             }
-            else if (temp._forwardList != null)
+            else if (temp.m_forwardList != null)
                 return false;
-            if (this._scriptList != null) {
-                if (temp._scriptList == null) return false;
-                else if (!(this._scriptList.equals(temp._scriptList))) 
+            if (this.m_scriptList != null) {
+                if (temp.m_scriptList == null) return false;
+                else if (!(this.m_scriptList.equals(temp.m_scriptList))) 
                     return false;
             }
-            else if (temp._scriptList != null)
+            else if (temp.m_scriptList != null)
                 return false;
-            if (this._mouseovertext != null) {
-                if (temp._mouseovertext == null) return false;
-                else if (!(this._mouseovertext.equals(temp._mouseovertext))) 
+            if (this.m_mouseovertext != null) {
+                if (temp.m_mouseovertext == null) return false;
+                else if (!(this.m_mouseovertext.equals(temp.m_mouseovertext))) 
                     return false;
             }
-            else if (temp._mouseovertext != null)
+            else if (temp.m_mouseovertext != null)
                 return false;
-            if (this._alarmData != null) {
-                if (temp._alarmData == null) return false;
-                else if (!(this._alarmData.equals(temp._alarmData))) 
+            if (this.m_alarmData != null) {
+                if (temp.m_alarmData == null) return false;
+                else if (!(this.m_alarmData.equals(temp.m_alarmData))) 
                     return false;
             }
-            else if (temp._alarmData != null)
+            else if (temp.m_alarmData != null)
+                return false;
+            if (this._filters != null) {
+                if (temp._filters == null) return false;
+                else if (!(this._filters.equals(temp._filters))) 
+                    return false;
+            }
+            else if (temp._filters != null)
                 return false;
             return true;
         }
@@ -547,9 +592,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'AlarmData'.
      */
-    public org.opennms.netmgt.xml.eventconf.AlarmData getAlarmData(
+    public AlarmData getAlarmData(
     ) {
-        return this._alarmData;
+        return this.m_alarmData;
     }
 
     /**
@@ -560,29 +605,29 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'Autoacknowledge'.
      */
-    public org.opennms.netmgt.xml.eventconf.Autoacknowledge getAutoacknowledge(
+    public Autoacknowledge getAutoacknowledge(
     ) {
-        return this._autoacknowledge;
+        return this.m_autoacknowledge;
     }
 
     /**
      * Method getAutoaction.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.opennms.netmgt.xml.eventconf.Autoaction at the given inde
+     * Autoaction at the given inde
      */
-    public org.opennms.netmgt.xml.eventconf.Autoaction getAutoaction(
+    public Autoaction getAutoaction(
             final int index)
-    throws java.lang.IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._autoactionList.size()) {
-            throw new IndexOutOfBoundsException("getAutoaction: Index value '" + index + "' not in range [0.." + (this._autoactionList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_autoactionList.size()) {
+            throw new IndexOutOfBoundsException("getAutoaction: Index value '" + index + "' not in range [0.." + (this.m_autoactionList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.xml.eventconf.Autoaction) _autoactionList.get(index);
+        return (Autoaction) m_autoactionList.get(index);
     }
 
     /**
@@ -594,10 +639,10 @@ public class Event implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public org.opennms.netmgt.xml.eventconf.Autoaction[] getAutoaction(
+    public Autoaction[] getAutoaction(
     ) {
-        org.opennms.netmgt.xml.eventconf.Autoaction[] array = new org.opennms.netmgt.xml.eventconf.Autoaction[0];
-        return (org.opennms.netmgt.xml.eventconf.Autoaction[]) this._autoactionList.toArray(array);
+        Autoaction[] array = new Autoaction[0];
+        return (Autoaction[]) this.m_autoactionList.toArray(array);
     }
 
     /**
@@ -607,9 +652,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<org.opennms.netmgt.xml.eventconf.Autoaction> getAutoactionCollection(
+    public List<Autoaction> getAutoactionCollection(
     ) {
-        return this._autoactionList;
+        return this.m_autoactionList;
     }
 
     /**
@@ -619,7 +664,7 @@ public class Event implements java.io.Serializable {
      */
     public int getAutoactionCount(
     ) {
-        return this._autoactionList.size();
+        return this.m_autoactionList.size();
     }
 
     /**
@@ -629,9 +674,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'Correlation'.
      */
-    public org.opennms.netmgt.xml.eventconf.Correlation getCorrelation(
+    public Correlation getCorrelation(
     ) {
-        return this._correlation;
+        return this.m_correlation;
     }
 
     /**
@@ -640,9 +685,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'Descr'.
      */
-    public java.lang.String getDescr(
+    public String getDescr(
     ) {
-        return this._descr;
+        return this.m_descr;
     }
 
     /**
@@ -653,32 +698,44 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'EventLabel'.
      */
-    public java.lang.String getEventLabel(
+    public String getEventLabel(
     ) {
-        return this._eventLabel;
+        return this.m_eventLabel;
     }
 
     /**
      * Method getForward.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.opennms.netmgt.xml.eventconf.Forward at the given index
+     * Forward at the given index
      */
-    public org.opennms.netmgt.xml.eventconf.Forward getForward(
+    public Forward getForward(
             final int index)
-    throws java.lang.IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._forwardList.size()) {
-            throw new IndexOutOfBoundsException("getForward: Index value '" + index + "' not in range [0.." + (this._forwardList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_forwardList.size()) {
+            throw new IndexOutOfBoundsException("getForward: Index value '" + index + "' not in range [0.." + (this.m_forwardList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.xml.eventconf.Forward) _forwardList.get(index);
+        return (Forward) m_forwardList.get(index);
     }
 
-    /**
+     /**
+      * Returns the value of field 'filters'. The field 'filters'
+      * has the following description: The event filters to be
+      * applied to the event data
+      * 
+      * @return the value of field 'Filters'.
+      */
+     public org.opennms.netmgt.xml.eventconf.Filters getFilters(
+     ) {
+         return this._filters;
+     }
+
+     /**
      * Method getForward.Returns the contents of the collection in
      * an Array.  <p>Note:  Just in case the collection contents
      * are changing in another thread, we pass a 0-length Array of
@@ -687,10 +744,10 @@ public class Event implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public org.opennms.netmgt.xml.eventconf.Forward[] getForward(
+    public Forward[] getForward(
     ) {
-        org.opennms.netmgt.xml.eventconf.Forward[] array = new org.opennms.netmgt.xml.eventconf.Forward[0];
-        return (org.opennms.netmgt.xml.eventconf.Forward[]) this._forwardList.toArray(array);
+        Forward[] array = new Forward[0];
+        return (Forward[]) this.m_forwardList.toArray(array);
     }
 
     /**
@@ -700,9 +757,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<org.opennms.netmgt.xml.eventconf.Forward> getForwardCollection(
+    public List<Forward> getForwardCollection(
     ) {
-        return this._forwardList;
+        return this.m_forwardList;
     }
 
     /**
@@ -712,26 +769,26 @@ public class Event implements java.io.Serializable {
      */
     public int getForwardCount(
     ) {
-        return this._forwardList.size();
+        return this.m_forwardList.size();
     }
 
     /**
      * Method getLoggroup.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
-     * @return the value of the java.lang.String at the given index
+     * @return the value of the String at the given index
      */
-    public java.lang.String getLoggroup(
+    public String getLoggroup(
             final int index)
-    throws java.lang.IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._loggroupList.size()) {
-            throw new IndexOutOfBoundsException("getLoggroup: Index value '" + index + "' not in range [0.." + (this._loggroupList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_loggroupList.size()) {
+            throw new IndexOutOfBoundsException("getLoggroup: Index value '" + index + "' not in range [0.." + (this.m_loggroupList.size() - 1) + "]");
         }
         
-        return (java.lang.String) _loggroupList.get(index);
+        return (String) m_loggroupList.get(index);
     }
 
     /**
@@ -743,10 +800,10 @@ public class Event implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public java.lang.String[] getLoggroup(
+    public String[] getLoggroup(
     ) {
-        java.lang.String[] array = new java.lang.String[0];
-        return (java.lang.String[]) this._loggroupList.toArray(array);
+        String[] array = new String[0];
+        return (String[]) this.m_loggroupList.toArray(array);
     }
 
     /**
@@ -756,9 +813,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<java.lang.String> getLoggroupCollection(
+    public List<String> getLoggroupCollection(
     ) {
-        return this._loggroupList;
+        return this.m_loggroupList;
     }
 
     /**
@@ -768,7 +825,7 @@ public class Event implements java.io.Serializable {
      */
     public int getLoggroupCount(
     ) {
-        return this._loggroupList.size();
+        return this.m_loggroupList.size();
     }
 
     /**
@@ -777,9 +834,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'Logmsg'.
      */
-    public org.opennms.netmgt.xml.eventconf.Logmsg getLogmsg(
+    public Logmsg getLogmsg(
     ) {
-        return this._logmsg;
+        return this.m_logmsg;
     }
 
     /**
@@ -790,9 +847,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'Mask'.
      */
-    public org.opennms.netmgt.xml.eventconf.Mask getMask(
+    public Mask getMask(
     ) {
-        return this._mask;
+        return this.m_mask;
     }
 
     /**
@@ -803,29 +860,29 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'Mouseovertext'.
      */
-    public java.lang.String getMouseovertext(
+    public String getMouseovertext(
     ) {
-        return this._mouseovertext;
+        return this.m_mouseovertext;
     }
 
     /**
      * Method getOperaction.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.opennms.netmgt.xml.eventconf.Operaction at the given inde
+     * Operaction at the given inde
      */
-    public org.opennms.netmgt.xml.eventconf.Operaction getOperaction(
+    public Operaction getOperaction(
             final int index)
-    throws java.lang.IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._operactionList.size()) {
-            throw new IndexOutOfBoundsException("getOperaction: Index value '" + index + "' not in range [0.." + (this._operactionList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_operactionList.size()) {
+            throw new IndexOutOfBoundsException("getOperaction: Index value '" + index + "' not in range [0.." + (this.m_operactionList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.xml.eventconf.Operaction) _operactionList.get(index);
+        return (Operaction) m_operactionList.get(index);
     }
 
     /**
@@ -837,10 +894,10 @@ public class Event implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public org.opennms.netmgt.xml.eventconf.Operaction[] getOperaction(
+    public Operaction[] getOperaction(
     ) {
-        org.opennms.netmgt.xml.eventconf.Operaction[] array = new org.opennms.netmgt.xml.eventconf.Operaction[0];
-        return (org.opennms.netmgt.xml.eventconf.Operaction[]) this._operactionList.toArray(array);
+        Operaction[] array = new Operaction[0];
+        return (Operaction[]) this.m_operactionList.toArray(array);
     }
 
     /**
@@ -850,9 +907,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<org.opennms.netmgt.xml.eventconf.Operaction> getOperactionCollection(
+    public List<Operaction> getOperactionCollection(
     ) {
-        return this._operactionList;
+        return this.m_operactionList;
     }
 
     /**
@@ -862,7 +919,7 @@ public class Event implements java.io.Serializable {
      */
     public int getOperactionCount(
     ) {
-        return this._operactionList.size();
+        return this.m_operactionList.size();
     }
 
     /**
@@ -873,29 +930,29 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'Operinstruct'.
      */
-    public java.lang.String getOperinstruct(
+    public String getOperinstruct(
     ) {
-        return this._operinstruct;
+        return this.m_operinstruct;
     }
 
     /**
      * Method getScript.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.opennms.netmgt.xml.eventconf.Script at the given index
+     * Script at the given index
      */
-    public org.opennms.netmgt.xml.eventconf.Script getScript(
+    public Script getScript(
             final int index)
-    throws java.lang.IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._scriptList.size()) {
-            throw new IndexOutOfBoundsException("getScript: Index value '" + index + "' not in range [0.." + (this._scriptList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_scriptList.size()) {
+            throw new IndexOutOfBoundsException("getScript: Index value '" + index + "' not in range [0.." + (this.m_scriptList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.xml.eventconf.Script) _scriptList.get(index);
+        return (Script) m_scriptList.get(index);
     }
 
     /**
@@ -907,10 +964,10 @@ public class Event implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public org.opennms.netmgt.xml.eventconf.Script[] getScript(
+    public Script[] getScript(
     ) {
-        org.opennms.netmgt.xml.eventconf.Script[] array = new org.opennms.netmgt.xml.eventconf.Script[0];
-        return (org.opennms.netmgt.xml.eventconf.Script[]) this._scriptList.toArray(array);
+        Script[] array = new Script[0];
+        return (Script[]) this.m_scriptList.toArray(array);
     }
 
     /**
@@ -920,9 +977,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<org.opennms.netmgt.xml.eventconf.Script> getScriptCollection(
+    public List<Script> getScriptCollection(
     ) {
-        return this._scriptList;
+        return this.m_scriptList;
     }
 
     /**
@@ -932,7 +989,7 @@ public class Event implements java.io.Serializable {
      */
     public int getScriptCount(
     ) {
-        return this._scriptList.size();
+        return this.m_scriptList.size();
     }
 
     /**
@@ -941,20 +998,20 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'Severity'.
      */
-    public java.lang.String getSeverity(
+    public String getSeverity(
     ) {
-        return this._severity;
+        return this.m_severity;
     }
 
     /**
      * Returns the value of field 'snmp'. The field 'snmp' has the
-     * following description: The snmp information from the trap
+     * following description: The SNMP information from the trap
      * 
      * @return the value of field 'Snmp'.
      */
-    public org.opennms.netmgt.xml.eventconf.Snmp getSnmp(
+    public Snmp getSnmp(
     ) {
-        return this._snmp;
+        return this.m_snmp;
     }
 
     /**
@@ -963,9 +1020,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'Tticket'.
      */
-    public org.opennms.netmgt.xml.eventconf.Tticket getTticket(
+    public Tticket getTticket(
     ) {
-        return this._tticket;
+        return this.m_tticket;
     }
 
     /**
@@ -974,30 +1031,30 @@ public class Event implements java.io.Serializable {
      * 
      * @return the value of field 'Uei'.
      */
-    public java.lang.String getUei(
+    public String getUei(
     ) {
-        return this._uei;
+        return this.m_uei;
     }
 
     /**
      * Method getVarbindsdecode.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.opennms.netmgt.xml.eventconf.Varbindsdecode at the given
+     * Varbindsdecode at the given
      * index
      */
-    public org.opennms.netmgt.xml.eventconf.Varbindsdecode getVarbindsdecode(
+    public Varbindsdecode getVarbindsdecode(
             final int index)
-    throws java.lang.IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._varbindsdecodeList.size()) {
-            throw new IndexOutOfBoundsException("getVarbindsdecode: Index value '" + index + "' not in range [0.." + (this._varbindsdecodeList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_varbindsdecodeList.size()) {
+            throw new IndexOutOfBoundsException("getVarbindsdecode: Index value '" + index + "' not in range [0.." + (this.m_varbindsdecodeList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.xml.eventconf.Varbindsdecode) _varbindsdecodeList.get(index);
+        return (Varbindsdecode) m_varbindsdecodeList.get(index);
     }
 
     /**
@@ -1010,10 +1067,10 @@ public class Event implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public org.opennms.netmgt.xml.eventconf.Varbindsdecode[] getVarbindsdecode(
+    public Varbindsdecode[] getVarbindsdecode(
     ) {
-        org.opennms.netmgt.xml.eventconf.Varbindsdecode[] array = new org.opennms.netmgt.xml.eventconf.Varbindsdecode[0];
-        return (org.opennms.netmgt.xml.eventconf.Varbindsdecode[]) this._varbindsdecodeList.toArray(array);
+        Varbindsdecode[] array = new Varbindsdecode[0];
+        return (Varbindsdecode[]) this.m_varbindsdecodeList.toArray(array);
     }
 
     /**
@@ -1023,9 +1080,9 @@ public class Event implements java.io.Serializable {
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<org.opennms.netmgt.xml.eventconf.Varbindsdecode> getVarbindsdecodeCollection(
+    public List<Varbindsdecode> getVarbindsdecodeCollection(
     ) {
-        return this._varbindsdecodeList;
+        return this.m_varbindsdecodeList;
     }
 
     /**
@@ -1035,11 +1092,11 @@ public class Event implements java.io.Serializable {
      */
     public int getVarbindsdecodeCount(
     ) {
-        return this._varbindsdecodeList.size();
+        return this.m_varbindsdecodeList.size();
     }
 
     /**
-     * Overrides the java.lang.Object.hashCode method.
+     * Overrides the Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming
      * Language Guide</b> by Joshua Bloch, Chapter 3
@@ -1048,68 +1105,13 @@ public class Event implements java.io.Serializable {
      */
     public int hashCode(
     ) {
-        int result = 17;
-        
-        long tmp;
-        if (_mask != null) {
-           result = 37 * result + _mask.hashCode();
-        }
-        if (_uei != null) {
-           result = 37 * result + _uei.hashCode();
-        }
-        if (_eventLabel != null) {
-           result = 37 * result + _eventLabel.hashCode();
-        }
-        if (_snmp != null) {
-           result = 37 * result + _snmp.hashCode();
-        }
-        if (_descr != null) {
-           result = 37 * result + _descr.hashCode();
-        }
-        if (_logmsg != null) {
-           result = 37 * result + _logmsg.hashCode();
-        }
-        if (_severity != null) {
-           result = 37 * result + _severity.hashCode();
-        }
-        if (_correlation != null) {
-           result = 37 * result + _correlation.hashCode();
-        }
-        if (_operinstruct != null) {
-           result = 37 * result + _operinstruct.hashCode();
-        }
-        if (_autoactionList != null) {
-           result = 37 * result + _autoactionList.hashCode();
-        }
-        if (_varbindsdecodeList != null) {
-           result = 37 * result + _varbindsdecodeList.hashCode();
-        }
-        if (_operactionList != null) {
-           result = 37 * result + _operactionList.hashCode();
-        }
-        if (_autoacknowledge != null) {
-           result = 37 * result + _autoacknowledge.hashCode();
-        }
-        if (_loggroupList != null) {
-           result = 37 * result + _loggroupList.hashCode();
-        }
-        if (_tticket != null) {
-           result = 37 * result + _tticket.hashCode();
-        }
-        if (_forwardList != null) {
-           result = 37 * result + _forwardList.hashCode();
-        }
-        if (_scriptList != null) {
-           result = 37 * result + _scriptList.hashCode();
-        }
-        if (_mouseovertext != null) {
-           result = 37 * result + _mouseovertext.hashCode();
-        }
-        if (_alarmData != null) {
-           result = 37 * result + _alarmData.hashCode();
-        }
-        
-        return result;
+        return new HashCodeBuilder().append(getAutoactionCount()).append(getForwardCount()).append(getLoggroupCount()).
+        	append(getOperactionCount()).append(getScriptCount()).append(getVarbindsdecodeCount()).append(getAlarmData()).
+        	append(getAutoacknowledge()).append(getAutoaction()).append(getCorrelation()).append(getDescr()).append(getEventLabel()).
+        	append(getForward()).append(getLoggroup()).append(getLogmsg()).append(getMask()).append(getMouseovertext()).
+        	append(getOperaction()).append(getOperinstruct()).append(getScript()).append(getSeverity()).append(getSnmp()).
+        	append(getTticket()).append(getUei()).append(getVarbindsdecode()).append(getFilters()).toHashCode();
+        	
     }
 
     /**
@@ -1133,9 +1135,9 @@ public class Event implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<org.opennms.netmgt.xml.eventconf.Autoaction> iterateAutoaction(
+    public Iterator<Autoaction> iterateAutoaction(
     ) {
-        return this._autoactionList.iterator();
+        return this.m_autoactionList.iterator();
     }
 
     /**
@@ -1144,9 +1146,9 @@ public class Event implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<org.opennms.netmgt.xml.eventconf.Forward> iterateForward(
+    public Iterator<Forward> iterateForward(
     ) {
-        return this._forwardList.iterator();
+        return this.m_forwardList.iterator();
     }
 
     /**
@@ -1155,9 +1157,9 @@ public class Event implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<java.lang.String> iterateLoggroup(
+    public Iterator<String> iterateLoggroup(
     ) {
-        return this._loggroupList.iterator();
+        return this.m_loggroupList.iterator();
     }
 
     /**
@@ -1166,9 +1168,9 @@ public class Event implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<org.opennms.netmgt.xml.eventconf.Operaction> iterateOperaction(
+    public Iterator<Operaction> iterateOperaction(
     ) {
-        return this._operactionList.iterator();
+        return this.m_operactionList.iterator();
     }
 
     /**
@@ -1177,9 +1179,9 @@ public class Event implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<org.opennms.netmgt.xml.eventconf.Script> iterateScript(
+    public Iterator<Script> iterateScript(
     ) {
-        return this._scriptList.iterator();
+        return this.m_scriptList.iterator();
     }
 
     /**
@@ -1188,9 +1190,9 @@ public class Event implements java.io.Serializable {
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<org.opennms.netmgt.xml.eventconf.Varbindsdecode> iterateVarbindsdecode(
+    public Iterator<Varbindsdecode> iterateVarbindsdecode(
     ) {
-        return this._varbindsdecodeList.iterator();
+        return this.m_varbindsdecodeList.iterator();
     }
 
     /**
@@ -1229,42 +1231,42 @@ public class Event implements java.io.Serializable {
      */
     public void removeAllAutoaction(
     ) {
-        this._autoactionList.clear();
+        this.m_autoactionList.clear();
     }
 
     /**
      */
     public void removeAllForward(
     ) {
-        this._forwardList.clear();
+        this.m_forwardList.clear();
     }
 
     /**
      */
     public void removeAllLoggroup(
     ) {
-        this._loggroupList.clear();
+        this.m_loggroupList.clear();
     }
 
     /**
      */
     public void removeAllOperaction(
     ) {
-        this._operactionList.clear();
+        this.m_operactionList.clear();
     }
 
     /**
      */
     public void removeAllScript(
     ) {
-        this._scriptList.clear();
+        this.m_scriptList.clear();
     }
 
     /**
      */
     public void removeAllVarbindsdecode(
     ) {
-        this._varbindsdecodeList.clear();
+        this.m_varbindsdecodeList.clear();
     }
 
     /**
@@ -1274,8 +1276,8 @@ public class Event implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeAutoaction(
-            final org.opennms.netmgt.xml.eventconf.Autoaction vAutoaction) {
-        boolean removed = _autoactionList.remove(vAutoaction);
+            final Autoaction vAutoaction) {
+        boolean removed = m_autoactionList.remove(vAutoaction);
         return removed;
     }
 
@@ -1285,10 +1287,10 @@ public class Event implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public org.opennms.netmgt.xml.eventconf.Autoaction removeAutoactionAt(
+    public Autoaction removeAutoactionAt(
             final int index) {
-        java.lang.Object obj = this._autoactionList.remove(index);
-        return (org.opennms.netmgt.xml.eventconf.Autoaction) obj;
+        Object obj = this.m_autoactionList.remove(index);
+        return (Autoaction) obj;
     }
 
     /**
@@ -1298,8 +1300,8 @@ public class Event implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeForward(
-            final org.opennms.netmgt.xml.eventconf.Forward vForward) {
-        boolean removed = _forwardList.remove(vForward);
+            final Forward vForward) {
+        boolean removed = m_forwardList.remove(vForward);
         return removed;
     }
 
@@ -1309,10 +1311,10 @@ public class Event implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public org.opennms.netmgt.xml.eventconf.Forward removeForwardAt(
+    public Forward removeForwardAt(
             final int index) {
-        java.lang.Object obj = this._forwardList.remove(index);
-        return (org.opennms.netmgt.xml.eventconf.Forward) obj;
+        Object obj = this.m_forwardList.remove(index);
+        return (Forward) obj;
     }
 
     /**
@@ -1322,8 +1324,8 @@ public class Event implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeLoggroup(
-            final java.lang.String vLoggroup) {
-        boolean removed = _loggroupList.remove(vLoggroup);
+            final String vLoggroup) {
+        boolean removed = m_loggroupList.remove(vLoggroup);
         return removed;
     }
 
@@ -1333,10 +1335,10 @@ public class Event implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public java.lang.String removeLoggroupAt(
+    public String removeLoggroupAt(
             final int index) {
-        java.lang.Object obj = this._loggroupList.remove(index);
-        return (java.lang.String) obj;
+        Object obj = this.m_loggroupList.remove(index);
+        return (String) obj;
     }
 
     /**
@@ -1346,8 +1348,8 @@ public class Event implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeOperaction(
-            final org.opennms.netmgt.xml.eventconf.Operaction vOperaction) {
-        boolean removed = _operactionList.remove(vOperaction);
+            final Operaction vOperaction) {
+        boolean removed = m_operactionList.remove(vOperaction);
         return removed;
     }
 
@@ -1357,10 +1359,10 @@ public class Event implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public org.opennms.netmgt.xml.eventconf.Operaction removeOperactionAt(
+    public Operaction removeOperactionAt(
             final int index) {
-        java.lang.Object obj = this._operactionList.remove(index);
-        return (org.opennms.netmgt.xml.eventconf.Operaction) obj;
+        Object obj = this.m_operactionList.remove(index);
+        return (Operaction) obj;
     }
 
     /**
@@ -1370,8 +1372,8 @@ public class Event implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeScript(
-            final org.opennms.netmgt.xml.eventconf.Script vScript) {
-        boolean removed = _scriptList.remove(vScript);
+            final Script vScript) {
+        boolean removed = m_scriptList.remove(vScript);
         return removed;
     }
 
@@ -1381,10 +1383,10 @@ public class Event implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public org.opennms.netmgt.xml.eventconf.Script removeScriptAt(
+    public Script removeScriptAt(
             final int index) {
-        java.lang.Object obj = this._scriptList.remove(index);
-        return (org.opennms.netmgt.xml.eventconf.Script) obj;
+        Object obj = this.m_scriptList.remove(index);
+        return (Script) obj;
     }
 
     /**
@@ -1394,8 +1396,8 @@ public class Event implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeVarbindsdecode(
-            final org.opennms.netmgt.xml.eventconf.Varbindsdecode vVarbindsdecode) {
-        boolean removed = _varbindsdecodeList.remove(vVarbindsdecode);
+            final Varbindsdecode vVarbindsdecode) {
+        boolean removed = m_varbindsdecodeList.remove(vVarbindsdecode);
         return removed;
     }
 
@@ -1405,10 +1407,10 @@ public class Event implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public org.opennms.netmgt.xml.eventconf.Varbindsdecode removeVarbindsdecodeAt(
+    public Varbindsdecode removeVarbindsdecodeAt(
             final int index) {
-        java.lang.Object obj = this._varbindsdecodeList.remove(index);
-        return (org.opennms.netmgt.xml.eventconf.Varbindsdecode) obj;
+        Object obj = this.m_varbindsdecodeList.remove(index);
+        return (Varbindsdecode) obj;
     }
 
     /**
@@ -1418,8 +1420,8 @@ public class Event implements java.io.Serializable {
      * @param alarmData the value of field 'alarmData'.
      */
     public void setAlarmData(
-            final org.opennms.netmgt.xml.eventconf.AlarmData alarmData) {
-        this._alarmData = alarmData;
+            final AlarmData alarmData) {
+        this.m_alarmData = alarmData;
     }
 
     /**
@@ -1431,8 +1433,8 @@ public class Event implements java.io.Serializable {
      * @param autoacknowledge the value of field 'autoacknowledge'.
      */
     public void setAutoacknowledge(
-            final org.opennms.netmgt.xml.eventconf.Autoacknowledge autoacknowledge) {
-        this._autoacknowledge = autoacknowledge;
+            final Autoacknowledge autoacknowledge) {
+        this.m_autoacknowledge = autoacknowledge;
     }
 
     /**
@@ -1440,19 +1442,19 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vAutoaction
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void setAutoaction(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Autoaction vAutoaction)
-    throws java.lang.IndexOutOfBoundsException {
+            final Autoaction vAutoaction)
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._autoactionList.size()) {
-            throw new IndexOutOfBoundsException("setAutoaction: Index value '" + index + "' not in range [0.." + (this._autoactionList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_autoactionList.size()) {
+            throw new IndexOutOfBoundsException("setAutoaction: Index value '" + index + "' not in range [0.." + (this.m_autoactionList.size() - 1) + "]");
         }
         
-        this._autoactionList.set(index, vAutoaction);
+        this.m_autoactionList.set(index, vAutoaction);
     }
 
     /**
@@ -1461,12 +1463,12 @@ public class Event implements java.io.Serializable {
      * @param vAutoactionArray
      */
     public void setAutoaction(
-            final org.opennms.netmgt.xml.eventconf.Autoaction[] vAutoactionArray) {
+            final Autoaction[] vAutoactionArray) {
         //-- copy array
-        _autoactionList.clear();
+        m_autoactionList.clear();
         
         for (int i = 0; i < vAutoactionArray.length; i++) {
-                this._autoactionList.add(vAutoactionArray[i]);
+                this.m_autoactionList.add(vAutoactionArray[i]);
         }
     }
 
@@ -1477,11 +1479,11 @@ public class Event implements java.io.Serializable {
      * @param vAutoactionList the Vector to copy.
      */
     public void setAutoaction(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Autoaction> vAutoactionList) {
+            final List<Autoaction> vAutoactionList) {
         // copy vector
-        this._autoactionList.clear();
+        this.m_autoactionList.clear();
         
-        this._autoactionList.addAll(vAutoactionList);
+        this.m_autoactionList.addAll(vAutoactionList);
     }
 
     /**
@@ -1492,8 +1494,8 @@ public class Event implements java.io.Serializable {
      * @param autoactionList the Vector to set.
      */
     public void setAutoactionCollection(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Autoaction> autoactionList) {
-        this._autoactionList = autoactionList;
+            final List<Autoaction> autoactionList) {
+        this.m_autoactionList = autoactionList;
     }
 
     /**
@@ -1504,8 +1506,8 @@ public class Event implements java.io.Serializable {
      * @param correlation the value of field 'correlation'.
      */
     public void setCorrelation(
-            final org.opennms.netmgt.xml.eventconf.Correlation correlation) {
-        this._correlation = correlation;
+            final Correlation correlation) {
+        this.m_correlation = correlation;
     }
 
     /**
@@ -1515,8 +1517,8 @@ public class Event implements java.io.Serializable {
      * @param descr the value of field 'descr'.
      */
     public void setDescr(
-            final java.lang.String descr) {
-        this._descr = descr;
+            final String descr) {
+        this.m_descr = descr;
     }
 
     /**
@@ -1528,8 +1530,12 @@ public class Event implements java.io.Serializable {
      * @param eventLabel the value of field 'eventLabel'.
      */
     public void setEventLabel(
-            final java.lang.String eventLabel) {
-        this._eventLabel = eventLabel;
+            final String eventLabel) {
+        this.m_eventLabel = eventLabel;
+    }
+
+    public void setFilters(final org.opennms.netmgt.xml.eventconf.Filters filters) {
+        this._filters = filters;
     }
 
     /**
@@ -1537,19 +1543,19 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vForward
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void setForward(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Forward vForward)
-    throws java.lang.IndexOutOfBoundsException {
+            final Forward vForward)
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._forwardList.size()) {
-            throw new IndexOutOfBoundsException("setForward: Index value '" + index + "' not in range [0.." + (this._forwardList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_forwardList.size()) {
+            throw new IndexOutOfBoundsException("setForward: Index value '" + index + "' not in range [0.." + (this.m_forwardList.size() - 1) + "]");
         }
         
-        this._forwardList.set(index, vForward);
+        this.m_forwardList.set(index, vForward);
     }
 
     /**
@@ -1558,12 +1564,12 @@ public class Event implements java.io.Serializable {
      * @param vForwardArray
      */
     public void setForward(
-            final org.opennms.netmgt.xml.eventconf.Forward[] vForwardArray) {
+            final Forward[] vForwardArray) {
         //-- copy array
-        _forwardList.clear();
+        m_forwardList.clear();
         
         for (int i = 0; i < vForwardArray.length; i++) {
-                this._forwardList.add(vForwardArray[i]);
+                this.m_forwardList.add(vForwardArray[i]);
         }
     }
 
@@ -1574,11 +1580,11 @@ public class Event implements java.io.Serializable {
      * @param vForwardList the Vector to copy.
      */
     public void setForward(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Forward> vForwardList) {
+            final List<Forward> vForwardList) {
         // copy vector
-        this._forwardList.clear();
+        this.m_forwardList.clear();
         
-        this._forwardList.addAll(vForwardList);
+        this.m_forwardList.addAll(vForwardList);
     }
 
     /**
@@ -1589,8 +1595,8 @@ public class Event implements java.io.Serializable {
      * @param forwardList the Vector to set.
      */
     public void setForwardCollection(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Forward> forwardList) {
-        this._forwardList = forwardList;
+            final List<Forward> forwardList) {
+        this.m_forwardList = forwardList;
     }
 
     /**
@@ -1598,19 +1604,19 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vLoggroup
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void setLoggroup(
             final int index,
-            final java.lang.String vLoggroup)
-    throws java.lang.IndexOutOfBoundsException {
+            final String vLoggroup)
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._loggroupList.size()) {
-            throw new IndexOutOfBoundsException("setLoggroup: Index value '" + index + "' not in range [0.." + (this._loggroupList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_loggroupList.size()) {
+            throw new IndexOutOfBoundsException("setLoggroup: Index value '" + index + "' not in range [0.." + (this.m_loggroupList.size() - 1) + "]");
         }
         
-        this._loggroupList.set(index, vLoggroup);
+        this.m_loggroupList.set(index, vLoggroup);
     }
 
     /**
@@ -1619,12 +1625,12 @@ public class Event implements java.io.Serializable {
      * @param vLoggroupArray
      */
     public void setLoggroup(
-            final java.lang.String[] vLoggroupArray) {
+            final String[] vLoggroupArray) {
         //-- copy array
-        _loggroupList.clear();
+        m_loggroupList.clear();
         
         for (int i = 0; i < vLoggroupArray.length; i++) {
-                this._loggroupList.add(vLoggroupArray[i]);
+                this.m_loggroupList.add(vLoggroupArray[i]);
         }
     }
 
@@ -1635,11 +1641,11 @@ public class Event implements java.io.Serializable {
      * @param vLoggroupList the Vector to copy.
      */
     public void setLoggroup(
-            final java.util.List<java.lang.String> vLoggroupList) {
+            final List<String> vLoggroupList) {
         // copy vector
-        this._loggroupList.clear();
+        this.m_loggroupList.clear();
         
-        this._loggroupList.addAll(vLoggroupList);
+        this.m_loggroupList.addAll(vLoggroupList);
     }
 
     /**
@@ -1650,8 +1656,8 @@ public class Event implements java.io.Serializable {
      * @param loggroupList the Vector to set.
      */
     public void setLoggroupCollection(
-            final java.util.List<java.lang.String> loggroupList) {
-        this._loggroupList = loggroupList;
+            final List<String> loggroupList) {
+        this.m_loggroupList = loggroupList;
     }
 
     /**
@@ -1661,8 +1667,8 @@ public class Event implements java.io.Serializable {
      * @param logmsg the value of field 'logmsg'.
      */
     public void setLogmsg(
-            final org.opennms.netmgt.xml.eventconf.Logmsg logmsg) {
-        this._logmsg = logmsg;
+            final Logmsg logmsg) {
+        this.m_logmsg = logmsg;
     }
 
     /**
@@ -1674,8 +1680,8 @@ public class Event implements java.io.Serializable {
      * @param mask the value of field 'mask'.
      */
     public void setMask(
-            final org.opennms.netmgt.xml.eventconf.Mask mask) {
-        this._mask = mask;
+            final Mask mask) {
+        this.m_mask = mask;
     }
 
     /**
@@ -1687,8 +1693,8 @@ public class Event implements java.io.Serializable {
      * @param mouseovertext the value of field 'mouseovertext'.
      */
     public void setMouseovertext(
-            final java.lang.String mouseovertext) {
-        this._mouseovertext = mouseovertext;
+            final String mouseovertext) {
+        this.m_mouseovertext = mouseovertext;
     }
 
     /**
@@ -1696,19 +1702,19 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vOperaction
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void setOperaction(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Operaction vOperaction)
-    throws java.lang.IndexOutOfBoundsException {
+            final Operaction vOperaction)
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._operactionList.size()) {
-            throw new IndexOutOfBoundsException("setOperaction: Index value '" + index + "' not in range [0.." + (this._operactionList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_operactionList.size()) {
+            throw new IndexOutOfBoundsException("setOperaction: Index value '" + index + "' not in range [0.." + (this.m_operactionList.size() - 1) + "]");
         }
         
-        this._operactionList.set(index, vOperaction);
+        this.m_operactionList.set(index, vOperaction);
     }
 
     /**
@@ -1717,12 +1723,12 @@ public class Event implements java.io.Serializable {
      * @param vOperactionArray
      */
     public void setOperaction(
-            final org.opennms.netmgt.xml.eventconf.Operaction[] vOperactionArray) {
+            final Operaction[] vOperactionArray) {
         //-- copy array
-        _operactionList.clear();
+        m_operactionList.clear();
         
         for (int i = 0; i < vOperactionArray.length; i++) {
-                this._operactionList.add(vOperactionArray[i]);
+                this.m_operactionList.add(vOperactionArray[i]);
         }
     }
 
@@ -1733,11 +1739,11 @@ public class Event implements java.io.Serializable {
      * @param vOperactionList the Vector to copy.
      */
     public void setOperaction(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Operaction> vOperactionList) {
+            final List<Operaction> vOperactionList) {
         // copy vector
-        this._operactionList.clear();
+        this.m_operactionList.clear();
         
-        this._operactionList.addAll(vOperactionList);
+        this.m_operactionList.addAll(vOperactionList);
     }
 
     /**
@@ -1748,8 +1754,8 @@ public class Event implements java.io.Serializable {
      * @param operactionList the Vector to set.
      */
     public void setOperactionCollection(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Operaction> operactionList) {
-        this._operactionList = operactionList;
+            final List<Operaction> operactionList) {
+        this.m_operactionList = operactionList;
     }
 
     /**
@@ -1761,8 +1767,8 @@ public class Event implements java.io.Serializable {
      * @param operinstruct the value of field 'operinstruct'.
      */
     public void setOperinstruct(
-            final java.lang.String operinstruct) {
-        this._operinstruct = operinstruct;
+            final String operinstruct) {
+        this.m_operinstruct = operinstruct;
     }
 
     /**
@@ -1770,19 +1776,19 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vScript
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void setScript(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Script vScript)
-    throws java.lang.IndexOutOfBoundsException {
+            final Script vScript)
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._scriptList.size()) {
-            throw new IndexOutOfBoundsException("setScript: Index value '" + index + "' not in range [0.." + (this._scriptList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_scriptList.size()) {
+            throw new IndexOutOfBoundsException("setScript: Index value '" + index + "' not in range [0.." + (this.m_scriptList.size() - 1) + "]");
         }
         
-        this._scriptList.set(index, vScript);
+        this.m_scriptList.set(index, vScript);
     }
 
     /**
@@ -1791,12 +1797,12 @@ public class Event implements java.io.Serializable {
      * @param vScriptArray
      */
     public void setScript(
-            final org.opennms.netmgt.xml.eventconf.Script[] vScriptArray) {
+            final Script[] vScriptArray) {
         //-- copy array
-        _scriptList.clear();
+        m_scriptList.clear();
         
         for (int i = 0; i < vScriptArray.length; i++) {
-                this._scriptList.add(vScriptArray[i]);
+                this.m_scriptList.add(vScriptArray[i]);
         }
     }
 
@@ -1807,11 +1813,11 @@ public class Event implements java.io.Serializable {
      * @param vScriptList the Vector to copy.
      */
     public void setScript(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Script> vScriptList) {
+            final List<Script> vScriptList) {
         // copy vector
-        this._scriptList.clear();
+        this.m_scriptList.clear();
         
-        this._scriptList.addAll(vScriptList);
+        this.m_scriptList.addAll(vScriptList);
     }
 
     /**
@@ -1822,8 +1828,8 @@ public class Event implements java.io.Serializable {
      * @param scriptList the Vector to set.
      */
     public void setScriptCollection(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Script> scriptList) {
-        this._scriptList = scriptList;
+            final List<Script> scriptList) {
+        this.m_scriptList = scriptList;
     }
 
     /**
@@ -1833,19 +1839,19 @@ public class Event implements java.io.Serializable {
      * @param severity the value of field 'severity'.
      */
     public void setSeverity(
-            final java.lang.String severity) {
-        this._severity = severity;
+            final String severity) {
+        this.m_severity = severity;
     }
 
     /**
      * Sets the value of field 'snmp'. The field 'snmp' has the
-     * following description: The snmp information from the trap
+     * following description: The SNMP information from the trap
      * 
      * @param snmp the value of field 'snmp'.
      */
     public void setSnmp(
-            final org.opennms.netmgt.xml.eventconf.Snmp snmp) {
-        this._snmp = snmp;
+            final Snmp snmp) {
+        this.m_snmp = snmp;
     }
 
     /**
@@ -1855,8 +1861,8 @@ public class Event implements java.io.Serializable {
      * @param tticket the value of field 'tticket'.
      */
     public void setTticket(
-            final org.opennms.netmgt.xml.eventconf.Tticket tticket) {
-        this._tticket = tticket;
+            final Tticket tticket) {
+        this.m_tticket = tticket;
     }
 
     /**
@@ -1866,8 +1872,8 @@ public class Event implements java.io.Serializable {
      * @param uei the value of field 'uei'.
      */
     public void setUei(
-            final java.lang.String uei) {
-        this._uei = uei;
+            final String uei) {
+        this.m_uei = uei;
     }
 
     /**
@@ -1875,19 +1881,19 @@ public class Event implements java.io.Serializable {
      * 
      * @param index
      * @param vVarbindsdecode
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
     public void setVarbindsdecode(
             final int index,
-            final org.opennms.netmgt.xml.eventconf.Varbindsdecode vVarbindsdecode)
-    throws java.lang.IndexOutOfBoundsException {
+            final Varbindsdecode vVarbindsdecode)
+    throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._varbindsdecodeList.size()) {
-            throw new IndexOutOfBoundsException("setVarbindsdecode: Index value '" + index + "' not in range [0.." + (this._varbindsdecodeList.size() - 1) + "]");
+        if (index < 0 || index >= this.m_varbindsdecodeList.size()) {
+            throw new IndexOutOfBoundsException("setVarbindsdecode: Index value '" + index + "' not in range [0.." + (this.m_varbindsdecodeList.size() - 1) + "]");
         }
         
-        this._varbindsdecodeList.set(index, vVarbindsdecode);
+        this.m_varbindsdecodeList.set(index, vVarbindsdecode);
     }
 
     /**
@@ -1896,12 +1902,12 @@ public class Event implements java.io.Serializable {
      * @param vVarbindsdecodeArray
      */
     public void setVarbindsdecode(
-            final org.opennms.netmgt.xml.eventconf.Varbindsdecode[] vVarbindsdecodeArray) {
+            final Varbindsdecode[] vVarbindsdecodeArray) {
         //-- copy array
-        _varbindsdecodeList.clear();
+        m_varbindsdecodeList.clear();
         
         for (int i = 0; i < vVarbindsdecodeArray.length; i++) {
-                this._varbindsdecodeList.add(vVarbindsdecodeArray[i]);
+                this.m_varbindsdecodeList.add(vVarbindsdecodeArray[i]);
         }
     }
 
@@ -1912,11 +1918,11 @@ public class Event implements java.io.Serializable {
      * @param vVarbindsdecodeList the Vector to copy.
      */
     public void setVarbindsdecode(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Varbindsdecode> vVarbindsdecodeList) {
+            final List<Varbindsdecode> vVarbindsdecodeList) {
         // copy vector
-        this._varbindsdecodeList.clear();
+        this.m_varbindsdecodeList.clear();
         
-        this._varbindsdecodeList.addAll(vVarbindsdecodeList);
+        this.m_varbindsdecodeList.addAll(vVarbindsdecodeList);
     }
 
     /**
@@ -1927,8 +1933,8 @@ public class Event implements java.io.Serializable {
      * @param varbindsdecodeList the Vector to set.
      */
     public void setVarbindsdecodeCollection(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Varbindsdecode> varbindsdecodeList) {
-        this._varbindsdecodeList = varbindsdecodeList;
+            final List<Varbindsdecode> varbindsdecodeList) {
+        this.m_varbindsdecodeList = varbindsdecodeList;
     }
 
     /**
@@ -1939,12 +1945,12 @@ public class Event implements java.io.Serializable {
      * null or if any SAXException is thrown during marshaling
      * @throws org.exolab.castor.xml.ValidationException if this
      * object is an invalid instance according to the schema
-     * @return the unmarshaled org.opennms.netmgt.xml.eventconf.Even
+     * @return the unmarshaled Even
      */
-    public static org.opennms.netmgt.xml.eventconf.Event unmarshal(
+    public static Event unmarshal(
             final java.io.Reader reader)
     throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.eventconf.Event) Unmarshaller.unmarshal(org.opennms.netmgt.xml.eventconf.Event.class, reader);
+        return (Event) Unmarshaller.unmarshal(Event.class, reader);
     }
 
     /**

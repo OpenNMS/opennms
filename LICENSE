@@ -29,8 +29,6 @@ See the top of those files for details:
 core/lib/src/main/java/org/opennms/core/utils/ExecRunner.java
 core/lib/src/main/java/org/opennms/core/utils/StreamGobbler.java
 core/test-api/dns/src/main/java/org/opennms/core/test/dns/DNSServer.java
-opennms-provision/opennms-detector-generic/src/main/java/org/opennms/netmgt/provision/detector/generic/support/ExecRunner.java
-opennms-provision/opennms-detector-generic/src/main/java/org/opennms/netmgt/provision/detector/generic/support/StreamGobbler.java
 opennms-services/src/main/java/org/opennms/netmgt/xmlrpcd/TimeoutSecureXmlRpcClient.java
 opennms-services/src/test/java/org/opennms/netmgt/syslogd/SyslogClient.java
 opennms-tools/OpenNMSXMLClient/*

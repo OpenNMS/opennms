@@ -43,7 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.test.mock.MockLogAppender;
@@ -83,7 +83,6 @@ public class DefaultSchedulerServiceTest implements InitializingBean {
     
     private static ReportParameters m_criteria;
     private static String REPORT_ID = "test";
-    private static String REPORT_SERVICE = "mockReportService";
     private static String CRON_EXPRESSION = "0 * * * * ?";
     private static final String TRIGGER_GROUP = "reporting";
     

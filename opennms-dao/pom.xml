@@ -10,12 +10,8 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
         <groupId>org.opennms.core.build</groupId>
-        <artifactId>castor-process-maven-plugin</artifactId>
+        <artifactId>castor-maven-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -71,14 +67,12 @@
   <dependencies>
     <!-- OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>mock-snmp-agent</artifactId>
-      <scope>test</scope>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>
     <dependency>
-	  <groupId>org.opennms.core.test-api</groupId>
-	  <artifactId>org.opennms.core.test-api.http</artifactId>
-      <scope>test</scope>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.snmp</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -137,14 +131,12 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <!-- for validating marshalled events -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
       <classifier>xsds</classifier>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

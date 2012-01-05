@@ -31,7 +31,6 @@ package org.opennms.netmgt.config;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Date;
@@ -72,19 +71,6 @@ public abstract class DestinationPathManager {
      * 
      */
     private Header oldHeader;
-
-    /**
-     * <p>parseXML</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    protected void parseXML(Reader reader) throws MarshalException, ValidationException {
-        allPaths = CastorUtils.unmarshal(DestinationPaths.class, reader);
-        oldHeader = allPaths.getHeader();
-        initializeDestinationPaths();
-    }
 
     /**
      * <p>parseXML</p>

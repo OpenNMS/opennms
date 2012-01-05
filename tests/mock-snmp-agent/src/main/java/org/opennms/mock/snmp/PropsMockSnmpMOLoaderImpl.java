@@ -29,15 +29,12 @@
 
 package org.opennms.mock.snmp;
 
-import java.io.InputStream;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.mo.MOAccessImpl;
@@ -66,7 +63,7 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	public List<ManagedObject> loadMOs(Resource moFile) {
 	    ArrayList<ManagedObject> moList = new ArrayList<ManagedObject>();
 		
-        Properties moProps = loadProperties(moFile);
+        Properties moProps = SnmpUtils.loadProperties(moFile);
         if (moProps == null) return null;
 
 		Enumeration<Object> moKeys = moProps.keys();
@@ -79,25 +76,15 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	}
 
     /**
-     * <p>loadProperties</p>
-     *
-     * @param propertiesFile a {@link org.springframework.core.io.Resource} object.
-     * @return a {@link java.util.Properties} object.
-     */
-    public static  Properties loadProperties(Resource propertiesFile) {
-        Properties moProps = new Properties();
-		InputStream inStream = null;
-		try {
-            inStream = propertiesFile.getInputStream();
-			moProps.load( inStream );
-		} catch (final Exception ex) {
-		    LogUtils.warnf(PropsMockSnmpMOLoaderImpl.class, ex, "Unable to read property file %s", propertiesFile);
-			return null;
-		} finally {
-            IOUtils.closeQuietly(inStream);
-		}
-        return moProps;
-    }
+	 * <p>loadProperties</p>
+	 *
+	 * @param propertiesFile a {@link org.springframework.core.io.Resource} object.
+	 * @return a {@link java.util.Properties} object.
+	 * @deprecated Use {@link SnmpUtils#loadProperties(Resource)} instead
+	 */
+	public static  Properties loadProperties(final Resource propertiesFile) {
+		return SnmpUtils.loadProperties(propertiesFile);
+	}
     
     private static class UpdatableScalar extends MOScalar implements Updatable {
 
@@ -174,10 +161,12 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	            } else {
 	                // Punt, assume it's a String
 	                //newVar = new OctetString(moValStr);
-                    throw new IllegalArgumentException("Unrecognized Snmp Type "+moTypeStr);
+                    throw new IllegalArgumentException("Unrecognized SNMP Type "+moTypeStr);
 	            }
-	        } catch (Throwable t) {
-	            throw new UndeclaredThrowableException(t, "Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr);
+	        } catch (RuntimeException t) {
+	            throw new IllegalStateException("Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr, t);
+	        } catch (Error t) {
+	            throw new IllegalStateException("Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr, t);
 	        }
 	    }
         return newVar;

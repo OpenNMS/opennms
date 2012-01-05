@@ -47,6 +47,7 @@ import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.test.ConfigurationTestUtils;
@@ -167,11 +168,6 @@ public class ConfigTesterTest {
 	}
 	
 	@Test
-	public void testDhcpdConfiguration() {
-        testConfigFile("dhcpd-configuration.xml");
-	}
-	
-	@Test
 	public void testDiscoveryConfiguration() {
         testConfigFile("discovery-configuration.xml");
 	}
@@ -283,8 +279,11 @@ public class ConfigTesterTest {
     }
     
     @Test
+    /**
+     * FIXME: Use LocationMonitorDaoHibernate to parse the config file
+     */
     public void testMonitoringLocations() {
-        testConfigFile("monitoring-locations.xml");
+        ignoreConfigFile("monitoring-locations.xml");
     }
     
     @Test
@@ -306,11 +305,13 @@ public class ConfigTesterTest {
     }
     
     @Test
+    @Ignore
     public void testNsclientConfig() {
         testConfigFile("nsclient-config.xml");
     }
     
     @Test
+    @Ignore
     public void testNsclientDatacollectionConfig() {
         testConfigFile("nsclient-datacollection-config.xml");
     }
@@ -534,11 +535,13 @@ public class ConfigTesterTest {
     }
 
 	@Test
+	@Ignore
     public void testXmpConfig() {
         testConfigFile("xmp-config.xml");
     }
 
 	@Test
+	@Ignore
     public void testXmpDatacollectionConfig() {
         testConfigFile("xmp-datacollection-config.xml");
     }

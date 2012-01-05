@@ -5,7 +5,6 @@
     <version>1.11.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms</groupId>
   <artifactId>opennms-detector-lineoriented</artifactId>
   <name>OpenNMS LineOriented Detectors</name>
   <url>http://www.opennms.org</url>
@@ -13,11 +12,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-mock-simpleserver</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.novell.ldap</groupId>
@@ -30,31 +24,26 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-mock-simpleserver</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
-      <scope>test</scope>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-	  <groupId>org.opennms</groupId>
-	  <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>mock-snmp-agent</artifactId>
-      <scope>test</scope>
+      <artifactId>opennms-dao</artifactId>
+      <type>test-jar</type>
     </dependency>
     <dependency>
-	  <groupId>org.opennms.core.test-api</groupId>
-	  <artifactId>org.opennms.core.test-api.http</artifactId>
-      <scope>test</scope>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>
   </dependencies>
 </project>

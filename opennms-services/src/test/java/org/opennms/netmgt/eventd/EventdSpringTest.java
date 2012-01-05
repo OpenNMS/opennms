@@ -29,12 +29,18 @@
 package org.opennms.netmgt.eventd;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.xml.eventconf.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -60,6 +66,9 @@ public class EventdSpringTest implements InitializingBean {
     @Autowired
     Eventd m_daemon;
 
+    @Autowired
+    EventConfDao m_eventConfDao;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_daemon);
@@ -75,5 +84,18 @@ public class EventdSpringTest implements InitializingBean {
     public void testDaemon() throws Exception {
         m_daemon.onStart();
         m_daemon.onStop();
+    }
+
+    @Test
+    public void testEventConfSeverities() throws Exception {
+        List<String> validSeverities = Arrays.asList(new String[] { "Critical", "Major", "Minor", "Warning", "Normal", "Cleared", "Indeterminate" });
+
+        for (String uei : m_eventConfDao.getEventUEIs()) {
+            for (Event event : m_eventConfDao.getEvents(uei)) {
+                if (!validSeverities.contains(event.getSeverity())) {
+                    fail(String.format("Invalid severity found on event: %s: %s", uei, event.getSeverity()));
+                }
+            }
+        }
     }
 }

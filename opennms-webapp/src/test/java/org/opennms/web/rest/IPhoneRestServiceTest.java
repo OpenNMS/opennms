@@ -86,6 +86,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
 		xml = sendRequest(GET, "/alarms/1", parameters, 200);
 		assertTrue(xml.contains("This is a test alarm"));
+		assertTrue(xml.contains("<nodeLabel>node1</nodeLabel>"));
 	}
 	
 	@Test

@@ -37,12 +37,11 @@ import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -81,14 +80,12 @@ public class AuthorizationTest implements InitializingBean {
     }
 
     private static boolean m_populated = false;
-    private static DatabasePopulator m_lastPopulator;
     
     @BeforeTransaction
     public void setUp() {
         try {
             if (!m_populated) {
                 m_populator.populateDatabase();
-                m_lastPopulator = m_populator;
             }
         } catch (Throwable e) {
             e.printStackTrace(System.err);

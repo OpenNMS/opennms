@@ -33,8 +33,8 @@ import java.util.Date;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyAccessorFactory;
 
 /**
  * <p>NetworkBuilder class.</p>
@@ -88,7 +88,7 @@ public class NetworkBuilder {
     public NodeBuilder addNode(String label) {
 		m_currentNode = new OnmsNode(m_distPoller);
 		m_currentNode.setLabel(label);
-		m_assetBean = new BeanWrapperImpl(m_currentNode.getAssetRecord());
+		m_assetBean = PropertyAccessorFactory.forBeanPropertyAccess(m_currentNode.getAssetRecord());
 		return new NodeBuilder(m_currentNode);
 	}
     

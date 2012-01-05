@@ -50,10 +50,6 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * collection to occur in a thread if necessary.
  *
  * @author <a href="mailto:brozow@opennms.org">brozow </a>
- * @author <a href="http://www.opennms.org">OpenNMS </a>
- * @author <a href="mailto:brozow@opennms.org">brozow </a>
- * @author <a href="http://www.opennms.org">OpenNMS </a>
- * @version $Id: $
  */
 public final class IfSnmpCollector implements Runnable {
 
@@ -426,6 +422,10 @@ public final class IfSnmpCollector implements Runnable {
 
             log().warn("IfSnmpCollector: collection interrupted, exiting", e);
             return;
+        }
+
+        if (walker.failed()) {
+            log().info("IfSnmpCollector: walker failed with error message:" + walker.getErrorMessage());
         }
 
         // Log any failures

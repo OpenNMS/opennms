@@ -1201,7 +1201,7 @@ primary power supply failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			altSwPrimaryPowerSupplyFailure trap received&lt;/p&gt;
 		</logmsg>
-	<severity>critical</severity>
+	<severity>Critical</severity>
 </event>
 <event>
 	<mask>

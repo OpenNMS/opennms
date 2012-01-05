@@ -31,7 +31,6 @@ package org.opennms.netmgt.importer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -41,7 +40,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.mock.snmp.MockSnmpAgent;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -52,7 +53,6 @@ import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
@@ -69,7 +69,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -78,12 +77,14 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class ImportOperationsManagerTest implements InitializingBean {
-    private MockSnmpAgent m_agent;
+    private static final String TEST_IP_ADDRESS="127.0.0.1";
+    private static final int TEST_PORT=1691;
 
     @Autowired
     DatabasePopulator m_populator;
@@ -101,6 +102,8 @@ public class ImportOperationsManagerTest implements InitializingBean {
     IpInterfaceDao m_ipInterfaceDao;
     @Autowired
     SnmpInterfaceDao m_snmpInterfaceDao;
+    @Autowired
+	private SnmpPeerFactory m_snmpPeerFactory;
 
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_populator);
@@ -111,6 +114,9 @@ public class ImportOperationsManagerTest implements InitializingBean {
         assertNotNull(m_categoryDao);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_snmpInterfaceDao);
+        assertNotNull(m_snmpPeerFactory);
+
+        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
     }
 
     @Before
@@ -122,19 +128,6 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
         m_populator.populateDatabase();
 
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), "127.0.0.1/1691");
-
-        SnmpPeerFactory spf = new SnmpPeerFactory(new ByteArrayInputStream(("<?xml version=\"1.0\"?>\n" + 
-                "<snmp-config port=\"1691\" retry=\"3\" timeout=\"800\"\n" + 
-                "             read-community=\"public\" \n" + 
-                "             version=\"v1\" \n" + 
-                "             max-vars-per-pdu=\"10\" proxy-host=\"127.0.0.1\">\n" + 
-                "\n" + 
-                "</snmp-config>\n" + 
-                "\n" + 
-        "").getBytes()));
-        SnmpPeerFactory.setInstance(spf);
-
         m_categoryDao.save(new OnmsCategory("AC"));
         m_categoryDao.save(new OnmsCategory("UK"));
         m_categoryDao.save(new OnmsCategory("low"));
@@ -145,7 +138,6 @@ public class ImportOperationsManagerTest implements InitializingBean {
     @After
     public void onTearDownInTransactionIfEnabled() throws Exception {
         MockLogAppender.assertNoWarningsOrGreater();
-        m_agent.shutDownAndWait();
     }
 
     protected ModelImporter getModelImporter() {
@@ -159,6 +151,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT)
     public void testGetOperations() {
         Map<String, Integer> assetNumberMap = getAssetNumberMap("imported:");
         ImportOperationsManager opsMgr = new ImportOperationsManager(assetNumberMap, getModelImporter());
@@ -175,6 +168,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitSnmpAgent(resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties", host=TEST_IP_ADDRESS, port=TEST_PORT)
     public void testSaveThenUpdate() throws Exception {
 
 
@@ -204,7 +198,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
                 assertEquals("cat7", node.getAssetRecord().getDisplayCategory());
                 assertEquals(1, node.getIpInterfaces().size());
                 OnmsIpInterface iface = node.getIpInterfaces().iterator().next();
-                assertEquals("192.168.7.1", iface.getIpAddressAsString());
+                assertEquals("192.168.7.1", InetAddressUtils.str(iface.getIpAddress()));
                 assertEquals("M", iface.getIsManaged());
                 assertEquals(2, iface.getMonitoredServices().size());
 
@@ -218,23 +212,23 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitSnmpAgent(host="172.20.1.201", resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testChangeIpAddr() throws Exception {
-        testImportFromSpecFile(new ClassPathResource("/tec_dump.xml"), 1, 1);
+        doImportFromSpecFile(new ClassPathResource("/tec_dump.xml"), 1, 1);
 
         assertEquals(1, m_ipInterfaceDao.findByIpAddress("172.20.1.204").size());
 
-        testImportFromSpecFile(new ClassPathResource("/tec_dumpIpAddrChanged.xml"), 1, 1);
+        doImportFromSpecFile(new ClassPathResource("/tec_dumpIpAddrChanged.xml"), 1, 1);
 
         assertEquals("Failed to add new interface 172.20.1.202", 1, m_ipInterfaceDao.findByIpAddress("172.20.1.202").size());
         assertEquals("Failed to delete removed interface 172.20.1.204", 0, m_ipInterfaceDao.findByIpAddress("172.20.1.204").size());
-
-
     }
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitSnmpAgent(host="172.20.1.201", resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testImportToOperationsMgr() throws Exception {
-        testDoubleImport(new ClassPathResource("/tec_dump.xml"));
+        doDoubleImport(new ClassPathResource("/tec_dump.xml"));
 
         Collection<OnmsIpInterface> c = m_ipInterfaceDao.findByIpAddress("172.20.1.201");
         assertEquals(1, c.size());
@@ -242,23 +236,23 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     }
 
-    private void testDoubleImport(Resource specFileResource) throws ModelImportException, IOException {
+    private void doDoubleImport(Resource specFileResource) throws ModelImportException, IOException {
 
         long pass1 = System.currentTimeMillis();
-        testImportFromSpecFile(specFileResource);
+        doImportFromSpecFile(specFileResource);
 
         System.err.println("##################################################################################");
         long pass2 = System.currentTimeMillis();
-        testImportFromSpecFile(specFileResource);
+        doImportFromSpecFile(specFileResource);
         long end = System.currentTimeMillis();
         System.err.println("Pass1 Duration: "+(pass2-pass1)/1000+" s. Pass2 Duration: "+(end-pass2)/1000+" s.");
     }
 
-    private void testImportFromSpecFile(Resource specFileResource) throws IOException, ModelImportException {
-        testImportFromSpecFile(specFileResource, 4, 50);
+    private void doImportFromSpecFile(Resource specFileResource) throws IOException, ModelImportException {
+        doImportFromSpecFile(specFileResource, 4, 50);
     }
 
-    private void testImportFromSpecFile(Resource specFileResource, int writeThreads, int scanThreads) throws IOException, ModelImportException {
+    private void doImportFromSpecFile(Resource specFileResource, int writeThreads, int scanThreads) throws IOException, ModelImportException {
         expectServiceTypeCreate("HTTP");
         final SpecFile specFile = new SpecFile();
         specFile.loadResource(specFileResource);

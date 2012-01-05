@@ -30,7 +30,8 @@ package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -47,9 +48,9 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * @author ranger
  * @version $Id: $
  */
-abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTracker {
-    
-    private Map<SnmpInstId, T> m_results = new TreeMap<SnmpInstId, T>();
+public abstract class SnmpTable<T extends SnmpStore> extends AggregateTracker implements Collection<T> {
+
+    private final Map<SnmpInstId, T> m_results = new TreeMap<SnmpInstId, T>();
     private InetAddress m_address;
     private String m_tableName;
 
@@ -66,8 +67,9 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
         m_address = address;
         m_tableName = tableName;
     }
-    
+
     /** {@inheritDoc} */
+    @Override
     protected void storeResult(SnmpResult res) {
         T entry = m_results.get(res.getInstance());
         if (entry == null) {
@@ -92,22 +94,92 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
      *
      * @return a {@link java.util.List} object.
      */
-    public List<T> getEntries() {
+    public Collection<T> getEntries() {
         return new ArrayList<T>(m_results.values());
     }
+
+    /**
+     * <p>iterator</p>
+     *
+     * @return a {@link java.util.Iterator} object.
+     */
+    public Iterator<T> iterator() {
+        return m_results.values().iterator();
+    }
+
     /** {@inheritDoc} */
+    @Override
     protected void reportGenErr(String msg) {
         log().warn("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportNoSuchNameErr(String msg) {
         log().info("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
     }
-    
+
     private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    @Override
+    public boolean add(T e) {
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return m_results.values().contains(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return m_results.values().containsAll(c);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return m_results.values().isEmpty();
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int size() {
+        return m_results.values().size();
+    }
+
+    @Override
+    public Object[] toArray() {
+        return m_results.values().toArray();
+    }
+
+    @Override
+    public <S> S[] toArray(S[] a) {
+        return m_results.values().toArray(a);
+    }
 }

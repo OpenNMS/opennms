@@ -61,8 +61,12 @@ import org.opennms.test.mock.EasyMockUtils;
 public class SnmpAttributeTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     private IpInterfaceDao m_ipInterfaceDao = m_mocks.createMock(IpInterfaceDao.class);
+
+    // Cannot avoid this warning since there is no way to fetch the class object for an interface
+    // that uses generics
+    @SuppressWarnings("unchecked")
     private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
-    
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();

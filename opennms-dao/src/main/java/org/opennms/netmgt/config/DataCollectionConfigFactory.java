@@ -31,8 +31,8 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.IOException;
 
-import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.dao.DefaultDataCollectionConfigDao;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -49,14 +49,14 @@ public final class DataCollectionConfigFactory {
     /**
      * The singleton instance of this factory
      */
-    private static DataCollectionConfig m_singleton = null;
+    private static DataCollectionConfigDao m_singleton = null;
 
     /**
      * <p>setInstance</p>
      *
-     * @param instance a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
+     * @param instance a {@link org.opennms.netmgt.config.DataCollectionConfigDao} object.
      */
-    public static void setInstance(DataCollectionConfig instance) {
+    public static void setInstance(DataCollectionConfigDao instance) {
         m_singleton = instance;
     }
 
@@ -95,7 +95,7 @@ public final class DataCollectionConfigFactory {
      *
      * @return The current factory instance.
      */
-    public static synchronized DataCollectionConfig getInstance() {
+    public static synchronized DataCollectionConfigDao getInstance() {
         if (m_singleton == null)
             throw new IllegalStateException("The factory has not been initialized");
         return m_singleton;
@@ -104,7 +104,7 @@ public final class DataCollectionConfigFactory {
     public static void main(String[] args) {
         try {
             DataCollectionConfigFactory.init();
-            DataCollectionConfig config = DataCollectionConfigFactory.getInstance();
+            DataCollectionConfigDao config = DataCollectionConfigFactory.getInstance();
             if (config == null) {
                 System.err.println("ERROR: can't get a reference to DataCollectionConfig object");
             } else {

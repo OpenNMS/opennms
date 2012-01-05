@@ -36,18 +36,24 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.CollectdPackage;
+import org.opennms.netmgt.config.collectd.Filter;
+import org.opennms.netmgt.config.collectd.Package;
+import org.opennms.netmgt.config.collectd.Parameter;
+import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -80,7 +86,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-@JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
 public class HttpCollectorTest implements TestContextAware {
 
     @Autowired
@@ -105,6 +110,7 @@ public class HttpCollectorTest implements TestContextAware {
     private final String m_testHostName = "127.0.0.1";
 
     private CollectionSpecification m_collectionSpecification;
+    private CollectionSpecification m_httpsCollectionSpecification;
 
     private CollectionAgent m_collectionAgent;
 
@@ -135,6 +141,7 @@ public class HttpCollectorTest implements TestContextAware {
             builder.addInterface(InetAddressUtils.normalize(m_testHostName)).setIsManaged("M").setIsSnmpPrimary("P");
             builder.addService(getServiceType("ICMP"));
             builder.addService(getServiceType("HTTP"));
+            builder.addService(getServiceType("HTTPS"));
             if (m_nodeDao == null) {
                 throw new Exception("node DAO does not exist!");
             }
@@ -155,7 +162,13 @@ public class HttpCollectorTest implements TestContextAware {
         collector.initialize(parameters);
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", collector, "default");
+        m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+    }
+
+    @After
+    public void tearDown() {
+        MockLogAppender.noWarningsOrHigherLogged();
     }
 
     /**
@@ -163,6 +176,7 @@ public class HttpCollectorTest implements TestContextAware {
      *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, Map)}.
      */
     @Test
+    @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
     @JUnitCollector(datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-config.xml", datacollectionType="http",
                     anticipateRrds={ "1/documentCount", "1/greatAnswer", "1/someNumber" }, anticipateFiles={ "1/strings.properties" })
     public final void testCollect() throws Exception {
@@ -176,9 +190,22 @@ public class HttpCollectorTest implements TestContextAware {
     }
 
     @Test
+    @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
     @JUnitCollector(datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-persist-test-config.xml", datacollectionType="http",
                     anticipateRrds={ "1/documentCount", "1/greatAnswer", "1/someNumber" }, anticipateFiles={ "1/strings.properties" })
     public final void testPersist() throws Exception {
+        doTestPersist(m_collectionSpecification);
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"}, https=true)
+    @JUnitCollector(datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-persist-https-test-config.xml", datacollectionType="https",
+                    anticipateRrds={ "1/documentCount", "1/greatAnswer", "1/someNumber" }, anticipateFiles={ "1/strings.properties" })
+    public final void testPersistHttps() throws Exception {
+        doTestPersist(m_httpsCollectionSpecification);
+    }
+
+    public final void doTestPersist(CollectionSpecification spec) throws Exception {
         File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
         FileAnticipator anticipator = (FileAnticipator)m_context.getAttribute("fileAnticipator");
 
@@ -213,6 +240,7 @@ public class HttpCollectorTest implements TestContextAware {
     }
 
     @Test
+    @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
     @JUnitCollector(
         datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-persist-apache-stats.xml", 
         datacollectionType="http",
@@ -254,6 +282,56 @@ public class HttpCollectorTest implements TestContextAware {
         assertEquals("documentType", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
 
         m_collectionSpecification.release(m_collectionAgent);
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
+    @JUnitCollector(datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-config-NMS4886.xml", datacollectionType="http",
+                    anticipateRrds={ "1/documentCount", "1/greatAnswer", "1/someNumber" }, anticipateFiles={ "1/strings.properties" })
+    public final void testNMS4886withHttp() throws Exception {
+        doTestNMS4886("HTTP");
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"}, https=true)
+    @JUnitCollector(datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-config-NMS4886-https.xml", datacollectionType="https",
+                    anticipateRrds={ "1/documentCount", "1/greatAnswer", "1/someNumber" }, anticipateFiles={ "1/strings.properties" })
+    public final void testNMS4886withHttps() throws Exception {
+        doTestNMS4886("HTTPS");
+    }
+
+    public final void doTestNMS4886(String svcName) throws Exception {
+        HttpCollector collector = new HttpCollector();
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("http-collection", "default");
+        parameters.put("port", "10342");
+        collector.initialize(parameters);
+
+        Package pkg = new Package();
+        Filter filter = new Filter();
+        filter.setContent("IPADDR IPLIKE *.*.*.*");
+        pkg.setFilter(filter);
+        Service service = new Service();
+        service.setName(svcName);
+        Parameter collectionParm = new Parameter();
+        collectionParm.setKey("http-collection");
+        collectionParm.setValue("default");
+        service.addParameter(collectionParm);
+        Parameter portParm = new Parameter();
+        portParm.setKey("port");
+        portParm.setValue("10342");
+        service.addParameter(portParm);
+        pkg.addService(service);
+
+        CollectdPackage wpkg = new CollectdPackage(pkg, "default", false);
+        CollectionSpecification collectionSpecification = new CollectionSpecification(wpkg, svcName, collector);
+        collectionSpecification.initialize(m_collectionAgent);
+
+        CollectionSet collectionSet = collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        CollectorTestUtils.persistCollectionSet(collectionSpecification, collectionSet);
+
+        collectionSpecification.release(m_collectionAgent);
     }
 
 }

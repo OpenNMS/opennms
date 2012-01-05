@@ -42,7 +42,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -123,7 +123,7 @@ public class FilesystemForeignSourceRepositoryTest {
     @Test
     public void testDefaultForeignSource() throws Exception {
         createRequisition();
-        List<String> detectorList = Arrays.asList(new String[]{ "DNS", "FTP", "HTTP", "HTTPS", "ICMP", "IMAP", "LDAP", "NRPE", "POP3", "Radius", "SMTP", "SNMP", "SSH" });
+        List<String> detectorList = Arrays.asList(new String[]{ "DNS", "FTP", "HTTP", "HTTPS", "ICMP", "IMAP", "LDAP", "NRPE", "POP3", "SMTP", "SNMP", "SSH" });
         String uuid = UUID.randomUUID().toString();
         ForeignSource defaultForeignSource = m_foreignSourceRepository.getForeignSource(uuid);
         assertEquals("name must match requested foreign source repository name", uuid, defaultForeignSource.getName());

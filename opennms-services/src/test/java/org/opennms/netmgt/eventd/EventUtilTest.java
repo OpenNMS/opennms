@@ -34,11 +34,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
@@ -83,10 +83,10 @@ public class EventUtilTest {
     @Test
     public void testGetValueAsString() {
         Value v = new Value();
-        v.setContent(String.valueOf(Base64.encodeBase64((new String("test")).getBytes())));
+        v.setContent(String.valueOf(Base64.encodeBase64((new String("abcd")).getBytes())));
         v.setEncoding("base64");
         
-        assertEquals("test", EventUtil.getValueAsString(v));
+        assertEquals("0x61626364", EventUtil.getValueAsString(v));
     }
 
     /*
@@ -103,7 +103,7 @@ public class EventUtilTest {
     @Test
     public void testGetValueOfParm() {
         String testString = EventUtil.getValueOfParm(EventUtil.TAG_UEI, m_svcLostEvent);
-        assertEquals("uei.opennms.org/nodes/nodeLostService", testString);
+        assertEquals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, testString);
         
         m_svcLostEvent.setSeverity(OnmsSeverity.MINOR.getLabel());
         testString = EventUtil.getValueOfParm(EventUtil.TAG_SEVERITY, m_svcLostEvent);
@@ -121,7 +121,7 @@ public class EventUtilTest {
         String testString = "%uei%:%dpname%:%nodeid%:%interface%:%service%";
         
         String newString = EventUtil.expandParms(testString, m_svcLostEvent);
-        assertEquals("uei.opennms.org/nodes/nodeLostService::1:192.168.1.1:SMTP", newString);
+        assertEquals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI + "::1:192.168.1.1:SMTP", newString);
 
     }
     

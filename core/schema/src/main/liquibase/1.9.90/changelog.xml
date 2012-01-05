@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="brozow" id="1.9.90-add-accessLocks-table" failOnError="true">
+        <createTable tableName="accessLocks">
+            <column name="lockName" type="varchar(40)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_accessLocks" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="brozow" id="1.9.90-make-accessLocks-case-insensitive" failOnError="true">
+        <renameTable oldTableName="accessLocks" newTableName="accesslocks" />
+        <renameColumn tableName="accesslocks" oldColumnName="lockName" newColumnName="lockname" />
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.9.90-add-ids-to-linkd-vlan">
+    	<validCheckSum>ANY</validCheckSum>
+        <addColumn tableName="vlan">
+            <column name="id" type="integer" defaultValueComputed="NEXTVAL('opennmsnxtid')">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="vlan" columnName="id" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.9.90-add-ids-to-linkd-stpNode">
+    	<validCheckSum>ANY</validCheckSum>
+        <addColumn tableName="stpnode">
+            <column name="id" type="integer" defaultValueComputed="NEXTVAL('opennmsnxtid')">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="stpnode" columnName="id" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.9.90-add-ids-to-linkd-stpInterface">
+    	<validCheckSum>ANY</validCheckSum>
+        <addColumn tableName="stpinterface">
+            <column name="id" type="integer" defaultValueComputed="NEXTVAL('opennmsnxtid')">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="stpinterface" columnName="id" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.9.90-add-ids-to-linkd-ipRouteInterface">
+    	<validCheckSum>ANY</validCheckSum>
+        <addColumn tableName="iprouteinterface">
+            <column name="id" type="integer" defaultValueComputed="NEXTVAL('opennmsnxtid')">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="iprouteinterface" columnName="id" />
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

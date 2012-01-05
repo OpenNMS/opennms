@@ -52,12 +52,9 @@ import org.springframework.web.servlet.view.RedirectView;
  * <p>AcknowledgeEventByFilterController class.</p>
  *
  * @author ranger
- * @version $Id: $
  * @since 1.8.1
  */
 public class AcknowledgeEventByFilterController extends AbstractController implements InitializingBean {
-    private static final long serialVersionUID = 2L;
-    
     private WebEventRepository m_webEventRepository;
     
     private String m_redirectView;

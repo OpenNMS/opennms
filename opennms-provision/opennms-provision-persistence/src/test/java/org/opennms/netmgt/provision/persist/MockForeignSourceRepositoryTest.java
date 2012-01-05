@@ -45,8 +45,8 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.InvalidPropertyException;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -108,7 +108,7 @@ public class MockForeignSourceRepositoryTest {
     public void testBeanWrapperAccess() throws Exception {
         createRequisition();
         Requisition r = m_repository.getRequisition(m_defaultForeignSourceName);
-        BeanWrapper wrapper = new BeanWrapperImpl(r);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(r);
         assertEquals("AC", wrapper.getPropertyValue("node[0].category[0].name"));
         assertEquals("UK", wrapper.getPropertyValue("node[0].category[1].name"));
         assertEquals("low", wrapper.getPropertyValue("node[0].category[2].name"));

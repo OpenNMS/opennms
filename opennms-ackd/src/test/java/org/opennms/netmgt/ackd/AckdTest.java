@@ -39,6 +39,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.ackd.AckReader.AckReaderState;
 import org.opennms.netmgt.config.ackd.Reader;
@@ -52,7 +53,6 @@ import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.dao.UserNotificationDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -85,7 +85,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-ackd.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
@@ -289,7 +290,7 @@ public class AckdTest implements InitializingBean {
     public void testHandelEvent() throws InterruptedException {
         
         VerificationObject vo = createAckStructure();
-        EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/ackd/Acknowledge", "AckdTest");
+        EventBuilder bldr = new EventBuilder(EventConstants.ACKNOWLEDGE_EVENT_UEI, "AckdTest");
         bldr.addParam("ackType", String.valueOf(AckType.ALARM));
         bldr.addParam("refId", vo.m_alarmId);
         final String user = "ackd-test-user";

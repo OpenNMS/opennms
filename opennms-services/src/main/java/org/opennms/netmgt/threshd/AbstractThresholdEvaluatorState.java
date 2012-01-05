@@ -30,12 +30,11 @@ package org.opennms.netmgt.threshd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -93,12 +92,7 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         bldr.addParam("label", dsLabelValue);
 
         // Set event host
-        try {
-            bldr.setHost(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException e) {
-            bldr.setHost("unresolved.host");
-            log().warn("Failed to resolve local hostname: " + e, e);
-        }
+        bldr.setHost(InetAddressUtils.getLocalHostName());
 
         // Add datasource name
         bldr.addParam("ds", getThresholdConfig().getDatasourceExpression());
@@ -125,7 +119,9 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
      * @param value a {@link java.lang.Double} object.
      * @return a {@link java.lang.String} object.
      */
-    protected String formatValue(Double value) {
+    protected String formatValue(double value) {
+        if (Double.isNaN(value)) // When reconfiguring thresholds, the value is set to NaN.
+            return "NaN";
         String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##");
         DecimalFormat valueFormatter = new DecimalFormat(pattern);
         return valueFormatter.format(value);

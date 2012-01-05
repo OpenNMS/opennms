@@ -28,6 +28,8 @@
 
 package org.opennms.web.element;
 
+import java.util.List;
+
 /**
  * <p>Interface class.</p>
  *
@@ -79,6 +81,21 @@ public class Interface {
     String m_snmpLastSnmpPoll;
 
     String m_snmpLastCapsdPoll;
+    	
+    List<String> ipaddresses=null;
+
+	public List<String> getIpaddresses() {
+		return ipaddresses;
+	}
+
+	public void setIpaddresses(List<String> ipaddresses) {
+		this.ipaddresses = ipaddresses;
+	}
+		
+	public boolean hasIpAddresses() {
+		return !(ipaddresses == null);
+	}
+    	    
 
     /**
      * <p>getId</p>

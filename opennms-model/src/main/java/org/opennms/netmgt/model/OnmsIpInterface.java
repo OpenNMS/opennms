@@ -70,9 +70,6 @@ import org.springframework.core.style.ToStringCreator;
 
 /**
  * <p>OnmsIpInterface class.</p>
- *
- * @author ranger
- * @version $Id: $
  */
 @XmlRootElement(name = "ipInterface")
 @Entity
@@ -237,6 +234,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @return a {@link java.lang.Integer} object.
      */
     @Id
+    @Column(nullable=false)
     @XmlTransient
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")    
@@ -500,12 +498,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      */
     public String toString() {
         return new ToStringCreator(this)
-        .append("ipaddr", InetAddressUtils.str(getIpAddress()))
-        //.append("ifindex", getIfIndex())
-        .append("iphostname", getIpHostName())
-        .append("ismanaged", getIsManaged())
-        .append("iplastcapsdpoll", getIpLastCapsdPoll())
-        .append("issnmpprimary", getIsSnmpPrimary())
+        .append("ipAddr", InetAddressUtils.str(m_ipAddress))
+        .append("ipHostName", m_ipHostName)
+        .append("isManaged", m_isManaged)
+        .append("isSnmpPrimary", m_isSnmpPrimary)
+        .append("ipLastCapsdPoll", m_ipLastCapsdPoll)
         .toString();
     }
 

@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.springframework.test.context.ContextConfiguration;
 
 
@@ -49,7 +49,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
         createForeignSource();
         String url = "/foreignSources";
         String xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("DHCP"));
+        assertTrue(xml.contains("ICMP"));
         
         url = "/foreignSources/test";
         sendPut(url, "scanInterval=1h");
@@ -75,7 +75,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<detectors "));
         assertTrue(xml.contains("<detector "));
-        assertTrue(xml.contains("name=\"DHCP\""));
+        assertTrue(xml.contains("name=\"ICMP\""));
         
         url = "/foreignSources/test/detectors/HTTP";
         xml = sendRequest(GET, url, 200);
@@ -109,7 +109,6 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
             "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"test\">" +
                 "<scan-interval>1d</scan-interval>" +
                 "<detectors>" + 
-                    "<detector class=\"org.opennms.netmgt.provision.detector.dhcp.DhcpDetector\" name=\"DHCP\"/>" +
                     "<detector class=\"org.opennms.netmgt.provision.detector.datagram.DnsDetector\" name=\"DNS\"/>" +
                     "<detector class=\"org.opennms.netmgt.provision.detector.simple.HttpDetector\" name=\"HTTP\"/>" +
                     "<detector class=\"org.opennms.netmgt.provision.detector.simple.HttpsDetector\" name=\"HTTPS\"/>" +

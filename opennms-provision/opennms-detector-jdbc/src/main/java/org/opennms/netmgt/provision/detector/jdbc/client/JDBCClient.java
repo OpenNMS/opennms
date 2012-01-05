@@ -35,12 +35,12 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.opennms.core.utils.DBTools;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.jdbc.DBTools;
 
 /**
  * <p>JDBCClient class.</p>
