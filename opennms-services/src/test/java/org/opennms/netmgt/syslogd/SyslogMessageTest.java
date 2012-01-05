@@ -159,12 +159,20 @@ public class SyslogMessageTest {
         SyslogParser parser = SyslogNGParser.getParser("<173>Dec  7 12:02:06 10.13.110.116 mgmtd[8326]: [mgmtd.NOTICE]: Configuration saved to database initial");
         assertTrue(parser.find());
         SyslogMessage message = parser.parse();
-        final Date date = new Date(1323259326000L);
+        final Date timestampIn2011 = new Date(1323259326000L);
+        
+        Calendar cal = Calendar.getInstance();
+        int currentYear = cal.get(Calendar.YEAR);
+        
+        cal.setTime(timestampIn2011);
+        cal.set(Calendar.YEAR, currentYear);
+        
+        final Date timestampThisYear = cal.getTime();
 
         assertEquals(SyslogFacility.LOCAL5, message.getFacility());
         assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
         assertEquals(null, message.getMessageID());
-        assertEquals(date, message.getDate());
+        assertEquals(timestampThisYear, message.getDate());
         assertEquals("10.13.110.116", message.getHostName());
         assertEquals("mgmtd", message.getProcessName());
         assertEquals(8326, message.getProcessId().intValue());
