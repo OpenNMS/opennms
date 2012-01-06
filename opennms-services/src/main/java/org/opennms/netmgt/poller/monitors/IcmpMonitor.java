@@ -116,7 +116,7 @@ final public class IcmpMonitor extends IPv4Monitor {
             //
             int retries = ParameterMap.getKeyedInteger(parameters, "retry", PingConstants.DEFAULT_RETRIES);
             long timeout = ParameterMap.getKeyedLong(parameters, "timeout", PingConstants.DEFAULT_TIMEOUT);
-            int packetsize=ParameterMap.getKeyedInteger(parameters, "packetsize", PingConstants.DEFAULT_PACKETSIZE);
+            int packetsize=ParameterMap.getKeyedInteger(parameters, "packet-size", PingConstants.DEFAULT_PACKETSIZE);
             rtt = Pinger.ping(host, timeout, retries,packetsize);
         } catch (Exception e) {
             log.debug("failed to ping " + host, e);
