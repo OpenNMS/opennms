@@ -64,12 +64,12 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     private final String REPOSITORY_REPORT_SEP = "_";
 
     /**
-     * List for two repository, a local disk and a remote repository.
+     * List for repositories, a local disk and every active remote repository configured at m_remoteRepositoryConfigDao.
      */
     private final List<ReportRepository> m_repositoryList;
 
     /**
-     * Default constructor creates local and remote repository.
+     * Default constructor creates one local and many remote repositories.
      */
     public DefaultGlobalReportRepository() {
         this.m_repositoryList = new ArrayList<ReportRepository>();
@@ -83,7 +83,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
          * A remote repository for each remote repository from RemoteRepositoryConfig.
          */
         for (RemoteRepositoryDefinition repositoryDefinition : m_remoteRepositoryConfigDao.getActiveRepositories()) {
-            this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, m_remoteRepositoryConfigDao.getJasperReportsVersion()));
+            this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, System.getProperty("org.opennms.jasperReportsVersion")));
         }
     }
 

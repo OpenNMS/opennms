@@ -28,7 +28,6 @@
 
 package org.opennms.features.reporting.model.remoterepository;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -50,7 +49,6 @@ public class RemoteRepositoryConfig {
         this.m_repositoryList = repositoryList;
     }
     
-    @XmlAttribute(name = "jasperReportsVersion")
     public String getJasperRepotsVersion() {
         return jasperRepotsVersion;
     }
@@ -58,6 +56,5 @@ public class RemoteRepositoryConfig {
     public void setJasperRepotsVersion(String jasperRepotsVersion) {
         this.jasperRepotsVersion = jasperRepotsVersion;
     }
-    
     
 }
