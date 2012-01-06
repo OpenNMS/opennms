@@ -91,10 +91,10 @@ for my $orig_repo (@$scan_repositories) {
 
 # return 1 if the obsolete RPM given should be deleted
 sub not_opennms {
-	my $rpm = $_[0];
+	my ($rpm, $repo) = @_;
 	if ($rpm->name =~ /^opennms/) {
 		# we keep all opennms-* RPMs in official release dirs
-		if ($rpm->release =~ /^(obsolete|stable|unstable)$/) {
+		if ($repo->release =~ /^(obsolete|stable|unstable)$/) {
 			return 0;
 		}
 	}
