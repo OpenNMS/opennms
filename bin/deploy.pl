@@ -20,7 +20,7 @@ clean_git() unless (exists $ENV{'SKIP_CLEAN'});
 
 my $hostname = `hostname 2>/dev/null`;
 chomp($hostname);
-if ($hostname eq "nen") {
+if ($hostname eq "repo.opennms.org") {
 	# special case, on nen we use the local repo
 	unshift(@ARGS, "-DaltDeploymentRepository=opennms-snapshot::default::file:///var/www/sites/opennms.org/site/repo/snapshots");
 }
