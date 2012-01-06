@@ -49,7 +49,27 @@ class V6PingRequest extends ICMPv6EchoPacket {
         setType(Type.EchoRequest);
         setCode(0);
     }
-    
+
+    public V6PingRequest(int id, int seqNum, long threadId, int packetsize) {
+        super(packetsize);
+        // header fields
+        setType(Type.EchoRequest);
+        setCode(0);
+        setIdentifier(id);
+        setSequenceNumber(seqNum);
+        
+        // data fields
+        setThreadId(threadId);
+        setCookie();
+        // timestamp is set later
+
+        // fill buffer with 'interesting' data
+        ByteBuffer buf = getContentBuffer();
+        for(int b = DATA_LENGTH; b < buf.limit(); b++) {
+            buf.put(b, (byte)b);
+        }
+    }
+
     public V6PingRequest(int id, int seqNum, long threadId) {
         super(PACKET_LENGTH);
         // header fields

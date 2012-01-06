@@ -98,10 +98,10 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         return datagram.getContent();
     }
     
-    public void ping(final Inet6Address addr, final int identifier, final int sequenceNumber, final long threadId, final long count, final long interval) throws InterruptedException {
+    public void ping(final Inet6Address addr, final int identifier, final int sequenceNumber, final long threadId, final long count, final long interval, final int packetSize) throws InterruptedException {
         final NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
-            final V6PingRequest request = new V6PingRequest(identifier, i, threadId);
+            final V6PingRequest request = new V6PingRequest(identifier, i, threadId,packetSize);
             request.send(socket, addr);
             Thread.sleep(interval);
         }
