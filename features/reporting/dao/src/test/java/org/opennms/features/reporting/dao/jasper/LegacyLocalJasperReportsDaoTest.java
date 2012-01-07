@@ -55,7 +55,7 @@ public class LegacyLocalJasperReportsDaoTest {
     private LegacyLocalJasperReportsDao m_legacyLocalJasperReportsDao;
 
     /**
-     * Resource for local-jasper-reports.xml
+     * Absolute path for local-jasper-repository.xml
      */
     private String m_configFile;
 
@@ -77,12 +77,14 @@ public class LegacyLocalJasperReportsDaoTest {
         // Injected configuration
         assertNotNull("Inject legacy local report data access.", m_legacyLocalJasperReportsDao);
 
+        // Configuration file tests
+        assertNotNull("Config file not null", m_legacyLocalJasperReportsDao.getConfigResource());
         m_configFile = m_legacyLocalJasperReportsDao.getConfigResource().getFile().getAbsolutePath();
+
         assertTrue("Config file " + m_configFile + " exist", m_legacyLocalJasperReportsDao.getConfigResource().exists());
         assertTrue("Config file " + m_configFile + " is readable", m_legacyLocalJasperReportsDao.getConfigResource().isReadable());
-        
-        m_jasperReportResource = m_legacyLocalJasperReportsDao.getJasperReportResources().getFile().getPath();
         assertTrue("Report template folder " + m_jasperReportResource + " exist", m_legacyLocalJasperReportsDao.getJasperReportResources().exists());
+        m_jasperReportResource = m_legacyLocalJasperReportsDao.getJasperReportResources().getFile().getPath();
 
         // Unmarshal with JAXB to load XML into POJO's
         m_legacyLocalJasperReportsDao.afterPropertiesSet();

@@ -8,7 +8,7 @@
         <property name="configResource" value="file:src/test/resources/etc/local-reports.xml" />
     </bean>
 
-    <bean id="LegacyLocalReportsDaoTest" class="org.opennms.features.reporting.dao.LegacyLocalReportsDaoTest">
+    <bean id="legacyLocalReportsDaoTest" class="org.opennms.features.reporting.dao.LegacyLocalReportsDaoTest">
         <property name="legacyLocalReportsDao" ref="legacyLocalReportsDao" />
     </bean>
 
@@ -18,7 +18,7 @@
         <property name="jasperReportResources" value="file:src/test/resources/etc/report-templates" />
     </bean>
 
-    <bean id="LegacyLocalJasperReportsDaoTest" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDaoTest">
+    <bean id="legacyLocalJasperReportsDaoTest" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDaoTest">
         <property name="legacyLocalJasperReportsDao" ref="legacyLocalJasperReportsDao" />
     </bean>
 
@@ -27,5 +27,7 @@
         <property name="configResource" value="file:src/test/resources/etc/remote-repository.xml" />
     </bean>
 
-
+    <bean id="defaultRemoteRepositoryConfigDaoTest" class="org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDaoTest">
+        <property name="defaultRemoteRemoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao" />
+    </bean>
 </beans>

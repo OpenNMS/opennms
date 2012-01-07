@@ -28,17 +28,19 @@
 
 package org.opennms.features.reporting.repository.local;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
+@Ignore
 public class LegacyLocalReportRepositoryTest {
     Logger logger = LoggerFactory.getLogger(LegacyLocalReportRepositoryTest.class);
     ReportRepository m_repo = new LegacyLocalReportRepository();

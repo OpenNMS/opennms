@@ -28,83 +28,176 @@
 
 package org.opennms.features.reporting.dao.remoterepository;
 
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.JAXB;
-
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.util.Assert;
 
+import javax.xml.bind.JAXB;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * <p>DefaultRemoteRepositoryConfigDao class.</p>
+ * <p/>
+ * Class realize the data access to remote-repository.xml.
+ *
+ * @author Markus Neumann <markus@opennms.com>
+ * @author Ronny Trommer <ronny@opennms.com>
+ * @version $Id: $
+ * @since 1.8.1
+ */
+@ContextConfiguration(locations = {"classpath:reportingDao-context.xml"})
 public class DefaultRemoteRepositoryConfigDao implements
         RemoteRepositoryConfigDao {
+    /**
+     * Logging
+     */
+    private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDao.class);
 
-    Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDao.class);
-    
-    private final String REMOTE_REPOSITORY_XML = System.getProperty("opennms.home")
-            + File.separator
-            + "etc"
-            + File.separator
-            + "remote-repository.xml";
+    /**
+     * Config resource for remote repository configuration file
+     */
+    private Resource m_configResource;
 
-    private RemoteRepositoryConfig config;
+    /**
+     * Remote repository configuration
+     */
+    private RemoteRepositoryConfig m_remoteRepositoryConfig;
 
-    private RemoteRepositoryConfig readConfig() {
-        try {
-            config = JAXB.unmarshal(new File(REMOTE_REPOSITORY_XML), RemoteRepositoryConfig.class);
-        } catch (Exception e) {
-            logger.error("fail to unmarshal file '{}', '{}'", REMOTE_REPOSITORY_XML, e.getMessage());
-            e.printStackTrace();
-        }
-        return config;
+    /**
+     * Version number for jasper report
+     */
+    private String m_jasperReportsVersion;
+
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * Sanity check for configuration file and load database-reports.xml
+     *
+     * @throws java.lang.Exception if any.
+     */
+    public void afterPropertiesSet() throws Exception {
+        Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
+        loadRemoteRepositoryConfig();
     }
 
+    /**
+     * <p>loadRemoteRepositoryConfig</p>
+     * <p/>
+     * File handling for remote-repository.xml and unmarshal in RemoteRepositoryConfig class
+     *
+     * @throws Exception
+     */
+    private void loadRemoteRepositoryConfig() throws Exception {
+        InputStream stream = null;
+        long lastModified;
+
+        File file = null;
+        try {
+            file = getConfigResource().getFile();
+        } catch (IOException e) {
+            logger.error("Resource '{}' does not seem to have an underlying File object.", getConfigResource());
+        }
+
+        if (file != null) {
+            lastModified = file.lastModified();
+            stream = new FileInputStream(file);
+        } else {
+            lastModified = System.currentTimeMillis();
+            stream = getConfigResource().getInputStream();
+        }
+        setRemoteRepositoryConfig(JAXB.unmarshal(file, RemoteRepositoryConfig.class));
+
+        //TODO indigo: The jasper report version should be configured in jasper-reports.xml
+        setJasperReportsVersion(m_remoteRepositoryConfig.getJasperReportsVersion());
+    }
+
+    /** {@inheritDoc} */
     @Override
     public String getJasperReportsVersion() {
-        return this.readConfig().getJasperRepotsVersion();
+        return m_jasperReportsVersion;
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     public Boolean isRepositoryActive(String repositoryID) {
         return this.getRepositoryById(repositoryID).isRepositoryActive();
     }
 
+    /** {@inheritDoc} */
     @Override
     public URI getURI(String repositoryID) {
         return this.getRepositoryById(repositoryID).getURI();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getLoginUser(String repositoryID) {
         return this.getRepositoryById(repositoryID).getLoginUser();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getLoginRepoPassword(String repositoryID) {
         return this.getRepositoryById(repositoryID).getLoginRepoPassword();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getRepositoryName(String repositoryID) {
         return this.getRepositoryById(repositoryID).getRepositoryName();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getRepositoryDescription(String repositoryID) {
         return this.getRepositoryById(repositoryID).getRepositoryDescription();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getRepositoryManagementURL(String repositoryID) {
         return this.getRepositoryById(repositoryID).getRepositoryManagementURL();
     }
 
-    //TODO Tak: How to fail safe this?
+    /** {@inheritDoc} */
+    @Override
+    public List<RemoteRepositoryDefinition> getAllRepositories() {
+        List<RemoteRepositoryDefinition> resultList = new ArrayList<RemoteRepositoryDefinition>();
+        resultList.addAll(this.m_remoteRepositoryConfig.getRepositoryList());
+        return resultList;
+    }
+    /** {@inheritDoc} */
+    @Override
+    public List<RemoteRepositoryDefinition> getActiveRepositories() {
+        List<RemoteRepositoryDefinition> resultList = new ArrayList<RemoteRepositoryDefinition>();
+        for (RemoteRepositoryDefinition repository : this.m_remoteRepositoryConfig.getRepositoryList()) {
+            if (repository.isRepositoryActive()) {
+                resultList.add(repository);
+            }
+        }
+        return resultList;
+    }
+
+    /**
+     * <p>getRepositoryById</p>
+     * 
+     * Get remote repository entry by repository ID
+     * 
+     * @param repositoryID a {@link org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition} object
+     * @return a {@link org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition} object
+     */
     public RemoteRepositoryDefinition getRepositoryById(String repositoryID) {
+        //TODO Tak: How to fail safe this?
         RemoteRepositoryDefinition result = null;
         for(RemoteRepositoryDefinition repository : this.getAllRepositories()) {
             if (repositoryID.equals(repository.getRepositoryId())) {
@@ -114,21 +207,58 @@ public class DefaultRemoteRepositoryConfigDao implements
         return result;
     }
 
-    @Override
-    public List<RemoteRepositoryDefinition> getAllRepositories() {
-        List<RemoteRepositoryDefinition> resultList = new ArrayList<RemoteRepositoryDefinition>();
-        resultList.addAll(this.readConfig().getRepositoryList());
-        return resultList;
+    /**
+     * <p>setConfigResource</p>
+     * <p/>
+     * Set configuration for jasper report template folder
+     *
+     * @param configResource a {@link org.springframework.core.io.Resource} object
+     */
+    public void setConfigResource(Resource configResource) {
+        m_configResource = configResource;
     }
 
-    @Override
-    public List<RemoteRepositoryDefinition> getActiveRepositories() {
-        List<RemoteRepositoryDefinition> resultList = new ArrayList<RemoteRepositoryDefinition>();
-        for (RemoteRepositoryDefinition repository : this.readConfig().getRepositoryList()) {
-            if (repository.isRepositoryActive()) {
-                resultList.add(repository);
-            }
-        }
-        return resultList;
+    /**
+     * <p>getConfigResource</p>
+     *
+     * Get configuration for jasper report template folder
+     *
+     * @return a {@link org.springframework.core.io.Resource} object
+     */
+    public Resource getConfigResource() {
+        return m_configResource;
+    }
+
+    /**
+     * <p>setRemoteRepositoryConfig</p>
+     *
+     * Set remote repository configuration
+     *
+     * @param remoteRepositoryConfig a {@link org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig} object
+     */
+    private void setRemoteRepositoryConfig(RemoteRepositoryConfig remoteRepositoryConfig) {
+        m_remoteRepositoryConfig = remoteRepositoryConfig;
+    }
+
+    /**
+     * <p>getRemoteRepositoryConfig</p>
+     *
+     * Get remote repository configuration
+     *
+     * @return a {@link org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig} object
+     */
+    private RemoteRepositoryConfig getRemoteRepositoryConfig () {
+        return m_remoteRepositoryConfig;
+    }
+
+    /**
+     * <p>setJasperReportsVersion</p>
+     * 
+     * Set version for jasper report
+     * 
+     * @param jasperReportsVersion a {@link java.lang.String} object
+     */
+    private void setJasperReportsVersion(String jasperReportsVersion) {
+        m_jasperReportsVersion = jasperReportsVersion;
     }
 }

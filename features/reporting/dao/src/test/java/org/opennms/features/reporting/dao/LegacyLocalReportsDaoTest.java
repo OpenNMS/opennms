@@ -50,7 +50,6 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:reportingDaoTest-context.xml"})
 public class LegacyLocalReportsDaoTest {
-
     /**
      * Local report data access object to test
      */
@@ -68,7 +67,7 @@ public class LegacyLocalReportsDaoTest {
     private List<BasicReportDefinition> m_reports;
 
     /**
-     * Resource for local-reports.xml
+     * Absolute path for local-repository.xml
      */
     private String m_configFile;
 
@@ -87,8 +86,8 @@ public class LegacyLocalReportsDaoTest {
 
         // Configuration file tests
         assertNotNull("Config file not null", m_legacyLocalReportsDao.getConfigResource());
-
         m_configFile = m_legacyLocalReportsDao.getConfigResource().getFile().getAbsolutePath();
+
         assertTrue("Config file " + m_configFile + " exist", m_legacyLocalReportsDao.getConfigResource().exists());
         assertTrue("Config file " + m_configFile + " is readable", m_legacyLocalReportsDao.getConfigResource().isReadable());
 
@@ -99,12 +98,10 @@ public class LegacyLocalReportsDaoTest {
         m_onlineReports = m_legacyLocalReportsDao.getOnlineReports();
         assertNotNull("Test to retrieve 2 online reports from " + m_configFile, m_onlineReports);
         assertEquals("Test 2 configured online reports.", 2, m_onlineReports.size());
-        assertFalse("Online reports from " + m_configFile + " is empty.", m_legacyLocalReportsDao.getReports().isEmpty());
 
         // Read all configured reports
         m_reports = m_legacyLocalReportsDao.getReports();
         assertNotNull("Test to retrieve 3 online reports from " + m_configFile, m_reports);
-        assertFalse("Reports from " + m_configFile + " is empty.", m_legacyLocalReportsDao.getReports().isEmpty());
         assertEquals("Test 3 configured online reports.", 3, m_reports.size());
     }
 
