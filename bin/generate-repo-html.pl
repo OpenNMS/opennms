@@ -38,7 +38,7 @@ for my $release (@display_order) {
 	my $repos  = $repo_map->{$release};
 	my $common = $repos->{'common'};
 
-	my $latest_rpm = $common->find_newest_rpm_by_name('opennms-core');
+	my $latest_rpm = $common->find_newest_rpm_by_name('opennms-core', 'noarch');
 
 	$index_text .= "<h2><a name=\"$release\">$release_description</a> (current version: <a href=\"$release/common/opennms\">" . $latest_rpm->display_version . "</a>)</h2>\n";
 	$index_text .= "<ul>\n";

@@ -47,7 +47,7 @@ $base = Cwd::abs_path($base);
 my $repo    = OpenNMS::YUM::Repo->new($base, $release, $platform);
 my $rpmname = "opennms-repo-$release";
 
-my $newest_rpm  = $repo->find_newest_rpm_by_name($rpmname);
+my $newest_rpm  = $repo->find_newest_rpm_by_name($rpmname, 'noarch');
 my $rpm_version = defined $newest_rpm? ($newest_rpm->version)     : $default_rpm_version;
 my $rpm_release = defined $newest_rpm? ($newest_rpm->release + 1) : $default_rpm_release;
 
