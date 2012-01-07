@@ -28,11 +28,6 @@
 
 package org.opennms.features.reporting.repository.local;
 
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.opennms.features.reporting.dao.LegacyLocalReportsDao;
 import org.opennms.features.reporting.dao.LocalReportsDao;
@@ -44,22 +39,59 @@ import org.opennms.features.reporting.repository.ReportRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * <p>LegacyLocalReportRepository class.</p>
+ *
+ * Class realize the local repository for community reports.
+ *
+ * @author Markus Neumann <markus@opennms.com>
+ * @author Ronny Trommer <ronny@opennms.com>
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class LegacyLocalReportRepository implements ReportRepository {
 
+    /**
+     * Logging
+     */
 	private Logger logger = LoggerFactory.getLogger(LegacyLocalReportRepository.class);
 
+    /**
+     * Data access to local-reports.xml
+     */
 	private LocalReportsDao m_localReportsDao = new LegacyLocalReportsDao();
 
+    /**
+     * Data access to local-jasper-reports.xml
+     */
 	private LocalJasperReportsDao m_localJasperReportsDao = new LegacyLocalJasperReportsDao();
 
+    /**
+     * Repository tag to identify reports
+     */
 	private final String REPOSITORY_ID = "local";
-    
-    private final String REPOSITORY_NAME="Legacy local repository";
-    
+
+    /**
+     * Name for the local community repository
+     */
+    private final String REPOSITORY_NAME="Community local repository";
+
+    /**
+     * Description for the local community repository
+     */
     private final String REPOSITORY_DESCRIPTION="Providing OpenNMS community reports from local disk.";
-    
+
+    /**
+     * URL to subscribe a repository
+     */
     private final String MANAGEMENT_URL ="http://localhost/manageLegacyLocalRepositoy";
 
+    /**{@inheritDoc} */
 	@Override
 	public List<BasicReportDefinition> getReports() {
 		List<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
@@ -82,7 +114,8 @@ public class LegacyLocalReportRepository implements ReportRepository {
 		return resultList;
 	}
 
-	@Override
+    /**{@inheritDoc} */
+    @Override
 	public List<BasicReportDefinition> getOnlineReports() {
 		List<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
 		for (BasicReportDefinition report : m_localReportsDao.getOnlineReports()) {
@@ -104,45 +137,53 @@ public class LegacyLocalReportRepository implements ReportRepository {
 		return resultList;
 	}
 
+    /**{@inheritDoc} */
 	@Override
 	public String getReportService(String id) {
 		id = id.substring(id.indexOf("_") + 1);
 		return m_localReportsDao.getReportService(id);
 	}
 
+    /**{@inheritDoc} */
 	@Override
 	public String getDisplayName(String id) {
 		id = id.substring(id.indexOf("_") + 1);
 		return m_localReportsDao.getDisplayName(id);
 	}
 
+    /**{@inheritDoc} */
 	@Override
 	public String getEngine(String id) {
 		id = id.substring(id.indexOf("_") + 1);
 		return m_localJasperReportsDao.getEngine(id);
 	}
 
+    /**{@inheritDoc} */
 	@Override
 	public InputStream getTemplateStream(String id) {
 		id = id.substring(id.indexOf("_") + 1);
 		return m_localJasperReportsDao.getTemplateStream(id);
 	}
 
+    /**{@inheritDoc} */
 	@Override
 	public String getRepositoryId() {
 		return REPOSITORY_ID;
 	}
 
+    /**{@inheritDoc} */
     @Override
     public String getRepositoryName() {
         return REPOSITORY_NAME;
     }
 
+    /**{@inheritDoc} */
     @Override
     public String getRepositoryDescription() {
         return REPOSITORY_DESCRIPTION;
     }
 
+    /**{@inheritDoc} */
     @Override
     public String getManagementUrl() {
         return MANAGEMENT_URL;
