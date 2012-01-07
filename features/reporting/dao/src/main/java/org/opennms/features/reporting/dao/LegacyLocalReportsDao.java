@@ -43,28 +43,50 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <p>LegacyLocalReportsDao class.</p>
+ *
+ * Class realize the data access and preserve compatibility to database-reports.xml.
+ *
+ * @author Markus Neumann <markus@opennms.com>
+ * @author Ronny Trommer <ronny@opennms.com>
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class LegacyLocalReportsDao implements LocalReportsDao {
 
+    /**
+     * Logging
+     */
     private Logger logger = LoggerFactory.getLogger(LegacyLocalReportsDao.class);
 
+    /**
+     * List of generic report definitions
+     */
     private LegacyLocalReportsDefinition m_legacyLocalReportsDefinition;
 
+    /**
+     * Config resource for database reports configuration file
+     */
     private Resource m_configResource;
-    
-    public LegacyLocalReportsDao() {
-    }
 
     /**
      * <p>afterPropertiesSet</p>
+     *
+     * Sanity check for configuration file and load database-reports.xml
      *
      * @throws java.lang.Exception if any.
      */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
-
         loadLegacyLocalReports();
     }
 
+    /**
+     * File handling for database-reports.xml and unmarshal in LegacyLocalReportsDefinition class
+     *
+     * @throws Exception
+     */
     private void loadLegacyLocalReports() throws Exception {
         InputStream stream = null;
         long lastModified;
@@ -85,7 +107,8 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
         }
         setLegacyLocalReportsDefinition(JAXB.unmarshal(file, LegacyLocalReportsDefinition.class));
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     public List<BasicReportDefinition> getReports() {
         ArrayList<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
@@ -95,17 +118,19 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
         return resultList;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<BasicReportDefinition> getOnlineReports() {
-       List<BasicReportDefinition> onlineReports = new ArrayList<BasicReportDefinition>();
-       for (BasicReportDefinition report : m_legacyLocalReportsDefinition.getReportList()) {
-           if (report.getOnline()) {
-               onlineReports.add(report);
-           }
-       }
-       return onlineReports;
+        List<BasicReportDefinition> onlineReports = new ArrayList<BasicReportDefinition>();
+        for (BasicReportDefinition report : m_legacyLocalReportsDefinition.getReportList()) {
+            if (report.getOnline()) {
+                onlineReports.add(report);
+            }
+        }
+        return onlineReports;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getReportService(String id) {
         for (BasicReportDefinition report : m_legacyLocalReportsDefinition.getReportList()) {
@@ -116,6 +141,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getDisplayName(String id) {
         for (BasicReportDefinition report : m_legacyLocalReportsDefinition.getReportList()) {
@@ -126,12 +152,22 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
         return null;
     }
 
+    /**
+     * Get list with legacy report definition
+     *
+     * @return a {@link org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition} object
+     */
     public LegacyLocalReportsDefinition getLegacyLocalReportsDefinition() {
         return m_legacyLocalReportsDefinition;
     }
 
-    public void setLegacyLocalReportsDefinition(LegacyLocalReportsDefinition m_legacyLocalReportsDefinition) {
-        this.m_legacyLocalReportsDefinition = m_legacyLocalReportsDefinition;
+    /**
+     * Set list with legacy report definition
+     *
+     * @param legacyLocalReportsDefinition {@link org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition} object
+     */
+    public void setLegacyLocalReportsDefinition(LegacyLocalReportsDefinition legacyLocalReportsDefinition) {
+        this.m_legacyLocalReportsDefinition = legacyLocalReportsDefinition;
     }
 
     /**
