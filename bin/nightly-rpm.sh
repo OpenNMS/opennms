@@ -1,9 +1,10 @@
 #!/bin/bash -e
 
 MYDIR=`dirname $0`
-TOPDIR=`cd $MYDIR; pwd`
+BINDIR=`cd "$MYDIR"; pwd`
+TOPDIR=`cd "$BINDIR"/..; pwd`
 
-cd "$TOPDIR"/..
+cd "$TOPDIR"
 
 if [ -z "$YUMDIR" ]; then
 	YUMDIR="/var/www/sites/opennms.org/site/yum"
