@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+ <head>
+  <title>OpenNMS Yum Repository</title>
+  <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+ </head>
+ <body>
+  <div id="header">
+   <h1 id="headerlogo"><a href="http://www.opennms.org/"><img src="logo.png" alt="OpenNMS" /></a></h1>  
+   <div id="headerinfo">
+    <h1>OpenNMS Yum Repository</h1>
+   </div>
+   <hr />
+   <div class="spacer"><!-- --></div>
+  </div>
+  <div id="content">
+   <p>&nbsp;</p>
+   <p>
+    OpenNMS is available for most RPM-based distributions through Yum.  Quick-start instructions
+    are available <a href="http://www.opennms.org/index.php/Installation:Yum">on the OpenNMS
+    wiki here</a>.
+   </p>
