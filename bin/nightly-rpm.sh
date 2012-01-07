@@ -6,7 +6,7 @@ TOPDIR=`cd $MYDIR; pwd`
 cd "$TOPDIR"/..
 
 if [ -z "$YUMDIR" ]; then
-	YUMDIR="/opt/yum"
+	YUMDIR="/var/www/sites/opennms.org/site/yum"
 fi
 
 if [ ! -d "$YUMDIR" ]; then
