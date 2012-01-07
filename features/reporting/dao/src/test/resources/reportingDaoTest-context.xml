@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="legacyLocalReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao">
-        <property name="configResource" value="file:features/reporting/dao/src/test/resources/etc/local-reports.xml" />
+        <property name="configResource" value="file:src/test/resources/etc/local-reports.xml" />
     </bean>
 
     <bean id="LegacyLocalReportsDaoTest" class="org.opennms.features.reporting.dao.LegacyLocalReportsDaoTest">
