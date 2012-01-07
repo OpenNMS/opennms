@@ -13,8 +13,8 @@ use IO::Handle;
 #use RPM4;
 
 use OpenNMS::Util;
-use OpenNMS::YUM::Repo;
-use OpenNMS::YUM::RPM;
+use OpenNMS::Package::Repo;
+use OpenNMS::Package::RPM;
 
 $|++;
 
@@ -64,9 +64,9 @@ delete $release_descriptions->{order_sync};
 
 my $scan_repositories = [];
 if ($all) {
-	$scan_repositories = OpenNMS::YUM::Repo->find_repos($base);
+	$scan_repositories = OpenNMS::Package::Repo->find_repos($base);
 } else {
-	$scan_repositories = [ OpenNMS::YUM::Repo->new($base, $release, $platform) ];
+	$scan_repositories = [ OpenNMS::Package::Repo->new($base, $release, $platform) ];
 }
 
 for my $orig_repo (@$scan_repositories) {
@@ -108,7 +108,7 @@ sub install_rpms {
 	my @rpms = @_;
 
 	for my $rpmname (@rpms) {
-		my $rpm = OpenNMS::YUM::RPM->new($rpmname);
+		my $rpm = OpenNMS::Package::RPM->new($rpmname);
 		$release_repo->install_rpm($rpm, $subdirectory);
 	}
 }
@@ -137,7 +137,7 @@ sub sync_repos {
 	for my $i ((get_release_index($release_repo->release) + 1) .. $#sync_order) {
 		my $rel = $sync_order[$i];
 
-		my $orig_repo = OpenNMS::YUM::Repo->new($base, $rel, $release_repo->platform);
+		my $orig_repo = OpenNMS::Package::Repo->new($base, $rel, $release_repo->platform);
 		my $next_repo = $orig_repo->create_temporary;
 	
 		print "- sharing from repo: " . $last_repo->to_string . " to " . $next_repo->to_string . "... ";

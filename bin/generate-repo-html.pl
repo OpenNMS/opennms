@@ -5,7 +5,7 @@ use File::Basename;
 use File::Spec;
 
 use OpenNMS::Util;
-use OpenNMS::YUM::Repo;
+use OpenNMS::Package::Repo;
 
 my $base = shift @ARGV;
 
@@ -22,7 +22,7 @@ my $platform_descriptions = read_properties(File::Spec->catdir(dirname($0), "pla
 my @display_order  = split(/\s*,\s*/, $release_descriptions->{order_display});
 my @platform_order = split(/\s*,\s*/, $platform_descriptions->{order_display});
 
-my $repos = OpenNMS::YUM::Repo->find_repos($base);
+my $repos = OpenNMS::Package::Repo->find_repos($base);
 
 # convenience hash for looking up repositories
 my $repo_map = {};

@@ -13,8 +13,8 @@ use Getopt::Long qw(:config gnu_getopt);
 use IO::Handle;
 
 use OpenNMS::Util;
-use OpenNMS::YUM::Repo;
-use OpenNMS::YUM::RPM;
+use OpenNMS::Package::Repo;
+use OpenNMS::Package::RPM;
 
 my $default_rpm_version  = '1.0';
 my $default_rpm_release  = 1;
@@ -44,7 +44,7 @@ if (not defined $signing_password or not defined $signing_id) {
 
 $base = Cwd::abs_path($base);
 
-my $repo    = OpenNMS::YUM::Repo->new($base, $release, $platform);
+my $repo    = OpenNMS::Package::Repo->new($base, $release, $platform);
 my $rpmname = "opennms-repo-$release";
 
 my $newest_rpm  = $repo->find_newest_rpm_by_name($rpmname, 'noarch');
@@ -168,7 +168,7 @@ sub sign_rpm {
 	my $signing_password = shift;
 
 	print "- signing $rpm_filename... ";
-	my $signed = OpenNMS::YUM::RPM->new($rpm_filename)->sign($signing_id, $signing_password);
+	my $signed = OpenNMS::Package::RPM->new($rpm_filename)->sign($signing_id, $signing_password);
 	die "failed while signing RPM: $!" unless ($signed);
 	print "- done signing.\n";
 
@@ -196,7 +196,7 @@ sub install_rpm_to_repo {
 	my $signing_password = shift;
 
 	print "- creating temporary repository from " . $repo->to_string . "... ";
-	my $rpm = OpenNMS::YUM::RPM->new($rpm_filename);
+	my $rpm = OpenNMS::Package::RPM->new($rpm_filename);
 	my $newrepo = $repo->create_temporary();
 	print "done\n";
 
