@@ -34,6 +34,10 @@ RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 # create the RPM
 ./makerpm.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION"
 
+# copy the source into the YUM repository
+rm -f "${YUMDIR}/${RELEASE}/common/"opennms-source-*.tar.gz
+cp target/rpm/SOURCES/opennms-source*.tar.gz "${YUMDIR}/${RELEASE}/common/"
+
 # update the $RELEASE repo, and sync it to anything later in the hierarchy
 # ./bin/update-repo.pl [-g gpg_id] -s "$PASSWORD" "$RELEASE" "common" "opennms" target/rpms/RPMS/noarch/*.rpm
 ./bin/update-repo.pl -s "$PASSWORD" "$YUMDIR" "$RELEASE" "common" "opennms" target/rpm/RPMS/noarch/*.rpm
