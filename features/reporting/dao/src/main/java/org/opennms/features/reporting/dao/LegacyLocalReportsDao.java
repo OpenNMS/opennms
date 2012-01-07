@@ -33,6 +33,7 @@ import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefini
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 import javax.xml.bind.JAXB;
@@ -53,6 +54,7 @@ import java.util.List;
  * @version $Id: $
  * @since 1.8.1
  */
+@ContextConfiguration(locations = {"classpath:reportingDaoTest-context.xml"})
 public class LegacyLocalReportsDao implements LocalReportsDao {
 
     /**
@@ -83,6 +85,8 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
     }
 
     /**
+     * <p>loadLegacyLocalReports</p>
+     *
      * File handling for database-reports.xml and unmarshal in LegacyLocalReportsDefinition class
      *
      * @throws Exception
@@ -153,15 +157,8 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
     }
 
     /**
-     * Get list with legacy report definition
+     * <p>setLegacyLocalReportsDefinition</p>
      *
-     * @return a {@link org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition} object
-     */
-    public LegacyLocalReportsDefinition getLegacyLocalReportsDefinition() {
-        return m_legacyLocalReportsDefinition;
-    }
-
-    /**
      * Set list with legacy report definition
      *
      * @param legacyLocalReportsDefinition {@link org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition} object
@@ -171,9 +168,22 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
     }
 
     /**
+     * <p>getLegacyLocalReportsDefinition</p>
+     *
+     * Get list with legacy report definition
+     *
+     * @return a {@link org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition} object
+     */
+    public LegacyLocalReportsDefinition getLegacyLocalReportsDefinition() {
+        return m_legacyLocalReportsDefinition;
+    }
+
+    /**
      * <p>setConfigResource</p>
      *
-     * @param configResource a {@link org.springframework.core.io.Resource} object.
+     * Set configuration for jasper report template folder
+     *
+     * @param configResource a {@link org.springframework.core.io.Resource} object
      */
     public void setConfigResource(Resource configResource) {
         m_configResource = configResource;
@@ -182,7 +192,9 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
     /**
      * <p>getConfigResource</p>
      *
-     * @return a {@link org.springframework.core.io.Resource} object.
+     * Get configuration for jasper report template folder
+     *
+     * @return a {@link org.springframework.core.io.Resource} object
      */
     public Resource getConfigResource() {
         return m_configResource;

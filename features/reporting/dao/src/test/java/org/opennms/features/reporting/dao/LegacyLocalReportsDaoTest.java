@@ -68,18 +68,20 @@ public class LegacyLocalReportsDaoTest {
     private List<BasicReportDefinition> m_reports;
 
     /**
-     * Name of the configuration file
+     * Resource for local-reports.xml
      */
     private String m_configFile;
 
     /**
+     * <p>setUp</p>
+     *
      * Initialize the configuration file. Check if the configuration file exist. Try retrieve the reports from
      * configuration.
      *
      * @throws Exception
      */
     @Before
-    public void sanityCheck() throws Exception {
+    public void setUp() throws Exception {
         // Injected configuration
         assertNotNull("Inject legacy local report data access.", m_legacyLocalReportsDao);
 
@@ -107,6 +109,8 @@ public class LegacyLocalReportsDaoTest {
     }
 
     /**
+     * <p>testReportDescription</p>
+     *
      * Tests to retrieve all descriptions from report configuration file
      *
      * @throws Exception
@@ -119,18 +123,22 @@ public class LegacyLocalReportsDaoTest {
     }
 
     /**
+     * <p>testReportId</p>
+     *
      * Tests to retrieve all IDs from report file
      *
      * @throws Exception
      */
     @Test
-    public void testReportIds() throws Exception {
+    public void testReportId() throws Exception {
         assertEquals("First report id test", "sample-report", m_reports.get(0).getId());
         assertEquals("Second report id test", "online-sample-report", m_reports.get(1).getId());
         assertEquals("Third report id test", "not-online-sample-report", m_reports.get(2).getId());
     }
 
     /**
+     * <p>testReportDisplayName</p>
+     *
      * Test to retrieve all DisplayNames from report configuration file
      *
      * @throws Exception
@@ -143,6 +151,8 @@ public class LegacyLocalReportsDaoTest {
     }
 
     /**
+     * <p>testReportService</p>
+     *
      * Test to retrieve all report services from report configuration file
      *
      * @throws Exception
@@ -155,6 +165,8 @@ public class LegacyLocalReportsDaoTest {
     }
 
     /**
+     * <p>testReportRepositoryId</p>
+     *
      * Test to retrieve repository IDs. The configuration is read in a repository. The repository will set his
      * repository id. For this reason the repository ID should be NULL.
      *
@@ -168,6 +180,8 @@ public class LegacyLocalReportsDaoTest {
     }
 
     /**
+     * <p>testReportAllowAccess</p>
+     *
      * Test to retrieve the allow access configuration. The implementation of a repository configure this property. By
      * default the allowAccess property is set to "FALSE"
      *
@@ -181,6 +195,8 @@ public class LegacyLocalReportsDaoTest {
     }
 
     /**
+     * <p>testReportIsOnline</p>
+     *
      * Test to retrieve is online property.
      *
      * @throws Exception
@@ -193,6 +209,8 @@ public class LegacyLocalReportsDaoTest {
     }
 
     /**
+     * <p>setLegacyLocalReportsDao</p>
+     *
      * Set the configured data access object with injection 
      *
      * @param legacyLocalReportsDao a {@link org.opennms.features.reporting.dao.LegacyLocalReportsDao} object
@@ -202,6 +220,8 @@ public class LegacyLocalReportsDaoTest {
     }
 
     /**
+     * <p>getLegacyLocalReportsDao</p>
+     *
      * Get the configured data access object injected by Spring
      *
      * @return a {@link org.opennms.features.reporting.dao.LegacyLocalReportsDao} object
