@@ -47,14 +47,14 @@ import java.util.List;
 /**
  * <p>LegacyLocalReportsDao class.</p>
  *
- * Class realize the data access and preserve compatibility to database-reports.xml.
+ * Class realize the data access and preserve compatibility to local-reports.xml.
  *
  * @author Markus Neumann <markus@opennms.com>
  * @author Ronny Trommer <ronny@opennms.com>
  * @version $Id: $
  * @since 1.8.1
  */
-@ContextConfiguration(locations = {"classpath:reportingDaoTest-context.xml"})
+@ContextConfiguration(locations = {"classpath:reportingDao-context.xml"})
 public class LegacyLocalReportsDao implements LocalReportsDao {
 
     /**
@@ -181,7 +181,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
     /**
      * <p>setConfigResource</p>
      *
-     * Set configuration for jasper report template folder
+     * Set resource for local-reports.xml
      *
      * @param configResource a {@link org.springframework.core.io.Resource} object
      */
@@ -192,7 +192,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
     /**
      * <p>getConfigResource</p>
      *
-     * Get configuration for jasper report template folder
+     * Get resource for local-reports.xml
      *
      * @return a {@link org.springframework.core.io.Resource} object
      */

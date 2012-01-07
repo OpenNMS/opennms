@@ -39,7 +39,17 @@ import org.springframework.util.Assert;
 import javax.xml.bind.JAXB;
 import java.io.*;
 
-@ContextConfiguration(locations = {"classpath:reportingDaoTest-context.xml"})
+/**
+ * <p>LegacyLocalJasperReportsDao class.</p>
+ *
+ * Class realize the data access and preserve compatibility to local-jasper-reports.xml.
+ *
+ * @author Markus Neumann <markus@opennms.com>
+ * @author Ronny Trommer <ronny@opennms.com>
+ * @version $Id: $
+ * @since 1.8.1
+ */
+@ContextConfiguration(locations = {"classpath:reportingDao-context.xml"})
 public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     /**
      * Logging
@@ -49,6 +59,7 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     /**
      * List of generic report definitions
      */
+
     private LocalJasperReports m_LocalJasperReports;
 
     /**
@@ -64,7 +75,7 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     /**
      * <p>afterPropertiesSet</p>
      *
-     * Sanity check for configuration file and load database-reports.xml
+     * Sanity check for configuration file and load local-jasper-reports.xml
      *
      * @throws java.lang.Exception if any.
      */
