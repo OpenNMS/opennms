@@ -29,6 +29,10 @@ if [ ! -e "$TOPDIR/.nightly" ]; then
 	exit 1
 fi
 
+# make sure things are cleaned up
+git clean -fdx
+git reset --hard HEAD
+
 RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 
 # create the RPM
