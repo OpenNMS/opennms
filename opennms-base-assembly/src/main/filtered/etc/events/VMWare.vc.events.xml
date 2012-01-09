@@ -15,7 +15,7 @@
 			<mevalue>201</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vpxdAlarm</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vpxdAlarm</uei>
 	<event-label>VMWARE-VC-EVENT-MIB defined trap event: vpxdAlarm</event-label>
 	<descr>
 <![CDATA[
@@ -78,7 +78,7 @@ for details.</p><table>
 			<mevalue>202</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vpxdDiagnostic</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vpxdDiagnostic</uei>
 	<event-label>VMWARE-VC-EVENT-MIB defined trap event: vpxdDiagnostic</event-label>
 	<descr>
 <![CDATA[
@@ -108,7 +108,7 @@ vCenter Server configuration by the vCenter Server SNMP agent.</p><table></table
 			<mevalue>203</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vpxdAlarmInfo</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vpxdAlarmInfo</uei>
 	<event-label>VMWARE-VC-EVENT-MIB defined trap event: vpxdAlarmInfo</event-label>
 	<descr>
 <![CDATA[

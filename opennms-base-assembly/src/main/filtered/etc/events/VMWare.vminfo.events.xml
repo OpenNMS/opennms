@@ -15,7 +15,7 @@
 			<mevalue>1</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vmwVmPoweredOn</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOn</uei>
 	<event-label>VMWARE-VMINFO-MIB defined trap event: vmwVmPoweredOn</event-label>
 	<descr>
 <![CDATA[
@@ -45,7 +45,7 @@ poll the vmwVmTable to obtain current status.</p><table>
 			vmwVmDisplayName=%parm[#3]%</p>
 ]]>		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/vmwVmPoweredOff:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data reduction-key="uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -62,7 +62,7 @@ poll the vmwVmTable to obtain current status.</p><table>
 			<mevalue>2</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vmwVmPoweredOff</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff</uei>
 	<event-label>VMWARE-VMINFO-MIB defined trap event: vmwVmPoweredOff</event-label>
 	<descr>
 <![CDATA[
@@ -108,7 +108,7 @@ poll the vmwVmTable to obtain current status.</p><table>
 			<mevalue>3</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vmwVmHBLost</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmwVmHBLost</uei>
 	<event-label>VMWARE-VMINFO-MIB defined trap event: vmwVmHBLost</event-label>
 	<descr>
 <![CDATA[
@@ -155,7 +155,7 @@ poll the vmwVmTable to obtain current status.</p><table>
 			<mevalue>4</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vmwVmHBDetected</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmwVmHBDetected</uei>
 	<event-label>VMWARE-VMINFO-MIB defined trap event: vmwVmHBDetected</event-label>
 	<descr>
 <![CDATA[
@@ -184,7 +184,7 @@ poll the vmwVmTable to obtain current status.</p><table>
 			vmwVmDisplayName=%parm[#3]%</p>
 ]]>		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/vmwVmHBLost:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data reduction-key="uei.opennms.org/vendor/vmware/traps/vmwVmHBLost:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -201,7 +201,7 @@ poll the vmwVmTable to obtain current status.</p><table>
 			<mevalue>5</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vmwVmSuspended</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmwVmSuspended</uei>
 	<event-label>VMWARE-VMINFO-MIB defined trap event: vmwVmSuspended</event-label>
 	<descr>
 <![CDATA[
