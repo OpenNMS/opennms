@@ -41,6 +41,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
@@ -122,7 +123,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         builder.setTime(new Date(authEvent.getTimestamp()));
         Authentication auth = authEvent.getAuthentication();
         if (auth != null && auth.getName() != null) {
-            builder.addParam("user", auth.getName());
+            builder.addParam("user", WebSecurityUtils.sanitizeString(auth.getName()));
         }
         if (auth != null && auth.getDetails() != null && auth.getDetails() instanceof WebAuthenticationDetails) {
             WebAuthenticationDetails webDetails = (WebAuthenticationDetails) auth.getDetails();
