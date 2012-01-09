@@ -5,18 +5,23 @@
 
     <!-- Configuration file resource URL -->
     <bean id="localReportsResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:${opennms.home}/etc/local-reports.xml" />
+        <constructor-arg value="file:${opennms.home}/etc/local-reports.xml"/>
     </bean>
 
     <bean id="localJasperReportsResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:${opennms.home}/etc/local-jasper-reports.xml" />
+        <constructor-arg value="file:${opennms.home}/etc/local-jasper-reports.xml"/>
     </bean>
 
     <bean id="jrTemplateResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:${opennms.home}/etc/report-templates" />
+        <constructor-arg value="file:${opennms.home}/etc/report-templates"/>
     </bean>
 
     <bean id="remoteRepositoryResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:${opennms.home}/etc/remote-repository.xml" />
+        <constructor-arg value="file:${opennms.home}/etc/remote-repository.xml"/>
     </bean>
+
+    <!-- DAO for XML configuration -->
+    <bean id="localReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao"/>
+
+    <bean id="localJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao"/>
 </beans>

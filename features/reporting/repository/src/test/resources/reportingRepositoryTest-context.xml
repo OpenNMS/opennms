@@ -20,10 +20,18 @@
         <constructor-arg value="file:src/test/resources/etc/remote-repository.xml"/>
     </bean>
 
-    <!-- Injection for JUnit tests -->
+    <!-- DAO for XML configuration -->
     <bean id="localReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao" />
 
     <bean id="localJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao" />
+
+    <!-- Inject DAO in LegacyLocalReportRepository test -->
+    <bean id="reportRepository" class="org.opennms.features.reporting.repository.local.LegacyLocalReportRepository">
+        <property name="localReportsDao" ref="localReportsDao" />
+        <property name="localJasperReportsDao" ref="localJasperReportsDao" />
+    </bean>
     
-    <bean id="remoteRepositoryConfigDao" class="org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao" />
+    <bean id="legacyLocalReportRepositoryTest" class="org.opennms.features.reporting.repository.local.LegacyLocalReportRepositoryTest">
+        <property name="reportRepository" ref="reportRepository" />
+    </bean>
 </beans>

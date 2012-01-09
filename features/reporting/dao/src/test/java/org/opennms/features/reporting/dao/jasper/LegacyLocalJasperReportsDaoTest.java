@@ -28,6 +28,7 @@
 
 package org.opennms.features.reporting.dao.jasper;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,17 +53,12 @@ public class LegacyLocalJasperReportsDaoTest {
      * Local report data access object to test
      */
     @Autowired
-    private LegacyLocalJasperReportsDao m_legacyLocalJasperReportsDao;
+    private LocalJasperReportsDao m_localJasperReportsDao;
 
     /**
      * Absolute path for local-jasper-repository.xml
      */
     private String m_configFile;
-
-    /**
-     * Resource for jasper report templates
-     */
-    private String m_jasperReportResource;
 
     /**
      * <p>setUp</p>
@@ -75,20 +71,23 @@ public class LegacyLocalJasperReportsDaoTest {
     @Before
     public void setUp() throws Exception {
         // Injected configuration
-        assertNotNull("Inject legacy local report data access.", m_legacyLocalJasperReportsDao);
+        assertNotNull("Inject legacy local report data access.", m_localJasperReportsDao);
+        m_localJasperReportsDao.loadConfiguration();
 
-        // Configuration file tests
-        assertNotNull("Config file not null", m_legacyLocalJasperReportsDao.getConfigResource());
-        m_configFile = m_legacyLocalJasperReportsDao.getConfigResource().getFile().getAbsolutePath();
+        assertNotNull("Test to retrieve 3 jasper reports from " + m_configFile, m_localJasperReportsDao);
+    }
 
-        assertTrue("Config file " + m_configFile + " exist", m_legacyLocalJasperReportsDao.getConfigResource().exists());
-        assertTrue("Config file " + m_configFile + " is readable", m_legacyLocalJasperReportsDao.getConfigResource().isReadable());
-        assertTrue("Report template folder " + m_jasperReportResource + " exist", m_legacyLocalJasperReportsDao.getJasperReportResources().exists());
-        m_jasperReportResource = m_legacyLocalJasperReportsDao.getJasperReportResources().getFile().getPath();
-
-        // Unmarshal with JAXB to load XML into POJO's
-        m_legacyLocalJasperReportsDao.afterPropertiesSet();
-        assertNotNull("Test to retrieve 3 jasper reports from " + m_configFile, m_legacyLocalJasperReportsDao);
+    /**
+     * <p>tearDown</p>
+     * <p/>
+     * Cleanup
+     *
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
+        m_localJasperReportsDao = null;
+        m_configFile = null;
     }
 
     /**
@@ -100,9 +99,9 @@ public class LegacyLocalJasperReportsDaoTest {
      */
     @Test
     public void testJasperTemplateLocation() throws Exception {
-        assertEquals("Test jasper sample-report template location", "sample-report.jrxml", m_legacyLocalJasperReportsDao.getTemplateLocation("sample-report"));
-        assertEquals("Test jasper online-sample-report template location", "sample-report.jrxml", m_legacyLocalJasperReportsDao.getTemplateLocation("online-sample-report"));
-        assertEquals("Test jasper not-online-sample-report template location","sample-report.jrxml", m_legacyLocalJasperReportsDao.getTemplateLocation("not-online-sample-report"));
+        assertEquals("Test jasper sample-report template location", "sample-report.jrxml", m_localJasperReportsDao.getTemplateLocation("sample-report"));
+        assertEquals("Test jasper online-sample-report template location", "sample-report.jrxml", m_localJasperReportsDao.getTemplateLocation("online-sample-report"));
+        assertEquals("Test jasper not-online-sample-report template location","sample-report.jrxml", m_localJasperReportsDao.getTemplateLocation("not-online-sample-report"));
     }
 
     /**
@@ -114,9 +113,9 @@ public class LegacyLocalJasperReportsDaoTest {
      */
     @Test
     public void testJasperReportEngine() throws Exception {
-        assertEquals("Test jasper sample-report engine","jdbc", m_legacyLocalJasperReportsDao.getEngine("sample-report"));
-        assertEquals("Test jasper online-sample-report engine","jdbc", m_legacyLocalJasperReportsDao.getEngine("online-sample-report"));
-        assertEquals("Test jasper not-online-sample-report engine","jdbc", m_legacyLocalJasperReportsDao.getEngine("not-online-sample-report"));
+        assertEquals("Test jasper sample-report engine","jdbc", m_localJasperReportsDao.getEngine("sample-report"));
+        assertEquals("Test jasper online-sample-report engine","jdbc", m_localJasperReportsDao.getEngine("online-sample-report"));
+        assertEquals("Test jasper not-online-sample-report engine","jdbc", m_localJasperReportsDao.getEngine("not-online-sample-report"));
     }
 
     /**
@@ -128,30 +127,8 @@ public class LegacyLocalJasperReportsDaoTest {
      */
     @Test
     public void testTemplateStream() throws Exception {
-        assertNotNull("Test to retrieve sample-report", m_legacyLocalJasperReportsDao.getTemplateStream("sample-report"));
-        assertNotNull("Test to retrieve online-sample-report", m_legacyLocalJasperReportsDao.getTemplateStream("online-sample-report"));
-        assertNotNull("Test to retrieve not-online-sample-report", m_legacyLocalJasperReportsDao.getTemplateStream("not-online-sample-report"));
-    }
-
-    /**
-     * <p>setLegacyLocalJasperReportsDao</p>
-     *
-     * Set the configured data access object with injection
-     *
-     * @param legacyLocalJasperReportsDao a {@link org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao} object
-     */
-    public void setLegacyLocalJasperReportsDao(LegacyLocalJasperReportsDao legacyLocalJasperReportsDao) {
-        this.m_legacyLocalJasperReportsDao = legacyLocalJasperReportsDao;
-    }
-
-    /**
-     * <p>getLegacyLocalJasperReportsDao</p>
-     *
-     * Get the configured data access object injected by Spring
-     *
-     * @return a {@link org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao} object
-     */
-    public LegacyLocalJasperReportsDao getLegacyLocalJasperReportsDao() {
-        return this.m_legacyLocalJasperReportsDao;
+        assertNotNull("Test to retrieve sample-report", m_localJasperReportsDao.getTemplateStream("sample-report"));
+        assertNotNull("Test to retrieve online-sample-report", m_localJasperReportsDao.getTemplateStream("online-sample-report"));
+        assertNotNull("Test to retrieve not-online-sample-report", m_localJasperReportsDao.getTemplateStream("not-online-sample-report"));
     }
 }

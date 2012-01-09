@@ -32,8 +32,9 @@ import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryCon
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 import javax.xml.bind.JAXB;
@@ -55,7 +56,6 @@ import java.util.List;
  * @version $Id: $
  * @since 1.8.1
  */
-@ContextConfiguration(locations = {"classpath:reportingDao-context.xml"})
 public class DefaultRemoteRepositoryConfigDao implements
         RemoteRepositoryConfigDao {
     /**
@@ -66,10 +66,12 @@ public class DefaultRemoteRepositoryConfigDao implements
     /**
      * Config resource for remote repository configuration file
      */
-    private Resource m_configResource;
+    @Autowired
+    @Qualifier("remoteRepositoryResource")
+    private Resource m_remoteRepositoryResource;
 
     /**
-     * Remote repository configuration
+     * Remote repository model
      */
     private RemoteRepositoryConfig m_remoteRepositoryConfig;
 
@@ -80,32 +82,29 @@ public class DefaultRemoteRepositoryConfigDao implements
 
     /**
      * <p>afterPropertiesSet</p>
-     *
+     * <p/>
      * Sanity check for configuration file and load database-reports.xml
      *
      * @throws java.lang.Exception if any.
      */
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
-        loadRemoteRepositoryConfig();
+        Assert.state(m_remoteRepositoryResource != null, "property configResource must be set to a non-null value");
+        loadConfiguration();
     }
 
     /**
-     * <p>loadRemoteRepositoryConfig</p>
-     * <p/>
-     * File handling for remote-repository.xml and unmarshal in RemoteRepositoryConfig class
-     *
-     * @throws Exception
+     * {@inheritDoc}
      */
-    private void loadRemoteRepositoryConfig() throws Exception {
+    @Override
+    public void loadConfiguration() throws Exception {
         InputStream stream = null;
         long lastModified;
 
         File file = null;
         try {
-            file = getConfigResource().getFile();
+            file = m_remoteRepositoryResource.getFile();
         } catch (IOException e) {
-            logger.error("Resource '{}' does not seem to have an underlying File object.", getConfigResource());
+            logger.error("Resource '{}' does not seem to have an underlying File object.", m_remoteRepositoryResource);
         }
 
         if (file != null) {
@@ -113,7 +112,7 @@ public class DefaultRemoteRepositoryConfigDao implements
             stream = new FileInputStream(file);
         } else {
             lastModified = System.currentTimeMillis();
-            stream = getConfigResource().getInputStream();
+            stream = m_remoteRepositoryResource.getInputStream();
         }
         setRemoteRepositoryConfig(JAXB.unmarshal(file, RemoteRepositoryConfig.class));
 
@@ -121,62 +120,83 @@ public class DefaultRemoteRepositoryConfigDao implements
         setJasperReportsVersion(m_remoteRepositoryConfig.getJasperReportsVersion());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getJasperReportsVersion() {
         return m_jasperReportsVersion;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Boolean isRepositoryActive(String repositoryID) {
         return this.getRepositoryById(repositoryID).isRepositoryActive();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public URI getURI(String repositoryID) {
         return this.getRepositoryById(repositoryID).getURI();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getLoginUser(String repositoryID) {
         return this.getRepositoryById(repositoryID).getLoginUser();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getLoginRepoPassword(String repositoryID) {
         return this.getRepositoryById(repositoryID).getLoginRepoPassword();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getRepositoryName(String repositoryID) {
         return this.getRepositoryById(repositoryID).getRepositoryName();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getRepositoryDescription(String repositoryID) {
         return this.getRepositoryById(repositoryID).getRepositoryDescription();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getRepositoryManagementURL(String repositoryID) {
         return this.getRepositoryById(repositoryID).getRepositoryManagementURL();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<RemoteRepositoryDefinition> getAllRepositories() {
         List<RemoteRepositoryDefinition> resultList = new ArrayList<RemoteRepositoryDefinition>();
         resultList.addAll(this.m_remoteRepositoryConfig.getRepositoryList());
         return resultList;
     }
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<RemoteRepositoryDefinition> getActiveRepositories() {
         List<RemoteRepositoryDefinition> resultList = new ArrayList<RemoteRepositoryDefinition>();
@@ -189,17 +209,13 @@ public class DefaultRemoteRepositoryConfigDao implements
     }
 
     /**
-     * <p>getRepositoryById</p>
-     * 
-     * Get remote repository entry by repository ID
-     * 
-     * @param repositoryID a {@link org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition} object
-     * @return a {@link org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition} object
+     * {@inheritDoc}
      */
+    @Override
     public RemoteRepositoryDefinition getRepositoryById(String repositoryID) {
         //TODO Tak: How to fail safe this?
         RemoteRepositoryDefinition result = null;
-        for(RemoteRepositoryDefinition repository : this.getAllRepositories()) {
+        for (RemoteRepositoryDefinition repository : this.getAllRepositories()) {
             if (repositoryID.equals(repository.getRepositoryId())) {
                 return repository;
             }
@@ -208,30 +224,8 @@ public class DefaultRemoteRepositoryConfigDao implements
     }
 
     /**
-     * <p>setConfigResource</p>
-     * <p/>
-     * Set configuration for jasper report template folder
-     *
-     * @param configResource a {@link org.springframework.core.io.Resource} object
-     */
-    public void setConfigResource(Resource configResource) {
-        m_configResource = configResource;
-    }
-
-    /**
-     * <p>getConfigResource</p>
-     *
-     * Get configuration for jasper report template folder
-     *
-     * @return a {@link org.springframework.core.io.Resource} object
-     */
-    public Resource getConfigResource() {
-        return m_configResource;
-    }
-
-    /**
      * <p>setRemoteRepositoryConfig</p>
-     *
+     * <p/>
      * Set remote repository configuration
      *
      * @param remoteRepositoryConfig a {@link org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig} object
@@ -242,20 +236,20 @@ public class DefaultRemoteRepositoryConfigDao implements
 
     /**
      * <p>getRemoteRepositoryConfig</p>
-     *
+     * <p/>
      * Get remote repository configuration
      *
      * @return a {@link org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig} object
      */
-    private RemoteRepositoryConfig getRemoteRepositoryConfig () {
+    private RemoteRepositoryConfig getRemoteRepositoryConfig() {
         return m_remoteRepositoryConfig;
     }
 
     /**
      * <p>setJasperReportsVersion</p>
-     * 
+     * <p/>
      * Set version for jasper report
-     * 
+     *
      * @param jasperReportsVersion a {@link java.lang.String} object
      */
     private void setJasperReportsVersion(String jasperReportsVersion) {

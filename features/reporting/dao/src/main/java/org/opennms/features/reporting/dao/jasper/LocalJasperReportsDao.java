@@ -28,19 +28,56 @@
 
 package org.opennms.features.reporting.dao.jasper;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+/**
+ * <p>LocalJasperReportsDao interface.<p/>
+ * <p/>
+ * Interface for generic local reports configuration access.
+ *
+ * @author Markus Neumann <markus@opennms.com>
+ * @author Ronny Trommer <ronny@opennms.com>
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public interface LocalJasperReportsDao {
-    
+
     /**
      * <p>getEngine</p>
+     * <p/>
+     * Get jasper report database engine
      *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param id a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      */
     String getEngine(String id);
 
-    InputStream getTemplateStream(String id);
 
+    /**
+     * <p>getTemplateStream</p>
+     * <p/>
+     * Get jasper report template as input stream
+     *
+     * @param id a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
+    InputStream getTemplateStream(String id) throws FileNotFoundException;
+
+    /**
+     * <p>getTemplateLocation</p>
+     * <p/>
+     * Get jasper report template location
+     *
+     * @param id a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     String getTemplateLocation(String id);
+
+    /**
+     * <p>loadConfiguration</p>
+     *
+     * Load XML configuration and unmarshalling
+     */
+    void loadConfiguration() throws Exception;
 }

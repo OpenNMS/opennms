@@ -32,8 +32,9 @@ import org.opennms.features.reporting.model.jasperreport.JasperReportDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 import javax.xml.bind.JAXB;
@@ -41,7 +42,7 @@ import java.io.*;
 
 /**
  * <p>LegacyLocalJasperReportsDao class.</p>
- *
+ * <p/>
  * Class realize the data access and preserve compatibility to local-jasper-reports.xml.
  *
  * @author Markus Neumann <markus@opennms.com>
@@ -49,7 +50,6 @@ import java.io.*;
  * @version $Id: $
  * @since 1.8.1
  */
-@ContextConfiguration(locations = {"classpath:reportingDao-context.xml"})
 public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     /**
      * Logging
@@ -65,48 +65,42 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     /**
      * Config resource for database reports configuration file
      */
+    @Autowired
+    @Qualifier("localJasperReportsResource")
     private Resource m_configResource;
 
     /**
      * Config resource for jasper report templates
      */
-    private Resource m_jasperReportResources;
+    @Autowired
+    @Qualifier("jrTemplateResource")
+    private Resource m_jrTemplateResource;
 
     /**
      * <p>afterPropertiesSet</p>
-     *
+     * <p/>
      * Sanity check for configuration file and load local-jasper-reports.xml
      *
-     * @throws java.lang.Exception if any.
+     * @throws Exception if any.
      */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
-        loadLegacyLocalJasperReports();
+        loadConfiguration();
     }
 
-    private final String LOCAL_JASPER_REPORTS_TEMPLATE_FOLDER = System.getProperty("opennms.home")
-            + File.separator
-            + "etc"
-            + File.separator
-            + "report-templates"
-            + File.separator;
-
     /**
-     * <p>loadLegacyLocalJasperReports</p>
-     *
-     * File handling for database-reports.xml and unmarshal in LegacyLocalReportsDefinition class
-     *
-     * @throws Exception
+     * {@inheritDoc}
      */
-    private void loadLegacyLocalJasperReports() throws Exception {
+    @Override
+    public void loadConfiguration() throws Exception {
         InputStream stream = null;
         long lastModified;
 
         File file = null;
         try {
-            file = getConfigResource().getFile();
+            file = m_configResource.getFile();
         } catch (IOException e) {
-            logger.error("Resource '{}' does not seem to have an underlying File object.", getConfigResource());
+            logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
         }
 
         if (file != null) {
@@ -114,18 +108,13 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
             stream = new FileInputStream(file);
         } else {
             lastModified = System.currentTimeMillis();
-            stream = getConfigResource().getInputStream();
+            stream = m_configResource.getInputStream();
         }
-        setLocalJasperReports(JAXB.unmarshal(file, LocalJasperReports.class));
+        m_LocalJasperReports = JAXB.unmarshal(file, LocalJasperReports.class);
     }
 
     /**
-     * <p>getTemplateLocation</p>
-     *
-     * Get jasper report template location
-     *
-     * @param id a {@link java.lang.String} object
-     * @return a {@link java.lang.String} object
+     * {@inheritDoc}
      */
     @Override
     public String getTemplateLocation(String id) {
@@ -138,12 +127,7 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     }
 
     /**
-     * <p>getEngine</p>
-     * 
-     * Get jasper report database engine
-     * 
-     * @param id a {@link java.lang.String} object
-     * @return a {@link java.lang.String} object
+     * {@inheritDoc}
      */
     @Override
     public String getEngine(String id) {
@@ -156,19 +140,14 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     }
 
     /**
-     * <p>getTemplateStream</p>
-     * 
-     * Get jasper report template as input stream
-     * 
-     * @param id a {@link java.lang.String} object
-     * @return a {@link java.lang.String} object
+     * {@inheritDoc}
      */
     @Override
     public InputStream getTemplateStream(String id) {
         InputStream reportTemplateStream = null;
 
         try {
-            String reportTemplateFolder = getJasperReportResources().getFile().getPath();
+            String reportTemplateFolder = m_jrTemplateResource.getFile().getPath();
 
             for (JasperReportDefinition report : m_LocalJasperReports.getReportList()) {
                 if (id.equals(report.getId())) {
@@ -193,71 +172,5 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return reportTemplateStream;
-    }
-
-    /**
-     * <p>getLocalJasperReports</p>
-     * 
-     * Get list with legacy report definition
-     *
-     * @return a {@link org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition} object
-     */
-    public LocalJasperReports getLocalJasperReports() {
-        return m_LocalJasperReports;
-    }
-
-    /**
-     * <p>setLocalJasperReports</p>
-     * 
-     * Set list with legacy report definition
-     *
-     * @param localJasperReports {@link org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition} object
-     */
-    public void setLocalJasperReports(LocalJasperReports localJasperReports) {
-        this.m_LocalJasperReports = localJasperReports;
-    }
-
-    /**
-     * <p>setConfigResource</p>
-     * 
-     * Set resource for local-jasper-reports.xml
-     *
-     * @param configResource a {@link org.springframework.core.io.Resource} object
-     */
-    public void setConfigResource(Resource configResource) {
-        m_configResource = configResource;
-    }
-
-    /**
-     * <p>getConfigResource</p>
-     * 
-     * Get resource for local-jasper-reports.xml
-     *
-     * @return a {@link org.springframework.core.io.Resource} object.
-     */
-    public Resource getConfigResource() {
-        return m_configResource;
-    }
-
-    /**
-     * <p>setJasperReportResources</p>
-     * 
-     * Set resource for jasper report template folder
-     * 
-     * @param jasperReportResources a {@link org.springframework.core.io.Resource} object
-     */
-    public void setJasperReportResources(Resource jasperReportResources) {
-        m_jasperReportResources = jasperReportResources;
-    }
-
-    /**
-     * <p>setConfigResource</p>
-     * 
-     * Get resource for jasper report template folder
-     * 
-     * @return a {@link org.springframework.core.io.Resource} object
-     */
-    public Resource getJasperReportResources() {
-        return m_jasperReportResources;
     }
 }

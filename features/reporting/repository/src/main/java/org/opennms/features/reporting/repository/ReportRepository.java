@@ -28,10 +28,10 @@
 
 package org.opennms.features.reporting.repository;
 
+import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
+
 import java.io.InputStream;
 import java.util.List;
-
-import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 
 /**
  * @author tak

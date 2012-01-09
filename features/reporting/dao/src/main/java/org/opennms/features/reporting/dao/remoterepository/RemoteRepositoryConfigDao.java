@@ -28,20 +28,55 @@
 
 package org.opennms.features.reporting.dao.remoterepository;
 
+import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
+
 import java.net.URI;
 import java.util.List;
 
-import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
-
+/**
+ * <p>RemoteRepositoryConfigDao interface.</p>
+ * <p/>
+ * Interface for generic remote repository configuration access.
+ *
+ * @author Markus Neumann <markus@opennms.com>
+ * @author Ronny Trommer <ronny@opennms.com>
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public interface RemoteRepositoryConfigDao {
     public Boolean isRepositoryActive(String repositoryID);
+
     public URI getURI(String repositoryID);
+
     public String getLoginUser(String repositoryID);
+
     public String getLoginRepoPassword(String repositoryID);
+
     public String getRepositoryName(String repositoryID);
+
     public String getRepositoryDescription(String repositoryID);
+
     public String getRepositoryManagementURL(String repositoryID);
+
     public List<RemoteRepositoryDefinition> getAllRepositories();
+
     public List<RemoteRepositoryDefinition> getActiveRepositories();
+
     public String getJasperReportsVersion();
+
+    /**
+     * <p>getRepositoryById</p>
+     *
+     * Get a repository by specific repository ID
+     *
+     * @return a {@link org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition} object
+     */
+    public RemoteRepositoryDefinition getRepositoryById(String repositoryId);
+
+    /**
+     * <p>loadConfiguration</p>
+     *
+     * Load XML configuration and unmarshalling
+     */
+    void loadConfiguration() throws Exception;
 }

@@ -28,19 +28,21 @@
 
 package org.opennms.features.reporting.dao.remoterepository;
 
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.net.URI;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * <p>DefaultRemoteRepositoryConfigDaoTest class.</p>
@@ -57,7 +59,8 @@ public class DefaultRemoteRepositoryConfigDaoTest {
      * Default implementation for remote repository to test
      */
     @Autowired
-    private DefaultRemoteRepositoryConfigDao m_defaultRemoteRepositoryConfigDao;
+    @Qualifier("remoteRepositoryConfigDao")
+    private RemoteRepositoryConfigDao m_remoteRepositoryConfigDao;
 
     /**
      * Absolute path for remote-repository.xml
@@ -85,45 +88,37 @@ public class DefaultRemoteRepositoryConfigDaoTest {
     @Before
     public void setUp() throws Exception {
         // Injected configuration
-        assertNotNull("Inject remote repository data access.", m_defaultRemoteRepositoryConfigDao);
-
-        // Configuration file tests
-        assertNotNull("Config file not null", m_defaultRemoteRepositoryConfigDao.getConfigResource());
-        m_configFile = m_defaultRemoteRepositoryConfigDao.getConfigResource().getFile().getAbsolutePath();
-
-        assertTrue("Config file " + m_configFile + " exist", m_defaultRemoteRepositoryConfigDao.getConfigResource().exists());
-        assertTrue("Config file " + m_configFile + " is readable", m_defaultRemoteRepositoryConfigDao.getConfigResource().isReadable());
-
-        // Unmarshal with JAXB to load XML into POJO's
-        m_defaultRemoteRepositoryConfigDao.afterPropertiesSet();
+        assertNotNull("Inject remote repository data access.", m_remoteRepositoryConfigDao);
+        m_remoteRepositoryConfigDao.loadConfiguration();
 
         // Read reports which are configured as online reports
-        m_allRemoteRepositories = m_defaultRemoteRepositoryConfigDao.getAllRepositories();
+        m_allRemoteRepositories = m_remoteRepositoryConfigDao.getAllRepositories();
         assertNotNull("Test to retrieve all remote repositories from " + m_configFile, m_allRemoteRepositories);
         assertEquals("Test 2 total configured remote repositories", 2, m_allRemoteRepositories.size());
 
-        m_activeRemoteRepositories = m_defaultRemoteRepositoryConfigDao.getActiveRepositories();
+        m_activeRemoteRepositories = m_remoteRepositoryConfigDao.getActiveRepositories();
         assertNotNull("Test to retrieve all active repositories from " + m_configFile, m_activeRemoteRepositories);
         assertEquals("Test 1 active configured remote repositories", 1, m_activeRemoteRepositories.size());
     }
 
     /**
-     * <p>testJasperReportsVersion</p>
-     *
-     * Test to retrieve Jasper Report version for remote repositories
+     * <p>tearDown</p>
+     * <p/>
+     * Cleanup
      *
      * @throws Exception
      */
-    @Ignore
-    @Test
-    //TODO tak: JasperReportsVersion is NULL
-    public void testJasperReportsVersion() throws Exception {
-        assertEquals("Test Jasper Report version for repository", "", m_defaultRemoteRepositoryConfigDao.getJasperReportsVersion());
+    @After
+    public void tearDown() throws Exception {
+        m_allRemoteRepositories = null;
+        m_activeRemoteRepositories = null;
+        m_remoteRepositoryConfigDao = null;
+        m_configFile = null;
     }
 
     /**
      * <p>testIsRepositoryActive</p>
-     *
+     * <p/>
      * Test to read all as active configured repositories
      *
      * @throws Exception
@@ -135,115 +130,92 @@ public class DefaultRemoteRepositoryConfigDaoTest {
 
     /**
      * <p>testGetURI</p>
-     *
+     * <p/>
      * Test to get repository URI for all configured remote repositories
      *
      * @throws Exception
      */
     @Test
     public void testGetURI() throws Exception {
-        assertEquals("Get URI for configured CIO remote repository", new URI("http://localhost:8080/opennms/connect/rest/repo/"), m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(0).getURI());
-        assertEquals("Get URI for configured CONNECT remote repository", new URI("http://localhost:8080/opennms/connect/rest/repo/connect"), m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(1).getURI());
+        assertEquals("Get URI for configured CIO remote repository", new URI("http://localhost:8080/opennms/connect/rest/repo/"), m_remoteRepositoryConfigDao.getAllRepositories().get(0).getURI());
+        assertEquals("Get URI for configured CONNECT remote repository", new URI("http://localhost:8080/opennms/connect/rest/repo/connect"), m_remoteRepositoryConfigDao.getAllRepositories().get(1).getURI());
     }
 
     /**
      * <p>testGetLoginUser</p>
-     *
+     * <p/>
      * Test to get user names for all configured remote repositories
      *
      * @throws Exception
      */
     @Test
     public void testGetLoginUser() throws Exception {
-        assertEquals("Get user name for CIO remote repository", "patrick", m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(0).getLoginUser());
-        assertEquals("Get user name for CONNECT remote repository", "ethan", m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(1).getLoginUser());
+        assertEquals("Get user name for CIO remote repository", "patrick", m_remoteRepositoryConfigDao.getAllRepositories().get(0).getLoginUser());
+        assertEquals("Get user name for CONNECT remote repository", "ethan", m_remoteRepositoryConfigDao.getAllRepositories().get(1).getLoginUser());
     }
 
     /**
      * <p>testGetLoginRepoPassword</p>
-     *
+     * <p/>
      * Test to get passwords for all configured remote repositories
      *
      * @throws Exception
      */
     @Test
     public void testGetLoginRepoPassword() throws Exception {
-        assertEquals("Get password for CIO remote repository", "bateman", m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(0).getLoginRepoPassword());
-        assertEquals("Get password for CONNECT remote repository", "galstad", m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(1).getLoginRepoPassword());
+        assertEquals("Get password for CIO remote repository", "bateman", m_remoteRepositoryConfigDao.getAllRepositories().get(0).getLoginRepoPassword());
+        assertEquals("Get password for CONNECT remote repository", "galstad", m_remoteRepositoryConfigDao.getAllRepositories().get(1).getLoginRepoPassword());
     }
 
     /**
      * <p>testGetRepositoryName</p>
-     *
+     * <p/>
      * Test to get all names for all configured remote repositories
      *
      * @throws Exception
      */
     @Test
     public void testGetRepositoryName() throws Exception {
-        assertEquals("Get CIO remote repository name", "OpenNMS CIO-Reporting", m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(0).getRepositoryName());
-        assertEquals("Get CONNECT remote repository name", "OpenNMS Connect Reports", m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(1).getRepositoryName());
+        assertEquals("Get CIO remote repository name", "OpenNMS CIO-Reporting", m_remoteRepositoryConfigDao.getAllRepositories().get(0).getRepositoryName());
+        assertEquals("Get CONNECT remote repository name", "OpenNMS Connect Reports", m_remoteRepositoryConfigDao.getAllRepositories().get(1).getRepositoryName());
     }
 
     /**
      * <p>testGetRepositoryDescription</p>
-     *
+     * <p/>
      * Test to get all descriptions for all configured remote repositories
      *
      * @throws Exception
      */
     @Test
     public void testGetRepositoryDescription() throws Exception {
-        assertEquals("Get CIO remote repository name", "OpenNMS.com provides high value reports.", m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(0).getRepositoryDescription());
-        assertEquals("Get CONNECT remote repository name", "OpenNMS Community provides free reports.", m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(1).getRepositoryDescription());
+        assertEquals("Get CIO remote repository name", "OpenNMS.com provides high value reports.", m_remoteRepositoryConfigDao.getAllRepositories().get(0).getRepositoryDescription());
+        assertEquals("Get CONNECT remote repository name", "OpenNMS Community provides free reports.", m_remoteRepositoryConfigDao.getAllRepositories().get(1).getRepositoryDescription());
     }
 
     /**
      * <p>testGetRepositoryManagementURL</p>
-     *
+     * <p/>
      * Test to get all management URLs for all configured remote repositories
      *
      * @throws Exception
      */
     @Test
     public void testGetRepositoryManagementURL() throws Exception {
-        assertEquals("Get CIO remote repository management URL", "http://www.opennms.com", m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(0).getRepositoryManagementURL());
-        assertEquals("Get CONNECT remote repository management URL", "http://www.opennms.org", m_defaultRemoteRepositoryConfigDao.getAllRepositories().get(1).getRepositoryManagementURL());
+        assertEquals("Get CIO remote repository management URL", "http://www.opennms.com", m_remoteRepositoryConfigDao.getAllRepositories().get(0).getRepositoryManagementURL());
+        assertEquals("Get CONNECT remote repository management URL", "http://www.opennms.org", m_remoteRepositoryConfigDao.getAllRepositories().get(1).getRepositoryManagementURL());
     }
 
     /**
      * <p>testGetRepositoryById</p>
-     *
+     * <p/>
      * Test to get a repository by ID
      *
      * @throws Exception
      */
     @Test
     public void testGetRepositoryById() throws Exception {
-        assertEquals("Get CIO remote repository by ID", "cioreporting", m_defaultRemoteRepositoryConfigDao.getRepositoryById("cioreporting").getRepositoryId());
-        assertEquals("Get CONNECT remote repository by ID", "connectreporting", m_defaultRemoteRepositoryConfigDao.getRepositoryById("connectreporting").getRepositoryId());
-    }
-
-    /**
-     * <p>setDefaultRemoteRemoteRepositoryConfigDao</p>
-     * <p/>
-     * Set the configured data access object with injection
-     *
-     * @param defaultRemoteRepositoryConfigDao
-     *         a {@link org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao} object
-     */
-    public void setDefaultRemoteRemoteRepositoryConfigDao(DefaultRemoteRepositoryConfigDao defaultRemoteRepositoryConfigDao) {
-        m_defaultRemoteRepositoryConfigDao = defaultRemoteRepositoryConfigDao;
-    }
-
-    /**
-     * <p>getDefaultRemoteRemoteRepositoryConfigDao</p>
-     * <p/>
-     * Get the configured data access object injected by Spring
-     *
-     * @return a {@link org.opennms.features.reporting.dao.LegacyLocalReportsDao} object
-     */
-    public DefaultRemoteRepositoryConfigDao getDefaultRemoteRepositoryConfigDao() {
-        return m_defaultRemoteRepositoryConfigDao;
+        assertEquals("Get CIO remote repository by ID", "cioreporting", m_remoteRepositoryConfigDao.getRepositoryById("cioreporting").getRepositoryId());
+        assertEquals("Get CONNECT remote repository by ID", "connectreporting", m_remoteRepositoryConfigDao.getRepositoryById("connectreporting").getRepositoryId());
     }
 }

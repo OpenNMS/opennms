@@ -32,8 +32,9 @@ import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 import javax.xml.bind.JAXB;
@@ -46,7 +47,7 @@ import java.util.List;
 
 /**
  * <p>LegacyLocalReportsDao class.</p>
- *
+ * <p/>
  * Class realize the data access and preserve compatibility to local-reports.xml.
  *
  * @author Markus Neumann <markus@opennms.com>
@@ -54,7 +55,6 @@ import java.util.List;
  * @version $Id: $
  * @since 1.8.1
  */
-@ContextConfiguration(locations = {"classpath:reportingDao-context.xml"})
 public class LegacyLocalReportsDao implements LocalReportsDao {
 
     /**
@@ -70,36 +70,35 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
     /**
      * Config resource for database reports configuration file
      */
-    private Resource m_configResource;
+    @Autowired
+    @Qualifier("localReportsResource")
+    private Resource m_legacyLocalReportConfigResource;
 
     /**
      * <p>afterPropertiesSet</p>
-     *
+     * <p/>
      * Sanity check for configuration file and load database-reports.xml
      *
      * @throws java.lang.Exception if any.
      */
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
-        loadLegacyLocalReports();
+        Assert.state(m_legacyLocalReportConfigResource != null, "property configResource must be set to a non-null value");
+        loadConfiguration();
     }
 
     /**
-     * <p>loadLegacyLocalReports</p>
-     *
-     * File handling for database-reports.xml and unmarshal in LegacyLocalReportsDefinition class
-     *
-     * @throws Exception
+     * {@inheritDoc}
      */
-    private void loadLegacyLocalReports() throws Exception {
+    @Override
+    public void loadConfiguration() throws Exception {
         InputStream stream = null;
         long lastModified;
 
         File file = null;
         try {
-            file = getConfigResource().getFile();
+            file = m_legacyLocalReportConfigResource.getFile();
         } catch (IOException e) {
-            logger.error("Resource '{}' does not seem to have an underlying File object.", getConfigResource());
+            logger.error("Resource '{}' does not seem to have an underlying File object.", m_legacyLocalReportConfigResource);
         }
 
         if (file != null) {
@@ -107,12 +106,14 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
             stream = new FileInputStream(file);
         } else {
             lastModified = System.currentTimeMillis();
-            stream = getConfigResource().getInputStream();
+            stream = m_legacyLocalReportConfigResource.getInputStream();
         }
         setLegacyLocalReportsDefinition(JAXB.unmarshal(file, LegacyLocalReportsDefinition.class));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<BasicReportDefinition> getReports() {
         ArrayList<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
@@ -122,7 +123,9 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
         return resultList;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<BasicReportDefinition> getOnlineReports() {
         List<BasicReportDefinition> onlineReports = new ArrayList<BasicReportDefinition>();
@@ -134,7 +137,9 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
         return onlineReports;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getReportService(String id) {
         for (BasicReportDefinition report : m_legacyLocalReportsDefinition.getReportList()) {
@@ -145,7 +150,9 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDisplayName(String id) {
         for (BasicReportDefinition report : m_legacyLocalReportsDefinition.getReportList()) {
@@ -158,7 +165,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
 
     /**
      * <p>setLegacyLocalReportsDefinition</p>
-     *
+     * <p/>
      * Set list with legacy report definition
      *
      * @param legacyLocalReportsDefinition {@link org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition} object
@@ -169,34 +176,12 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
 
     /**
      * <p>getLegacyLocalReportsDefinition</p>
-     *
+     * <p/>
      * Get list with legacy report definition
      *
      * @return a {@link org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition} object
      */
     public LegacyLocalReportsDefinition getLegacyLocalReportsDefinition() {
         return m_legacyLocalReportsDefinition;
-    }
-
-    /**
-     * <p>setConfigResource</p>
-     *
-     * Set resource for local-reports.xml
-     *
-     * @param configResource a {@link org.springframework.core.io.Resource} object
-     */
-    public void setConfigResource(Resource configResource) {
-        m_configResource = configResource;
-    }
-
-    /**
-     * <p>getConfigResource</p>
-     *
-     * Get resource for local-reports.xml
-     *
-     * @return a {@link org.springframework.core.io.Resource} object
-     */
-    public Resource getConfigResource() {
-        return m_configResource;
     }
 }

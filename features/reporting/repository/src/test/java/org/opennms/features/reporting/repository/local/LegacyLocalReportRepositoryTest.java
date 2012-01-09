@@ -28,41 +28,122 @@
 
 package org.opennms.features.reporting.repository.local;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
+import org.junit.runner.RunWith;
 import org.opennms.features.reporting.repository.ReportRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
-@Ignore
+/**
+ * <p>LegacyLocalReportRepositoryTest class.</p>
+ * <p/>
+ * Test legacy local repository
+ *
+ * @author Ronny Trommer <ronny@opennms.org>
+ * @version $Id: $
+ * @since 1.8.1
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:reportingRepositoryTest-context.xml"})
 public class LegacyLocalReportRepositoryTest {
-    Logger logger = LoggerFactory.getLogger(LegacyLocalReportRepositoryTest.class);
-    ReportRepository m_repo = new LegacyLocalReportRepository();
-    
-    @BeforeClass
-    public static void setup() {
-        System.setProperty("opennms.home", "src/test/resources");
+
+    /**
+     * Local repository for local community reports to test
+     */
+    @Autowired
+    @Qualifier("reportRepository")
+    private ReportRepository m_reportRepository;
+
+    /**
+     * <p>setUp</p>
+     * <p/>
+     * Initialize and mockup the LegacyLocalReportRepository
+     *
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        System.out.println("Setup: " + m_reportRepository.getReportService("sample-report"));
     }
-    
-    @Test
-    public void reportIdsWithRepositoryIdsTest() {
-        assertEquals("local", m_repo.getRepositoryId());
-        BasicReportDefinition report = m_repo.getReports().get(0);
-        logger.debug(report.getId());
-        logger.debug(m_repo.getDisplayName(report.getId()));
+
+    /**
+     * <p>tearDown</p>
+     * <p/>
+     * Cleanup
+     *
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
+        m_reportRepository = null;
     }
-    
+
+    /**
+     * Test to get local community reports from legacy local repository
+     *
+     * @throws Exception
+     */
     @Test
-    public void getReportsTest() {
-        List<BasicReportDefinition> reports = m_repo.getReports();
-        for (BasicReportDefinition report : reports) {
-	        logger.debug("'{}' \t '{}'", report.getId(), report.getReportService());
-	    }
-    }  
+    public void testGetReports() throws Exception {
+        //assertNotNull("Test if legacy local repository is null", m_reportRepository.getReports());
+        //assertEquals("Test the size of report list from local repository", "", m_reportRepository.getReports().size());
+    }
+
+    @Test
+    public void testGetOnlineReports() throws Exception {
+        //assertEquals("Test get online reports from *ALL* configured local repository","", m_reportRepository.getOnlineReports());
+    }
+
+    @Test
+    public void testGetReportService() throws Exception {
+        System.out.println("Huhu: " + m_reportRepository.getRepositoryName());
+        System.out.println("Huhu: " + m_reportRepository.getReports());
+
+//        assertEquals("", "", m_reportRepository.getReportService("sample-report"));
+//        assertEquals("","",m_reportRepository.getReportService("online-sample-report"));
+//        assertEquals("", "",m_reportRepository.getReportService("not-online-sample-report"));
+    }
+
+    @Test
+    public void testGetDisplayName() throws Exception {
+
+    }
+
+    @Test
+    public void testGetEngine() throws Exception {
+
+    }
+
+    @Test
+    public void testGetTemplateStream() throws Exception {
+
+    }
+
+    @Test
+    public void testGetRepositoryId() throws Exception {
+
+    }
+
+    @Test
+    public void testGetRepositoryName() throws Exception {
+
+    }
+
+    @Test
+    public void testGetRepositoryDescription() throws Exception {
+
+    }
+
+    @Test
+    public void testGetManagementUrl() throws Exception {
+
+    }
+
+    public void setReportRepository(LegacyLocalReportRepository legacyLocalReportRepository) {
+        m_reportRepository = legacyLocalReportRepository;
+    }
 }
