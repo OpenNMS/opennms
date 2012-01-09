@@ -149,4 +149,8 @@ public class JRobinDirectoryUtil {
         return RrdLabelUtils.computeLabelForRRD(snmpifname, snmpifdescr, snmpphysaddr);
     }
 
+    public String findRrdByDatasource(String rrdDir, int nodeId, String dataSource) {
+        return null;
+    }
+
 }

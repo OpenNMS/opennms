@@ -51,6 +51,7 @@ public class JRobinDirectoryUtilTest {
         assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/ifOutOctets.jrb", lookup.getIfOutOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
     }
     
+    
     @Test
     public void testGetInterfaceDirectory() {
         JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
@@ -94,4 +95,12 @@ public class JRobinDirectoryUtilTest {
         assertEquals("eth0-00e0817xxxxx", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
     }
     
+    @Test
+    public void testGetRRDfromDataSource() {
+        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
+        
+        
+        assertEquals("OpenNMS_Name_Queued.jrb", lookup.findRrdByDatasource("rrdDir", 10, "dataSource"));
+        
+    }
 }

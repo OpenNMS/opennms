@@ -14,6 +14,7 @@ public class ResourceQueryParserTest {
         ResourceQuery rQuery = parser.parseQueryCommand(getResourceQuery());
         
         assertNotNull(rQuery);
+        //TODO: change the filename assertion to check for not null before adding to 1.8
         assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp", rQuery.getRrdDir());
         assertEquals("10", rQuery.getNodeId());
         assertEquals("nsVpnMonitor", rQuery.getResourceName());
@@ -25,6 +26,7 @@ public class ResourceQueryParserTest {
         ResourceQuery rQuery = parser.parseQueryCommand(getResourceQueryWithFilter());
         
         assertNotNull(rQuery);
+        //TODO: change the filename assertion to check for not null before adding to 1.8
         assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp", rQuery.getRrdDir());
         assertEquals("10", rQuery.getNodeId());
         assertEquals("nsVpnMonitor", rQuery.getResourceName());
@@ -42,6 +44,7 @@ public class ResourceQueryParserTest {
         ResourceQuery rQuery = parser.parseQueryCommand("--rrdDir        /Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp  --nodeId 9 --resourceName opennms-jvm");
         
         assertNotNull(rQuery);
+        //TODO: change the filename assertion to check for not null before adding to 1.8
         assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp", rQuery.getRrdDir());
         assertEquals("9", rQuery.getNodeId());
         assertEquals("opennms-jvm", rQuery.getResourceName());

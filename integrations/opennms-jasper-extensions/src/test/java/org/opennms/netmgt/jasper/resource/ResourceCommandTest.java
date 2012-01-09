@@ -11,7 +11,7 @@ public class ResourceCommandTest {
 
     @Test
     public void test() throws JRException {
-        JRDataSource dataSource = new ResourceQueryCommand().executeCommand(getAbsoluteCommand());
+        JRDataSource dataSource = new ResourceQueryCommand().executeCommand(getCommand());
         assertNotNull(dataSource);
         assertTrue(dataSource.next());
     }
@@ -20,8 +20,5 @@ public class ResourceCommandTest {
         return "-rrdDir src/test/resources/share/rrd/snmp  -nodeid 10 -resourceName nsVpnMonitor";
     }
     
-    private String getAbsoluteCommand() {
-        return "-rrdDir /Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd  -nodeid 10 -resourceName nsVpnMonitor";
-    }
 
 }
