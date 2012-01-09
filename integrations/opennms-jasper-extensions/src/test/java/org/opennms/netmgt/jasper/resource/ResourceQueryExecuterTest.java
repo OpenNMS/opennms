@@ -64,7 +64,7 @@ public class ResourceQueryExecuterTest {
 
 
     private void compile() throws JRException {
-        m_jasperReport = JasperCompileManager.compileReport("");
+        m_jasperReport = JasperCompileManager.compileReport("src/test/resources/ResourceTest.jrxml");
     }
 
 }

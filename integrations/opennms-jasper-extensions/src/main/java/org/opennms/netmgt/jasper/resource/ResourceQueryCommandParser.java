@@ -9,7 +9,6 @@ public class ResourceQueryCommandParser{
     public ResourceQueryCommandParser() {}
 
     private ResourceQuery m_currentQuery;
-    private StringBuffer m_buffer;
     
     private void setCurrentQuery(ResourceQuery q) {
         m_currentQuery = q;
@@ -25,27 +24,17 @@ public class ResourceQueryCommandParser{
         
         String command = queryCommand.trim();
         
-        for(int i = 0; i < command.length(); i++) {
-            char c = command.charAt(i);
-            if(c == '-') {
-                if(i > 0) {
-                    processCommand();
-                }
-                continue;
-            }
-            appendWord(c);
-            
-            if(i == command.length() -1) {
-                processCommand();
-            }
+        String[] cmdArray = command.split("--");
+        
+        for(String cmd : cmdArray) {
+            processCommand(cmd.trim());
         }
         
         return retVal;
     }
 
-    private void processCommand() {
-        String command = m_buffer.toString();
-        m_buffer = null;
+
+    private void processCommand(String command) {
         
         if(command.toLowerCase().contains("rrddir")) {
             processRrdDir(command);
@@ -53,13 +42,13 @@ public class ResourceQueryCommandParser{
             processNodeId(command);
         }else if(command.toLowerCase().contains("resourcename")) {
             processResourceName(command);
-        }else if(command.toLowerCase().contains("filters")) {
+        }else if(command.toLowerCase().contains("filenames")) {
             processFilters(command);
         }
     }
 
     private void processFilters(String command) {
-        String value = command.substring(command.toLowerCase().indexOf("filters") + "filters".length(), command.length());
+        String value = command.substring(command.toLowerCase().indexOf("filenames") + "filenames".length(), command.length());
         String[] strFilters = value.trim().split(";");
         
         getCurrentQuery().setFilters(strFilters);
@@ -80,11 +69,5 @@ public class ResourceQueryCommandParser{
         getCurrentQuery().setRrdDir(value.trim());
     }
 
-    private void appendWord(char c) {
-        if(m_buffer == null) {
-            m_buffer = new StringBuffer();
-        }
-        m_buffer.append(c);
-    }
 
 }

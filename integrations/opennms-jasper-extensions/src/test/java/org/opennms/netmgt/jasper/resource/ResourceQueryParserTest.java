@@ -14,7 +14,7 @@ public class ResourceQueryParserTest {
         ResourceQuery rQuery = parser.parseQueryCommand(getResourceQuery());
         
         assertNotNull(rQuery);
-        assertEquals("src/test/resources/share/rrd/snmp", rQuery.getRrdDir());
+        assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp", rQuery.getRrdDir());
         assertEquals("10", rQuery.getNodeId());
         assertEquals("nsVpnMonitor", rQuery.getResourceName());
     }
@@ -25,7 +25,7 @@ public class ResourceQueryParserTest {
         ResourceQuery rQuery = parser.parseQueryCommand(getResourceQueryWithFilter());
         
         assertNotNull(rQuery);
-        assertEquals("src/test/resources/share/rrd/snmp", rQuery.getRrdDir());
+        assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp", rQuery.getRrdDir());
         assertEquals("10", rQuery.getNodeId());
         assertEquals("nsVpnMonitor", rQuery.getResourceName());
         
@@ -36,12 +36,23 @@ public class ResourceQueryParserTest {
         
     }
     
+    @Test
+    public void testForIReport() {
+        ResourceQueryCommandParser parser = new ResourceQueryCommandParser();
+        ResourceQuery rQuery = parser.parseQueryCommand("--rrdDir        /Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp  --nodeId 9 --resourceName opennms-jvm");
+        
+        assertNotNull(rQuery);
+        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp", rQuery.getRrdDir());
+        assertEquals("9", rQuery.getNodeId());
+        assertEquals("opennms-jvm", rQuery.getResourceName());
+    }
+    
     private String getResourceQuery() {
-        return "-rrdDir src/test/resources/share/rrd/snmp  -nodeid 10 -resourceName nsVpnMonitor";
+        return "--rrdDir /Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp  --nodeid 10 --resourceName nsVpnMonitor";
     }
     
     private String getResourceQueryWithFilter() {
-        return "-rrdDir src/test/resources/share/rrd/snmp -nodeid 10 -resourceName nsVpnMonitor -filters http.dump;icmp.jrb";
+        return "--rrdDir /Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp --nodeid 10 --resourceName nsVpnMonitor --filenames http.dump;icmp.jrb";
     }
 
 }

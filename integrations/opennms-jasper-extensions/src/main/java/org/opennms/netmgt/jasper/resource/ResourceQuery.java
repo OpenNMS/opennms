@@ -1,10 +1,10 @@
 package org.opennms.netmgt.jasper.resource;
 
 public class ResourceQuery {
-    public String m_rrdDir;
-    public String m_node;
-    public String m_resourceName;
-    public String[] m_filters;
+    private String m_rrdDir;
+    private String m_node;
+    private String m_resourceName;
+    private String[] m_filters;
 
     public ResourceQuery() {
     }
@@ -32,5 +32,9 @@ public class ResourceQuery {
     }
     public void setFilters(String[] filters) {
         m_filters = filters;
+    }
+    
+    public String constructBasePath() {
+        return getRrdDir() + "/" + getNodeId() + "/" + getResourceName();
     }
 }

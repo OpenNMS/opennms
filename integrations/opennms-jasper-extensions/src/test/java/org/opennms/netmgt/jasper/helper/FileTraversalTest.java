@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class FileTraversalTest {
     
-    private String m_baseDir = "src/test/resources/share/rrd/snmp";
+    private String m_baseDir = "/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp";
     private String m_resourceName = "nsVpnMonitor";
     private int m_nodeId = 10;
     
@@ -25,7 +25,7 @@ public class FileTraversalTest {
     @Test
     public void testFindPathsWithFilterOneFile() {
         FileTraversal traverser = new FileTraversal(new File(m_baseDir + "/" + m_nodeId + "/" + m_resourceName));
-        traverser.addNameFilter("http.dump");
+        traverser.addAndFilenameFilter("http.dump");
         List<String> paths = traverser.traverseDirectory();
         
         
@@ -36,7 +36,7 @@ public class FileTraversalTest {
     @Test
     public void testFindPathsWithAndFilter() {
         FileTraversal traverser = new FileTraversal(new File(m_baseDir + "/" + m_nodeId + "/" + m_resourceName));
-        traverser.addAndNameFilter("http.dump").addAndNameFilter("icmp.jrb");
+        traverser.addAndFilenameFilter("http.dump").addAndFilenameFilter("icmp.jrb");
         List<String> paths = traverser.traverseDirectory();
         
         assertEquals(1, paths.size());
@@ -46,7 +46,7 @@ public class FileTraversalTest {
     @Test
     public void testFindPathsWithFilterNoExtensions() {
         FileTraversal traverser = new FileTraversal(new File(m_baseDir + "/" + m_nodeId + "/" + m_resourceName));
-        traverser.addAndNameFilter("http").addAndNameFilter("icmp");
+        traverser.addAndFilenameFilter("http").addAndFilenameFilter("icmp");
         List<String> paths = traverser.traverseDirectory();
         
         assertEquals(1, paths.size());
