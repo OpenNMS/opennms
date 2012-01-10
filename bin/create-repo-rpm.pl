@@ -97,10 +97,11 @@ sub create_repo_file {
 	my $repofilename = File::Spec->catfile($outputdir, "opennms-$release-$platform.repo");
 	open($repohandle, '>' . $repofilename) or die "unable to write to $repofilename: $!";
 
+	my $output = "";
 	for my $plat ('common', $platform) {
 		my $description = $platform_descriptions->{$plat};
 
-		print $repohandle <<END;
+		$output .= <<END;
 [opennms-$release-$plat]
 name=$description ($release)
 baseurl=http://yum.opennms.org/$release/$plat
@@ -110,6 +111,7 @@ gpgkey=file:///etc/yum.repos.d/OPENNMS-GPG-KEY
 
 END
 	}
+	print $repohandle $output;
 
 	close($repohandle);
 
@@ -128,15 +130,19 @@ sub create_repo_rpm {
 	print "- creating RPM build structure... ";
 	my $dir = tempdir( CLEANUP => 1 );
 	for my $subdir ('tmp', 'SPECS', 'SOURCES', 'RPMS', 'SRPMS', 'BUILD') {
-		mkpath(File::Spec->catfile($dir, $subdir));
+		my $path = File::Spec->catfile($dir, $subdir);
+		mkpath($path) or die "unable to create path $path: $!";
 	}
 	for my $subdir ('noarch', 'i386', 'x86_64') {
-		mkpath(File::Spec->catfile($dir, 'RPMS', $subdir));
+		my $path = File::Spec->catfile($dir, 'RPMS', $subdir);
+		mkpath($path) or die "unable to create path $path: $!";
 	}
 
 	my $sourcedir = File::Spec->catfile($dir, 'SOURCES');
-	for my $file ("OPENNMS-GPG-KEY", "opennms-$release-common.repo", "opennms-$release-$platform.repo") {
-		copy(File::Spec->catfile($repofiledir, $file), File::Spec->catfile($sourcedir, $file)) or die "unable to copy $file to $sourcedir: $!";
+	for my $file ("OPENNMS-GPG-KEY", "opennms-$release-$platform.repo") {
+		my $from = File::Spec->catfile($repofiledir, $file);
+		my $to   = File::Spec->catfile($sourcedir, $file);
+		copy($from, $to) or die "unable to copy $from to $to: $!";
 	}
 	print "done.\n";
 
