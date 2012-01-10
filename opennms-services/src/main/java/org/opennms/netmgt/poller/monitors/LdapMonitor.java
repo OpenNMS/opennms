@@ -62,7 +62,7 @@ import com.novell.ldap.LDAPSocketFactory;
  */
 
 @Distributable
-final public class LdapMonitor extends AbstractServiceMonitor {
+public class LdapMonitor extends AbstractServiceMonitor {
 
     /**
      * Default retries.
@@ -92,7 +92,7 @@ final public class LdapMonitor extends AbstractServiceMonitor {
      */
     private class TimeoutLDAPSocket implements LDAPSocketFactory {
 
-        private int m_timeout;
+        private final int m_timeout;
 
         public TimeoutLDAPSocket(int timeout) {
             m_timeout = timeout;
@@ -101,8 +101,16 @@ final public class LdapMonitor extends AbstractServiceMonitor {
         public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
             Socket socket = new Socket(host, port);
             socket.setSoTimeout(m_timeout);
-            return socket;
+            return wrapSocket(socket);
         }
+    }
+
+    protected Socket wrapSocket(Socket socket) throws IOException {
+        return socket;
+    }
+
+    protected int determinePort(final Map<String, Object> parameters) {
+        return ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_PORT);
     }
 
     /**
@@ -120,20 +128,20 @@ final public class LdapMonitor extends AbstractServiceMonitor {
 
         int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
         String reason = null;
-	
-        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+
+        final TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // get the parameters
         //
-        int ldapVersion = ParameterMap.getKeyedInteger(parameters, "version", LDAPConnection.LDAP_V3);
-        int ldapPort = ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_PORT);
-        String searchBase = ParameterMap.getKeyedString(parameters, "searchbase", DEFAULT_BASE);
-        String searchFilter = ParameterMap.getKeyedString(parameters, "searchfilter", DEFAULT_FILTER);
+        final int ldapVersion = ParameterMap.getKeyedInteger(parameters, "version", LDAPConnection.LDAP_V3);
+        final int ldapPort = determinePort(parameters);
+        final String searchBase = ParameterMap.getKeyedString(parameters, "searchbase", DEFAULT_BASE);
+        final String searchFilter = ParameterMap.getKeyedString(parameters, "searchfilter", DEFAULT_FILTER);
 
-        String password = (String) parameters.get("password");
-        String ldapDn = (String) parameters.get("dn");
+        final String password = (String) parameters.get("password");
+        final String ldapDn = (String) parameters.get("dn");
 
-        Object addressObject = iface.getAddress();
+        final Object addressObject = iface.getAddress();
         String address = null;
         if (addressObject instanceof InetAddress)
             address = InetAddressUtils.str(((InetAddress) addressObject));
@@ -154,6 +162,7 @@ final public class LdapMonitor extends AbstractServiceMonitor {
             socket = new Socket();
             socket.connect(new InetSocketAddress((InetAddress) iface.getAddress(), ldapPort), tracker.getConnectionTimeout());
             socket.setSoTimeout(tracker.getSoTimeout());
+            socket = wrapSocket(socket);
             log().debug("LdapMonitor: connected to host: " + address + " on port: " + ldapPort);
 
             // We're connected, so upgrade status to unresponsive

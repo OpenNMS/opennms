@@ -1,0 +1,247 @@
+<!-- Start of auto generated data from MIB: VMWARE-OBSOLETE-MIB -->
+<events>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmPoweredOn</uei>
+	<event-label>VMWARE-OBSOLETE-MIB defined trap event: vmPoweredOn</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when a virtual machine is powered ON from a suspended 
+or a powered off state.</p><table>
+	<tr><td><b>
+
+	vmwVmID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmConfigFilePath</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vmPoweredOn trap received 
+			vmwVmID=%parm[#1]% 
+			vmwVmConfigFilePath=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmPoweredOff</uei>
+	<event-label>VMWARE-OBSOLETE-MIB defined trap event: vmPoweredOff</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when a virtual machine is powered OFF.</p><table>
+	<tr><td><b>
+
+	vmwVmID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmConfigFilePath</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vmPoweredOff trap received 
+			vmwVmID=%parm[#1]% 
+			vmwVmConfigFilePath=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmHBLost</uei>
+	<event-label>VMWARE-OBSOLETE-MIB defined trap event: vmHBLost</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when a virtual machine detects a loss in guest heartbeat.</p><table>
+	<tr><td><b>
+
+	vmwVmID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmConfigFilePath</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vmHBLost trap received 
+			vmwVmID=%parm[#1]% 
+			vmwVmConfigFilePath=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmHBDetected</uei>
+	<event-label>VMWARE-OBSOLETE-MIB defined trap event: vmHBDetected</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when a virtual machine detects or regains the guest heartbeat.</p><table>
+	<tr><td><b>
+
+	vmwVmID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmConfigFilePath</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vmHBDetected trap received 
+			vmwVmID=%parm[#1]% 
+			vmwVmConfigFilePath=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmSuspended</uei>
+	<event-label>VMWARE-OBSOLETE-MIB defined trap event: vmSuspended</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when a virtual machine is suspended.</p><table>
+	<tr><td><b>
+
+	vmwVmID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmConfigFilePath</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vmSuspended trap received 
+			vmwVmID=%parm[#1]% 
+			vmwVmConfigFilePath=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>201</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vpxdTrap</uei>
+	<event-label>VMWARE-OBSOLETE-MIB defined trap event: vpxdTrap</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when entity status changed.</p><table>
+	<tr><td><b>
+
+	vpxdTrapType</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vpxdHostName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vpxdVMName</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vpxdNewStatus</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vpxdOldStatus</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vpxdObjValue</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vpxdTrap trap received 
+			vpxdTrapType=%parm[#1]% 
+			vpxdHostName=%parm[#2]% 
+			vpxdVMName=%parm[#3]% 
+			vpxdNewStatus=%parm[#4]% 
+			vpxdOldStatus=%parm[#5]% 
+			vpxdObjValue=%parm[#6]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+</events>
+<!-- End of auto generated data from MIB: VMWARE-OBSOLETE-MIB -->

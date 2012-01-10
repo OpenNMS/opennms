@@ -9,7 +9,7 @@ License: GPL
 Group: Development/Tools
 URL: http://yum.opennms.org/
 
-Source0: opennms-%{_tree}-common.repo
+#Source0: opennms-%{_tree}-common.repo
 Source1: opennms-%{_tree}-%{_osname}.repo
 Source2: OPENNMS-GPG-KEY
 
@@ -23,7 +23,7 @@ Yum repository files for installing OpenNMS %{_tree} on %{_osname}.
 
 %install
 install -d -m 755            $RPM_BUILD_ROOT%{_sysconfdir}/yum.repos.d
-install -c -m 644 %{SOURCE0} $RPM_BUILD_ROOT%{_sysconfdir}/yum.repos.d/
+#install -c -m 644 %{SOURCE0} $RPM_BUILD_ROOT%{_sysconfdir}/yum.repos.d/
 install -c -m 644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/yum.repos.d/
 install -c -m 644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/yum.repos.d/
 

@@ -1,0 +1,160 @@
+<!-- Start of auto generated data from MIB: VMWARE-VC-EVENT-MIB -->
+<events>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876.4.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>201</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vpxdAlarm</uei>
+	<event-label>VMWARE-VC-EVENT-MIB defined trap event: vpxdAlarm</event-label>
+	<descr>
+<![CDATA[
+<p>This notification is sent on entity alarm state change, by the vCenter Server SNMP agent.
+This information is also available through the vSphere client, through the Alarms screen,
+or through the Managed Object Browser(MOB) interface for alarms at
+https://<vCenter Server machine address>/mob/?moid=AlarmManager.
+Listing individual objects of a specific type or ID can be done through the PropertyCollector SDK API.
+See http://www.vmware.com/support/developer/vc-sdk/visdk2xpubs/ReferenceGuide/vmodl.query.PropertyCollector.html
+for details.</p><table>
+	<tr><td><b>
+
+	vmwVpxdTrapType</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVpxdHostName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVpxdVMName</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVpxdOldStatus</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVpxdNewStatus</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVpxdObjValue</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vpxdAlarm trap received 
+			vmwVpxdTrapType=%parm[#1]% 
+			vmwVpxdHostName=%parm[#2]% 
+			vmwVpxdVMName=%parm[#3]% 
+			vmwVpxdOldStatus=%parm[#4]% 
+			vmwVpxdNewStatus=%parm[#5]% 
+			vmwVpxdObjValue=%parm[#6]%</p>
+]]>		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876.4.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>202</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vpxdDiagnostic</uei>
+	<event-label>VMWARE-VC-EVENT-MIB defined trap event: vpxdDiagnostic</event-label>
+	<descr>
+<![CDATA[
+<p>This notification is sent on starting or restarting vCenter Server,
+on requesting a test notification explicitly, and can also be
+configured to be sent periodically at a specified time interval via
+vCenter Server configuration by the vCenter Server SNMP agent.</p><table></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vpxdDiagnostic trap received</p>
+]]>		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876.4.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>203</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vpxdAlarmInfo</uei>
+	<event-label>VMWARE-VC-EVENT-MIB defined trap event: vpxdAlarmInfo</event-label>
+	<descr>
+<![CDATA[
+<p>This notification is sent on entity alarm state change, by the vCenter Server SNMP agent.
+This information is also available through the vSphere client, through the Alarms screen,
+or through the Managed Object Browser(MOB) interface for alarms at
+https://<vCenter Server machine address>/mob/?moid=AlarmManager.
+Listing individual objects of a specific type or ID can be done through the PropertyCollector SDK API.
+See http://www.vmware.com/support/developer/vc-sdk/visdk2xpubs/ReferenceGuide/vmodl.query.PropertyCollector.html
+for details.</p><table>
+	<tr><td><b>
+
+	vmwVpxdTargetObjType</b></td><td>
+	%parm[#1]%;</td><td><p>
+		unknown(1)
+		host(2)
+		vm(3)
+		other(4)
+	</p></td></tr>
+	<tr><td><b>
+
+	vmwVpxdOldStatus</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVpxdNewStatus</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVpxdObjValue</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVpxdTargetObj</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vpxdAlarmInfo trap received 
+			vmwVpxdTargetObjType=%parm[#1]% 
+			vmwVpxdOldStatus=%parm[#2]% 
+			vmwVpxdNewStatus=%parm[#3]% 
+			vmwVpxdObjValue=%parm[#4]% 
+			vmwVpxdTargetObj=%parm[#5]%</p>
+]]>		</logmsg>
+	<severity>Warning</severity>
+</event>
+</events>
+<!-- End of auto generated data from MIB: VMWARE-VC-EVENT-MIB -->
