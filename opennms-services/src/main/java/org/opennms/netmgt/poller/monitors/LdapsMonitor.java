@@ -44,9 +44,11 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
+import com.novell.ldap.LDAPConnection;
+
 /**
  * This class is designed to be used by the service poller framework to test the
- * availability of the HTTPS service on remote interfaces. The class implements
+ * availability of the LDAPS service on remote interfaces. The class implements
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  *
@@ -55,20 +57,13 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  */
 @Distributable
-final public class HttpsMonitor extends HttpMonitor {
+final public class LdapsMonitor extends LdapMonitor {
 
-    /**
-     * Default HTTPS ports.
-     */
-    private static final int[] DEFAULT_PORTS = { 443 };
-
-    /** {@inheritDoc} */
     @Override
-    protected int[] determinePorts(Map<String, Object> parameters) {
-        return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
+    protected int determinePort(Map<String, Object> parameters) {
+        return ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_SSL_PORT);
     }
 
-    /** {@inheritDoc} */
     @Override
     protected Socket wrapSocket(Socket socket) throws IOException {
         TrustManager[] tm = { new RelaxedX509TrustManager() };
