@@ -4,8 +4,8 @@ use Data::Dumper;
 use File::Basename;
 use File::Spec;
 
-use OpenNMS::Util;
-use OpenNMS::Package::Repo;
+use OpenNMS::Util 2.0;
+use OpenNMS::Release::YumRepo 2.0;
 
 my $base = shift @ARGV;
 
@@ -22,7 +22,7 @@ my $platform_descriptions = read_properties(File::Spec->catdir(dirname($0), "pla
 my @display_order  = split(/\s*,\s*/, $release_descriptions->{order_display});
 my @platform_order = split(/\s*,\s*/, $platform_descriptions->{order_display});
 
-my $repos = OpenNMS::Package::Repo->find_repos($base);
+my $repos = OpenNMS::Release::YumRepo->find_repos($base);
 
 # convenience hash for looking up repositories
 my $repo_map = {};
@@ -38,9 +38,9 @@ for my $release (@display_order) {
 	my $repos  = $repo_map->{$release};
 	my $common = $repos->{'common'};
 
-	my $latest_rpm = $common->find_newest_rpm_by_name('opennms-core', 'noarch');
+	my $latest_rpm = $common->find_newest_package_by_name('opennms-core', 'noarch');
 
-	$index_text .= "<h2><a name=\"$release\">$release_description</a> (current version: <a href=\"$release/common/opennms\">" . $latest_rpm->display_version . "</a>)</h2>\n";
+	$index_text .= "<h2><a name=\"$release\">$release_description</a> (current version: <a href=\"$release/common/opennms\">" . $latest_rpm->version->display_version . "</a>)</h2>\n";
 	$index_text .= "<ul>\n";
 
 	$index_text .= "<li>$platform_descriptions->{'common'} (<a href=\"$release/common\">browse</a>)</li>\n";

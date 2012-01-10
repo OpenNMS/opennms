@@ -13,8 +13,8 @@ use Getopt::Long qw(:config gnu_getopt);
 use IO::Handle;
 
 use OpenNMS::Util;
-use OpenNMS::Package::Repo;
-use OpenNMS::Package::RPM;
+use OpenNMS::Release::YumRepo 2.0;
+use OpenNMS::Release::RPMPackage 2.0;
 
 my $default_rpm_version  = '1.0';
 my $default_rpm_release  = 1;
@@ -44,12 +44,12 @@ if (not defined $signing_password or not defined $signing_id) {
 
 $base = Cwd::abs_path($base);
 
-my $repo    = OpenNMS::Package::Repo->new($base, $release, $platform);
+my $repo    = OpenNMS::Release::YumRepo->new($base, $release, $platform);
 my $rpmname = "opennms-repo-$release";
 
-my $newest_rpm  = $repo->find_newest_rpm_by_name($rpmname, 'noarch');
-my $rpm_version = defined $newest_rpm? ($newest_rpm->version)     : $default_rpm_version;
-my $rpm_release = defined $newest_rpm? ($newest_rpm->release + 1) : $default_rpm_release;
+my $newest_rpm  = $repo->find_newest_package_by_name($rpmname, 'noarch');
+my $rpm_version = defined $newest_rpm? ($newest_rpm->version->version)     : $default_rpm_version;
+my $rpm_release = defined $newest_rpm? ($newest_rpm->version->release + 1) : $default_rpm_release;
 
 print "- generating YUM repository RPM $rpmname, version $rpm_version-$rpm_release:\n";
 
@@ -174,7 +174,7 @@ sub sign_rpm {
 	my $signing_password = shift;
 
 	print "- signing $rpm_filename... ";
-	my $signed = OpenNMS::Package::RPM->new($rpm_filename)->sign($signing_id, $signing_password);
+	my $signed = OpenNMS::Release::RPMPackage->new($rpm_filename)->sign($signing_id, $signing_password);
 	die "failed while signing RPM: $!" unless ($signed);
 	print "- done signing.\n";
 
@@ -202,12 +202,12 @@ sub install_rpm_to_repo {
 	my $signing_password = shift;
 
 	print "- creating temporary repository from " . $repo->to_string . "... ";
-	my $rpm = OpenNMS::Package::RPM->new($rpm_filename);
+	my $rpm = OpenNMS::Release::RPMPackage->new($rpm_filename);
 	my $newrepo = $repo->create_temporary();
 	print "done\n";
 
 	print "- installing $rpm_filename to temporary repo... ";
-	$newrepo->install_rpm($rpm, 'opennms');
+	$newrepo->install_package($rpm, 'opennms');
 	print "done\n";
 
 	print "- reindexing temporary repo... ";

@@ -12,9 +12,9 @@ use Getopt::Long qw(:config gnu_getopt);
 use IO::Handle;
 #use RPM4;
 
-use OpenNMS::Util;
-use OpenNMS::Package::Repo;
-use OpenNMS::Package::RPM;
+use OpenNMS::Util 2.0;
+use OpenNMS::Release::YumRepo 2.0;
+use OpenNMS::Release::RPMPackage 2.0;
 
 $|++;
 
@@ -64,9 +64,9 @@ delete $release_descriptions->{order_sync};
 
 my $scan_repositories = [];
 if ($all) {
-	$scan_repositories = OpenNMS::Package::Repo->find_repos($base);
+	$scan_repositories = OpenNMS::Release::YumRepo->find_repos($base);
 } else {
-	$scan_repositories = [ OpenNMS::Package::Repo->new($base, $release, $platform) ];
+	$scan_repositories = [ OpenNMS::Release::YumRepo->new($base, $release, $platform) ];
 }
 
 for my $orig_repo (@$scan_repositories) {
@@ -108,8 +108,8 @@ sub install_rpms {
 	my @rpms = @_;
 
 	for my $rpmname (@rpms) {
-		my $rpm = OpenNMS::Package::RPM->new($rpmname);
-		$release_repo->install_rpm($rpm, $subdirectory);
+		my $rpm = OpenNMS::Release::RPMPackage->new($rpmname);
+		$release_repo->install_package($rpm, $subdirectory);
 	}
 }
 
@@ -119,7 +119,7 @@ sub index_repo {
 	my $signing_password = shift;
 
 	print "- removing obsolete RPMs from repo: " . $release_repo->to_string . "... ";
-	my $removed = $release_repo->delete_obsolete_rpms(\&not_opennms);
+	my $removed = $release_repo->delete_obsolete_packages(\&not_opennms);
 	print $removed . " RPMs removed.\n";
 
 	print "- reindexing repo: " . $release_repo->to_string . "... ";
@@ -137,15 +137,15 @@ sub sync_repos {
 	for my $i ((get_release_index($release_repo->release) + 1) .. $#sync_order) {
 		my $rel = $sync_order[$i];
 
-		my $orig_repo = OpenNMS::Package::Repo->new($base, $rel, $release_repo->platform);
+		my $orig_repo = OpenNMS::Release::YumRepo->new($base, $rel, $release_repo->platform);
 		my $next_repo = $orig_repo->create_temporary;
 	
 		print "- sharing from repo: " . $last_repo->to_string . " to " . $next_repo->to_string . "... ";
-		my $num_shared = $next_repo->share_all_rpms($last_repo);
+		my $num_shared = $next_repo->share_all_packages($last_repo);
 		print $num_shared . " RPMs updated.\n";
 	
 		print "- removing obsolete RPMs from repo: " . $next_repo->to_string . "... ";
-		my $num_removed = $next_repo->delete_obsolete_rpms(\&not_opennms);
+		my $num_removed = $next_repo->delete_obsolete_packages(\&not_opennms);
 		print $num_removed . " RPMs removed.\n";
 
 		print "- indexing repo: " . $next_repo->to_string . "... ";
