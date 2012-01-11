@@ -29,6 +29,7 @@
 package org.opennms.features.reporting.dao;
 
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
+import org.springframework.core.io.Resource;
 
 import java.util.List;
 
@@ -69,4 +70,21 @@ public interface LocalReportsDao {
      * Load XML configuration and unmarshalling
      */
     void loadConfiguration() throws Exception;
+
+    /**
+     * <p>setLocalReportConfigResource</p>
+     * 
+     * Set local report config resource for DAO
+     * 
+     * @param configResource a {@link org.springframework.core.io.Resource} object
+     */
+    void setConfigResource (Resource configResource);
+
+    /**
+     * <p>getConfigResource</p>
+     * 
+     * Get local report configuration resource for DAO
+     * @return a {@link org.springframework.core.io.Resource} object
+     */
+    Resource getConfigResource ();
 }

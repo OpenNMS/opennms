@@ -36,8 +36,6 @@ import org.opennms.features.reporting.model.basicreport.LegacyLocalReportDefinit
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.FileNotFoundException;
@@ -67,15 +65,11 @@ public class LegacyLocalReportRepository implements ReportRepository {
     /**
      * Data access to local-reports.xml
      */
-    @Autowired
-    @Qualifier("localReportsDao")
     private LocalReportsDao m_localReportsDao;
 
     /**
      * Data access to local-jasper-reports.xml
      */
-    @Autowired
-    @Qualifier("localJasperReportsDao")
     private LocalJasperReportsDao m_localJasperReportsDao;
 
     /**

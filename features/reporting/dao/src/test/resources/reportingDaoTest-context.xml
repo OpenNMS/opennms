@@ -3,27 +3,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- Configuration file resource URL -->
-    <bean id="localReportsResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:src/test/resources/etc/local-reports.xml"/>
+    <!-- Inject resource configuration -->
+    <bean id="legacyLocalReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao">
+        <property name="configResource" value="file:src/test/resources/etc/local-reports.xml" />
     </bean>
 
-    <bean id="localJasperReportsResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:src/test/resources/etc/local-jasper-reports.xml"/>
+    <bean id="legacyLocalJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao">
+        <property name="configResource" value="file:src/test/resources/etc/local-jasper-reports.xml" />
+        <property name="jrTemplateResource" value="file:src/test/resources/etc/report-templates" />
     </bean>
 
-    <bean id="jrTemplateResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:src/test/resources/etc/report-templates"/>
+    <bean id="defaultRemoteRepositoryConfigDao" class="org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao">
+        <property name="configResource" value="file:src/test/resources/etc/remote-repository.xml" />
     </bean>
-
-    <bean id="remoteRepositoryResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:src/test/resources/etc/remote-repository.xml"/>
-    </bean>
-
-    <!-- Injection for JUnit tests -->
-    <bean id="localReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao" />
-
-    <bean id="localJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao" />
-    
-    <bean id="remoteRepositoryConfigDao" class="org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao" />
 </beans>

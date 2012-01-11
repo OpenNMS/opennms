@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -59,7 +58,6 @@ public class DefaultRemoteRepositoryConfigDaoTest {
      * Default implementation for remote repository to test
      */
     @Autowired
-    @Qualifier("remoteRepositoryConfigDao")
     private RemoteRepositoryConfigDao m_remoteRepositoryConfigDao;
 
     /**

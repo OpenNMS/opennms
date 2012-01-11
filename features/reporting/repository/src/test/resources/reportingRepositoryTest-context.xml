@@ -3,35 +3,4 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- Configuration file resource URL -->
-    <bean id="localReportsResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:src/test/resources/etc/local-reports.xml"/>
-    </bean>
-
-    <bean id="localJasperReportsResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:src/test/resources/etc/local-jasper-reports.xml"/>
-    </bean>
-
-    <bean id="jrTemplateResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:src/test/resources/etc/report-templates"/>
-    </bean>
-
-    <bean id="remoteRepositoryResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:src/test/resources/etc/remote-repository.xml"/>
-    </bean>
-
-    <!-- DAO for XML configuration -->
-    <bean id="localReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao" />
-
-    <bean id="localJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao" />
-
-    <!-- Inject DAO in LegacyLocalReportRepository test -->
-    <bean id="reportRepository" class="org.opennms.features.reporting.repository.local.LegacyLocalReportRepository">
-        <property name="localReportsDao" ref="localReportsDao" />
-        <property name="localJasperReportsDao" ref="localJasperReportsDao" />
-    </bean>
-    
-    <bean id="legacyLocalReportRepositoryTest" class="org.opennms.features.reporting.repository.local.LegacyLocalReportRepositoryTest">
-        <property name="reportRepository" ref="reportRepository" />
-    </bean>
 </beans>

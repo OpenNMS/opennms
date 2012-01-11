@@ -28,6 +28,8 @@
 
 package org.opennms.features.reporting.dao.jasper;
 
+import org.springframework.core.io.Resource;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -80,4 +82,40 @@ public interface LocalJasperReportsDao {
      * Load XML configuration and unmarshalling
      */
     void loadConfiguration() throws Exception;
+
+    /**
+     * <p>setConfigResource</p>
+     * 
+     * Set configuration resource DAO for jasper reports
+     * 
+     * @param configResource a {@link org.springframework.core.io.Resource} object
+     */
+    void setConfigResource(Resource configResource);
+
+    /**
+     * <p>getConfigResource</p>>
+     * 
+     * Get configuration resource DAO for jasper reports
+     * 
+     * @return a {@link org.springframework.core.io.Resource} object
+     */
+    Resource getConfigResource();
+
+    /**
+     * <p>setJrTemplateResource</p>
+     *
+     * Set configuration resource DAO for jasper report templates
+     *
+     * @param jrTemplateResource a {@link org.springframework.core.io.Resource} object
+     */
+    void setJrTemplateResource(Resource jrTemplateResource);
+
+    /**
+     * <p>getJrTemplateResource</p>>
+     *
+     * Get configuration resource DAO for jasper report templates
+     *
+     * @return a {@link org.springframework.core.io.Resource} object
+     */
+    Resource getJrTemplateResource();
 }

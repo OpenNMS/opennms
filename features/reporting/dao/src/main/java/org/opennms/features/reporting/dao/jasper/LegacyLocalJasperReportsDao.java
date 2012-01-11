@@ -32,8 +32,6 @@ import org.opennms.features.reporting.model.jasperreport.JasperReportDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -65,15 +63,11 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     /**
      * Config resource for database reports configuration file
      */
-    @Autowired
-    @Qualifier("localJasperReportsResource")
     private Resource m_configResource;
 
     /**
      * Config resource for jasper report templates
      */
-    @Autowired
-    @Qualifier("jrTemplateResource")
     private Resource m_jrTemplateResource;
 
     /**
@@ -111,6 +105,38 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
             stream = m_configResource.getInputStream();
         }
         m_LocalJasperReports = JAXB.unmarshal(file, LocalJasperReports.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setConfigResource(Resource configResource) {
+        m_configResource = configResource;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Resource getConfigResource() {
+        return m_configResource;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setJrTemplateResource(Resource jrTemplateResource) {
+        m_jrTemplateResource = jrTemplateResource;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Resource getJrTemplateResource() {
+        return m_jrTemplateResource;
     }
 
     /**

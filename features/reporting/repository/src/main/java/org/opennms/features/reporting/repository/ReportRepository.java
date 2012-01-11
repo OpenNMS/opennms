@@ -41,42 +41,94 @@ public interface ReportRepository {
     /**
      * <p>getReports</p>
      *
-     * @return a {@link java.util.List} object.
+     * Get *ALL* reports from a report repository
+     *
+     * @return a {@link java.util.List} object
      */
     List <BasicReportDefinition> getReports();
     
     /**
      * <p>getOnlineReports</p>
      *
-     * @return a {@link java.util.List} object.
+     * Get all *ONLINE* reports from a report repository
+     *
+     * @return a {@link java.util.List} object
      */
     List <BasicReportDefinition> getOnlineReports();
     
     /**
      * <p>getReportService</p>
      *
-     * @param reportId a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * Get report service from a specific report by ID
+     *
+     * @param reportId a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      */
     String getReportService(String reportId);
     
     /**
      * <p>getDisplayName</p>
      *
-     * @param reportId a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * Get display name from a specific report by ID
+     *
+     * @param reportId a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      */
     String getDisplayName(String reportId);
 
+    /**
+     * <p>getEngine</p>
+     *
+     * Get engine for database access from a specific report by ID
+     *
+     * @param reportId a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     String getEngine(String reportId);
-    
+
+    /**
+     * <p>getTemplateStream</p>
+     *
+     * Get report template stream from a specific report by ID
+     *
+     * @param reportId a {@link java.lang.String} object
+     * @return a {@link java.io.InputStream} object
+     */
     InputStream getTemplateStream(String reportId);
 
+    /**
+     * <p>getRepositoryId</p>
+     *
+     * Get report repository ID
+     *
+     * @return a {@link java.lang.String} object
+     */
     String getRepositoryId();
-    
+
+    /**
+     * <p>getRepositoryName</p>
+     *
+     * Get report repository name
+     *
+     * @return a {@link java.lang.String} object
+     */
     String getRepositoryName();
-    
+
+    /**
+     * <p>getRepositoryDescription</p>
+     *
+     * Get report repository description
+     *
+     * @return a {@link java.lang.String} object
+     */
     String getRepositoryDescription();
-    
+
+    /**
+     * <p>getManagementUrl</p>
+     *
+     * Get repository management URL for subscription services
+     *
+     * @return a {@link java.lang.String} object
+     */
     String getManagementUrl();
 }

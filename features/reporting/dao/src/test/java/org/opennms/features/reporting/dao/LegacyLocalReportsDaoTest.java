@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -57,8 +56,7 @@ public class LegacyLocalReportsDaoTest {
      * Local report data access object to test
      */
     @Autowired
-    @Qualifier("localReportsDao")
-    private LocalReportsDao m_localReportsResource;
+    private LocalReportsDao m_legacyLocalReportsDao;
 
     /**
      * List with all configured online reports
@@ -86,16 +84,16 @@ public class LegacyLocalReportsDaoTest {
     @Before
     public void setUp() throws Exception {
         // Injected configuration
-        assertNotNull("Inject legacy local report data access.", m_localReportsResource);
-        m_localReportsResource.loadConfiguration();
+        assertNotNull("Inject legacy local report data access.", m_legacyLocalReportsDao);
+        m_legacyLocalReportsDao.loadConfiguration();
 
         // Read reports which are configured as online reports
-        m_onlineReports = m_localReportsResource.getOnlineReports();
+        m_onlineReports = m_legacyLocalReportsDao.getOnlineReports();
         assertNotNull("Test to retrieve 2 online reports from " + m_configFile, m_onlineReports);
         assertEquals("Test 2 configured online reports.", 2, m_onlineReports.size());
 
         // Read all configured reports
-        m_reports = m_localReportsResource.getReports();
+        m_reports = m_legacyLocalReportsDao.getReports();
         assertNotNull("Test to retrieve 3 online reports from " + m_configFile, m_reports);
         assertEquals("Test 3 configured online reports.", 3, m_reports.size());
     }
@@ -109,7 +107,7 @@ public class LegacyLocalReportsDaoTest {
      */
     @After
     public void tearDown() throws Exception {
-        m_localReportsResource = null;
+        m_legacyLocalReportsDao = null;
         m_configFile = null;
         m_onlineReports = null;
         m_reports = null;

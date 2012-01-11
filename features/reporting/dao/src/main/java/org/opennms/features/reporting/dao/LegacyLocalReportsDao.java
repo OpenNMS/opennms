@@ -32,8 +32,6 @@ import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -70,9 +68,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
     /**
      * Config resource for database reports configuration file
      */
-    @Autowired
-    @Qualifier("localReportsResource")
-    private Resource m_legacyLocalReportConfigResource;
+    private Resource m_configResource;
 
     /**
      * <p>afterPropertiesSet</p>
@@ -82,7 +78,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
      * @throws java.lang.Exception if any.
      */
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_legacyLocalReportConfigResource != null, "property configResource must be set to a non-null value");
+        Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
         loadConfiguration();
     }
 
@@ -96,9 +92,9 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
 
         File file = null;
         try {
-            file = m_legacyLocalReportConfigResource.getFile();
+            file = m_configResource.getFile();
         } catch (IOException e) {
-            logger.error("Resource '{}' does not seem to have an underlying File object.", m_legacyLocalReportConfigResource);
+            logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
         }
 
         if (file != null) {
@@ -106,9 +102,25 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
             stream = new FileInputStream(file);
         } else {
             lastModified = System.currentTimeMillis();
-            stream = m_legacyLocalReportConfigResource.getInputStream();
+            stream = m_configResource.getInputStream();
         }
         setLegacyLocalReportsDefinition(JAXB.unmarshal(file, LegacyLocalReportsDefinition.class));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setConfigResource(Resource configResource) {
+        m_configResource = configResource;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Resource getConfigResource() {
+        return m_configResource;
     }
 
     /**
