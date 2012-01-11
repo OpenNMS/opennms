@@ -28,10 +28,6 @@
 
 package org.opennms.features.reporting.repository.global;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao;
 import org.opennms.features.reporting.dao.remoterepository.RemoteRepositoryConfigDao;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
@@ -41,6 +37,10 @@ import org.opennms.features.reporting.repository.local.LegacyLocalReportReposito
 import org.opennms.features.reporting.repository.remote.DefaultRemoteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>DefaultGlobalReportRepository.java</p>
@@ -71,13 +71,14 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     /**
      * Default constructor creates one local and many remote repositories.
      */
-    public DefaultGlobalReportRepository() {
+    public DefaultGlobalReportRepository() throws Exception {
         this.m_repositoryList = new ArrayList<ReportRepository>();
 
         /**
          * The local disk repository provides the canned OpenNMS community reports.
          */
         this.m_repositoryList.add(new LegacyLocalReportRepository());
+        this.m_remoteRepositoryConfigDao.loadConfiguration();
 
         /**
          * A remote repository for each remote repository from RemoteRepositoryConfig.
