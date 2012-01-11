@@ -71,14 +71,18 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     /**
      * Default constructor creates one local and many remote repositories.
      */
-    public DefaultGlobalReportRepository() throws Exception {
+    public DefaultGlobalReportRepository() {
         this.m_repositoryList = new ArrayList<ReportRepository>();
 
         /**
          * The local disk repository provides the canned OpenNMS community reports.
          */
         this.m_repositoryList.add(new LegacyLocalReportRepository());
-        this.m_remoteRepositoryConfigDao.loadConfiguration();
+        try {
+            this.m_remoteRepositoryConfigDao.loadConfiguration();
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
         /**
          * A remote repository for each remote repository from RemoteRepositoryConfig.
