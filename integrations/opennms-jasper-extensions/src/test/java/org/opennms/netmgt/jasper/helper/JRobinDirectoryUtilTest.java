@@ -95,12 +95,4 @@ public class JRobinDirectoryUtilTest {
         assertEquals("eth0-00e0817xxxxx", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
     }
     
-    @Test
-    public void testGetRRDfromDataSource() {
-        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
-        
-        
-        assertEquals("OpenNMS_Name_Queued.jrb", lookup.findRrdByDatasource("rrdDir", 10, "dataSource"));
-        
-    }
 }

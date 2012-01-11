@@ -25,8 +25,8 @@ public class ResourcePathFileTraversalTest {
     @Test
     public void testFindTopLevelOnlyIfPassesFilenameCheck() {
         ResourcePathFileTraversal traverser = new ResourcePathFileTraversal(new File(m_baseDir + "/" + m_nodeId + "/opennms-jvm"));
-        traverser.addAndFilenameFilter("ThreadCount.jrb");
-        traverser.addAndFilenameFilter("Bogus.jrb");
+        traverser.addDatasourceFilter("ThreadCount");
+        traverser.addDatasourceFilter("Bogus");
         List<String> paths = traverser.traverseDirectory();
         
         assertEquals(0, paths.size());
@@ -35,7 +35,7 @@ public class ResourcePathFileTraversalTest {
     @Test
     public void testFindPathsWithFilterOneFile() {
         ResourcePathFileTraversal traverser = new ResourcePathFileTraversal(new File(m_baseDir + "/" + m_nodeId + "/" + m_resourceName));
-        traverser.addAndFilenameFilter("http.dump");
+        traverser.addDatasourceFilter("http");
         List<String> paths = traverser.traverseDirectory();
         
         
@@ -46,7 +46,8 @@ public class ResourcePathFileTraversalTest {
     @Test
     public void testFindPathsWithAndFilter() {
         ResourcePathFileTraversal traverser = new ResourcePathFileTraversal(new File(m_baseDir + "/" + m_nodeId + "/" + m_resourceName));
-        traverser.addAndFilenameFilter("http.dump").addAndFilenameFilter("icmp.jrb");
+        traverser.addDatasourceFilter("http");
+        traverser.addDatasourceFilter("icmp");
         List<String> paths = traverser.traverseDirectory();
         
         assertEquals(1, paths.size());
@@ -56,7 +57,8 @@ public class ResourcePathFileTraversalTest {
     @Test
     public void testFindPathsWithFilterNoExtensions() {
         ResourcePathFileTraversal traverser = new ResourcePathFileTraversal(new File(m_baseDir + "/" + m_nodeId + "/" + m_resourceName));
-        traverser.addAndFilenameFilter("http").addAndFilenameFilter("icmp");
+        traverser.addDatasourceFilter("http");
+        traverser.addDatasourceFilter("icmp");
         List<String> paths = traverser.traverseDirectory();
         
         assertEquals(1, paths.size());
@@ -67,11 +69,19 @@ public class ResourcePathFileTraversalTest {
     public void testFindPathsWithStoreByGroup() {
         System.setProperty("org.opennms.rrd.storeByGroup", "true");
         ResourcePathFileTraversal traverser = new ResourcePathFileTraversal(new File(m_baseDir + "/" + m_nodeId + "/storeby-group-jvm"));
-        traverser.addDatasourceFilter("Bogus");
+        traverser.addDatasourceFilter("TotalMemory");
         List<String> paths = traverser.traverseDirectory();
         
         assertEquals(1, paths.size());
         assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp/10/storeby-group-jvm", paths.get(0));
+        
+        
+        ResourcePathFileTraversal traverser2 = new ResourcePathFileTraversal(new File(m_baseDir + "/" + m_nodeId + "/storeby-group-jvm"));
+        traverser2.addDatasourceFilter("Bogus");
+        paths = traverser2.traverseDirectory();
+        
+        assertEquals(0, paths.size());
+
     }
 
 }

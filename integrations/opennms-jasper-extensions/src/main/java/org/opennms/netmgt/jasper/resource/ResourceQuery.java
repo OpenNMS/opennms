@@ -1,5 +1,7 @@
 package org.opennms.netmgt.jasper.resource;
 
+import java.io.File;
+
 public class ResourceQuery {
     private String m_rrdDir;
     private String m_node;
@@ -35,6 +37,6 @@ public class ResourceQuery {
     }
     
     public String constructBasePath() {
-        return getRrdDir() + "/" + getNodeId() + "/" + getResourceName();
+        return getRrdDir() + File.separator + getNodeId() + File.separator + getResourceName();
     }
 }

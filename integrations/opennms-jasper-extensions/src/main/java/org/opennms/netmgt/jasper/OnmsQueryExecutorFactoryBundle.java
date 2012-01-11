@@ -11,7 +11,7 @@ import org.opennms.netmgt.jasper.rrdtool.RrdtoolQueryExecutorFactory;
 public class OnmsQueryExecutorFactoryBundle implements QueryExecuterFactoryBundle {
     
     public String[] getLanguages() {
-        return new String[] {"jrobin","rrdtool", "resourceQuery"};
+        return new String[] {"jrobin","rrdtool","resourceQuery"};
     }
 
     public JRQueryExecuterFactory getQueryExecuterFactory(String language) throws JRException {

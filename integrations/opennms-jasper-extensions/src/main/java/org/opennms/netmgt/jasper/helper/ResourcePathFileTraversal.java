@@ -11,8 +11,7 @@ import java.util.Properties;
 public class ResourcePathFileTraversal{
     
     private final File m_file;
-    private List<FilenameFilter> m_filterList = new ArrayList<FilenameFilter>();
-    private List<String> m_dataSourceFilterList;
+    private List<String> m_dataSourceFilterList = new ArrayList<String>();
     
     public ResourcePathFileTraversal(File f) {
         m_file = f;
@@ -32,10 +31,12 @@ public class ResourcePathFileTraversal{
     
     private void addTopLevelIfNecessary(List<String> paths) {
         File[] fList = m_file.listFiles();
-        for(File f : fList) {
-            if(f.isFile()) {
-                onDirectory(m_file, paths);
-                break;
+        if(fList != null) {
+            for(File f : fList) {
+                if(f.isFile()) {
+                    onDirectory(m_file, paths);
+                    break;
+                }
             }
         }
         
@@ -65,7 +66,7 @@ public class ResourcePathFileTraversal{
     }
 
     private void onDirectory(File f, List<String> dirPaths) {
-        if(System.getProperty("org.opennms.rrd.storeByGroup").toLowerCase().equals("true")) {
+        if(System.getProperty("org.opennms.rrd.storeByGroup") != null && System.getProperty("org.opennms.rrd.storeByGroup").toLowerCase().equals("true")) {
             try {
                 if(validateDataSource(f)) {
                     dirPaths.add(f.getAbsolutePath());
@@ -109,7 +110,8 @@ public class ResourcePathFileTraversal{
     }
 
     private boolean validateFiles(final File f) {
-        for(FilenameFilter filter : m_filterList) {
+        List<FilenameFilter> filterList = getFilenameFilters();
+        for(FilenameFilter filter : filterList) {
             String[] files = f.list(filter);
             if(files.length == 0) {
                 return false;
@@ -120,33 +122,32 @@ public class ResourcePathFileTraversal{
         
     }
 
-    private void addFilenameFilter(final String filterName) {
-        m_filterList.add(new FilenameFilter() {
-            
-            public boolean accept(File dir, String name) {
-                return name.contains(filterName);
-            }
-        });
-        
+    private List<FilenameFilter> getFilenameFilters() {
+        List<FilenameFilter> filters = new ArrayList<FilenameFilter>();
+        for(final String dsName : m_dataSourceFilterList) {
+            filters.add(new FilenameFilter() {
+
+                public boolean accept(File dir, String name) {
+                    
+                    return name.contains(dsName);
+                }
+            });
+        }
+        return filters;
     }
-    
-    public void addFilenameFilters(String[] filenames) {
-        if(filenames != null) {
-            for(String filename : filenames) {
-                addFilenameFilter(filename);
+
+    public void addDatasourceFilters(String[] dsNames) {
+        
+        if(dsNames != null) {
+            for(String dsName : dsNames) {
+                m_dataSourceFilterList.add(dsName);
             }
         }
-    }
-    
-    public ResourcePathFileTraversal addAndFilenameFilter(final String nameToFilterOn) {
-        addFilenameFilter(nameToFilterOn);
-        return this;
+        
+        
     }
 
     public void addDatasourceFilter(String dataSource) {
-        if(m_dataSourceFilterList == null) {
-            m_dataSourceFilterList = new ArrayList<String>();
-        }
         m_dataSourceFilterList.add(dataSource);
     }
     

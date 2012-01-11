@@ -42,13 +42,13 @@ public class ResourceQueryCommandParser{
             processNodeId(command);
         }else if(command.toLowerCase().contains("resourcename")) {
             processResourceName(command);
-        }else if(command.toLowerCase().contains("filenames")) {
+        }else if(command.toLowerCase().contains("dsnames")) {
             processFilters(command);
         }
     }
 
     private void processFilters(String command) {
-        String value = command.substring(command.toLowerCase().indexOf("filenames") + "filenames".length(), command.length());
+        String value = command.substring(command.toLowerCase().indexOf("dsnames") + "dsnames".length(), command.length());
         String[] strFilters = value.trim().split(";");
         
         getCurrentQuery().setFilters(strFilters);
