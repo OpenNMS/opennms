@@ -28,12 +28,7 @@
 
 package org.opennms.features.reporting.repository.remote;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao;
@@ -41,31 +36,46 @@ import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * <p>DefaultRemoteRepositoryTest class.</p>
+ * <p/>
+ * Test OpenNMS CONNECT remote repository
+ *
+ * @author Markus Neumann <markus@opennms.com>
+ * @author Ronny Trommer <ronny@opennms.org>
+ * @version $Id: $
+ * @since 1.8.1
+ */
 // TODO tak: test needs a full working remote repository server with configuration
 @Ignore
 public class DefaultRemoteRepositoryTest {
-    private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryTest.class);
-    private DefaultRemoteRepository m_defaultRemoteRepository;
-    private static final String OPENNMS_HOME = "src/test/resources";
     
-    @BeforeClass
-     public static void setup(){
+    private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryTest.class);
+    
+    private DefaultRemoteRepository m_defaultRemoteRepository;
+    
+    private static final String OPENNMS_HOME = "src/test/resources";
+
+    @Before
+    public void setUp() {
         System.setProperty("opennms.home", OPENNMS_HOME);
         assertEquals(OPENNMS_HOME, System.getProperty("opennms.home"));
-    }
-    
-    @Before
-    public void initialize() {
         //TODO Tak: Jasper version is hard coded
         m_defaultRemoteRepository = new DefaultRemoteRepository(new DefaultRemoteRepositoryConfigDao().getActiveRepositories().get(0), "3.7.6");
         assertNotNull(System.getProperty("opennms.home"));
     }
-    
+
     @Test
     public void getOnlineReports() {
         List<BasicReportDefinition> reports = m_defaultRemoteRepository.getOnlineReports();
         logger.debug("getOnlineReports");
-        for(BasicReportDefinition report : reports) {
+        for (BasicReportDefinition report : reports) {
             logger.debug(report.toString());
         }
     }
@@ -74,25 +84,26 @@ public class DefaultRemoteRepositoryTest {
     public void getReports() {
         List<BasicReportDefinition> reports = m_defaultRemoteRepository.getReports();
         logger.debug("getReports");
-        for(BasicReportDefinition report : reports) {
+        for (BasicReportDefinition report : reports) {
             logger.debug(report.toString());
         }
     }
-    
-    @Test public void reportIdsStartWithRepositoryIdTest() {
+
+    @Test
+    public void reportIdsStartWithRepositoryIdTest() {
         List<BasicReportDefinition> reports = m_defaultRemoteRepository.getReports();
         logger.debug("reportIdsStartWithRepositoryIdTest");
-        for(BasicReportDefinition report : reports) {
+        for (BasicReportDefinition report : reports) {
             assertTrue(report.getId().startsWith(m_defaultRemoteRepository.getRepositoryId()));
             logger.debug(report.getId());
             logger.debug("'{}'", report.getRepositoryId());
         }
     }
-    
+
     @Test
     public void reportIdsWithRepoIdgetMappedToRemoteReportTest() {
         List<BasicReportDefinition> reports = m_defaultRemoteRepository.getReports();
-        for(BasicReportDefinition report : reports) {
+        for (BasicReportDefinition report : reports) {
             assertTrue(m_defaultRemoteRepository.getDisplayName(report.getId()).length() > 0);
             logger.debug("'{}' \t '{}'", report.getId(), m_defaultRemoteRepository.getDisplayName(report.getId()));
         }

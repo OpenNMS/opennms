@@ -28,15 +28,6 @@
 
 package org.opennms.features.reporting.repository.global;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -46,6 +37,12 @@ import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.local.LegacyLocalReportRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import static org.junit.Assert.*;
 @Ignore
 //TODO Tak: check this test and handel remote-repository connections
 public class GlobalReportRepositoryTest {
@@ -63,8 +60,12 @@ public class GlobalReportRepositoryTest {
 
 	@Before
 	public void init() {
-		globalRepo = new DefaultGlobalReportRepository();
-	}
+        try {
+            globalRepo = new DefaultGlobalReportRepository();
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
 
 	@Test
 	public void addReportRepositoryTest() {
