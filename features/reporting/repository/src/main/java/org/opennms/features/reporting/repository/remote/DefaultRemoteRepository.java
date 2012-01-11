@@ -16,11 +16,11 @@
 
 package org.opennms.features.reporting.repository.remote;
 
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.client.apache.ApacheHttpClient;
+import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
+import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import org.apache.commons.beanutils.BeanUtils;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.jasperreport.SimpleJasperReportDefinition;
@@ -30,31 +30,56 @@ import org.opennms.features.reporting.sdo.RemoteReportSDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jersey.api.client.GenericType;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache.ApacheHttpClient;
-import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
-import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * <p>
- * DefaultRemoteRepository.java
- * </p>
- * 
- * @author <a href="mailto:markus@opennms.com">Markus Neumann</a>
+ * <p>DefaultRemoteRepository class.</p>
+ * <p/>
+ * Implementation of OpenNMS CONNECT CIO Report repository
+ *
+ * @author Markus Neumann <markus@opennms.com>
  * @version $Id: $
+ * @since 1.8.1
  */
-
 public class DefaultRemoteRepository implements ReportRepository {
 
-    private RemoteRepositoryDefinition m_remoteRepositoryDefintion;
+    /**
+     * Logging
+     */
     private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepository.class);
+
+    /**
+     * Model for repository configuration from remote-repository.xml
+     */
+    private RemoteRepositoryDefinition m_remoteRepositoryDefintion;
+
+    /**
+     * Jasper report version number
+     */
     private final String JASPER_REPORTS_VERSION;
 
+    /**
+     * HTTP client for ReST connection
+     */
     private ApacheHttpClient m_client;
+
+    /**
+     * HTTP client connection configuration
+     */
     private ApacheHttpClientConfig m_clientConfig;
+
+    /**
+     * Data structure from ReST call
+     */
     private WebResource m_webResource;
 
+    /**
+     * @param remoteRepositoryDefinition
+     * @param jasperReportsVersion
+     */
     public DefaultRemoteRepository(
             RemoteRepositoryDefinition remoteRepositoryDefinition,
             String jasperReportsVersion) {
@@ -62,13 +87,14 @@ public class DefaultRemoteRepository implements ReportRepository {
         this.JASPER_REPORTS_VERSION = jasperReportsVersion;
         m_clientConfig = new DefaultApacheHttpClientConfig();
         m_clientConfig.getState().setCredentials(null,
-                                                 m_remoteRepositoryDefintion.getURI().getHost(),
-                                                 m_remoteRepositoryDefintion.getURI().getPort(),
-                                                 m_remoteRepositoryDefintion.getLoginUser(),
-                                                 m_remoteRepositoryDefintion.getLoginRepoPassword());
+                m_remoteRepositoryDefintion.getURI().getHost(),
+                m_remoteRepositoryDefintion.getURI().getPort(),
+                m_remoteRepositoryDefintion.getLoginUser(),
+                m_remoteRepositoryDefintion.getLoginRepoPassword());
         m_client = ApacheHttpClient.create(m_clientConfig);
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<BasicReportDefinition> getReports() {
         List<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
@@ -76,20 +102,22 @@ public class DefaultRemoteRepository implements ReportRepository {
             m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "reports" + "/" + JASPER_REPORTS_VERSION);
             List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
             try {
-                webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {});
+                webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
+                });
             } catch (Exception e) {
                 logger.error("Error requesting report template from repository. Error message: '{}'", e.getMessage());
                 e.printStackTrace();
             }
 
             logger.debug("getReports got '{}' RemoteReportSDOs", webCallResult.size());
-            
+
             resultReports = this.mapSDOListToBasicReportList(webCallResult);
-            
+
         }
         return resultReports;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<BasicReportDefinition> getOnlineReports() {
         List<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
@@ -97,7 +125,8 @@ public class DefaultRemoteRepository implements ReportRepository {
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "onlineReports" + "/" + JASPER_REPORTS_VERSION);
             try {
-                webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {});
+                webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
+                });
             } catch (Exception e) {
                 logger.error("Error requesting online reports. Error message: '{}'", e.getMessage());
                 e.printStackTrace();
@@ -108,6 +137,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         return resultReports;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getReportService(String reportId) {
         reportId = reportId.substring(reportId.indexOf("_") + 1);
@@ -124,6 +154,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         return result;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getDisplayName(String reportId) {
         reportId = reportId.substring(reportId.indexOf("_") + 1);
@@ -140,6 +171,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         return result;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getEngine(String reportId) {
         reportId = reportId.substring(reportId.indexOf("_") + 1);
@@ -156,6 +188,7 @@ public class DefaultRemoteRepository implements ReportRepository {
         return result;
     }
 
+    /** {@inheritDoc} */
     @Override
     public InputStream getTemplateStream(String reportId) {
         reportId = reportId.substring(reportId.indexOf("_") + 1);
@@ -170,6 +203,30 @@ public class DefaultRemoteRepository implements ReportRepository {
             }
         }
         return templateStreamResult;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getRepositoryId() {
+        return this.m_remoteRepositoryDefintion.getRepositoryId();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getRepositoryName() {
+        return this.m_remoteRepositoryDefintion.getRepositoryName();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getRepositoryDescription() {
+        return this.m_remoteRepositoryDefintion.getRepositoryDescription();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getManagementUrl() {
+        return this.m_remoteRepositoryDefintion.getRepositoryManagementURL();
     }
 
     private Boolean isConfigOk() {
@@ -209,33 +266,13 @@ public class DefaultRemoteRepository implements ReportRepository {
         }
         return resultList;
     }
-    
+
     public RemoteRepositoryDefinition getConfig() {
         return this.m_remoteRepositoryDefintion;
     }
 
     public void setConfig(RemoteRepositoryDefinition remoteRepositoryDefintion) {
         this.m_remoteRepositoryDefintion = remoteRepositoryDefintion;
-    }
-
-    @Override
-    public String getRepositoryId() {
-        return this.m_remoteRepositoryDefintion.getRepositoryId();
-    }
-
-    @Override
-    public String getRepositoryName() {
-        return this.m_remoteRepositoryDefintion.getRepositoryName();
-    }
-
-    @Override
-    public String getRepositoryDescription() {
-        return this.m_remoteRepositoryDefintion.getRepositoryDescription();
-    }
-
-    @Override
-    public String getManagementUrl() {
-        return this.m_remoteRepositoryDefintion.getRepositoryManagementURL();
     }
 
     public String getJASPER_REPORTS_VERSION() {
