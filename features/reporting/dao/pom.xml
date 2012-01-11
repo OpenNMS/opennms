@@ -30,10 +30,10 @@
 			<artifactId>logback-classic</artifactId>
 			<version>0.9.30</version>
 		</dependency>
-		<dependency>
-			<groupId>org.opennms.dependencies</groupId>
-		        <artifactId>spring-dependencies</artifactId>
-		        <type>pom</type>
-	        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-dependencies</artifactId>
+            <type>pom</type>
+        </dependency>
 	</dependencies>
 </project>
