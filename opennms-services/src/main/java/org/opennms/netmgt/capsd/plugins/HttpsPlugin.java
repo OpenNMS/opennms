@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import org.opennms.core.utils.SocketUtils.SocketWrapper;
-import org.opennms.core.utils.SocketUtils.SslSocketWrapper;
+import org.opennms.core.utils.SocketWrapper;
+import org.opennms.core.utils.SslSocketWrapper;
 
 /**
  * <P>

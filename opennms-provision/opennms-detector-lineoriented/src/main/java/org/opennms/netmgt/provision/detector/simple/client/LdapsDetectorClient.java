@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,35 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.provision.detector.simple.client;
 
-import java.util.Map;
-
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.SslSocketWrapper;
-import org.opennms.netmgt.poller.Distributable;
-
-import com.novell.ldap.LDAPConnection;
 
 /**
- * This class is designed to be used by the service poller framework to test the
- * availability of the LDAPS service on remote interfaces. The class implements
- * the ServiceMonitor interface that allows it to be used along with other
- * plug-ins by the service poller framework.
+ * <p>LdapDetectorClient class.</p>
  *
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @author thedesloge
+ * @version $Id: $
  */
-@Distributable
-final public class LdapsMonitor extends LdapMonitor {
-
-    @Override
-    protected int determinePort(Map<String, Object> parameters) {
-        return ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_SSL_PORT);
-    }
-
+public class LdapsDetectorClient extends LdapDetectorClient {
     @Override
     protected SocketWrapper getSocketWrapper() {
         return new SslSocketWrapper();

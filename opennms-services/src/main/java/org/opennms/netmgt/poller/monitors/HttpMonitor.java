@@ -47,12 +47,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.Base64;
+import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.core.utils.SocketUtils.DefaultSocketWrapper;
-import org.opennms.core.utils.SocketUtils.SocketWrapper;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;

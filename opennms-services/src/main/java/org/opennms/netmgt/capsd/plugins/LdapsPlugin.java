@@ -31,8 +31,8 @@ package org.opennms.netmgt.capsd.plugins;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.SocketUtils.SocketWrapper;
-import org.opennms.core.utils.SocketUtils.SslSocketWrapper;
+import org.opennms.core.utils.SocketWrapper;
+import org.opennms.core.utils.SslSocketWrapper;
 
 import com.novell.ldap.LDAPConnection;
 

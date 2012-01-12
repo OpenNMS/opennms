@@ -39,10 +39,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.core.utils.SocketUtils.DefaultSocketWrapper;
-import org.opennms.core.utils.SocketUtils.SocketWrapper;
 
 // TODO need to completely javadoc this class
 

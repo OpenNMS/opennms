@@ -38,12 +38,12 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
+import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.core.utils.SocketUtils.DefaultSocketWrapper;
-import org.opennms.core.utils.SocketUtils.SocketWrapper;
-import org.opennms.core.utils.SocketUtils.TimeoutSocketFactory;
+import org.opennms.core.utils.TimeoutSocketFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
 import com.novell.ldap.LDAPConnection;

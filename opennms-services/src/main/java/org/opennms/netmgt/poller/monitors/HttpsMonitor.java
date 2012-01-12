@@ -31,8 +31,8 @@ package org.opennms.netmgt.poller.monitors;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.SocketUtils.SocketWrapper;
-import org.opennms.core.utils.SocketUtils.SslSocketWrapper;
+import org.opennms.core.utils.SocketWrapper;
+import org.opennms.core.utils.SslSocketWrapper;
 import org.opennms.netmgt.poller.Distributable;
 
 /**
