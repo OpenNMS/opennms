@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.SocketUtils;
+import org.opennms.core.utils.SocketUtils.SocketWrapper;
+import org.opennms.core.utils.SocketUtils.SslSocketWrapper;
 import org.opennms.netmgt.poller.Distributable;
 
 import com.novell.ldap.LDAPConnection;
@@ -57,8 +56,7 @@ final public class LdapsMonitor extends LdapMonitor {
     }
 
     @Override
-    protected Socket wrapSocket(Socket socket) throws IOException {
-        return SocketUtils.wrapSocketInSslContext(socket);
+    protected SocketWrapper getSocketWrapper() {
+        return new SslSocketWrapper();
     }
-
 }

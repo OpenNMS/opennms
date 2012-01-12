@@ -31,6 +31,7 @@ package org.opennms.core.utils;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
@@ -44,6 +45,60 @@ import javax.net.ssl.TrustManager;
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
 public abstract class SocketUtils {
+
+    public interface SocketWrapper {
+        Socket wrapSocket(Socket socket) throws IOException;
+    }
+
+    public static class SslSocketWrapper implements SocketWrapper {
+        private final String[] m_cipherSuites;
+
+        public SslSocketWrapper() {
+            this(null);
+        }
+
+        public SslSocketWrapper(String[] cipherSuites) {
+            m_cipherSuites = cipherSuites;
+        }
+        @Override
+        public Socket wrapSocket(Socket socket) throws IOException {
+            return wrapSocketInSslContext(socket, m_cipherSuites);
+        }
+    }
+
+    public static class DefaultSocketWrapper implements SocketWrapper {
+        @Override
+        public Socket wrapSocket(Socket socket) throws IOException {
+            return socket;
+        }
+    }
+
+    public static class TimeoutSocketFactory {
+
+        private final int m_timeout;
+        private final SocketWrapper m_socketWrapper;
+
+        public TimeoutSocketFactory(final int timeout) {
+            this(timeout, null);
+        }
+
+        /**
+         * Oh noes, dyslexia!!!
+         */
+        public TimeoutSocketFactory(final int timeout, final SocketWrapper wocketSrapper) {
+            m_timeout = timeout;
+            m_socketWrapper = wocketSrapper;
+        }
+
+        public Socket createSocket(final String host, final int port) throws IOException, UnknownHostException {
+            Socket socket = new Socket(host, port);
+            socket.setSoTimeout(m_timeout);
+            if (m_socketWrapper != null) {
+                socket = m_socketWrapper.wrapSocket(socket);
+            }
+            return socket;
+        }
+    }
 
     public static Socket wrapSocketInSslContext(Socket socket) throws IOException {
         return wrapSocketInSslContext(socket, null);

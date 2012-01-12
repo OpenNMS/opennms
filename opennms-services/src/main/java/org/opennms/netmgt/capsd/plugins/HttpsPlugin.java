@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.io.IOException;
-import java.net.Socket;
-
-import org.opennms.core.utils.SocketUtils;
+import org.opennms.core.utils.SocketUtils.SocketWrapper;
+import org.opennms.core.utils.SocketUtils.SslSocketWrapper;
 
 /**
  * <P>
@@ -84,8 +82,7 @@ public class HttpsPlugin extends HttpPlugin {
 
     /** {@inheritDoc} */
     @Override
-    protected Socket wrapSocket(Socket socket) throws IOException {
-        return SocketUtils.wrapSocketInSslContext(socket);
+    public SocketWrapper getSocketWrapper() {
+        return new SslSocketWrapper();
     }
-
 }

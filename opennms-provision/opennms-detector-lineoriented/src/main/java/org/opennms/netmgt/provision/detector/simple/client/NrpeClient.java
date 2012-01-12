@@ -38,6 +38,7 @@ import java.net.Socket;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.SocketUtils;
+import org.opennms.core.utils.SocketUtils.SocketWrapper;
 import org.opennms.netmgt.provision.detector.simple.request.NrpeRequest;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
@@ -48,7 +49,7 @@ import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
  * @author Donald Desloge
  * @version $Id: $
  */
-public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
+public class NrpeClient implements Client<NrpeRequest, NrpePacket>, SocketWrapper {
     
     /** 
      * List of cipher suites to use when talking SSL to NRPE, which uses anonymous DH
@@ -99,8 +100,8 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
         socket.connect(new InetSocketAddress(address, port), timeout);
         socket.setSoTimeout(timeout);
         try {
-            return wrapSocket(socket, InetAddressUtils.str(address), port);
-        } catch (final Exception e) {
+            return wrapSocket(socket);
+        } catch (final IOException e) {
             LogUtils.debugf(this, e, "an error occurred while SSL-wrapping a socket (%s:%d)", address, port);
             return null;
         }
@@ -115,7 +116,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
      * @return a {@link java.net.Socket} object.
      * @throws java.lang.Exception if any.
      */
-    protected Socket wrapSocket(final Socket socket, final String hostAddress, final int port) throws Exception {
+    public Socket wrapSocket(final Socket socket) throws IOException {
         if (!isUseSsl()) {
             return socket;
         } else {

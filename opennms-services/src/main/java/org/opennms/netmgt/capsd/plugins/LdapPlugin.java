@@ -36,12 +36,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.SocketUtils.DefaultSocketWrapper;
+import org.opennms.core.utils.SocketUtils.SocketWrapper;
+import org.opennms.core.utils.SocketUtils.TimeoutSocketFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
 import com.novell.ldap.LDAPConnection;
@@ -86,23 +88,14 @@ public class LdapPlugin extends AbstractPlugin {
      * A class to add a timeout to the socket that the LDAP code uses to access
      * an LDAP server
      */
-    private class TimeoutLDAPSocket implements LDAPSocketFactory {
-
-        private int m_timeout;
-
+    private class TimeoutLDAPSocket extends TimeoutSocketFactory implements LDAPSocketFactory {
         public TimeoutLDAPSocket(int timeout) {
-            m_timeout = timeout;
-        }
-
-        public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
-            Socket socket = new Socket(host, port);
-            socket.setSoTimeout(m_timeout);
-            return wrapSocket(socket);
+            super(timeout, getSocketWrapper());
         }
     }
 
-    protected Socket wrapSocket(Socket socket) throws IOException {
-        return socket;
+    protected SocketWrapper getSocketWrapper() {
+        return new DefaultSocketWrapper();
     }
 
     protected int[] determinePorts(final Map<String, Object> parameters) {

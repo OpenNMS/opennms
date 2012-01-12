@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.SocketUtils;
+import org.opennms.core.utils.SocketUtils.SocketWrapper;
+import org.opennms.core.utils.SocketUtils.SslSocketWrapper;
 
 import com.novell.ldap.LDAPConnection;
 
@@ -99,7 +98,7 @@ public class LdapsPlugin extends LdapPlugin {
 
     /** {@inheritDoc} */
     @Override
-    protected Socket wrapSocket(Socket socket) throws IOException {
-        return SocketUtils.wrapSocketInSslContext(socket);
+    protected SocketWrapper getSocketWrapper() {
+        return new SslSocketWrapper();
     }
 }
