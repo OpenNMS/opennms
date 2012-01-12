@@ -60,7 +60,7 @@ import com.novell.ldap.LDAPSocketFactory;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
-public final class LdapPlugin extends AbstractPlugin {
+public class LdapPlugin extends AbstractPlugin {
 
     private static final String PROTOCOL_NAME = "LDAP";
 
@@ -97,8 +97,16 @@ public final class LdapPlugin extends AbstractPlugin {
         public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
             Socket socket = new Socket(host, port);
             socket.setSoTimeout(m_timeout);
-            return socket;
+            return wrapSocket(socket);
         }
+    }
+
+    protected Socket wrapSocket(Socket socket) throws IOException {
+        return socket;
+    }
+
+    protected int[] determinePorts(final Map<String, Object> parameters) {
+        return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
     }
 
     /**
@@ -219,7 +227,7 @@ public final class LdapPlugin extends AbstractPlugin {
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-        int[] ports = ParameterMap.getKeyedIntegerArray(qualifiers, "port", DEFAULT_PORTS);
+        int[] ports = determinePorts(qualifiers);
 
         for (int i = 0; i < ports.length; i++) {
             if (isServer(address, ports[i], retries, timeout)) {

@@ -162,7 +162,6 @@ public class LdapMonitor extends AbstractServiceMonitor {
             socket = new Socket();
             socket.connect(new InetSocketAddress((InetAddress) iface.getAddress(), ldapPort), tracker.getConnectionTimeout());
             socket.setSoTimeout(tracker.getSoTimeout());
-            socket = wrapSocket(socket);
             log().debug("LdapMonitor: connected to host: " + address + " on port: " + ldapPort);
 
             // We're connected, so upgrade status to unresponsive

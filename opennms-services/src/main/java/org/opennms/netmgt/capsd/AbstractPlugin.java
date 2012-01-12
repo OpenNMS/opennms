@@ -42,13 +42,6 @@ import java.util.Map;
  * @author <A HREF="mike@opennms.org">Mike</A>
  * @author <A HREF="weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mike@opennms.org">Mike</A>
- * @author <A HREF="weave@oculan.com">Weave</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mike@opennms.org">Mike</A>
- * @author <A HREF="weave@oculan.com">Weave</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
  */
 public abstract class AbstractPlugin implements Plugin {
     /**

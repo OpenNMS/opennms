@@ -39,20 +39,15 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.SocketUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.poller.nrpe.CheckNrpe;
 import org.opennms.netmgt.poller.nrpe.NrpePacket;
-import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
 /**
  * <P>
@@ -329,24 +324,8 @@ public final class NrpePlugin extends AbstractPlugin {
     		if (log().isDebugEnabled()) {
     			log().debug("Parameter 'usessl' is true, using SSL");
     		}
+    		return SocketUtils.wrapSocketInSslContext(socket, ADH_CIPHER_SUITES);
     	}
-
-    	Socket wrappedSocket;
-
-        // set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL
-        // CERTIFICATES
-        SSLSocketFactory sslSF = null;
-
-        TrustManager[] tm = { new RelaxedX509TrustManager() };
-        SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, tm, new java.security.SecureRandom());
-        sslSF = sslContext.getSocketFactory();
-        wrappedSocket = sslSF.createSocket(socket, hostAddress, hostPort, true);
-        SSLSocket sslSocket = (SSLSocket) wrappedSocket;
-        // Set this socket to use anonymous Diffie-Hellman ciphers. This removes the authentication
-        // benefits of SSL, but it's how NRPE rolls so we have to play along.
-        sslSocket.setEnabledCipherSuites(ADH_CIPHER_SUITES);
-        return wrappedSocket;
     }
     
     /**

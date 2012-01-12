@@ -29,20 +29,12 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.SocketUtils;
 import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
 import com.novell.ldap.LDAPConnection;
 
@@ -66,25 +58,7 @@ final public class LdapsMonitor extends LdapMonitor {
 
     @Override
     protected Socket wrapSocket(Socket socket) throws IOException {
-        TrustManager[] tm = { new RelaxedX509TrustManager() };
-        SSLContext sslContext = null;
-        try {
-            sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, tm, new java.security.SecureRandom());
-        } catch (NoSuchAlgorithmException e) {
-            log().error("wrapSocket: Error wrapping socket, throwing runtime exception..."+e);
-            throw new IllegalStateException("No such algorith in SSLSocketFactory: "+e);
-        } catch (KeyManagementException e) {
-            log().error("wrapSocket: Error wrapping socket, throwing runtime exception..."+e);
-            throw new IllegalStateException("Key management exception in SSLSocketFactory: "+e);
-        }
-        SSLSocketFactory socketFactory = sslContext.getSocketFactory();
-        Socket wrappedSocket;
-        InetAddress inetAddress = socket.getInetAddress();
-        String hostAddress = InetAddressUtils.str(inetAddress);
-        int port = socket.getPort();
-        wrappedSocket = socketFactory.createSocket(socket, hostAddress, port, true);
-        return wrappedSocket;
+        return SocketUtils.wrapSocketInSslContext(socket);
     }
 
 }

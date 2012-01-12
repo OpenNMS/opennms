@@ -133,7 +133,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
                 socket.setSoTimeout(timeout);
                 log.debug(getPluginName() + ": connected to host: " + config.getInetAddress() + " on port: " + config.getPort());
 
-                socket = wrapSocket(socket, config);
+                socket = wrapSocket(socket);
 
                 isAServer = checkProtocol(socket, config);
 
@@ -373,7 +373,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * @return a {@link java.net.Socket} object.
      * @throws java.lang.Exception if any.
      */
-    protected Socket wrapSocket(Socket socket, ConnectionConfig config) throws Exception {
+    protected Socket wrapSocket(Socket socket) throws IOException {
         return socket;
     }
 }
