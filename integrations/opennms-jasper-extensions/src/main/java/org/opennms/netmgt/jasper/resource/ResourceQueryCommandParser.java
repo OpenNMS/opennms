@@ -9,6 +9,7 @@ public class ResourceQueryCommandParser{
     public ResourceQueryCommandParser() {}
 
     private ResourceQuery m_currentQuery;
+    private static String DELIMETER = ",";
     
     private void setCurrentQuery(ResourceQuery q) {
         m_currentQuery = q;
@@ -44,12 +45,21 @@ public class ResourceQueryCommandParser{
             processResourceName(command);
         }else if(command.toLowerCase().contains("dsnames")) {
             processFilters(command);
+        }else if(command.toLowerCase().contains("strings")) {
+            processStringProperties(command);
         }
+    }
+
+    private void processStringProperties(String command) {
+        String value = command.substring(command.toLowerCase().indexOf("strings") + "strings".length(), command.length());
+        String[] strProperties = value.trim().split(DELIMETER);
+        
+        getCurrentQuery().setStringProperties(strProperties);
     }
 
     private void processFilters(String command) {
         String value = command.substring(command.toLowerCase().indexOf("dsnames") + "dsnames".length(), command.length());
-        String[] strFilters = value.trim().split(";");
+        String[] strFilters = value.trim().split(DELIMETER);
         
         getCurrentQuery().setFilters(strFilters);
     }

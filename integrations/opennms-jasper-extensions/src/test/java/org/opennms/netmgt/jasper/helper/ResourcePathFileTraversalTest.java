@@ -35,7 +35,7 @@ public class ResourcePathFileTraversalTest {
     @Test
     public void testFindPathsWithFilterOneFile() {
         ResourcePathFileTraversal traverser = new ResourcePathFileTraversal(new File(m_baseDir + "/" + m_nodeId + "/" + m_resourceName));
-        traverser.addDatasourceFilter("http");
+        traverser.addDatasourceFilter("http-8980");
         List<String> paths = traverser.traverseDirectory();
         
         
