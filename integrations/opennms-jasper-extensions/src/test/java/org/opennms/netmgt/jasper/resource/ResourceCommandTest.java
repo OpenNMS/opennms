@@ -61,8 +61,8 @@ public class ResourceCommandTest {
         System.setProperty("org.opennms.rrd.storeByGroup", "True");
         JRDataSource dataSource = new ResourceQueryCommand().executeCommand("--rrdDir /Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp" +
         		" --nodeId 47" +
-        		" --resourceName opennms-jvm" +
-        		" --dsNames TotalMemory");
+        		" --resourceType opennms-jvm" +
+        		" --dsName TotalMemory");
         assertNotNull(dataSource);
         assertTrue(dataSource.next());
         
@@ -84,8 +84,8 @@ public class ResourceCommandTest {
     public void testLocalNode9() throws JRException {
         JRDataSource dataSource = new ResourceQueryCommand().executeCommand("--rrdDir /Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp" +
                 " --nodeId 9" +
-                " --resourceName opennms-jvm" +
-                " --dsNames TotalMemory");
+                " --resourceType opennms-jvm" +
+                " --dsName TotalMemory");
         assertNotNull(dataSource);
         assertTrue(dataSource.next());
         
@@ -106,24 +106,32 @@ public class ResourceCommandTest {
     
     @Test
     public void testDataSourceWithStringProperties() throws JRException {
-        JRDataSource dataSource = new ResourceQueryCommand().executeCommand("--rrdDir /Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp" +
-                " --nodeId 9" +
-                " --resourceName opennms-jvm" +
-                " --dsNames TotalMemory");
+        JRDataSource dataSource = new ResourceQueryCommand().executeCommand("--rrdDir src/test/resources/share/rrd/snmp" +
+                " --nodeId 10" +
+                " --resourceType nsVpnMonitor" +
+                " --dsName nsVpnMonBytesIn" +
+                " --string nsVpnMonVpnName");
         assertNotNull(dataSource);
         assertTrue(dataSource.next());
         
         JRDesignField pathField = new JRDesignField();
         pathField.setName("path");
         String path = (String) dataSource.getFieldValue(pathField);
-        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp/9/opennms-jvm", dataSource.getFieldValue(pathField));
+        System.out.println("path retVal: " + path);
+        assertTrue(path.matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_1"));
         
         JRDesignField filterField = new JRDesignField();
-        filterField.setName("TotalMemory");
+        filterField.setName("nsVpnMonBytesIn");
         
         String dsFieldValue = (String) dataSource.getFieldValue(filterField);
         assertNotNull(dsFieldValue);
-        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp/9/opennms-jvm/java_lang_type_OperatingSystem.jrb", dsFieldValue);
+        assertTrue(dsFieldValue.matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_1/nsVpnMonBytesIn.jrb"));
+        
+        JRDesignField stringPropField = new JRDesignField();
+        stringPropField.setName("nsVpnMonVpnName");
+        String stringPropFieldVal = (String) dataSource.getFieldValue(stringPropField);
+        assertNotNull(stringPropFieldVal);
+        assertEquals("998r3-irving-tx-primary", stringPropFieldVal);
         
         assertFalse(dataSource.next());
     }
@@ -139,15 +147,15 @@ public class ResourceCommandTest {
     
     
     private String getCommandWithBogusFilter() {
-        return "--rrdDir src/test/resources/share/rrd/snmp  --nodeid 10 --resourceName nsVpnMonitor --dsNames bogus";
+        return "--rrdDir src/test/resources/share/rrd/snmp  --nodeid 10 --resourceType nsVpnMonitor --dsName bogus";
     }
 
     private String getCommand() {
-        return "--rrdDir src/test/resources/share/rrd/snmp  --nodeid 10 --resourceName nsVpnMonitor";
+        return "--rrdDir src/test/resources/share/rrd/snmp  --nodeid 10 --resourceType nsVpnMonitor";
     }
     
     private String getCommandWithFilter() {
-        return "--rrdDir src/test/resources/share/rrd/snmp  --nodeid 10 --resourceName nsVpnMonitor --dsNames nsVpnMonBytesIn";
+        return "--rrdDir src/test/resources/share/rrd/snmp  --nodeid 10 --resourceType nsVpnMonitor --dsName nsVpnMonBytesIn";
     }
 
 }

@@ -18,20 +18,55 @@ public class ResourceDataSource implements JRDataSource {
     
     private class ResourceFilterFields{
         private String[] m_fields;
+        private String[] m_strProps;
         
-        public ResourceFilterFields(String[] fields) {
+        public ResourceFilterFields(String[] fields, String[] strProps) {
             m_fields = fields;
+            m_strProps = strProps;
         }
         
         public String getValueForField(String fieldName, String curPath) {
-            if(contains(fieldName)) {
+            if(contains(fieldName, m_fields)) {
                 return getFilenameForField(fieldName, curPath);
+            }if(contains(fieldName, m_strProps)){
+                return getStringsPropertyValue(fieldName, curPath);
             }else {
                 return null;
             }
             
         }
         
+        private String getStringsPropertyValue(String fieldName, String curPath) {
+            File curDir = new File(curPath);
+            FilenameFilter filter = new FilenameFilter() {
+
+                public boolean accept(File f, String name) {
+                    return name.matches("strings.properties");
+                }
+                
+            };
+            
+            File[] strFiles = curDir.listFiles(filter);
+            if(curDir.exists() && strFiles.length == 1) {
+                File strPropFile = strFiles[0];
+                Properties props = new Properties();
+                try {
+                    FileInputStream fis = new FileInputStream(strPropFile);
+                    props.load(fis);
+                    return props.getProperty(fieldName);
+                } catch (FileNotFoundException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+            }
+            
+            return null;
+        }
+
         private String getFilenameForField(String dsName, String curPath) {
             File curDir = new File(curPath);
             FilenameFilter filter = new FilenameFilter() {
@@ -43,7 +78,7 @@ public class ResourceDataSource implements JRDataSource {
             if(curDir.exists() && curDir.list(filter).length > 0) {
                 return getFilenameFromDSfile(new File(curDir.getAbsoluteFile() + "" + File.separator + "ds.properties"), dsName);
             }else {
-                return dsName + "" + getFileExtension();
+                return curDir.getAbsolutePath() + File.separator + dsName + getFileExtension();
             }
             
         }
@@ -62,7 +97,7 @@ public class ResourceDataSource implements JRDataSource {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            return filename + "" + getFileExtension();
+            return file.getParent() + File.separator + filename + "" + getFileExtension();
         }
 
         private String getFileExtension() {
@@ -81,10 +116,14 @@ public class ResourceDataSource implements JRDataSource {
             }
             
         }
-
-        private boolean contains(String fieldName) {
-            if(m_fields != null) {
-                for(String fName : m_fields) {
+        
+        public boolean containsField(String fieldName) {
+            return (contains(fieldName, m_fields) || contains(fieldName, m_strProps));
+        }
+        
+        private boolean contains(String fieldName, String[] array) {
+            if(array != null) {
+                for(String fName : array) {
                     if(fName.equals(fieldName)) {
                         return true;
                     }
@@ -100,7 +139,7 @@ public class ResourceDataSource implements JRDataSource {
     
     public ResourceDataSource(ResourceQuery query) {
       extractPaths(query);
-      m_filterFields = new ResourceFilterFields(query.getFilters());
+      m_filterFields = new ResourceFilterFields(query.getFilters(), query.getStringProperties());
     }
 
     private void extractPaths(ResourceQuery query) {
@@ -120,8 +159,8 @@ public class ResourceDataSource implements JRDataSource {
             System.err.println("path field:[" + pathField + "]");
             return m_paths.get(m_currentRow);
         }else {
-            if(m_filterFields.contains(field.getName())) {
-                return calculateFileName(field, m_paths.get(m_currentRow));
+            if(m_filterFields.containsField(field.getName())) {
+                return calculateFieldValue(field, m_paths.get(m_currentRow));
             }else {
                 return null;
             }
@@ -129,9 +168,9 @@ public class ResourceDataSource implements JRDataSource {
         }
     }
 
-    private String calculateFileName(JRField field, String absolutePath) {
+    private String calculateFieldValue(JRField field, String absolutePath) {
         //TODO: check if there are dsName filters
-        return absolutePath +  File.separator + m_filterFields.getValueForField(field.getName(), absolutePath);
+        return m_filterFields.getValueForField(field.getName(), absolutePath);
     }
 
     public boolean next() throws JRException {

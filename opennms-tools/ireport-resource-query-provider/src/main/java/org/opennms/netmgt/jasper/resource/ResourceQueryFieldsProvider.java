@@ -35,10 +35,10 @@ public class ResourceQueryFieldsProvider implements FieldsProvider{
         query = reportDataset.getQuery().getText();
         
         addPathColumn(fields);
-        if(query.contains("--dsNames")) {
-            String[] splitDsNames = query.split("--dsNames");
+        if(query.contains("--dsName")) {
+            String[] splitDsNames = query.split("--dsName");
             String dsNames = splitDsNames[splitDsNames.length - 1];
-            String[] dsNameList = dsNames.split(";");
+            String[] dsNameList = checkForCommandsAndTrim(dsNames).split(","); 
             for(String ds : dsNameList) {
                 JRDesignField field = new JRDesignField();
                 field.setName(ds.trim());
@@ -48,8 +48,30 @@ public class ResourceQueryFieldsProvider implements FieldsProvider{
             }
         }
         
+        if(query.contains("--string")) {
+            String[] splitStrProps = query.split("--string");
+            String strProp = splitStrProps[splitStrProps.length - 1];
+            String[] strPropList = checkForCommandsAndTrim(strProp).split(","); 
+            for(String prop : strPropList) {
+                JRDesignField field = new JRDesignField();
+                field.setName(prop.trim());
+                field.setDescription(prop.trim());
+                field.setValueClass(String.class);
+                fields.add(field);
+            }
+        }
+        
         return fields.toArray(new JRField[fields.size()]);
         
+    }
+
+    private String checkForCommandsAndTrim(String str) {
+        if(str.contains("--")) {
+            String[] splitStr = str.split("--");
+            return splitStr[0];
+        }
+        
+        return str;
     }
 
     private void addPathColumn(List<JRField> fields) {

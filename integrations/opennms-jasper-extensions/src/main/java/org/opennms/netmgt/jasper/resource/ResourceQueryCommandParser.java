@@ -41,31 +41,31 @@ public class ResourceQueryCommandParser{
             processRrdDir(command);
         }else if(command.toLowerCase().contains("nodeid")) {
             processNodeId(command);
-        }else if(command.toLowerCase().contains("resourcename")) {
+        }else if(command.toLowerCase().contains("resourcetype")) {
             processResourceName(command);
-        }else if(command.toLowerCase().contains("dsnames")) {
+        }else if(command.toLowerCase().contains("dsname")) {
             processFilters(command);
-        }else if(command.toLowerCase().contains("strings")) {
+        }else if(command.toLowerCase().contains("string")) {
             processStringProperties(command);
         }
     }
 
     private void processStringProperties(String command) {
-        String value = command.substring(command.toLowerCase().indexOf("strings") + "strings".length(), command.length());
+        String value = command.substring(command.toLowerCase().indexOf("string") + "string".length(), command.length());
         String[] strProperties = value.trim().split(DELIMETER);
         
         getCurrentQuery().setStringProperties(strProperties);
     }
 
     private void processFilters(String command) {
-        String value = command.substring(command.toLowerCase().indexOf("dsnames") + "dsnames".length(), command.length());
+        String value = command.substring(command.toLowerCase().indexOf("dsname") + "dsname".length(), command.length());
         String[] strFilters = value.trim().split(DELIMETER);
         
         getCurrentQuery().setFilters(strFilters);
     }
 
     private void processResourceName(String command) {
-        String value = command.substring(command.toLowerCase().indexOf("resourcename") + "resourcename".length(), command.length());
+        String value = command.substring(command.toLowerCase().indexOf("resourcetype") + "resourcetype".length(), command.length());
         getCurrentQuery().setResourceName(value.trim());
     }
 

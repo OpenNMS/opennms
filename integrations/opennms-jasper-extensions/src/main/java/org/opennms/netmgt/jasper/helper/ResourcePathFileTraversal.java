@@ -16,7 +16,7 @@ public class ResourcePathFileTraversal{
     public ResourcePathFileTraversal(File f) {
         m_file = f;
         if(!m_file.exists()) {
-            System.err.println("Directory does not exist");
+            System.err.println("Directory does not exist: " + f.getAbsolutePath());
         }
     }
     

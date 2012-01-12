@@ -61,15 +61,15 @@ public class ResourceQueryParserTest {
     }
     
     private String getResourceQuery() {
-        return "--rrdDir /Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp  --nodeid 10 --resourceName nsVpnMonitor";
+        return "--rrdDir /Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp  --nodeid 10 --resourceType nsVpnMonitor";
     }
     
     private String getResourceQueryWithFilter() {
-        return "--rrdDir /Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp --nodeid 10 --resourceName nsVpnMonitor --dsNames http.dump,icmp.jrb";
+        return "--rrdDir /Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp --nodeid 10 --resourceType nsVpnMonitor --dsName http.dump,icmp.jrb";
     }
     
     private String getResourceQueryWithStringProperty() {
-        return "--rrdDir /Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp --nodeid 10 --resourceName nsVpnMonitor --dsNames http.dump,icmp.jrb --strings nsVpnMonVpnName,name2";
+        return "--rrdDir /Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp --nodeid 10 --resourceType nsVpnMonitor --dsName http.dump,icmp.jrb --string nsVpnMonVpnName,name2";
     }
 
 }
