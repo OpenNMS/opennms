@@ -70,16 +70,19 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
      */
     private Resource m_jrTemplateResource;
 
-    /**
-     * <p>afterPropertiesSet</p>
-     * <p/>
-     * Sanity check for configuration file and load local-jasper-reports.xml
-     *
-     * @throws Exception if any.
-     */
-    public void afterPropertiesSet() throws Exception {
-        Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
-        loadConfiguration();
+    public LegacyLocalJasperReportsDao(Resource configResource, Resource jrTemplateResource) {
+        m_configResource = configResource;
+        Assert.notNull(m_configResource, "property configResource must be set to a non-null value");
+        
+        m_jrTemplateResource = jrTemplateResource;
+        Assert.notNull(m_jrTemplateResource, "property configResource must be sot to a non-null value");
+        
+        try {
+            loadConfiguration();
+        } catch (Exception e) {
+            logger.error("Error could not load local-jasper-reports.xml. Error message: '{}'", e.getMessage());
+        }
+        logger.debug("Configuration '{}' successfully loaded and unmarshalled.", m_configResource.getFilename());
     }
 
     /**
@@ -104,7 +107,10 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
             lastModified = System.currentTimeMillis();
             stream = m_configResource.getInputStream();
         }
-        m_LocalJasperReports = JAXB.unmarshal(file, LocalJasperReports.class);
+        setLocalJasperReports(JAXB.unmarshal(file, LocalJasperReports.class));
+        Assert.notNull(m_LocalJasperReports, "unmarshall config file returned a null value.");
+        logger.debug("Unmarshalling config file '{}'", file.getAbsolutePath());
+        logger.debug("Local report definitions assigned: '{}'", m_LocalJasperReports.toString());
     }
 
     /**
@@ -198,5 +204,27 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return reportTemplateStream;
+    }
+
+    /**
+     * <p>getLocalJasperReports</p>
+     * 
+     * Get local jasper reports
+     * 
+     * @return a {@link org.opennms.features.reporting.model.jasperreport.LocalJasperReports} object
+     */
+    public LocalJasperReports getLocalJasperReports() {
+        return m_LocalJasperReports;
+    }
+
+    /**
+     * <p>setLocalJasperReports</p>
+     * 
+     * Set local jasper reports
+     * 
+     * @param localJasperReports a {@link org.opennms.features.reporting.model.jasperreport.LocalJasperReports} object
+     */
+    public void setLocalJasperReports(LocalJasperReports localJasperReports) {
+        m_LocalJasperReports = localJasperReports;
     }
 }

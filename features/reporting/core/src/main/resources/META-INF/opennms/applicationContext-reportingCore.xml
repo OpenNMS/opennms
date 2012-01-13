@@ -17,11 +17,11 @@
 
 	<bean id="reportStoreService" class="org.opennms.reporting.core.svclayer.support.DefaultReportStoreService" >
 		<property name="reportCatalogDao" ref="reportCatalogDao" />
+        <property name="globalReportRepository" ref="defaultGlobalReportRepository"/>
 		<property name="reportServiceLocator">
 		 <ref local="reportServiceLocator" />
 		</property>
 	</bean>
-	
+
 	<bean id="parameterConversionService" class="org.opennms.reporting.core.svclayer.support.DefaultParameterConversionService" />
-	
 </beans>

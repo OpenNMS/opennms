@@ -29,19 +29,15 @@
 package org.opennms.features.reporting.dao.remoterepository;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.net.URI;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * <p>DefaultRemoteRepositoryConfigDaoTest class.</p>
@@ -51,7 +47,7 @@ import static org.junit.Assert.assertNotNull;
  * @since 1.8.1
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:reportingDaoTest-context.xml"})
+@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDaoTest.xml"})
 public class DefaultRemoteRepositoryConfigDaoTest {
 
     /**
@@ -59,45 +55,6 @@ public class DefaultRemoteRepositoryConfigDaoTest {
      */
     @Autowired
     private RemoteRepositoryConfigDao m_remoteRepositoryConfigDao;
-
-    /**
-     * Absolute path for remote-repository.xml
-     */
-    private String m_configFile;
-
-    /**
-     * All remote repositories configured as *ACTIVE*
-     */
-    private List<RemoteRepositoryDefinition> m_activeRemoteRepositories;
-
-    /**
-     * All configured remote repositories *ACTIVE* and *NOT ACTIVE*
-     */
-    private List<RemoteRepositoryDefinition> m_allRemoteRepositories;
-
-    /**
-     * <p>setUp</p>
-     * <p/>
-     * Initialize the configuration file. Check if the configuration file exist. Try retrieve remote repositories from
-     * configuration.
-     *
-     * @throws Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-        // Injected configuration
-        assertNotNull("Inject remote repository data access.", m_remoteRepositoryConfigDao);
-        m_remoteRepositoryConfigDao.loadConfiguration();
-
-        // Read reports which are configured as online reports
-        m_allRemoteRepositories = m_remoteRepositoryConfigDao.getAllRepositories();
-        assertNotNull("Test to retrieve all remote repositories from " + m_configFile, m_allRemoteRepositories);
-        assertEquals("Test 2 total configured remote repositories", 2, m_allRemoteRepositories.size());
-
-        m_activeRemoteRepositories = m_remoteRepositoryConfigDao.getActiveRepositories();
-        assertNotNull("Test to retrieve all active repositories from " + m_configFile, m_activeRemoteRepositories);
-        assertEquals("Test 1 active configured remote repositories", 1, m_activeRemoteRepositories.size());
-    }
 
     /**
      * <p>tearDown</p>
@@ -108,10 +65,7 @@ public class DefaultRemoteRepositoryConfigDaoTest {
      */
     @After
     public void tearDown() throws Exception {
-        m_allRemoteRepositories = null;
-        m_activeRemoteRepositories = null;
         m_remoteRepositoryConfigDao = null;
-        m_configFile = null;
     }
 
     /**
@@ -123,7 +77,7 @@ public class DefaultRemoteRepositoryConfigDaoTest {
      */
     @Test
     public void testIsRepositoryActive() throws Exception {
-        assertEquals("Test 1 active repository configured", 1, m_activeRemoteRepositories.size());
+        assertEquals("Test 1 active repository configured", 1, m_remoteRepositoryConfigDao.getActiveRepositories().size());
     }
 
     /**

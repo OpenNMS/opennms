@@ -77,15 +77,20 @@ public class DefaultRemoteRepositoryConfigDao implements
     private String m_jasperReportsVersion;
 
     /**
-     * <p>afterPropertiesSet</p>
-     * <p/>
-     * Sanity check for configuration file and load database-reports.xml
-     *
-     * @throws java.lang.Exception if any.
+     * Default constructor load the configuration file
      */
-    public void afterPropertiesSet() throws Exception {
-        Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
-        loadConfiguration();
+    public DefaultRemoteRepositoryConfigDao(Resource configResource) {
+        m_configResource = configResource;
+
+        Assert.notNull(m_configResource, "property configResource must be set to a non-null value");
+        logger.debug("Config resource is set to " + m_configResource.toString());
+
+        try {
+            loadConfiguration();
+        } catch (Exception e) {
+            logger.error("Error could not load remote-repository.xml. Error message: '{}'", e.getMessage());
+        }
+        logger.debug("Configuration '{}' successfully loaded and unmarshalled.", m_configResource.getFilename());
     }
 
     /**
@@ -99,6 +104,7 @@ public class DefaultRemoteRepositoryConfigDao implements
         File file = null;
         try {
             file = m_configResource.getFile();
+            Assert.notNull(file, "config file must be sot to a non-null value");
         } catch (IOException e) {
             logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
         }
@@ -111,8 +117,11 @@ public class DefaultRemoteRepositoryConfigDao implements
             stream = m_configResource.getInputStream();
         }
         setRemoteRepositoryConfig(JAXB.unmarshal(file, RemoteRepositoryConfig.class));
+        Assert.notNull(m_remoteRepositoryConfig, "unmarshall config file returned a null value.");
+        logger.debug("Unmarshalling config file '{}'", file.getAbsolutePath());
+        logger.debug("Remote repository configuration assigned: '{}'", m_remoteRepositoryConfig.toString());
 
-        //TODO indigo: The jasper report version should be configured in jasper-reports.xml
+        //TODO indigo: The jasper report version should be configured here?
         setJasperReportsVersion(m_remoteRepositoryConfig.getJasperReportsVersion());
     }
 

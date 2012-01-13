@@ -36,7 +36,7 @@ import org.opennms.features.reporting.model.basicreport.LegacyLocalReportDefinit
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.util.Assert;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -47,14 +47,13 @@ import java.util.List;
 /**
  * <p>LegacyLocalReportRepository class.</p>
  * <p/>
- * Class realize the local repository for community reports.
+ * Class realize the local repository for OpenNMS community reports.
  *
  * @author Markus Neumann <markus@opennms.com>
  * @author Ronny Trommer <ronny@opennms.com>
  * @version $Id: $
  * @since 1.8.1
  */
-@ContextConfiguration(locations = {"classpath:reportingRepository-context.xml"})
 public class LegacyLocalReportRepository implements ReportRepository {
 
     /**
@@ -92,6 +91,21 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     private final String MANAGEMENT_URL = "http://localhost/manageLegacyLocalRepositoy";
 
+    /**
+     * Default constructor creates one local repositories for OpenNMS community reports.
+     *
+     * @param localReportsDao a {@link org.opennms.features.reporting.dao.LegacyLocalReportsDao} object
+     * @param localJasperReportsDao a {@link org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao} object
+     */
+    public LegacyLocalReportRepository(LocalReportsDao localReportsDao, LocalJasperReportsDao localJasperReportsDao) {
+        m_localReportsDao = localReportsDao;
+        Assert.notNull(m_localReportsDao, "property configResource must be set to a non-null value");
+        logger.debug("Config resource is set to '{}'", m_localReportsDao.toString());
+        
+        m_localJasperReportsDao = localJasperReportsDao;
+        Assert.notNull(m_localJasperReportsDao, "property configResource must be set to a non-null value");
+        logger.debug("Config resource is set to '{}'", m_localJasperReportsDao.toString());
+    }
     /**
      * {@inheritDoc}
      */

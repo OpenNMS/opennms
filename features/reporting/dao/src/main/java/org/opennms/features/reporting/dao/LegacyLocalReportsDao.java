@@ -70,16 +70,17 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
      */
     private Resource m_configResource;
 
-    /**
-     * <p>afterPropertiesSet</p>
-     * <p/>
-     * Sanity check for configuration file and load database-reports.xml
-     *
-     * @throws java.lang.Exception if any.
-     */
-    public void afterPropertiesSet() throws Exception {
-        Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
-        loadConfiguration();
+    public LegacyLocalReportsDao(Resource configResource) {
+        m_configResource = configResource;
+        Assert.notNull(m_configResource, "property configResource must be set to a non-null value");
+        logger.debug("Config resource is set to " + m_configResource.toString());
+        
+        try {
+            loadConfiguration();
+        } catch (Exception e) {
+            logger.error("Error could not load local-reports.xml. Error message: '{}'", e.getMessage());
+        }
+        logger.debug("Configuration '{}' successfully loaded and unmarshalled.", m_configResource.getFilename());
     }
 
     /**
@@ -93,6 +94,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
         File file = null;
         try {
             file = m_configResource.getFile();
+            Assert.notNull(file, "config file must be sot to a non-null value");
         } catch (IOException e) {
             logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
         }
@@ -105,6 +107,9 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
             stream = m_configResource.getInputStream();
         }
         setLegacyLocalReportsDefinition(JAXB.unmarshal(file, LegacyLocalReportsDefinition.class));
+        Assert.notNull(m_legacyLocalReportsDefinition, "unmarshall config file returned a null value.");
+        logger.debug("Unmarshalling config file '{}'", file.getAbsolutePath());
+        logger.debug("Local report definitions assigned: '{}'", m_legacyLocalReportsDefinition.toString());
     }
 
     /**

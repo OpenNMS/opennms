@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <bean id="defaultGlobalReportRepository" class="org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository">
+        <property name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao" />
+        <property name="localReportsDao" ref="legacyLocalReportsDao" />
+        <property name="localJasperReportsDao" ref="legacyLocalJasperReportsDao" />
+    </bean>
+    
+    <bean id="legacyLocalReportRepository" class="org.opennms.features.reporting.repository.local.LegacyLocalReportRepository">
+        <constructor-arg ref="legacyLocalReportsDao" name="localReportsDao" />
+        <constructor-arg ref="legacyLocalJasperReportsDao" name="localJasperReportsDao" />
+    </bean>
+</beans>

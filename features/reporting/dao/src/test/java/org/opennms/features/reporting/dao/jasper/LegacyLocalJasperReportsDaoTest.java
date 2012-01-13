@@ -29,14 +29,14 @@
 package org.opennms.features.reporting.dao.jasper;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * <p>LegacyLocalJasperReportsDaoTest class.</p>
@@ -46,7 +46,7 @@ import static org.junit.Assert.*;
  * @since 1.8.1
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:reportingDaoTest-context.xml"})
+@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDaoTest.xml"})
 public class LegacyLocalJasperReportsDaoTest {
 
     /**
@@ -54,28 +54,6 @@ public class LegacyLocalJasperReportsDaoTest {
      */
     @Autowired
     private LocalJasperReportsDao m_localJasperReportsDao;
-
-    /**
-     * Absolute path for local-jasper-repository.xml
-     */
-    private String m_configFile;
-
-    /**
-     * <p>setUp</p>
-     *
-     * Initialize the configuration file. Check if the configuration file exist. Try retrieve the jasper report
-     * templates from configuration.
-     *
-     * @throws Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-        // Injected configuration
-        assertNotNull("Inject legacy local report data access.", m_localJasperReportsDao);
-        m_localJasperReportsDao.loadConfiguration();
-
-        assertNotNull("Test to retrieve 3 jasper reports from " + m_configFile, m_localJasperReportsDao);
-    }
 
     /**
      * <p>tearDown</p>
@@ -87,7 +65,6 @@ public class LegacyLocalJasperReportsDaoTest {
     @After
     public void tearDown() throws Exception {
         m_localJasperReportsDao = null;
-        m_configFile = null;
     }
 
     /**

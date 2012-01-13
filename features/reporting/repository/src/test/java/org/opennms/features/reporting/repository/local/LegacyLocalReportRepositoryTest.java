@@ -61,6 +61,10 @@ public class LegacyLocalReportRepositoryTest {
 
     private LegacyLocalReportRepository m_legacyLocalReportRepository;
 
+    private LocalReportsDao m_localReportsDao;
+
+    private LocalJasperReportsDao m_localJasperReportsDao;
+
     /**
      * <p>setUp</p>
      * <p/>
@@ -88,7 +92,7 @@ public class LegacyLocalReportRepositoryTest {
         // EasyMock.expect(m_localJasperReportsDao.getTemplateStream("sample-report")).andReturn(jrTemplateStream);
 
         // Initialize the local report repository to provide reports from local-reports.xml and local-jasper-reports.xml
-        m_legacyLocalReportRepository = new LegacyLocalReportRepository();
+        m_legacyLocalReportRepository = new LegacyLocalReportRepository(m_localReportsDao, m_localJasperReportsDao);
         m_legacyLocalReportRepository.setLocalReportsDao(m_localReportsDao);
         m_legacyLocalReportRepository.setLocalJasperReportsDao(m_localJasperReportsDao);
 

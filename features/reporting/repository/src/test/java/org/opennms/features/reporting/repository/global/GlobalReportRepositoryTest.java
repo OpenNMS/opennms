@@ -32,6 +32,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.features.reporting.dao.LocalReportsDao;
+import org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao;
+import org.opennms.features.reporting.dao.remoterepository.RemoteRepositoryConfigDao;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.local.LegacyLocalReportRepository;
@@ -48,6 +51,12 @@ import static org.junit.Assert.*;
 public class GlobalReportRepositoryTest {
 
 	Logger logger = LoggerFactory.getLogger(GlobalReportRepositoryTest.class);
+    
+    private LocalReportsDao m_localReportsDao;
+    
+    private LocalJasperReportsDao m_localJasperReportsDao;
+
+    private RemoteRepositoryConfigDao m_remoteRepositoryConfigDao;
 
 	private GlobalReportRepository globalRepo;
 	private static final String OPENNMS_HOME = "src/test/resources";
@@ -69,7 +78,7 @@ public class GlobalReportRepositoryTest {
 
 	@Test
 	public void addReportRepositoryTest() {
-		ReportRepository newRepository = new LegacyLocalReportRepository();
+		ReportRepository newRepository = new LegacyLocalReportRepository(m_localReportsDao, m_localJasperReportsDao);
 		assertEquals("local", newRepository.getRepositoryId());
 		assertEquals(2, globalRepo.getRepositoryList().size());
 		globalRepo.addReportRepository(newRepository);

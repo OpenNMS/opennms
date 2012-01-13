@@ -16,15 +16,13 @@
 
 package org.opennms.web.svclayer.support;
 
+import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
+import org.opennms.features.reporting.repository.ReportRepository;
+import org.opennms.features.reporting.repository.global.GlobalReportRepository;
+import org.opennms.web.svclayer.DatabaseReportListService;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
-import org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository;
-import org.opennms.features.reporting.repository.global.GlobalReportRepository;
-import org.opennms.features.reporting.repository.ReportRepository;
-
-import org.opennms.web.svclayer.DatabaseReportListService;
 
 /**
  * <p>
@@ -38,7 +36,7 @@ import org.opennms.web.svclayer.DatabaseReportListService;
 public class DefaultDatabaseReportListService implements
         DatabaseReportListService {
 
-    private GlobalReportRepository m_globalRepository = new DefaultGlobalReportRepository();
+    private GlobalReportRepository m_globalReportRepository;
 
     /**
      * <p>
@@ -52,7 +50,7 @@ public class DefaultDatabaseReportListService implements
 
         List<DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
 
-        for (ReportRepository globalRepository : m_globalRepository.getRepositoryList()) {
+        for (ReportRepository globalRepository : m_globalReportRepository.getRepositoryList()) {
             for (BasicReportDefinition report : globalRepository.getReports()) {
                 DatabaseReportDescription summary = new DatabaseReportDescription();
                 summary.setRepositoryId(globalRepository.getRepositoryId());
@@ -72,7 +70,7 @@ public class DefaultDatabaseReportListService implements
         List<ReportRepositoryDescription> result = new ArrayList<ReportRepositoryDescription>();
         List<ReportRepository> reportRepositoryList = new ArrayList<ReportRepository>();
 
-        reportRepositoryList = m_globalRepository.getRepositoryList();
+        reportRepositoryList = m_globalReportRepository.getRepositoryList();
 
         for (ReportRepository repository : reportRepositoryList) {
             ReportRepositoryDescription reportRepositoryDescription = new ReportRepositoryDescription();
@@ -90,7 +88,7 @@ public class DefaultDatabaseReportListService implements
     public List<DatabaseReportDescription> getOnlineReportsByRepositoryId(String repositoryId) {
         List<DatabaseReportDescription> onlineReportList = new ArrayList<DatabaseReportDescription>();
 
-        for (BasicReportDefinition reportDefinition : m_globalRepository.getRepositoryById(repositoryId).getOnlineReports()) {
+        for (BasicReportDefinition reportDefinition : m_globalReportRepository.getRepositoryById(repositoryId).getOnlineReports()) {
                 DatabaseReportDescription summary = new DatabaseReportDescription();
                 summary.setRepositoryId(reportDefinition.getRepositoryId());
                 summary.setId(reportDefinition.getId());
@@ -107,7 +105,7 @@ public class DefaultDatabaseReportListService implements
     public List<DatabaseReportDescription> getReportsByRepositoryId(String repositoryId) {
         List<DatabaseReportDescription> reportList = new ArrayList<DatabaseReportDescription>();
 
-        for (BasicReportDefinition reportDefinition : m_globalRepository.getRepositoryById(repositoryId).getReports()) {
+        for (BasicReportDefinition reportDefinition : m_globalReportRepository.getRepositoryById(repositoryId).getReports()) {
             DatabaseReportDescription summary = new DatabaseReportDescription();
             summary.setRepositoryId(reportDefinition.getRepositoryId());
             summary.setId(reportDefinition.getId());
@@ -131,7 +129,7 @@ public class DefaultDatabaseReportListService implements
     public List<DatabaseReportDescription> getAllOnline() {
 
         List<DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
-        for (ReportRepository m_repo : m_globalRepository.getRepositoryList()) {
+        for (ReportRepository m_repo : m_globalReportRepository.getRepositoryList()) {
             for (BasicReportDefinition report : m_repo.getOnlineReports()) {
                 DatabaseReportDescription summary = new DatabaseReportDescription();
                 summary.setRepositoryId(m_repo.getRepositoryId());
@@ -144,5 +142,9 @@ public class DefaultDatabaseReportListService implements
             }
         }
         return onlineReports;
+    }
+
+    public void setGlobalReportRepository(GlobalReportRepository globalReportRepository) {
+        m_globalReportRepository = globalReportRepository;
     }
 }

@@ -28,27 +28,25 @@
 
 package org.opennms.reporting.core.svclayer.support;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.hibernate.criterion.Order;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
-import org.opennms.features.reporting.repository.ReportRepository;
-import org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
+
+import java.io.File;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>DefaultReportStoreService class.</p>
@@ -58,7 +56,7 @@ public class DefaultReportStoreService implements ReportStoreService {
     private ReportCatalogDao m_reportCatalogDao;
     private ReportServiceLocator m_reportServiceLocator;
     
-    private GlobalReportRepository m_repo = new DefaultGlobalReportRepository();
+    private GlobalReportRepository m_globalReportRepository;
     
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
     
@@ -121,7 +119,7 @@ public class DefaultReportStoreService implements ReportStoreService {
         HashMap <String, Object> formatMap = new HashMap<String, Object>();
         //TODO Tak: This call will be heavy if many RemoteRepositories are involved. Is this method necessary?
         //TODO Tak: Not working Repository By Repository
-        List <BasicReportDefinition> reports = m_repo.getAllReports();
+        List <BasicReportDefinition> reports = m_globalReportRepository.getAllReports();
         Iterator<BasicReportDefinition> reportIter = reports.iterator();
         while (reportIter.hasNext()) {
             BasicReportDefinition report = reportIter.next();
@@ -136,7 +134,7 @@ public class DefaultReportStoreService implements ReportStoreService {
     /** {@inheritDoc} */
     public void render(Integer id, ReportFormat format, OutputStream outputStream) {
         ReportCatalogEntry catalogEntry = m_reportCatalogDao.get(id);
-        String reportServiceName = m_repo.getReportService(catalogEntry.getReportId());
+        String reportServiceName = m_globalReportRepository.getReportService(catalogEntry.getReportId());
         ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
         log().debug("attempting to rended the report as " + format.toString() + " using " + reportServiceName );
         try {
@@ -164,5 +162,17 @@ public class DefaultReportStoreService implements ReportStoreService {
     /** {@inheritDoc} */
     public void setReportServiceLocator(ReportServiceLocator reportServiceLocator) {
         m_reportServiceLocator = reportServiceLocator;
+    }
+
+    /**
+     * <p>setGlobalReportRepository</p>
+     * 
+     * Set the global report repository which implements a local report for Community reports and remote 
+     * OpenNMS CONNETC repositories
+     * 
+     * @param globalReportRepository a {@link org.opennms.features.reporting.repository.global.GlobalReportRepository} object
+     */
+    public void setGlobalReportRepository(GlobalReportRepository globalReportRepository) {
+        this.m_globalReportRepository = globalReportRepository;
     }
 }

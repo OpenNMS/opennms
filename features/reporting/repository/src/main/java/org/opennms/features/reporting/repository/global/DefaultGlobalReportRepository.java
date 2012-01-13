@@ -28,7 +28,8 @@
 
 package org.opennms.features.reporting.repository.global;
 
-import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao;
+import org.opennms.features.reporting.dao.LocalReportsDao;
+import org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao;
 import org.opennms.features.reporting.dao.remoterepository.RemoteRepositoryConfigDao;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
@@ -37,27 +38,35 @@ import org.opennms.features.reporting.repository.local.LegacyLocalReportReposito
 import org.opennms.features.reporting.repository.remote.DefaultRemoteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>DefaultGlobalReportRepository.java</p>
- * 
- * @author <a href="mailto:markus@opennms.com">Markus Neumann</a>
+ * <p>DefaultGlobalReportRepository class.</p>
+ * <p/>
+ * Class realize the global report repository. It provides a local repository for community reports and reads one or
+ * more configurations for remote repositories.
  *
- * @version $Id: $ 
+ * @author Markus Neumann <markus@opennms.com>
+ * @author Ronny Trommer <ronny@opennms.com>
+ * @version $Id: $
+ * @since 1.8.1
  */
-public class DefaultGlobalReportRepository implements GlobalReportRepository { 
-    
+public class DefaultGlobalReportRepository implements GlobalReportRepository {
+
     /**
      * Logging
      */
     private final Logger logger = LoggerFactory.getLogger(DefaultGlobalReportRepository.class);
 
-    
-    private final RemoteRepositoryConfigDao m_remoteRepositoryConfigDao = new DefaultRemoteRepositoryConfigDao();
+    /**
+     * Configuration DAO for remote-reports.xml
+     */
+    private RemoteRepositoryConfigDao m_remoteRepositoryConfigDao;
+
     /**
      * Concatenated repositoryId and reportId by "_"
      */
@@ -69,33 +78,55 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     private final List<ReportRepository> m_repositoryList;
 
     /**
+     * JasperReports version number
+     */
+    private String JASPER_REPORTS_VERSION;
+
+    /**
+     * DAO for all configured local OpenNMS community reports
+     */
+    private LocalReportsDao m_localReportsDao;
+
+    /**
+     * DAO for all local jasper specific reports
+     */
+    private LocalJasperReportsDao m_localJasperReportsDao;
+
+    /**
      * Default constructor creates one local and many remote repositories.
      */
     public DefaultGlobalReportRepository() {
+        Assert.notNull(m_remoteRepositoryConfigDao, "remote repository config dao property configResource must be set to a non-null value");
+        logger.debug("Config resource is set to '{}'", m_remoteRepositoryConfigDao.toString());
+
+        Assert.notNull(m_localReportsDao, "local reports config dao property configResource must be set to a non-null value");
+        logger.debug("Config resource is set to '{}'", m_localReportsDao.toString());
+
+        Assert.notNull(m_localJasperReportsDao, "local jasper reports config dao property configResource must be set to a non-null value");
+        logger.debug("Config resource is set to '{}'", m_localJasperReportsDao.toString());
+
+        // The remote repository needs the JasperReport version for templates
+        JASPER_REPORTS_VERSION = System.getProperty("org.opennms.jasperReportsVersion");
+        Assert.notNull(JASPER_REPORTS_VERSION, "property jasper reports version must be set to a non-null value");
+        logger.debug("JasperReports version is set to '{}'", JASPER_REPORTS_VERSION);
+
         this.m_repositoryList = new ArrayList<ReportRepository>();
 
         /**
          * The local disk repository provides the canned OpenNMS community reports.
          */
-        this.m_repositoryList.add(new LegacyLocalReportRepository());
-        try {
-            this.m_remoteRepositoryConfigDao.loadConfiguration();
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        this.m_repositoryList.add(new LegacyLocalReportRepository(m_localReportsDao, m_localJasperReportsDao));
 
         /**
-         * A remote repository for each remote repository from RemoteRepositoryConfig.
+         * Create a list with all remote repositories from remote repository for each remote repository from RemoteRepositoryConfig.
          */
         for (RemoteRepositoryDefinition repositoryDefinition : m_remoteRepositoryConfigDao.getActiveRepositories()) {
-            this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, System.getProperty("org.opennms.jasperReportsVersion")));
+            this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, JASPER_REPORTS_VERSION));
         }
     }
 
     /**
-     * Legacy method to get all reports from local and remote repository.
-     * 
-     * @return a report definition as {@link java.util.List<BasicReportDefinition>} object
+     * {@inheritDoc}
      */
     @Override
     public List<BasicReportDefinition> getAllReports() {
@@ -107,25 +138,20 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     }
 
     /**
-     * Get reports from a specific repository identified by repository id.
-     * 
-     * @param repositoryId a String as repository identifier
-     * @return a report definition as {@link java.util.List<BasicReportDefinition>} object
+     * {@inheritDoc}
      */
     @Override
     public List<BasicReportDefinition> getReports(String repositoryId) {
         List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
         ReportRepository repository = this.getRepositoryById(repositoryId);
         if (repository != null) {
-			results.addAll(repository.getReports());
+            results.addAll(repository.getReports());
         }
         return results;
     }
 
     /**
-     * Get all online reports from local and remote repository.
-     *
-     * @return a report definition as {@link java.util.List<BasicReportDefinition>} object
+     * {@inheritDoc}
      */
     @Override
     public List<BasicReportDefinition> getAllOnlineReports() {
@@ -137,28 +163,22 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     }
 
     /**
-     * Get online reports from a specific repository identified by repository id.
-     *
-     * @param repositoryId a String as repository identifier
-     * @return a report definition as {@link java.util.List<BasicReportDefinition>} object
+     * {@inheritDoc}
      */
     @Override
     public List<BasicReportDefinition> getOnlineReports(String repositoryId) {
         List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
         ReportRepository repository = this.getRepositoryById(repositoryId);
-        if (repository != null ) {
+        if (repository != null) {
             results.addAll(repository.getOnlineReports());
         }
         return results;
     }
 
     /**
-     * Get the report service identified by report id.
-     *
-     * @param reportId a String as report identifier
-     * @return a report service as {@link java.lang.String} object
+     * {@inheritDoc}
      */
-    @Override 
+    @Override
     public String getReportService(String reportId) {
         String result = "";
         ReportRepository repository = this.getRepositoryForReport(reportId);
@@ -169,10 +189,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     }
 
     /**
-     * Get the display name from a specific report identified by report id.
-     * 
-     * @param reportId a String as report identifier
-     * @return a display name as {@link java.lang.String} object
+     * {@inheritDoc}
      */
     @Override
     public String getDisplayName(String reportId) {
@@ -185,10 +202,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     }
 
     /**
-     * Get the report engine from a specific report identified by report id.
-     * 
-     * @param reportId a String as report identifier
-     * @return engine as {@link java.lang.String} object
+     * {@inheritDoc}
      */
     @Override
     public String getEngine(String reportId) {
@@ -201,10 +215,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     }
 
     /**
-     * Get a specific report template identified by report id.
-     * 
-     * @param reportId a String as report identifier                
-     * @return template as {@link java.io.InputStream} object 
+     * {@inheritDoc}
      */
     @Override
     public InputStream getTemplateStream(String reportId) {
@@ -217,9 +228,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     }
 
     /**
-     * Get a list with the local and the remote repository.
-     * 
-     * @return repositories as {@link java.util.List<ReportRepository>} object
+     * {@inheritDoc}
      */
     @Override
     public List<ReportRepository> getRepositoryList() {
@@ -228,7 +237,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
 
     /**
      * Add a report repository.
-     * 
+     *
      * @param repository a ReportRepository
      */
     @Override
@@ -238,31 +247,83 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
 
     /**
      * Get a specific repository identified by repository id.
-     * 
+     *
      * @param repositoryId a String as repository identifier
-     * @return report repository as {@link org.opennms.features.reporting.repository.ReportRepository} object 
+     * @return report repository as {@link org.opennms.features.reporting.repository.ReportRepository} object
      */
     @Override
     public ReportRepository getRepositoryById(String repositoryId) {
         for (ReportRepository repository : m_repositoryList) {
-            if (repositoryId.equals(repository.getRepositoryId())) {       
+            if (repositoryId.equals(repository.getRepositoryId())) {
                 // leave if we have a repository
                 return repository;
             }
         }
-        logger.debug("Not repository with id '{}' was found, return null", repositoryId);       
+        logger.debug("Not repository with id '{}' was found, return null", repositoryId);
         // we haven't a repository with repositoryId
         return null;
     }
 
     /**
-     * Get a specific repository identified by a report id. 
-     * 
+     * Get a specific repository identified by a report id.
+     *
      * @param reportId a String as report identifier
      * @return report repository as {@link org.opennms.features.reporting.repository.ReportRepository} object
      */
     protected ReportRepository getRepositoryForReport(String reportId) {
         String repositoryId = reportId.substring(0, reportId.indexOf(REPOSITORY_REPORT_SEP));
         return this.getRepositoryById(repositoryId);
+    }
+
+    /**
+     * <p>setLocalReportsDao</p>
+     * 
+     * Set local reports DAO against local-reports.xml 
+     * 
+     * @param localReportsDao a {@link org.opennms.features.reporting.dao.LocalReportsDao} object
+     */
+    public void setLocalReportsDao(LocalReportsDao localReportsDao) {
+        this.m_localReportsDao = localReportsDao;
+    }
+
+    /**
+     * <p>getLocalReportsDao</p>
+     * 
+     * Get local reports DAO from local-reports.xml 
+     * 
+     * @return a {@link org.opennms.features.reporting.dao.LocalReportsDao} object
+     */
+    public LocalReportsDao getLocalReportsDao() {
+        return this.m_localReportsDao;
+    }
+
+    /**
+     * <p>setLocalJasperReportsDao</p>
+     *
+     * Set local jasper reports DAO against local-jasper-reports.xml
+     *
+     * @param localJasperReportsDao a {@link org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao} object
+     */
+    public void setLocalJasperReportsDao(LocalJasperReportsDao localJasperReportsDao) {
+        this.m_localJasperReportsDao = localJasperReportsDao;
+    }
+
+    /**
+     * <p>getLocalJasperReportsDao</p>
+     *
+     * Get local jasper reports DAO from local-jasper-reports.xml
+     * 
+     * @return a {@link org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao} object
+     */
+    public LocalJasperReportsDao getLocalJasperReportsDao() {
+        return this.m_localJasperReportsDao;
+    }
+
+    public void setRemoteRepositoryConfigDao(RemoteRepositoryConfigDao remoteRepositoryConfigDao) {
+        m_remoteRepositoryConfigDao = remoteRepositoryConfigDao;
+    }
+
+    public RemoteRepositoryConfigDao getRemoteRepositoryConfigDao() {
+        return m_remoteRepositoryConfigDao;
     }
 }

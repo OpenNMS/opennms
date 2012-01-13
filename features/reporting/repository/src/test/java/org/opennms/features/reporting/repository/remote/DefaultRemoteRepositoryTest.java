@@ -35,12 +35,11 @@ import org.opennms.features.reporting.dao.remoterepository.DefaultRemoteReposito
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * <p>DefaultRemoteRepositoryTest class.</p>
@@ -62,12 +61,14 @@ public class DefaultRemoteRepositoryTest {
     
     private static final String OPENNMS_HOME = "src/test/resources";
 
+    private Resource m_configResource;
+
     @Before
     public void setUp() {
         System.setProperty("opennms.home", OPENNMS_HOME);
         assertEquals(OPENNMS_HOME, System.getProperty("opennms.home"));
         //TODO Tak: Jasper version is hard coded
-        m_defaultRemoteRepository = new DefaultRemoteRepository(new DefaultRemoteRepositoryConfigDao().getActiveRepositories().get(0), "3.7.6");
+        m_defaultRemoteRepository = new DefaultRemoteRepository(new DefaultRemoteRepositoryConfigDao(m_configResource).getActiveRepositories().get(0), "3.7.6");
         assertNotNull(System.getProperty("opennms.home"));
     }
 

@@ -29,15 +29,11 @@
 package org.opennms.features.reporting.dao;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -49,7 +45,7 @@ import static org.junit.Assert.*;
  * @since 1.8.1
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:reportingDaoTest-context.xml"})
+@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDaoTest.xml"})
 public class LegacyLocalReportsDaoTest {
 
     /**
@@ -57,46 +53,6 @@ public class LegacyLocalReportsDaoTest {
      */
     @Autowired
     private LocalReportsDao m_legacyLocalReportsDao;
-
-    /**
-     * List with all configured online reports
-     */
-    private List<BasicReportDefinition> m_onlineReports;
-
-    /**
-     * List with all configured reports
-     */
-    private List<BasicReportDefinition> m_reports;
-
-    /**
-     * Absolute path for local-repository.xml
-     */
-    private String m_configFile;
-
-    /**
-     * <p>setUp</p>
-     * <p/>
-     * Initialize the configuration file. Check if the configuration file exist. Try retrieve the reports from
-     * configuration.
-     *
-     * @throws Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-        // Injected configuration
-        assertNotNull("Inject legacy local report data access.", m_legacyLocalReportsDao);
-        m_legacyLocalReportsDao.loadConfiguration();
-
-        // Read reports which are configured as online reports
-        m_onlineReports = m_legacyLocalReportsDao.getOnlineReports();
-        assertNotNull("Test to retrieve 2 online reports from " + m_configFile, m_onlineReports);
-        assertEquals("Test 2 configured online reports.", 2, m_onlineReports.size());
-
-        // Read all configured reports
-        m_reports = m_legacyLocalReportsDao.getReports();
-        assertNotNull("Test to retrieve 3 online reports from " + m_configFile, m_reports);
-        assertEquals("Test 3 configured online reports.", 3, m_reports.size());
-    }
 
     /**
      * <p>tearDown</p>
@@ -108,9 +64,6 @@ public class LegacyLocalReportsDaoTest {
     @After
     public void tearDown() throws Exception {
         m_legacyLocalReportsDao = null;
-        m_configFile = null;
-        m_onlineReports = null;
-        m_reports = null;
     }
 
     /**
@@ -122,9 +75,9 @@ public class LegacyLocalReportsDaoTest {
      */
     @Test
     public void testReportDescription() throws Exception {
-        assertEquals("First report description test", "sample Jasper report using jdbc datasource", m_reports.get(0).getDescription());
-        assertEquals("Second report description test", "online sample Jasper report using jdbc datasource", m_reports.get(1).getDescription());
-        assertEquals("Third report description test", "NOT online sample Jasper report using jdbc datasource", m_reports.get(2).getDescription());
+        assertEquals("First report description test", "sample Jasper report using jdbc datasource", m_legacyLocalReportsDao.getReports().get(0).getDescription());
+        assertEquals("Second report description test", "online sample Jasper report using jdbc datasource", m_legacyLocalReportsDao.getReports().get(1).getDescription());
+        assertEquals("Third report description test", "NOT online sample Jasper report using jdbc datasource", m_legacyLocalReportsDao.getReports().get(2).getDescription());
     }
 
     /**
@@ -136,9 +89,9 @@ public class LegacyLocalReportsDaoTest {
      */
     @Test
     public void testReportId() throws Exception {
-        assertEquals("First report id test", "sample-report", m_reports.get(0).getId());
-        assertEquals("Second report id test", "online-sample-report", m_reports.get(1).getId());
-        assertEquals("Third report id test", "not-online-sample-report", m_reports.get(2).getId());
+        assertEquals("First report id test", "sample-report", m_legacyLocalReportsDao.getReports().get(0).getId());
+        assertEquals("Second report id test", "online-sample-report", m_legacyLocalReportsDao.getReports().get(1).getId());
+        assertEquals("Third report id test", "not-online-sample-report", m_legacyLocalReportsDao.getReports().get(2).getId());
     }
 
     /**
@@ -150,9 +103,9 @@ public class LegacyLocalReportsDaoTest {
      */
     @Test
     public void testReportDisplayName() throws Exception {
-        assertEquals("First report display name test", "sample JasperReport", m_reports.get(0).getDisplayName());
-        assertEquals("Second report display name test", "online sample JasperReport", m_reports.get(1).getDisplayName());
-        assertEquals("Third report display name test", "NOT online sample JasperReport", m_reports.get(2).getDisplayName());
+        assertEquals("First report display name test", "sample JasperReport", m_legacyLocalReportsDao.getReports().get(0).getDisplayName());
+        assertEquals("Second report display name test", "online sample JasperReport", m_legacyLocalReportsDao.getReports().get(1).getDisplayName());
+        assertEquals("Third report display name test", "NOT online sample JasperReport", m_legacyLocalReportsDao.getReports().get(2).getDisplayName());
     }
 
     /**
@@ -164,9 +117,9 @@ public class LegacyLocalReportsDaoTest {
      */
     @Test
     public void testReportService() throws Exception {
-        assertEquals("First report report-service test", "jasperReportService", m_reports.get(0).getReportService());
-        assertEquals("Second report report-service test", "jasperReportService", m_reports.get(1).getReportService());
-        assertEquals("Third report report-service test", "jasperReportService", m_reports.get(2).getReportService());
+        assertEquals("First report report-service test", "jasperReportService", m_legacyLocalReportsDao.getReports().get(0).getReportService());
+        assertEquals("Second report report-service test", "jasperReportService", m_legacyLocalReportsDao.getReports().get(1).getReportService());
+        assertEquals("Third report report-service test", "jasperReportService", m_legacyLocalReportsDao.getReports().get(2).getReportService());
     }
 
     /**
@@ -179,9 +132,9 @@ public class LegacyLocalReportsDaoTest {
      */
     @Test
     public void testReportRepositoryId() throws Exception {
-        assertNull("First report repository id test", m_reports.get(0).getRepositoryId());
-        assertNull("Second report repository id test", m_reports.get(1).getRepositoryId());
-        assertNull("Third report repository id test", m_reports.get(2).getRepositoryId());
+        assertNull("First report repository id test", m_legacyLocalReportsDao.getReports().get(0).getRepositoryId());
+        assertNull("Second report repository id test", m_legacyLocalReportsDao.getReports().get(1).getRepositoryId());
+        assertNull("Third report repository id test", m_legacyLocalReportsDao.getReports().get(2).getRepositoryId());
     }
 
     /**
@@ -194,9 +147,9 @@ public class LegacyLocalReportsDaoTest {
      */
     @Test
     public void testReportAllowAccess() throws Exception {
-        assertFalse("First report allow access test", m_reports.get(0).getAllowAccess());
-        assertFalse("Second report allow access test", m_reports.get(1).getAllowAccess());
-        assertFalse("Third report allow access test", m_reports.get(2).getAllowAccess());
+        assertFalse("First report allow access test", m_legacyLocalReportsDao.getReports().get(0).getAllowAccess());
+        assertFalse("Second report allow access test", m_legacyLocalReportsDao.getReports().get(1).getAllowAccess());
+        assertFalse("Third report allow access test", m_legacyLocalReportsDao.getReports().get(2).getAllowAccess());
     }
 
     /**
@@ -208,8 +161,9 @@ public class LegacyLocalReportsDaoTest {
      */
     @Test
     public void testReportIsOnline() throws Exception {
-        assertTrue("First report is online test", m_reports.get(0).getOnline());
-        assertTrue("Second report is online test", m_reports.get(1).getOnline());
-        assertFalse("Third report is online test", m_reports.get(2).getOnline());
+        assertTrue("First report is online test", m_legacyLocalReportsDao.getReports().get(0).getOnline());
+        assertTrue("Second report is online test", m_legacyLocalReportsDao.getReports().get(1).getOnline());
+        assertFalse("Third report is online test", m_legacyLocalReportsDao.getReports().get(2).getOnline());
+        assertFalse("Third report is online test", m_legacyLocalReportsDao.getReports().get(2).getOnline());
     }
 }
