@@ -301,6 +301,12 @@ fi
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
 	export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true -DupdatePolicy=always"
+	TOPDIR=`pwd`
+	for dir in . opennms-tools; do
+		pushd $dir
+			"$TOPDIR"/compile.pl -N $EXTRA_OPTIONS -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" '-P!jspc' install
+		popd
+	done
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
