@@ -168,7 +168,7 @@ public class DefaultReportStoreService implements ReportStoreService {
      * <p>setGlobalReportRepository</p>
      * 
      * Set the global report repository which implements a local report for Community reports and remote 
-     * OpenNMS CONNETC repositories
+     * OpenNMS CONNECT repositories
      * 
      * @param globalReportRepository a {@link org.opennms.features.reporting.repository.global.GlobalReportRepository} object
      */

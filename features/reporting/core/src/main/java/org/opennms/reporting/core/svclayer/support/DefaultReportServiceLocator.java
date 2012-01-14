@@ -30,7 +30,6 @@ package org.opennms.reporting.core.svclayer.support;
 
 
 import org.opennms.api.reporting.ReportService;
-import org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
@@ -43,30 +42,40 @@ import org.springframework.context.ApplicationContextAware;
 public class DefaultReportServiceLocator implements ApplicationContextAware, ReportServiceLocator {
 
     private ApplicationContext m_applicationContext;
-    
-    private GlobalReportRepository m_repo = new DefaultGlobalReportRepository();
-    
-    /** {@inheritDoc} */
+
+    private GlobalReportRepository m_globalReportRepository;
+
+    /**
+     * {@inheritDoc}
+     */
     public ReportService getReportService(String reportServiceName) throws ReportServiceLocatorException {
-        
+
         ReportService reportService = (ReportService) m_applicationContext.getBean(reportServiceName);
-        
+
         if (reportService == null) {
-            throw new ReportServiceLocatorException("cannot locate report service bean: " + reportServiceName );       
+            throw new ReportServiceLocatorException("cannot locate report service bean: " + reportServiceName);
         } else {
             return reportService;
         }
     }
- 
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     public ReportService getReportServiceForId(String reportId)
             throws ReportServiceLocatorException {
-        
-        return getReportService(m_repo.getReportService(reportId));
+
+        return getReportService(m_globalReportRepository.getReportService(reportId));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void setApplicationContext(ApplicationContext applicationContext) {
-            m_applicationContext = applicationContext;
+        m_applicationContext = applicationContext;
+    }
+
+    public void setGlobalReportRepository(GlobalReportRepository globalReportRepository) {
+        m_globalReportRepository = globalReportRepository;
     }
 }

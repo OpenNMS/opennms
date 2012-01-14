@@ -28,16 +28,14 @@
 
 package org.opennms.features.reporting.repository.global;
 
-import org.opennms.features.reporting.dao.LocalReportsDao;
-import org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao;
 import org.opennms.features.reporting.dao.remoterepository.RemoteRepositoryConfigDao;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
-import org.opennms.features.reporting.repository.local.LegacyLocalReportRepository;
 import org.opennms.features.reporting.repository.remote.DefaultRemoteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 import java.io.InputStream;
@@ -55,6 +53,9 @@ import java.util.List;
  * @version $Id: $
  * @since 1.8.1
  */
+@ContextConfiguration(locations = {
+        "classpath:META-INF/opennms/applicationContext-reportingRepository.xml",
+        "classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class DefaultGlobalReportRepository implements GlobalReportRepository {
 
     /**
@@ -63,9 +64,14 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     private final Logger logger = LoggerFactory.getLogger(DefaultGlobalReportRepository.class);
 
     /**
-     * Configuration DAO for remote-reports.xml
+     * Configuration DAO to build remote repositories from  remote-reports.xml
      */
     private RemoteRepositoryConfigDao m_remoteRepositoryConfigDao;
+
+    /**
+     * The local report repository with all OpenNMS community reports
+     */
+    private ReportRepository m_localReportRepository;
 
     /**
      * Concatenated repositoryId and reportId by "_"
@@ -83,27 +89,17 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     private String JASPER_REPORTS_VERSION;
 
     /**
-     * DAO for all configured local OpenNMS community reports
-     */
-    private LocalReportsDao m_localReportsDao;
-
-    /**
-     * DAO for all local jasper specific reports
-     */
-    private LocalJasperReportsDao m_localJasperReportsDao;
-
-    /**
      * Default constructor creates one local and many remote repositories.
      */
-    public DefaultGlobalReportRepository() {
+    public DefaultGlobalReportRepository(RemoteRepositoryConfigDao remoteRepositoryConfigDao, ReportRepository reportRepository) {
+        m_remoteRepositoryConfigDao = remoteRepositoryConfigDao;
+        m_localReportRepository = reportRepository;
+
         Assert.notNull(m_remoteRepositoryConfigDao, "remote repository config dao property configResource must be set to a non-null value");
         logger.debug("Config resource is set to '{}'", m_remoteRepositoryConfigDao.toString());
 
-        Assert.notNull(m_localReportsDao, "local reports config dao property configResource must be set to a non-null value");
-        logger.debug("Config resource is set to '{}'", m_localReportsDao.toString());
-
-        Assert.notNull(m_localJasperReportsDao, "local jasper reports config dao property configResource must be set to a non-null value");
-        logger.debug("Config resource is set to '{}'", m_localJasperReportsDao.toString());
+        Assert.notNull(m_localReportRepository, "local report repository property must be set to a non-null value");
+        logger.debug("Local report repository is set to '{}'", m_localReportRepository.toString());
 
         // The remote repository needs the JasperReport version for templates
         JASPER_REPORTS_VERSION = System.getProperty("org.opennms.jasperReportsVersion");
@@ -115,7 +111,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         /**
          * The local disk repository provides the canned OpenNMS community reports.
          */
-        this.m_repositoryList.add(new LegacyLocalReportRepository(m_localReportsDao, m_localJasperReportsDao));
+        this.m_repositoryList.add(m_localReportRepository);
 
         /**
          * Create a list with all remote repositories from remote repository for each remote repository from RemoteRepositoryConfig.
@@ -276,53 +272,45 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     }
 
     /**
-     * <p>setLocalReportsDao</p>
-     * 
-     * Set local reports DAO against local-reports.xml 
-     * 
-     * @param localReportsDao a {@link org.opennms.features.reporting.dao.LocalReportsDao} object
+     * <p>setLocalReportRepository</p>
+     * <p/>
+     * Set the legacy local repository which provides all OpenNMS community reports
+     *
+     * @param reportRepository a {@link org.opennms.features.reporting.repository.local.LegacyLocalReportRepository} object
      */
-    public void setLocalReportsDao(LocalReportsDao localReportsDao) {
-        this.m_localReportsDao = localReportsDao;
+    public void setLocalReportRepository(ReportRepository reportRepository) {
+        m_localReportRepository = reportRepository;
     }
 
     /**
-     * <p>getLocalReportsDao</p>
-     * 
-     * Get local reports DAO from local-reports.xml 
-     * 
-     * @return a {@link org.opennms.features.reporting.dao.LocalReportsDao} object
+     * <p>getReportRepository</p>
+     *
+     * Get the legacy local repository which provides all OpenNMS community reports
+     *
+     * @return a {@link org.opennms.features.reporting.repository.local.LegacyLocalReportRepository} object
      */
-    public LocalReportsDao getLocalReportsDao() {
-        return this.m_localReportsDao;
+    public ReportRepository getReportRepository() {
+        return m_localReportRepository;
     }
 
     /**
-     * <p>setLocalJasperReportsDao</p>
+     * <p>setRemoteRepositoryConfigDao</p>
      *
-     * Set local jasper reports DAO against local-jasper-reports.xml
+     * Set the default remote report repository which provides access to OpenNMS CONNECT reports
      *
-     * @param localJasperReportsDao a {@link org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao} object
+     * @param remoteRepositoryConfigDao a {@link org.opennms.features.reporting.repository.remote.DefaultRemoteRepository} object
      */
-    public void setLocalJasperReportsDao(LocalJasperReportsDao localJasperReportsDao) {
-        this.m_localJasperReportsDao = localJasperReportsDao;
-    }
-
-    /**
-     * <p>getLocalJasperReportsDao</p>
-     *
-     * Get local jasper reports DAO from local-jasper-reports.xml
-     * 
-     * @return a {@link org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao} object
-     */
-    public LocalJasperReportsDao getLocalJasperReportsDao() {
-        return this.m_localJasperReportsDao;
-    }
-
     public void setRemoteRepositoryConfigDao(RemoteRepositoryConfigDao remoteRepositoryConfigDao) {
         m_remoteRepositoryConfigDao = remoteRepositoryConfigDao;
     }
 
+    /**
+     * <p>getRemoteRepositoryConfigDao</p>
+     *
+     * Get the default remote report repository which provides access to OpenNMS CONNECT reports
+     *
+     * @return a {@link org.opennms.features.reporting.repository.remote.DefaultRemoteRepository} object
+     */
     public RemoteRepositoryConfigDao getRemoteRepositoryConfigDao() {
         return m_remoteRepositoryConfigDao;
     }

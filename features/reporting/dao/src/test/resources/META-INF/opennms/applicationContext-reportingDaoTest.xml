@@ -3,15 +3,15 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="localReportsConfigResource" class="org.springframework.core.io.UrlResource">
+    <bean id="legacyLocalReportsConfigResource" class="org.springframework.core.io.UrlResource">
         <constructor-arg value="file:src/test/resources/etc/local-reports.xml" />
     </bean>
 
-    <bean id="localJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">
+    <bean id="legacyLocalJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">
         <constructor-arg value="file:src/test/resources/etc/local-jasper-reports.xml" />
     </bean>
 
-    <bean id="remoteRepositoryConfigResource" class="org.springframework.core.io.UrlResource">
+    <bean id="defaultRemoteRepositoryConfigResource" class="org.springframework.core.io.UrlResource">
         <constructor-arg value="file:src/test/resources/etc/remote-repository.xml" />
     </bean>
 
@@ -21,15 +21,15 @@
 
     <!-- DAO for XML configuration -->
     <bean id="legacyLocalReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao">
-        <constructor-arg ref="localReportsConfigResource" />
+        <constructor-arg ref="legacyLocalReportsConfigResource" />
     </bean>
 
     <bean id="legacyLocalJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao">
-        <constructor-arg ref="localJasperReportsConfigResource" />
+        <constructor-arg ref="legacyLocalJasperReportsConfigResource" />
         <constructor-arg ref="jrTemplateResource" />
     </bean>
 
     <bean id="defaultRemoteRepositoryConfigDao" class="org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao">
-        <constructor-arg ref="remoteRepositoryConfigResource" />
+        <constructor-arg ref="defaultRemoteRepositoryConfigResource" />
     </bean>
 </beans>

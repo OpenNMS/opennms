@@ -5,6 +5,8 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean id="jasperReportService"
-		class="org.opennms.reporting.jasperreports.svclayer.JasperReportService" />
+		class="org.opennms.reporting.jasperreports.svclayer.JasperReportService">
+        <property name="globalReportRepository" ref="defaultGlobalReportRepository" />
+    </bean>
 
 </beans>

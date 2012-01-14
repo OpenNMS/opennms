@@ -34,7 +34,6 @@
         <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao"/>
     </bean>
 
-
     <!-- Suppress Outage Service beans -->
     <bean id="outageService" class="org.opennms.web.svclayer.outage.DefaultOutageService">
         <property name="dao" ref="outageDao"/>
@@ -311,47 +310,44 @@
         <property name="nodeDao" ref="nodeDao"/>
     </bean>
 
-    <!-- Local and Remote Repository -->
-    <bean id="localReportsConfigResource" class="org.springframework.core.io.UrlResource">
+    <!-- Report repository for local community reports and OpenNMS CONNECT remote repository access -->
+    <bean id="legacyLocalReportsConfigResource" class="org.springframework.core.io.UrlResource">
         <constructor-arg value="file:${opennms.home}/etc/local-reports.xml" />
     </bean>
 
-    <bean id="localJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">
+    <bean id="legacyLocalJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">
         <constructor-arg value="file:${opennms.home}/etc/local-jasper-reports.xml" />
     </bean>
 
-    <bean id="remoteRepositoryConfigResource" class="org.springframework.core.io.UrlResource">
+    <bean id="defaultRemoteRepositoryConfigResource" class="org.springframework.core.io.UrlResource">
         <constructor-arg value="file:${opennms.home}/etc/remote-repository.xml" />
     </bean>
 
     <bean id="jrTemplateResource" class="org.springframework.core.io.UrlResource">
-        <constructor-arg value="file:${opennms.home}/etc/report-templates.xml" />
+        <constructor-arg value="file:${opennms.home}/etc/report-templates" />
     </bean>
-
     <!-- DAO for XML configuration -->
     <bean id="legacyLocalReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao">
-        <constructor-arg ref="localReportsConfigResource" />
+        <constructor-arg ref="legacyLocalReportsConfigResource" />
     </bean>
 
     <bean id="legacyLocalJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao">
-        <constructor-arg ref="localJasperReportsConfigResource" name="configResource" />
-        <constructor-arg ref="jrTemplateResource" name="jrTemplateResource" />
+        <constructor-arg ref="legacyLocalJasperReportsConfigResource" />
+        <constructor-arg ref="jrTemplateResource" />
     </bean>
 
     <bean id="defaultRemoteRepositoryConfigDao" class="org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao">
-        <constructor-arg ref="remoteRepositoryConfigResource" />
+        <constructor-arg ref="defaultRemoteRepositoryConfigResource" />
     </bean>
 
-    <bean id="defaultGlobalReportRepository"
-          class="org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository">
-        <property name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
-        <property name="localReportsDao" ref="legacyLocalReportsDao"/>
-        <property name="localJasperReportsDao" ref="legacyLocalJasperReportsDao"/>
+    <!-- Repository implementation for local community reports and OpenNMS CONNECT reporting -->
+    <bean id="legacyLocalReportRepository" class="org.opennms.features.reporting.repository.local.LegacyLocalReportRepository">
+        <constructor-arg name="localReportsDao" ref="legacyLocalReportsDao" />
+        <constructor-arg name="localJasperReportsDao" ref="legacyLocalJasperReportsDao" />
     </bean>
 
-    <bean id="legacyLocalReportRepository"
-          class="org.opennms.features.reporting.repository.local.LegacyLocalReportRepository">
-        <constructor-arg ref="legacyLocalReportsDao" name="localReportsDao"/>
-        <constructor-arg ref="legacyLocalJasperReportsDao" name="localJasperReportsDao"/>
+    <bean id="defaultGlobalReportRepository" class="org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository">
+        <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao" />
+        <constructor-arg name="reportRepository" ref="legacyLocalReportRepository" />
     </bean>
 </beans>

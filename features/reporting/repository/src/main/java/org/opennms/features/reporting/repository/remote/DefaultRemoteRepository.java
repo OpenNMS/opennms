@@ -29,6 +29,7 @@ import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.sdo.RemoteReportSDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -44,6 +45,9 @@ import java.util.List;
  * @version $Id: $
  * @since 1.8.1
  */
+@ContextConfiguration(locations = {
+        "classpath:META-INF/opennms/applicationContext-reportingRepository.xml",
+        "classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class DefaultRemoteRepository implements ReportRepository {
 
     /**
