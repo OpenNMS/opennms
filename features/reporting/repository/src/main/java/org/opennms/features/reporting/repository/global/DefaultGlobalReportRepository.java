@@ -74,6 +74,11 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     private ReportRepository m_localReportRepository;
 
     /**
+     * The remote report repository with OpenNMS CONNECT reports
+     */
+    private ReportRepository m_remoteReportRepository;
+
+    /**
      * Concatenated repositoryId and reportId by "_"
      */
     private final String REPOSITORY_REPORT_SEP = "_";
@@ -117,18 +122,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         } catch (Exception e) {
             logger.error("Jasper report version must be set in opennms.properties. Error message: '{}'", e.getMessage());
         }
-
-        /**
-         * The local disk repository provides the canned OpenNMS community reports.
-         */
-        this.m_repositoryList.add(m_localReportRepository);
-
-        /**
-         * Create a list with all remote repositories from remote repository for each remote repository from RemoteRepositoryConfig.
-         */
-        for (RemoteRepositoryDefinition repositoryDefinition : m_remoteRepositoryConfigDao.getActiveRepositories()) {
-            this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, m_jasperReportVersion));
-        }
+        setRemoteRepositoryConfigDao(remoteRepositoryConfigDao);
     }
 
     /**
@@ -265,7 +259,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
                 return repository;
             }
         }
-        logger.debug("Not repository with id '{}' was found, return null", repositoryId);
+        logger.debug("No repository with id '{}' was found, return null", repositoryId);
         // we haven't a repository with repositoryId
         return null;
     }
@@ -304,6 +298,26 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     }
 
     /**
+     * <p>setRemoteReportRepository</p>
+     * <p/>
+     * Set the remote repository for OpenNMS CONNECT reports
+     *
+     * @param remoteReportRepository a {@link org.opennms.features.reporting.repository.remote.DefaultRemoteRepository} object
+     */
+    public void setRemoteReportRepository(ReportRepository remoteReportRepository) {
+        m_remoteReportRepository = remoteReportRepository;
+    }
+
+    /**
+     * <p>getRemoteReportRepository</p>
+     * 
+     * @return a {@link org.opennms.features.reporting.repository.remote.DefaultRemoteRepository} object
+     */
+    public ReportRepository getRemoteReportRepository() {
+        return m_remoteReportRepository;
+    }
+
+    /**
      * <p>setRemoteRepositoryConfigDao</p>
      * <p/>
      * Set the default remote report repository which provides access to OpenNMS CONNECT reports
@@ -312,6 +326,23 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     public void setRemoteRepositoryConfigDao(RemoteRepositoryConfigDao remoteRepositoryConfigDao) {
         m_remoteRepositoryConfigDao = remoteRepositoryConfigDao;
+
+        /**
+         * The local disk repository provides the canned OpenNMS community reports.
+         */
+        this.m_repositoryList.add(m_localReportRepository);
+
+        /**
+         * Create a list with all remote repositories from remote repository for each remote repository from RemoteRepositoryConfig.
+         */
+        //TODO tak: This is tricky to test and to mock, we have to refactor this
+        try {
+            for (RemoteRepositoryDefinition repositoryDefinition : m_remoteRepositoryConfigDao.getActiveRepositories()) {
+                this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, m_jasperReportVersion));
+            }
+        } catch (Exception e) {
+            logger.error("Could not add configured remote repositories in default global report repository. Error message: '{}'", e.getMessage());
+        }
     }
 
     /**
@@ -323,27 +354,5 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     public RemoteRepositoryConfigDao getRemoteRepositoryConfigDao() {
         return m_remoteRepositoryConfigDao;
-    }
-
-    /**
-     * <p>setJasperReportVersion</p>
-     * <p/>
-     * Set the jasper report version
-     *
-     * @param jasperReportVersion a {@link java.lang.String} object
-     */
-    public void setJasperReportVersion(String jasperReportVersion) {
-        m_jasperReportVersion = jasperReportVersion;
-    }
-
-    /**
-     * <p>getJasperReportVersion</p>
-     * <p/>
-     * Get the jasper report version
-     *
-     * @return a {@link java.lang.String} object
-     */
-    public String getJasperReportVersion() {
-        return m_jasperReportVersion;
     }
 }
