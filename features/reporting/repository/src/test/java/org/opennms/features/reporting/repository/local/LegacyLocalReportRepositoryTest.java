@@ -56,14 +56,10 @@ import static junit.framework.Assert.assertNotNull;
  * @since 1.8.1
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:reportingRepositoryTest-context.xml"})
+@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingRepositoryTest.xml"})
 public class LegacyLocalReportRepositoryTest {
 
     private LegacyLocalReportRepository m_legacyLocalReportRepository;
-
-    private LocalReportsDao m_localReportsDao;
-
-    private LocalJasperReportsDao m_localJasperReportsDao;
 
     /**
      * <p>setUp</p>
