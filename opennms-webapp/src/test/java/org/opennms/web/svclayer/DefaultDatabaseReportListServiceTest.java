@@ -28,10 +28,16 @@
 
 package org.opennms.web.svclayer;
 
+import org.easymock.EasyMock;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
+import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.web.svclayer.support.DatabaseReportDescription;
+import org.opennms.web.svclayer.support.DefaultDatabaseReportListService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -39,38 +45,28 @@ import static org.junit.Assert.assertEquals;
 //import org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao;
 //import org.springframework.core.io.ClassPathResource;
 //import org.springframework.core.io.Resource;
+// TODO indigo: Improve tests and refactor for spring injection
 public class DefaultDatabaseReportListServiceTest {
 
-    private DatabaseReportListService m_descriptionService;
-    
+    private DefaultDatabaseReportListService m_defaultDatabaseReportListService;
+
+    private GlobalReportRepository m_globalReportRepository;
+
     @Before
     public void setupDao() throws Exception {
-        System.setProperty("opennms.home", "src/test/resources");
-        
-//        m_dao = new DefaultDatabaseReportConfigDao();
-//        Resource resource = new ClassPathResource("/database-reports-testdata.xml");
-//        m_dao.setConfigResource(resource);
-//        m_dao.afterPropertiesSet();
-//        m_descriptionService = new DefaultDatabaseReportListService();
-//        m_descriptionService.setDatabaseReportConfigDao(m_dao);
-//        m_descriptionService = new DefaultDatabaseReportListService();
-//        m_descriptionService.setDatabaseReportConfigDao(m_dao);
+        m_globalReportRepository = EasyMock.createNiceMock(GlobalReportRepository.class);
+        EasyMock.expect(m_globalReportRepository.getAllOnlineReports()).andReturn(new ArrayList<BasicReportDefinition>());
+        EasyMock.expect(m_globalReportRepository.getAllOnlineReports()).andReturn(new ArrayList<BasicReportDefinition>());
+        EasyMock.replay(m_globalReportRepository);
+        m_defaultDatabaseReportListService = new DefaultDatabaseReportListService();
+        m_defaultDatabaseReportListService.setGlobalReportRepository(m_globalReportRepository);
+
     }
 
+    @Ignore
     @Test
-    public void testGetAll() throws Exception {
-        //List<DatabaseReportDescription> description = m_descriptionService.getAll();
-        System.out.println("Huhu: " + m_descriptionService);
-        //assertEquals(2,description.size());
-    }
-    
-    @Test
-    public void testGetAlOnlinel() throws Exception {
-        List<DatabaseReportDescription> description = m_descriptionService.getAllOnline();
-        assertEquals(1,description.size());
-    }
-
-    public void setDatabaseReportListService(DatabaseReportListService databaseReportListService) {
-        m_descriptionService = databaseReportListService;
+    public void testGetAllOnline() throws Exception {
+        List<DatabaseReportDescription> description = m_defaultDatabaseReportListService.getAll();
+        assertEquals(1, description.size());
     }
 }
