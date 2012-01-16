@@ -167,15 +167,15 @@ function main()
         echo
 
         echo "=== Creating Working Directories ==="
-        run install -d -m 755 "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source"
+        run install -d -m 755 "$WORKDIR/tmp/opennms-$VERSION-$RELEASE"
         run install -d -m 755 "$WORKDIR"/{BUILD,RPMS/{i386,i686,noarch},SOURCES,SPECS,SRPMS}
 
         echo "=== Copying Source to Source Directory ==="
-        run rsync -aqr --exclude=.git --exclude=.svn --exclude=target --delete --delete-excluded "$TOPDIR/" "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source/"
+        run rsync -aqr --exclude=.git --exclude=.svn --exclude=target --delete --delete-excluded "$TOPDIR/" "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/"
 
         echo "=== Creating a tar.gz archive of the Source in /usr/src/redhat/SOURCES ==="
         run tar zcf "$WORKDIR/SOURCES/opennms-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDIR/tmp" "opennms-$VERSION-$RELEASE"
-        run tar zcf "$WORKDIR/SOURCES/centric-troubleticketer.tar.gz" -C "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source/opennms-tools" "centric-troubleticketer"
+        run tar zcf "$WORKDIR/SOURCES/centric-troubleticketer.tar.gz" -C "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/opennms-tools" "centric-troubleticketer"
 
         echo "=== Building RPMs ==="
         for spec in tools/packages/opennms/opennms.spec opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec
