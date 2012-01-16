@@ -41,9 +41,6 @@ import java.util.Map;
  *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @version $Id: $
  */
 public interface Plugin {
     /**

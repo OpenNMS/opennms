@@ -26,46 +26,58 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.simple.client;
+package org.opennms.netmgt.provision.detector.simple;
 
-import java.io.IOException;
-import java.net.InetAddress;
-
-import org.opennms.core.utils.DefaultSocketWrapper;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.TimeoutSocketFactory;
+import org.opennms.netmgt.provision.detector.simple.client.LdapsDetectorClient;
+import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
+import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
+import org.opennms.netmgt.provision.support.Client;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPSocketFactory;
 
 /**
- * <p>LdapDetectorClient class.</p>
+ * <p>LdapDetector class.</p>
  *
  * @author thedesloge
  * @version $Id: $
  */
-public class LdapDetectorClient extends LineOrientedClient {
+
+@Component
+@Scope("prototype")
+public class LdapsDetector extends LdapDetector {
+
+    private static final String DEFAULT_SERVICE_NAME = "LDAPS";
 
     /**
-     * A class to add a timeout to the socket that the LDAP code uses to access
-     * an LDAP server
+     * <P>
+     * The default ports on which the host is checked to see if it supports
+     * LDAP.
+     * </P>
      */
-    private class TimeoutLDAPSocket extends TimeoutSocketFactory implements LDAPSocketFactory {
-        public TimeoutLDAPSocket(int timeout) {
-            super(timeout, getSocketWrapper());
-        }
+    private static final int DEFAULT_PORT = LDAPConnection.DEFAULT_SSL_PORT;
+
+    /**
+     * Default constructor
+     */
+    protected LdapsDetector() {
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
 
-    protected SocketWrapper getSocketWrapper() {
-        return new DefaultSocketWrapper();
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     */
+    protected LdapsDetector(final String serviceName, final int port) {
+        super(serviceName, port);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
-        super.connect(address, port, timeout);
-        final LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
-        lc.connect(InetAddressUtils.str(address), port);
+    protected Client<LineOrientedRequest, LineOrientedResponse> getClient(){
+        return new LdapsDetectorClient();
     }
 }

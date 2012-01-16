@@ -28,18 +28,19 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.SocketWrapper;
+import org.opennms.core.utils.TimeoutSocketFactory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -90,23 +91,14 @@ public class LdapMonitor extends AbstractServiceMonitor {
      * A class to add a timeout to the socket that the LDAP code uses to access
      * an LDAP server
      */
-    private class TimeoutLDAPSocket implements LDAPSocketFactory {
-
-        private final int m_timeout;
-
+    private class TimeoutLDAPSocket extends TimeoutSocketFactory implements LDAPSocketFactory {
         public TimeoutLDAPSocket(int timeout) {
-            m_timeout = timeout;
-        }
-
-        public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
-            Socket socket = new Socket(host, port);
-            socket.setSoTimeout(m_timeout);
-            return wrapSocket(socket);
+            super(timeout, getSocketWrapper());
         }
     }
 
-    protected Socket wrapSocket(Socket socket) throws IOException {
-        return socket;
+    protected SocketWrapper getSocketWrapper() {
+        return new DefaultSocketWrapper();
     }
 
     protected int determinePort(final Map<String, Object> parameters) {
@@ -162,7 +154,6 @@ public class LdapMonitor extends AbstractServiceMonitor {
             socket = new Socket();
             socket.connect(new InetSocketAddress((InetAddress) iface.getAddress(), ldapPort), tracker.getConnectionTimeout());
             socket.setSoTimeout(tracker.getSoTimeout());
-            socket = wrapSocket(socket);
             log().debug("LdapMonitor: connected to host: " + address + " on port: " + ldapPort);
 
             // We're connected, so upgrade status to unresponsive

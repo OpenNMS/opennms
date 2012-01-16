@@ -36,12 +36,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.TimeoutSocketFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
 import com.novell.ldap.LDAPConnection;
@@ -60,7 +62,7 @@ import com.novell.ldap.LDAPSocketFactory;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
-public final class LdapPlugin extends AbstractPlugin {
+public class LdapPlugin extends AbstractPlugin {
 
     private static final String PROTOCOL_NAME = "LDAP";
 
@@ -86,19 +88,18 @@ public final class LdapPlugin extends AbstractPlugin {
      * A class to add a timeout to the socket that the LDAP code uses to access
      * an LDAP server
      */
-    private class TimeoutLDAPSocket implements LDAPSocketFactory {
-
-        private int m_timeout;
-
+    private class TimeoutLDAPSocket extends TimeoutSocketFactory implements LDAPSocketFactory {
         public TimeoutLDAPSocket(int timeout) {
-            m_timeout = timeout;
+            super(timeout, getSocketWrapper());
         }
+    }
 
-        public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
-            Socket socket = new Socket(host, port);
-            socket.setSoTimeout(m_timeout);
-            return socket;
-        }
+    protected SocketWrapper getSocketWrapper() {
+        return new DefaultSocketWrapper();
+    }
+
+    protected int[] determinePorts(final Map<String, Object> parameters) {
+        return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
     }
 
     /**
@@ -219,7 +220,7 @@ public final class LdapPlugin extends AbstractPlugin {
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-        int[] ports = ParameterMap.getKeyedIntegerArray(qualifiers, "port", DEFAULT_PORTS);
+        int[] ports = determinePorts(qualifiers);
 
         for (int i = 0; i < ports.length; i++) {
             if (isServer(address, ports[i], retries, timeout)) {

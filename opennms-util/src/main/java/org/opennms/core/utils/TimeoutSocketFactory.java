@@ -26,37 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.core.utils;
 
-import java.util.Map;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.SslSocketWrapper;
-import org.opennms.netmgt.poller.Distributable;
 
-import com.novell.ldap.LDAPConnection;
+public class TimeoutSocketFactory {
 
-/**
- * This class is designed to be used by the service poller framework to test the
- * availability of the LDAPS service on remote interfaces. The class implements
- * the ServiceMonitor interface that allows it to be used along with other
- * plug-ins by the service poller framework.
- *
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- */
-@Distributable
-final public class LdapsMonitor extends LdapMonitor {
+    private final int m_timeout;
+    private final SocketWrapper m_socketWrapper;
 
-    @Override
-    protected int determinePort(Map<String, Object> parameters) {
-        return ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_SSL_PORT);
+    public TimeoutSocketFactory(final int timeout) {
+        this(timeout, null);
     }
 
-    @Override
-    protected SocketWrapper getSocketWrapper() {
-        return new SslSocketWrapper();
+    /**
+     * Oh noes, dyslexia!!!
+     */
+    public TimeoutSocketFactory(final int timeout, final SocketWrapper wocketSrapper) {
+        m_timeout = timeout;
+        m_socketWrapper = wocketSrapper;
+    }
+
+    public Socket createSocket(final String host, final int port) throws IOException, UnknownHostException {
+        Socket socket = new Socket(host, port);
+        socket.setSoTimeout(m_timeout);
+        if (m_socketWrapper != null) {
+            socket = m_socketWrapper.wrapSocket(socket);
+        }
+        return socket;
     }
 }

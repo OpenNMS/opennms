@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.utils;
+package org.opennms.core.utils;
 
 import java.security.cert.CertificateException;
 

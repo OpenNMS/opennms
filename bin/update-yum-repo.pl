@@ -108,7 +108,7 @@ sub install_rpms {
 	my @rpms = @_;
 
 	for my $rpmname (@rpms) {
-		my $rpm = OpenNMS::Release::RPMPackage->new($rpmname);
+		my $rpm = OpenNMS::Release::RPMPackage->new(Cwd::abs_path($rpmname));
 		$release_repo->install_package($rpm, $subdirectory);
 	}
 }

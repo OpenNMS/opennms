@@ -26,37 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.core.utils;
 
-import java.util.Map;
+import java.io.IOException;
+import java.net.Socket;
 
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.SslSocketWrapper;
-import org.opennms.netmgt.poller.Distributable;
-
-import com.novell.ldap.LDAPConnection;
-
-/**
- * This class is designed to be used by the service poller framework to test the
- * availability of the LDAPS service on remote interfaces. The class implements
- * the ServiceMonitor interface that allows it to be used along with other
- * plug-ins by the service poller framework.
- *
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- */
-@Distributable
-final public class LdapsMonitor extends LdapMonitor {
-
-    @Override
-    protected int determinePort(Map<String, Object> parameters) {
-        return ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_SSL_PORT);
-    }
-
-    @Override
-    protected SocketWrapper getSocketWrapper() {
-        return new SslSocketWrapper();
-    }
+public interface SocketWrapper {
+    Socket wrapSocket(Socket socket) throws IOException;
 }
