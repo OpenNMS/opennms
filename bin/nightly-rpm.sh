@@ -38,14 +38,12 @@ RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 # create the RPM
 ./makerpm.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION"
 
-# copy the source into the YUM repository
-OUTPUTDIR="${YUMDIR}/${RELEASE}/common/opennms"
-rm -f "${OUTPUTDIR}"/opennms-source*.tar.gz
-cp target/rpm/SOURCES/opennms-source*.tar.gz "${OUTPUTDIR}"/
+# copy the source to SourceForge
+./bin/update-sourceforge-repo.pl "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz
 
 # update the $RELEASE repo, and sync it to anything later in the hierarchy
-# ./bin/update-repo.pl [-g gpg_id] -s "$PASSWORD" "$RELEASE" "common" "opennms" target/rpms/RPMS/noarch/*.rpm
-./bin/update-repo.pl -s "$PASSWORD" "$YUMDIR" "$RELEASE" "common" "opennms" target/rpm/RPMS/noarch/*.rpm
+# ./bin/update-yum-repo.pl [-g gpg_id] -s "$PASSWORD" "$RELEASE" "common" "opennms" target/rpms/RPMS/noarch/*.rpm
+./bin/update-yum-repo.pl -s "$PASSWORD" "$YUMDIR" "$RELEASE" "common" "opennms" target/rpm/RPMS/noarch/*.rpm
 
 ./bin/generate-repo-html.pl "$YUMDIR"
 
