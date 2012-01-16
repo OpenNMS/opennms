@@ -267,7 +267,7 @@ fields with data fetched from SNMP GET requests.
 %prep
 
 tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
-%define setupdir %{packagedir}/source
+%define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
 
@@ -328,7 +328,7 @@ echo "=== UNTAR BUILD ==="
 
 mkdir -p $RPM_BUILD_ROOT%{instprefix}
 
-tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/source/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT%{instprefix}
+tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
@@ -351,7 +351,7 @@ END
 %if %{with_docs}
 
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{release}/source/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
+cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{release}/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
 cp README* $RPM_BUILD_ROOT%{instprefix}/etc/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
