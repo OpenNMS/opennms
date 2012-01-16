@@ -10,16 +10,12 @@ use File::Find;
 use File::Path;
 use Getopt::Long qw(:config gnu_getopt);
 use IO::Handle;
-#use RPM4;
 
 use OpenNMS::Util v2.0;
-use OpenNMS::Release::YumRepo v2.0;
-use OpenNMS::Release::RPMPackage v2.0;
+use OpenNMS::Release::AptRepo v2.1.2;
+use OpenNMS::Release::DebPackage v2.1;
 
 $|++;
-
-# initialize RPM4
-#readconfig();
 
 my $help             = 0;
 my $all              = 0;
@@ -34,11 +30,11 @@ my $result = GetOptions(
 	"g|gpg-id=s" => \$signing_id,
 );
 
-my ($base, $release, $platform, $subdirectory, @rpms);
+my ($base, $release, @packages);
 
 $base = shift @ARGV;
 if (not defined $base) {
-	usage("You did not specify a YUM repository base!");
+	usage("You did not specify an APT repository base!");
 }
 $base = Cwd::abs_path($base);
 
@@ -47,39 +43,50 @@ if ($help) {
 }
 
 if (not $all) {
-	($release, $platform, $subdirectory, @rpms) = @ARGV;
-	if (not defined $release or not defined $platform) {
-		usage("You must specify a YUM repository base, release, and platform!");
-	}
-	
-	if (not defined $subdirectory) {
-		usage("You must specify a subdirectory.");
+	($release, @packages) = @ARGV;
+	if (not defined $release) {
+		usage("You must specify a repository base and release!");
 	}
 }
 
-my $release_descriptions = read_properties(File::Spec->catdir(dirname($0), "release.properties"));
+my @all_repositories = @{OpenNMS::Release::AptRepo->find_repos($base)};
 
-my @sync_order = split(/\s*,\s*/, $release_descriptions->{order_sync});
-delete $release_descriptions->{order_sync};
+@all_repositories = sort {
+	my ($a_name, $a_version) = $a->release =~ /^(.*?)-([\d\.]+)$/;
+	my ($b_name, $b_version) = $b->release =~ /^(.*?)-([\d\.]+)$/;
+
+	die "unable to determine name/revision from " . $a->release unless (defined $a_version);
+	die "unable to determine name/revision from " . $b->release unless (defined $b_version);
+
+	if ($a_version eq $b_version) {
+		return $a_name eq "opennms"? -1 : 1;
+	}
+	return (system('dpkg', '--compare-versions', $a_version, '<<', $b_version) == 0)? -1 : 1;
+} @all_repositories;
 
 my $scan_repositories = [];
 if ($all) {
-	$scan_repositories = OpenNMS::Release::YumRepo->find_repos($base);
+	$scan_repositories = \@all_repositories;
 } else {
-	$scan_repositories = [ OpenNMS::Release::YumRepo->new($base, $release, $platform) ];
+	my $releasedir = File::Spec->catdir($base, 'dists', $release);
+	if (-l $releasedir) {
+		$release = basename(readlink($releasedir));
+	}
+	$scan_repositories = [ OpenNMS::Release::AptRepo->new($base, $release) ];
 }
+
+my @sync_order = map { $_->release } @all_repositories;
 
 for my $orig_repo (@$scan_repositories) {
 	my $base     = $orig_repo->abs_base;
 	my $release  = $orig_repo->release;
-	my $platform = $orig_repo->platform;
 
-	print "=== Updating repo files in: $base/$release/$platform/ ===\n";
+	print "=== Updating repo files in: $base/dists/$release/ ===\n";
 	
 	my $release_repo = $orig_repo->create_temporary;
 
-	if (defined $subdirectory and @rpms) {
-		install_rpms($release_repo, $subdirectory, @rpms);
+	if (@packages) {
+		install_packages($release_repo, @packages);
 	}
 
 	index_repo($release_repo, $signing_id, $signing_password);
@@ -89,12 +96,12 @@ for my $orig_repo (@$scan_repositories) {
 	sync_repos($release_repo, $signing_id, $signing_password);
 }
 
-# return 1 if the obsolete RPM given should be deleted
+# return 1 if the obsolete package given should be deleted
 sub not_opennms {
-	my ($rpm, $repo) = @_;
-	if ($rpm->name =~ /^opennms/) {
-		# we keep all opennms-* RPMs in official release dirs
-		if ($repo->release =~ /^(obsolete|stable|unstable)$/) {
+	my ($package, $repo) = @_;
+	if ($package->name =~ /opennms/) {
+		# we keep all *opennms* packages in official release dirs
+		if ($repo->release =~ /^(obsolete|stable|unstable|opennms-[\d\.]+)$/) {
 			return 0;
 		}
 	}
@@ -102,14 +109,13 @@ sub not_opennms {
 	return 1;
 }
 
-sub install_rpms {
+sub install_packages {
 	my $release_repo = shift;
-	my $subdirectory = shift;
-	my @rpms = @_;
+	my @packages = @_;
 
-	for my $rpmname (@rpms) {
-		my $rpm = OpenNMS::Release::RPMPackage->new(Cwd::abs_path($rpmname));
-		$release_repo->install_package($rpm, $subdirectory);
+	for my $packagename (@packages) {
+		my $package = OpenNMS::Release::DebPackage->new(Cwd::abs_path($packagename));
+		$release_repo->install_package($package);
 	}
 }
 
@@ -118,9 +124,9 @@ sub index_repo {
 	my $signing_id       = shift;
 	my $signing_password = shift;
 
-	print "- removing obsolete RPMs from repo: " . $release_repo->to_string . "... ";
+	print "- removing obsolete packages from repo: " . $release_repo->to_string . "... ";
 	my $removed = $release_repo->delete_obsolete_packages(\&not_opennms);
-	print $removed . " RPMs removed.\n";
+	print $removed . " packages removed.\n";
 
 	print "- reindexing repo: " . $release_repo->to_string . "... ";
 	$release_repo->index({ signing_id => $signing_id, signing_password => $signing_password });
@@ -137,16 +143,16 @@ sub sync_repos {
 	for my $i ((get_release_index($release_repo->release) + 1) .. $#sync_order) {
 		my $rel = $sync_order[$i];
 
-		my $orig_repo = OpenNMS::Release::YumRepo->new($base, $rel, $release_repo->platform);
+		my $orig_repo = OpenNMS::Release::AptRepo->new($base, $rel);
 		my $next_repo = $orig_repo->create_temporary;
 	
 		print "- sharing from repo: " . $last_repo->to_string . " to " . $next_repo->to_string . "... ";
 		my $num_shared = $next_repo->share_all_packages($last_repo);
-		print $num_shared . " RPMs updated.\n";
+		print $num_shared . " packages updated.\n";
 	
-		print "- removing obsolete RPMs from repo: " . $next_repo->to_string . "... ";
+		print "- removing obsolete packages from repo: " . $next_repo->to_string . "... ";
 		my $num_removed = $next_repo->delete_obsolete_packages(\&not_opennms);
-		print $num_removed . " RPMs removed.\n";
+		print $num_removed . " packages removed.\n";
 
 		print "- indexing repo: " . $next_repo->to_string . "... ";
 		my $indexed = $next_repo->index_if_necessary({ signing_id => $signing_id, signing_password => $signing_password });
@@ -159,7 +165,7 @@ sub sync_repos {
 sub get_release_index {
 	my $release_name = shift;
 	my $index = 0;
-	++$index until ($index > $#sync_order or $sync_order[$index] eq $release_name);
+	++$index until ($sync_order[$index] eq $release_name or $index > $#sync_order);
 	return $index;
 }
 
@@ -167,18 +173,16 @@ sub usage {
 	my $error = shift;
 
 	print <<END;
-usage: $0 [-h] [-s <password>] [-g <signing_id>] ( -a <base> | <base> <release> <platform> <subdirectory> [rpm...] )
+usage: $0 [-h] [-s <password>] [-g <signing_id>] ( -a <base> | <base> <release> [package...] )
 
 	-h            : print this help
-	-a            : update all repositories (release, platform, subdirectory, and rpms will be ignored in this case)
-	-s <password> : sign the rpm using this password for the gpg key
+	-a            : update all repositories (release and packages will be ignored in this case)
+	-s <password> : sign the package using this password for the gpg key
 	-g <gpg_id>   : sign using this gpg_id (default: opennms\@opennms.org)
 
-	base          : the base directory of the YUM repository
-	release       : the release tree (e.g., "stable", "unstable", "snapshot", etc.)
-	platform      : the repository platform (e.g., "common", "rhel5", etc.)
-	subdirectory  : the subdirectory with in the base/release/platform repo to place RPMs
-	rpm...        : 0 or more RPMs to add to the repository
+	base          : the base directory of the APT repository
+	release       : the release tree (e.g., "opennms-1.8", "nightly-1.9", etc.)
+	package...    : 0 or more packages to add to the repository
 
 END
 
