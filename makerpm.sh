@@ -93,7 +93,7 @@ function setJavaHome()
 {
     if [ -z "$JAVA_HOME" ]; then
 	# hehe
-	for dir in /usr/java/jdk1.{5,6,7,8,9}*; do
+	for dir in /usr/java/jdk1.{6,7,8,9}*; do
 	    if [ -x "$dir/bin/java" ]; then
 		export JAVA_HOME="$dir"
 		break
