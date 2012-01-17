@@ -56,53 +56,6 @@ public class ResourceCommandTest {
         assertTrue(dsFieldValue.matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_1/nsVpnMonBytesIn.jrb"));
     }
     
-    @Test
-    public void testLocalDatasourceWithFilters() throws JRException {
-        System.setProperty("org.opennms.rrd.storeByGroup", "True");
-        JRDataSource dataSource = new ResourceQueryCommand().executeCommand("--rrdDir /Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp" +
-        		" --nodeId 47" +
-        		" --resourceType opennms-jvm" +
-        		" --dsName TotalMemory");
-        assertNotNull(dataSource);
-        assertTrue(dataSource.next());
-        
-        JRDesignField pathField = new JRDesignField();
-        pathField.setName("path");
-        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp/47/opennms-jvm", dataSource.getFieldValue(pathField));
-        
-        JRDesignField filterField = new JRDesignField();
-        filterField.setName("TotalMemory");
-        
-        String dsFieldValue = (String) dataSource.getFieldValue(filterField);
-        assertNotNull(dsFieldValue);
-        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp/47/opennms-jvm/java_lang_type_OperatingSystem.jrb", dsFieldValue);
-        
-        assertFalse(dataSource.next());
-    }
-    
-    @Test
-    public void testLocalNode9() throws JRException {
-        JRDataSource dataSource = new ResourceQueryCommand().executeCommand("--rrdDir /Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp" +
-                " --nodeId 9" +
-                " --resourceType opennms-jvm" +
-                " --dsName TotalMemory");
-        assertNotNull(dataSource);
-        assertTrue(dataSource.next());
-        
-        JRDesignField pathField = new JRDesignField();
-        pathField.setName("path");
-        String path = (String) dataSource.getFieldValue(pathField);
-        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp/9/opennms-jvm", dataSource.getFieldValue(pathField));
-        
-        JRDesignField filterField = new JRDesignField();
-        filterField.setName("TotalMemory");
-        
-        String dsFieldValue = (String) dataSource.getFieldValue(filterField);
-        assertNotNull(dsFieldValue);
-        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.8.17-SNAPSHOT/share/rrd/snmp/9/opennms-jvm/java_lang_type_OperatingSystem.jrb", dsFieldValue);
-        
-        assertFalse(dataSource.next());
-    }
     
     @Test
     public void testDataSourceWithStringProperties() throws JRException {
