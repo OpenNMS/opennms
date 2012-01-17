@@ -28,14 +28,15 @@
         restart_on='restart'>
       <service_fmri value='svc:/application/database/postgresql' />
     </dependency>
-  
-    <dependent
-         name='opennms_multi-user-server'
-         grouping='require_all'
-         restart_on='none'>
-       <service_fmri value='svc:/milestone/multi-user-server' />
-    </dependent>
-  
+
+    <dependency
+        name='multi-user-server'
+        type='service'
+        grouping='require_all'
+        restart_on='none'>
+      <service_fmri value='svc:/milestone/multi-user-server' />
+    </dependency> 
+
     <exec_method
         type='method'
         name='start'
