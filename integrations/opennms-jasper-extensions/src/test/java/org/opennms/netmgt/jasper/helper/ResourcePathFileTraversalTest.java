@@ -1,6 +1,7 @@
 package org.opennms.netmgt.jasper.helper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
@@ -18,8 +19,8 @@ public class ResourcePathFileTraversalTest {
         ResourcePathFileTraversal traverser = new ResourcePathFileTraversal(new File(m_baseDir + "/" + m_nodeId + "/" + m_resourceName));
         List<String> paths = traverser.traverseDirectory();
         
-        assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_1", paths.get(0));
-        assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_2", paths.get(1));
+        assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_1"));
+        assertTrue(paths.get(1).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_2"));
     }
     
     @Test
@@ -40,7 +41,7 @@ public class ResourcePathFileTraversalTest {
         
         
         assertEquals(2, paths.size());
-        assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_2", paths.get(0));
+        assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_2"));
     }
     
     @Test
@@ -51,7 +52,7 @@ public class ResourcePathFileTraversalTest {
         List<String> paths = traverser.traverseDirectory();
         
         assertEquals(1, paths.size());
-        assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_3", paths.get(0));
+        assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_3"));
     }
     
     @Test
@@ -62,7 +63,7 @@ public class ResourcePathFileTraversalTest {
         List<String> paths = traverser.traverseDirectory();
         
         assertEquals(1, paths.size());
-        assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_3", paths.get(0));
+        assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_3"));
     }
     
     @Test
@@ -73,8 +74,7 @@ public class ResourcePathFileTraversalTest {
         List<String> paths = traverser.traverseDirectory();
         
         assertEquals(1, paths.size());
-        assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp/10/storeby-group-jvm", paths.get(0));
-        
+        assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/storeby-group-jvm"));
         
         ResourcePathFileTraversal traverser2 = new ResourcePathFileTraversal(new File(m_baseDir + "/" + m_nodeId + "/storeby-group-jvm"));
         traverser2.addDatasourceFilter("Bogus");
