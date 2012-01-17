@@ -86,33 +86,33 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     	final int port = getPort();
     	final int retries = getRetries();
         final int timeout = getTimeout();
-        LogUtils.infof(this, "Address: %s || port: %s || \n", ipAddr, getPort());
-        detectorMonitor.start(this, "Checking address: %s for %s capability", ipAddr, getServiceName());
+        LogUtils.infof(this, "isServiceDetected: Address: %s, port: %s", ipAddr, getPort());
+        detectorMonitor.start(this, "isServiceDetected: Checking address: %s for %s capability", ipAddr, getServiceName());
 
         final Client<Request, Response> client = getClient();
         for (int attempts = 0; attempts <= retries; attempts++) {
 
             try {
                 client.connect(address, port, timeout);
-                detectorMonitor.attempt(this, attempts, "Attempting to connect to address: %s port %d attempt #%s",ipAddr,port,attempts);
+                detectorMonitor.attempt(this, attempts, "isServiceDetected: Attempting to connect to address: %s, port: %d, attempt: #%s", ipAddr, port, attempts);
                 
                 if (attemptConversation(client)) {
                     return true;
                 }
                 
-            } catch (ConnectException cE) {
+            } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
-                detectorMonitor.info(this, cE, "%s: Unabled to connect to address: %s port %d, attempt #%s",getServiceName(), ipAddr,port, attempts);
+                detectorMonitor.info(this, e, "isServiceDetected: %s: Unable to connect to address: %s port %d, attempt #%s",getServiceName(), ipAddr, port, attempts);
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
-                detectorMonitor.info(this, e, "%s: No route to address %s was available", getServiceName(), ipAddr);
+                detectorMonitor.info(this, e, "isServiceDetected: %s: No route to address %s was available", getServiceName(), ipAddr);
             } catch (InterruptedIOException e) {
                 // Expected exception
-                detectorMonitor.info(this, e, "%s: Did not connect to to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
+                detectorMonitor.info(this, e, "isServiceDetected: %s: Did not connect to to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
             } catch (IOException e) {
-                detectorMonitor.info(this, e, "%s: An unexpected I/O exception occured contacting address %s port %d",getServiceName(), ipAddr, port);
+                detectorMonitor.error(this, e, "isServiceDetected: %s: An unexpected I/O exception occured contacting address %s port %d",getServiceName(), ipAddr, port);
             } catch (Throwable t) {
-                detectorMonitor.info(this, t, "%s: Unexpected error trying to detect %s on address %s port %d", getServiceName(), getServiceName(), ipAddr, port);
+                detectorMonitor.error(this, t, "isServiceDetected: %s: Unexpected error trying to detect %s on address %s port %d", getServiceName(), getServiceName(), ipAddr, port);
             } finally {
                 client.close();
             }
