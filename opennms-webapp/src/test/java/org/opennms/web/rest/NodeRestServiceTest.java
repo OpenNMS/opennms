@@ -238,6 +238,24 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendRequest(DELETE, url, 200);
         sendRequest(GET, url, 204);
     }
+    
+    @Test
+    public void testIpInterfaceByIpAddress() throws Exception{
+        createTwoIpInterface();
+        String url = "/nodes/1/ipinterfaces";
+        String xml = sendRequest(GET, url, parseParamData("ipAddress=11&comparator=contains"), 200);
+        assertTrue(xml.contains("count=\"1\""));
+        
+    }
+    
+    @Test
+    public void testIpInterfaceIpLikeFilter() throws Exception{
+        createTwoIpInterface();
+        String url = "/nodes/1/ipinterfaces";
+        String xml = sendRequest(GET, url, parseParamData("ipAddress=*.*.*.11&comparator=iplike"), 200);
+        assertTrue(xml.contains("count=\"1\""));
+        
+    }
 
     @Test
     public void testSnmpInterface() throws Exception {
