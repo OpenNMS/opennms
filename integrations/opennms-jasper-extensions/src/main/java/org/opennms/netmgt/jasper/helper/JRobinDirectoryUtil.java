@@ -177,5 +177,4 @@ public class JRobinDirectoryUtil {
     public String getInterfaceDirectory(String snmpifname, String snmpifdescr, String snmpphysaddr) {
         return RrdLabelUtils.computeLabelForRRD(snmpifname, snmpifdescr, snmpphysaddr);
     }
-
 }
