@@ -4,8 +4,8 @@ use Data::Dumper;
 use File::Basename;
 use File::Spec;
 
-use OpenNMS::Util 2.0;
-use OpenNMS::Release::YumRepo 2.0;
+use OpenNMS::Util v2.0;
+use OpenNMS::Release::YumRepo v2.0;
 
 my $base = shift @ARGV;
 
@@ -14,7 +14,7 @@ if (not defined $base or not -d $base) {
 	exit 1;
 }
 
-my $index_text = slurp(File::Spec->catdir(dirname($0), "generate-repo-html.pre"));
+my $index_text = slurp(File::Spec->catdir(dirname($0), "generate-yum-repo-html.pre"));
 
 my $release_descriptions  = read_properties(File::Spec->catdir(dirname($0), "release.properties"));
 my $platform_descriptions = read_properties(File::Spec->catdir(dirname($0), "platform.properties"));
@@ -60,7 +60,7 @@ for my $release (@display_order) {
 	$index_text .= "</ul>\n";
 }
 
-$index_text .= slurp(File::Spec->catdir(dirname($0), "generate-repo-html.post"));
+$index_text .= slurp(File::Spec->catdir(dirname($0), "generate-yum-repo-html.post"));
 
 open (FILEOUT, ">$base/index.html") or die "unable to write to $base/index.html: $!";
 print FILEOUT $index_text;

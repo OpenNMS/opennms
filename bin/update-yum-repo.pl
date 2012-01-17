@@ -12,9 +12,9 @@ use Getopt::Long qw(:config gnu_getopt);
 use IO::Handle;
 #use RPM4;
 
-use OpenNMS::Util 2.0;
-use OpenNMS::Release::YumRepo 2.0;
-use OpenNMS::Release::RPMPackage 2.0;
+use OpenNMS::Util v2.0;
+use OpenNMS::Release::YumRepo v2.0;
+use OpenNMS::Release::RPMPackage v2.0;
 
 $|++;
 
@@ -108,7 +108,7 @@ sub install_rpms {
 	my @rpms = @_;
 
 	for my $rpmname (@rpms) {
-		my $rpm = OpenNMS::Release::RPMPackage->new($rpmname);
+		my $rpm = OpenNMS::Release::RPMPackage->new(Cwd::abs_path($rpmname));
 		$release_repo->install_package($rpm, $subdirectory);
 	}
 }
@@ -159,7 +159,7 @@ sub sync_repos {
 sub get_release_index {
 	my $release_name = shift;
 	my $index = 0;
-	++$index until ($sync_order[$index] eq $release_name or $index > $#sync_order);
+	++$index until ($index > $#sync_order or $sync_order[$index] eq $release_name);
 	return $index;
 }
 
