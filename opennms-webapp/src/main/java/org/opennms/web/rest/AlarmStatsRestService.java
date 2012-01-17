@@ -165,7 +165,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     protected OnmsAlarm getOldestAcknowledged(final OnmsSeverity severity) {
         final MultivaluedMap<String,String> parameters = m_uriInfo.getQueryParameters();
         translateSeverity(m_uriInfo.getQueryParameters());
-        parameters.putSingle("orderBy", "lastEventTime");
+        parameters.putSingle("orderBy", "firstEventTime");
         parameters.putSingle("order", "asc");
         parameters.putSingle("limit", "1");
         // TODO: HACK!
@@ -180,7 +180,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     private OnmsAlarm getOldestUnacknowledged(final OnmsSeverity severity) {
         final MultivaluedMap<String,String> parameters = m_uriInfo.getQueryParameters();
         translateSeverity(m_uriInfo.getQueryParameters());
-        parameters.putSingle("orderBy", "lastEventTime");
+        parameters.putSingle("orderBy", "firstEventTime");
         parameters.putSingle("order", "asc");
         parameters.putSingle("limit", "1");
         // TODO: HACK!
