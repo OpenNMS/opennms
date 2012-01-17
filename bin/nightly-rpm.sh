@@ -15,8 +15,8 @@ if [ ! -d "$YUMDIR" ]; then
 	exit 1
 fi
 
-TIMESTAMP=`bin/buildtool.sh get_stamp`
-REVISION=`bin/buildtool.sh get_revision`
+TIMESTAMP=`bin/buildtool.sh nightly-rpm get_stamp`
+REVISION=`bin/buildtool.sh nightly-rpm get_revision`
 
 PASSWORD=""
 if [ -e "${HOME}/.signingpass" ]; then
@@ -48,4 +48,4 @@ RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 
 ./bin/generate-repo-html.pl "$YUMDIR"
 
-bin/buildtool.sh save
+bin/buildtool.sh nightly-rpm save

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+PROJECT="$1"; shift
 COMMAND="$1"; shift
 BRANCH=`git name-rev HEAD 2>/dev/null | cut -d' ' -f 2-`
 
@@ -8,8 +9,9 @@ if [ -z "$BRANCH" ]; then
 	exit 1
 fi
 
-TIMESTAMPFILE="$HOME/.buildtool-$BRANCH-timestamp"
-REVISIONFILE="$HOME/.buildtool-$BRANCH-revision"
+TIMESTAMPFILE="$HOME/.buildtool-$PROJECT-$BRANCH-timestamp"
+REVISIONFILE="$HOME/.buildtool-$PROJECT-$BRANCH-revision"
+GITHASHFILE="$HOME/.buildtool-$PROJECT-$BRANCH-githash"
 
 print_stored_timestamp() {
 	cat "$TIMESTAMPFILE" 2>/dev/null || echo 0
@@ -17,6 +19,10 @@ print_stored_timestamp() {
 
 print_stored_revision() {
 	cat "$REVISIONFILE" 2>/dev/null || echo 0
+}
+
+print_stored_githash() {
+	cat "$GITHASHFILE" 2>/dev/null || echo ""
 }
 
 print_current_timestamp() {
@@ -34,12 +40,14 @@ print_current_revision() {
 	if [ "$STORED_TIMESTAMP" = "$CURRENT_TIMESTAMP" ]; then
 		REVISION=`expr $REVISION + 1`
 	else
-		if [ "$REVISION" = "0" ]; then
-			REVISION=1
-		fi
+		REVISION=1
 	fi
 
 	echo $REVISION
+}
+
+print_current_githash() {
+	git show | head -n 1 | awk '{ print $2 }'
 }
 
 print_build_id() {
@@ -49,12 +57,24 @@ print_build_id() {
 	echo "0.$CURRENT_TIMESTAMP.$CURRENT_REVISION"
 }
 
+has_hash_changed() {
+	local STORED=`print_stored_githash`
+	local CURRENT=`print_current_githash`
+	if [ "$STORED" = "$CURRENT" ]; then
+		exit 1
+	else
+		exit 0
+	fi
+}
+
 update_build_state() {
 	local TIMESTAMP=`print_current_timestamp`
 	local REVISION=`print_current_revision`
+	local GITHASH=`print_current_githash`
 
 	echo $TIMESTAMP > "$TIMESTAMPFILE"
-	echo $REVISION > "$REVISIONFILE"
+	echo $REVISION  > "$REVISIONFILE"
+	echo $GITHASH   > "$GITHASHFILE"
 }
 
 usage() {
@@ -62,10 +82,12 @@ usage() {
 usage: $0 <command>
 
 available commands:
-	get          Get the latest build ID (format: 0.<timestamp>.<revision>)
-	get_stamp    Get the latest build timestamp
-	get_revision Get the latest build revision
-	save         Save the current build ID state
+	get              Get the latest build ID (format: 0.<timestamp>.<revision>)
+	get_stamp        Get the latest build timestamp
+	get_revision     Get the latest build revision
+	has_hash_changed Return 0 (true) if git has been modified since last save,
+	                 1 if not.
+	save             Save the current build ID state
 END
 
 }
@@ -82,6 +104,10 @@ case "$COMMAND" in
 	get_revision)
 		print_current_revision
 		exit 0
+		;;
+	has_hash_changed)
+		has_hash_changed
+		exit $?
 		;;
 	save)
 		update_build_state
