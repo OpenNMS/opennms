@@ -15,8 +15,8 @@ if [ ! -d "$APTDIR" ]; then
 	exit 1
 fi
 
-TIMESTAMP=`bin/buildtool.sh get_stamp`
-REVISION=`bin/buildtool.sh get_revision`
+TIMESTAMP=`bin/buildtool.sh nightly-debian get_stamp`
+REVISION=`bin/buildtool.sh nightly-debian get_revision`
 
 PASSWORD=""
 if [ -e "${HOME}/.signingpass" ]; then
@@ -43,4 +43,4 @@ RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 # update the $RELEASE repo, and sync it to anything later in the hierarchy
 ./bin/update-apt-repo.pl -s "$PASSWORD" "$APTDIR" "$RELEASE" ../*.${TIMESTAMP}.${REVISION}_all.deb
 
-bin/buildtool.sh save
+bin/buildtool.sh nightly-debian save
