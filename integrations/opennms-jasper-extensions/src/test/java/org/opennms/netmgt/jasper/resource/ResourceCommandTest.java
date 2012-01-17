@@ -29,7 +29,7 @@ public class ResourceCommandTest {
         pathField.setName("path");
         String pathVal = (String) dataSource.getFieldValue(pathField);
         assertNotNull("", pathVal);
-        assertEquals("/Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_1", pathVal);
+	assertTrue(pathVal.matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_1"));
         
         JRDesignField filterField = new JRDesignField();
         filterField.setName("icmp");
