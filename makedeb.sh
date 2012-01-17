@@ -3,14 +3,10 @@
 MYDIR=`dirname $0`
 TOPDIR=`cd $MYDIR; pwd`
 
-WORKDIR="$TOPDIR/target/rpm"
-
-export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
-
 cd "$TOPDIR"
 
-#opennms-core-1.9.9-0.<datestamp>.rpm
-#opennms-core-<pom-version>-<release-major>.<release-minor>.<release-micro>
+#opennms-core_1.9.9-0.<datestamp>_all.deb
+#opennms-core_<pom-version>-<release-major>.<release-minor>.<release-micro>_all.deb
 
 function exists() {
     which "$1" >/dev/null 2>&1
@@ -38,10 +34,10 @@ function tell()
 
 function usage()
 {
-    tell "makerpm [-h] [-a] [-s <password>] [-g <gpg-id>] [-M <major>] [-m <minor>] [-u <micro>]"
+    tell "makedeb [-h] [-a] [-s <password>] [-g <gpg-id>] [-M <major>] [-m <minor>] [-u <micro>]"
     tell "\t-h : print this help"
     tell "\t-a : assembly only (skip the compile step)"
-    tell "\t-s <password> : sign the rpm using this password for the gpg key"
+    tell "\t-s <password> : sign the deb using this password for the gpg key"
     tell "\t-g <gpg_id> : signing using this gpg_id (default: opennms@opennms.org)"
     tell "\t-M <major> : default 0 (0 means a snapshot release)"
     tell "\t-m <minor> : default <datestamp> (ignored unless major is 0)"
@@ -93,12 +89,12 @@ function setJavaHome()
 {
     if [ -z "$JAVA_HOME" ]; then
 	# hehe
-	for dir in /usr/java/jdk1.{6,7,8,9}*; do
-	    if [ -x "$dir/bin/java" ]; then
-		export JAVA_HOME="$dir"
-		break
-	    fi
-	done
+        for dir in /usr/lib/jvm/java-{1.5.0,6,7,8,9}-sun; do
+            if [ -x "$dir/bin/java" ]; then
+                export JAVA_HOME="$dir"
+                break
+            fi
+        done
     fi
 
     if [ -z $JAVA_HOME ]; then
@@ -119,7 +115,7 @@ function main()
     SIGN=false
     SIGN_PASSWORD=
     SIGN_ID=opennms@opennms.org
-    BUILD_RPM=true
+    BUILD_DEB=true
 
     RELEASE_MAJOR=0
     local RELEASE_MINOR="$(calcMinor)"
@@ -133,7 +129,7 @@ function main()
 	    s)  SIGN=true
 		SIGN_PASSWORD="$OPTARG"
 		;;
-            r)  BUILD_RPM=false
+            r)  BUILD_DEB=false
                 ;;
 	    g)  SIGN_ID="$OPTARG"
 		;;
@@ -158,54 +154,52 @@ function main()
     VERSION=$(version)
 
     setJavaHome
+    export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
-    if $BUILD_RPM; then
-        echo "==== Building OpenNMS RPMs ===="
+    if $BUILD_DEB; then
+        echo "==== Building OpenNMS Debian Packages ===="
         echo
         echo "Version: " $VERSION
         echo "Release: " $RELEASE
         echo
 
-        echo "=== Creating Working Directories ==="
-        run install -d -m 755 "$WORKDIR/tmp/opennms-$VERSION-$RELEASE"
-        run install -d -m 755 "$WORKDIR"/{BUILD,RPMS/{i386,i686,noarch},SOURCES,SPECS,SRPMS}
+	dch -v "$VERSION-$RELEASE" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update debian/changelog"
 
-        echo "=== Copying Source to Source Directory ==="
-        run rsync -aqr --exclude=.git --exclude=.svn --exclude=target --delete --delete-excluded "$TOPDIR/" "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/"
+	# prime the local ~/.m2/repository
+	if [ -d core/build ]; then
+		nice ./compile.pl -N install || die "unable to build top-level POM"
+		pushd core
+			nice ../compile.pl -N install || die "unable to build core POM"
+		popd
+		pushd core/build
+			nice ../../compile.pl install || die "unable to build build tools"
+		popd
+	fi
 
-        echo "=== Creating a tar.gz archive of the Source in /usr/src/redhat/SOURCES ==="
-        run tar zcf "$WORKDIR/SOURCES/opennms-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDIR/tmp" "opennms-$VERSION-$RELEASE"
-        run tar zcf "$WORKDIR/SOURCES/centric-troubleticketer.tar.gz" -C "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/opennms-tools" "centric-troubleticketer"
+	if [ -f "${HOME}/.m2/settings.xml" ]; then
+		export OPENNMS_SETTINGS_XML="${HOME}/.m2/settings.xml"
+	fi
+	export OPENNMS_SKIP_COMPILE=$(skipCompile)
 
-        echo "=== Building RPMs ==="
-        for spec in tools/packages/opennms/opennms.spec opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec
-        do
-    	run rpmbuild -bb \
-    	    --define "skip_compile $(skipCompile)" \
-    	    --define "extrainfo $EXTRA_INFO" \
-    	    --define "extrainfo2 $EXTRA_INFO2" \
-    	    --define "_topdir $WORKDIR" \
-    	    --define "_tmppath $WORKDIR/tmp" \
-    	    --define "version $VERSION" \
-    	    --define "releasenumber $RELEASE" \
-    	    $spec
-        done
+	dpkg-buildpackage -p/bin/true -us -uc
     fi
 
     if $SIGN; then
 
-	RPMS=$(echo "$WORKDIR"/RPMS/noarch/*.rpm)
-	#run rpm --define "_signature gpg" --define "_gpg_name $SIGN_ID" --resign "$RPMS"
+	DEBS=$(echo "$TOPDIR"/../*.deb)
+	which dpkg-sig >/dev/null 2>&1 || die "unable to locate dpkg-sig"
 
-	run expect -c "set timeout -1; spawn rpm --define \"_signature gpg\" --define \"_gpg_name $SIGN_ID\" --resign $RPMS; match_max 100000; expect \"Enter pass phrase: \"; send -- \"${SIGN_PASSWORD}\r\"; expect eof" || \
-	    die "RPM signing failed for $(branch)"
+	for DEB in $(echo "$TOPDIR"/../*.deb); do
+		run expect -c "set timeout -1; spawn dpkg-sig --sign builder -k \"$SIGN_ID\" \"$DEB\"; match_max 100000; expect \"Enter passphrase: \"; send -- \"${SIGN_PASSWORD}\r\"; expect eof" || \
+	    die "Debian package signing of $DEB failed for $(branch)"
+	done
 
     fi
 
-    echo "==== OpenNMS RPM Build Finished ===="
+    echo "==== OpenNMS Debian Build Finished ===="
 
     echo ""
-    echo "Your completed RPMs are in the $WORKDIR/RPMS/noarch directory."
+    echo "Your completed Debian packages are in the $TOPDIR/.. directory."
 }
 
 main "$@"

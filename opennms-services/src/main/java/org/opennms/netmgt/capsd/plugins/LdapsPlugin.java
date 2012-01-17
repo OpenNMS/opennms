@@ -28,8 +28,13 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
+import java.util.Map;
+
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.SslSocketWrapper;
+
+import com.novell.ldap.LDAPConnection;
 
 /**
  * <P>
@@ -63,7 +68,9 @@ import org.opennms.core.utils.SslSocketWrapper;
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  */
-public class HttpsPlugin extends HttpPlugin {
+public class LdapsPlugin extends LdapPlugin {
+
+    private static final String PROTOCOL_NAME = "LDAPS";
 
     /**
      * <P>
@@ -71,18 +78,27 @@ public class HttpsPlugin extends HttpPlugin {
      * HTTP.
      * </P>
      */
-    private static final int[] DEFAULT_PORTS = { 443 };
+    private static final int[] DEFAULT_PORTS = { LDAPConnection.DEFAULT_SSL_PORT };
 
     /**
-     * <p>Constructor for HttpsPlugin.</p>
+     * Returns the name of the protocol that this plugin checks on the target
+     * system for support.
+     *
+     * @return The protocol name for this plugin.
      */
-    public HttpsPlugin() {
-        super("HTTPS", true, "GET / HTTP/1.0\r\n\r\n", "HTTP/", DEFAULT_PORTS);
+    @Override
+    public String getProtocolName() {
+        return PROTOCOL_NAME;
+    }
+
+    @Override
+    protected int[] determinePorts(final Map<String, Object> parameters) {
+        return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
     }
 
     /** {@inheritDoc} */
     @Override
-    public SocketWrapper getSocketWrapper() {
+    protected SocketWrapper getSocketWrapper() {
         return new SslSocketWrapper();
     }
 }

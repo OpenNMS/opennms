@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,46 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.simple.client;
+package org.opennms.netmgt.poller.monitors;
 
-import java.io.IOException;
-import java.net.InetAddress;
+import java.util.Map;
 
-import org.opennms.core.utils.DefaultSocketWrapper;
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.TimeoutSocketFactory;
+import org.opennms.core.utils.SslSocketWrapper;
+import org.opennms.netmgt.poller.Distributable;
 
 import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPSocketFactory;
 
 /**
- * <p>LdapDetectorClient class.</p>
+ * This class is designed to be used by the service poller framework to test the
+ * availability of the LDAPS service on remote interfaces. The class implements
+ * the ServiceMonitor interface that allows it to be used along with other
+ * plug-ins by the service poller framework.
  *
- * @author thedesloge
- * @version $Id: $
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  */
-public class LdapDetectorClient extends LineOrientedClient {
+@Distributable
+final public class LdapsMonitor extends LdapMonitor {
 
-    /**
-     * A class to add a timeout to the socket that the LDAP code uses to access
-     * an LDAP server
-     */
-    private class TimeoutLDAPSocket extends TimeoutSocketFactory implements LDAPSocketFactory {
-        public TimeoutLDAPSocket(int timeout) {
-            super(timeout, getSocketWrapper());
-        }
-    }
-
-    protected SocketWrapper getSocketWrapper() {
-        return new DefaultSocketWrapper();
-    }
-
-    /** {@inheritDoc} */
     @Override
-    public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
-        super.connect(address, port, timeout);
-        final LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
-        lc.connect(InetAddressUtils.str(address), port);
+    protected int determinePort(Map<String, Object> parameters) {
+        return ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_SSL_PORT);
+    }
+
+    @Override
+    protected SocketWrapper getSocketWrapper() {
+        return new SslSocketWrapper();
     }
 }

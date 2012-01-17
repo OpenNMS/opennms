@@ -28,16 +28,8 @@
 
 package org.opennms.netmgt.provision.detector.simple.client;
 
-import java.io.IOException;
-import java.net.InetAddress;
-
-import org.opennms.core.utils.DefaultSocketWrapper;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.TimeoutSocketFactory;
-
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPSocketFactory;
+import org.opennms.core.utils.SslSocketWrapper;
 
 /**
  * <p>LdapDetectorClient class.</p>
@@ -45,27 +37,9 @@ import com.novell.ldap.LDAPSocketFactory;
  * @author thedesloge
  * @version $Id: $
  */
-public class LdapDetectorClient extends LineOrientedClient {
-
-    /**
-     * A class to add a timeout to the socket that the LDAP code uses to access
-     * an LDAP server
-     */
-    private class TimeoutLDAPSocket extends TimeoutSocketFactory implements LDAPSocketFactory {
-        public TimeoutLDAPSocket(int timeout) {
-            super(timeout, getSocketWrapper());
-        }
-    }
-
-    protected SocketWrapper getSocketWrapper() {
-        return new DefaultSocketWrapper();
-    }
-
-    /** {@inheritDoc} */
+public class LdapsDetectorClient extends LdapDetectorClient {
     @Override
-    public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
-        super.connect(address, port, timeout);
-        final LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
-        lc.connect(InetAddressUtils.str(address), port);
+    protected SocketWrapper getSocketWrapper() {
+        return new SslSocketWrapper();
     }
 }

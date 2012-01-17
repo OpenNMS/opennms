@@ -306,7 +306,7 @@ The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
 %prep
 
 tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
-%define setupdir %{packagedir}/source
+%define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
 
@@ -340,6 +340,12 @@ fi
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
 	export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true -DupdatePolicy=always"
+	TOPDIR=`pwd`
+	for dir in . opennms-tools; do
+		pushd $dir
+			"$TOPDIR"/compile.pl -N $EXTRA_OPTIONS -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" '-P!jspc' install
+		popd
+	done
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
@@ -361,7 +367,7 @@ echo "=== UNTAR BUILD ==="
 
 mkdir -p $RPM_BUILD_ROOT%{instprefix}
 
-tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/source/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT%{instprefix}
+tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
@@ -384,7 +390,7 @@ END
 %if %{with_docs}
 
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{release}/source/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
+cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{release}/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
 cp README* $RPM_BUILD_ROOT%{instprefix}/etc/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README

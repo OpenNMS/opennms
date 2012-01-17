@@ -2093,6 +2093,10 @@
   <event-file>events/UPS-MIB.events.xml</event-file>
   <event-file>events/Uptime.events.xml</event-file>
   <event-file>events/Veraz.events.xml</event-file>
+  <event-file>events/VMWare.env.events.xml</event-file>
+  <event-file>events/VMWare.vc.events.xml</event-file>
+  <event-file>events/VMWare.vminfo.events.xml</event-file>
+  <event-file>events/VMWare.obsolete.events.xml</event-file>
   <event-file>events/VMWare.events.xml</event-file>
   <event-file>events/Waverider.3000.events.xml</event-file>
   <event-file>events/Xerox-V2.events.xml</event-file>

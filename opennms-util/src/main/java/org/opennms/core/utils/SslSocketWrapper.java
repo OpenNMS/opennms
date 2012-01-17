@@ -26,43 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.core.utils;
 
-import java.util.Map;
+import java.io.IOException;
+import java.net.Socket;
 
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.SslSocketWrapper;
-import org.opennms.netmgt.poller.Distributable;
+public class SslSocketWrapper implements SocketWrapper {
+    private final String[] m_cipherSuites;
 
-/**
- * This class is designed to be used by the service poller framework to test the
- * availability of the HTTPS service on remote interfaces. The class implements
- * the ServiceMonitor interface that allows it to be used along with other
- * plug-ins by the service poller framework.
- *
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- */
-@Distributable
-final public class HttpsMonitor extends HttpMonitor {
-
-    /**
-     * Default HTTPS ports.
-     */
-    private static final int[] DEFAULT_PORTS = { 443 };
-
-    /** {@inheritDoc} */
-    @Override
-    protected int[] determinePorts(Map<String, Object> parameters) {
-        return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
+    public SslSocketWrapper() {
+        this(null);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected SocketWrapper getSocketWrapper() {
-        return new SslSocketWrapper();
+    public SslSocketWrapper(String[] cipherSuites) {
+        m_cipherSuites = cipherSuites;
     }
-
+    @Override
+    public Socket wrapSocket(Socket socket) throws IOException {
+        return SocketUtils.wrapSocketInSslContext(socket, m_cipherSuites);
+    }
 }
