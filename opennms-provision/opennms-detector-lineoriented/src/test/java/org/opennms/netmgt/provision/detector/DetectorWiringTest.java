@@ -41,6 +41,7 @@ import org.opennms.netmgt.provision.detector.simple.HttpDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpsDetector;
 import org.opennms.netmgt.provision.detector.simple.ImapDetector;
 import org.opennms.netmgt.provision.detector.simple.LdapDetector;
+import org.opennms.netmgt.provision.detector.simple.LdapsDetector;
 import org.opennms.netmgt.provision.detector.simple.NrpeDetector;
 import org.opennms.netmgt.provision.detector.simple.Pop3Detector;
 import org.opennms.netmgt.provision.detector.simple.SmtpDetector;
@@ -77,7 +78,10 @@ public class DetectorWiringTest implements InitializingBean {
     @Autowired 
     private ImapDetector m_imapDetector;
     @Autowired 
+    @Qualifier(value="org.opennms.netmgt.provision.detector.simple.LdapDetector")
     private LdapDetector m_ldapDetector;
+    @Autowired 
+    private LdapsDetector m_ldapsDetector;
     @Autowired 
     private NrpeDetector m_nrpeDetector;
     @Autowired 
@@ -94,6 +98,7 @@ public class DetectorWiringTest implements InitializingBean {
         assertNotNull(m_httpsDetector);
         assertNotNull(m_imapDetector);
         assertNotNull(m_ldapDetector);
+        assertNotNull(m_ldapsDetector);
         assertNotNull(m_nrpeDetector);
         assertNotNull(m_smtpDetector);
         assertNotNull(m_tcpDetector);
