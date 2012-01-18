@@ -52,7 +52,7 @@ public class XmlCollectorTest3GPP extends AbcstractXmlCollectorTest {
      */
     @Override
     public String getXmlConfigFileName() {
-        return "src/test/resources/xml-datacollection-config.junit.xml";
+        return "src/test/resources/3gpp-xml-datacollection-config.xml";
     }
 
     /* (non-Javadoc)
