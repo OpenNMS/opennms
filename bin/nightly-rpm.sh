@@ -46,6 +46,6 @@ RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 # ./bin/update-yum-repo.pl [-g gpg_id] -s "$PASSWORD" "$RELEASE" "common" "opennms" target/rpms/RPMS/noarch/*.rpm
 ./bin/update-yum-repo.pl -s "$PASSWORD" "$YUMDIR" "$RELEASE" "common" "opennms" target/rpm/RPMS/noarch/*.rpm
 
-./bin/generate-repo-html.pl "$YUMDIR"
+./bin/generate-yum-repo-html.pl "$YUMDIR"
 
 bin/buildtool.sh nightly-rpm save
