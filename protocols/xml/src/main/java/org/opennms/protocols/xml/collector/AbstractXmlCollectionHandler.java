@@ -136,9 +136,10 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             NodeList resourceList = (NodeList) xpath.evaluate(group.getResourceXpath(), doc, XPathConstants.NODESET);
             for (int j = 0; j < resourceList.getLength(); j++) {
                 Node resource = resourceList.item(j);
-                Node resourceName = (Node) xpath.evaluate(group.getKeyXpath(), resource, XPathConstants.NODE);
+                Node resourceNameNode = group.getKeyXpath() == null ? null : (Node) xpath.evaluate(group.getKeyXpath(), resource, XPathConstants.NODE);
+                String resourceName = resourceNameNode == null ? "node" : resourceNameNode.getNodeValue(); // if key-xpath doesn't exist or not found, a node resource will be assumed.
                 log().debug("fillCollectionSet: processing XML resource " + resourceName);
-                XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName.getNodeValue(), group.getResourceType(), timestamp);
+                XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
                 AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
                 for (XmlObject object : group.getXmlObjects()) {
                     String value = (String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING);
