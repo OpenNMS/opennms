@@ -205,7 +205,7 @@ public class XmlDataCollectionConfigTest {
         // Read the example XML from src/test/resources
         StringBuffer exampleXML = new StringBuffer();
         File xmlCollectionConfig = getSourceFile();
-        assertTrue("xml-datacollection-config-simple.xml is readable", xmlCollectionConfig.canRead());
+        assertTrue(XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE + " is readable", xmlCollectionConfig.canRead());
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(xmlCollectionConfig), "UTF-8"));
         String line;
         while (true) {

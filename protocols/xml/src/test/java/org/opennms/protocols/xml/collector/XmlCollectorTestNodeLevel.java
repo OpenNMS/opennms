@@ -27,61 +27,32 @@
  *******************************************************************************/
 package org.opennms.protocols.xml.collector;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * The Test class for XML Collector for 3GPP Statistics
+ * The Test class for XML Collector for Node Level Statistics
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlCollectorTest3GPP extends AbcstractXmlCollectorTest {
+public class XmlCollectorTestNodeLevel extends AbcstractXmlCollectorTest {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()
      */
     @Override
     public String getXmlConfigFileName() {
-        return "src/test/resources/3gpp-xml-datacollection-config.xml";
+        return "src/test/resources/node-level-datacollection-config.xml";
     }
-
+    
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlSampleFileName()
      */
     @Override
     public String getXmlSampleFileName() {
-        return "src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml";
-    }
-
-    /**
-     * Test time parser.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testTimeParser() throws Exception {
-        String pattern = "yyyy-MM-dd'T'HH:mm:ssZ";
-        String value = "2011-10-25T00:45:00-05:00";
-        long expectedTimestamp = 1319521500000l;
-        DateTimeFormatter dtf = DateTimeFormat.forPattern(pattern);
-        DateTime dateTime = dtf.parseDateTime(value);
-        Date date = dateTime.toDate();
-        Assert.assertEquals(expectedTimestamp, date.getTime());
-
-        MockDefaultXmlCollectionHandler handler = new MockDefaultXmlCollectionHandler();
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        date = handler.getTimeStamp(MockDocumentBuilder.getXmlDocument(), xpath, getConfigDao().getDataCollectionByName("3GPP").getXmlSources().get(0).getXmlGroups().get(0));
-        Assert.assertEquals(expectedTimestamp, date.getTime());
+        return "src/test/resources/node-level.xml";
     }
 
     /**
@@ -92,9 +63,9 @@ public class XmlCollectorTest3GPP extends AbcstractXmlCollectorTest {
     @Test
     public void testDefaultXmlCollector() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("collection", "3GPP");
+        parameters.put("collection", "NodeLevel");
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
-        executeCollectorTest(parameters, 147);
+        executeCollectorTest(parameters, 1);
     }
 
 }
