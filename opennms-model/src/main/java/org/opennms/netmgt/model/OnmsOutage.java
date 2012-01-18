@@ -47,8 +47,12 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Type;
+import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -319,6 +323,8 @@ public class OnmsOutage implements Serializable {
      */
     @Transient
     @XmlElement(name="ipAddress")
+    @Type(type="org.opennms.netmgt.model.InetAddressUserType")
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     public InetAddress getIpAddress() {
         return getMonitoredService().getIpAddress();
     }
@@ -330,7 +336,7 @@ public class OnmsOutage implements Serializable {
      * @deprecated use getIpAddress
      */
     @Transient
-    @XmlElement(name="ipAddress")
+    @XmlTransient
     public String getIpAddressAsString() {
         return getMonitoredService().getIpAddressAsString();
     }
