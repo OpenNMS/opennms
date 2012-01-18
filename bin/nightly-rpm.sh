@@ -15,8 +15,32 @@ if [ ! -d "$YUMDIR" ]; then
 	exit 1
 fi
 
-TIMESTAMP=`bin/buildtool.sh nightly-rpm get_stamp`
-REVISION=`bin/buildtool.sh nightly-rpm get_revision`
+BUILDTOOL=`which buildtool.pl 2>/dev/null`
+if [ $? != 0 ]; then
+	echo 'Unable to locate buildtool.pl!'
+	exit 1
+fi
+
+UPDATE_SF_REPO=`which update-sourceforge-repo.pl 2>/dev/null`
+if [ $? != 0 ]; then
+	echo 'Unable to locate update-sourceforge-repo.pl!'
+	exit 1
+fi
+
+UPDATE_REPO=`which update-yum-repo.pl 2>/dev/null`
+if [ $? != 0 ]; then
+	echo 'Unable to locate update-yum-repo.pl!'
+	exit 1
+fi
+
+GENERATE=`which generate-yum-repo-html.pl 2>/dev/null`
+if [ $? != 0 ]; then
+	echo 'Unable to locate generate-yum-repo-html.pl!'
+	exit 1
+fi
+
+TIMESTAMP=`$BUILDTOOL nightly-rpm get_stamp`
+REVISION=`$BUILDTOOL nightly-rpm get_revision`
 
 PASSWORD=""
 if [ -e "${HOME}/.signingpass" ]; then
@@ -40,12 +64,12 @@ RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 ./makerpm.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION"
 
 # copy the source to SourceForge
-./bin/update-sourceforge-repo.pl "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz
+$UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz
 
 # update the $RELEASE repo, and sync it to anything later in the hierarchy
 # ./bin/update-yum-repo.pl [-g gpg_id] -s "$PASSWORD" "$RELEASE" "common" "opennms" target/rpms/RPMS/noarch/*.rpm
-./bin/update-yum-repo.pl -s "$PASSWORD" "$YUMDIR" "$RELEASE" "common" "opennms" target/rpm/RPMS/noarch/*.rpm
+$UPDATE_REPO -s "$PASSWORD" "$YUMDIR" "$RELEASE" "common" "opennms" target/rpm/RPMS/noarch/*.rpm
 
-./bin/generate-yum-repo-html.pl "$YUMDIR"
+$GENERATE "$YUMDIR"
 
-bin/buildtool.sh nightly-rpm save
+$BUILDTOOL nightly-rpm save

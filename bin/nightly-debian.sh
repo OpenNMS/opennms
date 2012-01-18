@@ -4,6 +4,8 @@ MYDIR=`dirname $0`
 BINDIR=`cd "$MYDIR"; pwd`
 TOPDIR=`cd "$BINDIR"/..; pwd`
 
+export PATH="/usr/local/bin:$PATH"
+
 cd "$TOPDIR"
 
 if [ -z "$APTDIR" ]; then
@@ -15,8 +17,20 @@ if [ ! -d "$APTDIR" ]; then
 	exit 1
 fi
 
-TIMESTAMP=`bin/buildtool.sh nightly-debian get_stamp`
-REVISION=`bin/buildtool.sh nightly-debian get_revision`
+BUILDTOOL=`which buildtool.pl 2>/dev/null`
+if [ $? != 0 ]; then
+	echo 'Unable to locate buildtool.pl!'
+	exit 1
+fi
+
+UPDATE_REPO=`which update-apt-repo.pl 2>/dev/null`
+if [ $? != 0 ]; then
+	echo 'Unable to locate update-apt-repo.pl!'
+	exit 1
+fi
+
+TIMESTAMP=`$BUILDTOOL nightly-debian get_stamp`
+REVISION=`$BUILDTOOL nightly-debian get_revision`
 
 PASSWORD=""
 if [ -e "${HOME}/.signingpass" ]; then
@@ -41,6 +55,6 @@ RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 ./makedeb.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION"
 
 # update the $RELEASE repo, and sync it to anything later in the hierarchy
-./bin/update-apt-repo.pl -s "$PASSWORD" "$APTDIR" "$RELEASE" ../*.${TIMESTAMP}.${REVISION}_all.deb
+$UPDATE_REPO -s "$PASSWORD" "$APTDIR" "$RELEASE" ../*.${TIMESTAMP}.${REVISION}_all.deb
 
-bin/buildtool.sh nightly-debian save
+$BUILDTOOL nightly-debian save
