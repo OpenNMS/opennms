@@ -6,6 +6,8 @@ TOPDIR=`cd "$BINDIR"/..; pwd`
 
 cd "$TOPDIR"
 
+export PATH="/usr/local/bin:$PATH"
+
 if [ -z "$YUMDIR" ]; then
 	YUMDIR="/var/www/sites/opennms.org/site/yum"
 fi
