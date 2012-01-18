@@ -4,13 +4,25 @@ MYDIR=`dirname $0`
 BINDIR=`cd "$MYDIR"; pwd`
 TOPDIR=`cd "$BINDIR"/..; pwd`
 
+BUILDTOOL=`which buildtool.pl 2>/dev/null`
+if [ $? != 0 ]; then
+	echo 'Unable to locate buildtool.pl!'
+	exit 1
+fi
+
+UPDATE_REPO=`which update-sourceforge-repo.pl 2>/dev/null`
+if [ $? != 0 ]; then
+	echo 'Unable to locate update-sourceforge-repo.pl!'
+	exit 1
+fi
+
 if [ ! -x "${TOPDIR}/../make-installer.sh" ]; then
 	echo "$TOPDIR/../make-installer.sh does not exist, not sure what to do"
 	exit 1
 fi
 
-TIMESTAMP=`"${TOPDIR}"/bin/buildtool.sh nightly-jar get_stamp`
-REVISION=`"${TOPDIR}"/bin/buildtool.sh nightly-jar get_revision`
+TIMESTAMP=`$BUILDTOOL nightly-jar get_stamp`
+REVISION=`$BUILDTOOL nightly-jar get_revision`
 
 # make sure things are cleaned up
 git clean -fdx
@@ -23,6 +35,6 @@ cd "${TOPDIR}/.."
 ./make-installer.sh -a -m "${TIMESTAMP}" -u "${REVISION}"
 
 # copy the source to SourceForge
-"${TOPDIR}"/bin/update-sourceforge-repo.pl "${RELEASE}" standalone-opennms-installer*${TIMESTAMP}.${REVISION}.zip
+$UPDATE_REPO "${RELEASE}" standalone-opennms-installer*${TIMESTAMP}.${REVISION}.zip
 
-"${TOPDIR}"/bin/buildtool.sh nightly-jar save
+$BUILDTOOL nightly-jar save
