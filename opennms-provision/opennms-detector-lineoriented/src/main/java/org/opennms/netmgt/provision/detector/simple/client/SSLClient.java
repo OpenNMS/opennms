@@ -35,16 +35,11 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.SocketUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
 
 /**
  * <p>SSLClient class.</p>
@@ -77,34 +72,11 @@ public class SSLClient extends MultilineOrientedClient implements Client<LineOri
         socket.connect(new InetSocketAddress(address, port), timeout);
         socket.setSoTimeout(timeout);
         try {
-            return wrapSocket(socket, InetAddressUtils.str(address), port);
+            return SocketUtils.wrapSocketInSslContext(socket);
         } catch (final Exception e) {
             LogUtils.debugf(this, e, "Unable to wrap socket in SSL.");
             return null;
         }
-    }
-    
-    /**
-     * <p>wrapSocket</p>
-     *
-     * @param socket a {@link java.net.Socket} object.
-     * @param hostAddress a {@link java.lang.String} object.
-     * @param port a int.
-     * @return a {@link java.net.Socket} object.
-     * @throws java.lang.Exception if any.
-     */
-    protected Socket wrapSocket(final Socket socket, final String hostAddress, final int port) throws Exception {
-        Socket sslSocket;
-
-        // set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL CERTIFICATES
-        SSLSocketFactory sslSF = null;
-        final TrustManager[] tm = { new RelaxedX509TrustManager() };
-        final SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, tm, new java.security.SecureRandom());
-        sslSF = sslContext.getSocketFactory();
-        LogUtils.debugf(this, "SSL port: %d", port);
-        sslSocket = sslSF.createSocket(socket, hostAddress, port, true);
-        return sslSocket;
     }
 
 }

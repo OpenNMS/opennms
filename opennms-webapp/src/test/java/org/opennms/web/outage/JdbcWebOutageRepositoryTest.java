@@ -32,14 +32,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageIdFilter;
@@ -51,7 +50,8 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/jdbcWebRepositoryTestContext.xml"
+        "classpath:/jdbcWebRepositoryTestContext.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -69,11 +69,6 @@ public class JdbcWebOutageRepositoryTest{
         m_dbPopulator.populateDatabase();
     }
     
-    @After
-    public void tearDown(){
-        
-    }
-   
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testCountMatchingOutages(){

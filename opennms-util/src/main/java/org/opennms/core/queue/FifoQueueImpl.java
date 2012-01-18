@@ -28,6 +28,7 @@
 
 package org.opennms.core.queue;
 
+import java.util.Deque;
 import java.util.LinkedList;
 
 /**
@@ -47,7 +48,7 @@ public class FifoQueueImpl<T> implements FifoQueue<T> {
      * removed from the front of the list and added to the end of the list,
      * always!
      */
-    private LinkedList<T> m_delegate;
+    private final Deque<T> m_delegate;
 
     /**
      * Constructs a new First In, First Out queue that can be used to exchange

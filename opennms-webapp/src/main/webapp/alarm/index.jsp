@@ -32,6 +32,11 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
+	import="org.springframework.web.context.WebApplicationContext,
+        org.springframework.web.context.support.WebApplicationContextUtils,
+        org.opennms.core.soa.ServiceRegistry,
+        org.opennms.web.navigate.PageNavEntry,
+        java.util.Collection"
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -54,6 +59,7 @@
           <li><a href="alarm/list.htm" title="Summary view of all outstanding alarms">All alarms (summary)</a></li>
           <li><a href="alarm/list.htm?display=long" title="Detailed view of all outstanding alarms">All alarms (detail)</a></li>
           <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
+          <%=getAlarmPageNavItems() %>
         </ul>  
       </div>
   </div>
@@ -85,3 +91,19 @@
   </div>
   <hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>
+
+<%!
+    protected String getAlarmPageNavItems(){
+        String retVal = "";
+        WebApplicationContext webappContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        ServiceRegistry registry = webappContext.getBean(ServiceRegistry.class);
+        Collection<PageNavEntry> navEntries = registry.findProviders(PageNavEntry.class, "(Page=alarms)");
+        
+        for(PageNavEntry navEntry : navEntries){
+            retVal += "<li><a href=\"" + navEntry.getUrl() + "\" >" + navEntry.getName() + "</a></li>";
+        }
+        
+        return retVal;
+    }
+
+%>

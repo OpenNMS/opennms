@@ -252,8 +252,8 @@ sub cmd_node {
 			pod2usage(-exitval => 1, -message => "Error: You must specify a key!", -verbose => 0);
 		}
 
-		$key   = uri_escape_utf8($key);
-		$value = uri_escape_utf8($value);
+		$key   = URI::Escape::uri_escape_utf8($key);
+		$value = URI::Escape::uri_escape_utf8($value);
 		put($foreign_source . '/nodes/' . $foreign_id, "$key=$value");
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: node $command", -verbose => 0);
@@ -324,8 +324,8 @@ sub cmd_interface {
 			pod2usage(-exitval => 1, -message => "Error: You must specify a key!", -verbose => 0);
 		}
 
-		$key   = uri_escape_utf8($key);
-		$value = uri_escape_utf8($value);
+		$key   = URI::Escape::uri_escape_utf8($key);
+		$value = URI::Escape::uri_escape_utf8($value);
 
 		put($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip, "$key=$value");
 	} else {
@@ -539,11 +539,11 @@ sub cmd_snmp {
 		if (not defined $community or $community eq "") {
 			pod2usage(-exitval => 1, -message => "Error: You must specify an SNMP community string!", -verbose => 0);
 		}
-		my $arguments = "community=" . uri_escape_utf8($community);
+		my $arguments = "community=" . URI::Escape::uri_escape_utf8($community);
 
 		for my $arg (@args) {
 			my ($key, $value) = split(/=/, $arg);
-			$arguments .= "&" . uri_escape_utf8($key) . "=" . uri_escape_utf8($value);
+			$arguments .= "&" . URI::Escape::uri_escape_utf8($key) . "=" . URI::Escape::uri_escape_utf8($value);
 		}
 		put($ip, $arguments, '/snmpConfig');
 	} else {

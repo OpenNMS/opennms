@@ -30,7 +30,6 @@ package org.opennms.protocols.xml.config;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -45,7 +44,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlSource implements Serializable, Comparable<XmlSource> {
+public class XmlSource extends XmlGroups implements Serializable, Comparable<XmlSource> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -9220561601381984080L;
@@ -53,21 +52,13 @@ public class XmlSource implements Serializable, Comparable<XmlSource> {
     /** The Constant OF_XML_GROUPS. */
     private static final XmlGroup[] OF_XML_GROUPS = new XmlGroup[0];
 
+    /** Import Groups List. */
+    @XmlElement(name="import-groups", required=false)
+    private List<String> m_importGroupsList = new ArrayList<String>();
+
     /** The source URL. */
     @XmlAttribute(name="url", required=true)
     private String m_url;
-
-    /** The user name for authentication. */
-    @XmlAttribute(name="user-name")
-    private String m_userName;
-
-    /** The password for authentication. */
-    @XmlAttribute(name="password")
-    private String m_password;
-
-    /** The XML groups list. */
-    @XmlElement(name="xml-group")
-    private List<XmlGroup> m_xmlGroups = new ArrayList<XmlGroup>();
 
     /**
      * Instantiates a new XML source.
@@ -95,93 +86,31 @@ public class XmlSource implements Serializable, Comparable<XmlSource> {
     }
 
     /**
-     * Gets the user name.
+     * Gets the import groups list.
      *
-     * @return the user name
+     * @return the import groups list
      */
     @XmlTransient
-    public String getUserName() {
-        return m_userName;
+    public List<String> getImportGroupsList() {
+        return m_importGroupsList;
     }
 
     /**
-     * Sets the user name.
+     * Sets the import groups list.
      *
-     * @param userName the new user name
+     * @param importGroupsList the new import groups list
      */
-    public void setUserName(String userName) {
-        this.m_userName = userName;
+    public void setImportGroupsList(List<String> importGroupsList) {
+        this.m_importGroupsList = importGroupsList;
     }
 
     /**
-     * Gets the password.
+     * Checks for import groups.
      *
-     * @return the password
+     * @return true, if successful
      */
-    @XmlTransient
-    public String getPassword() {
-        return m_password;
-    }
-
-    /**
-     * Sets the password.
-     *
-     * @param password the new password
-     */
-    public void setPassword(String password) {
-        this.m_password = password;
-    }
-
-    /**
-     * Gets the XML groups.
-     *
-     * @return the XML groups
-     */
-    @XmlTransient
-    public List<XmlGroup> getXmlGroups() {
-        return m_xmlGroups;
-    }
-
-    /**
-     * Sets the XML groups.
-     *
-     * @param xmlGroups the new XML groups
-     */
-    public void setXmlGroups(List<XmlGroup> xmlGroups) {
-        m_xmlGroups = xmlGroups;
-    }
-
-    /**
-     * Adds the XML group.
-     *
-     * @param group the group
-     */
-    public void addXmlGroup(XmlGroup group) {
-        m_xmlGroups.add(group);
-    }
-
-    /**
-     * Removes the XML group.
-     *
-     * @param group the group
-     */
-    public void removeXmlGroup(XmlGroup group) {
-        m_xmlGroups.remove(group);
-    }
-
-    /**
-     * Removes the group by name.
-     *
-     * @param name the name
-     */
-    public void removeGroupByName(String name) {
-        for (Iterator<XmlGroup> itr = m_xmlGroups.iterator(); itr.hasNext();) {
-            XmlGroup query = itr.next();
-            if(query.getName().equals(name)) {
-                m_xmlGroups.remove(query);
-                return;
-            }
-        }
+    public boolean hasImportGroups() {
+        return m_importGroupsList != null && !m_importGroupsList.isEmpty();
     }
 
     /* (non-Javadoc)

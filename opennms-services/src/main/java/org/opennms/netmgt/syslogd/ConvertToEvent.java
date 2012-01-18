@@ -208,8 +208,8 @@ final class ConvertToEvent {
             throw new MessageDiscardedException(String.format("Unable to parse '%s'", e.m_eventXML));
         }
         // Build a basic event out of the syslog message
-        final String priorityTxt = SyslogDefs.getPriorityName(message.getSeverity());
-        final String facilityTxt = SyslogDefs.getFacilityName(message.getFacility());
+        final String priorityTxt = message.getSeverity().toString();
+        final String facilityTxt = message.getFacility().toString();
 
         EventBuilder bldr = new EventBuilder("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt, "syslogd");
         bldr.setCreationTime(message.getDate());
@@ -254,8 +254,9 @@ final class ConvertToEvent {
         // Time to verify UEI matching.
 
         final String fullText = message.getFullText();
-        
-        final List<UeiMatch> ueiMatch = ueiList.getUeiMatchCollection();
+        final String matchedText = message.getMatchedMessage();
+
+        final List<UeiMatch> ueiMatch = ueiList == null? null : ueiList.getUeiMatchCollection();
         if (ueiMatch == null) {
             LogUtils.warnf(ConvertToEvent.class, "No ueiList configured.");
         } else {
@@ -267,7 +268,7 @@ final class ConvertToEvent {
                                                   matchHostAddr(uei.getHostaddrMatch(), message.getHostAddress());
                 
                 if (otherStuffMatches && uei.getMatch().getType().equals("substr")) {
-                    if (matchSubstring(discardUei, bldr, fullText, uei)) {
+                    if (matchSubstring(discardUei, bldr, matchedText, uei)) {
                         break;
                     }
                 } else if (otherStuffMatches && (uei.getMatch().getType().startsWith("regex"))) {
@@ -280,7 +281,7 @@ final class ConvertToEvent {
 
         // Time to verify if we need to hide the message
         boolean doHide = false;
-        final List<HideMatch> hideMatch = hideMessage.getHideMatchCollection();
+        final List<HideMatch> hideMatch = hideMessage == null? null : hideMessage.getHideMatchCollection();
         if (hideMatch == null) {
             LogUtils.warnf(ConvertToEvent.class, "No hideMessage configured.");
         } else {
@@ -443,7 +444,13 @@ final class ConvertToEvent {
             LogUtils.debugf(ConvertToEvent.class, "Unable to create pattern for expression '%s'", expression);
             return false;
         } else {
-            msgMat = msgPat.matcher(message.getFullText());
+            final String text;
+            if (message.getMatchedMessage() != null) {
+                text = message.getMatchedMessage();
+            } else {
+                text = message.getFullText();
+            }
+            msgMat = msgPat.matcher(text);
         }
         if ((msgMat != null) && (msgMat.find())) {
             if (discardUei.equals(uei.getUei())) {

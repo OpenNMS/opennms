@@ -122,8 +122,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author brozow
  */
 public abstract class UpsertTemplate<T, D extends OnmsDao<T, ?>> {
-    private final PlatformTransactionManager m_transactionManager;
-    private final OnmsDao<T, ?> m_dao;
+    protected final PlatformTransactionManager m_transactionManager;
+    protected final D m_dao;
     
 
     /**

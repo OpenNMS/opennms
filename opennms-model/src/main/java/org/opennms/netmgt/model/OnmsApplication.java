@@ -61,6 +61,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
      * @return a {@link java.lang.Integer} object.
      */
     @Id
+    @Column(nullable=false)
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
     public Integer getId() {

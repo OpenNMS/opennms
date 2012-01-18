@@ -24,6 +24,7 @@
     <include-collection dataCollectionGroup="Colubris"/>
     <include-collection dataCollectionGroup="Concord"/>
     <include-collection dataCollectionGroup="Cyclades"/>
+    <include-collection dataCollectionGroup="Dell"/>
     <include-collection dataCollectionGroup="Equallogic"/>
     <include-collection dataCollectionGroup="Extreme Networks"/>
     <include-collection dataCollectionGroup="F5"/>

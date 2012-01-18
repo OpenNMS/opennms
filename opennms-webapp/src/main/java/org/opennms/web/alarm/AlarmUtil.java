@@ -34,6 +34,7 @@ import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
@@ -41,12 +42,14 @@ import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
+import org.opennms.web.alarm.filter.EventParmLikeFilter;
 import org.opennms.web.alarm.filter.ExactUEIFilter;
 import org.opennms.web.alarm.filter.IPAddrLikeFilter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
 import org.opennms.web.alarm.filter.NegativeAcknowledgedByFilter;
+import org.opennms.web.alarm.filter.NegativeEventParmLikeFilter;
 import org.opennms.web.alarm.filter.NegativeExactUEIFilter;
 import org.opennms.web.alarm.filter.NegativeInterfaceFilter;
 import org.opennms.web.alarm.filter.NegativeNodeFilter;
@@ -91,11 +94,13 @@ public abstract class AlarmUtil extends Object {
         Filter filter = null;
 
         StringTokenizer tokens = new StringTokenizer(filterString, "=");
+        String[] tempTokens = filterString.split("=");
         String type;
         String value;
         try {
-            type = tokens.nextToken();
-            value = tokens.nextToken();
+            type = tempTokens[0];//tokens.nextToken();
+            String[] values = (String[]) ArrayUtils.remove(tempTokens, 0);
+            value = org.apache.commons.lang.StringUtils.join(values, "=");//tokens.nextToken();
         } catch (NoSuchElementException e) {
             throw new IllegalArgumentException("Could not tokenize filter string: " + filterString);
         }
@@ -144,6 +149,10 @@ public abstract class AlarmUtil extends Object {
             filter = new AfterLastEventTimeFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(AfterFirstEventTimeFilter.TYPE)) {
             filter = new AfterFirstEventTimeFilter(WebSecurityUtils.safeParseLong(value));
+        } else if (type.equals(EventParmLikeFilter.TYPE)) {
+            filter = new EventParmLikeFilter(value);
+        } else if(type.equals(NegativeEventParmLikeFilter.TYPE)) {
+            filter = new NegativeEventParmLikeFilter(value);
         }
 
         return filter;

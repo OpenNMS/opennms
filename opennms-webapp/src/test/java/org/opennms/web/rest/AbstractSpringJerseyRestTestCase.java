@@ -78,10 +78,10 @@ import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
  */
 public abstract class AbstractSpringJerseyRestTestCase {
 
-    static String GET = "GET";
-    static String POST = "POST";
-    static String DELETE = "DELETE";
-    static String PUT = "PUT";
+    public static String GET = "GET";
+    public static String POST = "POST";
+    public static String DELETE = "DELETE";
+    public static String PUT = "PUT";
     
     String contextPath = "/opennms/rest";
     
@@ -113,7 +113,10 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml " +
                 "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml " +
                 "classpath:/org/opennms/web/rest/applicationContext-mockEventProxy.xml " +
+                "classpath:/applicationContext-jersey-test.xml " +
                 "classpath:/META-INF/opennms/applicationContext-reporting.xml " +
+                "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml " +
+                "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml " +
                 "/WEB-INF/applicationContext-spring-security.xml " +
                 "/WEB-INF/applicationContext-jersey.xml");
         

@@ -9,7 +9,7 @@ public class OutagePageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
     	super.setUp();
         selenium.click("link=Outages");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
@@ -34,23 +34,23 @@ public class OutagePageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testAllLinks() {
         selenium.click("link=Current outages");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isElementPresent("name=outtype"));
         assertTrue(selenium.isElementPresent("css=input[type=submit]"));
         assertTrue(selenium.isElementPresent("link=Interface"));
         selenium.click("css=a[title=Outages System Page]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=All outages");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isElementPresent("name=outtype"));
         assertTrue(selenium.isTextPresent("Current Resolved Both Current & Resolved"));
         assertTrue(selenium.isTextPresent("Interface"));
         selenium.click("css=a[title=Outages System Page]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("css=input[type=submit]");
         assertEquals("Please enter a valid outage ID.", selenium.getAlert());
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
 }

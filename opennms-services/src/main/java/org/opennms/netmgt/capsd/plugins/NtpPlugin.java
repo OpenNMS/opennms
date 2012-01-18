@@ -50,19 +50,6 @@ import org.opennms.protocols.ntp.NtpMessage;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mhuot@mhuot.net">mhuot </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mhuot@mhuot.net">mhuot </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mhuot@mhuot.net">mhuot </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class NtpPlugin extends AbstractPlugin {
     /**

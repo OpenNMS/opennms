@@ -37,7 +37,7 @@ import java.io.InputStream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.MarshallingResourceFailureException;
-import org.opennms.protocols.xml.config.XmlDataCollectionConfigFactory;
+import org.opennms.protocols.xml.config.XmlDataCollectionConfig;
 import org.opennms.test.ThrowableAnticipator;
 
 import org.springframework.core.io.FileSystemResource;
@@ -100,14 +100,36 @@ public class XmlDataCollectionConfigDaoJaxbTest {
     public void testAfterPropertiesSetWithGoodConfigFile() throws Exception {
         XmlDataCollectionConfigDaoJaxb dao = new XmlDataCollectionConfigDaoJaxb();
 
-        File xmlCollectionConfig = new File(ClassLoader.getSystemResource(XmlDataCollectionConfigFactory.XML_DATACOLLECTION_CONFIG_FILE).getFile());
-        assertTrue(XmlDataCollectionConfigFactory.XML_DATACOLLECTION_CONFIG_FILE + " is readable", xmlCollectionConfig.canRead());
+        File xmlCollectionConfig= new File("src/test/resources/", XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE);
+        assertTrue(XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE + " is readable", xmlCollectionConfig.canRead());
         InputStream in = new FileInputStream(xmlCollectionConfig);
 
         dao.setConfigResource(new InputStreamResource(in));
         dao.afterPropertiesSet();
 
         Assert.assertNotNull("xml data collection should not be null", dao.getConfig());
+    }
+
+    /**
+     * Test after properties set with nested files (external references to XML groups).
+     * 
+     * @throws Exception the exception
+     */
+    @Test
+    public void testAfterPropertiesSetWithNestedFiles() throws Exception {
+        System.setProperty("opennms.home", "src/test/resources");
+        XmlDataCollectionConfigDaoJaxb dao = new XmlDataCollectionConfigDaoJaxb();
+
+        File xmlCollectionConfig= new File("src/test/resources/etc", XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE);
+        assertTrue(XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE + " is readable", xmlCollectionConfig.canRead());
+        InputStream in = new FileInputStream(xmlCollectionConfig);
+
+        dao.setConfigResource(new InputStreamResource(in));
+        dao.afterPropertiesSet();
+        XmlDataCollectionConfig config = dao.getConfig();
+        Assert.assertNotNull("xml data collection should not be null", config);
+        Assert.assertEquals(2, config.getXmlDataCollections().get(0).getXmlSources().get(0).getXmlGroups().size());
+        Assert.assertEquals(5, config.getXmlDataCollections().get(1).getXmlSources().get(0).getXmlGroups().size());
     }
 
 }

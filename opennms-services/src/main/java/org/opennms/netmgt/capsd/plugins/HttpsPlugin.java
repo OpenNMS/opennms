@@ -28,15 +28,8 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.net.Socket;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.capsd.ConnectionConfig;
-import org.opennms.netmgt.utils.RelaxedX509TrustManager;
+import org.opennms.core.utils.SocketWrapper;
+import org.opennms.core.utils.SslSocketWrapper;
 
 /**
  * <P>
@@ -69,9 +62,6 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @version $Id: $
  */
 public class HttpsPlugin extends HttpPlugin {
 
@@ -91,19 +81,8 @@ public class HttpsPlugin extends HttpPlugin {
     }
 
     /** {@inheritDoc} */
-    protected Socket wrapSocket(Socket socket, ConnectionConfig config) throws Exception {
-        Socket sslSocket;
-
-        // set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL
-        // CERTIFICATES
-        SSLSocketFactory sslSF = null;
-
-        TrustManager[] tm = { new RelaxedX509TrustManager() };
-        SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, tm, new java.security.SecureRandom());
-        sslSF = sslContext.getSocketFactory();
-        sslSocket = sslSF.createSocket(socket, InetAddressUtils.str(config.getInetAddress()), config.getPort(), true);
-        return sslSocket;
+    @Override
+    public SocketWrapper getSocketWrapper() {
+        return new SslSocketWrapper();
     }
-
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<xml-groups>
+	<xml-group name="ga-msg" resource-type="gaMsg" key-xpath="@measObjLdn"
+		resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='ga|msg']/measValue"
+		timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
+		timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
+		<xml-object name="suspect" type="STRING" xpath="suspect" />
+		<xml-object name="VSCdrsXferSucc" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.GTPP.CdrsXferSucc -->
+		<xml-object name="VSGtpMsgXferCgfSucc" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.GTPP.GtpMsgXferCgfSucc -->
+		<xml-object name="VSCdrsXferFail_FQAF" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.GTPP.CdrsXferFail_FQAF -->
+		<xml-object name="VSCdrsXferFail_NRAV" type="GAUGE" xpath="r[@p=4]" /> <!-- VS.GTPP.CdrsXferFail_NRAV -->
+		<xml-object name="VSCdrsXferFail_RQNF" type="GAUGE" xpath="r[@p=5]" /> <!-- VS.GTPP.CdrsXferFail_RQNF -->
+		<xml-object name="VSCdrsXferFail_SYSF" type="GAUGE" xpath="r[@p=6]" /> <!-- VS.GTPP.CdrsXferFail_SYSF -->
+		<xml-object name="VSCdrsXferFail_VNSU" type="GAUGE" xpath="r[@p=7]" /> <!-- VS.GTPP.CdrsXferFail_VNSU -->
+		<xml-object name="VSGtpMsgXferCgfFail" type="GAUGE" xpath="r[@p=8]" /> <!-- VS.GTPP.GtpMsgXferCgfFail -->
+		<xml-object name="VSCgfDrtTimeouts" type="GAUGE" xpath="r[@p=9]" /> <!-- VS.GTPP.CgfDrtTimeouts -->
+		<xml-object name="VSCgfRedirectReq" type="GAUGE" xpath="r[@p=10]" /> <!-- VS.GTPP.CgfRedirectReq -->
+	</xml-group>
+	<xml-group name="gb-bssgp" resource-type="gbBssgp" key-xpath="@measObjLdn"
+		resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='gb|bssgp']/measValue"
+		timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
+		timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
+		<xml-object name="suspect" type="STRING" xpath="suspect" />
+		<xml-object name="NSECurrentNbrBvcs" type="GAUGE" xpath="r[@p=1]" /> <!-- NSE.CurrentNbrBvcs -->
+		<xml-object name="PTPBVCOctetsRx" type="GAUGE" xpath="r[@p=2]" /> <!-- PTPBVC.OctetsRx -->
+		<xml-object name="PTPBVCOctetsTx" type="GAUGE" xpath="r[@p=3]" /> <!-- PTPBVC.OctetsTx -->
+		<xml-object name="PTPBVCPdusRx" type="GAUGE" xpath="r[@p=4]" /> <!-- PTPBVC.PdusRx -->
+		<xml-object name="PTPBVCPdusTx" type="GAUGE" xpath="r[@p=5]" /> <!-- PTPBVC.PdusTx -->
+		<xml-object name="SIGBVCOctetsRx" type="GAUGE" xpath="r[@p=6]" /> <!-- SIGBVC.OctetsRx -->
+		<xml-object name="SIGBVCOctetsTx" type="GAUGE" xpath="r[@p=7]" /> <!-- SIGBVC.OctetsTx -->
+		<xml-object name="SIGBVCPdusRx" type="GAUGE" xpath="r[@p=8]" /> <!-- SIGBVC.PdusRx -->
+		<xml-object name="SIGBVCPdusTx" type="GAUGE" xpath="r[@p=9]" /> <!-- SIGBVC.PdusTx -->
+		<xml-object name="SIGBVCRimOctetsRx" type="GAUGE" xpath="r[@p=10]" /> <!-- SIGBVC.RimOctetsRx -->
+		<xml-object name="SIGBVCRimOctetsTx" type="GAUGE" xpath="r[@p=11]" /> <!-- SIGBVC.RimOctetsTx -->
+		<xml-object name="SIGBVCRimPdusRx" type="GAUGE" xpath="r[@p=12]" /> <!-- SIGBVC.RimPdusRx -->
+		<xml-object name="SIGBVCRimPdusTx" type="GAUGE" xpath="r[@p=13]" /> <!-- SIGBVC.RimPdusTx -->
+	</xml-group>
+</xml-groups>

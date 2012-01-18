@@ -35,6 +35,7 @@ import java.io.InputStream;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -266,19 +267,25 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @throws ValidationException
      */
     private void parseIncludedFiles() throws IOException, MarshalException, ValidationException {
-        File configDir = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME).getParentFile();
-        for (String fileName : m_config.getImportFileCollection()) {
-            File configFile = new File(configDir, fileName);
-            SyslogdConfigurationGroup includeCfg = CastorUtils.unmarshal(SyslogdConfigurationGroup.class, new FileSystemResource(configFile));
+        final File configDir;
+        try {
+            configDir = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME).getParentFile();
+        } catch (final Throwable t) {
+            LogUtils.warnf(this, "Error getting default syslogd configuration location. <import-file> directives will be ignored.  This should really only happen in unit tests.");
+            return;
+        }
+        for (final String fileName : m_config.getImportFileCollection()) {
+            final File configFile = new File(configDir, fileName);
+            final SyslogdConfigurationGroup includeCfg = CastorUtils.unmarshal(SyslogdConfigurationGroup.class, new FileSystemResource(configFile));
             if (includeCfg.getUeiList() != null) {
-                for (UeiMatch ueiMatch : includeCfg.getUeiList().getUeiMatchCollection())  {
+                for (final UeiMatch ueiMatch : includeCfg.getUeiList().getUeiMatchCollection())  {
                     if (m_config.getUeiList() == null)
                         m_config.setUeiList(new UeiList());
                     m_config.getUeiList().addUeiMatch(ueiMatch);
                 }
             }
             if (includeCfg.getHideMessage() != null) {
-                for (HideMatch hideMatch : includeCfg.getHideMessage().getHideMatchCollection()) {
+                for (final HideMatch hideMatch : includeCfg.getHideMessage().getHideMatchCollection()) {
                     if (m_config.getHideMessage() == null)
                         m_config.setHideMessage(new HideMessage());
                     m_config.getHideMessage().addHideMatch(hideMatch);

@@ -8,12 +8,12 @@ public class NodeListPageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
     	super.setUp();
         selenium.click("link=Node List");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertTrue(selenium.isTextPresent("Nodes"));
+        assertTrue(selenium.getHtmlSource().contains("<h3>Nodes</h3>"));
     }
     
     @Test
@@ -24,7 +24,7 @@ public class NodeListPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testAllLinks() {
         selenium.click("link=Show interfaces");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("interfaces"));
     }
 }

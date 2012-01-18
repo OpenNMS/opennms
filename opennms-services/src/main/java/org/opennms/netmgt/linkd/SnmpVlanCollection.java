@@ -70,32 +70,32 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	/**
 	 * The Dot1DBridge.dot1dbase map
 	 */
-	private Dot1dBaseGroup m_dot1dbase;
+	private Dot1dBaseGroup m_dot1dBase;
 
 	/**
 	 * The Dot1DBridge Ids List
 	 */
-	private Dot1dBasePortTable m_dot1dbaseTable;
+	private Dot1dBasePortTable m_dot1dBaseTable;
 
 	/**
 	 * The Dot1dStp base map
 	 */
-	private Dot1dStpGroup m_dot1dstp;
+	private Dot1dStpGroup m_dot1dStp;
 
 	/**
 	 * The Dot1dStp Port table List
 	 */
-	private Dot1dStpPortTable m_dot1dstptable;
+	private Dot1dStpPortTable m_dot1dStpTable;
 
 	/**
 	 * The Dot1dTpFdb table List
 	 */
-	private Dot1dTpFdbTable m_dot1dtpFdbtable;
+	private Dot1dTpFdbTable m_dot1dTpFdbTable;
 
 	/**
 	 * The QbridgeDot1dTpFdb table List
 	 */
-	private QBridgeDot1dTpFdbTable m_qdot1dtpFdbtable;
+	private QBridgeDot1dTpFdbTable m_dot1qTpFdbTable;
 
 
 	private boolean m_collectStpNode = true;
@@ -116,11 +116,11 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	SnmpVlanCollection(final SnmpAgentConfig agentConfig) {
 		m_agentConfig = agentConfig;
 		m_address = m_agentConfig.getEffectiveAddress();
-		m_dot1dbase = null;
-		m_dot1dbaseTable = null;
-		m_dot1dstp = null;
-		m_dot1dstptable = null;
-		m_dot1dtpFdbtable = null;
+		m_dot1dBase = null;
+		m_dot1dBaseTable = null;
+		m_dot1dStp = null;
+		m_dot1dStpTable = null;
+		m_dot1dTpFdbTable = null;
 	}
 	// for debug only
 
@@ -136,11 +136,11 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	SnmpVlanCollection(final SnmpAgentConfig agentConfig, final boolean collectStpNode, final boolean collectStpTable, final boolean collectBridgeForwardingTable) {
 		m_agentConfig = agentConfig;
 		m_address = m_agentConfig.getEffectiveAddress();
-		m_dot1dbase = null;
-		m_dot1dbaseTable = null;
-		m_dot1dstp = null;
-		m_dot1dstptable = null;
-		m_dot1dtpFdbtable = null;
+		m_dot1dBase = null;
+		m_dot1dBaseTable = null;
+		m_dot1dStp = null;
+		m_dot1dStpTable = null;
+		m_dot1dTpFdbTable = null;
 		m_collectStpNode = collectStpNode;
 		m_collectStpInterface = collectStpTable;
 		m_collectBridgeForwardingTable = collectBridgeForwardingTable;
@@ -164,84 +164,84 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DBridge table was collected.
 	 */
 	boolean hasDot1dBase() {
-		return (m_dot1dbase != null && !m_dot1dbase.failed());
+		return (m_dot1dBase != null && !m_dot1dBase.failed());
 	}
 
 	/**
 	 * Returns the collected dot1base.
 	 */
 	Dot1dBaseGroup getDot1dBase() {
-		return m_dot1dbase;
+		return m_dot1dBase;
 	}
 
 	/**
 	 * Returns true if the dot1DBridge table was collected.
 	 */
 	boolean hasDot1dBasePortTable() {
-		return (m_dot1dbaseTable != null && !m_dot1dbaseTable.failed());
+		return (m_dot1dBaseTable != null && !m_dot1dBaseTable.failed());
 	}
 
 	/**
 	 * Returns the collected dot1dbridge.
 	 */
 	Dot1dBasePortTable getDot1dBasePortTable() {
-		return m_dot1dbaseTable;
+		return m_dot1dBaseTable;
 	}
 
 	/**
 	 * Returns true if the dot1DStp info was collected.
 	 */
 	boolean hasDot1dStp() {
-		return (m_dot1dstp != null && !m_dot1dstp.failed());
+		return (m_dot1dStp != null && !m_dot1dStp.failed());
 	}
 
 	/**
 	 * Returns the collected dot1stp.
 	 */
 	Dot1dStpGroup getDot1dStp() {
-		return m_dot1dstp;
+		return m_dot1dStp;
 	}
 
 	/**
 	 * Returns true if the dot1DStpPortTable info was collected.
 	 */
 	boolean hasDot1dStpPortTable() {
-		return (m_dot1dstptable != null && !m_dot1dstptable.failed());
+		return (m_dot1dStpTable != null && !m_dot1dStpTable.failed());
 	}
 
 	/**
 	 * Returns the collected dot1stp.
 	 */
 	Dot1dStpPortTable getDot1dStpPortTable() {
-		return m_dot1dstptable;
+		return m_dot1dStpTable;
 	}
 
 	/**
 	 * Returns true if the dot1DStpPortTable info was collected.
 	 */
 	boolean hasDot1dTpFdbTable() {
-		return (m_dot1dtpFdbtable != null && !m_dot1dtpFdbtable.failed());
+		return (m_dot1dTpFdbTable != null && !m_dot1dTpFdbTable.failed());
 	}
 
 	/**
 	 * Returns the collected dot1stp.
 	 */
 	Dot1dTpFdbTable getDot1dFdbTable() {
-		return m_dot1dtpFdbtable;
+		return m_dot1dTpFdbTable;
 	}
 
 	/**
 	 * Returns true if the dot1DStpPortTable info was collected.
 	 */
 	boolean hasQBridgeDot1dTpFdbTable() {
-		return (m_qdot1dtpFdbtable!= null && !m_qdot1dtpFdbtable.failed());
+		return (m_dot1qTpFdbTable!= null && !m_dot1qTpFdbTable.failed());
 	}
 
 	/**
 	 * Returns the collected dot1stp.
 	 */
 	QBridgeDot1dTpFdbTable getQBridgeDot1dFdbTable() {
-		return m_qdot1dtpFdbtable;
+		return m_dot1qTpFdbTable;
 	}
 
 
@@ -266,41 +266,41 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 * </p>
 	 */
 	public void run() {
-			m_dot1dbase = new Dot1dBaseGroup(m_address);
-			m_dot1dbaseTable = new Dot1dBasePortTable(m_address);
-			m_dot1dstp = new Dot1dStpGroup(m_address);
-			m_dot1dstptable = new Dot1dStpPortTable(m_address);
-			m_dot1dtpFdbtable = new Dot1dTpFdbTable(m_address);
+			m_dot1dBase = new Dot1dBaseGroup(m_address);
+			m_dot1dBaseTable = new Dot1dBasePortTable(m_address);
+			m_dot1dStp = new Dot1dStpGroup(m_address);
+			m_dot1dStpTable = new Dot1dStpPortTable(m_address);
+			m_dot1dTpFdbTable = new Dot1dTpFdbTable(m_address);
 			
 			SnmpWalker walker = null;
 			
 			if (m_collectBridgeForwardingTable && m_collectStpInterface && m_collectStpNode) {
 		        walker = SnmpUtils.createWalker(m_agentConfig, "dot1dBase/dot1dBaseTable/dot1dStp/dot1dStpTable/dot1dTpFdbTable ", 
-		        			new CollectionTracker[] { m_dot1dbase, m_dot1dbaseTable, m_dot1dstp, m_dot1dstptable, m_dot1dtpFdbtable});
+		        			new CollectionTracker[] { m_dot1dBase, m_dot1dBaseTable, m_dot1dStp, m_dot1dStpTable, m_dot1dTpFdbTable});
 			} else if(m_collectBridgeForwardingTable && m_collectStpInterface ) {
 		        walker = 
 		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBase/dot1dBaseTable/dot1dStp/dot1dStpTable/dot1dTpFdbTable ", 
-		        			new CollectionTracker[] { m_dot1dbase, m_dot1dbaseTable, m_dot1dstp, m_dot1dstptable, m_dot1dtpFdbtable});
+		        			new CollectionTracker[] { m_dot1dBase, m_dot1dBaseTable, m_dot1dStp, m_dot1dStpTable, m_dot1dTpFdbTable});
 			} else if (m_collectBridgeForwardingTable && m_collectStpInterface ) {
 		        walker = 
 		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBaseTable/dot1dStpTable/dot1dTpFdbTable ", 
-		        			new CollectionTracker[] {m_dot1dbaseTable, m_dot1dstptable,m_dot1dtpFdbtable});
+		        			new CollectionTracker[] {m_dot1dBaseTable, m_dot1dStpTable,m_dot1dTpFdbTable});
 			} else if(m_collectBridgeForwardingTable && m_collectStpNode) {
 		        walker = 
 		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBase/dot1dStp/dot1dTpFdbTable ", 
-		        			new CollectionTracker[] { m_dot1dbase, m_dot1dstp,m_dot1dtpFdbtable});
+		        			new CollectionTracker[] { m_dot1dBase, m_dot1dStp,m_dot1dTpFdbTable});
 			} else if(m_collectBridgeForwardingTable) {
 		        walker = 
 		        	SnmpUtils.createWalker(m_agentConfig, "dot1dTpFdbTable ", 
-		        			new CollectionTracker[] {m_dot1dtpFdbtable});
+		        			new CollectionTracker[] {m_dot1dTpFdbTable});
 			} else if(m_collectStpNode) {
 		        walker = 
 		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBase/dot1dStp ", 
-		        			new CollectionTracker[] { m_dot1dbase, m_dot1dstp});
+		        			new CollectionTracker[] { m_dot1dBase, m_dot1dStp});
 			} else if(m_collectStpInterface) {
 		        walker = 
 		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBaseTable/dot1dStpTable ", 
-		        			new CollectionTracker[] { m_dot1dbaseTable, m_dot1dstptable});
+		        			new CollectionTracker[] { m_dot1dBaseTable, m_dot1dStpTable});
 			} else {
 			    LogUtils.infof(this, "run: no info to collect return");
 				return;
@@ -312,11 +312,11 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	        try {
 	            walker.waitFor();
 	        } catch (final InterruptedException e) {
-				m_dot1dbase = null;
-				m_dot1dbaseTable = null;
-				m_dot1dstp = null;
-				m_dot1dstptable = null;
-				m_dot1dtpFdbtable = null;
+				m_dot1dBase = null;
+				m_dot1dBaseTable = null;
+				m_dot1dStp = null;
+				m_dot1dStpTable = null;
+				m_dot1dTpFdbTable = null;
 
 				LogUtils.warnf(this, e, "SnmpVlanCollection.run: collection interrupted, exiting");
 	            return;
@@ -341,22 +341,23 @@ final class SnmpVlanCollection implements ReadyRunnable {
 			//if not found macaddresses forwarding table find it in Qbridge
 			//ExtremeNetwork works.....
 			
-			if (m_dot1dtpFdbtable.isEmpty() && m_collectBridgeForwardingTable) {
+			if (m_dot1dTpFdbTable.isEmpty() && m_collectBridgeForwardingTable) {
 			    LogUtils.infof(this, "run: Trying to collect QbridgeDot1dTpFdbTable for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
-				m_qdot1dtpFdbtable = new QBridgeDot1dTpFdbTable(m_address);
-		        walker =  SnmpUtils.createWalker(m_agentConfig, "qBridgedot1dTpFdbTable ", new CollectionTracker[] { m_qdot1dtpFdbtable });
+				m_dot1qTpFdbTable = new QBridgeDot1dTpFdbTable(m_address);
+		        walker =  SnmpUtils.createWalker(m_agentConfig, "qBridgedot1dTpFdbTable ", new CollectionTracker[] { m_dot1qTpFdbTable });
 		        walker.start();
 
 		        try {
 		            walker.waitFor();
 		        } catch (final InterruptedException e) {
-					m_qdot1dtpFdbtable = null;
+					m_dot1qTpFdbTable = null;
 					LogUtils.warnf(this, e, "SnmpVlanCollection.run: collection interrupted");
 		            
 		        }
-			}
-			if (!hasQBridgeDot1dTpFdbTable()) {
-			    LogUtils.infof(this, "run: failed to collect QBridgeDot1dTpFdbTable for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
+
+		        if (!hasQBridgeDot1dTpFdbTable()) {
+		            LogUtils.infof(this, "run: failed to collect QBridgeDot1dTpFdbTable for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
+		        }
 			}
 	}
 
@@ -374,12 +375,12 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	    return new ToStringBuilder(this)
 	        .append("agentConfig", m_agentConfig)
 	        .append("address", m_address)
-	        .append("dot1dBase", m_dot1dbase)
-	        .append("dot1dBaseTable", m_dot1dbaseTable)
-	        .append("dot1dStp", m_dot1dstp)
-	        .append("dot1dStpTable", m_dot1dstptable)
-	        .append("dot1dTpFdbTable", m_dot1dtpFdbtable)
-	        .append("qDot1dTpFdbTable", m_qdot1dtpFdbtable)
+	        .append("dot1dBase", m_dot1dBase)
+	        .append("dot1dBaseTable", m_dot1dBaseTable)
+	        .append("dot1dStp", m_dot1dStp)
+	        .append("dot1dStpTable", m_dot1dStpTable)
+	        .append("dot1dTpFdbTable", m_dot1dTpFdbTable)
+	        .append("dot1qTpFdbTable", m_dot1qTpFdbTable)
 	        .toString();
 	}
 }

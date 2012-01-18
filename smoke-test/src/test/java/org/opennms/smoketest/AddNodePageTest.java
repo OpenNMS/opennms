@@ -8,22 +8,22 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
     	super.setUp();
         selenium.click("link=Add Node");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
     @Test
     public void setupProvisioningGroup() throws Exception {
         selenium.open("/opennms/admin/node/add.htm");
         selenium.click("link=Admin");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("link=Manage Provisioning Groups");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
+        selenium.click("link=Manage Provisioning Requisitions");
+        waitForPageToLoad();
         selenium.type("css=form[name=takeAction] > input[name=groupName]", "test");
         selenium.click("css=input[type=submit]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("//input[@value='Synchronize']");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
     @Test
     public void testAddNodePage() throws Exception {
@@ -38,7 +38,7 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Surveillance Category Memberships (optional)"));
         assertTrue(selenium.isTextPresent("Basic Attributes (required)"));
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
 }

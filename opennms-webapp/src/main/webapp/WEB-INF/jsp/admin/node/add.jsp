@@ -38,11 +38,11 @@
 <%@page import="org.opennms.web.XssRequestWrapper" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-	<jsp:param name="title" value="Provision Node" />
-	<jsp:param name="headTitle" value="Provisioning Groups" />
+	<jsp:param name="title" value="Requisition Node" />
+	<jsp:param name="headTitle" value="Provisioning Requisitions" />
 	<jsp:param name="headTitle" value="Add Node" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Groups</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Requisitions</a>" />
 	<jsp:param name="breadcrumb" value="Node Quick-Add" />
 </jsp:include>
 
@@ -51,7 +51,7 @@
 <c:if test="${success}">
 	<div style="border: 1px solid black; background-color: #bbffcc; margin: 2px; padding: 3px;">
 		<h2>Success</h2>
-		<p>Your node has been provisioned in the ${foreignSource} foreign source.</p>
+		<p>Your node has been added to the ${foreignSource} requisition.</p>
 	</div>
 </c:if>
 
@@ -59,7 +59,7 @@
 <c:choose>
 <c:when test="${empty requisitions}">
 	<h2>Missing Requisition</h2>
-	<p>You must first <a href='admin/provisioningGroups.htm'>create and import a provisioning group</a> before using this page.</p>
+	<p>You must first <a href='admin/provisioningGroups.htm'>create and import a requisition</a> before using this page.</p>
 </c:when>
 <c:otherwise>
 <form action="admin/node/add.htm">
@@ -77,7 +77,7 @@
 	<div class="boxWrapper">
 		<table class="normal">
 			<tr>
-				<td>Provisioning Group:</td>
+				<td>Requisition:</td>
 				<td colspan="3">
 					<select name="foreignSource">
 						<c:forEach var="req" items="${requisitions}">
@@ -190,16 +190,16 @@
 	<div class="boxWrapper">
 		<p>
 		This workflow provides a quick way to add a node to an existing
-		provisioning group in this OpenNMS system.
+		provisioning requisition in this OpenNMS system.
 		</p>
 
 		<p>
-		<strong>Note: This operation <em>will</em> override any unimported modifications
-		made to the selected provisioning group.</strong>
+		<strong>Note: This operation <em>will</em> override any un-synchronized
+		modifications made to the selected requisition.</strong>
 		</p>
 
 		<p>
-		<em>Basic Attributes</em> are common to all nodes. Select the provisioning group
+		<em>Basic Attributes</em> are common to all nodes. Select the requisition
 		into which this node should be added, provide an IP address on which OpenNMS
 		will communicate with the node, and enter a node label. The node label will
 		serve as the display name for the node throughout OpenNMS.
@@ -214,7 +214,7 @@
 
 		<p>
 		<em>SNMP Parameters</em> are optional and apply only to the node being
-		provisioned. If no values are specified here, OpenNMS' system-wide SNMP
+		requisitioned. If no values are specified here, OpenNMS' system-wide SNMP
 		configuration will be used to determine the appropriate values for the IP
 		address entered in the <em>Basic Attributes</em> section. If the node does not
 		support SNMP, the "No SNMP" box should be checked. Configuring SNMPv3

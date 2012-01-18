@@ -41,7 +41,7 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class ThresholdResourceType {
 
-    private String m_dsType;
+    private final String m_dsType;
 
     private Map<String, Set<ThresholdEntity>> m_thresholdMap;
     
@@ -50,8 +50,8 @@ public class ThresholdResourceType {
      *
      * @param type a {@link java.lang.String} object.
      */
-    public ThresholdResourceType(String type) {
-        m_dsType = type;
+    public ThresholdResourceType(final String type) {
+        m_dsType = type.intern();
     }
 
     /**

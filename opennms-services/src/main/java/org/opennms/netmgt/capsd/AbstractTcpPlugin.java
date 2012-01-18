@@ -39,15 +39,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.ThreadCategory;
 
 // TODO need to completely javadoc this class
 
 /**
- * Implements the basic functionality of a Tcp based servicethat can be
+ * Implements the basic functionality of a TCP-based service that can be
  * discovered by OpenNMS. It extends the AbstractPlugin class and provides
- * methods for creating the sockets and dealing with timeouts and reteries.
+ * methods for creating the sockets and dealing with timeouts and retries.
  *
  * @author Matt Brozowski
  * @version $Id: $
@@ -133,7 +135,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
                 socket.setSoTimeout(timeout);
                 log.debug(getPluginName() + ": connected to host: " + config.getInetAddress() + " on port: " + config.getPort());
 
-                socket = wrapSocket(socket, config);
+                socket = getSocketWrapper().wrapSocket(socket);
 
                 isAServer = checkProtocol(socket, config);
 
@@ -165,7 +167,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
 
         //
         // return the success/failure of this
-        // attempt to contact an ftp server.
+        // attempt to contact the server.
         //
         return isAServer;
     }
@@ -366,14 +368,9 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     }
 
     /**
-     * <p>wrapSocket</p>
-     *
-     * @param socket a {@link java.net.Socket} object.
-     * @param config a {@link org.opennms.netmgt.capsd.ConnectionConfig} object.
-     * @return a {@link java.net.Socket} object.
-     * @throws java.lang.Exception if any.
+     * <p>getSocketWrapper</p>
      */
-    protected Socket wrapSocket(Socket socket, ConnectionConfig config) throws Exception {
-        return socket;
+    protected SocketWrapper getSocketWrapper() {
+        return new DefaultSocketWrapper();
     }
 }

@@ -174,10 +174,14 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      */
     public List<Object> getMemoryObjects() {
     	final List<Object> objects = new LinkedList<Object>();
-        for(Iterator<?> it = m_workingMemory.iterateObjects(); it.hasNext(); it.next()) {
-        	// FIXME: why are we not actually returning these?
+        for(Iterator<?> it = m_workingMemory.iterateObjects(); it.hasNext(); ) {
+        	objects.add(it.next());
         }
         return objects;
+    }
+    
+    public WorkingMemory getWorkingMemory() {
+    	return m_workingMemory;
     }
 
     /**

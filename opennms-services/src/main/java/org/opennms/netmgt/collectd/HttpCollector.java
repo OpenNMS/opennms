@@ -80,10 +80,13 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
+import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.collector.AttributeDefinition;
@@ -102,7 +105,6 @@ import org.opennms.netmgt.config.httpdatacollection.Parameter;
 import org.opennms.netmgt.config.httpdatacollection.Uri;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.poller.monitors.PageSequenceMonitor;
 
 /**
  * Collect data via URI
@@ -136,7 +138,7 @@ public class HttpCollector implements ServiceCollector {
 
         // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
         // is available to JSSE
-        java.security.Security.addProvider(new PageSequenceMonitor.EmptyKeyRelaxedTrustProvider());
+        java.security.Security.addProvider(new EmptyKeyRelaxedTrustProvider());
     }
 
     /** {@inheritDoc} */
@@ -291,7 +293,7 @@ public class HttpCollector implements ServiceCollector {
                 final Scheme https = registry.getScheme("https");
 
                 // Override the trust validation with a lenient implementation
-                final SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(PageSequenceMonitor.EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+                final SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
                 final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
                 // This will replace the existing "https" schema
@@ -840,6 +842,10 @@ public class HttpCollector implements ServiceCollector {
 
         public String getParent() {
             return Integer.toString(m_agent.getNodeId());
+        }
+
+        public TimeKeeper getTimeKeeper() {
+            return null;
         }
     }
 

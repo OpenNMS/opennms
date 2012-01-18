@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
@@ -134,6 +135,10 @@ public class MockCollectionResource implements CollectionResource {
     
     public Map<String,String> getAttribtueMap() {
         return attributes;
+    }
+
+    public TimeKeeper getTimeKeeper() {
+        return null;
     }
 
 }

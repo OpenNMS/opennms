@@ -42,6 +42,8 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import org.opennms.netmgt.dao.AtInterfaceDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
@@ -61,7 +63,6 @@ import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
 
 public abstract class AbstractQueryManager implements QueryManager {
-
     protected Linkd m_linkd;
 
     @Override
@@ -79,31 +80,14 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     public abstract NodeDao getNodeDao();
-    
+
+    public abstract IpInterfaceDao getIpInterfaceDao();
+
+    public abstract AtInterfaceDao getAtInterfaceDao();
+
     protected abstract int getIfIndexByName(Connection dbConn, int targetCdpNodeId, String cdpTargetDevicePort) throws SQLException;
 
     protected abstract int getNodeidFromIp(Connection dbConn, InetAddress cdpTargetIpAddr) throws SQLException;
-
-    /**
-     * Get the {@link OnmsAtInterface} that goes with a given address and
-     * node. If it does not exist, but the IP interface does exist, then
-     * create it. If an equivalent IP interface does *not* exist, returns
-     * null.
-     * 
-     * @param dbConn
-     *            the database connection, if necessary
-     * @param ipaddress
-     *            the IP address to look up
-     * @param node
-     *            the {@link LinkableNode} associated with the interface (if
-     *            known)
-     * @return an {@link OnmsAtInterface}
-     * @throws SQLException
-     */
-    protected abstract OnmsAtInterface getAtInterfaceForAddress(Connection dbConn, InetAddress ipaddress) throws SQLException;
-
-    protected abstract void saveAtInterface(Connection dbConn, OnmsAtInterface at)
-            throws SQLException;
 
     protected abstract RouterInterface getNodeidMaskFromIp(Connection dbConn, InetAddress nexthop) throws SQLException;
 
@@ -166,7 +150,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             LogUtils.debugf(this, "processIpNetToMediaTable: trying save ipNetToMedia info: IP address %s, MAC address %s, ifIndex %d", hostAddress, physAddr, ifindex);
 
             // get an AtInterface but without setting MAC address
-            final OnmsAtInterface at = getAtInterfaceForAddress(dbConn, ipaddress);
+            final OnmsAtInterface at = getAtInterfaceDao().getAtInterfaceForAddress(dbConn, ipaddress);
             if (at == null) {
                 LogUtils.debugf(this, "processIpNetToMediaTable: no node found for IP address %s.", hostAddress);
                 sendNewSuspectEvent(ipaddress, snmpcoll.getTarget(), snmpcoll.getPackageName());
@@ -176,12 +160,12 @@ public abstract class AbstractQueryManager implements QueryManager {
             at.setSourceNodeId(node.getNodeId());
 
             if (at.getMacAddress() != null && !at.getMacAddress().equals(physAddr)) {
-                LogUtils.warnf(this, "processIpNetToMediaTable: Setting OnmsAtInterface MAC address to %s but it used to be '%s' (IP Address = %s, ifIndex = %d)", physAddr, at.getMacAddress(), hostAddress, ifindex);
+                LogUtils.infof(this, "processIpNetToMediaTable: Setting OnmsAtInterface MAC address to %s but it used to be '%s' (IP Address = %s, ifIndex = %d)", physAddr, at.getMacAddress(), hostAddress, ifindex);
             }
             at.setMacAddress(physAddr);
 
             if (at.getIfIndex() != null && !at.getIfIndex().equals(ifindex)) {
-                LogUtils.warnf(this, "processIpNetToMediaTable: Setting OnmsAtInterface ifIndex to %d but it used to be '%s' (IP Address = %s, MAC = %s)", ifindex, at.getIfIndex(), hostAddress, physAddr);
+                LogUtils.infof(this, "processIpNetToMediaTable: Setting OnmsAtInterface ifIndex to %d but it used to be '%s' (IP Address = %s, MAC = %s)", ifindex, at.getIfIndex(), hostAddress, physAddr);
             }
             at.setIfIndex(ifindex);
 
@@ -191,7 +175,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             // add AtInterface to list of valid interfaces
             atInterfaces.add(at);
 
-            saveAtInterface(dbConn, at);
+            getAtInterfaceDao().saveAtInterface(dbConn, at);
         }
         // set AtInterfaces in LinkableNode
         node.setAtInterfaces(atInterfaces);
@@ -251,7 +235,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
 
             if (targetCdpNodeId == -1) {
-                LogUtils.warnf(this, "processCdpCacheTable: No node ID found: interface not added to linkable SNMP node. Skipping.");
+                LogUtils.infof(this, "processCdpCacheTable: No node ID found: interface %s not added to linkable SNMP node. Skipping.", hostAddress);
                 sendNewSuspectEvent(cdpTargetIpAddr, snmpcoll.getTarget(), snmpcoll.getPackageName());
                 continue;
             }
@@ -259,7 +243,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             final int cdpTargetIfindex = getIfIndexByName(dbConn, targetCdpNodeId, cdpTargetDevicePort);
 
             if (cdpTargetIfindex == -1) {
-                LogUtils.warnf(this, "processCdpCacheTable: No valid target ifIndex found: interface not added to linkable SNMP node. Skipping.");
+                LogUtils.infof(this, "processCdpCacheTable: No valid target ifIndex found: interface not added to linkable SNMP node. Skipping.");
                 continue;
             }
 
@@ -292,25 +276,25 @@ public abstract class AbstractQueryManager implements QueryManager {
             final InetAddress nexthop = ent.getIPAddress(IpRouteCollectorEntry.IP_ROUTE_NXTHOP);
 
             if (nexthop == null) {
-                LogUtils.warnf(this, "processRouteTable: next hop not found. Skipping.");
+                LogUtils.warnf(this, "processRouteTable: next hop not found on node %d. Skipping.", node.getNodeId());
                 continue;
             }
 
             final InetAddress routedest = ent.getIPAddress(IpRouteCollectorEntry.IP_ROUTE_DEST);
             if (routedest == null) {
-                LogUtils.warnf(this, "processRouteTable: route destination not found. Skipping.");
+                LogUtils.warnf(this, "processRouteTable: route destination not found on node %d. Skipping.", node.getNodeId());
                 continue;
             }
 
             final InetAddress routemask = ent.getIPAddress(IpRouteCollectorEntry.IP_ROUTE_MASK);
 
             if (routemask == null) {
-                LogUtils.warnf(this, "processRouteTable: route mask not found. Skipping.");
+                LogUtils.warnf(this, "processRouteTable: route mask not found on node %d. Skipping.", node.getNodeId());
                 continue;
             }
 
             if (ifindex == null || ifindex < 0) {
-                LogUtils.warnf(this, "processRouteTable: Not valid ifIndex %s. Skipping.", ifindex);
+                LogUtils.warnf(this, "processRouteTable: Invalid ifIndex %d on node %d. Skipping.", ifindex, node.getNodeId());
                 continue;
             } else if (ifindex == 0) {
                 // According to the RFC, if the ifindex is zero (0) then this indicates that no
@@ -327,7 +311,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 */
                 ifindex = getIfIndexFromRouteTableEntries(nexthop, snmpcoll.getIpRouteTable());
                 if (ifindex < 1) {
-                    LogUtils.warnf(this, "processRouteTable: Not valid ifIndex %s. Skipping.", ifindex);
+                    LogUtils.warnf(this, "processRouteTable: Invalid ifIndex %d on node %d. Skipping.", ifindex, node.getNodeId());
                     continue;
                 }
             }
@@ -355,7 +339,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
 
             if (routeIface == null) {
-                LogUtils.warnf(this, "processRouteTable: No node ID found for next hop IP address %s. Not adding the IP route interface to the linkable SNMP node.", str(nexthop));
+                LogUtils.infof(this, "processRouteTable: No node ID found for next hop IP address %s. Not adding the IP route interface to the linkable SNMP node.", str(nexthop));
                 // try to find it in ipinterface
                 sendNewSuspectEvent(nexthop, snmpcoll.getTarget(), snmpcoll.getPackageName());
             } else {
@@ -458,14 +442,14 @@ public abstract class AbstractQueryManager implements QueryManager {
             final Integer vlanIndex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 
             if (vlanIndex == null || vlanIndex < 0) {
-                LogUtils.debugf(this, "processVlanTable: VLAN ifIndex was invalid (%d).  Skipping.", vlanIndex);
+                LogUtils.debugf(this, "processVlanTable: VLAN ifIndex was invalid (%d). Skipping.", vlanIndex);
                 continue;
             }
 
             String vlanName = ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
             if (vlanName == null) {
-                LogUtils.debugf(this, "processVlanTable: No VLAN name found.  Setting to 'default-%s'.", vlanIndex);
                 vlanName = "default-" + vlanIndex;
+                LogUtils.debugf(this, "processVlanTable: No VLAN name found. Setting to '%s'.", vlanName);
             }
 
             Integer vlanType = ent.getInt32(VlanCollectorEntry.VLAN_TYPE);
@@ -501,7 +485,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         final String baseBridgeAddress = dod1db.getBridgeAddress();
         if (baseBridgeAddress == null || baseBridgeAddress == "000000000000") {
-            LogUtils.warnf(this, "processDot1DBase: Invalid base bridge address: %s", baseBridgeAddress);
+            LogUtils.infof(this, "processDot1DBase: Invalid base bridge address (%s) on node %d", baseBridgeAddress, node.getNodeId());
             return;
         }
 
@@ -542,20 +526,20 @@ public abstract class AbstractQueryManager implements QueryManager {
             final String curMacAddress = dot1dfdbentry.getQBridgeDot1dTpFdbAddress();
 
             if (curMacAddress == null || curMacAddress.equals("000000000000")) {
-                LogUtils.warnf(this, "processQBridgeDot1DTpFdbTable: Invalid MAC address: %s. Skipping.", curMacAddress);
+                LogUtils.infof(this, "processQBridgeDot1DTpFdbTable: Invalid MAC addres %s on node %d. Skipping.", curMacAddress, node.getNodeId());
                 continue;
             }
 
-            LogUtils.debugf(this, "processQBridgeDot1DTpFdbTable: Found MAC address: %s", curMacAddress);
+            LogUtils.debugf(this, "processQBridgeDot1DTpFdbTable: Found MAC address %s on node %d", curMacAddress, node.getNodeId());
 
             final int fdbport = dot1dfdbentry.getQBridgeDot1dTpFdbPort();
 
             if (fdbport == 0 || fdbport == -1) {
-                LogUtils.debugf(this, "processQBridgeDot1DTpFdbTable: Invalid FDB port (%d) for MAC address %s. Skipping.", fdbport, curMacAddress);
+                LogUtils.debugf(this, "processQBridgeDot1DTpFdbTable: Invalid FDB port (%d) for MAC address %s on node %d. Skipping.", fdbport, curMacAddress, node.getNodeId());
                 continue;
             }
 
-            LogUtils.debugf(this, "processQBridgeDot1DTpFdbTable: Found bridge port: %d.", fdbport);
+            LogUtils.debugf(this, "processQBridgeDot1DTpFdbTable: Found bridge port %d on node %d.", fdbport, node.getNodeId());
 
             final int curfdbstatus = dot1dfdbentry.getQBridgeDot1dTpFdbStatus();
 
@@ -592,18 +576,18 @@ public abstract class AbstractQueryManager implements QueryManager {
             final int curfdbstatus = dot1dfdbentry.getDot1dTpFdbStatus();
 
             if (curMacAddress == null || curMacAddress.equals("000000000000")) {
-                LogUtils.warnf(this, "processDot1DTpFdbTable: Invalid MAC address: %s. Skipping.", curMacAddress);
+                LogUtils.infof(this, "processDot1DTpFdbTable: Invalid MAC address %s on node %d. Skipping.", curMacAddress, node.getNodeId());
                 continue;
             }
 
-            LogUtils.debugf(this, "processDot1DTpFdbTable: Found valid MAC address: %s", curMacAddress);
+            LogUtils.debugf(this, "processDot1DTpFdbTable: Found valid MAC address %s on node %d", curMacAddress, node.getNodeId());
 
             if (fdbport == 0 || fdbport == -1) {
-                LogUtils.debugf(this, "processDot1DTpFdbTable: Invalid FDB port (%d) for MAC address %s. Skipping.", fdbport, curMacAddress);
+                LogUtils.debugf(this, "processDot1DTpFdbTable: Invalid FDB port (%d) for MAC address %s on node %d. Skipping.", fdbport, curMacAddress, node.getNodeId());
                 continue;
             }
 
-            LogUtils.debugf(this, "processDot1DTpFdbTable: MAC address (%s) found on bridge port %d", curMacAddress, fdbport);
+            LogUtils.debugf(this, "processDot1DTpFdbTable: MAC address (%s) found on bridge port %d on node %d", curMacAddress, fdbport, node.getNodeId());
 
             if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED && vlan.getVlanId() != null) {
                 node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId().toString());
@@ -637,7 +621,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             final int stpport = dot1dstpptentry.getDot1dStpPort();
 
             if (stpport == -1) {
-                LogUtils.warnf(this, "processDot1StpPortTable: Found invalid STP port. Skipping.");
+                LogUtils.infof(this, "processDot1StpPortTable: Found invalid STP port. Skipping.");
                 continue;
             }
 
@@ -655,10 +639,10 @@ public abstract class AbstractQueryManager implements QueryManager {
             String stpPortDesignatedPort = dot1dstpptentry.getDot1dStpPortDesignatedPort();
 
             if (stpPortDesignatedBridge == null || stpPortDesignatedBridge.equals("0000000000000000")) {
-                LogUtils.warnf(this, "processDot1StpPortTable: Designated bridge (%s) is invalid. Skipping.", stpPortDesignatedBridge);
+                LogUtils.infof(this, "processDot1StpPortTable: Designated bridge (%s) is invalid on node %d. Skipping.", stpPortDesignatedBridge, node.getNodeId());
                 stpPortDesignatedBridge = "0000000000000000";
             } else if (stpPortDesignatedPort == null || stpPortDesignatedPort.equals("0000")) {
-                LogUtils.warnf(this, "processDot1StpPortTable: Designated port (%s) is invalid. Skipping.", stpPortDesignatedPort);
+                LogUtils.infof(this, "processDot1StpPortTable: Designated port (%s) is invalid on node %d. Skipping.", stpPortDesignatedPort, node.getNodeId());
                 stpPortDesignatedPort = "0000";
             } else {
                 stpInterface.setStpPortState(dot1dstpptentry.getDot1dStpPortState());
@@ -690,7 +674,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             int ifindex = dot1dbaseptentry.getBaseBridgePortIfindex();
 
             if (baseport == -1 || ifindex == -1) {
-                LogUtils.warnf(this, "processDot1DBasePortTable: Invalid base port (%d) or ifIndex (%d). Skipping.", baseport, ifindex);
+                LogUtils.infof(this, "processDot1DBasePortTable: Invalid base port (%d) or ifIndex (%d). Skipping.", baseport, ifindex);
                 continue;
             }
 
@@ -752,7 +736,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             String stpDesignatedRoot = dod1stp.getStpDesignatedRoot();
 
             if (stpDesignatedRoot == null || stpDesignatedRoot == "0000000000000000") {
-                LogUtils.debugf(this, "store: Dot1dStpGroup found stpDesignatedRoot " + stpDesignatedRoot + " not adding to Linkable node");
+                LogUtils.debugf(this, "store: Dot1dStpGroup found stpDesignatedRoot " + stpDesignatedRoot + ", not adding to Linkable node");
                 stpDesignatedRoot = "0000000000000000";
             } else {
                 if (stpNode.getBaseVlan() != null) {

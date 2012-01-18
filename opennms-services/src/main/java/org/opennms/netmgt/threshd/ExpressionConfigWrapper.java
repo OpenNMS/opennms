@@ -65,19 +65,19 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 
 		public Object get(String key) {
 			LogUtils.tracef(this, "Bindings.get(%s)", key);
-			m_sniffedKeys.add((String)key);
+			m_sniffedKeys.add(((String)key).intern());
 			return super.get(key);
 		}
 
 		public boolean has(String key) {
 			LogUtils.tracef(this, "Bindings.containsKey(%s)", key);
-			m_sniffedKeys.add((String)key);
+			m_sniffedKeys.add(((String)key).intern());
 			return super.containsKey(key);
 		}
 
 		public void set(String key, Object value) {
 			LogUtils.tracef(this, "Bindings.set(%s, %s)", key, value.toString());
-			m_sniffedKeys.add((String)key);
+			m_sniffedKeys.add(((String)key).intern());
 			super.put(key, value);
 		}
 
@@ -90,21 +90,21 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 
 	private final Expression m_expression;
 	private final Collection<String> m_datasources;
-	private final JexlEngine m_parser;
 	public ExpressionConfigWrapper(Expression expression) throws ThresholdExpressionException {
 		super(expression);
 		m_expression = expression;
 
 		// Fetch an instance of the JEXL script engine
-		m_parser = new JexlEngine();
+		JexlEngine expressionParser = new JexlEngine();
 
 		BindingsSniffer sniffer = new BindingsSniffer();
 		sniffer.put("math", new MathBinding());
+		sniffer.put("datasources", new HashMap<String,Double>()); // To workaround NMS-5019
 
 		// Test parsing of the expression and collect the variable names by using
 		// a Bindings instance that sniffs all of the variable names
 		try {
-			m_parser.createExpression(m_expression.getExpression()).evaluate(sniffer);
+			expressionParser.createExpression(m_expression.getExpression()).evaluate(sniffer);
 		} catch (Throwable e) {
 			throw new ThresholdExpressionException("Could not parse threshold expression:" + e.getMessage(), e);
 		}
@@ -178,12 +178,13 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 		// Add all of the variable values to the script context
 		BindingsSniffer context = new BindingsSniffer();
 		context.putAll(values);
+		context.set("datasources",  new HashMap<String, Double>(values)); // To workaround NMS-5019
 		context.put("math", new MathBinding());
 		double result = Double.NaN;
 		try {
-			// Evaluate the script expression
-                        Object resultObject = m_parser.createExpression(m_expression.getExpression()).evaluate(context);
-                        result = Double.parseDouble(resultObject.toString());
+		    // Fetch an instance of the JEXL script engine to evaluate the script expression
+		    Object resultObject = new JexlEngine().createExpression(m_expression.getExpression()).evaluate(context);
+		    result = Double.parseDouble(resultObject.toString());
 		} catch (Throwable e) {
 			throw new ThresholdExpressionException("Error while evaluating expression "+m_expression.getExpression()+": " + e.getMessage(), e);
 		}

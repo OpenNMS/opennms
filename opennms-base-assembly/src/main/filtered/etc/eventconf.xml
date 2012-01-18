@@ -1921,6 +1921,7 @@
   </event>
 
 
+  <event-file>events/Translator.default.events.xml</event-file>
   <event-file>events/Rancid.events.xml</event-file>
   <event-file>events/3Com.events.xml</event-file>
   <event-file>events/AdaptecRaid.events.xml</event-file>
@@ -2092,13 +2093,18 @@
   <event-file>events/UPS-MIB.events.xml</event-file>
   <event-file>events/Uptime.events.xml</event-file>
   <event-file>events/Veraz.events.xml</event-file>
+  <event-file>events/VMWare.env.events.xml</event-file>
+  <event-file>events/VMWare.vc.events.xml</event-file>
+  <event-file>events/VMWare.vminfo.events.xml</event-file>
+  <event-file>events/VMWare.obsolete.events.xml</event-file>
   <event-file>events/VMWare.events.xml</event-file>
   <event-file>events/Waverider.3000.events.xml</event-file>
   <event-file>events/Xerox-V2.events.xml</event-file>
   <event-file>events/Xerox.events.xml</event-file>
 
+  <event-file>events/ncs-component.events.xml</event-file>
+
   <event-file>events/asset-management.events.xml</event-file>
   <event-file>events/Standard.events.xml</event-file>
-  <event-file>events/Translator.default.events.xml</event-file>
   <event-file>events/default.events.xml</event-file>
 </events>

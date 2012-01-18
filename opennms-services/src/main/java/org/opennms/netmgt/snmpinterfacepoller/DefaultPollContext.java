@@ -30,6 +30,7 @@ package org.opennms.netmgt.snmpinterfacepoller;
 
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.util.Date;
 import java.util.List;
@@ -206,7 +207,7 @@ public class DefaultPollContext implements PollContext {
         if (snmpinterface.getIfName() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_NAME, snmpinterface.getIfName());
         if (snmpinterface.getIfDescr() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_DESC, snmpinterface.getIfDescr());
         if (snmpinterface.getIfAlias() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_ALIAS, snmpinterface.getIfAlias());
-        if (snmpinterface.getNetMask() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_MASK, snmpinterface.getNetMask());        
+        if (snmpinterface.getNetMask() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_MASK, str(snmpinterface.getNetMask()));        
         
         return bldr.getEvent();
     }

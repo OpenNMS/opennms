@@ -31,6 +31,7 @@ package org.opennms.netmgt.statsd;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.TimeKeeper;
@@ -43,10 +44,14 @@ import org.opennms.core.utils.TimeKeeper;
  */
 public enum RelativeTime {
 
-    THISYEAR{
+    THISYEAR {
         @Override
         public Date getStart() {
-            return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), 0, 1).getTimeInMillis());
+            final TimeZone timeZone = getTimeZone();
+            final GregorianCalendar yearCalendar = new GregorianCalendar(timeZone);
+            final GregorianCalendar januaryFirst = new GregorianCalendar(yearCalendar.get(Calendar.YEAR), 0, 1);
+            januaryFirst.setTimeZone(timeZone);
+            return new Date(januaryFirst.getTimeInMillis());
         }
 
         @Override
@@ -82,13 +87,13 @@ public enum RelativeTime {
         }
         
         public Date getEnd() {
-                  return getStartOfToday();
+            return getStartOfToday();
         }
     },
     
     LASTHOUR {
         public Date getStart() {
-            Calendar calendar = new GregorianCalendar();
+            Calendar calendar = new GregorianCalendar(getTimeZone());
             calendar.setTimeInMillis(getCurrentTime());
             
             calendar.set(Calendar.MILLISECOND, 0);
@@ -100,7 +105,7 @@ public enum RelativeTime {
         }
         
         public Date getEnd() {
-            Calendar calendar = new GregorianCalendar();
+            Calendar calendar = new GregorianCalendar(getTimeZone());
             calendar.setTimeInMillis(getCurrentTime());
 
             calendar.set(Calendar.MILLISECOND, 0);
@@ -118,7 +123,7 @@ public enum RelativeTime {
      * @return a {@link java.util.Date} object.
      */
     protected Date getStartDate(int offset) {
-        Calendar calendar = new GregorianCalendar();
+        Calendar calendar = new GregorianCalendar(getTimeZone());
         calendar.setTimeInMillis(getCurrentTime());
         
         calendar.set(Calendar.MILLISECOND, 0);
@@ -136,7 +141,7 @@ public enum RelativeTime {
      * @return a {@link java.util.Date} object.
      */
     protected Date getStartOfToday() {
-        Calendar calendar = new GregorianCalendar();
+        Calendar calendar = new GregorianCalendar(getTimeZone());
         calendar.setTimeInMillis(getCurrentTime());
 
         calendar.set(Calendar.MILLISECOND, 0);
@@ -188,12 +193,14 @@ public enum RelativeTime {
      * @return a long.
      */
     protected long getCurrentTime() {
-        if (getTimeKeeper() == null) {
-            return DEFAULT_TIME_KEEPER.getCurrentTime();
-        } else {
-            return getTimeKeeper().getCurrentTime();
-        }
+        return myTimeKeeper().getCurrentTime();
     }
 
+    protected TimeZone getTimeZone() {
+        return myTimeKeeper().getTimeZone();
+    }
 
+    protected TimeKeeper myTimeKeeper() {
+        return getTimeKeeper() == null? DEFAULT_TIME_KEEPER : getTimeKeeper();
+    }
 }

@@ -109,7 +109,7 @@ public class IfIndexNullTest {
     public void testNullIfIndex() throws Exception {
         final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
 
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/tec_dump.xml"));
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/tec_dump.xml"), true);
         
         final List<OnmsNode> nodes = getNodeDao().findAll();
         final OnmsNode node = nodes.get(0);

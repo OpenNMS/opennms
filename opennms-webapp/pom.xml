@@ -21,6 +21,17 @@
         <artifactId>gwt-maven-plugin</artifactId>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-clean-plugin</artifactId>
         <version>2.4.1</version>
         <configuration>
@@ -147,6 +158,28 @@
           </classpathContainers>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+            <execution>
+                <id>attach-artifacts</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>attach-artifact</goal>
+                </goals>
+                <configuration>
+                    <artifacts>
+                        <artifact>
+                            <file>target/opennms-webapp-1.9.94-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.9.94-SNAPSHOT.jar</file>
+                            <type>jar</type>
+                        </artifact>
+                    </artifacts>
+                </configuration>
+            </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -267,6 +300,11 @@
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-util</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.soa</artifactId>
+        <scope>provided</scope>
     </dependency>
 
     <!-- direct dependencies that should be in WEB-INF/lib -->

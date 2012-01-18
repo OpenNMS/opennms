@@ -9,7 +9,7 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
         super.setUp();
         selenium.click("link=Reports");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
@@ -49,7 +49,7 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
       @Test
       public void testAllLinks() {
         selenium.click("link=Resource Graphs");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Standard Resource"));
         assertTrue(selenium.isTextPresent("Performance Reports"));
         assertTrue(selenium.isTextPresent("Custom Resource"));
@@ -57,16 +57,16 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Network Performance Data"));
         assertTrue(selenium.isTextPresent("The Standard Performance"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=KSC Performance, Nodes, Domains");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Customized Reports"));
         assertTrue(selenium.isTextPresent("Node SNMP Interface Reports"));
         assertTrue(selenium.isTextPresent("Descriptions"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=Database Reports");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Database Reports"));
         assertTrue(selenium.isTextPresent("Descriptions"));
         assertTrue(selenium.isTextPresent("You may run or schedule"));
@@ -75,22 +75,22 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isElementPresent("//div[@id='content']/div[2]/div/ul/li[3]"));
         assertTrue(selenium.isElementPresent("link=Manage the batch report schedule"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=Statistics Reports");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         assertEquals("Statistics Reports List | OpenNMS Web Console", selenium.getTitle());
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("css=strong");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.type("id=input_j_username", "admin");
         selenium.type("name=j_password", "admin");
         selenium.click("name=Login");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
         selenium.click("css=strong");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
 }

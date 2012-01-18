@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-<!-- Old world added fireworks ... we are already in 2012, it's nice here, follow us! Greetz Ronny and Markus -->  
-<!-- OpenNMS Top-Level POM -->
+  <!-- OpenNMS Top-Level POM -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
@@ -103,7 +102,7 @@
     <module>opennms-bootstrap</module>
     <module>opennms-model</module>
     <module>opennms-ackd</module>
-    <module>opennms-alarmd</module>
+    <module>opennms-alarms</module>
     <module>opennms-config-utils</module>
     <module>opennms-config-tester</module>
     <module>opennms-dao</module>
@@ -1181,6 +1180,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>geronimo-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>gwt-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -2075,7 +2080,6 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.8.2</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.jwebunit</groupId>

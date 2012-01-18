@@ -94,7 +94,7 @@ public class SuggestionComboboxPresenter implements Presenter, SuggestionCombobo
         builder.append(getBaseHref() + "graph/chooseresource.htm");
         builder.append("?reports=all");
         builder.append("&parentResourceType=node");
-        builder.append("&parentResource" + m_view.getSelectedNode().getId());
+        builder.append("&parentResource=" + m_view.getSelectedNode().getId());
 
         Location.assign(builder.toString());
     }

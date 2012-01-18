@@ -61,4 +61,16 @@
 		<property name="reloadCheckInterval" value="-1" />
 	</bean>
 
+  <bean id="groupManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
+  </bean>
+
+  <bean id="groupManager" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupManager-init" factory-method="getInstance"/>
+
+  <bean id="userManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
+  </bean>
+
+  <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
+  
 </beans>

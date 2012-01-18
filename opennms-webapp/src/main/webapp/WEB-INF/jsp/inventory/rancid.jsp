@@ -54,7 +54,7 @@
 	  		<td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
 	  	</tr>
  		<tr>
-	  		<th>Foreign Source</th>
+	  		<th>Requisition Name</th>
 	  		<td>${model.foreignSource}</td>
 	  	</tr>
 		<tr>

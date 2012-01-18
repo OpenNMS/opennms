@@ -143,12 +143,14 @@ public class XmlDataCollectionConfigTest {
         group.setResourceType("platformSystemResource");
         group.setResourceXpath("/measCollecFile/measData/measInfo[@measInfoId='platform-system|resource']/measValue");
         group.setKeyXpath("@measObjLdn");
+        group.setTimestampXpath("/measCollecFile/fileFooter/measCollec/@endTime");
+        group.setTimestampFormat("yyyy-MM-dd'T'HH:mm:ssZ");
         group.addXmlObject(cpu);
         group.addXmlObject(mem);
         group.addXmlObject(suspect);
 
         XmlSource source = new XmlSource();
-        source.setUrl("sftp://{ipaddr}:8080/3GPP-data.xml");
+        source.setUrl("sftp.3gpp://opennms:Op3nNMS!@{ipaddr}/opt/3gpp/data/?step={step}&neId={foreignId}");
         source.addXmlGroup(group);
 
         XmlDataCollection xmlDataCollection = new XmlDataCollection();
@@ -202,8 +204,8 @@ public class XmlDataCollectionConfigTest {
 
         // Read the example XML from src/test/resources
         StringBuffer exampleXML = new StringBuffer();
-        File xmlCollectionConfig = new File(ClassLoader.getSystemResource(XmlDataCollectionConfigFactory.XML_DATACOLLECTION_CONFIG_FILE).getFile());
-        assertTrue("xml-datacollection-config.xml is readable", xmlCollectionConfig.canRead());
+        File xmlCollectionConfig = getSourceFile();
+        assertTrue(XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE + " is readable", xmlCollectionConfig.canRead());
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(xmlCollectionConfig), "UTF-8"));
         String line;
         while (true) {
@@ -233,9 +235,8 @@ public class XmlDataCollectionConfigTest {
      */
     @Test
     public void readXML() throws Exception {
-        // Retrieve the file we're parsing.
-        File xmlCollectionConfig = new File(ClassLoader.getSystemResource(XmlDataCollectionConfigFactory.XML_DATACOLLECTION_CONFIG_FILE).getFile());
-        assertTrue("xml-datacollection-config.xml is readable", xmlCollectionConfig.canRead());
+        File xmlCollectionConfig = getSourceFile();
+        assertTrue(XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE + " is readable", xmlCollectionConfig.canRead());
 
         InputStream reader = new FileInputStream(xmlCollectionConfig);
 
@@ -245,6 +246,17 @@ public class XmlDataCollectionConfigTest {
         assertTrue("Compare XML Data Collection Config objects.", xmldcc.equals(exampleXmldcc));
 
         reader.close();
+    }
+
+    /**
+     * Gets the source file.
+     *
+     * @return the source file
+     */
+    private File getSourceFile() {
+        File xmlCollectionConfig = new File("src/test/resources/", XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE);
+        System.err.println("Source File: " + xmlCollectionConfig.getAbsolutePath());
+        return xmlCollectionConfig;
     }
 
     /**

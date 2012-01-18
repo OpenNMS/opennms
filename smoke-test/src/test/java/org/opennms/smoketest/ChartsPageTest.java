@@ -8,7 +8,7 @@ public class ChartsPageTest extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
     	super.setUp();
         selenium.click("link=Charts");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
     @Test
@@ -18,7 +18,7 @@ public class ChartsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isElementPresent("css=img[alt=sample-bar-chart2]"));
         assertTrue(selenium.isElementPresent("css=img[alt=sample-bar-chart3]"));
         selenium.click("link=Log out");
-        selenium.waitForPageToLoad("30000");
+        waitForPageToLoad();
     }
 
 }

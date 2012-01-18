@@ -64,7 +64,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
 		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:/META-INF/opennms/applicationContext-troubleTicketer.xml",
-		"classpath:/org/opennms/netmgt/ticketd/applicationContext-configOverride.xml" 
+		"classpath:/org/opennms/netmgt/ticketd/applicationContext-configOverride.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         // Set opennms.ticketer.plugin to a value for unit testing

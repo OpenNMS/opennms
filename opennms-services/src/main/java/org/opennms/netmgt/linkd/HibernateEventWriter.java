@@ -50,20 +50,21 @@ import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.StpInterfaceDao;
 import org.opennms.netmgt.dao.StpNodeDao;
 import org.opennms.netmgt.dao.VlanDao;
+import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
 
 public class HibernateEventWriter extends AbstractQueryManager implements InitializingBean {
@@ -93,7 +94,10 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
 	@Autowired
 	private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-	
+
+	@Autowired
+	private PlatformTransactionManager m_transactionManager;
+
 	// SELECT node.nodeid, nodesysoid, ipaddr FROM node LEFT JOIN ipinterface ON node.nodeid = j.nodeid WHERE nodetype = 'A' AND issnmpprimary = 'P'
 	@Override
 	public List<LinkableNode> getSnmpNodeList() throws SQLException {
@@ -104,8 +108,8 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         criteria.add(Restrictions.eq("type", "A"));
         criteria.add(Restrictions.eq("iface.isSnmpPrimary", PrimaryType.PRIMARY));
         for (final OnmsNode node : m_nodeDao.findMatching(criteria)) {
-        	final String sysObjectId = node.getSysObjectId();
-			nodes.add(new LinkableNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId));
+            final String sysObjectId = node.getSysObjectId();
+            nodes.add(new LinkableNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId));
         }
 
         return nodes;
@@ -277,7 +281,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             dli.setParentIfIndex(lkm.getParentifindex());
             dli.setStatus(String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE));
             dli.setLastPollTime(now);
-            m_dataLinkInterfaceDao.save(dli);
+            m_dataLinkInterfaceDao.saveOrUpdate(dli);
 
             LogUtils.debugf(this, "storeDiscoveryLink: Storing %s", dli);
             m_dataLinkInterfaceDao.deactivateIfOlderThan(now);
@@ -304,39 +308,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	        m_stpInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, action);
 	        m_ipRouteInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, action);
 	        m_dataLinkInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, action);
-	    }
-	}
-
-	// SELECT node.nodeid,ipinterface.ifindex FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
-	@Override
-	protected OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress address) {
-	    final String addressString = str(address);
-
-	    // See if we have an existing version of this OnmsAtInterface first
-	    final OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
-	    criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-	    criteria.add(Restrictions.eq("node.type", "A"));
-	    criteria.add(Restrictions.eq("ipAddress", addressString));
-	    List<OnmsAtInterface> interfaces = m_atInterfaceDao.findMatching(criteria);
-
-	    if (interfaces.isEmpty()) {
-	        // Create a new OnmsAtInterface if the IP address is in the database
-	        OnmsIpInterface iface;
-	        final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(addressString);
-	        if (ifaces.isEmpty()) {
-	            return null;
-	        } else {
-	            if (ifaces.size() > 1) {
-	                LogUtils.debugf(this, "getAtInterfaceForAddress: More than one IpInterface matched address %s!", addressString);
-	            }
-	            iface = ifaces.get(0);
-	            return new OnmsAtInterface(iface.getNode(), iface.getIpAddress());
-	        }
-	    } else {
-	        if (interfaces.size() > 1) {
-	            LogUtils.debugf(this, "getAtInterfaceForAddress: More than one AtInterface matched address %s!", addressString);
-	        }
-	        return interfaces.get(0);
 	    }
 	}
 
@@ -478,111 +449,179 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
 
     @Override
-    @Transactional
-    protected void saveAtInterface(final Connection dbConn, final OnmsAtInterface at) {
-        OnmsAtInterface atInterface = m_atInterfaceDao.findByNodeAndAddress(at.getNode().getId(), at.getIpAddress(), at.getMacAddress());
-        if (atInterface == null) {
-            atInterface = at;
-        } else {
-            atInterface.setIfIndex(at.getIfIndex());
-            atInterface.setIpAddress(at.getIpAddress());
-            atInterface.setLastPollTime(at.getLastPollTime());
-            atInterface.setMacAddress(at.getMacAddress());
-            atInterface.setNode(at.getNode());
-            atInterface.setSourceNodeId(at.getSourceNodeId());
-            atInterface.setStatus(at.getStatus());
-        }
-        
-        // "nodeId", "ipAddr", "atPhysAddr
-        m_atInterfaceDao.saveOrUpdate(at);
+    protected synchronized void saveIpRouteInterface(final Connection dbConn, final OnmsIpRouteInterface saveMe) throws SQLException {
+        new UpsertTemplate<OnmsIpRouteInterface, IpRouteInterfaceDao>(m_transactionManager, m_ipRouteInterfaceDao) {
+
+            @Override
+            protected OnmsIpRouteInterface query() {
+                return m_dao.findByNodeAndDest(saveMe.getNode().getId(), saveMe.getRouteDest());
+            }
+
+            @Override
+            protected OnmsIpRouteInterface doUpdate(OnmsIpRouteInterface updateMe) {
+                // Make sure that the fields used in the query match
+                Assert.isTrue(updateMe.getNode().compareTo(saveMe.getNode()) == 0);
+                Assert.isTrue(updateMe.getRouteDest().equals(saveMe.getRouteDest()));
+
+                if (updateMe.getId() == null && saveMe.getId() != null) {
+                    updateMe.setId(saveMe.getId());
+                }
+                updateMe.setLastPollTime(saveMe.getLastPollTime());
+                //updateMe.setRouteDest(saveMe.getRouteDest());
+                updateMe.setRouteIfIndex(saveMe.getRouteIfIndex());
+                updateMe.setRouteMask(saveMe.getRouteMask());
+                updateMe.setRouteMetric1(saveMe.getRouteMetric1());
+                updateMe.setRouteMetric2(saveMe.getRouteMetric2());
+                updateMe.setRouteMetric3(saveMe.getRouteMetric3());
+                updateMe.setRouteMetric4(saveMe.getRouteMetric4());
+                updateMe.setRouteMetric5(saveMe.getRouteMetric5());
+                updateMe.setRouteNextHop(saveMe.getRouteNextHop());
+                updateMe.setRouteProto(saveMe.getRouteProto());
+                updateMe.setRouteType(saveMe.getRouteType());
+                updateMe.setStatus(saveMe.getStatus());
+
+                m_dao.update(updateMe);
+                m_dao.flush();
+                return updateMe;
+            }
+
+            @Override
+            protected OnmsIpRouteInterface doInsert() {
+                m_dao.save(saveMe);
+                m_dao.flush();
+                return saveMe;
+            }
+        }.execute();
     }
 
-	@Override
-	@Transactional
-	protected synchronized void saveIpRouteInterface(final Connection dbConn, final OnmsIpRouteInterface route) throws SQLException {
-        OnmsIpRouteInterface ipRouteInterface = m_ipRouteInterfaceDao.findByNodeAndDest(route.getNode().getId(), route.getRouteDest());
-        if (ipRouteInterface == null) {
-            ipRouteInterface = route;
-        } else {
-            ipRouteInterface.setLastPollTime(route.getLastPollTime());
-            //ipRouteInterface.setRouteDest(route.getRouteDest());
-            ipRouteInterface.setRouteIfIndex(route.getRouteIfIndex());
-            ipRouteInterface.setRouteMask(route.getRouteMask());
-            ipRouteInterface.setRouteMetric1(route.getRouteMetric1());
-            ipRouteInterface.setRouteMetric2(route.getRouteMetric2());
-            ipRouteInterface.setRouteMetric3(route.getRouteMetric3());
-            ipRouteInterface.setRouteMetric4(route.getRouteMetric4());
-            ipRouteInterface.setRouteMetric5(route.getRouteMetric5());
-            ipRouteInterface.setRouteNextHop(route.getRouteNextHop());
-            ipRouteInterface.setRouteProto(route.getRouteProto());
-            ipRouteInterface.setRouteType(route.getRouteType());
-            ipRouteInterface.setStatus(route.getStatus());
-        }
-		m_ipRouteInterfaceDao.saveOrUpdate(ipRouteInterface);
-	}
+    @Override
+    protected void saveVlan(final Connection dbConn, final OnmsVlan saveMe) throws SQLException {
+        new UpsertTemplate<OnmsVlan, VlanDao>(m_transactionManager, m_vlanDao) {
 
-	@Override
-	@Transactional
-	protected void saveVlan(final Connection dbConn, final OnmsVlan v) throws SQLException {
-	    OnmsVlan vlan = m_vlanDao.findByNodeAndVlan(v.getNode().getId(), v.getVlanId());
-	    if (vlan == null) {
-	        vlan = v;
-	    } else {
-	        vlan.setLastPollTime(v.getLastPollTime());
-	        vlan.setStatus(v.getStatus());
-	        //vlan.setVlanId(v.getVlanId());
-	        vlan.setVlanName(v.getVlanName());
-            vlan.setVlanStatus(v.getVlanStatus());
-	        vlan.setVlanType(v.getVlanType());
-	    }
-		m_vlanDao.saveOrUpdate(v);
-	}
+            @Override
+            protected OnmsVlan query() {
+                return m_dao.findByNodeAndVlan(saveMe.getNode().getId(), saveMe.getVlanId());
+            }
 
-	@Override
-	@Transactional
-	protected synchronized void saveStpNode(final Connection dbConn, final OnmsStpNode stp) throws SQLException {
-	    OnmsStpNode stpNode = m_stpNodeDao.findByNodeAndVlan(stp.getNode().getId(), stp.getBaseVlan());
-	    if (stpNode == null) {
-	        stpNode = stp;
-	    } else {
-	        stpNode.setBaseBridgeAddress(stp.getBaseBridgeAddress());
-	        stpNode.setBaseNumPorts(stp.getBaseNumPorts());
-	        stpNode.setBaseType(stp.getBaseType());
-	        stpNode.setBaseVlan(stp.getBaseVlan());
-	        stpNode.setBaseVlanName(stp.getBaseVlanName());
-	        stpNode.setLastPollTime(stp.getLastPollTime());
-	        stpNode.setNode(stp.getNode());
-	        stpNode.setStatus(stp.getStatus());
-	        stpNode.setStpDesignatedRoot(stp.getStpDesignatedRoot());
-	        stpNode.setStpPriority(stp.getStpPriority());
-	        stpNode.setStpProtocolSpecification(stp.getStpProtocolSpecification());
-	        stpNode.setStpRootCost(stp.getStpRootCost());
-	        stpNode.setStpRootPort(stp.getStpRootPort());
-	    }
-		m_stpNodeDao.saveOrUpdate(stpNode);
+            @Override
+            protected OnmsVlan doUpdate(OnmsVlan updateMe) {
+                // Make sure that the fields used in the query match
+                Assert.isTrue(updateMe.getNode().compareTo(saveMe.getNode()) == 0);
+                Assert.isTrue(updateMe.getVlanId().equals(saveMe.getVlanId()));
+
+                if (updateMe.getId() == null && saveMe.getId() != null) {
+                    updateMe.setId(saveMe.getId());
+                }
+                updateMe.setLastPollTime(saveMe.getLastPollTime());
+                updateMe.setStatus(saveMe.getStatus());
+                updateMe.setVlanName(saveMe.getVlanName());
+                updateMe.setVlanStatus(saveMe.getVlanStatus());
+                updateMe.setVlanType(saveMe.getVlanType());
+
+                m_dao.update(updateMe);
+                m_dao.flush();
+                return updateMe;
+            }
+
+            @Override
+            protected OnmsVlan doInsert() {
+                m_dao.save(saveMe);
+                m_dao.flush();
+                return saveMe;
+            }
+        }.execute();
+    }
+
+    @Override
+    protected synchronized void saveStpNode(final Connection dbConn, final OnmsStpNode saveMe) throws SQLException {
+        new UpsertTemplate<OnmsStpNode, StpNodeDao>(m_transactionManager, m_stpNodeDao) {
+
+            @Override
+            protected OnmsStpNode query() {
+                return m_dao.findByNodeAndVlan(saveMe.getNode().getId(), saveMe.getBaseVlan());
+            }
+
+            @Override
+            protected OnmsStpNode doUpdate(OnmsStpNode updateMe) {
+                // Make sure that the fields used in the query match
+                Assert.isTrue(updateMe.getNode().compareTo(saveMe.getNode()) == 0);
+                Assert.isTrue(updateMe.getBaseVlan().equals(saveMe.getBaseVlan()));
+
+                if (updateMe.getId() == null && saveMe.getId() != null) {
+                    updateMe.setId(saveMe.getId());
+                }
+                updateMe.setBaseBridgeAddress(saveMe.getBaseBridgeAddress());
+                updateMe.setBaseNumPorts(saveMe.getBaseNumPorts());
+                updateMe.setBaseType(saveMe.getBaseType());
+                //updateMe.setBaseVlan(saveMe.getBaseVlan());
+                updateMe.setBaseVlanName(saveMe.getBaseVlanName());
+                updateMe.setLastPollTime(saveMe.getLastPollTime());
+                //updateMe.setNode(saveMe.getNode());
+                updateMe.setStatus(saveMe.getStatus());
+                updateMe.setStpDesignatedRoot(saveMe.getStpDesignatedRoot());
+                updateMe.setStpPriority(saveMe.getStpPriority());
+                updateMe.setStpProtocolSpecification(saveMe.getStpProtocolSpecification());
+                updateMe.setStpRootCost(saveMe.getStpRootCost());
+                updateMe.setStpRootPort(saveMe.getStpRootPort());
+
+                m_dao.update(updateMe);
+                m_dao.flush();
+                return updateMe;
+            }
+
+            @Override
+            protected OnmsStpNode doInsert() {
+                m_dao.save(saveMe);
+                m_dao.flush();
+                return saveMe;
+            }
+        }.execute();
 	}
 
     @Override
-    @Transactional
-    protected void saveStpInterface(final Connection dbConn, final OnmsStpInterface stp) throws SQLException {
-        OnmsStpInterface stpInterface = m_stpInterfaceDao.findByNodeAndVlan(stp.getNode().getId(), stp.getBridgePort(), stp.getVlan());
-        if (stpInterface == null) {
-            stpInterface = stp;
-        } else {
-            stpInterface.setBridgePort(stp.getBridgePort());
-            stpInterface.setIfIndex(stp.getIfIndex());
-            stpInterface.setLastPollTime(stp.getLastPollTime());
-            stpInterface.setNode(stp.getNode());
-            stpInterface.setStatus(stp.getStatus());
-            stpInterface.setStpPortDesignatedBridge(stp.getStpPortDesignatedBridge());
-            stpInterface.setStpPortDesignatedCost(stp.getStpPortDesignatedCost());
-            stpInterface.setStpPortDesignatedPort(stp.getStpPortDesignatedPort());
-            stpInterface.setStpPortDesignatedRoot(stp.getStpPortDesignatedRoot());
-            stpInterface.setStpPortPathCost(stp.getStpPortPathCost());
-            stpInterface.setStpPortState(stp.getStpPortState());
-            stpInterface.setVlan(stp.getVlan());
-        }
-        m_stpInterfaceDao.saveOrUpdate(stpInterface);
+    protected void saveStpInterface(final Connection dbConn, final OnmsStpInterface saveMe) throws SQLException {
+        new UpsertTemplate<OnmsStpInterface, StpInterfaceDao>(m_transactionManager, m_stpInterfaceDao) {
+
+            @Override
+            protected OnmsStpInterface query() {
+                return m_dao.findByNodeAndVlan(saveMe.getNode().getId(), saveMe.getBridgePort(), saveMe.getVlan());
+            }
+
+            @Override
+            protected OnmsStpInterface doUpdate(OnmsStpInterface updateMe) {
+                // Make sure that the fields used in the query match
+                Assert.isTrue(updateMe.getNode().compareTo(saveMe.getNode()) == 0);
+                Assert.isTrue(updateMe.getBridgePort().equals(saveMe.getBridgePort()));
+                Assert.isTrue(updateMe.getVlan().equals(saveMe.getVlan()));
+
+                if (updateMe.getId() == null && saveMe.getId() != null) {
+                    updateMe.setId(saveMe.getId());
+                }
+                //updateMe.setBridgePort(saveMe.getBridgePort());
+                updateMe.setIfIndex(saveMe.getIfIndex());
+                updateMe.setLastPollTime(saveMe.getLastPollTime());
+                //updateMe.setNode(saveMe.getNode());
+                updateMe.setStatus(saveMe.getStatus());
+                updateMe.setStpPortDesignatedBridge(saveMe.getStpPortDesignatedBridge());
+                updateMe.setStpPortDesignatedCost(saveMe.getStpPortDesignatedCost());
+                updateMe.setStpPortDesignatedPort(saveMe.getStpPortDesignatedPort());
+                updateMe.setStpPortDesignatedRoot(saveMe.getStpPortDesignatedRoot());
+                updateMe.setStpPortPathCost(saveMe.getStpPortPathCost());
+                updateMe.setStpPortState(saveMe.getStpPortState());
+                //updateMe.setVlan(saveMe.getVlan());
+
+                m_dao.update(updateMe);
+                m_dao.flush();
+                return updateMe;
+            }
+
+            @Override
+            protected OnmsStpInterface doInsert() {
+                m_dao.save(saveMe);
+                m_dao.flush();
+                return saveMe;
+            }
+        }.execute();
     }
 
     @Override
@@ -595,6 +634,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         Assert.notNull(m_snmpInterfaceDao);
         Assert.notNull(m_stpInterfaceDao);
         Assert.notNull(m_stpNodeDao);
+        Assert.notNull(m_transactionManager);
         Assert.notNull(m_vlanDao);
         LogUtils.debugf(this, "Initialized %s", this.getClass().getSimpleName());
     }

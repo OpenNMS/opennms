@@ -122,6 +122,7 @@ public class OnmsAtInterface {
 	}
 
     @Id
+    @Column(nullable=false)
     @XmlTransient
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")    

@@ -256,11 +256,25 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="linkdConfigFactory" class="org.opennms.netmgt.config.LinkdConfigFactory" depends-on="linkdConfigFactory-init" factory-method="getInstance"/>
 
-  <bean id="userDao" class="org.opennms.web.springframework.security.UserDaoImpl">
+  <bean id="groupManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
+  </bean>
+
+  <bean id="groupManager" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupManager-init" factory-method="getInstance"/>
+
+  <bean id="userManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
+  </bean>
+
+  <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
+
+  <bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
     <property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />
     <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
     <property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />
     <property name="useGroups" value="false" />
+    <property name="userManager" ref="userManager" />
+    <property name="groupManager" ref="groupManager" />
   </bean>
   
   <bean id="mapPropertiesFactory" class="org.opennms.web.map.config.MapPropertiesFactory"/>

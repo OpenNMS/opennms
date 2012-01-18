@@ -54,7 +54,7 @@ public class ImportJob implements Job {
             String url = (String) context.getJobDetail().getJobDataMap().get(KEY);
             Assert.notNull(url);
 
-            getProvisioner().doImport(url);
+            getProvisioner().doImport(url, true);
             
         } catch (Throwable t) {
             throw new JobExecutionException(t);

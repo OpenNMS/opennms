@@ -34,14 +34,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria;
@@ -58,7 +57,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
-        "classpath:/daoWebRepositoryTestContext.xml"
+        "classpath:/daoWebRepositoryTestContext.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -73,11 +73,6 @@ public class DaoWebAlarmRepositoryTest {
     @Before
     public void setUp(){
        m_dbPopulator.populateDatabase();
-    }
-    
-    @After
-    public void tearDown(){
-        
     }
     
     @Test

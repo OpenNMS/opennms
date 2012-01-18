@@ -48,7 +48,9 @@ import org.hibernate.criterion.Subqueries;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
+import org.opennms.web.rest.support.InetAddressTypeEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -66,7 +68,7 @@ public class OnmsRestService {
 
 	protected static final int DEFAULT_LIMIT = 10;
 
-	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE, CONTAINS }
+	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, IPLIKE, GT, LT, GE, LE, CONTAINS }
 
 	private List<Order> m_ordering = new ArrayList<Order>();
 	private Integer m_limit = null;
@@ -214,10 +216,13 @@ public class OnmsRestService {
 				op=ComparisonOperation.NE;
 			} else if (comparatorLabel.equals("contains")) {
 			    op=ComparisonOperation.CONTAINS;
+			} else if (comparatorLabel.equals("iplike")) {
+			    op=ComparisonOperation.IPLIKE;
 			}
 		}
 		BeanWrapper wrapper = new BeanWrapperImpl(objectClass);
 		wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
+		wrapper.registerCustomEditor(java.net.InetAddress.class, new InetAddressTypeEditor());
 		
 		List<Criterion> criteriaList = new ArrayList<Criterion>();
 		
@@ -229,11 +234,16 @@ public class OnmsRestService {
     			} else if ("notnull".equals(stringValue)) {
     				criteriaList.add(Restrictions.isNotNull(key));
     			} else {
-    				@SuppressWarnings("unchecked")
-					Object thisValue=wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+    				
+					Object thisValue;
     				if ("node.id".equals(key)) {
     					thisValue = Integer.valueOf(stringValue);
+    				}else if(op == ComparisonOperation.CONTAINS || op == ComparisonOperation.IPLIKE) {
+    				    thisValue = stringValue;
+    				}else {
+    				    thisValue = convertIfNecessary(wrapper, key, stringValue);
     				}
+    				
     				LogUtils.warnf(this, "key = %s, propertyType = %s", key, wrapper.getPropertyType(key));
     				switch(op) {
     		   		case EQ:
@@ -262,6 +272,10 @@ public class OnmsRestService {
     					break;
     		   		case CONTAINS:
     		   		    criteriaList.add(Restrictions.ilike(key, stringValue, MatchMode.ANYWHERE));
+    		   		    break;
+    		   		case IPLIKE:
+    		   		    criteriaList.add(OnmsRestrictions.ipLike(stringValue));
+    		   		    break;
     				}
     			}
 		    }
@@ -285,6 +299,11 @@ public class OnmsRestService {
 		    }
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+    private Object convertIfNecessary(BeanWrapper wrapper, String key, String stringValue) {
+        return wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+    }
 
     /**
      * Does ordering processing; pulled out to a separate method for visual clarity.  Configures ordering as defined in addFiltersToCriteria
@@ -336,11 +355,16 @@ public class OnmsRestService {
      * @param <T> a T object.
      * @return a T object.
      */
-    protected <T> T throwException(Status status, String msg) {
+    protected <T> WebApplicationException getException(final Status status, final String msg) throws WebApplicationException {
         log().error(msg);
-        throw new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
-    
+
+    protected <T> WebApplicationException getException(Status status, Throwable t) throws WebApplicationException {
+        log().error(t.getMessage(), t);
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+    }
+
     /**
      * <p>log</p>
      *
@@ -428,7 +452,7 @@ public class OnmsRestService {
             if (wrapper.isWritableProperty(propertyName)) {
                 Object value = null;
                 String stringValue = params.getFirst(key);
-                value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(propertyName));
+                value = convertIfNecessary(wrapper, propertyName, stringValue);
                 wrapper.setPropertyValue(propertyName, value);
             }
         }

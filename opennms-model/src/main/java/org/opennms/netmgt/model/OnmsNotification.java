@@ -180,6 +180,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
      * @return a {@link java.lang.Integer} object.
      */
     @Id
+    @Column(nullable=false)
     @XmlAttribute(name="id")
     @SequenceGenerator(name="notifySequence", sequenceName="notifyNxtId")
     @GeneratedValue(generator="notifySequence")

@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.protocols</artifactId>
+    <version>1.9.94-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.protocols</groupId>
+  <artifactId>selenium-monitor</artifactId>
+  <name>selenium-monitor</name>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/etc.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <!-- Overrided scope from parent to compile -->
+      <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+		<groupId>org.opennms</groupId>
+    	<artifactId>opennms-services</artifactId>
+    	<version>${project.version}</version>
+    	<scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+    	<groupId>org.seleniumhq.selenium</groupId>
+    	<artifactId>selenium-java</artifactId>
+    	<version>2.7.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-support</artifactId>
+        <version>2.7.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-firefox-driver</artifactId>
+        <version>2.7.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-chrome-driver</artifactId>
+        <version>2.7.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-api</artifactId>
+        <version>2.7.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy</artifactId>
+        <version>1.9.0-beta-3</version>
+    </dependency>
+    <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>10.0.1</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.http</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <type>test-jar</type>
+    </dependency>
+  </dependencies>
+</project>
