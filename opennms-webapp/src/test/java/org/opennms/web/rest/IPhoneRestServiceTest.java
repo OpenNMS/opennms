@@ -190,5 +190,6 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		assertTrue(xml.contains("count=\"1\""));
 		assertTrue(xml.contains("id=\"2\""));
 		assertTrue(xml.contains("192.168.1.1"));
+		assertFalse(xml.contains("<ipAddress/>"));
 	}
 }
