@@ -63,7 +63,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
     /**
      * Logging
      */
-    private Logger logger = LoggerFactory.getLogger(LegacyLocalReportRepository.class);
+    private Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + LegacyLocalReportRepository.class.getName());
 
     /**
      * Data access to local-reports.xml

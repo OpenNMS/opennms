@@ -53,7 +53,7 @@ public class DefaultRemoteRepository implements ReportRepository {
     /**
      * Logging
      */
-    private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepository.class);
+    private Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + DefaultRemoteRepository.class.getName());
 
     /**
      * Model for repository configuration for remote-repository.xml
