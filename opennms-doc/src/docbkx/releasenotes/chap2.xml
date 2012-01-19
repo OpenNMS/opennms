@@ -6,6 +6,31 @@
 
 	<!-- Start 1.8 -->
 
+
+	<section id="opennms-1.8.17">
+		<title>Changes in OpenNMS 1.8.17</title>
+
+		<section id="opennms-1.8.17-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Field reference to script engine appears to cause memory bloat (Issue <ulink url='http://issues.opennms.org/browse/NMS-5076'>NMS-5076</ulink>)</para></listitem>
+				<listitem><para>Notification names cannot contain an apostrophe it breaks the Java script (Issue <ulink url='http://issues.opennms.org/browse/NMS-5090'>NMS-5090</ulink>)</para></listitem>
+				<listitem><para>Spike hunter throws an exception that prevents to scan all RRAs. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5096'>NMS-5096</ulink>)</para></listitem>
+				<listitem><para>If a threshold configuration contains invalid data from evaluators point of view a silent exception is thrown. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5102'>NMS-5102</ulink>)</para></listitem>
+				<listitem><para>XSS vulnerability in OpenNMS web UI (Issue <ulink url='http://issues.opennms.org/browse/NMS-5128'>NMS-5128</ulink>)</para></listitem>
+				<listitem><para>provision.pl not working &quot;set&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-5130'>NMS-5130</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.17-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Add LdapsMonitor (Issue <ulink url='http://issues.opennms.org/browse/NMS-5129'>NMS-5129</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.8.16">
 		<title>Changes in OpenNMS 1.8.16</title>
 
