@@ -107,8 +107,8 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         } catch (IOException e) {
             log.error("IO exception trying to set destination email address",
                       e);
-        } catch (NullPointerException e) {
-            options.setMailTo(""); // See NMS-5111 for more details.
+        } catch (NullPointerException e) { // See NMS-5111 for more details.
+            log.warn("the user " + userId + " does not have any email configured.");
         }
 
         options.setInstanceId(reportId + " " + userId);
