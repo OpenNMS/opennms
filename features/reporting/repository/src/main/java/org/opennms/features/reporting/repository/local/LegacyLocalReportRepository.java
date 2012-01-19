@@ -83,7 +83,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
     /**
      * Name for the local community repository
      */
-    private final String REPOSITORY_NAME = "Community local repository";
+    private final String REPOSITORY_NAME = "Local Report Repository";
 
     /**
      * Description for the local community repository
@@ -93,7 +93,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
     /**
      * URL to subscribe a repository
      */
-    private final String MANAGEMENT_URL = "http://localhost/manageLegacyLocalRepositoy";
+    private final String MANAGEMENT_URL = "blank";
 
     /**
      * Default constructor creates one local repositories for OpenNMS community reports.
