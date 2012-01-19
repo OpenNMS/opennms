@@ -1704,24 +1704,20 @@ public class ManagerDefaultImpl implements Manager {
         }
     }
 
-    @Override
     public String execCommand(final Command command) {
         String key= UUID.randomUUID().toString();
         commandmap.put(key, command);
         return key;
     }
 
-    @Override
     public Command getCommand(String id) {
         return commandmap.get(id);
     }
 
-    @Override
     public void removeCommand(String id) {
         commandmap.remove(id);
     }
 
-    @Override
     public boolean checkCommandExecution() {
         List<String> keytoremove = new ArrayList<String>();
         for (String key: commandmap.keySet()) {
