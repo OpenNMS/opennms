@@ -35,6 +35,7 @@ cd "${TOPDIR}/.."
 ./make-installer.sh -a -m "${TIMESTAMP}" -u "${REVISION}"
 
 # copy the source to SourceForge
+echo $UPDATE_REPO "${RELEASE}" standalone-opennms-installer*${TIMESTAMP}.${REVISION}.zip
 $UPDATE_REPO "${RELEASE}" standalone-opennms-installer*${TIMESTAMP}.${REVISION}.zip
 
 $BUILDTOOL nightly-jar save
