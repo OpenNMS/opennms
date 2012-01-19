@@ -38,7 +38,7 @@ import java.util.List;
  * 
  * @version $Revision$ $Date$
  */
-@XmlRootElement(name = "local-reports")
+@XmlRootElement(name = "database-reports")
 public class LocalReports {
 
     private List<Report> m_reportList = new ArrayList<Report>();

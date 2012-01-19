@@ -234,10 +234,10 @@
   </bean>
   <!-- Report repository for local community reports and OpenNMS CONNECT remote repository access -->
   <bean id="legacyLocalReportsConfigResource" class="org.springframework.core.io.UrlResource">
-    <constructor-arg value="file:${opennms.home}/etc/local-reports.xml"/>
+    <constructor-arg value="file:${opennms.home}/etc/database-reports.xml"/>
   </bean>
   <bean id="legacyLocalJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">
-    <constructor-arg value="file:${opennms.home}/etc/local-jasper-reports.xml"/>
+    <constructor-arg value="file:${opennms.home}/etc/jasper-reports.xml"/>
   </bean>
   <bean id="defaultRemoteRepositoryConfigResource" class="org.springframework.core.io.UrlResource">
     <constructor-arg value="file:${opennms.home}/etc/remote-repository.xml"/>
