@@ -94,7 +94,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         try {
             String emailAddress = userFactory.getEmail(userId);
             if (emailAddress != null) {
-                options.setMailTo(userFactory.getEmail(userId));
+                options.setMailTo(emailAddress);
             }
         } catch (MarshalException e) {
             log.error(
@@ -107,6 +107,8 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         } catch (IOException e) {
             log.error("IO exception trying to set destination email address",
                       e);
+        } catch (NullPointerException e) {
+            options.setMailTo(""); // See NMS-5111 for more details.
         }
 
         options.setInstanceId(reportId + " " + userId);
