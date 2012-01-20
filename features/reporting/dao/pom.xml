@@ -1,39 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-	<parent>
-		<groupId>org.opennms.features</groupId>
-		<artifactId>org.opennms.features.reporting</artifactId>
-		<version>1.9.94-RRP-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.opennms.features.reporting</groupId>
-	<artifactId>org.opennms.features.reporting.dao</artifactId>
-	<name>OpenNMS Dao for Reports</name>
-	<url>http://www.opennms.org/</url>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.opennms.features.reporting</groupId>
-			<artifactId>org.opennms.features.reporting.model</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>0.9.30</version>
-		</dependency>
-        <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>spring-dependencies</artifactId>
-            <type>pom</type>
-        </dependency>
-	</dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>org.opennms.features.reporting</artifactId>
+    <version>1.9.94-RRP-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.reporting</groupId>
+  <artifactId>org.opennms.features.reporting.dao</artifactId>
+  <name>OpenNMS Dao for Reports</name>
+  <url>http://www.opennms.org/</url>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.6.3</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>0.9.30</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+  </dependencies>
 </project>
