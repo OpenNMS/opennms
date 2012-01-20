@@ -217,7 +217,7 @@ public class LegacyLocalReportRepositoryTest {
      */
     @Test
     public void testGetRepositoryName() throws Exception {
-        assertEquals("Test get repository name", "Community local repository", m_legacyLocalReportRepository.getRepositoryName());
+        assertEquals("Test get repository name", "Local Report Repository", m_legacyLocalReportRepository.getRepositoryName());
     }
 
     /**
@@ -241,7 +241,7 @@ public class LegacyLocalReportRepositoryTest {
      */
     @Test
     public void testGetManagementUrl() throws Exception {
-        assertEquals("Test get repository management url", "http://localhost/manageLegacyLocalRepositoy", m_legacyLocalReportRepository.getManagementUrl());
+        assertEquals("Test get repository management url", "blank", m_legacyLocalReportRepository.getManagementUrl());
     }
 
     /**
