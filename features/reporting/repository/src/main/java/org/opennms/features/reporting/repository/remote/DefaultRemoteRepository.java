@@ -114,11 +114,11 @@ public class DefaultRemoteRepository implements ReportRepository {
                 webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
                 });
             } catch (Exception e) {
-                logger.error("Error requesting report template from repository. Error message: '{}'", e.getMessage());
+                logger.error("Error requesting report template from repository. Error message: '{}' Uri was: '{}'", e.getMessage(), m_webResource.getURI());
                 e.printStackTrace();
             }
 
-            logger.debug("getReports got '{}' RemoteReportSDOs", webCallResult.size());
+            logger.debug("getReports got '{}' RemoteReportSDOs from uri '{}'", webCallResult.size(), m_webResource.getURI());
 
             resultReports = this.mapSDOListToBasicReportList(webCallResult);
 
@@ -139,7 +139,7 @@ public class DefaultRemoteRepository implements ReportRepository {
                 webCallResult = m_webResource.get(new GenericType<List<RemoteReportSDO>>() {
                 });
             } catch (Exception e) {
-                logger.error("Error requesting online reports. Error message: '{}'", e.getMessage());
+                logger.error("Error requesting online reports. Error message: '{}' URI was: '{}'", e.getMessage(), m_webResource.getURI());
                 e.printStackTrace();
             }
 
@@ -160,7 +160,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
-                logger.error("Error requesting report service by report id. Error message: '{}'", e.getMessage());
+                logger.error("Error requesting report service by report id. Error message: '{}' URI was: '{}'", e.getMessage(), m_webResource.getURI());
                 e.printStackTrace();
             }
         }
@@ -179,7 +179,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
-                logger.error("Error requesting display name by report id. Error message: '{}'", e.getMessage());
+                logger.error("Error requesting display name by report id. Error message: '{}' URI was: '{}'", e.getMessage(), m_webResource.getURI());
                 e.printStackTrace();
             }
         }
@@ -198,7 +198,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             try {
                 result = m_webResource.get(String.class);
             } catch (Exception e) {
-                logger.error("Error requesting engine by id. Error message: '{}'", e.getMessage());
+                logger.error("Error requesting engine by id. Error message: '{}' URI was: '{}'", e.getMessage(), m_webResource.getURI());
                 e.printStackTrace();
             }
         }
@@ -217,7 +217,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             try {
                 templateStreamResult = m_webResource.get(InputStream.class);
             } catch (Exception e) {
-                logger.error("Error requesting template stream by id. Error message: '{}'", e.getMessage());
+                logger.error("Error requesting template stream by id. Error message: '{}' URI was: '{}'", e.getMessage(), m_webResource.getURI());
                 e.printStackTrace();
             }
         }
@@ -264,7 +264,7 @@ public class DefaultRemoteRepository implements ReportRepository {
                 return false;
             }
         } else {
-            logger.debug("Problem by RemoteRepository Config Access. No RemoteRepository can be used.");
+            logger.debug("Problem by RemoteRepository Config Access. RemoteRepository can't be used.");
             return false;
         }
         return true;
@@ -280,11 +280,11 @@ public class DefaultRemoteRepository implements ReportRepository {
                         + "_" + result.getId());
             } catch (IllegalAccessException e) {
                 logger.debug("SDO to BasicReport mapping IllegalAssessException while copyProperties from '{}' to '{}' with exception.", report, result);
-                logger.error("SDO to BasicReport mapping IllegalAssessException while copyProperties '{}'", e);
+                logger.error("SDO to BasicReport mapping IllegalAssessException while copyProperties '{}' RepositoryURI: '{}'", e, m_remoteRepositoryDefintion.getURI());
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
                 logger.debug("SDO to BasicReport mapping InvocationTargetException while copyProperties from '{}' to '{}' with exception.", report, result);
-                logger.error("SDO to BasicReport mapping InvocationTargetException while copyProperties '{}'", e);
+                logger.error("SDO to BasicReport mapping InvocationTargetException while copyProperties '{}' RepositoryURI: '{}'", e, m_remoteRepositoryDefintion.getURI());
                 e.printStackTrace();
             }
 
