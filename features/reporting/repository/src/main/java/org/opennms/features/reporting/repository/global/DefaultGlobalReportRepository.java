@@ -51,7 +51,7 @@ import java.util.List;
  * @author Markus Neumann <markus@opennms.com>
  * @author Ronny Trommer <ronny@opennms.com>
  * @version $Id: $
- * @since 1.8.1
+ * @since 1.10
  */
 @ContextConfiguration(locations = {
         "classpath:META-INF/opennms/applicationContext-reportingRepository.xml",
