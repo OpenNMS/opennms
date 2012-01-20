@@ -142,7 +142,9 @@ public class DefaultRemoteRepository implements ReportRepository {
                 logger.error("Error requesting online reports. Error message: '{}' URI was: '{}'", e.getMessage(), m_webResource.getURI());
                 e.printStackTrace();
             }
-
+            
+            logger.debug("getOnlineReports got '{}' RemoteReportSDOs from uri '{}'", webCallResult.size(), m_webResource.getURI());
+            
             resultReports = this.mapSDOListToBasicReportList(webCallResult);
         }
         return resultReports;
@@ -163,6 +165,7 @@ public class DefaultRemoteRepository implements ReportRepository {
                 logger.error("Error requesting report service by report id. Error message: '{}' URI was: '{}'", e.getMessage(), m_webResource.getURI());
                 e.printStackTrace();
             }
+            logger.debug("getReportService for id / result: '{}' URI was: '{}' ", reportId + " / " + result, m_webResource.getURI());
         }
         return result;
     }
@@ -182,6 +185,9 @@ public class DefaultRemoteRepository implements ReportRepository {
                 logger.error("Error requesting display name by report id. Error message: '{}' URI was: '{}'", e.getMessage(), m_webResource.getURI());
                 e.printStackTrace();
             }
+            
+            logger.debug("getDisplayName for id / result: '{}' URI was: '{}' ", reportId + " / " + result, m_webResource.getURI());
+            
         }
         return result;
     }
@@ -201,6 +207,9 @@ public class DefaultRemoteRepository implements ReportRepository {
                 logger.error("Error requesting engine by id. Error message: '{}' URI was: '{}'", e.getMessage(), m_webResource.getURI());
                 e.printStackTrace();
             }
+            
+            logger.debug("getEngine for id / result: '{}' URI was: '{}' ", reportId + " / " + result, m_webResource.getURI());
+            
         }
         return result;
     }
@@ -220,6 +229,9 @@ public class DefaultRemoteRepository implements ReportRepository {
                 logger.error("Error requesting template stream by id. Error message: '{}' URI was: '{}'", e.getMessage(), m_webResource.getURI());
                 e.printStackTrace();
             }
+            
+            logger.debug("getTemplateStream for id / inputstream: '{}' URI was: '{}' ", reportId + " / " + templateStreamResult, m_webResource.getURI());
+            
         }
         return templateStreamResult;
     }
@@ -229,6 +241,7 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     @Override
     public String getRepositoryId() {
+        logger.debug("getRepositoryId was called: '{}'", m_remoteRepositoryDefintion.getRepositoryId());
         return this.m_remoteRepositoryDefintion.getRepositoryId();
     }
 
@@ -237,6 +250,7 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     @Override
     public String getRepositoryName() {
+        logger.debug("getRepositoryName was called: '{}'", m_remoteRepositoryDefintion.getRepositoryName());
         return this.m_remoteRepositoryDefintion.getRepositoryName();
     }
 
@@ -245,6 +259,7 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     @Override
     public String getRepositoryDescription() {
+        logger.debug("getRepositoryDescription was called: '{}'", m_remoteRepositoryDefintion.getRepositoryDescription());
         return this.m_remoteRepositoryDefintion.getRepositoryDescription();
     }
 
@@ -253,6 +268,7 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     @Override
     public String getManagementUrl() {
+        logger.debug("getRepositoryDescription was called: '{}'", m_remoteRepositoryDefintion.getRepositoryDescription());
         return this.m_remoteRepositoryDefintion.getRepositoryManagementURL();
     }
 
@@ -291,6 +307,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             logger.debug("SDO to BasicReport mapping got: '{}'", report.toString());
             resultList.add(result);
         }
+        logger.debug("SDO to BasicReport mapping returns resultList: '{}'", resultList.toString());
         return resultList;
     }
 }

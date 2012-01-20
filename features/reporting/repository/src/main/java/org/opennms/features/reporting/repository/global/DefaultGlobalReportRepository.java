@@ -134,6 +134,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         for (ReportRepository repository : m_repositoryList) {
             results.addAll(repository.getReports());
         }
+        logger.debug("getAllReports was called result: '{}'", results);
         return results;
     }
 
@@ -147,6 +148,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         if (repository != null) {
             results.addAll(repository.getReports());
         }
+        logger.debug("getReports was called for: '{}' result: '{}'", repositoryId, results);
         return results;
     }
 
@@ -159,6 +161,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         for (ReportRepository repository : m_repositoryList) {
             results.addAll(repository.getOnlineReports());
         }
+        logger.debug("getAllOnlineReports was called result: '{}'", results);
         return results;
     }
 
@@ -172,6 +175,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         if (repository != null) {
             results.addAll(repository.getOnlineReports());
         }
+        logger.debug("getOnlineReports was called for: '{}' result: '{}'", repositoryId, results);
         return results;
     }
 
@@ -185,6 +189,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         if (repository != null) {
             result = repository.getReportService(reportId);
         }
+        logger.debug("getReportService was called for: '{}' result: '{}'", reportId, result);
         return result;
     }
 
@@ -198,6 +203,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         if (repository != null) {
             result = repository.getDisplayName(reportId);
         }
+        logger.debug("getDisplayName was called for: '{}' result: '{}'", reportId, result);
         return result;
     }
 
@@ -211,6 +217,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         if (repository != null) {
             result = repository.getEngine(reportId);
         }
+        logger.debug("getEngine was called for: '{}' result: '{}'", reportId, result);
         return result;
     }
 
@@ -224,6 +231,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         if (repository != null) {
             templateStream = repository.getTemplateStream(reportId);
         }
+        logger.debug("getTemplateStream was called for: '{}' result: '{}'", reportId, templateStream);
         return templateStream;
     }
 
@@ -232,6 +240,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     @Override
     public List<ReportRepository> getRepositoryList() {
+        logger.debug("getRepositoryList was called, result: '{}'", m_repositoryList);
         return m_repositoryList;
     }
 
@@ -242,6 +251,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     @Override
     public void addReportRepository(ReportRepository repository) {
+        logger.debug("addReportRepository was called for: '{}'", repository);
         m_repositoryList.add(repository);
     }
 
@@ -255,11 +265,12 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     public ReportRepository getRepositoryById(String repositoryId) {
         for (ReportRepository repository : m_repositoryList) {
             if (repositoryId.equals(repository.getRepositoryId())) {
-                // leave if we have a repository
+                //leave if we have a repository
+                logger.debug("getRepositoryById was called for: '{}' result: '{}'", repositoryId, repository);
                 return repository;
             }
         }
-        logger.debug("No repository with id '{}' was found, return null", repositoryId);
+        logger.debug("getRepositoryById was called for: '{}' result: '{}'", repositoryId, null);
         // we haven't a repository with repositoryId
         return null;
     }
@@ -272,6 +283,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     protected ReportRepository getRepositoryForReport(String reportId) {
         String repositoryId = reportId.substring(0, reportId.indexOf(REPOSITORY_REPORT_SEP));
+        logger.debug("getRepositoryForReport was called for: '{}' result repository: '{}'", reportId, repositoryId);
         return this.getRepositoryById(repositoryId);
     }
 
