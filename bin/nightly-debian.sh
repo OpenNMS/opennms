@@ -47,7 +47,7 @@ fi
 git clean -fdx
 git reset --hard HEAD
 rm -rf "${HOME}"/.m2/repository/org/opennms
-rm -rf ../*opennms*.{changes,deb,dsc,tar.gz}
+rm -rf "${TOPDIR}"/../*opennms*.{changes,deb,dsc,tar.gz}
 
 VERSION=`grep '<version>' pom.xml | head -n 1 | sed -e 's,^.*<version>,,' -e 's,<.version>.*$,,' | cut -d. -f1-2`
 RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
@@ -56,6 +56,7 @@ RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 ./makedeb.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION"
 
 # update the $RELEASE repo, and sync it to anything later in the hierarchy
-$UPDATE_REPO -s "$PASSWORD" "$APTDIR" "nightly-${VERSION}" ../*opennms*${VERSION}*.${TIMESTAMP}.${REVISION}_all.deb
+$UPDATE_REPO -s "$PASSWORD" "$APTDIR" "nightly-${VERSION}" "${TOPDIR}"/../*opennms*_${VERSION}*.deb
+find ../*opennms*.{changes,deb,dsc,tar.gz} -maxdepth 0 -type f -exec rm -rf {} \;
 
 $BUILDTOOL nightly-debian save
