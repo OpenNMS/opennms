@@ -163,7 +163,7 @@ function main()
         echo "Release: " $RELEASE
         echo
 
-	dch -v "$VERSION-$RELEASE" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update debian/changelog"
+	dch -b -v "$VERSION-$RELEASE" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update debian/changelog"
 
 	# prime the local ~/.m2/repository
 	if [ -d core/build ]; then
