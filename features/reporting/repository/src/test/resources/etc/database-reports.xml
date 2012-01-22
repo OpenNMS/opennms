@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<local-reports
-        xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-local-reports"
+<database-reports
+        xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-local-reports">
+        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
     <report id="sample-report" display-name="sample JasperReport" online="true"
             report-service="jasperReportService" description="sample Jasper report using jdbc datasource" />
     <report id="online-sample-report" display-name="online sample JasperReport" online="true"
             report-service="jasperReportService" description="online sample Jasper report using jdbc datasource" />
     <report id="not-online-sample-report" display-name="NOT online sample JasperReport"
             report-service="jasperReportService" description="NOT online sample Jasper report using jdbc datasource" />
-</local-reports>
+</database-reports>
