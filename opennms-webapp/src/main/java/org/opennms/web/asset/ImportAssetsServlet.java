@@ -51,6 +51,8 @@ import org.opennms.core.resource.Vault;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.api.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -60,23 +62,16 @@ import au.com.bytecode.opencsv.CSVReader;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @version $Id: $
  * @since 1.8.1
  */
 public class ImportAssetsServlet extends HttpServlet {
+    private Logger logger = LoggerFactory.getLogger(ImportAssetsServlet.class.getName());
     private static final long serialVersionUID = 2L;
     private List<String> errors = new ArrayList<String>();
 
     private class AssetException extends Exception {
-		/**
-         * 
-         */
+
         private static final long serialVersionUID = 2498335935646001342L;
 
         public AssetException(String message) {
@@ -123,6 +118,7 @@ public class ImportAssetsServlet extends HttpServlet {
         String assetsText = request.getParameter("assetsText");
 
         if (assetsText == null) {
+            logger.error("assetsText was null");
             throw new MissingParameterException("assetsText");
         }
 
@@ -130,24 +126,22 @@ public class ImportAssetsServlet extends HttpServlet {
             List<Asset> assets = this.decodeAssetsText(assetsText);
             List<Integer> nodesWithAssets = this.getCurrentAssetNodesList();
 
-            int assetCount = assets.size();
-
-            for (int i = 0; i < assetCount; i++) {
-                Asset asset = (Asset) assets.get(i);
-
+            for (Asset asset : assets) {
                 // update with the current information
                 asset.setUserLastModified(request.getRemoteUser());
                 asset.setLastModifiedDate(new Date());
 
                 if (nodesWithAssets.contains(new Integer(asset.getNodeId()))) {
+                    logger.debug("modifyAsset call for asset:'{}'", asset);
                     this.model.modifyAsset(asset);
                 } else {
+                    logger.debug("createAsset:'{}'", asset);
                     this.model.createAsset(asset);
                 }
             }
 
             StringBuffer messageText = new StringBuffer();
-            messageText.append("Successfully imported").append(assets.size()).append(" asset");
+            messageText.append("Successfully imported ").append(assets.size()).append(" asset");
             if (assets.size() > 1) {
                 messageText.append("s");
             }
@@ -197,13 +191,15 @@ public class ImportAssetsServlet extends HttpServlet {
             while ((line = reader.readNext()) != null) {
                 count++;
                 try {
-
-                    if (line.length != 44) {
+                    logger.debug("asset line is:'{}'", line);
+                    if (line.length != 59) {
+                        logger.error("csv test row length was not 58 line length: '{}' line was:'{}', line length", line.length, line);
                         throw new NoSuchElementException();
                     }
 
                     // skip the first line if it's the headers
                     if (line[0].equals("Node Label")) {
+                        logger.debug("line was header. line:'{}'", line);
                         continue;
                     }
                     
@@ -253,19 +249,42 @@ public class ImportAssetsServlet extends HttpServlet {
                     asset.setAutoenable(Util.decode(line[42]));
                     asset.setComments(Util.decode(line[43]));
                     
+                    asset.setCpu(Util.decode(line[44]));
+                    asset.setRam(Util.decode(line[45]));                   
+                    asset.setStoragectrl(Util.decode(line[46]));
+                    
+                    asset.setHdd1(Util.decode(line[47]));
+                    asset.setHdd2(Util.decode(line[48]));
+                    asset.setHdd3(Util.decode(line[49]));
+                    asset.setHdd4(Util.decode(line[50]));
+                    asset.setHdd5(Util.decode(line[51]));
+                    asset.setHdd6(Util.decode(line[52]));
+
+                    asset.setNumpowersupplies(Util.decode(line[53]));
+                    asset.setInputpower(Util.decode(line[54]));
+
+                    asset.setAdditionalhardware(Util.decode(line[55]));
+                    asset.setAdmin(Util.decode(line[56]));
+                    asset.setSnmpcommunity(Util.decode(line[57]));
+                    asset.setRackunitheight(Util.decode(line[58]));
+            
                     list.add(asset);
+                    logger.debug("decoded asset:'{}'", asset);
 
                 } catch (NoSuchElementException e) {
                     errors.add("Ignoring malformed import for entry " + count + ", not enough values.");
                 } catch (NumberFormatException e) {
+                    logger.error("NodeId parsing to int faild, ignoreing malformed import for entry number '{}' exception message:'{}'", count, e.getMessage());
                     errors.add("Ignoring malformed import for entry " + count + ", node id not a number.");
                 }
             }
         } catch (IOException e) {
+            logger.error("An error occurred reading the CSV input. Message:'{}'", e.getMessage());
             throw new AssetException("An error occurred reading the CSV input.", e);
         }
 
         if (list.size() == 0) {
+            logger.error("No asset information was found, list size was 0");
         	throw new AssetException("No asset information was found.");
         }
 

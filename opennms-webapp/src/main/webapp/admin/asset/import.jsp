@@ -70,62 +70,82 @@
   The asset fields are (in order):
 </p>
 
-	<div style="width: 33%; position: relative; float: left">
+	<div style="width: 25%; position: relative; float: left">
               <ol>
                 <li> NodeLabel (for display only)
                 <li> NodeId (database identifier, integer)
-                <li> Category
-                <li> Manufacturer
-                <li> Vendor
-                <li> ModelNumber
-                <li> SerialNumber
-                <li> Description
-                <li> CircuitId
-                <li> AssetNumber
-                <li> OperatingSystem
-                <li> Rack
-				<li> Slot
-                <li> Port
+                <li> (64) Category
+                <li> (64) Manufacturer
+                <li> (64) Vendor
+                <li> (64) ModelNumber
+                <li> (64) SerialNumber
+                <li> (128) Description
+                <li> (64) CircuitId
+                <li> (64) AssetNumber
+                <li> (64) OperatingSystem
+                <li> (64) Rack
+				<li> (64) Slot
+                <li> (64) Port
               </ol>
 	</div>
 
-	<div style="width: 33%; position: relative; float: left">
+	<div style="width: 25%; position: relative; float: left">
               <ol start="15">
-                <li> Region
-                <li> Division
-                <li> Department
-                <li> Address1
-                <li> Address2
-                <li> City
-                <li> State
-                <li> Zip
-                <li> Building
-                <li> Floor
-                <li> Room
-                <li> VendorPhone
-                <li> VendorFax
-                <li> DateInstalled
+                <li> (64) Region
+                <li> (64) Division
+                <li> (64) Department
+                <li> (256) Address1
+                <li> (256) Address2
+                <li> (64) City
+                <li> (64) State
+                <li> (64) Zip
+                <li> (64) Building
+                <li> (64) Floor
+                <li> (64) Room
+                <li> (64) VendorPhone
+                <li> (64) VendorFax
+                <li> (64) DateInstalled
               </ol>
 	</div>
 
-	<div style="width: 33%; position: relative; float: left">
+	<div style="width: 25%; position: relative; float: left">
               <ol start="29">
-                <li> Lease
-                <li> LeaseExpires
-                <li> SupportPhone
-                <li> MaintContract
-                <li> VendorAssetNumber
-                <li> MaintContractExpires
-		<li> Display Category
-		<li> Notification Category
-		<li> Poller Category
-		<li> Threshold Category
-                <li> Username
-                <li> Password
-                <li> Enable
-                <li> Connection
-                <li> Auto Enable
+                <li> (64) Lease
+                <li> (64) LeaseExpires
+                <li> (64) SupportPhone
+                <li> (64) MaintContract
+                <li> (64) VendorAssetNumber
+                <li> (64) MaintContractExpires
+				<li> (64) Display Category
+				<li> (64) Notification Category
+				<li> (64) Poller Category
+				<li> (64) Threshold Category
+                <li> (32) Username
+                <li> (32) Password
+                <li> (32) Enable
+                <li> (32) Connection
+                <li> (1) Auto Enable
                 <li> Comments
+              </ol>
+	</div>
+	
+		<div style="width: 25%; position: relative; float: left">
+              <ol start="45">
+                <li> (64) Cpu
+                <li> (10) Ram
+                <li> (64) Storage Controller
+                <li> (64) HDD 1
+                <li> (64) HDD 2
+                <li> (64) HDD 3
+				<li> (64) HDD 4
+				<li> (64) HDD 5
+				<li> (64) HDD 6
+				<li> (1) Number of power supplies
+                <li> (11) Inputpower
+                <li> (64) Additional hardware
+                <li> (32) Admin
+                <li> (32) SNMP Community
+                <li> (2) Rack unit height
               </ol>
 	</div>
 
