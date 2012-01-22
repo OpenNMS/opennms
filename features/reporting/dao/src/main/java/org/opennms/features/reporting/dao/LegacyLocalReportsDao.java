@@ -47,7 +47,7 @@ import java.util.List;
 /**
  * <p>LegacyLocalReportsDao class.</p>
  * <p/>
- * Class realize the data access and preserve compatibility to local-reports.xml.
+ * Class realize the data access and preserve compatibility to database-reports.xml.
  *
  * @author Markus Neumann <markus@opennms.com>
  * @author Ronny Trommer <ronny@opennms.com>
@@ -80,7 +80,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
         try {
             loadConfiguration();
         } catch (Exception e) {
-            logger.error("Error could not load local-reports.xml. Error message: '{}'", e.getMessage());
+            logger.error("Error could not load database-reports.xml. Error message: '{}'", e.getMessage());
         }
         logger.debug("Configuration '{}' successfully loaded and unmarshalled.", m_configResource.getFilename());
     }

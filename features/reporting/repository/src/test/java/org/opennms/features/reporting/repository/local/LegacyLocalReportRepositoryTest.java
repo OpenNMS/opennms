@@ -87,7 +87,7 @@ public class LegacyLocalReportRepositoryTest {
         // InputStream jrTemplateStream = EasyMock.createMock(InputStream.class);
         // EasyMock.expect(m_localJasperReportsDao.getTemplateStream("sample-report")).andReturn(jrTemplateStream);
 
-        // Initialize the local report repository to provide reports from local-reports.xml and local-jasper-reports.xml
+        // Initialize the local report repository to provide reports from database-reports.xml and jasper-reports.xml
         m_legacyLocalReportRepository = new LegacyLocalReportRepository(m_localReportsDao, m_localJasperReportsDao);
         m_legacyLocalReportRepository.setLocalReportsDao(m_localReportsDao);
         m_legacyLocalReportRepository.setLocalJasperReportsDao(m_localJasperReportsDao);
@@ -106,8 +106,8 @@ public class LegacyLocalReportRepositoryTest {
         EasyMock.replay(m_localJasperReportsDao);
 
         // Sanitycheck
-        assertNotNull("Test if mocked DAO for local-reports.xml is not null", m_legacyLocalReportRepository.getLocalReportsDao());
-        assertNotNull("Test if mocked DAo for local-jasper-reports.xml is not null", m_legacyLocalReportRepository.getLocalJasperReportsDao());
+        assertNotNull("Test if mocked DAO for database-reports.xml is not null", m_legacyLocalReportRepository.getLocalReportsDao());
+        assertNotNull("Test if mocked DAo for jasper-reports.xml is not null", m_legacyLocalReportRepository.getLocalJasperReportsDao());
     }
 
     /**

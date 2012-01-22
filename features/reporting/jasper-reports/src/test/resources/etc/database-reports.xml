@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<local-reports
-        xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-local-reports"
+<database-reports
+        xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-local-reports">
+        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
         <report id="trivial-report" display-name="trivial JasperReport" online="true"
                 report-service="jasperReportService" description="trivial Jasper report using null datasource" />
 	    <report id="parameter-test" display-name="parameter test report" online="true"
@@ -13,4 +13,4 @@
                 report-service="jasperReportService" description="Subreport 1 for main report description with null datasource" />
         <report id="Subreport_2" display-name="Subreport 2 for main report" online="true"
                 report-service="jasperReportService" description="Subreport 2 for main report description with null datasource" />
-</local-reports>
+</database-reports>

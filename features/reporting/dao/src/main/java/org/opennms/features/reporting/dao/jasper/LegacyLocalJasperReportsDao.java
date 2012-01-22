@@ -42,7 +42,7 @@ import java.io.*;
 /**
  * <p>LegacyLocalJasperReportsDao class.</p>
  * <p/>
- * Class realize the data access and preserve compatibility to local-jasper-reports.xml.
+ * Class realize the data access and preserve compatibility to jasper-reports.xml.
  *
  * @author Markus Neumann <markus@opennms.com>
  * @author Ronny Trommer <ronny@opennms.com>
@@ -82,7 +82,7 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
         try {
             loadConfiguration();
         } catch (Exception e) {
-            logger.error("Error could not load local-jasper-reports.xml. Error message: '{}'", e.getMessage());
+            logger.error("Error could not load jasper-reports.xml. Error message: '{}'", e.getMessage());
         }
         logger.debug("Configuration '{}' successfully loaded and unmarshalled.", m_configResource.getFilename());
     }

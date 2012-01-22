@@ -38,7 +38,7 @@ import java.util.List;
  * 
  * @version $Revision$ $Date$
  */
-@XmlRootElement(name = "local-reports")
+@XmlRootElement(name = "database-reports")
 public class LegacyLocalReportsDefinition {
 
     private List<LegacyLocalReportDefinition> m_reportList = new ArrayList<LegacyLocalReportDefinition>();

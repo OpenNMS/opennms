@@ -66,12 +66,12 @@ public class LegacyLocalReportRepository implements ReportRepository {
     private Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + LegacyLocalReportRepository.class.getName());
 
     /**
-     * Data access to local-reports.xml
+     * Data access to database-reports.xml
      */
     private LocalReportsDao m_localReportsDao;
 
     /**
-     * Data access to local-jasper-reports.xml
+     * Data access to jasper-reports.xml
      */
     private LocalJasperReportsDao m_localJasperReportsDao;
 
@@ -239,7 +239,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
     /**
      * <p>setLocalReportsDao</p>
      * <p/>
-     * Set local reports DAO to access local-reports.xml
+     * Set local reports DAO to access database-reports.xml
      *
      * @param localReportsDao a {@link org.opennms.features.reporting.dao.LocalReportsDao} object
      */
@@ -250,7 +250,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
     /**
      * <p>getLocalReportsDao</p>
      * <p/>
-     * Get local reports DAO to access local-reports.xml
+     * Get local reports DAO to access database-reports.xml
      *
      * @return a {@link org.opennms.features.reporting.dao.LocalReportsDao} object
      */
@@ -261,7 +261,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
     /**
      * <p>setLocalJasperReportsDao</p>
      * <p/>
-     * Set local jasper reports dao to access local-jasper-reports.xml
+     * Set local jasper reports dao to access jasper-reports.xml
      *
      * @param localJasperReportsDao a {@link org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao} object
      */
@@ -272,7 +272,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
     /**
      * <p>getLocalJasperReportsDao</p>
      * <p/>
-     * Get local jasper reports dao to access local-jasper-reports.xml
+     * Get local jasper reports dao to access jasper-reports.xml
      *
      * @return a {@link org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao} object
      */

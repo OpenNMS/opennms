@@ -29,25 +29,7 @@
 
 package org.opennms.netmgt.config;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
-
 import junit.framework.AssertionFailedError;
-
 import org.exolab.castor.util.LocalConfiguration;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -68,7 +50,6 @@ import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
-import org.opennms.netmgt.config.databaseReports.DatabaseReports;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
@@ -94,7 +75,6 @@ import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.reportd.ReportdConfiguration;
-import org.opennms.netmgt.config.reporting.jasperReports.JasperReports;
 import org.opennms.netmgt.config.reporting.opennms.OpennmsReports;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
@@ -128,6 +108,15 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.xml.sax.InputSource;
+
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  * The name of this class is a tribute to
@@ -251,7 +240,7 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testDatabaseReportsConfiguration() throws Exception {
-        unmarshal("database-reports.xml", DatabaseReports.class);
+        unmarshalJaxb("database-reports.xml", LegacyLocalReportsDefinition.class);
     }
     @Test
     public void testDatabaseSchema() throws Exception {
@@ -307,7 +296,7 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testJasperReportsConfiguration() throws Exception {
-        unmarshal("jasper-reports.xml", JasperReports.class);
+        unmarshalJaxb("jasper-reports.xml", LocalJasperReports.class);
     }
     @Test
     public void testJmxDataCollectionConfiguration() throws Exception {
@@ -574,16 +563,6 @@ public class WillItUnmarshalTest {
         unmarshalJaxb("jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class);
     }
 
-    @Test
-    public void testLocalJasperReportsConfiguration() throws Exception {
-        unmarshalJaxb("local-jasper-reports.xml", LocalJasperReports.class);
-    }
-
-    @Test
-    public void testLocalReportsXmlConfiguration() throws Exception {
-        unmarshalJaxb("local-reports.xml", LegacyLocalReportsDefinition.class);
-    }
-    
     @Test
     public void testRemoteRepositoryXmlConfiguration() throws Exception {
         unmarshalJaxb("remote-repository.xml", RemoteRepositoryConfig.class);
