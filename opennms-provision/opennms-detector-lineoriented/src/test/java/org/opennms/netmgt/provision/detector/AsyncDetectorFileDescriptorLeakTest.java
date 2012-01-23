@@ -99,13 +99,14 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
             
         };
 
+        // No timeout
         m_server.setTimeout(0);
         m_server.init();
         m_server.startServer();
     }
     
     @Test
-    public void testSucessServer() throws Throwable {
+    public void testSuccessServer() throws Throwable {
         setUpServer();
         final int port = m_server.getLocalPort();
         final InetAddress address = m_server.getInetAddress();
@@ -159,6 +160,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         
         final TcpDetector detector = m_detector.get();
         detector.setPort(1999);
+        System.err.printf("Starting testNoServerPresent with detector: %s\n", m_detector);
         
         final DetectFuture future = detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
         future.addListener(new IoFutureListener<DetectFuture>() {
@@ -172,9 +174,8 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         future.awaitUninterruptibly();
         assertFalse(future.isServiceDetected());
         
-        
+        System.err.printf("Finished testNoServerPresent with detector: %s\n", m_detector);
         m_detector.set(null);
-        System.err.println("Finish test");
     }
     
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
