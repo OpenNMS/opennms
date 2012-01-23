@@ -2,14 +2,14 @@
 <remoteRepositoryConfig>
 	<remoteRepository>
 		<active>false</active>
-		<id>cioreporting</id>
-		<name>OpenNMS Connect CIO-Reporting</name>
-		<description>Repository with OpenNMS Group CIO reports.
+		<id>community</id>
+		<name>OpenNMS Connect Community-Reporting</name>
+		<description>Repository with OpenNMS Community-Reports.
 		</description>
-		<management-url>http://www.opennms.com</management-url>
-		<login-user>patrick</login-user>
-		<login-password>bateman</login-password>
-		<uri>http://localhost:8080/opennms/connect/rest/repository/</uri>
+		<management-url>http://communityreporting.opennms.com/</management-url>
+		<login-user>community</login-user>
+		<login-password>community</login-password>
+		<uri>http://localhost:8080/opennms/connect/rest/repo/</uri>
 	</remoteRepository>
 </remoteRepositoryConfig>
 
