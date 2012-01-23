@@ -63,7 +63,7 @@ public class ImportAssetsServletTest {
         List<Asset> decodedAssets;
         logger.debug(m_testCvs);
         decodedAssets = m_importAssetServlet.decodeAssetsText(m_testCvs);
-        Assert.assertEquals(4, decodedAssets.size());
+        Assert.assertEquals(5, decodedAssets.size());
         for (Asset decodedAsset : decodedAssets) {
             logger.debug("decodedAsset:'{}'", decodedAsset);
         }
