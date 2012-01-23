@@ -12,7 +12,7 @@ if [ -z "$MATCH_RPM" ]; then
 	MATCH_RPM=no
 fi
 OPENNMS_HOME=/opt/opennms
-SOURCEDIR="$ME/opennms-source"
+SOURCEDIR=`cd "$ME"/..; pwd`
 
 PACKAGES="$@"; shift
 if [ -z "$PACKAGES" ]; then
@@ -95,13 +95,11 @@ reset_opennms() {
 	yum -y install $PACKAGES || die "Unable to install the following packages: $PACKAGES"
 }
 
-get_source() {
+prepare_source() {
 	banner "Getting OpenNMS Source"
 
-	rsync -avr --exclude=target --exclude=smoke-test "$ME"/../  "$SOURCEDIR"/ || die "Unable to create source dir."
 	pushd "$SOURCEDIR"
-		git clean -fdx || die "Unable to clean source tree."
-		git reset --hard HEAD
+		./clean.pl || die "Unable to clean source tree."
 
 		# if $MATCH_RPM is set to "yes", then reset the code to the git hash the RPM was built from
 		case $MATCH_RPM in
@@ -172,7 +170,7 @@ stop_opennms() {
 clean_maven
 reset_opennms
 reset_database
-get_source
+prepare_source
 configure_opennms
 start_opennms
 
