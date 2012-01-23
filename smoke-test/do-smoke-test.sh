@@ -164,7 +164,7 @@ run_tests() {
 #	popd
 
 	pushd "$SOURCEDIR/smoke-test"
-		../bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
+		../bin/bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
 		RETVAL=$?
 	popd
 	return $RETVAL
