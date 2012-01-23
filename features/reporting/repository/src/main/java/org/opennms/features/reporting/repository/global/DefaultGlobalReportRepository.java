@@ -35,7 +35,6 @@ import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.remote.DefaultRemoteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 import java.io.InputStream;
@@ -44,18 +43,14 @@ import java.util.List;
 
 /**
  * <p>DefaultGlobalReportRepository class.</p>
- * <p/>
- * Class realize the global report repository. It provides a local repository for community reports and reads one or
- * more configurations for remote repositories.
+ * Class realize the global report repository. It provides access to a local-repository and all configured remote-repositories.
  *
  * @author Markus Neumann <markus@opennms.com>
  * @author Ronny Trommer <ronny@opennms.com>
  * @version $Id: $
  * @since 1.10
  */
-@ContextConfiguration(locations = {
-        "classpath:META-INF/opennms/applicationContext-reportingRepository.xml",
-        "classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
+
 public class DefaultGlobalReportRepository implements GlobalReportRepository {
 
     /**
@@ -64,42 +59,37 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     private final Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + DefaultGlobalReportRepository.class.getName());
 
     /**
-     * Configuration DAO to build remote repositories from  remote-reports.xml
+     * Configuration DAO to get configured remote-repositories.
      */
     private RemoteRepositoryConfigDao m_remoteRepositoryConfigDao;
 
     /**
-     * The local report repository with all OpenNMS community reports
+     * The local report-repository.
      */
     private ReportRepository m_localReportRepository;
 
     /**
-     * The remote report repository with OpenNMS CONNECT reports
-     */
-    private ReportRepository m_remoteReportRepository;
-
-    /**
-     * Concatenated repositoryId and reportId by "_"
+     * Separator for repositoryId and reportId.
      */
     private final String REPOSITORY_REPORT_SEP = "_";
 
     /**
-     * List for repositories, one local disk and all configured remote repositories
+     * List of repositories managed by this class.
      */
     private final List<ReportRepository> m_repositoryList;
 
     /**
-     * JasperReports version number
+     * JasperReports version number.
      */
     private String m_jasperReportVersion;
 
 
     /**
-     * Default constructor creates one local and many remote repositories.
+     * Default constructor creates one local-repository and all configured remote-repositories.
      */
-    public DefaultGlobalReportRepository(RemoteRepositoryConfigDao remoteRepositoryConfigDao, ReportRepository reportRepository) {
+    public DefaultGlobalReportRepository(RemoteRepositoryConfigDao remoteRepositoryConfigDao, ReportRepository localReportRepository) {
         m_remoteRepositoryConfigDao = remoteRepositoryConfigDao;
-        m_localReportRepository = reportRepository;
+        m_localReportRepository = localReportRepository;
 
         // Get the jasper report version from opennms.properties
         m_jasperReportVersion = System.getProperty("org.opennms.jasperReportsVersion");
@@ -310,42 +300,23 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     }
 
     /**
-     * <p>setRemoteReportRepository</p>
-     * <p/>
-     * Set the remote repository for OpenNMS CONNECT reports
-     *
-     * @param remoteReportRepository a {@link org.opennms.features.reporting.repository.remote.DefaultRemoteRepository} object
-     */
-    public void setRemoteReportRepository(ReportRepository remoteReportRepository) {
-        m_remoteReportRepository = remoteReportRepository;
-    }
-
-    /**
-     * <p>getRemoteReportRepository</p>
-     * 
-     * @return a {@link org.opennms.features.reporting.repository.remote.DefaultRemoteRepository} object
-     */
-    public ReportRepository getRemoteReportRepository() {
-        return m_remoteReportRepository;
-    }
-
-    /**
      * <p>setRemoteRepositoryConfigDao</p>
      * <p/>
      * Set the default remote report repository which provides access to OpenNMS CONNECT reports
      *
      * @param remoteRepositoryConfigDao a {@link org.opennms.features.reporting.repository.remote.DefaultRemoteRepository} object
      */
+    //TODO Ronny: it's more then a simple setter refactor it.
     public void setRemoteRepositoryConfigDao(RemoteRepositoryConfigDao remoteRepositoryConfigDao) {
         m_remoteRepositoryConfigDao = remoteRepositoryConfigDao;
 
         /**
-         * The local disk repository provides the canned OpenNMS community reports.
+         * Add local-repository to repository list.
          */
         this.m_repositoryList.add(m_localReportRepository);
 
         /**
-         * Create a list with all remote repositories from remote repository for each remote repository from RemoteRepositoryConfig.
+         * Add all active remote-repositories configured at remoteRepositoryConfigDao, to repositorylist.
          */
         //TODO tak: This is tricky to test and to mock, we have to refactor this
         try {
@@ -360,8 +331,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     /**
      * <p>getRemoteRepositoryConfigDao</p>
      * <p/>
-     * Get the default remote report repository which provides access to OpenNMS CONNECT reports
-     *
+     * Get config Dao for remote-repositories
      * @return a {@link org.opennms.features.reporting.repository.remote.DefaultRemoteRepository} object
      */
     public RemoteRepositoryConfigDao getRemoteRepositoryConfigDao() {

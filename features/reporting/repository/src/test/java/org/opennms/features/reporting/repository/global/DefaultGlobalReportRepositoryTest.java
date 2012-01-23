@@ -184,7 +184,6 @@ public class DefaultGlobalReportRepositoryTest {
         EasyMock.replay(m_mockRemoteRepositoryConfigDao);
 
         m_globalReportRepository = new DefaultGlobalReportRepository(m_mockRemoteRepositoryConfigDao, m_mockLocalReportRepository);
-        m_globalReportRepository.setRemoteReportRepository(m_remoteReportRepository);
     }
 
     @Test

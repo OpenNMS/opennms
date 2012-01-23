@@ -263,6 +263,6 @@
   </bean>
   <bean id="defaultGlobalReportRepository" class="org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository">
     <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
-    <constructor-arg name="reportRepository" ref="legacyLocalReportRepository"/>
+    <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
   </bean>
 </beans>
