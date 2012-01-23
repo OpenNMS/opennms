@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.support;
 
-import java.net.ConnectException;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
@@ -108,46 +108,57 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     
     /** {@inheritDoc} */
     @Override
-    public DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor) throws Exception {
-    	
+    public DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor) {
+
         final DetectFuture detectFuture = new DefaultDetectFuture(this);
-        
-        // Set this up here because it can throw an Exception, which we want
-        // to throw now, not in initializeSession
-        final SSLContext c = createClientSSLContext();
-        
-        // Create an IoSessionInitializer that will configure this individual
-        // session. Previously, all this was done on a new Connector each time
-        // but that was leaking file handles all over the place. This way gives
-        // us per-connection settings without the overhead of creating new
-        // Connectors each time
-        IoSessionInitializer<ConnectFuture> init = new IoSessionInitializer<ConnectFuture>() {
 
-			public void initializeSession(IoSession session, ConnectFuture future) {
-				// Add filters to the session
-		        if(isUseSSLFilter()) {
-		            final SslFilter filter = new SslFilter(c);
-		            filter.setUseClientMode(true);
-		            session.getFilterChain().addFirst("SSL", filter);
-		        }			
-		        session.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new LoggingFilter() );
-		        session.getFilterChain().addLast( "codec", getProtocolCodecFilter());
-		        session.getConfig().setIdleTime(IdleStatus.READER_IDLE, getIdleTime());
-		        // Give the session an IoHandler that will get everything delegated to it
-		        // by the SessionDelegateIoHandler
-		        session.setAttribute( IoHandler.class, createDetectorHandler(detectFuture) );
-			}
-		};
+        try {
+            // Set this up here because it can throw an Exception, which we want
+            // to throw now, not in initializeSession
+            final SSLContext c = createClientSSLContext();
 
-		// Start communication
-		final InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
-    	m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
-		final ConnectFuture cf = m_connectionFactory.connect(socketAddress, init);
-		cf.addListener(retryAttemptListener( m_connectionFactory, detectFuture, socketAddress, init, getRetries() ));
- 
+            // Create an IoSessionInitializer that will configure this individual
+            // session. Previously, all this was done on a new Connector each time
+            // but that was leaking file handles all over the place. This way gives
+            // us per-connection settings without the overhead of creating new
+            // Connectors each time
+            IoSessionInitializer<ConnectFuture> init = new IoSessionInitializer<ConnectFuture>() {
+
+                public void initializeSession(IoSession session, ConnectFuture future) {
+                    // Add filters to the session
+                    if(isUseSSLFilter()) {
+                        final SslFilter filter = new SslFilter(c);
+                        filter.setUseClientMode(true);
+                        session.getFilterChain().addFirst("SSL", filter);
+                    }
+                    session.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new LoggingFilter() );
+                    session.getFilterChain().addLast( "codec", getProtocolCodecFilter());
+                    session.getConfig().setIdleTime(IdleStatus.READER_IDLE, getIdleTime());
+                    // Give the session an IoHandler that will get everything delegated to it
+                    // by the SessionDelegateIoHandler
+                    session.setAttribute( IoHandler.class, createDetectorHandler(detectFuture) );
+                }
+            };
+
+            // Start communication
+            final InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
+            m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
+            final ConnectFuture cf = m_connectionFactory.connect(socketAddress, init);
+            cf.addListener(retryAttemptListener( m_connectionFactory, detectFuture, socketAddress, init, getRetries() ));
+        } catch (KeyManagementException e) {
+            detectFuture.setException(e);
+            //detectFuture.setServiceDetected(false);
+        } catch (NoSuchAlgorithmException e) {
+            detectFuture.setException(e);
+            //detectFuture.setServiceDetected(false);
+        } catch (IOException e) {
+            detectFuture.setException(e);
+            //detectFuture.setServiceDetected(false);
+        }
+
         return detectFuture;
     }
-    
+
     /**
      * <p>dispose</p>
      */
@@ -186,18 +197,23 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
             public void operationComplete(ConnectFuture future) {
                 final Throwable cause = future.getException();
                
-                if(cause instanceof ConnectException) {
+                if(cause instanceof IOException) {
                     if(retryAttempt == 0) {
-                        LogUtils.infof(this, "service %s detected false",getServiceName());
+                        LogUtils.infof(this, "Service %s detected false",getServiceName());
                         detectFuture.setServiceDetected(false);
                     }else {
-                        LogUtils.infof(this, "Connection exception occurred %s for service %s retrying attempt: ", cause, getServiceName());
+                        LogUtils.infof(this, "Connection exception occurred %s for service %s, retrying attempt %d", cause, getServiceName(), retryAttempt);
                         // Connect without using a semaphore
+                        /*
+                        m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
+                        final ConnectFuture cf = m_connectionFactory.connect(address, init);
+                        cf.addListener(retryAttemptListener( m_connectionFactory, detectFuture, address, init, retryAttempt - 1));
+                        */
                         future = connector.reConnect(address, init);
-                        future.addListener(retryAttemptListener(connector, detectFuture, address, init, retryAttempt -1));
+                        future.addListener(retryAttemptListener(connector, detectFuture, address, init, retryAttempt - 1));
                     }
                 }else if(cause instanceof Throwable) {
-                    LogUtils.infof(this, "Threw a Throwable and detection is false for service %s", getServiceName());
+                    LogUtils.infof(this, cause, "Threw a Throwable and detection is false for service %s", getServiceName());
                     detectFuture.setServiceDetected(false);
                 } 
             }

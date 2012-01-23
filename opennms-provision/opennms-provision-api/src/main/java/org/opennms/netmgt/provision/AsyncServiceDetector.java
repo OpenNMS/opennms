@@ -46,6 +46,6 @@ public interface AsyncServiceDetector extends ServiceDetector {
      * @return a {@link org.opennms.netmgt.provision.DetectFuture} object.
      * @throws java.lang.Exception if any.
      */
-    public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) throws Exception;
+    public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor);
     
 }
