@@ -105,6 +105,9 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
         selenium.click("link=Log out");
         waitForPageToLoad();
+        
+        // Yo dawg, I heard you liked hacks
+        Thread.sleep(10000);
     }
 
     @Test

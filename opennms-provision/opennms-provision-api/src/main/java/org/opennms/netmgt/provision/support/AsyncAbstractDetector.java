@@ -93,7 +93,7 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
     abstract protected void onInit();
     
     /** {@inheritDoc} */
-    abstract public DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor) throws Exception;
+    abstract public DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor);
     
     /**
      * <p>dispose</p>
