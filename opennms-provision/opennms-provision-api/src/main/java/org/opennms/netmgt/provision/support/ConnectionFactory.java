@@ -38,28 +38,17 @@ public class ConnectionFactory {
     	= new ConcurrentHashMap<Integer, ConnectionFactory>();
 	
     
-    // Semaphores for number of connectors (small, probably ~ 20) and 
-    // connections (large, in the hundreds).
-    private static Semaphore s_availableConnectors;
+    // Semaphore for number of connections (large, in the hundreds).
     private static Semaphore s_availableConnections;
     private static int s_connectionExecutionRetries = 3;
     
     static{
-        if(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors") != null){
-            
-            if(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors")) == 0){
-                s_availableConnectors = null;
-            }else{
-                s_availableConnectors = new Semaphore(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors", "20")));
-            }
-        }
-        
         if(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnections") != null){
             
             if(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnections")) == 0){
-                s_availableConnectors = null;
+                s_availableConnections = null;
             }else{
-                s_availableConnectors = new Semaphore(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnections", "2000")));
+                s_availableConnections = new Semaphore(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnections", "2000")));
             }
         }
         
@@ -70,7 +59,7 @@ public class ConnectionFactory {
      * Count the number of references to this Factory so we can dispose it
      * when there are no active references
      */
-    private int m_references;
+    private int m_references = 0;
     /**
      * The actual connector
      */
@@ -93,6 +82,10 @@ public class ConnectionFactory {
         return connector;
     }
 
+    public long getTimeout() {
+        return m_timeout;
+    }
+
     /**
      * Get a new ConnectionFactory. If there is already a Factory with the
      * desired timeout, you will get that one; otherwise a new one is created.
@@ -106,9 +99,6 @@ public class ConnectionFactory {
      * 		An appropriate Factory
      */
     public static ConnectionFactory getFactory(int timeoutInMillis) {
-        if (s_availableConnectors != null) {
-            s_availableConnectors.acquireUninterruptibly();
-        }
         ConnectionFactory factory = s_connectorPool.get(timeoutInMillis);
         if (factory == null) {
             LogUtils.debugf(ConnectionFactory.class, "Creating a ConnectionFactory for timeout %d, there are already %d factories", timeoutInMillis, s_connectorPool.size());
@@ -201,16 +191,13 @@ public class ConnectionFactory {
      * @param factory
      * @param connection
      */
-    public static void dispose(ConnectionFactory factory, ConnectFuture connection) {
+    public static void dispose(ConnectionFactory factory) {
         if (s_availableConnections != null) {
             s_availableConnections.release();
         }
 
         if (--factory.m_references <= 0) {
-            if (s_availableConnectors != null) {
-                s_availableConnectors.release();
-            }
-
+            LogUtils.debugf(factory, "Disposing of factory for interval %d", factory.getTimeout());
             Iterator<Entry<Integer, ConnectionFactory>> i = s_connectorPool.entrySet().iterator();
             while(i.hasNext()) {
                 if(i.next().getValue() == factory) {

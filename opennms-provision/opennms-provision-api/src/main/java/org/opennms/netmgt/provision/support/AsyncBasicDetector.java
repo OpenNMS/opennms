@@ -67,15 +67,13 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     
     protected static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
     private BaseDetectorHandler<Request, Response> m_detectorHandler = new BaseDetectorHandler<Request, Response>();
-    private IoFilterAdapter m_filterLogging;
+    private IoFilterAdapter m_filterLogging = null;
     private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter(new TextLineCodecFactory(CHARSET_UTF8));
     private int m_idleTime = 1;
     private AsyncClientConversation<Request, Response> m_conversation = new AsyncClientConversation<Request, Response>();
     private boolean useSSLFilter = false;
     
-   
-    private ConnectFuture m_connection;
-    private ConnectionFactory m_connectionFactory;
+    private final ConnectionFactory m_connectionFactory;
     
     /**
      * <p>Constructor for AsyncBasicDetector.</p>
@@ -87,6 +85,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      */
     public AsyncBasicDetector(final String serviceName, final int port) {
         super(serviceName, port);
+        m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
     }
     
     /**
@@ -99,6 +98,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      */
     public AsyncBasicDetector(final String serviceName, final int port, final int timeout, final int retries){
         super(serviceName, port, timeout, retries);
+        m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
     }
     
     /**
@@ -142,9 +142,8 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
 
             // Start communication
             final InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
-            m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
             final ConnectFuture cf = m_connectionFactory.connect(socketAddress, init);
-            cf.addListener(retryAttemptListener( m_connectionFactory, detectFuture, socketAddress, init, getRetries() ));
+            cf.addListener(retryAttemptListener(m_connectionFactory, detectFuture, socketAddress, init, getRetries() ));
         } catch (KeyManagementException e) {
             detectFuture.setException(e);
             //detectFuture.setServiceDetected(false);
@@ -164,9 +163,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      */
     public void dispose(){
         LogUtils.debugf(this, "calling dispose on detector %s", getServiceName());
-        ConnectionFactory.dispose(m_connectionFactory, m_connection);
-        m_connectionFactory = null;
-        m_connection = null;
+        ConnectionFactory.dispose(m_connectionFactory);
     }
     
     /**
