@@ -146,13 +146,10 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
             cf.addListener(retryAttemptListener(m_connectionFactory, detectFuture, socketAddress, init, getRetries() ));
         } catch (KeyManagementException e) {
             detectFuture.setException(e);
-            //detectFuture.setServiceDetected(false);
         } catch (NoSuchAlgorithmException e) {
             detectFuture.setException(e);
-            //detectFuture.setServiceDetected(false);
         } catch (IOException e) {
             detectFuture.setException(e);
-            //detectFuture.setServiceDetected(false);
         }
 
         return detectFuture;
@@ -202,7 +199,6 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
                         LogUtils.infof(this, "Connection exception occurred %s for service %s, retrying attempt %d", cause, getServiceName(), retryAttempt);
                         // Connect without using a semaphore
                         /*
-                        m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
                         final ConnectFuture cf = m_connectionFactory.connect(address, init);
                         cf.addListener(retryAttemptListener( m_connectionFactory, detectFuture, address, init, retryAttempt - 1));
                         */

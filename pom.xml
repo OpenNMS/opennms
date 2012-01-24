@@ -788,7 +788,7 @@
 	<jettyVersion>7.5.1.v20110908</jettyVersion>
 	<liquibaseVersion>2.0.1</liquibaseVersion>
    <log4jVersion>1.2.15</log4jVersion>
-   <minaVersion>2.0.2</minaVersion>
+   <minaVersion>2.0.4</minaVersion>
    <oroVersion>2.0.8</oroVersion>
    <xercesVersion>2.9.1</xercesVersion>
   </properties>

@@ -144,11 +144,6 @@ public class ConnectionFactory {
                 LogUtils.debugf(this, "Caught exception, retrying: %s", e);
                 synchronized (m_connector) {
                     m_connector.dispose();
-                    /*
-                    while (!m_connector.isDisposed()) {
-                        try { Thread.sleep(10); } catch (InterruptedException ex) {}
-                    }
-                    */
                     m_connector = getSocketConnector();
                     try { Thread.sleep(10); } catch (InterruptedException ex) {}
                 }
@@ -156,11 +151,6 @@ public class ConnectionFactory {
                 LogUtils.debugf(this, "Caught exception, retrying: %s", e);
                 synchronized (m_connector) {
                     m_connector.dispose();
-                    /*
-                    while (!m_connector.isDisposed()) {
-                        try { Thread.sleep(10); } catch (InterruptedException ex) {}
-                    }
-                    */
                     m_connector = getSocketConnector();
                     try { Thread.sleep(10); } catch (InterruptedException ex) {}
                 }
