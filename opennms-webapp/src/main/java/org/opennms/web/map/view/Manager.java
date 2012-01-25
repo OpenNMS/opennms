@@ -55,12 +55,12 @@ public interface Manager {
      * @param height a int.
      * @return the new VMap
      */
-    public VMap newMap(String owner,String userModifies, int width, int height) ;
+    VMap newMap(String owner,String userModifies, int width, int height) ;
 
     /**
      * Close a VMap previusly opened.
      */
-    public void closeMap();
+    void closeMap();
 
     /**
      * <p>openMap</p>
@@ -69,7 +69,7 @@ public interface Manager {
      * @throws MapsException if any.
      * @throws org.opennms.web.map.MapNotFoundException if any.
      */
-    public VMap openMap() throws 
+    VMap openMap() throws 
             MapNotFoundException;    
 
     /**
@@ -82,7 +82,7 @@ public interface Manager {
      * @throws org.opennms.web.map.MapsException if any.
      * @throws org.opennms.web.map.MapNotFoundException if any.
      */
-    public VMap openMap(int id, String user, boolean refreshElems) throws MapNotFoundException, MapsException ;    
+    VMap openMap(int id, String user, boolean refreshElems) throws MapNotFoundException, MapsException ;    
 
     /**
      * <p>clearMap</p>
@@ -90,7 +90,7 @@ public interface Manager {
      * @throws org.opennms.web.map.MapNotFoundException if any.
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public void clearMap()throws MapNotFoundException, MapsException ;
+    void clearMap()throws MapNotFoundException, MapsException ;
 
     /**
      * gets all visible maps for user in input
@@ -99,7 +99,7 @@ public interface Manager {
      * @return a List of MapMenu objects.
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public List<VMapInfo> getVisibleMapsMenu(String user) throws MapsException;
+    List<VMapInfo> getVisibleMapsMenu(String user) throws MapsException;
 
     /**
      * get the default map for specified user in input
@@ -109,7 +109,7 @@ public interface Manager {
      * @return a MapMenu object.
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public VMapInfo getDefaultMapsMenu(String user) throws MapsException;
+    VMapInfo getDefaultMapsMenu(String user) throws MapsException;
 
 	/**
 	 * Create a new (not child) empty Submap with the identifier setted to id.
@@ -120,7 +120,7 @@ public interface Manager {
 	 * @param mapid a int.
 	 * @return a {@link org.opennms.web.map.view.VElement} object.
 	 */
-	public VElement newElement(int mapid, int elementId, String type) throws MapsException ;	
+	VElement newElement(int mapid, int elementId, String type) throws MapsException ;	
 
 	/**
 	 * Create a new (not child) empty Submap with the identifier setted to id.
@@ -134,7 +134,7 @@ public interface Manager {
 	 * @throws org.opennms.web.map.MapsException if any.
 	 * @param iconname a {@link java.lang.String} object.
 	 */
-	public VElement newElement(int mapId, int elementId, String type, String iconname, int x,int y) throws 
+	VElement newElement(int mapId, int elementId, String type, String iconname, int x,int y) throws 
             MapsException ;
 	
     /**
@@ -145,8 +145,7 @@ public interface Manager {
      *             map to delete doesn't exist.
      * @throws org.opennms.web.map.MapNotFoundException if any.
      */
-    public void deleteMap() throws MapsException,
-    MapNotFoundException ;
+    void deleteMap() throws MapsException, MapNotFoundException ;
 
     /**
      * save the map in input
@@ -156,7 +155,7 @@ public interface Manager {
      * @throws org.opennms.web.map.MapsException if any.
      * @return a int.
      */
-    public int save(VMap map) throws MapsException ;
+    int save(VMap map) throws MapsException ;
         
     /**
      * <p>refreshMap</p>
@@ -165,7 +164,7 @@ public interface Manager {
      * @return a {@link org.opennms.web.map.view.VMap} object.
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public VMap refreshMap(VMap map) throws MapsException;
+    VMap refreshMap(VMap map) throws MapsException;
         
     /**
      * Refreshs avail,severity and status of the map in input and its elements
@@ -174,7 +173,7 @@ public interface Manager {
      * @return the map refreshed
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public VMap reloadMap(VMap map)throws MapsException;
+    VMap reloadMap(VMap map)throws MapsException;
         
     /**
      * <p>foundLoopOnMaps</p>
@@ -184,7 +183,7 @@ public interface Manager {
      * @return a boolean.
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public boolean foundLoopOnMaps(VMap parentMap,int mapId) throws MapsException ;
+    boolean foundLoopOnMaps(VMap parentMap,int mapId) throws MapsException ;
     
 	/**
 	 * <p>getElementInfo</p>
@@ -192,7 +191,7 @@ public interface Manager {
 	 * @return a {@link java.util.List} object.
 	 * @throws org.opennms.web.map.MapsException if any.
 	 */
-	public List<VElementInfo> getElementInfo() throws MapsException;
+	List<VElementInfo> getElementInfo() throws MapsException;
 	
     /**
      * Get a Map of nodelabel to the
@@ -202,7 +201,7 @@ public interface Manager {
      * @return a java$util$Map object.
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public Map<String,Set<Integer>> getNodeLabelToMaps(String user) throws MapsException;
+    Map<String,Set<Integer>> getNodeLabelToMaps(String user) throws MapsException;
     
     /**
      * <p>searchMap</p>
@@ -215,7 +214,7 @@ public interface Manager {
      * @throws org.opennms.web.map.MapsException if any.
      * @return a {@link org.opennms.web.map.view.VMap} object.
      */
-    public VMap searchMap(String owner,String userModifies, int width, int height,List<VElement> velems) throws MapsException ;
+    VMap searchMap(String owner,String userModifies, int width, int height,List<VElement> velems) throws MapsException ;
     
     /**
      * <p>getProperties</p>
@@ -224,7 +223,7 @@ public interface Manager {
      * @return a {@link org.opennms.web.map.view.VProperties} object.
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public VProperties getProperties(boolean isUserAdmin) throws MapsException;
+    VProperties getProperties(boolean isUserAdmin) throws MapsException;
     
     /**
      * <p>addElements</p>
@@ -234,23 +233,23 @@ public interface Manager {
      * @return a {@link org.opennms.web.map.view.VMap} object.
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public VMap addElements(VMap map, List<VElement> velems) throws MapsException;
+    VMap addElements(VMap map, List<VElement> velems) throws MapsException;
     
     /**
      * <p>reloadConfig</p>
      *
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public void reloadConfig() throws MapsException;
+    void reloadConfig() throws MapsException;
 
     /**
      * <p> ExecCommand</p>
      */
-    public String execCommand(Command command);
+    String execCommand(Command command);
     
-    public Command getCommand(String id);
+    Command getCommand(String id);
     
-    public void removeCommand(String id);
+    void removeCommand(String id);
         
-    public boolean checkCommandExecution();
+    boolean checkCommandExecution();
 }
