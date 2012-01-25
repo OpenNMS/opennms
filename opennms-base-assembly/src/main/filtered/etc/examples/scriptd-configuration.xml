@@ -4,6 +4,7 @@
 
 	<start-script language="beanshell">
 
+		import org.opennms.core.utils.InetAddressUtils;
 		import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 		import org.opennms.netmgt.config.DataSourceFactory;
 		import org.opennms.netmgt.utils.SingleResultQuerier;
@@ -120,7 +121,7 @@
                 if (t_interface != null) {
                         retParmVal = event.getInterface();
                         try {
-                                java.net.InetAddress inet = java.net.InetAddressUtils.addr(retParmVal);
+                                java.net.InetAddress inet = InetAddressUtils.addr(retParmVal);
                                 retParmVal = inet.getHostName();
                             } catch (java.net.UnknownHostException e) {
                             }
