@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.mock.snmp.MockSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;

@@ -45,6 +45,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
+import org.opennms.mock.snmp.MockSnmpDataProvider;
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.SnmpAgentConfigProxyMapper;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;

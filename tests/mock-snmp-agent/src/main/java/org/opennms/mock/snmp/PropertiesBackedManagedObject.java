@@ -29,8 +29,6 @@
 
 package org.opennms.mock.snmp;
 
-import java.io.InputStream;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -38,8 +36,8 @@ import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.snmp4j.agent.DefaultMOScope;
 import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.MOScope;
@@ -47,15 +45,8 @@ import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.request.RequestStatus;
 import org.snmp4j.agent.request.SubRequest;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.smi.Counter32;
-import org.snmp4j.smi.Counter64;
-import org.snmp4j.smi.Gauge32;
-import org.snmp4j.smi.Integer32;
-import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.Null;
 import org.snmp4j.smi.OID;
-import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.springframework.core.io.Resource;
@@ -77,7 +68,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
     
     /** {@inheritDoc} */
     public List<ManagedObject> loadMOs(Resource moFile) {
-    	final Properties props = loadProperties(moFile);
+    	final Properties props = SnmpUtils.loadProperties(moFile);
 
         m_vars = new TreeMap<OID, Object>();
 
@@ -103,21 +94,6 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         
         return Collections.singletonList((ManagedObject)this);
     }
-
-	private Properties loadProperties(Resource moFile) {
-		final Properties moProps = new Properties();
-		InputStream inStream = null;
-		try {
-		    inStream = moFile.getInputStream();
-			moProps.load( inStream );
-		} catch (final Exception ex) {
-		    LogUtils.warnf(getClass(), ex, "Unable to read property file %s", moFile);
-			return null;
-		} finally {
-		    IOUtils.closeQuietly(inStream);
-		}
-		return moProps;
-	}
     
     /** {@inheritDoc} */
     public OID find(final MOScope range) {
@@ -162,7 +138,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         } else if (val instanceof Variable) {
             return (Variable)val;
         }
-        return getVariableFromValueString(oid.toString(), (String)val);
+        return PropsMockSnmpMOLoaderImpl.getVariableFromValueString(oid.toString(), (String)val);
     }
 
     /** {@inheritDoc} */
@@ -272,57 +248,5 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
     public boolean isAccessibleForWrite() {
         return false;
     }
-
-	/**
-	 * <p>getVariableFromValueString</p>
-	 *
-	 * @param oidStr a {@link java.lang.String} object.
-	 * @param valStr a {@link java.lang.String} object.
-	 * @return a {@link org.snmp4j.smi.Variable} object.
-	 */
-	private Variable getVariableFromValueString(String oidStr, String valStr) {
-	    Variable newVar;
-	
-	    if ("\"\"".equals(valStr)) {
-	        newVar = new Null();
-	    }
-	    else {
-	        String moTypeStr = valStr.substring(0, valStr.indexOf(":"));
-	        String moValStr = valStr.substring(valStr.indexOf(":") + 2);
-	
-	        try {
-	
-	            if (moTypeStr.equals("STRING")) {
-	                newVar = new OctetString(moValStr);
-	            } else if (moTypeStr.equals("Hex-STRING")) {
-	                newVar = OctetString.fromHexString(moValStr.trim().replace(' ', ':'));
-	            } else if (moTypeStr.equals("INTEGER")) {
-	                newVar = new Integer32(Integer.parseInt(moValStr));
-	            } else if (moTypeStr.equals("Gauge32")) {
-	                newVar = new Gauge32(Long.parseLong(moValStr));
-	            } else if (moTypeStr.equals("Counter32")) {
-	                newVar = new Counter32(Long.parseLong(moValStr)); // a 32 bit counter can be > 2 ^ 31, which is > INTEGER_MAX
-	            } else if (moTypeStr.equals("Counter64")) {
-	                newVar = new Counter64(Long.parseLong(moValStr));
-	            } else if (moTypeStr.equals("Timeticks")) {
-	                Integer ticksInt = Integer.parseInt( moValStr.substring( moValStr.indexOf("(") + 1, moValStr.indexOf(")") ) );
-	                newVar = new TimeTicks(ticksInt);
-	            } else if (moTypeStr.equals("OID")) {
-	                newVar = new OID(moValStr);
-	            } else if (moTypeStr.equals("IpAddress")) {
-	                newVar = new IpAddress(moValStr.trim());
-	            } else if (moTypeStr.equals("Network Address")) {
-	                newVar = OctetString.fromHexString(moValStr.trim());
-	            } else {
-	                // Punt, assume it's a String
-	                //newVar = new OctetString(moValStr);
-	                throw new IllegalArgumentException("Unrecognized SNMP Type "+moTypeStr);
-	            }
-	        } catch (Throwable t) {
-	            throw new UndeclaredThrowableException(t, "Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr);
-	        }
-	    }
-	    return newVar;
-	}
 
 }

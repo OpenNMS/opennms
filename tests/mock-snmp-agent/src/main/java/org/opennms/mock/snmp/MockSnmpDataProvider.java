@@ -1,4 +1,4 @@
-package org.opennms.core.test.snmp;
+package org.opennms.mock.snmp;
 
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.springframework.core.io.Resource;

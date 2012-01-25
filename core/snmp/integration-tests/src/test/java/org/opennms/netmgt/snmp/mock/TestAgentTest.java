@@ -33,6 +33,7 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.opennms.mock.snmp.MockSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 

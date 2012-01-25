@@ -268,6 +268,27 @@ public class SnmpUtils {
         return true;
     }
 
+	/**
+	 * <p>loadProperties</p>
+	 *
+	 * @param propertiesFile a {@link org.springframework.core.io.Resource} object.
+	 * @return a {@link java.util.Properties} object.
+	 */
+	public static  Properties loadProperties(final Resource propertiesFile) {
+		final Properties moProps = new Properties();
+		InputStream inStream = null;
+		try {
+	        inStream = propertiesFile.getInputStream();
+			moProps.load( inStream );
+		} catch (final Exception ex) {
+		    LogUtils.warnf(SnmpUtils.class, ex, "Unable to read property file %s", propertiesFile);
+			return null;
+		} finally {
+	        IOUtils.closeQuietly(inStream);
+		}
+	    return moProps;
+	}
+
 	public static SnmpValue parseMibValue(final String mibVal) {
 	    if (mibVal.startsWith("OID:")) {
 	    	return getValueFactory().getObjectId(SnmpObjId.get(mibVal.substring("OID:".length()).trim()));
