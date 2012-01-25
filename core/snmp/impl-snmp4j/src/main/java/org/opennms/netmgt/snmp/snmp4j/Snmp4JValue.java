@@ -101,6 +101,18 @@ class Snmp4JValue implements SnmpValue {
             m_value = new Opaque(bytes);
             break;
         }
+        case SMIConstants.EXCEPTION_END_OF_MIB_VIEW: {
+        	m_value = Null.endOfMibView;
+        	break;
+        }
+        case SMIConstants.EXCEPTION_NO_SUCH_INSTANCE: {
+        	m_value = Null.noSuchInstance;
+        	break;
+        }
+        case SMIConstants.EXCEPTION_NO_SUCH_OBJECT: {
+        	m_value = Null.noSuchObject;
+        	break;
+        }
         case SMIConstants.SYNTAX_NULL: {
             m_value = new Null();
             break;
@@ -130,6 +142,9 @@ class Snmp4JValue implements SnmpValue {
             return ((OctetString)m_value).getValue();
         case SMIConstants.SYNTAX_OPAQUE:
             return((Opaque)m_value).getValue();
+        case SMIConstants.EXCEPTION_END_OF_MIB_VIEW:
+        case SMIConstants.EXCEPTION_NO_SUCH_INSTANCE:
+        case SMIConstants.EXCEPTION_NO_SUCH_OBJECT:
         case SMIConstants.SYNTAX_NULL:
             return new byte[0];
         default:
@@ -202,6 +217,8 @@ class Snmp4JValue implements SnmpValue {
             return Long.toString(toLong());
         case SMIConstants.SYNTAX_OCTET_STRING :
             return toStringDottingCntrlChars(((OctetString)m_value).getValue());
+        case SMIConstants.SYNTAX_NULL:
+        	return "";
         default :
             return m_value.toString();
         }

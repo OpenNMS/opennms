@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.mock.snmp;
+package org.opennms.netmgt.snmp.mock;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
