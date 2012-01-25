@@ -30,7 +30,6 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
-import org.opennms.mock.snmp.MockSnmpValue.StringSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.test.mock.MockLogAppender;
@@ -225,8 +224,8 @@ public class Snmp4JStrategyTest extends MockSnmpAgentTestCase {
         };
         
         SnmpValue[] values = new SnmpValue[] {
-                new StringSnmpValue("foo"),
-                new StringSnmpValue("bar")
+                snmpValue("foo"),
+                snmpValue("bar")
         };
         
         PDU pdu = m_strategy.buildPdu(new Snmp4JAgentConfig(getAgentConfig()), PDU.SET, oids, values);
@@ -250,7 +249,7 @@ public class Snmp4JStrategyTest extends MockSnmpAgentTestCase {
         };
         
         SnmpValue[] values = new SnmpValue[] {
-                new StringSnmpValue("foo"),
+                snmpValue("foo"),
         };
         
         PDU pdu = m_strategy.buildPdu(new Snmp4JAgentConfig(getAgentConfig()), PDU.SET, oids, values);
@@ -271,9 +270,9 @@ public class Snmp4JStrategyTest extends MockSnmpAgentTestCase {
         };
         
         SnmpValue[] values = new SnmpValue[] {
-                new StringSnmpValue("foo"),
-                new StringSnmpValue("bar"),
-                new StringSnmpValue("baz")
+                snmpValue("foo"),
+                snmpValue("bar"),
+                snmpValue("baz")
         };
         
         PDU pdu = m_strategy.buildPdu(new Snmp4JAgentConfig(getAgentConfig()), PDU.SET, oids, values);
@@ -290,5 +289,9 @@ public class Snmp4JStrategyTest extends MockSnmpAgentTestCase {
     private void assertSnmpValueEquals(String message, int expectedType, int expectedValue, SnmpValue value) {
         assertEquals(message + " getType()", expectedType, value.getType());
         assertEquals(message + " toInt()", expectedValue, value.toInt());
+    }
+    
+    SnmpValue snmpValue(String val) {
+    	return m_strategy.getValueFactory().getOctetString(val.getBytes());
     }
 }
