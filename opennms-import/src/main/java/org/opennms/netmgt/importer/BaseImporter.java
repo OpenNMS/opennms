@@ -30,6 +30,7 @@ package org.opennms.netmgt.importer;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -433,7 +434,7 @@ public class BaseImporter implements ImportOperationFactory {
 	private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
         return m_transTemplate.execute(new TransactionCallback<Map<String, Integer>>() {
             public Map<String,Integer> doInTransaction(TransactionStatus status) {
-                return getNodeDao().getForeignIdToNodeIdMap(foreignSource);
+                return Collections.unmodifiableMap(getNodeDao().getForeignIdToNodeIdMap(foreignSource));
             }
         });
         
