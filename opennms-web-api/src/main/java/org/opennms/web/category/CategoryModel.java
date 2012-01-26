@@ -35,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -120,7 +121,7 @@ public class CategoryModel extends Object {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, Category> getCategoryMap() {
-        return new HashMap<String, Category>(m_categoryMap);
+        return Collections.unmodifiableMap(new HashMap<String, Category>(m_categoryMap));
     }
 
     /**
@@ -356,7 +357,7 @@ public class CategoryModel extends Object {
             d.cleanUp();
         }
 
-        return retMap;
+        return Collections.unmodifiableMap(retMap);
     }    
 
     /**

@@ -139,7 +139,7 @@ public class AlertMapReader {
             }
         }
         LogUtils.infof(this, "Loaded %d alert-mappings from [%s]", alertMappings.size(), m_resource);
-        return alertMappings;
+        return Collection.unmodifiableList(alertMappings);
     }
     
 }

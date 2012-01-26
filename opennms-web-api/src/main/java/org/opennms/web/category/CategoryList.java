@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -181,7 +182,7 @@ public class CategoryList {
             categoryData.put(section.getSectionName(), categories);
         }
 
-        return categoryData;
+        return Collections.unmodifiableMap(categoryData);
     }
 
     /**
