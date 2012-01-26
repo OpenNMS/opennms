@@ -262,7 +262,7 @@
 <script type="text/javascript">
 function doReload() {
     if (confirm("Are you sure you want to do this?")) {
-        document.location = "KSC/index.htm?reloadConfig=true";
+        document.location = "<%=Util.calculateUrlBase(request, "KSC/index.htm?reloadConfig=true")%>";
     }
 }
 </script>
