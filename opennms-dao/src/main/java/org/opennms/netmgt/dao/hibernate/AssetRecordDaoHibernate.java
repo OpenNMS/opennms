@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +86,7 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
 		for (Object[] an : assetNumbers) {
 			assetNumberMap.put((String) an[1], (Integer) an[0]);
 		}
-		return assetNumberMap;
+		return Collections.unmodifiableMap(assetNumberMap);
 	}
 
 	@Override

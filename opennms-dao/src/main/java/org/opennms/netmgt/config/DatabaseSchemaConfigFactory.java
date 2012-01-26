@@ -33,12 +33,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -252,7 +251,7 @@ public final class DatabaseSchemaConfigFactory {
      */
     private void finishConstruction() {
         Set<String> joinableSet = new HashSet<String>();
-        final Map<String, Join> primaryJoins = new HashMap<String, Join>();
+        final Map<String, Join> primaryJoins = new ConcurrentHashMap<String, Join>();
         joinableSet.add(getPrimaryTable().getName());
         // loop until we stop adding entries to the set
         int joinableCount = 0;
@@ -271,7 +270,7 @@ public final class DatabaseSchemaConfigFactory {
             }
             joinableSet = newSet;
         }
-        m_primaryJoins = Collections.synchronizedMap(primaryJoins);
+        m_primaryJoins = primaryJoins;
     }
 
     /**

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.castor;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
@@ -76,7 +77,7 @@ public class DefaultSurveillanceViewConfigDao extends AbstractCastorConfigDao<Su
      * @return <code>Map</> of View classes.
      */
     public Map<String, View> getViewMap() {
-        return getContainer().getObject().getViewsMap();
+        return Collections.unmodifiableMap(getContainer().getObject().getViewsMap());
     }
 
     /**

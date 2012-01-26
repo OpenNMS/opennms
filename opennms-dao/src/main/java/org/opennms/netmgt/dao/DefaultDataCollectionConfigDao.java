@@ -296,7 +296,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                 throw m_validationException;
             }
         }
-        return map;
+        return Collections.unmodifiableMap(map);
     }
 
     public RrdRepository getRrdRepository(final String collectionName) {
@@ -554,7 +554,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             }
             collectionGroupMap.put(collection.getName(), groupMap);
         }
-        return collectionGroupMap;
+        return Collections.unmodifiableMap(collectionGroupMap);
     }
 
     private void validateResourceTypes(final Set<String> allowedResourceTypes) {
