@@ -28,7 +28,6 @@
 
 package org.opennms.core.test.snmp;
 
-import org.opennms.mock.snmp.MockSnmpDataProvider;
 
 
 public interface MockSnmpDataProviderAware {

@@ -6,9 +6,9 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
-  <artifactId>snmp-agent-dependencies</artifactId>
+  <artifactId>snmp4j-agent-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS SNMP Agent Dependencies</name>
+  <name>OpenNMS SNMP4J Agent Dependencies</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use SNMP4J's Agent
