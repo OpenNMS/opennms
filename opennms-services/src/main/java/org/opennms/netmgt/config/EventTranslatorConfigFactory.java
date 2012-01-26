@@ -368,13 +368,13 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 				transMaps.add(transMap);
 			}
 			
-			return transMaps;
+			return Collections.unmodifiableList(transMaps);
 		}
 		
 		List<TranslationMapping> getTranslationMappings() {
 			if (m_translationMappings == null)
 				m_translationMappings = constructTranslationMappings();
-			return m_translationMappings;
+			return Collections.unmodifiableList(m_translationMappings);
 		}
 		boolean matches(Event e) {
 			// short circuit if the eui doesn't match

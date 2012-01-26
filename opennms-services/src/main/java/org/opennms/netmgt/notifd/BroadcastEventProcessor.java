@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -741,7 +742,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
         NotificationManager.expandMapValues(paramMap, event);
 
-        return paramMap;
+        return Collections.unmodifiableMap(paramMap);
         
     }
 

@@ -110,6 +110,6 @@ public abstract class NotificationCommandManager {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, Command> getCommands() {
-        return m_commands;
+        return Collections.unmodifiableMap(m_commands);
     }
 }

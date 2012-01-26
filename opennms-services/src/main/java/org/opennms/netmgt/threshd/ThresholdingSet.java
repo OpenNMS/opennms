@@ -30,6 +30,7 @@ package org.opennms.netmgt.threshd;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -459,7 +460,7 @@ public class ThresholdingSet {
             }
             entityMap = thisResourceType.getThresholdMap();
         }
-        return entityMap;
+        return Collections.unmodifiableMap(entityMap);
     }
 
     /** {@inheritDoc} */

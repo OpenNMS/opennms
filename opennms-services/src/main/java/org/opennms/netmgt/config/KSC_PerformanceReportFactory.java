@@ -258,7 +258,7 @@ public class KSC_PerformanceReportFactory {
             reports.put(report.getId(), report.getTitle());
         }
         
-        return reports;
+        return Collections.unmodifiableMap(reports);
     }
 
     /**

@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -106,13 +107,13 @@ public class IfResourceType extends ResourceType {
      * @return a {@link java.util.Collection} object.
      */
     public Collection<IfInfo> getResources() {
-        return m_ifMap.values();
+        return Collections.unmodifiableCollection(m_ifMap.values());
     }
 
     /** {@inheritDoc} */
     @Override
     protected Collection<SnmpAttributeType> loadAttributeTypes() {
-        return getCollection().getIndexedAttributeTypesForResourceType(getAgent(), this);
+        return Collections.unmodifiableCollection(getCollection().getIndexedAttributeTypesForResourceType(getAgent(), this));
     }
     
     

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -378,7 +379,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
     }
 
     Map<?,?> getPropertyMap() {
-        return (Map<?,?>) SVC_PROP_MAP.get(m_svcPropKey);
+        return Collections.unmodifiableMap((Map<?,?>) SVC_PROP_MAP.get(m_svcPropKey));
     }
 
     /**

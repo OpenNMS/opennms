@@ -37,6 +37,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -165,7 +166,7 @@ public class SnmpThresholdNetworkInterface {
      */
     public Map<String, Set<ThresholdEntity>> getNodeThresholdMap() {
     	ThresholdResourceType resourceType = getThresholdConfiguration().getNodeResourceType();
-    	return resourceType.getThresholdMap();
+    	return Collections.unmodifiableMap(resourceType.getThresholdMap());
     }
 
     /**
@@ -187,7 +188,7 @@ public class SnmpThresholdNetworkInterface {
             getAllInterfaceMap().put(ifLabel, thresholdMap);
         }
         
-        return thresholdMap;
+        return Collections.unmodifiableMap(thresholdMap);
     }
 
 }

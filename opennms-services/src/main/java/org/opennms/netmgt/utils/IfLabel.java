@@ -31,6 +31,7 @@ package org.opennms.netmgt.utils;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -137,7 +138,7 @@ public class IfLabel extends Object {
         
         // The map will remain empty if the information was not located in the
         // DB.
-        return info;
+        return Collections.unmodifiableMap(info);
     }
 
     /**

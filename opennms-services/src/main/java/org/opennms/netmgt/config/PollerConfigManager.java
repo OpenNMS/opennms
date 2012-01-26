@@ -980,7 +980,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public Map<String, ServiceMonitor> getServiceMonitors() {
         getReadLock().lock();
         try {
-            return m_svcMonitors;
+            return Collections.unmodifiableMap(m_svcMonitors);
         } finally {
             getReadLock().unlock();
         }

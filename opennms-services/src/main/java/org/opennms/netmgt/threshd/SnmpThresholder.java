@@ -31,6 +31,7 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -808,7 +809,7 @@ public final class SnmpThresholder implements ServiceThresholder {
         		thresholdMap.get(entity.getDataSourceExpression()).add(entity.clone());
         	}
         }
-        return thresholdMap;
+        return Collections.unmodifiableMap(thresholdMap);
     }
 
     private ThreadCategory log() {

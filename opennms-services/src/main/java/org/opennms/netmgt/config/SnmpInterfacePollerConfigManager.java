@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -486,9 +487,10 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
 
     /** {@inheritDoc} */
     public synchronized Set<String> getInterfaceOnPackage(String pkgName) {
-    	if (m_pkgIntMap.containsKey(pkgName))
-        	return m_pkgIntMap.get(pkgName).keySet();
-    	return new HashSet<String>();
+        if (m_pkgIntMap.containsKey(pkgName))
+            return Collections.unmodifiableSet(m_pkgIntMap.get(pkgName).keySet());
+        Set<String> retval = Collections.emptySet();
+        return Collections.unmodifiableSet(retval);
     }
 
     /** {@inheritDoc} */
