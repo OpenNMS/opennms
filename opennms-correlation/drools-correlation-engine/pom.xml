@@ -34,7 +34,7 @@
   <parent>
     <artifactId>opennms-correlation</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.9.94-RRP-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>drools-correlation-engine</artifactId>
@@ -51,7 +51,7 @@
         <configuration>
           <additionalBuildcommands>
             <buildcommand>org.drools.ide.droolsbuilder</buildcommand>
-          </additionalBuildcommands> 
+          </additionalBuildcommands>
         </configuration>
       </plugin>
       <plugin>
@@ -89,7 +89,7 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-correlator</artifactId>
     </dependency>
-   <dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>

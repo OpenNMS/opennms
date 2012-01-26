@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.9.94-RRP-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
@@ -39,13 +39,11 @@
       <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-
   </dependencies>
 </project>

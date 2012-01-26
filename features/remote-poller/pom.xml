@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.9.94-RRP-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -43,14 +43,11 @@
           <additionalConfig>
             <file>
               <name>.settings/org.codehaus.groovy.eclipse.preferences.prefs</name>
-              <content>
-<!-- note the newlines in this are important please don't format -->
-<![CDATA[
+              <content><!-- note the newlines in this are important please don't format --><![CDATA[
 #Added by maven-eclipse-plugin
 eclipse.preferences.version=1
 groovy.compiler.output.path=target/classes
-]]>
-              </content>
+]]></content>
             </file>
           </additionalConfig>
         </configuration>
@@ -157,7 +154,6 @@ groovy.compiler.output.path=target/classes
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jni6</artifactId>
     </dependency>
-
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

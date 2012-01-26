@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.9.94-RRP-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -32,9 +32,7 @@
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>
   </modules>
-
   <profiles>
-
     <profile>
       <id>build.features.remote-poller</id>
       <activation>
@@ -46,7 +44,5 @@
         <module>remote-poller-gwt</module>
       </modules>
     </profile>
-
   </profiles>
-
 </project>

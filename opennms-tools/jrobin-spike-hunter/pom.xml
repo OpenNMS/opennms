@@ -1,14 +1,15 @@
-<?xml version="1.0"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>opennms-tools</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.9.94-RRP-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>spike-hunter</artifactId>
   <packaging>jar</packaging>
   <name>spike-hunter</name>
-  <version>1.9.94-RRP-SNAPSHOT</version>
+  <version>1.10.1-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -21,7 +22,7 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
       <scope>compile</scope>
-      <version>1.9.94-RRP-SNAPSHOT</version>
+      <version>1.10.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.jrobin</groupId>
@@ -36,7 +37,6 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -49,27 +49,27 @@
         </configuration>
       </plugin>
       <plugin>
-       <artifactId>maven-assembly-plugin</artifactId>
-       <executions>
-         <execution>
-           <phase>package</phase>
-           <goals>
-             <goal>attached</goal>
-           </goals>
-         </execution>
-       </executions>
-       <configuration>
-         <archive>
-           <manifest>
-             <mainClass>org.opennms.netmgt.util.spikehunter.SpikeHunter</mainClass>
-           </manifest>
-         </archive>
-         <descriptorRefs>
-           <descriptorRef>jar-with-dependencies</descriptorRef>
-         </descriptorRefs>
-         <!-- appendAssemblyId>false</appendAssemblyId -->
-         <tarLongFileMode>gnu</tarLongFileMode>
-       </configuration>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>org.opennms.netmgt.util.spikehunter.SpikeHunter</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <!-- appendAssemblyId>false</appendAssemblyId -->
+          <tarLongFileMode>gnu</tarLongFileMode>
+        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -3,12 +3,11 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-integrations</artifactId>
-    <version>1.9.94-RRP-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-link-provisioning-adapter</artifactId>
   <name>OpenNMS Link Provisioning Adaptor</name>
-
   <build>
     <plugins>
       <plugin>
@@ -74,7 +73,6 @@
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
@@ -103,7 +101,7 @@
       <type>pom</type>
     </dependency>
     <!-- test dependencies -->
-      <dependency>
+    <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
       <scope>test</scope>

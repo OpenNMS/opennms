@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.9.94-RRP-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-provision</artifactId>
@@ -12,7 +12,7 @@
   <modules>
     <module>opennms-provision-api</module>
     <module>opennms-mock-simpleserver</module>
-    <module>opennms-detector-lineoriented</module> 
+    <module>opennms-detector-lineoriented</module>
     <module>opennms-detector-simple</module>
     <module>opennms-snmp-scanners</module>
     <module>opennms-provisiond</module>

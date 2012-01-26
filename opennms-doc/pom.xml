@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.9.94-RRP-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
   </parent>
   <artifactId>opennms-doc</artifactId>
   <packaging>pom</packaging>
@@ -48,11 +48,11 @@
           <postProcess>
             <copy todir="target/docbkx/html/common">
               <fileset dir="src/docbkx/common">
-                <include name="*.css" />
+                <include name="*.css"/>
               </fileset>
               <fileset dir="src/docbkx/images">
-                <include name="*.gif" />
-                <include name="*.png" />
+                <include name="*.gif"/>
+                <include name="*.png"/>
               </fileset>
             </copy>
             <!--
@@ -80,7 +80,9 @@
         <executions>
           <execution>
             <phase>package</phase>
-            <goals><goal>single</goal></goals>
+            <goals>
+              <goal>single</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>

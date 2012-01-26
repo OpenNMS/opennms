@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.9.94-RRP-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -42,7 +42,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-api</artifactId>
     </dependency>
-
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -80,6 +79,5 @@
       <artifactId>easymock</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 </project>

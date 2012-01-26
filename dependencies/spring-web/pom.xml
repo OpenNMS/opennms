@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.9.94-RRP-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -15,93 +16,158 @@
   </description>
   <!-- springVersion defined in the dependencies pom since its shared in multiple modules -->
   <dependencies>
-
     <!-- Spring -->
-
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
       <version>${springVersion}</version>
       <exclusions>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-beans</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context-support</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-core</artifactId></exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
       <version>${springVersion}</version>
       <exclusions>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-beans</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context-support</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-core</artifactId></exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-struts</artifactId>
       <version>${springVersion}</version>
       <exclusions>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-beans</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context-support</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-core</artifactId></exclusion>
-        <exclusion><groupId>commons-beanutils</groupId><artifactId>commons-beanutils</artifactId></exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
-	 </dependency>
-
+    </dependency>
     <dependency>
       <groupId>org.springframework.webflow</groupId>
       <artifactId>spring-binding</artifactId>
       <version>${springWebFlowVersion}</version>
       <exclusions>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-beans</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context-support</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-core</artifactId></exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.webflow</groupId>
       <artifactId>spring-js</artifactId>
       <version>${springWebFlowVersion}</version>
       <exclusions>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-beans</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context-support</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-core</artifactId></exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.webflow</groupId>
       <artifactId>spring-webflow</artifactId>
       <version>${springWebFlowVersion}</version>
       <exclusions>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-beans</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context-support</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring-core</artifactId></exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-
     <!-- Spring Dependencies -->
-
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-
   </dependencies>
 </project>

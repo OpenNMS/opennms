@@ -3,17 +3,14 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.build</artifactId>
-    <version>1.9.94-RRP-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
-
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>org.opennms.core.build</groupId>
   <artifactId>castor-maven-plugin</artifactId>
   <name>Castor Source Generated with no Warnings</name>
   <packaging>maven-plugin</packaging>
-
   <build>
     <plugins>
       <plugin>
@@ -30,7 +27,6 @@
       </plugin>
     </plugins>
   </build>
-  
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -65,5 +61,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>
