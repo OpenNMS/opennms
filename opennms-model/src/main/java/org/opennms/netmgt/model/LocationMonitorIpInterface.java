@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model;
 
+import org.springframework.core.style.ToStringCreator;
+
 
 /**
  * <p>LocationMonitorIpInterface class.</p>
@@ -42,7 +44,7 @@ public class LocationMonitorIpInterface {
      * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
      * @param ipInterface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
-    public LocationMonitorIpInterface(OnmsLocationMonitor locationMonitor, OnmsIpInterface ipInterface) {
+    public LocationMonitorIpInterface(final OnmsLocationMonitor locationMonitor, final OnmsIpInterface ipInterface) {
         m_locationMonitor = locationMonitor;
         m_ipInterface = ipInterface;
     }
@@ -63,6 +65,14 @@ public class LocationMonitorIpInterface {
      */
     public OnmsLocationMonitor getLocationMonitor() {
         return m_locationMonitor;
+    }
+    
+    @Override
+    public String toString() {
+        return new ToStringCreator(this)
+            .append("locationMonitor", m_locationMonitor)
+            .append("ipInterface", m_ipInterface)
+            .toString();
     }
 }
 
