@@ -106,12 +106,6 @@
 			<parameter key="rrd-repository" value="target/test-data"/>
 			<parameter key="ds-name" value="ssh"/>
 		</service>
-		<service name="DHCP" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="rrd-repository" value="target/test-data"/>
-			<parameter key="ds-name" value="dhcp"/>
-		</service>
 		<service name="IMAP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
 			<parameter key="port" value="143"/>
@@ -164,7 +158,6 @@
 	<monitor service="HTTP-8000"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
 	<monitor service="HTTPS" 	class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor"/>
 	<monitor service="SMTP" 	class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor"/>
-	<monitor service="DHCP" 	class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
 	<monitor service="DNS"  	class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
 	<monitor service="FTP"  	class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
 	<monitor service="SNMP"         class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor"/>
