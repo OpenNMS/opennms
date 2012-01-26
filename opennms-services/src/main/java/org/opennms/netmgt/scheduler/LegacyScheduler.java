@@ -29,10 +29,9 @@
 package org.opennms.netmgt.scheduler;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.fiber.PausableFiber;
@@ -199,7 +198,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         String name = parent + "Scheduler-" + maxSize;
         m_status = START_PENDING;
         m_runner = new RunnableConsumerThreadPool(name + " Pool", 0.6f, 1.0f, maxSize);
-        m_queues = Collections.synchronizedMap(new TreeMap<Long, PeekableFifoQueue<ReadyRunnable>>());
+        m_queues = new ConcurrentSkipListMap<Long, PeekableFifoQueue<ReadyRunnable>>();
         m_scheduled = 0;
         m_worker = null;
     }
@@ -225,7 +224,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         String name = parent + "Scheduler-" + maxSize;
         m_status = START_PENDING;
         m_runner = new RunnableConsumerThreadPool(name + " Pool", lowMark, hiMark, maxSize);
-        m_queues = Collections.synchronizedMap(new TreeMap<Long, PeekableFifoQueue<ReadyRunnable>>());
+        m_queues = new ConcurrentSkipListMap<Long, PeekableFifoQueue<ReadyRunnable>>();
         m_scheduled = 0;
         m_worker = null;
     }

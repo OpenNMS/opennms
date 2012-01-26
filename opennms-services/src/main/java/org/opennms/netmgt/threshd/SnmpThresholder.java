@@ -31,13 +31,13 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -111,7 +111,7 @@ public final class SnmpThresholder implements ServiceThresholder {
        
         log().debug("initialize: successfully instantiated RRD subsystem");
        
-        m_snmpThresholdNetworkInterfaces = Collections.synchronizedMap(new HashMap<NetworkInterface<InetAddress>, SnmpThresholdNetworkInterface>()); 
+        m_snmpThresholdNetworkInterfaces = new ConcurrentHashMap<NetworkInterface<InetAddress>, SnmpThresholdNetworkInterface>(); 
     }
 
     private void setupIfInfoGetter() {

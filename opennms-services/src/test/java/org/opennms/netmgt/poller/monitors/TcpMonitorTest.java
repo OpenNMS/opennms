@@ -33,9 +33,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +71,7 @@ public class TcpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new TcpMonitor();
@@ -103,7 +102,7 @@ public class TcpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new TcpMonitor();
@@ -133,7 +132,7 @@ public class TcpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new TcpMonitor();
