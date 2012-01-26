@@ -26,7 +26,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>snmp-agent-dependencies</artifactId>
+      <artifactId>snmp4j-agent-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
