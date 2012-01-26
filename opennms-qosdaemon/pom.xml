@@ -118,7 +118,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.opennms.core.build</groupId>
+        <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>castor-maven-plugin</artifactId>
       </plugin>
       <plugin>

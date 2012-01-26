@@ -1,80 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <artifactId>opennms-tools</artifactId>
-    <groupId>org.opennms</groupId>
-    <version>1.10.1-SNAPSHOT</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>jira-troubleticketer</artifactId>
-  <packaging>jar</packaging>
-  <name>OpenNMS Jira Trouble Ticketer</name>
-  <repositories>
-    <repository>
-      <id>su-mvn</id>
-      <name>SU Maven2</name>
-      <url>http://maven.opennms.org/content/groups/su.se-release2</url>
-    </repository>
-    <repository>
-      <id>su-maven</id>
-      <name>SU Maven</name>
-      <url>http://maven.opennms.org/content/groups/su.se-release1</url>
-      <layout>legacy</layout>
-    </repository>
-  </repositories>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>attached</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <!-- appendAssemblyId>false</appendAssemblyId -->
-          <tarLongFileMode>gnu</tarLongFileMode>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>axistools-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>wsdl2java</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <urls>
-            <url>file://${project.basedir}/src/main/wsdl/jirasoapservice-v2.wsdl</url>
-          </urls>
-          <packageSpace>com.atlassian.jira.rpc.soap.client</packageSpace>
-          <testCases>false</testCases>
-          <serverSide>false</serverSide>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <dependencies>
-    <dependency>
-      <groupId>org.opennms.features.ticketing</groupId>
-      <artifactId>org.opennms.features.ticketing.api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
+    <parent>
+        <artifactId>opennms-tools</artifactId>
+        <groupId>org.opennms</groupId>
+        <version>1.10.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>jira-troubleticketer</artifactId>
+    <packaging>jar</packaging>
+    <name>OpenNMS Jira Trouble Ticketer</name>
+
+    <repositories>
+        <repository>
+            <id>su-mvn</id>
+            <name>SU Maven2</name>
+            <url>http://maven.opennms.org/content/groups/su.se-release2</url>
+        </repository>
+        <repository>
+            <id>su-maven</id>
+            <name>SU Maven</name>
+            <url>http://maven.opennms.org/content/groups/su.se-release1</url>
+            <layout>legacy</layout>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <!-- appendAssemblyId>false</appendAssemblyId -->
+                    <tarLongFileMode>gnu</tarLongFileMode>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>axistools-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <urls>
+                        <url>file://${project.basedir}/src/main/wsdl/jirasoapservice-v2.wsdl</url>
+                    </urls>
+                    <packageSpace>com.atlassian.jira.rpc.soap.client</packageSpace>
+                    <testCases>false</testCases>
+                    <serverSide>false</serverSide>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opennms.features.ticketing</groupId>
+            <artifactId>org.opennms.features.ticketing.api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-services</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
   <!-- we add the ws-client as a dependency in a profile only while we are not tagging
        since we cannot release with a SNAPSHOT dependency.  When there is a released
        wersion can make it a regular dependency -->
@@ -89,11 +95,12 @@
       <dependencies>
         <!-- Cutting edge ++ -->
         <dependency>
-          <groupId>com.atlassian.jira.rpc.soap.client</groupId>
-          <artifactId>jira-ws-client</artifactId>
-          <version>1.0-SNAPSHOT</version>
+            <groupId>com.atlassian.jira.rpc.soap.client</groupId>
+            <artifactId>jira-ws-client</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
   </profiles>
+
 </project>

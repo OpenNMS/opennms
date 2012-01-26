@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.protocols</artifactId>
@@ -12,6 +12,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
   <build>
     <plugins>
       <plugin>
@@ -32,7 +33,15 @@
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
+
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+      <version>1.0</version>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -40,51 +49,59 @@
       <!-- Overrided scope from parent to compile -->
       <scope>compile</scope>
     </dependency>
+    
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
+		<groupId>org.opennms</groupId>
+    	<artifactId>opennms-services</artifactId>
+    	<version>${project.version}</version>
+    	<scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+    	<groupId>org.seleniumhq.selenium</groupId>
+    	<artifactId>selenium-java</artifactId>
+    	<version>2.7.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-support</artifactId>
+        <version>2.7.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-firefox-driver</artifactId>
+        <version>2.7.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-chrome-driver</artifactId>
+        <version>2.7.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-api</artifactId>
+        <version>2.7.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy</artifactId>
+        <version>1.9.0-beta-3</version>
     </dependency>
     <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-java</artifactId>
-      <version>2.7.0</version>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>10.0.1</version>
     </dependency>
+    
     <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-support</artifactId>
-      <version>2.7.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-firefox-driver</artifactId>
-      <version>2.7.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-chrome-driver</artifactId>
-      <version>2.7.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-api</artifactId>
-      <version>2.7.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy</artifactId>
-      <version>1.9.0-beta-3</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>10.0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.http</artifactId>
-      <scope>test</scope>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.http</artifactId>
+        <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

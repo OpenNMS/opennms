@@ -48,7 +48,7 @@ public class SshTest extends TestCase {
     InetAddress good;
     private static final InetAddress bad = InetAddressUtils.UNPINGABLE_ADDRESS;
 
-    private static final String GOOD_HOST = "www.opennms.org";
+    private static final String GOOD_HOST = "localhost";
     private static final int PORT = 22;
     private static final int TIMEOUT = 2000;
     private TimeoutTracker tt;

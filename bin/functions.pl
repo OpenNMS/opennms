@@ -32,8 +32,19 @@ if (basename($PREFIX) eq "bin") {
 }
 
 # path to git executable
-$GIT = `which git 2>/dev/null`;
-chomp($GIT);
+$GIT = $ENV{'GIT'};
+if (not defined $GIT or not -x $GIT) {
+	for my $dir (File::Spec->path()) {
+		my $git = File::Spec->catfile($dir, 'git');
+		if ($^O =~ /mswin/i) {
+			$git .= '.exe';
+		}
+		if (-x $git) {
+			$GIT = $git;
+			break;
+		}
+	}
+}
 if ($GIT eq "" or ! -x "$GIT") {
 	warning("Unable to locate git.");
 	$GIT = undef;
@@ -43,7 +54,7 @@ if ($GIT eq "" or ! -x "$GIT") {
 $MVN = $ENV{'MVN'};
 if (not defined $MVN or not -x $MVN) {
 	$MVN = File::Spec->catfile($PREFIX, 'maven', 'bin', 'mvn');
-	if ($^O =~ /mSWIN/) {
+	if ($^O =~ /mswin/i) {
 		$MVN .= '.bat';
 	}
 }
@@ -152,7 +163,6 @@ $ENV{'MAVEN_OPTS'} = $MAVEN_OPTS;
 info("JAVA_HOME = $JAVA_HOME") if (defined $JAVA_HOME and $JAVA_HOME ne "");
 info("MVN = $MVN");
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
-info("MAVEN_VERSION = $MAVEN_VERSION");
 
 sub clean_git {
 	my @command = ($GIT, "clean", "-fdx", ".");

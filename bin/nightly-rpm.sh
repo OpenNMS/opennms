@@ -6,6 +6,8 @@ TOPDIR=`cd "$BINDIR"/..; pwd`
 
 cd "$TOPDIR"
 
+export PATH="/usr/local/bin:$PATH"
+
 if [ -z "$YUMDIR" ]; then
 	YUMDIR="/var/www/sites/opennms.org/site/yum"
 fi
@@ -64,6 +66,7 @@ RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 ./makerpm.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION"
 
 # copy the source to SourceForge
+echo $UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz
 $UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz
 
 # update the $RELEASE repo, and sync it to anything later in the hierarchy

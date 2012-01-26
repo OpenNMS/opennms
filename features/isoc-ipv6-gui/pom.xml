@@ -5,18 +5,24 @@
     <groupId>org.opennms</groupId>
     <version>1.10.1-SNAPSHOT</version>
   </parent>
+    
   <modelVersion>4.0.0</modelVersion>
+  
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.isoc-ipv6-gui</artifactId>
   <packaging>war</packaging>
   <name>ISOC World IPv6 UI</name>
+
   <properties>
     <moduleName>org.opennms.isoc.ipv6.gui.Application</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
   </properties>
+
+  
+
   <build>
-    <!--    <outputDirectory>war/WEB-INF/classes</outputDirectory>-->
+<!--    <outputDirectory>war/WEB-INF/classes</outputDirectory>-->
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -36,6 +42,7 @@
           </execution>
         </executions>
       </plugin>
+            
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -81,53 +88,64 @@
           </classpathContainers>
         </configuration>
       </plugin>
+      
     </plugins>
   </build>
-  <dependencies>
-    <!-- GWT -->
+    
+    
+    <dependencies>
+
+     <!-- GWT -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>gwt-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    
     <!--GWT visualization-->
     <dependency>
-      <groupId>com.google.gwt.google-apis</groupId>
-      <artifactId>gwt-visualization</artifactId>
-      <version>1.0.2</version>
+        <groupId>com.google.gwt.google-apis</groupId>
+        <artifactId>gwt-visualization</artifactId>
+        <version>1.0.2</version>
     </dependency>
+    
     <!-- Jersey -->
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jersey-dependencies</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jersey-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>provided</scope>
+      </dependency>
+
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+        <scope>provided</scope>
     </dependency>
+    
     <!-- test -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
+  
   <profiles>
     <profile>
-      <id>runInPlace</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.opennms.dependencies</groupId>
-          <artifactId>jersey-dependencies</artifactId>
-          <version>${project.version}</version>
-          <type>pom</type>
-          <scope>compile</scope>
-        </dependency>
-      </dependencies>
+        <id>runInPlace</id>
+        <dependencies>
+            <dependency>
+                <groupId>org.opennms.dependencies</groupId>
+                <artifactId>jersey-dependencies</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>compile</scope>
+            </dependency>
+        </dependencies>
     </profile>
   </profiles>
+  
+  
 </project>

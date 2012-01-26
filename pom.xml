@@ -157,9 +157,9 @@
           <version>1.5</version>
         </plugin>
         <plugin>
-          <groupId>org.opennms.core.build</groupId>
+          <groupId>org.opennms.maven.plugins</groupId>
           <artifactId>castor-maven-plugin</artifactId>
-          <version>${project.version}</version>
+          <version>1.0</version>
           <executions>
             <execution>
               <goals>
@@ -775,7 +775,7 @@
     <jettyVersion>7.5.1.v20110908</jettyVersion>
     <liquibaseVersion>2.0.1</liquibaseVersion>
     <log4jVersion>1.2.15</log4jVersion>
-    <minaVersion>2.0.2</minaVersion>
+    <minaVersion>2.0.4</minaVersion>
     <oroVersion>2.0.8</oroVersion>
     <xercesVersion>2.9.1</xercesVersion>
   </properties>
@@ -913,18 +913,6 @@
       </modules>
     </profile>
   </profiles>
-  <dependencies>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
   <dependencyManagement>
     <dependencies>
       <!--  opennms dependencies that are outside of the opennms/trunk project -->
@@ -2245,6 +2233,17 @@
     <pluginRepository>
       <snapshots>
         <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </pluginRepository>
+    <pluginRepository>
+      <snapshots>
+        <enabled>false</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
       </snapshots>
       <releases>
@@ -2254,17 +2253,6 @@
       <id>maven-repo</id>
       <name>Maven Central</name>
       <url>http://repo1.maven.org/maven2</url>
-    </pluginRepository>
-    <pluginRepository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots>

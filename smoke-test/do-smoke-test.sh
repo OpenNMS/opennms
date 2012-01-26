@@ -98,20 +98,10 @@ reset_opennms() {
 get_source() {
 	banner "Getting OpenNMS Source"
 
-	if [ ! -d "$SOURCEDIR" ]; then
-		git clone git://opennms.git.sourceforge.net/gitroot/opennms/opennms "$SOURCEDIR" || die "Unable to clone from git."
-	fi
+	rsync -avr --exclude=target --exclude=smoke-test "$ME"/../  "$SOURCEDIR"/ || die "Unable to create source dir."
 	pushd "$SOURCEDIR"
-		CURRENT_BRANCH=`get_branch_from_git`
-		RPM_BRANCH=`get_branch_from_rpm`
-
-		if [ "$RPM_BRANCH" != "$CURRENT_BRANCH" ]; then
-			git branch -t "$RPM_BRANCH" origin/"$RPM_BRANCH"
-			git checkout "$RPM_BRANCH" || die "Unable to check out $RPM_BRANCH branch."
-		fi
 		git clean -fdx || die "Unable to clean source tree."
 		git reset --hard HEAD
-		git pull || die "Unable to pull latest code."
 
 		# if $MATCH_RPM is set to "yes", then reset the code to the git hash the RPM was built from
 		case $MATCH_RPM in
@@ -164,7 +154,7 @@ run_tests() {
 #	popd
 
 	pushd "$SOURCEDIR/smoke-test"
-		../bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
+		../bin/bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
 		RETVAL=$?
 	popd
 	return $RETVAL

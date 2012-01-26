@@ -59,9 +59,10 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.opennms.core.build</groupId>
+        <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>castor-maven-plugin</artifactId>
       </plugin>
+
       <!-- plugin to use to run webapp in an embedded tomcat -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -92,6 +93,7 @@
           </systemProperties>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>com.sun.tools.jxc.maven2</groupId>
         <artifactId>maven-jaxb-schemagen-plugin</artifactId>
@@ -161,21 +163,21 @@
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.7</version>
         <executions>
-          <execution>
-            <id>attach-artifacts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>target/opennms-webapp-1.9.94-RRP-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.9.94-RRP-SNAPSHOT.jar</file>
-                  <type>jar</type>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution>
+            <execution>
+                <id>attach-artifacts</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>attach-artifact</goal>
+                </goals>
+                <configuration>
+                    <artifacts>
+                        <artifact>
+                            <file>target/opennms-webapp-1.10.1-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.10.1-SNAPSHOT.jar</file>
+                            <type>jar</type>
+                        </artifact>
+                    </artifacts>
+                </configuration>
+            </execution>
         </executions>
       </plugin>
     </plugins>
@@ -183,9 +185,7 @@
   <profiles>
     <profile>
       <id>jspc</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
+      <activation><activeByDefault>true</activeByDefault></activation>
       <build>
         <plugins>
           <plugin>
@@ -302,10 +302,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.soa</artifactId>
-      <scope>provided</scope>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.soa</artifactId>
+        <scope>provided</scope>
     </dependency>
+
     <!-- direct dependencies that should be in WEB-INF/lib -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -327,7 +328,7 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
-    </dependency>
+    </dependency>   
     <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
@@ -357,39 +358,40 @@
     </dependency>
     <!-- GWT components -->
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
-      <version>${project.version}</version>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
+        <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.node-page-list</artifactId>
-      <version>${project.version}</version>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.node-page-list</artifactId>
+        <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
-      <version>${project.version}</version>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
+        <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-suggestion-combobox</artifactId>
-      <type>jar</type>
-      <version>${project.version}</version>
-      <scope>compile</scope>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-suggestion-combobox</artifactId>
+        <type>jar</type>
+        <version>${project.version}</version>
+        <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-graph-resources-list</artifactId>
-      <type>jar</type>
-      <version>${project.version}</version>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-graph-resources-list</artifactId>
+        <type>jar</type>
+        <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-snmpselect-list</artifactId>
-      <type>jar</type>
-      <version>${project.version}</version>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.gwt-snmpselect-list</artifactId>
+        <type>jar</type>
+        <version>${project.version}</version>
     </dependency>
+
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -434,5 +436,7 @@
       <version>1.0.2</version>
       <scope>test</scope>
     </dependency>
+
+    
   </dependencies>
 </project>
