@@ -176,8 +176,8 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         }
         // otherwise it will go straight to the only node's page
 
-        if(selenium.isElementPresent("link=HTTP-8080")){
-            selenium.click("link=HTTP-8080");
+        if(selenium.isElementPresent("link=ICMP")){
+            selenium.click("link=ICMP");
             waitForPageToLoad();
             assertTrue("Managed text not found", selenium.isTextPresent("regexp:(Managed|Not Monitored)"));
             assertTrue("IP text not found", selenium.isTextPresent("regexp:0+\\:0+\\:0+\\:0+\\:0+\\:0+\\:0+\\:0*1"));
