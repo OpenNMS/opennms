@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -143,7 +142,7 @@ public class SnmpIfData {
      * @return a {@link java.util.Map} object.
      */
     public Map<String,String> getAttributesMap() {
-        return Collections.unmodifiableMap(m_attributes);
+        return m_attributes;
     }
 
 }

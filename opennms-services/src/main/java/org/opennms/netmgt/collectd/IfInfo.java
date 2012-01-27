@@ -31,7 +31,6 @@ package org.opennms.netmgt.collectd;
 
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Map;
 
 import org.opennms.core.utils.AlphaNumeric;
@@ -145,7 +144,7 @@ public final class IfInfo extends SnmpCollectionResource {
      * @return a {@link java.util.Map} object.
      */
     public Map<String,String> getAttributesMap() {
-        return Collections.unmodifiableMap(m_snmpIfData.getAttributesMap());
+        return m_snmpIfData.getAttributesMap();
     }
 
     /**
