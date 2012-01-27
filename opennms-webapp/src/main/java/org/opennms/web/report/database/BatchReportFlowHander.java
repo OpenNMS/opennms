@@ -49,14 +49,14 @@ public class BatchReportFlowHander extends AbstractFlowHandler {
     @Override
     public String handleExecutionOutcome(FlowExecutionOutcome outcome, HttpServletRequest request,
         HttpServletResponse response) {
-    return "contextRelative:/report/database/batchList.htm";
+    return "contextRelative:/report/database/reportList.htm";
     }
 
     /** {@inheritDoc} */
     @Override
     public String handleException(FlowException e, HttpServletRequest request, HttpServletResponse response) {
         if (e instanceof NoSuchFlowExecutionException) {
-            return "contextRelative:/report/database/batchList.htm";
+            return "contextRelative:/report/database/reportList.htm";
         } else {
             throw e;
         }

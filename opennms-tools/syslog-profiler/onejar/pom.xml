@@ -10,7 +10,6 @@
   <artifactId>syslog-profiler</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Syslog Profiler (Single Jar)</name>
-
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>

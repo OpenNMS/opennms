@@ -6,42 +6,35 @@
   which accompanies this distribution, and is available at
   http://www.eclipse.org/legal/epl-v10.html
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>org.opennms.m2e.extensions</groupId>
   <artifactId>m2eclipse-extensions</artifactId>
   <version>0.9.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-
   <properties>
     <tycho-version>0.12.0</tycho-version>
   </properties>
-
   <modules>
     <module>org.opennms.m2e.castor</module>
     <module>org.opennms.m2e.castor.feature</module>
-<!--
+    <!--
     <module>org.opennms.m2e.castor.tests</module>
 -->
     <module>org.opennms.m2e.site-extras</module>
   </modules>
-
   <repositories>
     <repository>
       <id>helios</id>
       <layout>p2</layout>
       <url>http://download.eclipse.org/releases/indigo</url>
     </repository>
-
     <repository>
       <id>m2e</id>
       <layout>p2</layout>
       <url>http://download.eclipse.org/technology/m2e/releases/1.0</url>
     </repository>
   </repositories>
-
   <build>
     <plugins>
       <plugin>
@@ -51,7 +44,6 @@
         <extensions>true</extensions>
       </plugin>
     </plugins>
-
     <pluginManagement>
       <plugins>
         <plugin>
@@ -69,7 +61,6 @@
             <forkedProcessTimeoutInSeconds>7200</forkedProcessTimeoutInSeconds>
           </configuration>
         </plugin>
-        
         <!-- important for self-hosting -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -79,7 +70,6 @@
       </plugins>
     </pluginManagement>
   </build>
-
   <profiles>
     <profile>
       <id>sun-jvm</id>
@@ -128,7 +118,9 @@
     <profile>
       <id>sign</id>
       <activation>
-        <property><name>jarsigner.alias</name></property>
+        <property>
+          <name>jarsigner.alias</name>
+        </property>
       </activation>
       <build>
         <plugins>

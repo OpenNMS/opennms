@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<remoteRepositoryConfig jasperReportsVersion="4.2.3">
+	<remoteRepository>
+		<active>true</active>
+		<id>cioreporting</id>
+		<name>OpenNMS CIO-Reporting</name>
+		<description>OpenNMS.com provides high value reports.</description>
+		<management-url>http://www.opennms.com</management-url>
+		<login-user>patrick</login-user>
+		<login-password>bateman</login-password>
+		<uri>http://localhost:8080/opennms/connect/rest/repo/</uri>
+	</remoteRepository>
+
+	<remoteRepository>
+		<active>false</active>
+		<id>connectreporting</id>
+		<name>OpenNMS Connect Reports</name>
+		<description>OpenNMS Community provides free reports.</description>
+		<management-url>http://www.opennms.org</management-url>
+		<login-user>ethan</login-user>
+		<login-password>galstad</login-password>
+		<uri>http://localhost:8080/opennms/connect/rest/repo/connect</uri>
+	</remoteRepository>
+</remoteRepositoryConfig>

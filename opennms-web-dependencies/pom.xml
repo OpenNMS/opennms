@@ -31,7 +31,6 @@
       <groupId>taglibs</groupId>
       <artifactId>standard</artifactId>
     </dependency>
-
     <!-- org.opennms packages -->
     <dependency>
       <groupId>org.opennms</groupId>

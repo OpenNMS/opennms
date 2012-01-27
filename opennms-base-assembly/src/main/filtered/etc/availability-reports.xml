@@ -3,7 +3,7 @@
 	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-reports"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-reports">
-	<report id="defaultCalendarReport" 
+	<report id="local_defaultCalendarReport" 
 		type="calendar">
 		<logo>${install.etc.dir}/reports/logo.gif</logo>
 		<svg-template>file://${install.etc.dir}/reports/SVGAvailReport.xsl</svg-template>
@@ -21,7 +21,7 @@
 			</date-parm>
 		</parameters>
 	</report>
-	<report id="defaultClassicReport" 
+	<report id="local_defaultClassicReport" 
 		type="classic">
 		<logo>${install.etc.dir}/reports/logo.gif</logo>
 		<svg-template>file://${install.etc.dir}/reports/SVGAvailReport.xsl</svg-template>

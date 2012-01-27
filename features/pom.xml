@@ -32,9 +32,7 @@
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>
   </modules>
-
   <profiles>
-
     <profile>
       <id>build.features.remote-poller</id>
       <activation>
@@ -46,7 +44,5 @@
         <module>remote-poller-gwt</module>
       </modules>
     </profile>
-
   </profiles>
-
 </project>

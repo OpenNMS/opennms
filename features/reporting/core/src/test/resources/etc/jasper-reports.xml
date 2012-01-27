@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasper-reports
+        xmlns:this="http://xmlns.opennms.org/xsd/config/jasper-reports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/jasper-reports">
+        <report id="sample-report" template="sample-report.jrxml" engine="jdbc" />
+        <report id="trivial-report" template="trivial-report.jrxml" engine="null" />
+        <report id="parameter-test" template="parameter-test.jrxml" engine="null" />
+        <report id="Early-Morning-Report" template="Early-Morning-Report.jrxml" engine="jdbc" />
+        <report id="Response-Time-Summary-Report" template="ResponseTimeSummary.jrxml" engine="jdbc" />
+        <report id="Node-Availability-Report" template="NodeAvailabilityReport.jrxml" engine="jdbc" />
+        <report id="Availability-Summary-Report" template="AvailabilitySummary.jrxml" engine="jdbc" />
+        <report id="Response-Time-Report" template="ResponseTime.jrxml" engine="jdbc" />
+        <report id="Serial-Interface-Utilization-Summary" template="SerialInterfaceUtilizationSummary.jrxml" engine="jdbc" />
+        <report id="Total-Bytes-Transferred-By-Interface" template="TotalBytesTransferredByInterface.jrxml" engine="jdbc" />
+        <report id="Average-Peak-Traffic-Rates" template="AveragePeakTrafficRates.jrxml" engine="jdbc" />
+        <report id="Interface-Availability-Report" template="InterfaceAvailabilityReport.jrxml" engine="jdbc" />
+        <report id="Snmp-Interface-Oper-Availability" template="SnmpInterfaceOperAvailabilityReport.jrxml" engine="jdbc" />
+        <report id="AssetMangementMaintExpired" template="AssetManagementMaintExpired.jrxml" engine="jdbc" />
+        <report id="AssetMangementMaintStrategy" template="AssetManagementMaintStrategy.jrxml" engine="jdbc" />
+        <report id="Event-Analysis" template="EventAnalysis.jrxml" engine="jdbc" />
+	<report id="DiskUsageForCTX" template="DiskUsageForCTX.jrxml" engine="jdbc" /> 
+</jasper-reports>

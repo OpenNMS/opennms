@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
@@ -13,22 +14,21 @@
     This module is used to provide a single artifact that the opennms project
     can depend on to use SNMP
   </description>
-
   <dependencies>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.api</artifactId>
-		<version>${project.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.implementations.joesnmp</artifactId>
-		<version>${project.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.implementations.snmp4j</artifactId>
-		<version>${project.version}</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
   <!--

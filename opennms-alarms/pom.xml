@@ -9,7 +9,6 @@
   <artifactId>opennms-alarms</artifactId>
   <name>OpenNMS Alarm Subsystem</name>
   <packaging>pom</packaging>
-
   <modules>
     <module>api</module>
     <module>daemon</module>

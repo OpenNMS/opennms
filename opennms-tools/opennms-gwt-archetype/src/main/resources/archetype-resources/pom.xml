@@ -8,21 +8,15 @@
   <artifactId>${artifactId}</artifactId>
   <packaging>war</packaging>
   <version>${version}</version>
-
   <properties>
-
-      <!-- convenience to define GWT version in one place -->
-  	<gwt.version>2.0.4</gwt.version>
-
-  	<!--  tell the compiler we can use 1.5 -->
-      <maven.compiler.source>1.5</maven.compiler.source>
-      <maven.compiler.target>1.5</maven.compiler.target>
-
+    <!-- convenience to define GWT version in one place -->
+    <gwt.version>2.0.4</gwt.version>
+    <!--  tell the compiler we can use 1.5 -->
+    <maven.compiler.source>1.5</maven.compiler.source>
+    <maven.compiler.target>1.5</maven.compiler.target>
   </properties>
-
   <dependencies>
-
-      <!--  GWT dependencies (from central repo) -->
+    <!--  GWT dependencies (from central repo) -->
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
@@ -35,7 +29,6 @@
       <version>${gwt.version}</version>
       <scope>provided</scope>
     </dependency>
-
     <!-- test -->
     <dependency>
       <groupId>junit</groupId>
@@ -44,7 +37,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <outputDirectory>war/WEB-INF/classes</outputDirectory>
     <plugins>
@@ -78,17 +70,15 @@
                 </configuration>
             </plugin>
             -->
-
       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.0.2</version>
-          <configuration>
-            <source>${maven.compiler.source}</source>
-            <target>${maven.compiler.target}</target>
-          </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.0.2</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+        </configuration>
       </plugin>
     </plugins>
   </build>
-
 </project>

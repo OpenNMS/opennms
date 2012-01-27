@@ -8,9 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-ackd</artifactId>
   <name>OpenNMS Acknowledgement Daemon</name>
-
   <dependencies>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-daemon</artifactId>
@@ -51,16 +49,12 @@
       <artifactId>httpclient</artifactId>
       <scope>compile</scope>
     </dependency>
-
-
     <!-- runtime only dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <scope>runtime</scope>
     </dependency>
-
-
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -80,19 +74,16 @@
       <artifactId>easymock</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
     </dependency>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <type>test-jar</type>
     </dependency>
-
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>

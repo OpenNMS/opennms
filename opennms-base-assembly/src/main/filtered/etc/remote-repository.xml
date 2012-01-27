@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<remoteRepositoryConfig>
+	<remoteRepository>
+		<active>false</active>
+		<id>community</id>
+		<name>OpenNMS Connect Community-Reporting</name>
+		<description>Repository with OpenNMS Community-Reports.
+		</description>
+		<management-url>http://communityreporting.opennms.com/</management-url>
+		<login-user>community</login-user>
+		<login-password>community</login-password>
+		<uri>http://localhost:8080/opennms/connect/rest/repo/</uri>
+	</remoteRepository>
+</remoteRepositoryConfig>
+

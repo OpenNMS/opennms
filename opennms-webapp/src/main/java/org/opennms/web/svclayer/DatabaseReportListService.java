@@ -30,8 +30,8 @@ package org.opennms.web.svclayer;
 
 import java.util.List;
 
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.web.svclayer.support.DatabaseReportDescription;
+import org.opennms.web.svclayer.support.ReportRepositoryDescription;
 
 /**
  * <p>DatabaseReportListService interface.</p>
@@ -47,6 +47,7 @@ public interface DatabaseReportListService {
      *
      * @return a {@link java.util.List} object.
      */
+    @Deprecated
     List<DatabaseReportDescription> getAll();
     
     /**
@@ -54,13 +55,12 @@ public interface DatabaseReportListService {
      *
      * @return a {@link java.util.List} object.
      */
+    @Deprecated
     List<DatabaseReportDescription> getAllOnline();
-    
-    /**
-     * <p>setDatabaseReportConfigDao</p>
-     *
-     * @param dao a {@link org.opennms.netmgt.dao.DatabaseReportConfigDao} object.
-     */
-    void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
 
+    List<ReportRepositoryDescription> getActiveRepositories();
+
+    List<DatabaseReportDescription> getOnlineReportsByRepositoryId(String repositoryId);
+
+    List<DatabaseReportDescription> getReportsByRepositoryId(String repositoryId);
 }

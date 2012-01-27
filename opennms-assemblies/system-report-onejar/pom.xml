@@ -13,28 +13,28 @@
   <build>
     <plugins>
       <plugin>
-       <artifactId>maven-deploy-plugin</artifactId>
-       <configuration>
-         <skip>true</skip>
-       </configuration>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.dstovall</groupId>
-         <artifactId>onejar-maven-plugin</artifactId>
-         <version>1.4.3</version>
-         <executions>
-            <execution>
-              <configuration>
-                 <mainClass>org.opennms.systemreport.SystemReport</mainClass>
-                 <onejarVersion>0.96</onejarVersion>
-                 <attachToBuild>true</attachToBuild>
-              </configuration>
-              <phase>package</phase>
-              <goals>
-                 <goal>one-jar</goal>
-              </goals>
-            </execution>
-         </executions>
+        <artifactId>onejar-maven-plugin</artifactId>
+        <version>1.4.3</version>
+        <executions>
+          <execution>
+            <configuration>
+              <mainClass>org.opennms.systemreport.SystemReport</mainClass>
+              <onejarVersion>0.96</onejarVersion>
+              <attachToBuild>true</attachToBuild>
+            </configuration>
+            <phase>package</phase>
+            <goals>
+              <goal>one-jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

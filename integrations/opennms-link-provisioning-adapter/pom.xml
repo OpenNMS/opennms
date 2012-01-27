@@ -8,7 +8,6 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-link-provisioning-adapter</artifactId>
   <name>OpenNMS Link Provisioning Adaptor</name>
-
   <build>
     <plugins>
       <plugin>
@@ -74,7 +73,6 @@
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
@@ -103,7 +101,7 @@
       <type>pom</type>
     </dependency>
     <!-- test dependencies -->
-      <dependency>
+    <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
       <scope>test</scope>

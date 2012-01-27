@@ -51,7 +51,7 @@
         <configuration>
           <additionalBuildcommands>
             <buildcommand>org.drools.ide.droolsbuilder</buildcommand>
-          </additionalBuildcommands> 
+          </additionalBuildcommands>
         </configuration>
       </plugin>
       <plugin>
@@ -89,7 +89,7 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-correlator</artifactId>
     </dependency>
-   <dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>

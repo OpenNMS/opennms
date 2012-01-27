@@ -39,13 +39,11 @@
       <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-
   </dependencies>
 </project>

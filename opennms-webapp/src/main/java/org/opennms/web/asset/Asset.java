@@ -1494,7 +1494,7 @@ public class Asset extends Object {
 
     /**
      * <p>Setter for the field <code>ram</code>.</p>
-     *
+     * 
      * @param ram a {@link java.lang.String} object.
      */
     public void setRam(String ram) {
@@ -1502,7 +1502,133 @@ public class Asset extends Object {
             this.ram = ram;
         } else {
             this.ram = "";
-        }        
-      }
+        }
+    }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Asset [nodeId=");
+        builder.append(nodeId);
+        builder.append(", lastModifiedDate=");
+        builder.append(lastModifiedDate);
+        builder.append(", userLastModified=");
+        builder.append(userLastModified);
+        builder.append(", category=");
+        builder.append(category);
+        builder.append(", manufacturer=");
+        builder.append(manufacturer);
+        builder.append(", vendor=");
+        builder.append(vendor);
+        builder.append(", modelNumber=");
+        builder.append(modelNumber);
+        builder.append(", serialNumber=");
+        builder.append(serialNumber);
+        builder.append(", description=");
+        builder.append(description);
+        builder.append(", circuitId=");
+        builder.append(circuitId);
+        builder.append(", assetNumber=");
+        builder.append(assetNumber);
+        builder.append(", operatingSystem=");
+        builder.append(operatingSystem);
+        builder.append(", rack=");
+        builder.append(rack);
+        builder.append(", slot=");
+        builder.append(slot);
+        builder.append(", port=");
+        builder.append(port);
+        builder.append(", region=");
+        builder.append(region);
+        builder.append(", division=");
+        builder.append(division);
+        builder.append(", department=");
+        builder.append(department);
+        builder.append(", address1=");
+        builder.append(address1);
+        builder.append(", address2=");
+        builder.append(address2);
+        builder.append(", city=");
+        builder.append(city);
+        builder.append(", state=");
+        builder.append(state);
+        builder.append(", zip=");
+        builder.append(zip);
+        builder.append(", building=");
+        builder.append(building);
+        builder.append(", floor=");
+        builder.append(floor);
+        builder.append(", room=");
+        builder.append(room);
+        builder.append(", vendorPhone=");
+        builder.append(vendorPhone);
+        builder.append(", vendorFax=");
+        builder.append(vendorFax);
+        builder.append(", dateInstalled=");
+        builder.append(dateInstalled);
+        builder.append(", lease=");
+        builder.append(lease);
+        builder.append(", leaseExpires=");
+        builder.append(leaseExpires);
+        builder.append(", supportPhone=");
+        builder.append(supportPhone);
+        builder.append(", maintContract=");
+        builder.append(maintContract);
+        builder.append(", vendorAssetNumber=");
+        builder.append(vendorAssetNumber);
+        builder.append(", maintContractExpires=");
+        builder.append(maintContractExpires);
+        builder.append(", displayCategory=");
+        builder.append(displayCategory);
+        builder.append(", notifyCategory=");
+        builder.append(notifyCategory);
+        builder.append(", pollerCategory=");
+        builder.append(pollerCategory);
+        builder.append(", thresholdCategory=");
+        builder.append(thresholdCategory);
+        builder.append(", comments=");
+        builder.append(comments);
+        builder.append(", username=");
+        builder.append(username);
+        builder.append(", password=");
+        builder.append(password);
+        builder.append(", enable=");
+        builder.append(enable);
+        builder.append(", connection=");
+        builder.append(connection);
+        builder.append(", autoenable=");
+        builder.append(autoenable);
+        builder.append(", cpu=");
+        builder.append(cpu);
+        builder.append(", ram=");
+        builder.append(ram);
+        builder.append(", storagectrl=");
+        builder.append(storagectrl);
+        builder.append(", hdd1=");
+        builder.append(hdd1);
+        builder.append(", hdd2=");
+        builder.append(hdd2);
+        builder.append(", hdd3=");
+        builder.append(hdd3);
+        builder.append(", hdd4=");
+        builder.append(hdd4);
+        builder.append(", hdd5=");
+        builder.append(hdd5);
+        builder.append(", hdd6=");
+        builder.append(hdd6);
+        builder.append(", numpowersupplies=");
+        builder.append(numpowersupplies);
+        builder.append(", inputpower=");
+        builder.append(inputpower);
+        builder.append(", additionalhardware=");
+        builder.append(additionalhardware);
+        builder.append(", admin=");
+        builder.append(admin);
+        builder.append(", snmpcommunity=");
+        builder.append(snmpcommunity);
+        builder.append(", rackunitheight=");
+        builder.append(rackunitheight);
+        builder.append("]");
+        return builder.toString();
+    }
 }
