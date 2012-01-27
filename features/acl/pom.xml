@@ -53,6 +53,10 @@
 			<artifactId>spring-test-dependencies</artifactId>
 			<type>pom</type>
 		</dependency>
+                <dependency>
+       			<groupId>org.opennms</groupId>
+			<artifactId>opennms-util</artifactId>
+                </dependency>
 		<dependency>
 			<groupId>opensymphony</groupId>
 			<artifactId>sitemesh</artifactId>

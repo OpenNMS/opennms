@@ -29,7 +29,6 @@
 package org.opennms.netmgt.snmp;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -42,11 +41,9 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.springframework.core.io.Resource;
 
 public class SnmpUtils {
 	public static final Pattern HEX_PATTERN = Pattern.compile("^[a-fA-F0-9 :]*$");

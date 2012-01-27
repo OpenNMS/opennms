@@ -31,12 +31,8 @@ package org.opennms.mock.snmp;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
-
-import org.opennms.core.utils.InetAddressUtils;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 
 /**
  * <p>AgentConfigData class.</p>
@@ -45,9 +41,9 @@ import org.springframework.core.io.UrlResource;
  * @version $Id: $
  */
 public class AgentConfigData {
-    public Resource m_moFile;
+    public URL m_moFile;
     public InetAddress m_listenAddr;
-    public long m_listenPort;
+    public int m_listenPort;
 
     /**
      * <p>Constructor for AgentConfigData.</p>
@@ -64,13 +60,13 @@ public class AgentConfigData {
      * @throws java.net.UnknownHostException if any.
      * @throws java.net.MalformedURLException if any.
      */
-    protected AgentConfigData(String moFileSpec, String listenAddr, long listenPort) throws UnknownHostException, MalformedURLException {
-        if (moFileSpec.contains("://")) {
-            m_moFile = new UrlResource(moFileSpec);
+    protected AgentConfigData(String moFileSpec, String listenAddr, int listenPort) throws UnknownHostException, MalformedURLException {
+        if (moFileSpec.contains("://") || moFileSpec.startsWith("file:")) {
+            m_moFile = new URL(moFileSpec);
         } else {
-            m_moFile = new FileSystemResource(moFileSpec);
+            m_moFile = new URL("file:" + moFileSpec);
         }
-        m_listenAddr = InetAddressUtils.addr(listenAddr);
+        m_listenAddr = InetAddress.getByName(listenAddr);
         m_listenPort = listenPort;
     }
 
@@ -79,7 +75,7 @@ public class AgentConfigData {
      *
      * @return a {@link org.springframework.core.io.Resource} object.
      */
-    public Resource getMoFile() {
+    public URL getMoFile() {
         return m_moFile;
     }
 
@@ -88,7 +84,7 @@ public class AgentConfigData {
      *
      * @param moFile a {@link org.springframework.core.io.Resource} object.
      */
-    public void setMoFile(Resource moFile) {
+    public void setMoFile(URL moFile) {
         m_moFile = moFile;
     }
 
@@ -124,7 +120,7 @@ public class AgentConfigData {
      *
      * @param listenPort a long.
      */
-    public void setListenPort(long listenPort) {
+    public void setListenPort(int listenPort) {
         m_listenPort = listenPort;
     }
 }

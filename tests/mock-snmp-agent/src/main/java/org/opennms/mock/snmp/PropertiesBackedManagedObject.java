@@ -29,8 +29,10 @@
 
 package org.opennms.mock.snmp;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -38,14 +40,14 @@ import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.LogUtils;
 import org.snmp4j.agent.DefaultMOScope;
 import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.MOScope;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.request.RequestStatus;
 import org.snmp4j.agent.request.SubRequest;
+import org.snmp4j.log.LogAdapter;
+import org.snmp4j.log.LogFactory;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.Counter32;
 import org.snmp4j.smi.Counter64;
@@ -58,7 +60,6 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
-import org.springframework.core.io.Resource;
 
 /**
  * <p>PropertiesBackedManagedObject class.</p>
@@ -68,6 +69,7 @@ import org.springframework.core.io.Resource;
  */
 public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOLoader, Updatable, MOAccess {
     
+	private static final LogAdapter s_log = LogFactory.getLogger(PropertiesBackedManagedObject.class);
     
     private TreeMap<OID, Object> m_vars = null;
     
@@ -76,7 +78,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	private Object m_oldValue;
     
     /** {@inheritDoc} */
-    public List<ManagedObject> loadMOs(Resource moFile) {
+    public List<ManagedObject> loadMOs(URL moFile) {
     	final Properties props = loadProperties(moFile);
 
         m_vars = new TreeMap<OID, Object>();
@@ -85,7 +87,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
             final String key = (String)e.getKey();
             final Object value = e.getValue();
             if (!key.startsWith(".")) {
-            	LogUtils.debugf(this, "key does not start with '.', probably a linewrap issue in snmpwalk: %s = %s", key, value);
+            	s_log.debug(String.format("key does not start with '.', probably a linewrap issue in snmpwalk: %s = %s", key, value));
             	continue;
             }
             try {
@@ -104,19 +106,27 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         return Collections.singletonList((ManagedObject)this);
     }
 
-	private Properties loadProperties(Resource moFile) {
+	private Properties loadProperties(URL moFile) {
 		final Properties moProps = new Properties();
 		InputStream inStream = null;
 		try {
-		    inStream = moFile.getInputStream();
+		    inStream = moFile.openStream();
 			moProps.load( inStream );
 		} catch (final Exception ex) {
-		    LogUtils.warnf(getClass(), ex, "Unable to read property file %s", moFile);
+			s_log.error("Unable to read property file " + moFile, ex);
 			return null;
 		} finally {
-		    IOUtils.closeQuietly(inStream);
+			closeQuietly(inStream);
 		}
 		return moProps;
+	}
+	
+	private void closeQuietly(InputStream in) {
+		try {
+			in.close();
+		} catch (IOException e) {
+			// ignore this -- hence the quietly
+		}
 	}
     
     /** {@inheritDoc} */

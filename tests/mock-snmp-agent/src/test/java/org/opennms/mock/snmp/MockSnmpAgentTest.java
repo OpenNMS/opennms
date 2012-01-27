@@ -32,10 +32,11 @@ package org.opennms.mock.snmp;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,9 +44,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.test.mock.MockLogAppender;
-import org.opennms.test.mock.MockUtil;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
@@ -70,7 +68,6 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
-import org.springframework.core.io.ClassPathResource;
 
 
 @RunWith(Parameterized.class)
@@ -136,24 +133,21 @@ public class MockSnmpAgentTest  {
 
     @Before
     public void setUp() throws Exception {
-        final Properties p = new Properties();
-        p.setProperty("log4j.logger.org.snmp4j", "DEBUG");
-        p.setProperty("log4j.logger.org.snmp4j.agent", "DEBUG");
-        MockLogAppender.setupLogging(true, p);
-
         // Create a global USM that all client calls will use
         MPv3.setEnterpriseID(5813);
         m_usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(m_usm);
 
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("loadSnmpDataTest.properties"), "127.0.0.1/1691");	// Homage to Empire
+        m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("loadSnmpDataTest.properties"), "127.0.0.1/1691");	// Homage to Empire
         
         m_requestedVarbinds = new ArrayList<AnticipatedRequest>();
     }
     
     @After
     public void tearDown() throws Exception {
-        m_agent.shutDownAndWait();
+    	if (m_agent != null) {
+    		m_agent.shutDownAndWait();
+    	}
     }
 
     public AnticipatedRequest request(String requestedOid, Variable requestedValue) {
@@ -225,7 +219,7 @@ public class MockSnmpAgentTest  {
     	
     	doGet();
 
-        m_agent.updateValuesFromResource(new ClassPathResource("differentSnmpData.properties"));
+        m_agent.updateValuesFromResource(classPathResource("differentSnmpData.properties"));
         
     	request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(77));
     	
@@ -330,7 +324,7 @@ public class MockSnmpAgentTest  {
     	PDU response = sendRequest(pdu, version);
         
         assertNotNull("request timed out", response);
-        MockUtil.println("Response is: "+response);
+        System.err.println("Response is: "+response);
         assertTrue("unexpected report pdu: " + ((VariableBinding)response.getVariableBindings().get(0)).getOid(), response.getType() != PDU.REPORT);
         
         assertEquals("Unexpected number of varbinds returned.", m_requestedVarbinds.size(), response.getVariableBindings().size());
@@ -365,7 +359,7 @@ public class MockSnmpAgentTest  {
 		PDU response;
 		CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString("public"));
-        target.setAddress(new UdpAddress(InetAddressUtils.addr("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
 		target.setVersion(version);
 
         TransportMapping transport = null;
@@ -393,7 +387,7 @@ public class MockSnmpAgentTest  {
         UserTarget target = new UserTarget();
         target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
         target.setSecurityName(userId);
-        target.setAddress(new UdpAddress(InetAddressUtils.addr("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
         target.setVersion(SnmpConstants.version3);
         target.setTimeout(5000);
         
@@ -417,6 +411,10 @@ public class MockSnmpAgentTest  {
             }
         }
 		return response;
+	}
+	
+	private URL classPathResource(String path) {
+		return getClass().getClassLoader().getResource(path);
 	}
 
 

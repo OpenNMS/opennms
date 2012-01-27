@@ -105,7 +105,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         setStartEventd(false);
         super.setUp();
         
-        m_mockAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), InetAddressUtils.str(myLocalHost()) + "/9161");
+        m_mockAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties").getURL(), InetAddressUtils.str(myLocalHost()) + "/9161");
         
         m_config = new MockDataCollectionConfig();
         DataCollectionConfigFactory.setInstance(m_config);
