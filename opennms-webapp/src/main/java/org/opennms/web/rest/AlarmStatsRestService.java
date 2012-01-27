@@ -47,6 +47,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.FetchMode;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.stats.AlarmStatisticsService;
@@ -129,43 +131,47 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     }
 
     protected OnmsAlarm getNewestAcknowledged(final OnmsSeverity severity) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        if (severity != null) {
-            criteria.add(Restrictions.eq("severity", severity));
-        }
+        final OnmsCriteria criteria = getCriteria(severity);
         criteria.addOrder(Order.desc("lastEventTime"));
         criteria.setMaxResults(1);
         return m_statisticsService.getAcknowledged(criteria);
     }
 
     private OnmsAlarm getNewestUnacknowledged(final OnmsSeverity severity) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        if (severity != null) {
-            criteria.add(Restrictions.eq("severity", severity));
-        }
+        final OnmsCriteria criteria = getCriteria(severity);
         criteria.addOrder(Order.desc("lastEventTime"));
         criteria.setMaxResults(1);
         return m_statisticsService.getUnacknowledged(criteria);
     }
 
     protected OnmsAlarm getOldestAcknowledged(final OnmsSeverity severity) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        if (severity != null) {
-            criteria.add(Restrictions.eq("severity", severity));
-        }
+        final OnmsCriteria criteria = getCriteria(severity);
         criteria.addOrder(Order.asc("firstEventTime"));
         criteria.setMaxResults(1);
         return m_statisticsService.getAcknowledged(criteria);
     }
 
     private OnmsAlarm getOldestUnacknowledged(final OnmsSeverity severity) {
+        final OnmsCriteria criteria = getCriteria(severity);
+        criteria.addOrder(Order.asc("firstEventTime"));
+        criteria.setMaxResults(1);
+        return m_statisticsService.getUnacknowledged(criteria);
+    }
+
+    protected OnmsCriteria getCriteria(final OnmsSeverity severity) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         if (severity != null) {
             criteria.add(Restrictions.eq("severity", severity));
         }
-        criteria.addOrder(Order.asc("firstEventTime"));
-        criteria.setMaxResults(1);
-        return m_statisticsService.getUnacknowledged(criteria);
+
+        criteria.setFetchMode("firstEvent", FetchMode.JOIN);
+        criteria.setFetchMode("lastEvent", FetchMode.JOIN);
+        
+        criteria.createAlias("node", "node", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("node.snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("node.ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
+
+        return criteria;
     }
 
     @Entity
