@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <parent>
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
     <version>1.11.0-SNAPSHOT</version>
   </parent>
-
   <properties>
     <bundle.symbolicName>org.opennms.features.sms-reflector.sms-service</bundle.symbolicName>
     <bundle.namespace>org.opennms.sms.reflector.smsservice</bundle.namespace>
   </properties>
-
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.sms-reflector</groupId>
   <artifactId>sms-service</artifactId>
-
   <name>${bundle.symbolicName} [${bundle.namespace}]</name>
-
   <packaging>bundle</packaging>
-
   <build>
     <plugins>
       <plugin>
@@ -41,7 +35,7 @@
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
-			 <encoding>UTF-8</encoding>
+          <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
       <plugin>
@@ -53,12 +47,11 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.sms.reflector.smsservice.*;version="${project.version}"</Export-Package>
-           </instructions>
+          </instructions>
         </configuration>
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
     <!--
      | uncomment to add all imported (non-local) bundles to your compilation classpath
@@ -113,8 +106,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-  		<groupId>org.opennms.dependencies</groupId>
-  		<artifactId>spring-test-dependencies</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
       <type>pom</type>
@@ -132,11 +125,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-    	<groupId>org.opennms.core</groupId>
-    	<artifactId>org.opennms.core.soa</artifactId>
-    	<version>${project.version}</version>
-    	<scope>provided</scope>
-    	<optional>true</optional>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.soa</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
@@ -151,8 +144,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-	  <groupId>org.opennms</groupId>
-	  <artifactId>opennms-dao</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -162,10 +155,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-	  <groupId>org.opennms.core.test-api</groupId>
-	  <artifactId>org.opennms.core.test-api.http</artifactId>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>

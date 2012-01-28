@@ -42,7 +42,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-api</artifactId>
     </dependency>
-
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -80,6 +79,5 @@
       <artifactId>easymock</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 </project>

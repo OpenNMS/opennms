@@ -6,7 +6,7 @@
 
 	<bean id="jasperReportService"
 		class="org.opennms.reporting.jasperreports.svclayer.JasperReportService">
-		<property name="configDao" ref="jasperReportConfigDao" />  
-	</bean>
-	
+        <property name="globalReportRepository" ref="defaultGlobalReportRepository" />
+    </bean>
+
 </beans>

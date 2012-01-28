@@ -15,9 +15,9 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-reportd</artifactId>
-	<version>${project.version}</version>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-reportd</artifactId>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

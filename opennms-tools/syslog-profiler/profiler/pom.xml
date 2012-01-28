@@ -10,7 +10,6 @@
   <artifactId>org.opennms.opennms-tools.syslog-profiler.profiler</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS Syslog Profiler (Main)</name>
-
   <dependencies>
     <dependency>
       <groupId>commons-cli</groupId>

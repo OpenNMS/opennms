@@ -256,7 +256,7 @@
 
 				<g:HTMLPanel styleName="disclosureBodyPanel">
 					<onms_fs:FieldSetSuggestBox ui:field="sCpu"
-						name="{con.cpu}" value="" helpText="{con.cpuHelp}" maxLength="32" />
+						name="{con.cpu}" value="" helpText="{con.cpuHelp}" maxLength="64" />
 					<onms_fs:FieldSetSuggestBox ui:field="sRam"
 						name="{con.ram}" value="" helpText="{con.ramHelp}" maxLength="10" />
 					<onms_fs:FieldSetSuggestBox ui:field="sAdditionalhardware"
@@ -267,22 +267,22 @@
 						helpText="{con.numpowersuppliesHelp}" maxLength="1" />
 					<onms_fs:FieldSetSuggestBox ui:field="sInputpower"
 						name="{con.inputpower}" value="" helpText="{con.inputpowerHelp}"
-						maxLength="6" />
+						maxLength="11" />
 					<onms_fs:FieldSetSuggestBox ui:field="sStoragectrl"
 						name="{con.storagectrl}" value="" helpText="{con.storagectrlHelp}"
-						maxLength="32" />
+						maxLength="64" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd1"
-						name="{con.hdd} 1" value="" helpText="{con.hddHelp}" maxLength="32" />
+						name="{con.hdd} 1" value="" helpText="{con.hddHelp}" maxLength="64" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd2"
-						name="{con.hdd} 2" value="" helpText="{con.hddHelp}" maxLength="32" />
+						name="{con.hdd} 2" value="" helpText="{con.hddHelp}" maxLength="64" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd3"
-						name="{con.hdd} 3" value="" helpText="{con.hddHelp}" maxLength="32" />
+						name="{con.hdd} 3" value="" helpText="{con.hddHelp}" maxLength="64" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd4"
-						name="{con.hdd} 4" value="" helpText="{con.hddHelp}" maxLength="32" />
+						name="{con.hdd} 4" value="" helpText="{con.hddHelp}" maxLength="64" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd5"
-						name="{con.hdd} 5" value="" helpText="{con.hddHelp}" maxLength="32" />
+						name="{con.hdd} 5" value="" helpText="{con.hddHelp}" maxLength="64" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd6"
-						name="{con.hdd} 6" value="" helpText="{con.hddHelp}" maxLength="32" />
+						name="{con.hdd} 6" value="" helpText="{con.hddHelp}" maxLength="64" />
 				</g:HTMLPanel>
 			</onms:DisclosurePanelCookie>
 

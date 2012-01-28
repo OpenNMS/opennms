@@ -1,25 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
     <version>1.11.0-SNAPSHOT</version>
   </parent>
-
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-tools</artifactId>
-
   <packaging>pom</packaging>
-
   <name>OpenNMS Tools</name>
-
   <modules>
     <module>opennms-rrd-stresser</module>
     <module>opennms-rrd-converter</module>
     <module>groovy-tools</module>
   </modules>
-
   <profiles>
     <profile>
       <!-- this profile is only activated while tagging so versions get updated -->
@@ -39,5 +33,4 @@
       </modules>
     </profile>
   </profiles>
-
 </project>

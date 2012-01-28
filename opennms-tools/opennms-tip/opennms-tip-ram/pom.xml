@@ -5,19 +5,16 @@
     <artifactId>opennms-tip</artifactId>
     <version>1.11.0-SNAPSHOT</version>
   </parent>
-
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.tip</groupId>
   <artifactId>opennms-tip-ram</artifactId>
   <packaging>war</packaging>
   <name>OpenNMS Resource Alarm Interface</name>
-
   <properties>
     <web.port>8080</web.port>
     <tip-api.version>0.2.0-SNAPSHOT</tip-api.version>
     <slf4j.version>1.6.1</slf4j.version>
   </properties>
-
   <build>
     <!-- <outputDirectory>war/WEB-INF/classes</outputDirectory> -->
     <plugins>
@@ -59,45 +56,66 @@
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
-  
-      <!-- Local Interface Project TIP_RAM Model Generated Dependencies -->
+    <!-- Local Interface Project TIP_RAM Model Generated Dependencies -->
     <dependency>
       <groupId>org.tmforum.tip</groupId>
       <artifactId>TIP_RAM_JvtSpecPackage</artifactId>
       <version>${tip-api.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring</artifactId>
+        </exclusion>
       </exclusions>
-      
     </dependency>
-
     <!-- NOTE - scope may need to be test? -->
     <dependency>
       <groupId>org.openoss.tip</groupId>
       <artifactId>TIP_RAM_EjbImplGenSrcPackage</artifactId>
       <version>${tip-api.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.openoss.tip</groupId>
       <artifactId>TIP_RAM_SoapImplGenSrcPackage</artifactId>
       <version>${tip-api.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
-        <exclusion><groupId>org.springframework</groupId><artifactId>spring</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-
     <!--  external dependencies -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -137,35 +155,37 @@
       <scope>${provided.by.opennms}</scope>
     </dependency>
     <dependency>
-    	<groupId>org.slf4j</groupId>
-    	<artifactId>jcl-over-slf4j</artifactId>
-    	<version>${slf4j.version}</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+      <type>jar</type>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
-
   <!-- special case, we need the stuff above as direct dependencies -->
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
       <id>opennms-repo</id>
       <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
     <!-- OpenNMS private download URL -->
     <!-- see http://www.opennms.org/wiki/TIP_Maven_Repository -->
-   <repository>
-     <releases />
-     <id>tip-repo</id>
-     <url>http://tip.opennms.org/content/repositories/tip-repo</url>
-   </repository>
-   <repository>
-     <snapshots />
-     <id>tip-snapshot</id>
-     <url>http://tip.opennms.org/content/repositories/tip-snapshot</url>
-   </repository>
+    <repository>
+      <releases/>
+      <id>tip-repo</id>
+      <url>http://tip.opennms.org/content/repositories/tip-repo</url>
+    </repository>
+    <repository>
+      <snapshots/>
+      <id>tip-snapshot</id>
+      <url>http://tip.opennms.org/content/repositories/tip-snapshot</url>
+    </repository>
   </repositories>
-
 </project>

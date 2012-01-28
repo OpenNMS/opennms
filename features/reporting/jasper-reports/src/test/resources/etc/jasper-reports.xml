@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasper-reports
+        xmlns:this="http://xmlns.opennms.org/xsd/config/jasper-reports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/jasper-reports">
+        <report id="trivial-report" template="trivial-report.jrxml" engine="null" />
+        <report id="parameter-test" template="parameter-test.jrxml" engine="null" />
+        <report id="main-subreport-test" template="resource-sub-uri-test.jrxml" engine="null" />
+        <report id="Subreport_1" template="subreports/resource-sub-uri-test_subreport1.jrxml" engine="null" />
+        <report id="Subreport_2" template="subreports/resource-sub-uri-test_subreport2.jrxml" engine="null" />
+</jasper-reports>

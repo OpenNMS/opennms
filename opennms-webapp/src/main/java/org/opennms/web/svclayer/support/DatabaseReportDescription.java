@@ -36,10 +36,36 @@ package org.opennms.web.svclayer.support;
  * @since 1.8.1
  */
 public class DatabaseReportDescription {
-    
+
+    /**
+     * Id of a report template
+     */
     private String m_id;
+
+    /**
+     * Id of the repository
+     */
+    private String m_repositoryId;
+
+    /**
+     * Display name for a report template
+     */
     private String m_displayName;
+
+    /**
+     * Description for a report template
+     */
     private String m_description;
+
+    /**
+     * Defines if a report is allowed to be accessed by report repository.
+     */
+    private boolean m_allowAccess;
+
+    /**
+     * Configuration as online report
+     */
+    private boolean m_isOnline;
     
     /**
      * <p>getId</p>
@@ -56,6 +82,22 @@ public class DatabaseReportDescription {
      */
     public void setId(String id) {
         m_id = id;
+    }
+    /**
+     * <p>getRepositoryId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getRepositoryId() {
+        return m_repositoryId;
+    }
+    /**
+     * <p>setId</p>
+     *
+     * @param repositoryId a {@link java.lang.String} object.
+     */
+    public void setRepositoryId(String repositoryId) {
+        m_repositoryId = repositoryId;
     }
     /**
      * <p>getDisplayName</p>
@@ -89,6 +131,44 @@ public class DatabaseReportDescription {
     public void setDescription(String description) {
         m_description = description;
     }
-    
 
+    /**
+     * <p>setIsOnline</p>
+     * Set isOnline property to define if a report can be executed instantly from the WebUI.
+     *  
+     * @param isOnline a {@link boolean} object.
+     */
+    public void setIsOnline(boolean isOnline) {
+        m_isOnline = isOnline;
+    }
+
+    /**
+     * <p>getIsOnline</p>
+     * Get isOnline property for instant report execution.
+     * 
+     * @return a {@link boolean} object.
+     */
+    public boolean getIsOnline() {
+        return m_isOnline;
+    }
+
+    /**
+     * <p>setAllowAccess</p>
+     * Set allowAccess for report execution permission. 
+     * 
+     * @param allowAccess a {@link boolean} object.
+     */
+    public void setAllowAccess(boolean allowAccess) {
+        m_allowAccess = allowAccess;
+    }
+
+    /**
+     * <p>getAllowAccess</p>
+     * Get allowAccess for report execution permission.
+     * 
+     * @return a {@link boolean} object
+     */
+    public boolean getAllowAccess() {
+        return m_allowAccess;
+    }
 }

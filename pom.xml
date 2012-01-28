@@ -1083,12 +1083,32 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.dao</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.sdo</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
         <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.reporting</groupId>
         <artifactId>org.opennms.features.reporting.availability</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.repository</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

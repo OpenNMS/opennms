@@ -13,10 +13,10 @@
   <build>
     <plugins>
       <plugin>
-       <artifactId>maven-deploy-plugin</artifactId>
-       <configuration>
-         <skip>true</skip>
-       </configuration>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -65,7 +65,6 @@
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>
-
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -86,6 +85,5 @@
       <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-
   </dependencies>
 </project>

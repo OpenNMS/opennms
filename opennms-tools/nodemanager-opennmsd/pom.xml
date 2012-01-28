@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennmsd</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <description></description>
+  <description/>
   <packaging>groovy-jar</packaging>
   <build>
     <plugins>
@@ -46,7 +47,7 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
-       <plugin>
+      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
@@ -86,7 +87,7 @@ eclipse.preferences.version=1
 groovy.compiler.output.path=target/classes
 ]]></content>
             </file>
-          </additionalConfig>          
+          </additionalConfig>
         </configuration>
       </plugin>
     </plugins>
@@ -133,15 +134,27 @@ groovy.compiler.output.path=target/classes
   </dependencies>
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <snapshots>
+        <enabled>false</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
     <repository>
-      <snapshots><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>

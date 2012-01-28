@@ -8,11 +8,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.phonebook</artifactId>
-
   <name>OpenNMS Phonebook</name>
-
   <packaging>bundle</packaging>
-
   <build>
     <plugins>
       <plugin>
@@ -24,12 +21,11 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.sms.phonebook.*;version="${project.version}"</Export-Package>
-           </instructions>
+          </instructions>
         </configuration>
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
     <!-- direct dependencies -->
     <dependency>
@@ -37,7 +33,6 @@
       <artifactId>commons-io</artifactId>
       <version>1.4</version>
     </dependency>
-
     <!-- OSGi Stuff -->
     <dependency>
       <groupId>org.osgi</groupId>

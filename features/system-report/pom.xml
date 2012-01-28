@@ -68,7 +68,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
     </dependency>
-    
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>

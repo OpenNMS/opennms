@@ -33,10 +33,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.svclayer.DatabaseReportListService;
 import org.opennms.web.svclayer.support.DatabaseReportDescription;
+import org.opennms.web.svclayer.support.ReportRepositoryDescription;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * <p>BatchReportListController class.</p>
@@ -45,24 +49,27 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @version $Id: $
  * @since 1.8.1
  */
+@Deprecated
 public class BatchReportListController extends AbstractController {
 
     private DatabaseReportListService m_reportListService;
     private int m_pageSize;
-    
+
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        ModelAndView modelAndView = new ModelAndView("report/database/batchList"); 
-        PagedListHolder<DatabaseReportDescription> pagedListHolder = new PagedListHolder<DatabaseReportDescription>(m_reportListService.getAll());
-        pagedListHolder.setPageSize(m_pageSize);
-        int page = ServletRequestUtils.getIntParameter(request, "p", 0);
-        pagedListHolder.setPage(page); 
-        modelAndView.addObject("pagedListHolder", pagedListHolder);  
+                                                 HttpServletResponse response) throws Exception {
+        Map<ReportRepositoryDescription, PagedListHolder<DatabaseReportDescription>> repositoryList = new LinkedHashMap<ReportRepositoryDescription, PagedListHolder <DatabaseReportDescription>>();
 
-        return modelAndView;
-        
+        // Go through all active repositories and get all reports for each repository
+        for (ReportRepositoryDescription reportRepositoryDescription : m_reportListService.getActiveRepositories()) {
+            PagedListHolder<DatabaseReportDescription> pageListholder = new PagedListHolder<DatabaseReportDescription>(m_reportListService.getReportsByRepositoryId(reportRepositoryDescription.getId()));
+            pageListholder.setPageSize(m_pageSize);
+            int page = ServletRequestUtils.getIntParameter(request,"p_" + reportRepositoryDescription.getId(),0);
+            pageListholder.setPage(page);
+            repositoryList.put(reportRepositoryDescription, pageListholder);
+        }
+        return new ModelAndView("report/database/batchList","repositoryList", repositoryList);
     }
 
     /**
