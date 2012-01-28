@@ -39,7 +39,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -48,6 +47,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.FetchMode;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.stats.AlarmStatisticsService;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -73,8 +75,6 @@ import com.sun.jersey.spi.resource.PerRequest;
 public class AlarmStatsRestService extends AlarmRestServiceBase {
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
-
-    // private static Logger s_log = LoggerFactory.getLogger(AlarmStatsRestService.class);
 
 	@Autowired
 	AlarmStatisticsService m_statisticsService;
@@ -113,13 +113,11 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     protected AlarmStatistics getStats(final OnmsSeverity severity) {
         final AlarmStatistics stats = new AlarmStatistics();
 
-        final OnmsCriteria criteria;
-        if (severity == null) {
-            criteria = getQueryFilters(m_uriInfo.getQueryParameters(), true);
-        } else {
-            criteria = new OnmsCriteria(OnmsAlarm.class);
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+        if (severity != null) {
             criteria.add(Restrictions.eq("severity", severity));
         }
+
         final int count = m_statisticsService.getTotalCount(criteria);
         stats.setTotalCount(count);
         stats.setAcknowledgedCount(m_statisticsService.getAcknowledgedCount(criteria));
@@ -133,63 +131,47 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     }
 
     protected OnmsAlarm getNewestAcknowledged(final OnmsSeverity severity) {
-        final MultivaluedMap<String,String> parameters = m_uriInfo.getQueryParameters();
-        translateSeverity(m_uriInfo.getQueryParameters());
-        parameters.putSingle("orderBy", "lastEventTime");
-        parameters.putSingle("order", "desc");
-        parameters.putSingle("limit", "1");
-        // TODO: HACK!
-        if (severity != null) {
-            parameters.remove("severities");
-            parameters.putSingle("comparator", "eq");
-            parameters.putSingle("severity", severity.toString());
-        }
-        return m_statisticsService.getAcknowledged(getQueryFilters(parameters));
+        final OnmsCriteria criteria = getCriteria(severity);
+        criteria.addOrder(Order.desc("lastEventTime"));
+        criteria.setMaxResults(1);
+        return m_statisticsService.getAcknowledged(criteria);
     }
 
     private OnmsAlarm getNewestUnacknowledged(final OnmsSeverity severity) {
-        final MultivaluedMap<String,String> parameters = m_uriInfo.getQueryParameters();
-        translateSeverity(m_uriInfo.getQueryParameters());
-        parameters.putSingle("orderBy", "lastEventTime");
-        parameters.putSingle("order", "desc");
-        parameters.putSingle("limit", "1");
-        // TODO: HACK!
-        if (severity != null) {
-            parameters.remove("severities");
-            parameters.putSingle("comparator", "eq");
-            parameters.putSingle("severity", severity.toString());
-        }
-        return m_statisticsService.getUnacknowledged(getQueryFilters(parameters));
+        final OnmsCriteria criteria = getCriteria(severity);
+        criteria.addOrder(Order.desc("lastEventTime"));
+        criteria.setMaxResults(1);
+        return m_statisticsService.getUnacknowledged(criteria);
     }
 
     protected OnmsAlarm getOldestAcknowledged(final OnmsSeverity severity) {
-        final MultivaluedMap<String,String> parameters = m_uriInfo.getQueryParameters();
-        translateSeverity(m_uriInfo.getQueryParameters());
-        parameters.putSingle("orderBy", "firstEventTime");
-        parameters.putSingle("order", "asc");
-        parameters.putSingle("limit", "1");
-        // TODO: HACK!
-        if (severity != null) {
-            parameters.remove("severities");
-            parameters.putSingle("comparator", "eq");
-            parameters.putSingle("severity", severity.toString());
-        }
-        return m_statisticsService.getAcknowledged(getQueryFilters(parameters));
+        final OnmsCriteria criteria = getCriteria(severity);
+        criteria.addOrder(Order.asc("firstEventTime"));
+        criteria.setMaxResults(1);
+        return m_statisticsService.getAcknowledged(criteria);
     }
 
     private OnmsAlarm getOldestUnacknowledged(final OnmsSeverity severity) {
-        final MultivaluedMap<String,String> parameters = m_uriInfo.getQueryParameters();
-        translateSeverity(m_uriInfo.getQueryParameters());
-        parameters.putSingle("orderBy", "firstEventTime");
-        parameters.putSingle("order", "asc");
-        parameters.putSingle("limit", "1");
-        // TODO: HACK!
+        final OnmsCriteria criteria = getCriteria(severity);
+        criteria.addOrder(Order.asc("firstEventTime"));
+        criteria.setMaxResults(1);
+        return m_statisticsService.getUnacknowledged(criteria);
+    }
+
+    protected OnmsCriteria getCriteria(final OnmsSeverity severity) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         if (severity != null) {
-            parameters.remove("severities");
-            parameters.putSingle("comparator", "eq");
-            parameters.putSingle("severity", severity.toString());
+            criteria.add(Restrictions.eq("severity", severity));
         }
-        return m_statisticsService.getUnacknowledged(getQueryFilters(parameters));
+
+        criteria.setFetchMode("firstEvent", FetchMode.JOIN);
+        criteria.setFetchMode("lastEvent", FetchMode.JOIN);
+        
+        criteria.createAlias("node", "node", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("node.snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("node.ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
+
+        return criteria;
     }
 
     @Entity
