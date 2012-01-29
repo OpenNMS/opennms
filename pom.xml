@@ -7,7 +7,7 @@
   <version>1.11.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
-  <url>http://opennms.org</url>
+  <url>http://opennms.org/</url>
   <description>
     OpenNMS is the world's first enterprise grade network management
     platform developed under the open source model. It consists of a
@@ -15,9 +15,9 @@
     services, training and support organization. 
   </description>
   <issueManagement>
-    <system>Bugzilla</system>
-    <url>http://bugs.opennms.org/</url>
-  </issueManagement>  
+    <system>Jira</system>
+    <url>http://issues.opennms.org/</url>
+  </issueManagement>
   <ciManagement>
     <system>Bamboo</system>
     <url>http://bamboo.internal.opennms.com:8085/</url>
