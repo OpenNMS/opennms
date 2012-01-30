@@ -162,7 +162,7 @@ public class Starter {
                 log().warn("Did not find file '" + file + "' in the class path.  " + notFoundWarning + "  Set the property '" + propertyName + "' to the location of the file.");
             }
         } else {
-            log().info("System property '" + propertyName + "' already set to '" + System.getProperty(propertyName) + "'.");
+            log().debug("System property '" + propertyName + "' already set to '" + System.getProperty(propertyName) + "'.");
         }
     }
 
@@ -170,7 +170,7 @@ public class Starter {
         // Log system properties, sorted by property name
         TreeMap<Object, Object> sortedProps = new TreeMap<Object, Object>(System.getProperties());
         for (Entry<Object, Object> entry : sortedProps.entrySet()) {
-            log().info("System property '" + entry.getKey() + "' already set to value '" + entry.getValue() + "'.");
+            log().debug("System property '" + entry.getKey() + "' already set to value '" + entry.getValue() + "'.");
         }
         
         File propertiesFile = getPropertiesFile();
@@ -193,9 +193,9 @@ public class Starter {
         for (Entry<Object, Object> entry : props.entrySet()) {
             String systemValue = System.getProperty(entry.getKey().toString());
             if (systemValue != null) {
-                log().info("Property '" + entry.getKey() + "' from " + propertiesFile + " already exists as a system property (with value '" + systemValue + "').  Not overridding existing system property.");
+                log().debug("Property '" + entry.getKey() + "' from " + propertiesFile + " already exists as a system property (with value '" + systemValue + "').  Not overridding existing system property.");
             } else {
-                log().info("Setting system property '" + entry.getKey() + "' to '" + entry.getValue() + "' from " + propertiesFile + ".");
+                log().debug("Setting system property '" + entry.getKey() + "' to '" + entry.getValue() + "' from " + propertiesFile + ".");
                 System.setProperty(entry.getKey().toString(), entry.getValue().toString());
             }
         }

@@ -124,28 +124,24 @@ public class Manager implements ManagerMBean {
         return result;
     }
     
-    private List<String> status(MBeanServer server) {
+    private List<String> status(final MBeanServer server) {
         log().debug("Beginning status check");
-        Invoker invoker = new Invoker();
+        final Invoker invoker = new Invoker();
         invoker.setServer(server);
         invoker.setAtType(InvokeAtType.STATUS);
         invoker.setFailFast(false);
-        
-        List<InvokerService> services = InvokerService.createServiceList(Invoker.getDefaultServiceConfigFactory().getServices());
+
+        final List<InvokerService> services = InvokerService.createServiceList(Invoker.getDefaultServiceConfigFactory().getServices());
         invoker.setServices(services);
         invoker.getObjectInstances();
-        List<InvokerResult> results = invoker.invokeMethods();
+        final List<InvokerResult> results = invoker.invokeMethods();
         
-        List<String> statusInfo = new ArrayList<String>(results.size());
-        for (InvokerResult invokerResult : results) {
+        final List<String> statusInfo = new ArrayList<String>(results.size());
+        for (final InvokerResult invokerResult : results) {
             if (invokerResult.getThrowable() == null) {
-                statusInfo.add("Status: "
-                               + invokerResult.getMbean().getObjectName()
-                               + " = " + invokerResult.getResult().toString());
+                statusInfo.add("Status: " + invokerResult.getMbean().getObjectName() + " = " + invokerResult.getResult().toString());
             } else {
-                statusInfo.add("Status: "
-                               + invokerResult.getMbean().getObjectName()
-                               + " = STATUS_CHECK_ERROR");
+                statusInfo.add("Status: " + invokerResult.getMbean().getObjectName() + " = STATUS_CHECK_ERROR");
             }
         }
         log().debug("Status check complete");
