@@ -1625,21 +1625,28 @@ public class BroadcastEventProcessor implements InitializingBean {
      * @throws org.opennms.netmgt.capsd.InsufficientInformationException if any.
      */
     @EventHandler(uei=EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
-    public void handleNewSuspect(Event event) throws InsufficientInformationException {
+    public void handleNewSuspect(final Event event) throws InsufficientInformationException {
         // ensure the event has an interface
         EventUtils.checkInterface(event);
-        
+
+        final String interfaceValue = event.getInterface();
+
+        if (System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true")) {
+            log().info("Ignoring newSuspect event for interface " + interfaceValue + " because Provisiond is configured to handle newSuspect events (org.opennms.provisiond.enableDiscovery=true)");
+            return;
+        }
+
         // discard this newSuspect if one is already enqueued for the same IP address
-        if (SuspectEventProcessor.isScanQueuedForAddress(event.getInterface())) {
-        	log().info("Ignoring newSuspect event for interface " + event.getInterface() + " because a newSuspect scan for that interface already exists in the queue");
+        if (SuspectEventProcessor.isScanQueuedForAddress(interfaceValue)) {
+        	log().info("Ignoring newSuspect event for interface " + interfaceValue + " because a newSuspect scan for that interface already exists in the queue");
         	return;
         }
         
         // new suspect event
         try {
-            log().debug("onMessage: Adding interface to suspectInterface Q: " + event.getInterface());
-            m_suspectQ.add(m_suspectEventProcessorFactory.createSuspectEventProcessor(event.getInterface()));
-        } catch (Throwable ex) {
+            if (log().isDebugEnabled()) log().debug("onMessage: Adding interface to suspectInterface Q: " + interfaceValue);
+            m_suspectQ.add(m_suspectEventProcessorFactory.createSuspectEventProcessor(interfaceValue));
+        } catch (final Throwable ex) {
             log().error("onMessage: Failed to add interface to suspect queue", ex);
         }
     }
