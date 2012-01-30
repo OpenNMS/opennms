@@ -37,9 +37,6 @@ import org.opennms.netmgt.model.ServiceDaemon;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  */
 public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServiceDaemon {
     /**
@@ -97,7 +94,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      *
      * @param name a {@link java.lang.String} object.
      */
-    protected AbstractServiceDaemon(String name) {
+    protected AbstractServiceDaemon(final String name) {
         m_name = name;
         setStatus(START_PENDING);
     }
@@ -107,7 +104,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      *
      * @param status a int.
      */
-    protected void setStatus(int status) {
+    protected void setStatus(final int status) {
         synchronized (m_statusLock) {
             m_status = status;
             m_statusLock.notifyAll();
@@ -121,10 +118,10 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param timeout a long.
      * @throws java.lang.InterruptedException if any.
      */
-    protected void waitForStatus(int status, long timeout) throws InterruptedException {
+    protected void waitForStatus(final int status, final long timeout) throws InterruptedException {
         synchronized (m_statusLock) {
             
-            long last = System.currentTimeMillis();
+            final long last = System.currentTimeMillis();
             long waitTime = timeout;
             while (status != m_status && waitTime > 0) {
                 m_statusLock.wait(waitTime);
@@ -141,7 +138,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param status a int.
      * @throws java.lang.InterruptedException if any.
      */
-    protected void waitForStatus(int status) throws InterruptedException {
+    protected void waitForStatus(final int status) throws InterruptedException {
         synchronized (m_statusLock) {
             while (status != m_status) {
                 m_statusLock.wait();
@@ -229,7 +226,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    protected void fatalf(String format, Object... args) {
+    protected void fatalf(final String format, final Object... args) {
         log().fatal(String.format(format, args));
     }
 
@@ -240,7 +237,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    protected void fatalf(Throwable t, String format, Object... args) {
+    protected void fatalf(final Throwable t, final String format, final Object... args) {
         log().fatal(String.format(format, args), t);
     }
 
@@ -250,7 +247,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    protected void errorf(String format, Object... args) {
+    protected void errorf(final String format, final Object... args) {
         log().error(String.format(format, args));
     }
 
@@ -261,7 +258,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    protected void errorf(Throwable t, String format, Object... args) {
+    protected void errorf(final Throwable t, final String format, final Object... args) {
         log().error(String.format(format, args), t);
     }
 
@@ -271,7 +268,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    protected void warnf(String format, Object... args) {
+    protected void warnf(final String format, final Object... args) {
         log().warn(String.format(format, args));
     }
 
@@ -282,7 +279,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    protected void warnf(Throwable t, String format, Object... args) {
+    protected void warnf(final Throwable t, final String format, final Object... args) {
         log().warn(String.format(format, args), t);
     }
 
@@ -292,7 +289,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    protected void infof(String format, Object... args) {
+    protected void infof(final String format, final Object... args) {
         if (log().isInfoEnabled()) {
             log().info(String.format(format, args));
         }
@@ -305,7 +302,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    protected void infof(Throwable t, String format, Object... args) {
+    protected void infof(final Throwable t, final String format, final Object... args) {
         if (log().isInfoEnabled()) {
             log().info(String.format(format, args), t);
         }
@@ -317,7 +314,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    protected void debugf(String format, Object... args) {
+    protected void debugf(final String format, final Object... args) {
         if (log().isDebugEnabled()) {
             log().debug(String.format(format, args));
         }
@@ -330,7 +327,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    protected void debugf(Throwable t, String format, Object... args) {
+    protected void debugf(final Throwable t, final String format, final Object... args) {
         if (log().isDebugEnabled()) {
             log().debug(String.format(format, args), t);
         }
@@ -340,15 +337,15 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>init</p>
      */
     final public void init() {
-        String prefix = ThreadCategory.getPrefix();
+        final String prefix = ThreadCategory.getPrefix();
         try {
             
             ThreadCategory.setPrefix(getName());
-            log().debug(getName()+" initializing.");
+            log().info(getName()+" initializing.");
 
             onInit();
 
-            log().debug(getName()+" initialization complete.");
+            log().info(getName()+" initialization complete.");
         } finally {
             ThreadCategory.setPrefix(prefix);
         }
@@ -360,20 +357,19 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>pause</p>
      */
     final public void pause() {
-        String prefix = ThreadCategory.getPrefix();
+        final String prefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(getName());
 
-            if (!isRunning())
-                return;
+            if (!isRunning()) return;
+
+            log().info(getName()+" pausing.");
 
             setStatus(PAUSE_PENDING);
-
             onPause();
-
             setStatus(PAUSED);
 
-            log().debug(getName()+" paused.");
+            log().info(getName()+" paused.");
 
         } finally {
             ThreadCategory.setPrefix(prefix);
@@ -384,19 +380,18 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>resume</p>
      */
     final public void resume() {
-        String prefix = ThreadCategory.getPrefix();
+        final String prefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(getName());
-            if (!isPaused())
-                return;
+            if (!isPaused()) return;
+
+            log().info(getName()+" resuming.");
 
             setStatus(RESUME_PENDING);
-
             onResume();
-
             setStatus(RUNNING);
 
-            log().debug(getName()+" resumed.");
+            log().info(getName()+" resumed.");
         } finally {
             ThreadCategory.setPrefix(prefix);
         }
@@ -406,15 +401,13 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>start</p>
      */
     final public synchronized void start() {
-        String prefix = ThreadCategory.getPrefix();
+        final String prefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(getName());
-            log().debug(getName()+" starting.");
+            log().info(getName()+" starting.");
 
             setStatus(STARTING);
-
             onStart();
-
             setStatus(RUNNING);
 
             log().info(getName()+" started.");
@@ -429,14 +422,13 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * the command is silently discarded.
      */
     final public synchronized void stop() {
-        String prefix = ThreadCategory.getPrefix();
+        final String prefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(getName());
-            log().debug(getName()+" stopping.");
+            log().info(getName()+" stopping.");
+
             setStatus(STOP_PENDING);
-
             onStop();
-
             setStatus(STOPPED);
 
             log().info(getName()+" stopped.");
