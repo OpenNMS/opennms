@@ -7,6 +7,7 @@ import org.junit.Test;
 
 public class ReportsPageTest extends OpenNMSSeleniumTestCase {
     @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         selenium.click("link=Reports");
@@ -72,13 +73,6 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Database Reports"));
         assertTrue(selenium.isTextPresent("Descriptions"));
         assertTrue(selenium.isTextPresent("You may run or schedule"));
-        
-        //TODO Tak: This test is broken, caused by changed reporting web ui
-//        assertTrue(selenium.isElementPresent("link=Batch reports"));
-//        assertTrue(selenium.isElementPresent("link=Online reports"));
-//        assertTrue(selenium.isElementPresent("//div[@id='content']/div[2]/div/ul/li[3]"));
-//        assertTrue(selenium.isElementPresent("link=Manage the batch report schedule"));
-//        selenium.click("//div[@id='content']/div/h2/a[2]");
         assertTrue(selenium.isElementPresent("link=List reports"));
         assertTrue(selenium.isElementPresent("link=View and manage pre-run reports"));
         assertTrue(selenium.isElementPresent("link=Manage the batch report schedule"));
