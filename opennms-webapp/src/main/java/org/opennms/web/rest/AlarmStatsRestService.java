@@ -133,6 +133,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     protected OnmsAlarm getNewestAcknowledged(final OnmsSeverity severity) {
         final OnmsCriteria criteria = getCriteria(severity);
         criteria.addOrder(Order.desc("lastEventTime"));
+        criteria.addOrder(Order.desc("id"));
         criteria.setMaxResults(1);
         return m_statisticsService.getAcknowledged(criteria);
     }
@@ -140,6 +141,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     private OnmsAlarm getNewestUnacknowledged(final OnmsSeverity severity) {
         final OnmsCriteria criteria = getCriteria(severity);
         criteria.addOrder(Order.desc("lastEventTime"));
+        criteria.addOrder(Order.desc("id"));
         criteria.setMaxResults(1);
         return m_statisticsService.getUnacknowledged(criteria);
     }
@@ -147,6 +149,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     protected OnmsAlarm getOldestAcknowledged(final OnmsSeverity severity) {
         final OnmsCriteria criteria = getCriteria(severity);
         criteria.addOrder(Order.asc("firstEventTime"));
+        criteria.addOrder(Order.asc("id"));
         criteria.setMaxResults(1);
         return m_statisticsService.getAcknowledged(criteria);
     }
@@ -154,6 +157,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     private OnmsAlarm getOldestUnacknowledged(final OnmsSeverity severity) {
         final OnmsCriteria criteria = getCriteria(severity);
         criteria.addOrder(Order.asc("firstEventTime"));
+        criteria.addOrder(Order.asc("id"));
         criteria.setMaxResults(1);
         return m_statisticsService.getUnacknowledged(criteria);
     }
