@@ -47,7 +47,7 @@
 				<listitem><para>XSS vulnerability in OpenNMS web UI (Issue <ulink url='http://issues.opennms.org/browse/NMS-5128'>NMS-5128</ulink>)</para></listitem>
 				<listitem><para>provision.pl not working &quot;set&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-5130'>NMS-5130</ulink>)</para></listitem>
 				<listitem><para>Outage ReST Interface outputs invalid XML (multiple &lt;ipAddress/&gt; fields) (Issue <ulink url='http://issues.opennms.org/browse/NMS-5138'>NMS-5138</ulink>)</para></listitem>
-				<listitem><para>Capsd should ignore newSuspect events if org.opennms.provisiond.enableDiscovery is true (Issue <ulink url='http://issues.opennms.org/browse/NMS-5157'>NMS-5157</ulink>)</para></listitem>
+				<listitem><para>Capsd should exit if org.opennms.provisiond.enableDiscovery is true (Issue <ulink url='http://issues.opennms.org/browse/NMS-5157'>NMS-5157</ulink>)</para></listitem>
 			</itemizedlist>
 		</section>
 		<section id="opennms-1.10.0-enhancement">
