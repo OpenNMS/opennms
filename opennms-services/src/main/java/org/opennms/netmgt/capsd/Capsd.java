@@ -153,6 +153,12 @@ public class Capsd extends AbstractServiceDaemon {
         Assert.state(m_scheduler != null, "must set the scheduler property");
         Assert.state(m_eventListener != null, "must set the eventListener property");
 
+        if (System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true")) {
+        	throw new IllegalStateException("Provisiond is configured to handle discovery events. " +
+        			"Please disable Capsd in service-configuration.xml, or set " +
+        			"org.opennms.provisiond.enableDiscovery=false in opennms.properties!");
+        }
+
 	    
 	    /* 
          * First any new services are added to the services table
