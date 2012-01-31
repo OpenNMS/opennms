@@ -38,6 +38,10 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
  * <p>EventconfFactory class.</p>
+ * 
+ * @deprecated This class is just a thin wrapper around an {@link EventConfDao}
+ * instance. Instead of using this factory, you should use dependency injection
+ * to acquire a reference to the {@link EventConfDao} implementation instance.
  *
  * @author ranger
  * @version $Id: $
