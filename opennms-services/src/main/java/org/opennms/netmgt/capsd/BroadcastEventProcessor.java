@@ -1631,11 +1631,6 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         final String interfaceValue = event.getInterface();
 
-        if (System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true")) {
-            log().info("Ignoring newSuspect event for interface " + interfaceValue + " because Provisiond is configured to handle newSuspect events (org.opennms.provisiond.enableDiscovery=true)");
-            return;
-        }
-
         // discard this newSuspect if one is already enqueued for the same IP address
         if (SuspectEventProcessor.isScanQueuedForAddress(interfaceValue)) {
         	log().info("Ignoring newSuspect event for interface " + interfaceValue + " because a newSuspect scan for that interface already exists in the queue");
