@@ -12,6 +12,10 @@ function exists() {
     which "$1" >/dev/null 2>&1
 }
 
+function use_git() {
+    exists git && test -d "${TOPDIR}/.git"
+}
+
 function run()
 {
     if exists $1; then
@@ -47,7 +51,7 @@ function usage()
 
 function calcMinor()
 {
-    if exists git; then
+    if use_git; then
 	git log --pretty='format:%cd' --date=short -1 | head -n 1 | sed -e 's,^Date: *,,' -e 's,-,,g'
     else
 	date '+%Y%m%d'
@@ -56,26 +60,42 @@ function calcMinor()
 
 function branch()
 {
-    run git branch | grep -E '^\*' | awk '{ print $2 }'
+    if use_git; then
+        run git branch | grep -E '^\*' | awk '{ print $2 }'
+    else
+        echo "source"
+    fi
 }
 
 function commit()
 {
-    run git log -1 | grep -E '^commit' | cut -d' ' -f2
+    if use_git; then
+        run git log -1 | grep -E '^commit' | cut -d' ' -f2
+    else
+        echo ""
+    fi
 }
 
 function extraInfo()
 {
-    if [ "$RELEASE_MAJOR" = "0" ] ; then
-	echo "This is an OpenNMS build from the $(branch) branch.  For a complete log, see:"
+    if use_git; then
+        if [ "$RELEASE_MAJOR" = "0" ] ; then
+            echo "This is an OpenNMS build from the $(branch) branch.  For a complete log, see:"
+        else
+            echo "This is an OpenNMS build from Git.  For a complete log, see:"
+        fi
     else
-	echo "This is an OpenNMS build from Git.  For a complete log, see:"
+        echo "This is an OpenNMS build from source."
     fi
 }
 
 function extraInfo2()
 {
-    echo "  http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=$(commit)"
+    if use_git; then
+        echo "  http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=$(commit)"
+    else
+        echo ""
+    fi
 }
 
 function version()
