@@ -45,6 +45,11 @@ import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbeans;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Simon Walter <simon.walter@hp-factory.de>
+ * @author Markus Neumann <markus@opennms.com>
+ */
+
 public class SnmpGraphConfigGenerator {
 	
 	private static Logger logger = LoggerFactory.getLogger(SnmpGraphConfigGenerator.class);

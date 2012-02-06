@@ -35,6 +35,11 @@ import org.kohsuke.args4j.Option;
 import org.opennms.tools.jmxconfiggenerator.graphs.SnmpGraphConfigGenerator;
 import org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfigGenerator;
 
+/**
+ * @author Simon Walter <simon.walter@hp-factory.de>
+ * @author Markus Neumann <markus@opennms.com>
+ */
+
 public class Starter {
 
 	@Option(name = "-jmx", usage = "Generate jmx-datacollection.xml by reading JMX over RMI")

@@ -40,6 +40,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.tools.jmxconfiggenerator.graphs.SnmpGraphConfigGenerator;
 
+/**
+ * @author Simon Walter <simon.walter@hp-factory.de>
+ * @author Markus Neumann <markus@opennms.com>
+ */
+
+
 public class JmxDatacollectionConfigGeneratorTest {
 
 	@BeforeClass
