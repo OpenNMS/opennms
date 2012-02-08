@@ -119,6 +119,7 @@ install: build
 	mv debian/temp/lib/*radius*.jar                                                            debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
 	
 	# XML
+	install -d -m 755 debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/{datacollection,xml-datacollection,snmp-graph.properties.d}
 	mv debian/temp/lib/org.opennms.protocols.xml-*.jar                                         debian/opennms-plugin-protocol-xml/usr/share/java/opennms/
 	mv debian/temp/etc/xml*-config.xml                                                         debian/opennms-plugin-protocol-xml/etc/opennms/
 	mv debian/temp/etc/datacollection/3gpp*                                                    debian/opennms-plugin-protocol-xml/etc/opennms/datacollection/
