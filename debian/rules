@@ -74,6 +74,7 @@ install: build
 	##
 	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,snmp-asset}/usr/share/java/opennms
 	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset}/var/lib/opennms/etc-pristine
 	mv debian/temp/lib/opennms-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-link-provisioning-adapter*.jar        debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-map-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
@@ -85,31 +86,55 @@ install: build
 	mv debian/temp/etc/snmp-asset-adapter-configuration.xml          debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
 	find debian/opennms-plugin*/etc/opennms -type f -execdir chmod 644 {} \;
 	
+	# etc-pristine version
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/link-adapter-configuration.xml       debian/opennms-plugin-provisioning-link/var/lib/opennms/etc-pristine/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/endpoint-configuration.xml           debian/opennms-plugin-provisioning-link/var/lib/opennms/etc-pristine/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/mapsadapter-configuration.xml        debian/opennms-plugin-provisioning-map/var/lib/opennms/etc-pristine/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-asset-adapter-configuration.xml debian/opennms-plugin-provisioning-snmp-asset/var/lib/opennms/etc-pristine/
+	
 	##
 	## Setup the protocol packages
 	##
 	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/usr/share/java/opennms
 	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/usr/share/opennms/contrib
 	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/var/lib/opennms/etc-pristine
 	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/var/lib/opennms/xsds
 	install -d -m 755 debian/opennms-plugin-protocol-xml/etc/opennms/{datacollection,xml-datacollection,snmp-graph.properties.d}
-	mv debian/temp/lib/org.opennms.protocols.dhcp-*.jar     debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
-	mv debian/temp/etc/dhcpd-configuration.xml              debian/opennms-plugin-protocol-dhcp/etc/opennms/
-	mv debian/temp/share/xsds/dhcpd-configuration.xsd       debian/opennms-plugin-protocol-dhcp/var/lib/opennms/xsds/
-	mv debian/temp/lib/org.opennms.protocols.nsclient-*.jar debian/opennms-plugin-protocol-nsclient/usr/share/java/opennms/
-	mv debian/temp/etc/nsclient*.xml                        debian/opennms-plugin-protocol-nsclient/etc/opennms/
-	mv debian/temp/share/xsds/nsclient*.xsd                 debian/opennms-plugin-protocol-nsclient/var/lib/opennms/xsds/
-	mv debian/temp/lib/gnu-crypto*.jar                      debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
-	mv debian/temp/lib/*radius*.jar                         debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
-	mv debian/temp/lib/org.opennms.protocols.xml-*.jar      debian/opennms-plugin-protocol-xml/usr/share/java/opennms/
-	mv debian/temp/etc/xml*-config.xml                      debian/opennms-plugin-protocol-xml/etc/opennms/
-	mv debian/temp/etc/datacollection/3gpp*                 debian/opennms-plugin-protocol-xml/etc/opennms/datacollection/
-	mv debian/temp/etc/xml-datacollection/3gpp*             debian/opennms-plugin-protocol-xml/etc/opennms/xml-datacollection/
-	mv debian/temp/etc/snmp-graph.properties.d/3gpp*        debian/opennms-plugin-protocol-xml/etc/opennms/snmp-graph.properties.d/
-	mv debian/temp/contrib/xml-collector                    debian/opennms-plugin-protocol-xml/usr/share/opennms/contrib/
-	mv debian/temp/lib/org.opennms.protocols.xmp-*.jar      debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
-	mv debian/temp/etc/xmp*-config.xml                      debian/opennms-plugin-protocol-xmp/etc/opennms/
-	mv debian/temp/share/xsds/xmp*.xsd                      debian/opennms-plugin-protocol-xmp/var/lib/opennms/xsds/
+	
+	# DHCP
+	mv debian/temp/lib/org.opennms.protocols.dhcp-*.jar                                        debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
+	mv debian/temp/etc/dhcpd-configuration.xml                                                 debian/opennms-plugin-protocol-dhcp/etc/opennms/
+	mv debian/temp/share/xsds/dhcpd-configuration.xsd                                          debian/opennms-plugin-protocol-dhcp/var/lib/opennms/xsds/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/dhcpd-configuration.xml              debian/opennms-plugin-protocol-dhcp/var/lib/opennms/etc-pristine/
+	
+	# NSClient
+	mv debian/temp/lib/org.opennms.protocols.nsclient-*.jar                                    debian/opennms-plugin-protocol-nsclient/usr/share/java/opennms/
+	mv debian/temp/etc/nsclient*.xml                                                           debian/opennms-plugin-protocol-nsclient/etc/opennms/
+	mv debian/temp/share/xsds/nsclient*.xsd                                                    debian/opennms-plugin-protocol-nsclient/var/lib/opennms/xsds/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/nsclient*.xml                        debian/opennms-plugin-protocol-nsclient/var/lib/opennms/etc-pristine/
+	
+	# RADIUS
+	mv debian/temp/lib/gnu-crypto*.jar                                                         debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
+	mv debian/temp/lib/*radius*.jar                                                            debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
+	
+	# XML
+	mv debian/temp/lib/org.opennms.protocols.xml-*.jar                                         debian/opennms-plugin-protocol-xml/usr/share/java/opennms/
+	mv debian/temp/etc/xml*-config.xml                                                         debian/opennms-plugin-protocol-xml/etc/opennms/
+	mv debian/temp/etc/datacollection/3gpp*                                                    debian/opennms-plugin-protocol-xml/etc/opennms/datacollection/
+	mv debian/temp/etc/xml-datacollection/3gpp*                                                debian/opennms-plugin-protocol-xml/etc/opennms/xml-datacollection/
+	mv debian/temp/etc/snmp-graph.properties.d/3gpp*                                           debian/opennms-plugin-protocol-xml/etc/opennms/snmp-graph.properties.d/
+	mv debian/temp/contrib/xml-collector                                                       debian/opennms-plugin-protocol-xml/usr/share/opennms/contrib/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/xml*-config.xml                      debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/datacollection/3gpp*                 debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/datacollection/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/xml-datacollection/3gpp*             debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/xml-datacollection/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-graph.properties.d/3gpp*        debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/snmp-graph.properties.d/
+	
+	# XMP
+	mv debian/temp/lib/org.opennms.protocols.xmp-*.jar                                         debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
+	mv debian/temp/etc/xmp*-config.xml                                                         debian/opennms-plugin-protocol-xmp/etc/opennms/
+	mv debian/temp/share/xsds/xmp*.xsd                                                         debian/opennms-plugin-protocol-xmp/var/lib/opennms/xsds/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/xmp*-config.xml                      debian/opennms-plugin-protocol-xmp/var/lib/opennms/etc-pristine/
 	
 	##
 	## Setup the libopennms-java package
