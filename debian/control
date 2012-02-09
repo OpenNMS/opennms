@@ -179,6 +179,7 @@ Description: Enterprise-grade Open-source Network Management Platform (All Plugi
 Package: opennms-plugin-provisioning-dns
 Architecture: all
 Depends: opennms-server (=${binary:Version})
+Replaces: opennms-common (<<${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (DNS Provisioning Adapter)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -227,6 +228,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Map Provi
 Package: opennms-plugin-provisioning-rancid
 Architecture: all
 Depends: opennms-server (=${binary:Version})
+Replaces: opennms-common (<<${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (RANCID Provisioning Adapter)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -242,6 +244,7 @@ Description: Enterprise-grade Open-source Network Management Platform (RANCID Pr
 Package: opennms-plugin-provisioning-snmp-asset
 Architecture: all
 Depends: opennms-server (=${binary:Version})
+Replaces: opennms-common (<<${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (SNMP Asset Provisioning Adapter)
  OpenNMS is an enterprise-grade network management system written in Java.
  .

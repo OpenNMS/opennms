@@ -435,6 +435,22 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	sort > %{_tmppath}/files.main
+find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
+	sed -e "s,^$RPM_BUILD_ROOT,," | \
+	grep -v '%{_initrddir}/opennms-remote-poller' | \
+	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
+	grep -v '3gpp' | \
+	grep -v 'dhcpd-configuration.xml' | \
+	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'link-adapter-configuration.xml' | \
+	grep -v 'mapsadapter-configuration.xml' | \
+	grep -v 'nsclient-config.xml' | \
+	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v 'xml-datacollection-config.xml' | \
+	grep -v 'xmp-config.xml' | \
+	grep -v 'xmp-datacollection-config.xml' | \
+	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
 	grep -v '/remote-poller.sh' | \
@@ -442,6 +458,7 @@ find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
+	grep -v 'etc-pristine' | \
 	grep -v 'nsclient-config.xsd' | \
 	grep -v 'nsclient-datacollection.xsd' | \
 	grep -v 'xmp-config.xsd' | \
@@ -524,14 +541,17 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-provisioning-link
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-link-provisioning-adapter*.jar
-%{instprefix}/etc/link-adapter-configuration.xml
-%{instprefix}/etc/endpoint-configuration.xml
+%config(noreplace) %{instprefix}/etc/link-adapter-configuration.xml
+%config(noreplace) %{instprefix}/etc/endpoint-configuration.xml
+%{sharedir}/etc-pristine/link-adapter-configuration.xml
+%{sharedir}/etc-pristine/endpoint-configuration.xml
 
 %files plugin-provisioning-map
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-map-provisioning-adapter*.jar
 %{instprefix}/etc/examples/mapsadapter-configuration.xml
-%{instprefix}/etc/mapsadapter-configuration.xml
+%config(noreplace) %{instprefix}/etc/mapsadapter-configuration.xml
+%{sharedir}/etc-pristine/mapsadapter-configuration.xml
 
 %files plugin-provisioning-rancid
 %defattr(664 root root 775)
@@ -540,19 +560,22 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-provisioning-snmp-asset
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
-%{instprefix}/etc/snmp-asset-adapter-configuration.xml
+%config(noreplace) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
+%{sharedir}/etc-pristine/snmp-asset-adapter-configuration.xml
 
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/dhcp*.xml
 %{instprefix}/lib/org.opennms.protocols.dhcp*.jar
+%{sharedir}/etc-pristine/dhcp*.xml
 %{sharedir}/xsds/dhcp*.xsd
 
 %files plugin-protocol-nsclient
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/nsclient*.xml
-%config(noreplace) %{instprefix}/etc/examples/nsclient*.xml
+%{instprefix}/etc/examples/nsclient*.xml
 %{instprefix}/lib/org.opennms.protocols.nsclient*.jar
+%{sharedir}/etc-pristine/nsclient*.xml
 %{sharedir}/xsds/nsclient*.xsd
 
 %files plugin-protocol-radius
@@ -567,11 +590,15 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/3gpp*
 %{instprefix}/lib/org.opennms.protocols.xml-*.jar
 %attr(755,root,root) %{instprefix}/contrib/xml-collector/*.pl
+%{sharedir}/etc-pristine/xml-*.xml
+%{sharedir}/etc-pristine/*datacollection*/3gpp*
+%{sharedir}/etc-pristine/snmp-graph.properties.d/3gpp*
 
 %files plugin-protocol-xmp
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/xmp*.xml
 %{instprefix}/lib/org.opennms.protocols.xmp-*.jar
+%{sharedir}/etc-pristine/xmp*.xml
 %{sharedir}/xsds/xmp*.xsd
 
 %post docs

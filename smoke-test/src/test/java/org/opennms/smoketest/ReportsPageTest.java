@@ -64,7 +64,7 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         selenium.click("link=KSC Performance, Nodes, Domains");
         waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Customized Reports"));
-        assertTrue(selenium.isTextPresent("Node & Domain Interface Reports"));
+        assertTrue(selenium.isTextPresent("no Node & Domain Interface Reports found, content is: " + selenium.getHtmlSource(), "Node & Domain Interface Reports"));
         assertTrue(selenium.isTextPresent("Descriptions"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
         waitForPageToLoad();

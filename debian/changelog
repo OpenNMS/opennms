@@ -1,3 +1,9 @@
+opennms (1.10.0-2) unstable; urgency=low
+
+  * Fix inclusion of etc-pristine in -core package
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 08 Feb 2012 12:42:00 -0400
+
 opennms (1.10.0-1) unstable; urgency=high
 
   * New upstream release.
