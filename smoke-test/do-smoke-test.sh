@@ -91,7 +91,7 @@ reset_opennms() {
 
 	rpm -qa --queryformat='%{name}\n' | grep -E '^opennms' | xargs yum -y remove
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms /etc/yum.repos.d/opennms*
-	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-snapshot-rhel5.noarch.rpm
+	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-testing-rhel5.noarch.rpm
 	yum -y install $PACKAGES || die "Unable to install the following packages: $PACKAGES"
 }
 
