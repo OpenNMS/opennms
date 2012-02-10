@@ -345,10 +345,14 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             DEFLOOP: for (final Definition def : m_config.getDefinitionCollection()) {
                 // check the specifics first
                 for (final String saddr : def.getSpecificCollection()) {
-                    final InetAddress addr = InetAddressUtils.addr(saddr);
-                    if (addr != null && addr.equals(agentConfig.getAddress())) {
-                        setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
-                        break DEFLOOP;
+                    try {
+                        final InetAddress addr = InetAddressUtils.addr(saddr);
+                        if (addr != null && addr.equals(agentConfig.getAddress())) {
+                            setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
+                            break DEFLOOP;
+                        }
+                    } catch (final IllegalArgumentException e) {
+                        LogUtils.debugf(this, e, "Error while reading SNMP config <specific> tag: %s", saddr);
                     }
                 }
 
@@ -429,7 +433,11 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         InetAddress inetAddr = null;
         final String address = def.getProxyHost() == null ? (m_config.getProxyHost() == null ? null : m_config.getProxyHost()) : def.getProxyHost();
         if (address != null) {
-        	inetAddr =  InetAddressUtils.addr(address);
+            try {
+                inetAddr =  InetAddressUtils.addr(address);
+            } catch (final IllegalArgumentException e) {
+                LogUtils.debugf(this, e, "Error while reading SNMP config proxy host: %s", address);
+            }
         }
         return inetAddr;
     }
