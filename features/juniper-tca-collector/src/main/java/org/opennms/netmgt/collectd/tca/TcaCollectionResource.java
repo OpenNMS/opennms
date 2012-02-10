@@ -57,7 +57,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	private String m_peerAddress;
 
 	/** The m_strategy. */
-	private StorageStrategy m_strategy = new IndexStorageStrategy();
+	private StorageStrategy m_strategy;
 
 	/**
 	 * Instantiates a new TCA collection resource.
@@ -68,6 +68,8 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	protected TcaCollectionResource(CollectionAgent agent, String peerAddress) {
 		super(agent);
 		m_peerAddress = peerAddress;
+		m_strategy = new IndexStorageStrategy();
+		m_strategy.setResourceTypeName(RESOURCE_TYPE_NAME);
 	}
 
 	/* (non-Javadoc)

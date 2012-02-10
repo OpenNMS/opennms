@@ -46,10 +46,10 @@ public class ConstantTimeKeeper implements TimeKeeper {
     /**
      * Instantiates a new constant time keeper.
      *
-     * @param timestamp the timestamp in milliseconds
+     * @param timestamp the timestamp in seconds
      */
-    public ConstantTimeKeeper(long timestamp) {
-        m_date = new Date(timestamp);
+    public ConstantTimeKeeper(long timestampInSeconds) {
+        m_date = new Date(timestampInSeconds * 1000);
     }
     
     /* (non-Javadoc)

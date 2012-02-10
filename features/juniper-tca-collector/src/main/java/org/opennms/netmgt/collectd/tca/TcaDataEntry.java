@@ -36,7 +36,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpStore;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class TcaDataEntry extends SnmpStore {
+public final class TcaDataEntry extends SnmpStore {
 
 	/** Constant <code>TCA_PEER_ADDRESS="jnxTcaSlaRawDataPeerIPAddress"</code>. */
 	public final static	String	TCA_PEER_ADDRESS = "jnxTcaSlaRawDataPeerIPAddress";
@@ -46,11 +46,8 @@ public class TcaDataEntry extends SnmpStore {
 
 	/** The Constant TCA Element List. */
 	public final static NamedSnmpVar[] tca_elemList = new NamedSnmpVar[] {
-
-		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, TCA_PEER_ADDRESS, ".1.3.6.1.4.1.27091.3.1.6.1.1"),
-
-		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, TCA_RAW_DATA, ".1.3.6.1.4.1.27091.3.1.6.1.2"),
-
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, TCA_PEER_ADDRESS, ".1.3.6.1.4.1.27091.3.1.6.1.1", 1),
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, TCA_RAW_DATA, ".1.3.6.1.4.1.27091.3.1.6.1.2", 2),
 	};
 
 	/**

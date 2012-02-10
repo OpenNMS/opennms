@@ -31,10 +31,14 @@ package org.opennms.netmgt.collectd.tca;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,7 +50,10 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.DefaultCollectionAgent;
+import org.opennms.netmgt.collectd.OneToOnePersister;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -55,6 +62,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
 import org.opennms.test.mock.MockLogAppender;
@@ -70,35 +78,35 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
+		"classpath:/META-INF/opennms/applicationContext-dao.xml",
+		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
+@JUnitSnmpAgent(resource = "classpath:juniperTcaSample.properties")
 public class TcaCollectorTest  {
-	
-    /** The Constant TEST_NODE_LABEL. */
-    private final static String TEST_NODE_LABEL = "TestNode"; 
 
-    /** The collection agent. */
-    private CollectionAgent m_collectionAgent;
-    
-    /** The Node DAO. */
-    @Autowired
-    private NodeDao m_nodeDao;
+	/** The Constant TEST_NODE_LABEL. */
+	private final static String TEST_NODE_LABEL = "TestNode"; 
 
-    /** The IP Interface DAO. */
-    @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
+	/** The collection agent. */
+	private CollectionAgent m_collectionAgent;
+
+	/** The Node DAO. */
+	@Autowired
+	private NodeDao m_nodeDao;
+
+	/** The IP Interface DAO. */
+	@Autowired
+	private IpInterfaceDao m_ipInterfaceDao;
 
 	/** The SNMP peer factory. */
 	@Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;
 
-    /** The transaction manager. */
-    @Autowired
-    private PlatformTransactionManager m_transactionManager;
+	/** The transaction manager. */
+	@Autowired
+	private PlatformTransactionManager m_transactionManager;
 
 	/**
 	 * Sets the up.
@@ -107,36 +115,38 @@ public class TcaCollectorTest  {
 	 */
 	@Before
 	public void setUp() throws Exception {
-        MockLogAppender.setupLogging();
+		MockLogAppender.setupLogging();
+		
+		FileUtils.deleteDirectory(new File("target/1"));
 
-        RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
+		RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
 
-        OnmsIpInterface iface = null;
-        OnmsNode testNode = null;
-        Collection<OnmsNode> testNodes = m_nodeDao.findByLabel(TEST_NODE_LABEL);
-        if (testNodes == null || testNodes.size() < 1) {
-            NetworkBuilder builder = new NetworkBuilder();
-            builder.addNode(TEST_NODE_LABEL).setId(1).setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
-            String testHostName = InetAddressUtils.str(InetAddress.getLocalHost());
-            InterfaceBuilder ifBldr = builder.addInterface(testHostName).setIsSnmpPrimary("P");
-            ifBldr.addSnmpInterface(6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
-            testNode = builder.getCurrentNode();
-            assertNotNull(testNode);
-            m_nodeDao.save(testNode);
-            m_nodeDao.flush();
-        } else {
-            testNode = testNodes.iterator().next();
-        }
+		OnmsIpInterface iface = null;
+		OnmsNode testNode = null;
+		Collection<OnmsNode> testNodes = m_nodeDao.findByLabel(TEST_NODE_LABEL);
+		if (testNodes == null || testNodes.size() < 1) {
+			NetworkBuilder builder = new NetworkBuilder();
+			builder.addNode(TEST_NODE_LABEL).setId(1).setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
+			String testHostName = InetAddressUtils.str(InetAddress.getLocalHost());
+			InterfaceBuilder ifBldr = builder.addInterface(testHostName).setIsSnmpPrimary("P");
+			ifBldr.addSnmpInterface(6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
+			testNode = builder.getCurrentNode();
+			assertNotNull(testNode);
+			m_nodeDao.save(testNode);
+			m_nodeDao.flush();
+		} else {
+			testNode = testNodes.iterator().next();
+		}
 
-        Set<OnmsIpInterface> ifaces = testNode.getIpInterfaces();
-        assertEquals(1, ifaces.size());
-        iface = ifaces.iterator().next();
+		Set<OnmsIpInterface> ifaces = testNode.getIpInterfaces();
+		assertEquals(1, ifaces.size());
+		iface = ifaces.iterator().next();
 
-        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
+		SnmpPeerFactory.setInstance(m_snmpPeerFactory);
 
-        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+		m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
 	}
-	
+
 	/**
 	 * Tear down.
 	 *
@@ -144,20 +154,29 @@ public class TcaCollectorTest  {
 	 */
 	@After
 	public void tearDown() throws Exception {
-        MockLogAppender.assertNoWarningsOrGreater();
+		MockLogAppender.assertNoWarningsOrGreater();
 	}
-	
+
 	/**
 	 * Test collector.
 	 *
 	 * @throws Exception the exception
 	 */
 	@Test
-    @JUnitSnmpAgent(resource = "juniperTcaSample.properties")
 	public void testCollector() throws Exception {
-		TcaCollectionSet collectionSet = new TcaCollectionSet(m_collectionAgent);
-		collectionSet.collect();
-		Assert.assertFalse(collectionSet.getCollectionResources().isEmpty());
+		Map<String,Object> parameters = new HashMap<String,Object>();
+		TcaCollector collector = new TcaCollector();
+		collector.initialize(new HashMap<String,String>());
+		collector.initialize(m_collectionAgent, parameters);
+		CollectionSet collectionSet = collector.collect(m_collectionAgent, null, parameters);
+		Assert.assertTrue(collectionSet instanceof TcaCollectionSet);
+		TcaCollectionSet tcaCollection = (TcaCollectionSet) collectionSet;
+		Assert.assertFalse(tcaCollection.getCollectionResources().isEmpty());
+		Assert.assertEquals(50, tcaCollection.getCollectionResources().size()); // 25 Samples of each of 2 peers = 50 resources.
+		RrdRepository repository = collector.getRrdRepository("default");
+		repository.setRrdBaseDir(new File("target"));
+		OneToOnePersister persister = new OneToOnePersister(new ServiceParameters(parameters), repository);
+		collectionSet.visit(persister);
 	}
 
 }

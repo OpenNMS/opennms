@@ -183,11 +183,10 @@ public class TcaCollectionSet implements CollectionSet {
 	 * @param tracker the tracker
 	 */
 	private void process(TcaData tracker) {
-		log().debug("process: tracker status: isFinished=" + tracker.isFinished() + ", isEmpty=" + tracker.isEmpty());
-		log().debug("process: processing raw TCA data for " + tracker.size() + " resources.");
+		log().debug("process: processing raw TCA data for " + tracker.size() + " peers.");
 		AttributeGroupType attribGroupType = new AttributeGroupType(TcaCollectionResource.RESOURCE_TYPE_NAME, "all"); // It will be treated like a Multi-Instance Resource
 		for (TcaDataEntry entry : tracker.getEntries()) {
-			String[] rawData = entry.getRawData().split("|");
+			String[] rawData = entry.getRawData().split("\\|");
 			int samples = Integer.parseInt(rawData[1]);
 			for (int i=0; i<samples; i++) {
 				log().debug("process: processing row " + i + ": " + rawData[2 + i]);
@@ -205,6 +204,8 @@ public class TcaCollectionSet implements CollectionSet {
 					TcaCollectionAttributeType jitterRemoteLocal = new TcaCollectionAttributeType(attribGroupType, "jitterRemoteLocal");
 					resource.setAttributeValue(jitterRemoteLocal, rawEntry[4]);
 					m_collectionResources.add(resource);
+				} else {
+					log().info("process: skipping row " + i + " " + rawData[2 + i] + " because the status is not valid.");
 				}
 			}
 		}

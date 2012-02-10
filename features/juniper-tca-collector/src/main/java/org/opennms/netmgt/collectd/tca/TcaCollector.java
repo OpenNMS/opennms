@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.collectd.tca;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
@@ -84,6 +87,17 @@ public class TcaCollector implements ServiceCollector {
 		log().debug("initialize: initializing TCA collection handling using " + parameters + " for collection agent " + agent);
 		m_serviceName = ParameterMap.getKeyedString(parameters, "SERVICE", "TCA");
 		m_rrdRepository = new RrdRepository();
+		m_rrdRepository.setStep(1);
+		m_rrdRepository.setHeartBeat(1);
+		File rrdBaseDir = new File(System.getProperty("opennms.home"), "/share/rrd/snmp");
+		m_rrdRepository.setRrdBaseDir(rrdBaseDir);
+		List<String> rraList = new ArrayList<String>();
+		rraList.add("RRA:AVERAGE:0.5:1:3600");    // one hour at 1 second step
+		rraList.add("RRA:AVERAGE:0.5:300:288");   // one day at 5 minutes step
+		rraList.add("RRA:AVERAGE:0.5:900:2880");  // 30 days at 15 minutes step
+		rraList.add("RRA:AVERAGE:0.5:3600:4300"); // 6 months at 1 hour step
+		m_rrdRepository.setRraList(rraList);
+		log().debug("initialize: using the following settings for RRD repository: " + m_rrdRepository);
 	}
 
 	/* (non-Javadoc)
