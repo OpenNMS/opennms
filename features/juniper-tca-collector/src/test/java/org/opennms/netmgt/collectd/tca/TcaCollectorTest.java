@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -82,7 +83,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
+@JUnitTemporaryDatabase(reuseDatabase=false)
 @JUnitSnmpAgent(resource = "classpath:juniperTcaSample.properties")
 public class TcaCollectorTest  {
 
@@ -116,7 +117,7 @@ public class TcaCollectorTest  {
 	@Before
 	public void setUp() throws Exception {
 		MockLogAppender.setupLogging();
-		
+
 		FileUtils.deleteDirectory(new File("target/1"));
 
 		RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
@@ -165,18 +166,34 @@ public class TcaCollectorTest  {
 	@Test
 	public void testCollector() throws Exception {
 		Map<String,Object> parameters = new HashMap<String,Object>();
+
+		// Create Collection Set
 		TcaCollector collector = new TcaCollector();
 		collector.initialize(new HashMap<String,String>());
 		collector.initialize(m_collectionAgent, parameters);
 		CollectionSet collectionSet = collector.collect(m_collectionAgent, null, parameters);
+
+		// Validate Collection Set
 		Assert.assertTrue(collectionSet instanceof TcaCollectionSet);
 		TcaCollectionSet tcaCollection = (TcaCollectionSet) collectionSet;
 		Assert.assertFalse(tcaCollection.getCollectionResources().isEmpty());
 		Assert.assertEquals(50, tcaCollection.getCollectionResources().size()); // 25 Samples of each of 2 peers = 50 resources.
+
+		// Persist Data
 		RrdRepository repository = collector.getRrdRepository("default");
 		repository.setRrdBaseDir(new File("target"));
 		OneToOnePersister persister = new OneToOnePersister(new ServiceParameters(parameters), repository);
 		collectionSet.visit(persister);
+
+		// Validate Persisted Data
+		RrdDb jrb = new RrdDb("target/1/" + TcaCollectionResource.RESOURCE_TYPE_NAME + "/171.19.37.60/delayLocalRemote.jrb");
+		// According with the Fixed Step
+		Assert.assertEquals(1, jrb.getArchive(0).getArcStep());
+		// According with the Sample Data
+		Assert.assertEquals(1327451786l, jrb.getArchive(0).getEndTime());
+		for (int i = jrb.getArchive(0).getRows() - 24; i < jrb.getArchive(0).getRows(); i++) {
+			Assert.assertEquals(new Double(11), Double.valueOf(jrb.getArchive(0).getRobin(0).getValue(i)));	
+		}
 	}
 
 }

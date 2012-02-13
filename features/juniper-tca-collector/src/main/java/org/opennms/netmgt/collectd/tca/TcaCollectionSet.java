@@ -52,9 +52,6 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  */
 public class TcaCollectionSet implements CollectionSet {
 
-	/** The SNMP OID for JUNIPER-SLA-MIB::jnxTcaSlaRawdataTable.jnxTcaSlaRawdataEntry. */
-	public static final String BASE_OID = ".1.3.6.1.4.1.27091.3.1.6.1";
-
 	/** The collection status. */
 	private int m_status;
 
