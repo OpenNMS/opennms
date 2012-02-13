@@ -33,6 +33,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.opennms.core.utils.Base64;
@@ -1075,7 +1076,7 @@ public class EventConstants {
 
     static final ThreadLocal<DateFormat> FORMATTER_FULL = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, Locale.US);
             formatter.setLenient(true);
             return formatter;
         }
@@ -1083,7 +1084,7 @@ public class EventConstants {
 
     static final ThreadLocal<DateFormat> FORMATTER_LONG = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG, Locale.US);
             formatter.setLenient(true);
             return formatter;
         }
@@ -1091,7 +1092,7 @@ public class EventConstants {
     
     static final ThreadLocal<DateFormat> FORMATTER_FULL_GMT = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, Locale.US);
             formatter.setLenient(true);
             formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
             return formatter;
@@ -1100,7 +1101,7 @@ public class EventConstants {
 
     static final ThreadLocal<DateFormat> FORMATTER_LONG_GMT = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG, Locale.US);
             formatter.setLenient(true);
             formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
             return formatter;
@@ -1117,7 +1118,7 @@ public class EventConstants {
 
     static final ThreadLocal<DateFormat> FORMATTER_DEFAULT = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance();
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locale.US);
             formatter.setLenient(true);
             return formatter;
         }

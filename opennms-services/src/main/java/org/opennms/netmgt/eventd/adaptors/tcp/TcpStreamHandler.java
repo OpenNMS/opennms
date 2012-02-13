@@ -46,6 +46,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.fiber.Fiber;
@@ -299,7 +300,7 @@ final class TcpStreamHandler implements Runnable {
                         return 0;
                     }
 
-                    final DateFormat fmt = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+                    final DateFormat fmt = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, Locale.US);
 
                     Date de1 = null;
                     try {
