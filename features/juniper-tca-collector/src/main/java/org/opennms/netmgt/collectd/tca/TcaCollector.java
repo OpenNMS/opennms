@@ -28,14 +28,12 @@
 
 package org.opennms.netmgt.collectd.tca;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.Collectd;
@@ -43,6 +41,7 @@ import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.CollectionInitializationException;
 import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.model.RrdRepository;
@@ -60,44 +59,58 @@ public class TcaCollector implements ServiceCollector {
 	/** The service name. */
 	private String m_serviceName;
 
-	/** The RRD repository. */
-	private RrdRepository m_rrdRepository;
+	/** The TCA Data Collection Configuration DAO. */
+	private TcaDataCollectionConfigDao m_configDao;
+
+	/**
+	 * Gets the TCA Data Collection Configuration DAO.
+	 *
+	 * @return the TCA Data Collection Configuration DAO
+	 */
+	public TcaDataCollectionConfigDao getConfigDao() {
+		return m_configDao;
+	}
+
+	/**
+	 * Sets the TCA Data Collection Configuration DAO.
+	 *
+	 * @param configDao the new TCA Data Collection Configuration DAO
+	 */
+	public void setConfigDao(TcaDataCollectionConfigDao configDao) {
+		this.m_configDao = configDao;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.ServiceCollector#initialize(java.util.Map)
 	 */
 	@Override
-	public void initialize(Map<String, String> parameters)
-			throws CollectionInitializationException {
+	public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
 		log().debug("initialize: initializing TCA collector");
-        try {
-            SnmpPeerFactory.init();
-        } catch (IOException e) {
-            log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
-            throw new UndeclaredThrowableException(e);
-        }
+		try {
+			SnmpPeerFactory.init();
+		} catch (IOException e) {
+			log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
+			throw new UndeclaredThrowableException(e);
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.ServiceCollector#initialize(org.opennms.netmgt.collectd.CollectionAgent, java.util.Map)
 	 */
 	@Override
-	public void initialize(CollectionAgent agent, Map<String, Object> parameters)
-			throws CollectionInitializationException {
+	public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
 		log().debug("initialize: initializing TCA collection handling using " + parameters + " for collection agent " + agent);
 		m_serviceName = ParameterMap.getKeyedString(parameters, "SERVICE", "TCA");
-		m_rrdRepository = new RrdRepository();
-		m_rrdRepository.setStep(1);
-		m_rrdRepository.setHeartBeat(1);
-		File rrdBaseDir = new File(System.getProperty("opennms.home"), "/share/rrd/snmp");
-		m_rrdRepository.setRrdBaseDir(rrdBaseDir);
-		List<String> rraList = new ArrayList<String>();
-		rraList.add("RRA:AVERAGE:0.5:1:3600");    // one hour at 1 second step
-		rraList.add("RRA:AVERAGE:0.5:300:288");   // one day at 5 minutes step
-		rraList.add("RRA:AVERAGE:0.5:900:2880");  // 30 days at 15 minutes step
-		rraList.add("RRA:AVERAGE:0.5:3600:4300"); // 6 months at 1 hour step
-		m_rrdRepository.setRraList(rraList);
-		log().debug("initialize: using the following settings for RRD repository: " + m_rrdRepository);
+
+		// Retrieve the DAO for our configuration file.
+		if (m_configDao == null)
+			m_configDao = BeanUtils.getBean("daoContext", "tcaDataCollectionConfigDao", TcaDataCollectionConfigDao.class);
+
+		RrdRepository repo = getRrdRepository(null);
+		if (repo == null || repo.getStep() > 1)
+			throw new CollectionInitializationException("RRD configuration missing or using an invalid step. This collector expect to use 1 second as step.");
+
+		log().debug("initialize: using the following settings for RRD repository: " + repo);
 	}
 
 	/* (non-Javadoc)
@@ -120,8 +133,7 @@ public class TcaCollector implements ServiceCollector {
 	 * @see org.opennms.netmgt.collectd.ServiceCollector#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, java.util.Map)
 	 */
 	@Override
-	public CollectionSet collect(CollectionAgent agent, EventProxy eproxy,
-			Map<String, Object> parameters) throws CollectionException {
+	public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
 		try {
 			Collectd.instrumentation().beginCollectingServiceData(agent.getNodeId(), agent.getHostAddress(), m_serviceName);
 			TcaCollectionSet collectionSet = new TcaCollectionSet(agent);
@@ -142,7 +154,7 @@ public class TcaCollector implements ServiceCollector {
 	 */
 	@Override
 	public RrdRepository getRrdRepository(String collectionName) {
-		return m_rrdRepository;
+		return m_configDao.getConfig().buildRrdRepository();
 	}
 
 	/**
