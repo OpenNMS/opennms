@@ -192,16 +192,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected MockHttpServletRequest createRequest(final String requestType, final String urlPath) {
-    	final MockHttpServletRequest request = new MockHttpServletRequest(getServletContext(), requestType, contextPath + urlPath) {
-
-            @Override
-            public void setContentType(final String contentType) {
-                super.setContentType(contentType);
-                super.addHeader("Content-Type", contentType);
-            }
-            
-        };
-        request.setContextPath(contextPath);
+    	final MockHttpServletRequest request = new MockHttpServletRequest(getServletContext(), requestType, contextPath + urlPath);
+    	request.setContextPath(contextPath);
         return request;
     }
 
