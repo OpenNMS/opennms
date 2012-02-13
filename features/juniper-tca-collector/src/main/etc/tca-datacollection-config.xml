@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <tca-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/tca-datacollection">
-	<rrd step="1"> <!-- This is mandatory. The Juniper TCA collector, uses a fixed step of 1 second. -->
+	<!-- This collector always use 1 second for RRD step. -->
+	<rrd>
 		<rra>RRA:AVERAGE:0.5:1:3600</rra>
 		<rra>RRA:AVERAGE:0.5:300:288</rra>
 		<rra>RRA:MIN:0.5:300:288</rra>

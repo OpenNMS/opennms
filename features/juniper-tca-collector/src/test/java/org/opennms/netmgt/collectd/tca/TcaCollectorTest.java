@@ -170,7 +170,6 @@ public class TcaCollectorTest  {
 		rrd.addRra("RRA:AVERAGE:0.5:3600:4300");
 		rrd.addRra("RRA:MIN:0.5:3600:4300");
 		rrd.addRra("RRA:MAX:0.5:3600:4300");
-		rrd.setStep(1);
 		TcaDataCollectionConfig tcadcc = new TcaDataCollectionConfig();
 		tcadcc.setXmlRrd(rrd);
 		tcadcc.setRrdRepository(TEST_SNMP_DIR);

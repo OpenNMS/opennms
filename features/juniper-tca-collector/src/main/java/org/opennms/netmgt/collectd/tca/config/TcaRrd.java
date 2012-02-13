@@ -32,7 +32,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -51,9 +50,8 @@ public class TcaRrd implements Serializable, Comparable<TcaRrd> {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 439792690711379417L;
 
-	/** The step. */
-	@XmlAttribute(name="step", required=true)
-	private Integer m_step;
+	/** The collection step is a fixed constant for the TCA Collector. */
+	private Integer m_step = 1;
 
 	/** The XML RRAs list. */
 	@XmlElement(name="rra", required=true)
@@ -74,15 +72,6 @@ public class TcaRrd implements Serializable, Comparable<TcaRrd> {
 	@XmlTransient
 	public Integer getStep() {
 		return m_step;
-	}
-
-	/**
-	 * Sets the step.
-	 *
-	 * @param step the new step
-	 */
-	public void setStep(Integer step) {
-		m_step = step;
 	}
 
 	/**
