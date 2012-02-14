@@ -30,6 +30,9 @@ package org.opennms.netmgt.collectd.tca.config;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -51,16 +54,19 @@ public class TcaDataCollectionConfig implements Serializable, Comparable<TcaData
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 5432437490676491057L;
 
-    /** The Constant TCA_DATACOLLECTION_CONFIG_FILE. */
-    public static final String TCA_DATACOLLECTION_CONFIG_FILE = "tca-datacollection-config.xml";
+	/** The Constant TCA_DATACOLLECTION_CONFIG_FILE. */
+	public static final String TCA_DATACOLLECTION_CONFIG_FILE = "tca-datacollection-config.xml";
 
 	/** The RRD Repository. */
 	@XmlAttribute(name="rrdRepository", required=true)
 	private String m_rrdRepository;
 
-	/** The RRD configuration object. */
-	@XmlElement(name="rrd", required=true)
-	private TcaRrd m_rrd;
+	/** The Constant OF_DATA_COLLECTIONS. */
+	private static final TcaDataCollection[] OF_DATA_COLLECTIONS = new TcaDataCollection[0];
+
+	/** The TCA data collections list. */
+	@XmlElement(name="tca-collection")
+	private List<TcaDataCollection> m_tcaDataCollections = new ArrayList<TcaDataCollection>();
 
 	/**
 	 * Instantiates a new TCA data collection configuration.
@@ -89,35 +95,88 @@ public class TcaDataCollectionConfig implements Serializable, Comparable<TcaData
 	}
 
 	/**
-	 * Gets the RRD.
+	 * Gets the TCA data collections.
 	 *
-	 * @return the RRD
+	 * @return the TCA data collections
 	 */
 	@XmlTransient
-	public TcaRrd getRrd() {
-		return m_rrd;
+	public List<TcaDataCollection> getTcaDataCollections() {
+		return m_tcaDataCollections;
 	}
 
 	/**
-	 * Sets the RRD.
+	 * Sets the TCA data collections.
 	 *
-	 * @param rrd the new RRD
+	 * @param tcaDataCollections the new TCA data collections
 	 */
-	public void setXmlRrd(TcaRrd rrd) {
-		m_rrd = rrd;
+	public void setTcaDataCollections(List<TcaDataCollection> tcaDataCollections) {
+		m_tcaDataCollections = tcaDataCollections;
+	}
+
+	/**
+	 * Adds the data collection.
+	 *
+	 * @param dataCollection the data collection
+	 */
+	public void addDataCollection(TcaDataCollection dataCollection) {
+		m_tcaDataCollections.add(dataCollection);
+	}
+
+	/**
+	 * Removes the data collection.
+	 *
+	 * @param dataCollection the data collection
+	 */
+	public void removeDataCollection(TcaDataCollection dataCollection) {
+		m_tcaDataCollections.remove(dataCollection);
+	}
+
+	/**
+	 * Removes the data collection by name.
+	 *
+	 * @param name the name
+	 */
+	public void removeDataCollectionByName(String name) {
+		for (Iterator<TcaDataCollection> itr = m_tcaDataCollections.iterator(); itr.hasNext(); ) {
+			TcaDataCollection dataCollection = itr.next();
+			if(dataCollection.getName().equals(name)) {
+				m_tcaDataCollections.remove(dataCollection);
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Gets the data collection by name.
+	 *
+	 * @param name the name
+	 * @return the data collection by name
+	 */
+	public TcaDataCollection getDataCollectionByName(String name) {
+		for (TcaDataCollection dataCol :  m_tcaDataCollections) {
+			if(dataCol.getName().equals(name)) {
+				return dataCol;
+			}
+		}
+		return null;
 	}
 
 	/**
 	 * Builds the RRD repository.
 	 *
+	 * @param collectionName the collection name
 	 * @return the RRD repository
 	 */
-	public RrdRepository buildRrdRepository() {
+	public RrdRepository buildRrdRepository(String collectionName) {
+		TcaDataCollection collection = getDataCollectionByName(collectionName);
+		if (collection == null)
+			return null;
+		TcaRrd rrd = collection.getRrd();
 		RrdRepository repo = new RrdRepository();
 		repo.setRrdBaseDir(new File(getRrdRepository()));
-		repo.setRraList(m_rrd.getRras());
-		repo.setStep(m_rrd.getStep());
-		repo.setHeartBeat(m_rrd.getStep());
+		repo.setRraList(rrd.getRras());
+		repo.setStep(rrd.getStep()); // Step should be 1 second
+		repo.setHeartBeat(rrd.getStep()); // Heartbeat should be equal to the step.
 		return repo;
 	}
 
@@ -127,7 +186,7 @@ public class TcaDataCollectionConfig implements Serializable, Comparable<TcaData
 	public int compareTo(TcaDataCollectionConfig obj) {
 		return new CompareToBuilder()
 		.append(getRrdRepository(), obj.getRrdRepository())
-		.append(getRrd(), obj.getRrd())
+		.append(getTcaDataCollections().toArray(OF_DATA_COLLECTIONS), obj.getTcaDataCollections().toArray(OF_DATA_COLLECTIONS))
 		.toComparison();
 	}
 
@@ -140,7 +199,7 @@ public class TcaDataCollectionConfig implements Serializable, Comparable<TcaData
 			TcaDataCollectionConfig other = (TcaDataCollectionConfig) obj;
 			return new EqualsBuilder()
 			.append(getRrdRepository(), other.getRrdRepository())
-			.append(getRrd(), other.getRrd())
+			.append(getTcaDataCollections().toArray(OF_DATA_COLLECTIONS), other.getTcaDataCollections().toArray(OF_DATA_COLLECTIONS))
 			.isEquals();
 		}
 		return false;

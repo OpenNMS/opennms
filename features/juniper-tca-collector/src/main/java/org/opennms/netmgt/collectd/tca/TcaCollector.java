@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collectd.tca;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Date;
@@ -86,11 +87,26 @@ public class TcaCollector implements ServiceCollector {
 	@Override
 	public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
 		log().debug("initialize: initializing TCA collector");
+
+		// Initialize SNMP Factory
 		try {
 			SnmpPeerFactory.init();
 		} catch (IOException e) {
 			log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
 			throw new UndeclaredThrowableException(e);
+		}
+
+		// Retrieve the DAO for our configuration file.
+		if (m_configDao == null)
+			m_configDao = BeanUtils.getBean("daoContext", "tcaDataCollectionConfigDao", TcaDataCollectionConfigDao.class);
+
+		// If the RRD file repository directory does NOT already exist, create it.
+		log().debug("initialize: Initializing RRD repo from XmlCollector...");
+		File f = new File(m_configDao.getConfig().getRrdRepository());
+		if (!f.isDirectory()) {
+			if (!f.mkdirs()) {
+				throw new CollectionInitializationException("Unable to create RRD file repository.  Path doesn't already exist and could not make directory: " + m_configDao.getConfig().getRrdRepository());
+			}
 		}
 	}
 
@@ -101,16 +117,6 @@ public class TcaCollector implements ServiceCollector {
 	public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
 		log().debug("initialize: initializing TCA collection handling using " + parameters + " for collection agent " + agent);
 		m_serviceName = ParameterMap.getKeyedString(parameters, "SERVICE", "TCA");
-
-		// Retrieve the DAO for our configuration file.
-		if (m_configDao == null)
-			m_configDao = BeanUtils.getBean("daoContext", "tcaDataCollectionConfigDao", TcaDataCollectionConfigDao.class);
-
-		RrdRepository repo = getRrdRepository(null);
-		if (repo == null || repo.getStep() > 1)
-			throw new CollectionInitializationException("RRD configuration missing or using an invalid step. This collector expect to use 1 second as step.");
-
-		log().debug("initialize: using the following settings for RRD repository: " + repo);
 	}
 
 	/* (non-Javadoc)
@@ -154,7 +160,7 @@ public class TcaCollector implements ServiceCollector {
 	 */
 	@Override
 	public RrdRepository getRrdRepository(String collectionName) {
-		return m_configDao.getConfig().buildRrdRepository();
+		return m_configDao.getConfig().buildRrdRepository(collectionName);
 	}
 
 	/**

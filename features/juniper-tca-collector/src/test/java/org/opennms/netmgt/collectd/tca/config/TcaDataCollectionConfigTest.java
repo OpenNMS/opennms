@@ -127,8 +127,11 @@ public class TcaDataCollectionConfigTest {
 		rrd.addRra("RRA:MIN:0.5:3600:4300");
 		rrd.addRra("RRA:MAX:0.5:3600:4300");
 
+		TcaDataCollection tcadc = new TcaDataCollection();
+		tcadc.setName("default");
+		tcadc.setRrd(rrd);
 		tcadcc = new TcaDataCollectionConfig();
-		tcadcc.setXmlRrd(rrd);
+		tcadcc.addDataCollection(tcadc);
 		tcadcc.setRrdRepository("target/snmp/");
 
 		XMLUnit.setIgnoreWhitespace(true);
