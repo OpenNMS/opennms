@@ -2,16 +2,24 @@ package org.opennms.core.criteria;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.opennms.core.criteria.restrictions.Restriction;
 
 public class Criteria {
 
 	public enum FetchType { DEFAULT, LAZY, EAGER }
-
 	private Class<?> m_class;
-	private Collection<Order> m_orders = new ArrayList<Order>();
+	private List<Order> m_orders = new ArrayList<Order>();
+	private List<Join> m_joins = new ArrayList<Join>();
 	private Map<String,FetchType> m_fetchTypes = new HashMap<String,FetchType>();
+	private Set<Restriction> m_restrictions = new LinkedHashSet<Restriction>();
+	private boolean m_distinct = false;
 
 	public Criteria(final Class<?> clazz) {
 		m_class = clazz;
@@ -21,8 +29,8 @@ public class Criteria {
 		return m_class;
 	}
 	
-	public Collection<Order> getOrders() {
-		return m_orders;
+	public List<Order> getOrders() {
+		return Collections.unmodifiableList(m_orders);
 	}
 
 	public void setOrders(final Collection<Order> orderCollection) {
@@ -31,12 +39,38 @@ public class Criteria {
 	}
 
 	public Map<String,FetchType> getFetchTypes() {
-		return m_fetchTypes;
+		return Collections.unmodifiableMap(m_fetchTypes);
 	}
 
 	public void setFetchTypes(final Map<String, FetchType> types) {
 		m_fetchTypes.clear();
 		m_fetchTypes.putAll(types);
+	}
+
+	public List<Join> getJoins() {
+		return Collections.unmodifiableList(m_joins);
+	}
+
+	public void setJoins(final Collection<Join> joins) {
+		m_joins.clear();
+		m_joins.addAll(joins);
+	}
+
+	public Set<Restriction> getRestrictions() {
+		return Collections.unmodifiableSet(m_restrictions);
+	}
+
+	public void setRestrictions(Collection<Restriction> restrictions) {
+		m_restrictions.clear();
+		m_restrictions.addAll(restrictions);
+	}
+
+	public boolean isDistinct() {
+		return m_distinct ;
+	}
+
+	public void setDistinct(final boolean distinct) {
+		m_distinct = distinct;
 	}
 
 }

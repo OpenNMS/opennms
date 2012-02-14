@@ -1,16 +1,37 @@
 package org.opennms.core.criteria;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.opennms.core.criteria.Join.JoinType;
+import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.criteria.restrictions.Restrictions;
 
 
 public class CriteriaBuilder {
 	private Class<?> m_class;
 	private OrderBuilder m_orderBuilder = new OrderBuilder();
 	private Map<String, Criteria.FetchType> m_fetch = new HashMap<String, Criteria.FetchType>();
+	private JoinBuilder m_joinBuilder = new JoinBuilder();
+	private boolean m_distinct = false;
+	private Set<Restriction> m_restrictions = new LinkedHashSet<Restriction>();
+	private boolean m_negateNext = false;
 
 	public CriteriaBuilder(final Class<?> clazz) {
 		m_class = clazz;
+	}
+
+	public Criteria toCriteria() {
+		final Criteria criteria = new Criteria(m_class);
+		criteria.setOrders(m_orderBuilder.getOrderCollection());
+		criteria.setJoins(m_joinBuilder.getJoinCollection());
+		criteria.setFetchTypes(m_fetch);
+		criteria.setRestrictions(m_restrictions);
+		criteria.setDistinct(m_distinct);
+		return criteria;
 	}
 
 	public CriteriaBuilder fetch(final String attribute) {
@@ -20,6 +41,15 @@ public class CriteriaBuilder {
 
 	public CriteriaBuilder fetch(final String attribute, final Criteria.FetchType type) {
 		m_fetch.put(attribute, type);
+		return this;
+	}
+
+	public CriteriaBuilder join(final String associationPath, String alias) {
+		return join(associationPath, alias, JoinType.LEFT_JOIN);
+	}
+
+	public CriteriaBuilder join(final String associationPath, String alias, JoinType type) {
+		m_joinBuilder.join(associationPath, alias, type);
 		return this;
 	}
 
@@ -47,11 +77,109 @@ public class CriteriaBuilder {
 		return this;
 	}
 
-	public Criteria toCriteria() {
-		final Criteria criteria = new Criteria(m_class);
-		criteria.setOrders(m_orderBuilder.getOrderCollection());
-		criteria.setFetchTypes(m_fetch);
-		return criteria;
+	public CriteriaBuilder distinct() {
+		m_distinct = true;
+		return this;
+	}
+
+	public CriteriaBuilder distinct(final boolean isDistinct) {
+		m_distinct = isDistinct;
+		return this;
+	}
+
+	private boolean addRestriction(final Restriction restriction) {
+		if (m_negateNext) {
+			m_negateNext = false;
+			return m_restrictions.add(Restrictions.not(restriction));
+		} else {
+			return m_restrictions.add(restriction);
+		}
+	}
+
+	public CriteriaBuilder isNull(final String attribute) {
+		addRestriction(Restrictions.isNull(attribute));
+		return this;
+	}
+
+	public CriteriaBuilder isNotNull(final String attribute) {
+		addRestriction(Restrictions.isNotNull(attribute));
+		return this;
+	}
+
+	public CriteriaBuilder id(final Integer id) {
+		addRestriction(Restrictions.id(id));
+		return this;
+	}
+
+	public CriteriaBuilder eq(final String attribute, final Object comparator) {
+		addRestriction(Restrictions.eq(attribute, comparator));
+		return this;
+	}
+
+	public CriteriaBuilder ne(final String attribute, final Object comparator) {
+		if (m_negateNext) {
+			m_negateNext = false;
+			addRestriction(Restrictions.eq(attribute, comparator));
+		} else {
+			addRestriction(Restrictions.not(Restrictions.eq(attribute, comparator)));
+		}
+		return this;
+	}
+
+	public CriteriaBuilder gt(final String attribute, final Object comparator) {
+		addRestriction(Restrictions.gt(attribute, comparator));
+		return this;
+	}
+
+	public CriteriaBuilder ge(final String attribute, final Object comparator) {
+		addRestriction(Restrictions.ge(attribute, comparator));
+		return this;
+	}
+
+	public CriteriaBuilder lt(final String attribute, final Object comparator) {
+		addRestriction(Restrictions.lt(attribute, comparator));
+		return this;
+	}
+
+	public CriteriaBuilder le(final String attribute, final Object comparator) {
+		addRestriction(Restrictions.le(attribute, comparator));
+		return this;
+	}
+
+	public CriteriaBuilder like(final String attribute, final Object comparator) {
+		addRestriction(Restrictions.like(attribute, comparator));
+		return this;
+	}
+
+	public CriteriaBuilder ilike(final String attribute, final Object comparator) {
+		addRestriction(Restrictions.ilike(attribute, comparator));
+		return this;
+	}
+
+	public CriteriaBuilder in(final String attribute, final List<?> list) {
+		addRestriction(Restrictions.in(attribute, list));
+		return this;
+	}
+
+	public CriteriaBuilder between(final String attribute, final Object begin, final Object end) {
+		addRestriction(Restrictions.between(attribute, begin, end));
+		return this;
+	}
+
+	public CriteriaBuilder not() {
+		m_negateNext = true;
+		return this;
+	}
+
+	public CriteriaBuilder and(final Restriction lhs, final Restriction rhs) {
+		addRestriction(Restrictions.and(lhs, rhs));
+		return this;
+	}
+
+	public CriteriaBuilder or(final Restriction lhs, final Restriction rhs) {
+		final Restriction restriction = Restrictions.or(lhs, rhs);
+		addRestriction(restriction);
+		return this;
 	}
 
 }
