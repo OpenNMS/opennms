@@ -32,6 +32,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -112,7 +113,7 @@ public class OnmsAcknowledgment {
      * @throws java.text.ParseException if any.
      */
     public OnmsAcknowledgment(final Event e) throws ParseException {
-        this(DateFormat.getDateInstance(DateFormat.FULL).parse(e.getTime()), "admin");
+        this(DateFormat.getDateInstance(DateFormat.FULL, Locale.US).parse(e.getTime()), "admin");
         Collection<Parm> parms = e.getParmCollection();
         
         if (parms.size() <= 2) {
