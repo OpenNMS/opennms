@@ -1,5 +1,18 @@
 <?xml version="1.0"?>
 <tca-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/tca-datacollection">
+
+    <!-- IMPORTANT: To enable this collector you should add a service definition inside any package on
+                    collectd-configuration.xml, like this:
+
+		<service name="TCA" interval="20000" user-defined="false" status="on">
+			<parameter key="collection" value="default"/>
+			<parameter key="thresholding-enabled" value="false"/>
+		</service>
+
+        <collector service="TCA"  class-name="org.opennms.netmgt.collectd.tca.TcaCollector"/>
+
+        Note that the interval should be less than 25 seconds.
+    -->
     <tca-collection name="default">
         <!-- This collector always use 1 second for RRD step. -->
 	    <rrd>

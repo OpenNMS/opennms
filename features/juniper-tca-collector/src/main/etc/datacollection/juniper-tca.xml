@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<datacollection-group name="Juniper TCA">
+
+    <resourceType name="juniperTcaEntry" label="Juniper TCA Peer"
+                  resourceLabel="Peer ${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+</datacollection-group>
+
