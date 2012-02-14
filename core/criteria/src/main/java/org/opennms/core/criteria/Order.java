@@ -49,7 +49,7 @@ public class Order implements Comparable<Order> {
 		if (obj.getClass() != getClass()) {
 			return false;
 		}
-		Order that = (Order) obj;
+		final Order that = (Order) obj;
 		return new EqualsBuilder()
 			.append(this.asc(), that.asc())
 			.append(this.getAttribute(), that.getAttribute())
