@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -17,6 +18,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -61,5 +63,19 @@ public class HibernateCriteriaConverterTest {
 		cb.eq("label", "node1").join("ipInterfaces", "ipInterface").eq("ipInterface.ipAddress", "192.168.1.1");
 		nodes = m_nodeDao.findMatching(cb.toCriteria());
 		assertEquals(1, nodes.size());
+	}
+
+	@Test
+	@Transactional
+	public void testDistinct() {
+		List<OnmsNode> nodes = null;
+
+		final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+		cb.isNotNull("id").distinct();
+		cb.eq("label", "node1").join("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN).eq("ipInterface.ipAddress", "192.168.1.1");
+
+		nodes = m_nodeDao.findMatching(cb.toCriteria());
+		assertEquals(1, nodes.size());
+		assertEquals(Integer.valueOf(1), nodes.get(0).getId());
 	}
 }
