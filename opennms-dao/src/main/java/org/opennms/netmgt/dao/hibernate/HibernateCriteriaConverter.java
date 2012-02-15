@@ -36,19 +36,13 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 		}
 
 		if (criteria.isDistinct()) {
-			hibernateCriteria.setProjection(
-				Projections.distinct(
-					Projections.projectionList().add(
-						Projections.alias( Projections.property("id"), "id" )
-					)
-				)
-			);
+			hibernateCriteria.setProjection(Projections.distinct(Projections.id()));
 			
 			final DetachedCriteria newCriteria = DetachedCriteria.forClass(criteria.getCriteriaClass());
-			newCriteria.add(Subqueries.in("id", hibernateCriteria));
+			newCriteria.add(Subqueries.propertyIn("id", hibernateCriteria));
 
 			// re-add these so they're available from the "outside" objects
-			// is this really necessary?
+			// is this really necessary?  skipping seems to work fine
 			// addJoinsToCriteria(joins, newCriteria);
 
 			hibernateCriteria = newCriteria;
