@@ -4,7 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class BaseRestriction implements Restriction {
+public abstract class BaseRestriction implements Restriction {
 	private final RestrictionType m_type;
 	
 	public BaseRestriction(final RestrictionType type) {

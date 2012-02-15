@@ -11,7 +11,7 @@ public class Restrictions {
 	}
 	
 	public static Restriction isNotNull(final String attribute) {
-		return new NotRestriction(new AttributeRestriction(RestrictionType.NULL, attribute));
+		return new AttributeRestriction(RestrictionType.NOTNULL, attribute);
 	}
 
 	public static Restriction id(final Integer id) {

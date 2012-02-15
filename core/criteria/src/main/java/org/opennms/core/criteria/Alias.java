@@ -1,13 +1,13 @@
 package org.opennms.core.criteria;
 
-public class Join {
-	public enum JoinType { LEFT_JOIN, RIGHT_JOIN, FULL_JOIN }
+public class Alias {
+	public enum JoinType { LEFT_JOIN, INNER_JOIN, FULL_JOIN }
 
 	private final String m_associationPath;
 	private final String m_alias;
 	private final JoinType m_type;
 
-	public Join(final String associationPath, final String alias, final JoinType type) {
+	public Alias(final String associationPath, final String alias, final JoinType type) {
 		m_alias = alias.intern();
 		m_associationPath = associationPath.intern();
 		m_type = type;

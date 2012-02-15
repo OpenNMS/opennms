@@ -16,6 +16,14 @@ public class AttributeRestriction extends BaseRestriction {
 		return m_attribute;
 	}
 
+	public org.hibernate.criterion.Criterion toCriterion() {
+		switch(getType()) {
+			case NULL: return org.hibernate.criterion.Restrictions.isNull(getAttribute());
+			case NOTNULL: return org.hibernate.criterion.Restrictions.isNotNull(getAttribute());
+		}
+		throw new UnsupportedOperationException("unknown type: " + getType());
+	}
+	
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder()

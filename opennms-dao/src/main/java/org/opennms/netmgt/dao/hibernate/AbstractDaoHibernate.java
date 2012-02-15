@@ -60,6 +60,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     
     Class<T> m_entityClass;
     private String m_lockName;
+    private final HibernateCriteriaConverter m_criteriaConverter = new HibernateCriteriaConverter();
     
     /**
      * <p>Constructor for AbstractDaoHibernate.</p>
@@ -332,7 +333,20 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         return getHibernateTemplate().executeFind(callback);
     }
     
+    @SuppressWarnings("unchecked")
+	public List<T> findMatching(final org.opennms.core.criteria.Criteria criteria) {
+    	final HibernateCallback<List<T>> callback = new HibernateCallback<List<T>>() {
 
+			public List<T> doInHibernate(final Session session) throws HibernateException, SQLException {
+            	final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
+            	LogUtils.debugf(this, "hibernateCriteria = " + hibernateCriteria);
+				return (List<T>)(hibernateCriteria.list());
+            }
+            
+        };
+        return getHibernateTemplate().executeFind(callback);
+    }
+    
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<T> findMatching(final OnmsCriteria onmsCrit) throws DataAccessException {

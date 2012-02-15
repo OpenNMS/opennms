@@ -16,10 +16,12 @@ public class Criteria {
 	public enum FetchType { DEFAULT, LAZY, EAGER }
 	private Class<?> m_class;
 	private List<Order> m_orders = new ArrayList<Order>();
-	private List<Join> m_joins = new ArrayList<Join>();
+	private List<Alias> m_aliases = new ArrayList<Alias>();
 	private Map<String,FetchType> m_fetchTypes = new HashMap<String,FetchType>();
 	private Set<Restriction> m_restrictions = new LinkedHashSet<Restriction>();
 	private boolean m_distinct = false;
+	private Integer m_limit = null;
+	private Integer m_offset = null;
 
 	public Criteria(final Class<?> clazz) {
 		m_class = clazz;
@@ -47,13 +49,13 @@ public class Criteria {
 		m_fetchTypes.putAll(types);
 	}
 
-	public List<Join> getJoins() {
-		return Collections.unmodifiableList(m_joins);
+	public List<Alias> getAliases() {
+		return Collections.unmodifiableList(m_aliases);
 	}
 
-	public void setJoins(final Collection<Join> joins) {
-		m_joins.clear();
-		m_joins.addAll(joins);
+	public void setAliases(final Collection<Alias> aliases) {
+		m_aliases.clear();
+		m_aliases.addAll(aliases);
 	}
 
 	public Set<Restriction> getRestrictions() {
@@ -71,6 +73,22 @@ public class Criteria {
 
 	public void setDistinct(final boolean distinct) {
 		m_distinct = distinct;
+	}
+
+	public Integer getLimit() {
+		return m_limit;
+	}
+
+	public void setLimit(final Integer limit) {
+		m_limit = limit;
+	}
+	
+	public Integer getOffset() {
+		return m_offset;
+	}
+	
+	public void setOffset(final Integer offset) {
+		m_offset = offset;
 	}
 
 }
