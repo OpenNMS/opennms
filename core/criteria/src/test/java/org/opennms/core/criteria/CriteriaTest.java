@@ -14,7 +14,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria.FetchType;
-import org.opennms.core.criteria.Join.JoinType;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -74,24 +74,24 @@ public class CriteriaTest {
 	}
 	
 	@Test
-	public void testJoin() {
+	public void testAlias() {
 		CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 		
-		cb.join("node", "node").join("node.snmpInterfaces", "snmpInterface").join("node.ipInterfaces", "ipInterface");
-		assertEquals(JoinType.LEFT_JOIN, cb.toCriteria().getJoins().get(0).getType());
-		assertEquals(3, cb.toCriteria().getJoins().size());
+		cb.alias("node", "node").join("node.snmpInterfaces", "snmpInterface").join("node.ipInterfaces", "ipInterface");
+		assertEquals(JoinType.LEFT_JOIN, cb.toCriteria().getAliases().get(0).getType());
+		assertEquals(3, cb.toCriteria().getAliases().size());
 
 		cb = new CriteriaBuilder(OnmsAlarm.class).join("monkey", "ook", JoinType.FULL_JOIN);
-		assertEquals("monkey", cb.toCriteria().getJoins().get(0).getAssociationPath());
-		assertEquals("ook", cb.toCriteria().getJoins().get(0).getAlias());
-		assertEquals(JoinType.FULL_JOIN, cb.toCriteria().getJoins().get(0).getType());
+		assertEquals("monkey", cb.toCriteria().getAliases().get(0).getAssociationPath());
+		assertEquals("ook", cb.toCriteria().getAliases().get(0).getAlias());
+		assertEquals(JoinType.FULL_JOIN, cb.toCriteria().getAliases().get(0).getType());
 	}
 	
 	@Test
 	public void testDistinct() {
 		final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 		
-		cb.join("node", "node");
+		cb.alias("node", "node");
 		assertFalse(cb.toCriteria().isDistinct());
 		
 		cb.distinct();
@@ -101,6 +101,14 @@ public class CriteriaTest {
 		assertFalse(cb.toCriteria().isDistinct());
 	}
 	
+	@Test
+	public void testLimits() {
+		CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
+		cb.limit(10).offset(20);
+		assertEquals(Integer.valueOf(10), cb.toCriteria().getLimit());
+		assertEquals(Integer.valueOf(20), cb.toCriteria().getOffset());
+	}
+
 	@Test
 	public void testRestrictions() {
 		CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);

@@ -17,6 +17,10 @@ public class NotRestriction extends BaseRestriction {
 		return m_restriction;
 	}
 
+	public org.hibernate.criterion.Criterion toCriterion() {
+		return org.hibernate.criterion.Restrictions.not(getRestriction().toCriterion());
+	}
+
     @Override
 	public int hashCode() {
 		return new HashCodeBuilder()

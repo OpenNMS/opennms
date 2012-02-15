@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.core.criteria.Join.JoinType;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 
@@ -15,10 +15,12 @@ public class CriteriaBuilder {
 	private Class<?> m_class;
 	private OrderBuilder m_orderBuilder = new OrderBuilder();
 	private Map<String, Criteria.FetchType> m_fetch = new HashMap<String, Criteria.FetchType>();
-	private JoinBuilder m_joinBuilder = new JoinBuilder();
+	private AliasBuilder m_aliasBuilder = new AliasBuilder();
 	private boolean m_distinct = false;
 	private Set<Restriction> m_restrictions = new LinkedHashSet<Restriction>();
 	private boolean m_negateNext = false;
+	private Integer m_limit = null;
+	private Integer m_offset = null;
 
 	public CriteriaBuilder(final Class<?> clazz) {
 		m_class = clazz;
@@ -27,10 +29,12 @@ public class CriteriaBuilder {
 	public Criteria toCriteria() {
 		final Criteria criteria = new Criteria(m_class);
 		criteria.setOrders(m_orderBuilder.getOrderCollection());
-		criteria.setJoins(m_joinBuilder.getJoinCollection());
+		criteria.setAliases(m_aliasBuilder.getAliasCollection());
 		criteria.setFetchTypes(m_fetch);
 		criteria.setRestrictions(m_restrictions);
 		criteria.setDistinct(m_distinct);
+		criteria.setLimit(m_limit);
+		criteria.setOffset(m_offset);
 		return criteria;
 	}
 
@@ -44,12 +48,29 @@ public class CriteriaBuilder {
 		return this;
 	}
 
-	public CriteriaBuilder join(final String associationPath, String alias) {
-		return join(associationPath, alias, JoinType.LEFT_JOIN);
+	public CriteriaBuilder join(final String associationPath, final String alias) {
+		return alias(associationPath, alias, JoinType.LEFT_JOIN);
 	}
 
-	public CriteriaBuilder join(final String associationPath, String alias, JoinType type) {
-		m_joinBuilder.join(associationPath, alias, type);
+	public CriteriaBuilder alias(final String associationPath, final String alias) {
+		return alias(associationPath, alias, JoinType.LEFT_JOIN);
+	}
+
+	public CriteriaBuilder join(final String associationPath, final String alias, final JoinType type) {
+		return alias(associationPath, alias, type);
+	}
+
+	public CriteriaBuilder alias(final String associationPath, final String alias, final JoinType type) {
+		m_aliasBuilder.alias(associationPath, alias, type);
+		return this;
+	}
+	public CriteriaBuilder limit(final Integer limit) {
+		m_limit = limit;
+		return this;
+	}
+	
+	public CriteriaBuilder offset(final Integer offset) {
+		m_offset = offset;
 		return this;
 	}
 
