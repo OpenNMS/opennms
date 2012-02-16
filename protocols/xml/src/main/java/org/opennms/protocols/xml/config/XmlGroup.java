@@ -78,8 +78,12 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
     private String m_timestampFormat;
 
     /** The XML objects list. */
-    @XmlElement(name="xml-object")
+    @XmlElement(name="xml-object", required=true)
     private List<XmlObject> m_xmlObjects = new ArrayList<XmlObject>();
+    
+    /** The m_xml resource key. */
+    @XmlElement(name="resource-key", required=false)
+    private XmlResourceKey m_xmlResourceKey;
 
     /**
      * Gets the name.
@@ -210,9 +214,9 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
     }
 
     /**
-     * Gets the timestamp xpath.
+     * Gets the timestamp XPath.
      *
-     * @return the timestamp xpath
+     * @return the timestamp XPath
      */
     @XmlTransient
     public String getTimestampXpath() {
@@ -220,9 +224,9 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
     }
 
     /**
-     * Sets the timestamp xpath.
+     * Sets the timestamp XPath.
      *
-     * @param timestampXpath the new timestamp xpath
+     * @param timestampXpath the new timestamp XPath
      */
     public void setTimestampXpath(String timestampXpath) {
         this.m_timestampXpath = timestampXpath;
@@ -255,6 +259,34 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
     @XmlTransient
     public String getIfType() {
         return m_resourceType.equals("node") ? "ignore" : "all";
+    }
+
+    /**
+     * Gets the XML resource key.
+     *
+     * @return the XML resource key
+     */
+    @XmlTransient
+    public XmlResourceKey getXmlResourceKey() {
+        return m_xmlResourceKey;
+    }
+
+    /**
+     * Sets the XML resource key.
+     *
+     * @param xmlResourceKey the new XML resource key
+     */
+    public void setXmlResourceKey(XmlResourceKey xmlResourceKey) {
+        this.m_xmlResourceKey = xmlResourceKey;
+    }
+    
+    /**
+     * Checks for multiple resource key.
+     *
+     * @return true, if successful
+     */
+    public boolean hasMultipleResourceKey() {
+        return m_xmlResourceKey != null && !m_xmlResourceKey.getKeyXpathList().isEmpty();
     }
 
     /* (non-Javadoc)

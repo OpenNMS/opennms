@@ -89,10 +89,11 @@ reset_opennms() {
 
 	clean_yum || die "Unable to clean up old RPM files."
 
+	REPO=`cat $ME/../.nightly | grep -E '^repo:' | sed -e 's,^repo: *,,'`
 	rpm -qa --queryformat='%{name}\n' | grep -E '^opennms' | xargs yum -y remove
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms /etc/yum.repos.d/opennms*
-	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-bleeding-rhel5.noarch.rpm
-	yum -y install $PACKAGES || die "Unable to install the following packages: $PACKAGES"
+	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-$REPO-rhel5.noarch.rpm
+	yum -y install $PACKAGES || die "Unable to install the following packages from the $REPO YUM repo: $PACKAGES"
 }
 
 get_source() {

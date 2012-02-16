@@ -28,6 +28,7 @@
 
 package org.opennms.protocols.xml.collector;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
@@ -87,7 +88,19 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getNumericValue()
      */
     public String getNumericValue() {
-        return m_value;
+        try {
+            Double d = Double.parseDouble(m_value); // This covers negative and scientific notation numbers.
+            return d.toString();
+        } catch (Exception e) {
+            log().debug("getNumericValue: the value " + m_value + " is not a valid number. Removing invalid characters and try again.");
+            try {
+                Double d = Double.parseDouble(m_value.replaceAll("[^-\\d.]+", ""));  // Removing Units to return only a numeric value.
+                return d.toString();
+            } catch (Exception ex) {
+                log().warn("getNumericValue: the value " + m_value + " is not parsable as a valid numeric value.");
+            }
+        }
+        return "U"; // Ignoring value from RRDtool/JRobin point of view.
     }
 
     /* (non-Javadoc)
@@ -123,6 +136,15 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
      */
     public String toString() {
         return "XmlCollectionAttribute " + m_name + "=" + m_value;
+    }
+
+    /**
+     * Log.
+     *
+     * @return the thread category
+     */
+    protected ThreadCategory log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }
