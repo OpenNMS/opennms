@@ -40,7 +40,6 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -431,7 +430,7 @@ public final class EventUtil {
 			try {
 				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
 				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL,
-						DateFormat.FULL, Locale.US);
+						DateFormat.FULL);
 				retParmVal = df.format(actualDate);
 			} catch (java.text.ParseException e) {
 				ThreadCategory log = ThreadCategory.getInstance();
@@ -447,7 +446,7 @@ public final class EventUtil {
 			try {
 				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
 				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
-								DateFormat.SHORT, Locale.US);
+								DateFormat.SHORT);
 				retParmVal = df.format(actualDate);
 			} catch (java.text.ParseException e) {
 				ThreadCategory log = ThreadCategory.getInstance();
