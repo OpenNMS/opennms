@@ -152,7 +152,7 @@ public class EventConstantsTest {
     public void testRoundTripFromFull() throws Exception {
         final String formatted = EventConstants.FORMATTER_FULL.get().format(new Date(m_timestamp));
         final Date date = EventConstants.parseToDate(formatted);
-        assertEquals(m_testLocale + ": date should equal " + new Date(m_timestamp), new Date(m_timestamp), date);
+        assertEquals(m_testLocale + ": date string " + formatted + " should equal " + new Date(m_timestamp), new Date(m_timestamp), date);
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         assertEquals(37, calendar.get(Calendar.SECOND));
@@ -163,7 +163,7 @@ public class EventConstantsTest {
     public void testRoundTripFromFullGMT() throws Exception {
         final String formatted = EventConstants.FORMATTER_FULL_GMT.get().format(new Date(m_timestamp));
         final Date date = EventConstants.parseToDate(formatted);
-        assertEquals(m_testLocale + ": date should equal " + new Date(m_timestamp), new Date(m_timestamp), date);
+        assertEquals(m_testLocale + ": date string " + formatted + " should equal " + new Date(m_timestamp), new Date(m_timestamp), date);
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         assertEquals(37, calendar.get(Calendar.SECOND));
@@ -174,7 +174,7 @@ public class EventConstantsTest {
     public void testRoundTripFromLong() throws Exception {
         final String formatted = EventConstants.FORMATTER_LONG.get().format(new Date(m_timestamp));
         final Date date = EventConstants.parseToDate(formatted);
-        assertEquals(m_testLocale + ": date should equal " + new Date(m_timestamp), new Date(m_timestamp), date);
+        assertEquals(m_testLocale + ": date string " + formatted + " should equal " + new Date(m_timestamp), new Date(m_timestamp), date);
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         assertEquals(37, calendar.get(Calendar.SECOND));
@@ -185,7 +185,7 @@ public class EventConstantsTest {
     public void testRoundTripFromLongGMT() throws Exception {
         final String formatted = EventConstants.FORMATTER_LONG_GMT.get().format(new Date(m_timestamp));
         final Date date = EventConstants.parseToDate(formatted);
-        assertEquals(m_testLocale + ": date should equal " + new Date(m_timestamp), new Date(m_timestamp), date);
+        assertEquals(m_testLocale + ": date string " + formatted + " should equal " + new Date(m_timestamp), new Date(m_timestamp), date);
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         assertEquals(37, calendar.get(Calendar.SECOND));
@@ -196,7 +196,7 @@ public class EventConstantsTest {
     public void testRoundTripFromCustom() throws Exception {
         final String formatted = EventConstants.FORMATTER_CUSTOM.get().format(new Date(m_timestamp));
         final Date date = EventConstants.parseToDate(formatted);
-        assertEquals(m_testLocale + ": date should equal " + new Date(m_timestamp), new Date(m_timestamp), date);
+        assertEquals(m_testLocale + ": date string " + formatted + " should equal " + new Date(m_timestamp), new Date(m_timestamp), date);
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         assertEquals(37, calendar.get(Calendar.SECOND));
