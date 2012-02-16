@@ -126,15 +126,15 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
         };
         addColumn(snmpIfSpeedColumn, "SNMP ifSpeed");
         
-        DblClickTextColumn<PhysicalInterface> ipAddresColumn = new DblClickTextColumn<PhysicalInterface>() {
-
-            @Override
-            public String getValue(PhysicalInterface physIface) {
-                return physIface.getIpAddress();
-            }
-            
-        };
-        addColumn(ipAddresColumn, "IP Address");
+//        DblClickTextColumn<PhysicalInterface> ipAddresColumn = new DblClickTextColumn<PhysicalInterface>() {
+//
+//            @Override
+//            public String getValue(PhysicalInterface physIface) {
+//                return physIface.getIpAddress();
+//            }
+//            
+//        };
+//        addColumn(ipAddresColumn, "IP Address");
     }
     
     
