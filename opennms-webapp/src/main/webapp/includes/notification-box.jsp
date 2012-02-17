@@ -54,7 +54,6 @@
     protected NotificationModel model = new NotificationModel();
     protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>
-<h3 class="o-box"><a href="notification/index.jsp">Notification</a></h3>
 <div class="boxWrapper">
 	<ul class="plain o-box">
 		<% if( nodeIdString == null ) { %>

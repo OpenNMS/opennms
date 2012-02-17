@@ -64,24 +64,32 @@
                 
                 <!-- Center Column -->
                 <ui:column columnType="six">
-                    <jsp:include page="/includes/categories-box.jsp" flush="false" />
+                    <ui:panel title="Availability">
+                        <jsp:include page="/includes/categories-box.jsp" flush="false" />
+                    </ui:panel>
                 </ui:column>
                 
                 <!-- Right Column -->
                 <ui:column columnType="three">
                     <ui:row>
                         <ui:column columnType="twelve">
+                            <ui:panel title="Notifications" showHeader="true" link="notification/index.jsp">
                             <jsp:include page="/includes/notification-box.jsp" flush="false" />
+                            </ui:panel>
                         </ui:column>
                     </ui:row>
                     <ui:row>
                         <ui:column columnType="twelve">
+                            <ui:panel title="Resource Graphs" showHeader="true" link="graph/index.jsp">
                             <jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
+                            </ui:panel>
                         </ui:column>
                     </ui:row>
                     <ui:row>
                         <ui:column columnType="twelve">
+                            <ui:panel title="KSC Reports" showHeader="true">
                             <jsp:include page="/KSC/include-box.htm" flush="false" />
+                            </ui:panel>
                         </ui:column>
                     </ui:row>
                 </ui:column>

@@ -2,22 +2,21 @@
 <%@ attribute name="showHeader" required="false" %>
 <%@ attribute name="link" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<div class="o-box">
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+
 <c:choose>
 	<c:when test="${showHeader == 'true'}">
-		<c:if test="${!empty link}">
-		<h3 class="o-box-header"><a href="${link}">${title}</a></h3>
-		</c:if>
-		<c:if test="${empty link}">
-		<h3 class="o-box-header">${title}</h3>
-		</c:if>
-		<div class="o-box-spacer">
-		  <jsp:doBody/>
-		</div>
+		<div class="o-box">
+		   <ui:onms-header title="${title}" link="${link}"/>
+			<div class="o-box-spacer">
+			  <jsp:doBody/>
+			</div>
+	    </div>
 	</c:when>
     <c:otherwise>
-        <jsp:doBody/>
+	    <div class="o-box slim">
+	        <jsp:doBody/>
+	    </div>
     </c:otherwise>
 </c:choose>
 
-</div>

@@ -45,7 +45,7 @@
 		java.util.Iterator,
 		java.util.List,
 		java.util.Map" %>
-
+<%@taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
 <%!
 
     CategoryList m_category_list;
@@ -64,18 +64,21 @@
 		m_category_list.isDisconnected(earliestUpdate);
 %>
 <%	if (opennmsDisconnect) { %>
-	    <h3 class="o-box-header">OpenNMS Disconnect -- is the OpenNMS daemon running? - 
-		Last update:
-<%=		(earliestUpdate > 0 ?
-			 new Date(earliestUpdate).toString() :
-			 "one or more categories have never been updated.") %>
-	      </h3>
+        <ui:onms-header>
+            <jsp:attribute name="title">
+                OpenNMS Disconnect -- is the OpenNMS daemon running? - 
+        Last update:
+<%=     (earliestUpdate > 0 ?
+             new Date(earliestUpdate).toString() :
+             "one or more categories have never been updated.") %>
+            </jsp:attribute>
+        </ui:onms-header>
 <%	} else { %>
-	    <h3 class="o-box-header">Availability Over the Past 24 Hours</h3>
+        <ui:onms-header title="Availability Over the Past 24 Hours"></ui:onms-header>
 <%	} %>
 
 
-<table class="o-box onms-table">
+<table class="onms-table">
 <%
 	for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = i.next();

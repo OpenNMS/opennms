@@ -43,7 +43,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<h3 class="o-box"><a href="KSC/index.htm">KSC Reports</a></h3>
+<!-- <h3 class="o-box"><a href="KSC/index.htm">KSC Reports</a></h3> -->
 <div class="boxWrapper">
   <c:choose>
     <c:when test="${fn:length(reports) == 0}">
