@@ -30,44 +30,64 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true"  %>
-
+<%@taglib tagdir="/WEB-INF/tags/ui" prefix="ui" %>
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
 </jsp:include>
-
-	<!-- Left Column -->
-	<div id="index-contentleft">
-		<!-- Services down box -->
-		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
-		<hr />
-		<!-- Quick Search box -->
-		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
-		<hr />
-	</div>
-
-	<!-- Middle Column -->
-	<div id="index-contentmiddle">
-		<!-- category box(es) -->    
-		<jsp:include page="/includes/categories-box.jsp" flush="false" />
-		<hr />
-	</div>
-
-	<!-- Right Column -->
-	<div id="index-contentright">
-		<!-- notification box -->    
-		<jsp:include page="/includes/notification-box.jsp" flush="false" />
-		<hr />
-		<!-- Performance box -->    
-		<jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
-		<hr />
-		<!-- KSC Reports box -->    
-		<jsp:include page="/KSC/include-box.htm" flush="false" />
-		<hr />
-		<%--
-		<!-- security box -->    
-		Commenting out the security box include until it is functional
-		<jsp:include page="/includes/security-box.jsp" flush="false" />
-		--%>
-	</div>
+    
+    <!-- Top Level Row -->
+    <ui:row>
+        
+        <!-- Entire view -->
+        <ui:column columnType="twelve">
+            
+            <ui:row>
+                <!-- Left Column -->
+                <ui:column columnType="three">
+                    
+                    <ui:row>
+                        <ui:column columnType="twelve">
+                            <ui:panel title="Nodes with Outages" showHeader="true" link="outage/list.html">
+                                <jsp:include page="/outage/servicesdown-box.htm" flush="false" />
+                            </ui:panel>
+                        </ui:column>
+	                </ui:row>
+	                
+	                <ui:row>
+	                   <ui:column columnType="twelve">
+	                       <ui:panel title="Quick Search" showHeader="true">
+	                           <jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
+	                       </ui:panel>
+	                   </ui:column>
+	                </ui:row>
+                </ui:column>
+                
+                <!-- Center Column -->
+                <ui:column columnType="six">
+                    <jsp:include page="/includes/categories-box.jsp" flush="false" />
+                </ui:column>
+                
+                <!-- Right Column -->
+                <ui:column columnType="three">
+                    <ui:row>
+                        <ui:column columnType="twelve">
+                            <jsp:include page="/includes/notification-box.jsp" flush="false" />
+                        </ui:column>
+                    </ui:row>
+                    <ui:row>
+                        <ui:column columnType="twelve">
+                            <jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
+                        </ui:column>
+                    </ui:row>
+                    <ui:row>
+                        <ui:column columnType="twelve">
+                            <jsp:include page="/KSC/include-box.htm" flush="false" />
+                        </ui:column>
+                    </ui:row>
+                </ui:column>
+            </ui:row>
+            
+        </ui:column>
+    </ui:row>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

@@ -883,3 +883,34 @@ li.pagination {
 #o-report-schedule a:hover {
 	background: url(../images/reportSchedule.png);
 }
+
+
+/*Start refactor here*/
+div.o-box {
+	background-color: white;
+	border: 1px solid #999;
+	border-top: 0;
+	padding-bottom: 4px;
+	overflow: auto; 
+	margin-top: 7px;
+}
+
+h3.o-box-header{
+	background-image: url(../images/headingbg.png);
+	background-repeat: repeat-x;
+	background-position: center center;
+	background-color: #366903;
+	color: white;
+	margin-bottom: 0;
+ 	margin-top: 0px;
+	font-size: 70%;
+	padding: 6px;
+}
+
+h3.o-box-header a{
+	color: white;
+}
+
+div.o-box-spacer{
+	padding: 0px 6px 0px 6px;
+}

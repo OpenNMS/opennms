@@ -115,6 +115,7 @@ final String baseHref = Util.calculateUrlBase( request );
   <c:choose>
     <c:when test="${param.nostyles != 'true' }">
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/foundation.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/gwt-asset.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/onms-gwt-chrome.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />

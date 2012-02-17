@@ -45,9 +45,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!-- outage/servicesdown-box.htm -->
-<c:url var="headingLink" value="outage/list.htm"/>
-<h3 class="o-box"><a href="${headingLink}">Nodes with Outages</a></h3>
-<div class="boxWrapper">
+
   <c:choose>
     <c:when test="${empty summaries}">
       <p class="noBottomMargin">
@@ -73,4 +71,3 @@
       </c:if>
     </c:otherwise>
   </c:choose>
-</div>

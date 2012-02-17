@@ -49,6 +49,7 @@
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@taglib tagdir="/WEB-INF/tags/ui" prefix="ui" %>
 
 
 <%!
@@ -296,28 +297,36 @@
   </ul>
 </div>
 </div>
-<div class="TwoColLeft">
-  
-  
 
+<ui:row>
+<ui:column columnType="twelve">
+<ui:row> 
+  
+  <ui:column columnType="five">
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
-    <h3 class="o-box">Asset Information</h3>
-    <table class="o-box">
-      <tr>
-        <th>Description</th>
-        <td>${model.asset.description}</td>
-      </tr>
-      
-      <tr>
-        <th>Comments</th>
-        <td>${model.asset.comments}</td>
-      </tr>
-    </table>
+    <ui:row>
+    <ui:column columnType="twelve">
+	    <h3 class="o-box">Asset Information</h3>
+	    <table class="o-box">
+	      <tr>
+	        <th>Description</th>
+	        <td>${model.asset.description}</td>
+	      </tr>
+	      
+	      <tr>
+	        <th>Comments</th>
+	        <td>${model.asset.comments}</td>
+	      </tr>
+	    </table>
+    </ui:column>
+    </ui:row>
   </c:if>
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.sysObjectId}">
+    <ui:row>
+    <ui:column columnType="twelve">
     <h3 class="o-box">SNMP Attributes</h3>
     <table class="o-box">
       <tr>
@@ -341,66 +350,86 @@
         <td valign="top">${model.node.sysDescription}</td>
       </tr>
     </table>
+    </ui:column>
+    </ui:row>
   </c:if>
 
   <!-- Critical Path info, if info available -->
   <c:if test="${model.criticalPath != model.noCriticalPath}">
-    <h3 class="o-box">Path Outage - Critical Path</h3>
-    <div class="boxWrapper">
-      <ul class="plain o-box">
-        <li>
-          ${model.criticalPath}
-        </li>
-      </ul>           
-    </div>    
+    <ui:row>
+    <ui:column columnType="twelve">
+	    <h3 class="o-box">Path Outage - Critical Path</h3>
+	    <div class="boxWrapper">
+	      <ul class="plain o-box">
+	        <li>
+	          ${model.criticalPath}
+	        </li>
+	      </ul>           
+	    </div>
+    </ui:column>
+    </ui:row>
   </c:if>
 	
 	<!-- Availability box -->
 	<c:if test="${fn:length( model.intfs ) < 10}">
-    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
+		<ui:row>
+		   <ui:column columnType="twelve">
+	        <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
+	       </ui:column>
+	    </ui:row>
     </c:if> 
-    <script type="text/javascript">
-        var nodeId = ${model.id}
-    </script>
-  <div id="interface-panel-gwt">
-    <h3 class="o-box">Node Interfaces</h3>
-    <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
-    <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
-  </div>
+    
+    <ui:row>
+    <ui:column columnType="twelve">
+	  <script type="text/javascript">
+	    var nodeId = ${model.id}
+	  </script>
+	  <div id="interface-panel-gwt">
+	    <h3 class="o-box">Node Interfaces</h3>
+	    <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
+	    <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
+	  </div>
+    </ui:column>
+    </ui:row>
 	
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
-    <h3 class="o-box">VLAN Information</h3>
-    <table class="o-box">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Status</th>
-          <th>Status</th>
-          <th>Last Poll Time</th>
-        </tr>
-      </thead>
-  
-      <c:forEach items="${model.vlans}" var="vlan">
-        <tr>
-          <td>${vlan.vlanId}</td>
-          <td>${vlan.vlanName}</td>
-          <td>${vlan.vlanTypeString}</td>
-          <td>${vlan.vlanStatusString}</td>
-          <td>${vlan.statusString}</td>
-          <td>${vlan.lastPollTime}</td>
-        </tr>
-      </c:forEach>
-    </table>
+    <ui:row>
+    <ui:column columnType="twelve">
+	    <h3 class="o-box">VLAN Information</h3>
+	    <table class="o-box">
+	      <thead>
+	        <tr>
+	          <th>ID</th>
+	          <th>Name</th>
+	          <th>Type</th>
+	          <th>Status</th>
+	          <th>Status</th>
+	          <th>Last Poll Time</th>
+	        </tr>
+	      </thead>
+	  
+	      <c:forEach items="${model.vlans}" var="vlan">
+	        <tr>
+	          <td>${vlan.vlanId}</td>
+	          <td>${vlan.vlanName}</td>
+	          <td>${vlan.vlanTypeString}</td>
+	          <td>${vlan.vlanStatusString}</td>
+	          <td>${vlan.statusString}</td>
+	          <td>${vlan.lastPollTime}</td>
+	        </tr>
+	      </c:forEach>
+	    </table>
+    </ui:column>
+    </ui:row>
   </c:if>
-
   
-</div>
-
-<div class="TwoColRight">
+    </ui:column>
   
+  <ui:column columnType="seven">
+    
+    <ui:row>    
+    <ui:column columnType="twelve">
   <!-- general info box -->
   <h3 class="o-box">General (Status: ${model.status})</h3>
   <div class="boxWrapper">
@@ -440,15 +469,27 @@
       </li>
     </ul>	     
   </div>
+  </ui:column>
+  </ui:row>
   
+  <ui:row>
+  <ui:column columnType="twelve">
   <!-- Category box -->
   <jsp:include page="/includes/nodeCategory-box.htm" flush="false" />
+  </ui:column>
+  </ui:row>
   
+  <ui:row>
+  <ui:column columnType="twelve">
   <!-- notification box -->
   <jsp:include page="/includes/notification-box.jsp" flush="false" >
     <jsp:param name="node" value="${model.id}" />
   </jsp:include>
+  </ui:column>
+  </ui:row>
   
+  <ui:row>
+  <ui:column columnType="twelve">
   <!-- events list  box -->
   <c:url var="eventListUrl" value="event/list">
     <c:param name="filter" value="node=${model.id}"/>
@@ -459,11 +500,22 @@
     <jsp:param name="header" value="<a href='${eventListUrl}'>Recent Events</a>" />
     <jsp:param name="moreUrl" value="${eventListUrl}" />
   </jsp:include>
+  </ui:column>
+  </ui:row>
   
+  <ui:row>
+  <ui:column columnType="twelve">
   <!-- Recent outages box -->
   <jsp:include page="/outage/nodeOutages-box.htm" flush="false"> 
     <jsp:param name="node" value="${model.id}" />
   </jsp:include>
-</div>
+  </ui:column>
+  </ui:row>
 
+</ui:column>
+    </ui:row>
+ 
+
+</ui:column>
+</ui:row>
 <jsp:include page="/includes/footer.jsp" flush="false" />
