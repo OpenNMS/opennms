@@ -31,71 +31,72 @@
 
 <%@page language="java" contentType="text/html" session="true"  %>
 <%@taglib tagdir="/WEB-INF/tags/ui" prefix="ui" %>
+<%@ taglib tagdir="/WEB-INF/tags/ui/layout" prefix="layout" %>
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
 </jsp:include>
     
     <!-- Top Level Row -->
-    <ui:row>
+    <layout:row>
         
         <!-- Entire view -->
-        <ui:column columnType="twelve">
+        <layout:column columnType="twelve">
             
-            <ui:row>
+            <layout:row>
                 <!-- Left Column -->
-                <ui:column columnType="three">
+                <layout:column columnType="three">
                     
-                    <ui:row>
-                        <ui:column columnType="twelve">
+                    <layout:row>
+                        <layout:column columnType="twelve">
                             <ui:panel title="Nodes with Outages" showHeader="true" link="outage/list.htm">
                                 <jsp:include page="/outage/servicesdown-box.htm" flush="false" />
                             </ui:panel>
-                        </ui:column>
-	                </ui:row>
+                        </layout:column>
+	                </layout:row>
 	                
-	                <ui:row>
-	                   <ui:column columnType="twelve">
+	                <layout:row>
+	                   <layout:column columnType="twelve">
 	                       <ui:panel title="Quick Search" showHeader="true">
 	                           <jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
 	                       </ui:panel>
-	                   </ui:column>
-	                </ui:row>
-                </ui:column>
+	                   </layout:column>
+	                </layout:row>
+                </layout:column>
                 
                 <!-- Center Column -->
-                <ui:column columnType="six">
+                <layout:column columnType="six">
                     <ui:panel title="Availability">
                         <jsp:include page="/includes/categories-box.jsp" flush="false" />
                     </ui:panel>
-                </ui:column>
+                </layout:column>
                 
                 <!-- Right Column -->
-                <ui:column columnType="three">
-                    <ui:row>
-                        <ui:column columnType="twelve">
+                <layout:column columnType="three">
+                    <layout:row>
+                        <layout:column columnType="twelve">
                             <ui:panel title="Notifications" showHeader="true" link="notification/index.jsp">
                             <jsp:include page="/includes/notification-box.jsp" flush="false" />
                             </ui:panel>
-                        </ui:column>
-                    </ui:row>
-                    <ui:row>
-                        <ui:column columnType="twelve">
+                        </layout:column>
+                    </layout:row>
+                    <layout:row>
+                        <layout:column columnType="twelve">
                             <ui:panel title="Resource Graphs" showHeader="true" link="graph/index.jsp">
                             <jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
                             </ui:panel>
-                        </ui:column>
-                    </ui:row>
-                    <ui:row>
-                        <ui:column columnType="twelve">
+                        </layout:column>
+                    </layout:row>
+                    <layout:row>
+                        <layout:column columnType="twelve">
                             <ui:panel title="KSC Reports" showHeader="true">
                             <jsp:include page="/KSC/include-box.htm" flush="false" />
                             </ui:panel>
-                        </ui:column>
-                    </ui:row>
-                </ui:column>
-            </ui:row>
+                        </layout:column>
+                    </layout:row>
+                </layout:column>
+            </layout:row>
             
-        </ui:column>
-    </ui:row>
+        </layout:column>
+    </layout:row>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
