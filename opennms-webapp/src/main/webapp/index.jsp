@@ -47,7 +47,7 @@
                     
                     <ui:row>
                         <ui:column columnType="twelve">
-                            <ui:panel title="Nodes with Outages" showHeader="true" link="outage/list.html">
+                            <ui:panel title="Nodes with Outages" showHeader="true" link="outage/list.htm">
                                 <jsp:include page="/outage/servicesdown-box.htm" flush="false" />
                             </ui:panel>
                         </ui:column>
