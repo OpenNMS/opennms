@@ -33,6 +33,8 @@
 	contentType="text/html"
 	session="true"
 %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/ui/layout" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Outages" />
@@ -52,9 +54,9 @@ function validateId() {
   }
 }
 </script>
-
-  <div class="TwoColLeft">
-      <h3>Outage Menu</h3>    
+<layout:row>
+    <layout:column columnType="five">
+      <ui:panel title="Outage Menu" showHeader="true">
 		<div class="boxWrapper">
         <form name="outageIdForm" method="get" action="outage/detail.htm" onsubmit="return validateId();">
           <p align="right">Outage ID:
@@ -66,15 +68,18 @@ function validateId() {
 				<li><a href="outage/list.htm?outtype=both">All outages</a></li>
 			</ul>
       </div>
-  </div>
-  <div class="TwoColRight">
-      <h3>Outages and Service Level Availability</h3>
+      </ui:panel>
+  </layout:column>
+  <layout:column columnType="seven">
+      <ui:panel title="Outages and Service Level Availability" showHeader="true">
 		<div class="boxWrapper">
 			<p>Outages are tracked by OpenNMS by polling services that have been
 			provisioned.  If the service does not respond to the poll, a service outage
 			is created and service availability levels are impacted.  Service 
 			outages create notifications.</p>
 		</div>
-  </div>
-  <hr />                                   
+		</ui:panel>
+  </layout:column>
+  <hr /> 
+</layout:row>                                  
 <jsp:include page="/includes/footer.jsp" flush="false" />

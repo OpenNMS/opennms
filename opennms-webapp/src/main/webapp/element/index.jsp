@@ -37,6 +37,8 @@
 		org.opennms.web.asset.*
 		"
 %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui"%>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/ui/layout" %>
 
 <%!
     protected AssetModel model;
@@ -63,8 +65,11 @@
 </jsp:include>
 
   <div class="TwoColLeft">
-      <h3>Search for Nodes</h3>
-		<div class="boxWrapper">
+<!--       <h3>Search for Nodes</h3> -->
+        <div class="o-box">
+        <div class="border">
+        <ui:onms-header title="Search for Nodes"></ui:onms-header>
+        <div class="o-box-spacer">
             <form action="element/nodeList.htm" method="get">
 					<p align="right">Name containing:          
               <input type="hidden" name="listInterfaces" value="false"/>
@@ -106,7 +111,7 @@
 						</select>
 						<input type="submit" value="Search"/></p>                
             </form>
-            
+
             <form action="element/nodeList.htm" method="get">
 					<p align="right">MAC Address like:          
 						<input type="hidden" name="listInterfaces" value="false"/>
@@ -127,9 +132,13 @@
 				<li><a href="element/nodeList.htm?listInterfaces=true">All nodes and their interfaces</a></li>
 			</ul>
 		</div>
+		</div>
+		</div>
 		
-		<h3>Search Asset Information</h3>
-		<div class="boxWrapper">
+		<div class="o-box">
+		<div class="border">
+		<ui:onms-header title="Search Asset Information"/>
+		<div class="o-box-spacer">
         <%-- category --%>
         <form action="asset/nodelist.jsp" method="get">
           <p align="right">Category: 
@@ -156,12 +165,14 @@
 		<ul class="plain">
 			<li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
       </ul>
+        </div>
+		</div>
 		</div>
   </div>
 
 
   <div class="TwoColRight">
-      <h3>Search Options</h3>
+    <ui:panel title="Search Options" showHeader="true">
      <div class="boxWrapper"> 
       <p>Searching by name is a case-insensitive, inclusive search. For example,
         searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>, 
@@ -215,6 +226,7 @@
         information assigned by clicking the <em>List all nodes with asset info</em> link.
       </p>
 		</div>
+		</ui:panel>
   </div>
 <hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>

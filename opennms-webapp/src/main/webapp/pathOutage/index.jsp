@@ -35,7 +35,8 @@
                 org.opennms.netmgt.config.OpennmsServerConfigFactory,
                 org.opennms.web.pathOutage.*" %>
 
-
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/ui/layout" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
   <jsp:param name="title" value="Path Outages" />
@@ -55,7 +56,12 @@
 <% if (dcpip != null && !dcpip.equals("")) { %>
 	<p>Default Critical Path = <%= dcpip %> ICMP</p>
 <% } %>
-	<h3>All path outages</h3>
+<%-- <layout:row> --%>
+<%-- <layout:column columnType="twelve"> --%>
+<%--     <ui:panel title="All path outages" showHeader="true"></ui:panel> --%>
+	<div class="o-box">
+	<div class="border">
+	   <ui:onms-header title="All path outages"/>
 	<table>
 		<tr>
 			<th>Critical Path Node</th>
@@ -81,7 +87,9 @@
 						</tr>
 						<% } %>
 </table>
-
-
+    </div>
+    </div>
+<%-- </layout:column> --%>
+<%-- </layout:row> --%>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

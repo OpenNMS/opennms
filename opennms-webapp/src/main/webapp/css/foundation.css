@@ -698,7 +698,7 @@
 	form label { display: block; font-size: 13px; line-height: 18px; cursor: pointer; margin-bottom: 9px; }
 
 	input.input-text, textarea { border-right: 1px solid #bbb; border-bottom: 1px solid #bbb; }
-	input.input-text, textarea, select { display: block; margin-bottom: 9px; }
+/* 	input.input-text, textarea, select { display: block; margin-bottom: 9px; } */
 	label + input.input-text, label + textarea, label + select, label + div.dropdown, select + div.dropdown { margin-top: -9px; }
 
 	/* Text input and textarea font and padding */
