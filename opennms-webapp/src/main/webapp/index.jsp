@@ -65,7 +65,7 @@
                 
                 <!-- Center Column -->
                 <layout:column columnType="six">
-                    <ui:panel title="Availability">
+                    <ui:panel title="Availability" noPadding="true">
                         <jsp:include page="/includes/categories-box.jsp" flush="false" />
                     </ui:panel>
                 </layout:column>

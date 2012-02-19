@@ -50,6 +50,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@taglib tagdir="/WEB-INF/tags/ui" prefix="ui" %>
+<%@taglib tagdir="/WEB-INF/tags/ui/layout" prefix="layout" %>
 
 
 <%!
@@ -298,104 +299,111 @@
 </div>
 </div>
 
-<ui:row>
-<ui:column columnType="twelve">
-<ui:row> 
+<layout:row>
+<layout:column columnType="twelve">
+<layout:row> 
   
-  <ui:column columnType="five">
+  <layout:column columnType="five">
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
-    <ui:row>
-    <ui:column columnType="twelve">
-	    <h3 class="o-box">Asset Information</h3>
-	    <table class="o-box">
-	      <tr>
-	        <th>Description</th>
-	        <td>${model.asset.description}</td>
-	      </tr>
-	      
-	      <tr>
-	        <th>Comments</th>
-	        <td>${model.asset.comments}</td>
-	      </tr>
-	    </table>
-    </ui:column>
-    </ui:row>
+    <layout:row>
+    <layout:column columnType="twelve">
+        <ui:panel title="Asset Information" showHeader="true">
+		    <table class="o-box">
+		      <tr>
+		        <th>Description</th>
+		        <td>${model.asset.description}</td>
+		      </tr>
+		      
+		      <tr>
+		        <th>Comments</th>
+		        <td>${model.asset.comments}</td>
+		      </tr>
+		    </table>
+	    </ui:panel>
+    </layout:column>
+    </layout:row>
   </c:if>
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.sysObjectId}">
-    <ui:row>
-    <ui:column columnType="twelve">
-    <h3 class="o-box">SNMP Attributes</h3>
-    <table class="o-box">
-      <tr>
-        <th>Name</th>
-        <td>${model.node.sysName}</td>
-      </tr>
-      <tr>
-        <th>Object&nbsp;ID</th>
-        <td>${model.node.sysObjectId}</td>
-      </tr>
-      <tr>
-        <th>Location</th>
-        <td>${model.node.sysLocation}</td>
-      </tr>
-      <tr>
-        <th>Contact</th>
-        <td>${model.node.sysContact}</td>
-      </tr>
-      <tr>
-        <th valign="top">Description</th>
-        <td valign="top">${model.node.sysDescription}</td>
-      </tr>
-    </table>
-    </ui:column>
-    </ui:row>
+    <layout:row>
+    <layout:column columnType="twelve">
+        <ui:panel title="SNMP Attributes" showHeader="true" noPadding="true">
+		    <table>
+		      <tr>
+		        <th>Name</th>
+		        <td>${model.node.sysName}</td>
+		      </tr>
+		      <tr>
+		        <th>Object&nbsp;ID</th>
+		        <td>${model.node.sysObjectId}</td>
+		      </tr>
+		      <tr>
+		        <th>Location</th>
+		        <td>${model.node.sysLocation}</td>
+		      </tr>
+		      <tr>
+		        <th>Contact</th>
+		        <td>${model.node.sysContact}</td>
+		      </tr>
+		      <tr>
+		        <th valign="top">Description</th>
+		        <td valign="top">${model.node.sysDescription}</td>
+		      </tr>
+		    </table>
+	    </ui:panel>
+    </layout:column>
+    </layout:row>
   </c:if>
 
   <!-- Critical Path info, if info available -->
   <c:if test="${model.criticalPath != model.noCriticalPath}">
-    <ui:row>
-    <ui:column columnType="twelve">
-	    <h3 class="o-box">Path Outage - Critical Path</h3>
-	    <div class="boxWrapper">
-	      <ul class="plain o-box">
-	        <li>
-	          ${model.criticalPath}
-	        </li>
-	      </ul>           
-	    </div>
-    </ui:column>
-    </ui:row>
+    <layout:row>
+    <layout:column columnType="twelve">
+        <ui:panel title="Path Outage - Critical Path" showHeader="true">
+		    <div class="boxWrapper">
+		      <ul class="plain o-box">
+		        <li>
+		          ${model.criticalPath}
+		        </li>
+		      </ul>           
+		    </div>
+	    </ui:panel>
+    </layout:column>
+    </layout:row>
   </c:if>
 	
 	<!-- Availability box -->
 	<c:if test="${fn:length( model.intfs ) < 10}">
-		<ui:row>
-		   <ui:column columnType="twelve">
-	        <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
-	       </ui:column>
-	    </ui:row>
+		<layout:row>
+		   <layout:column columnType="twelve">
+		    <ui:panel title="Availability" noPadding="true">
+	           <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
+	        </ui:panel>
+	       </layout:column>
+	    </layout:row>
     </c:if> 
     
-    <ui:row>
-    <ui:column columnType="twelve">
-	  <script type="text/javascript">
-	    var nodeId = ${model.id}
-	  </script>
-	  <div id="interface-panel-gwt">
-	    <h3 class="o-box">Node Interfaces</h3>
-	    <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
-	    <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
-	  </div>
-    </ui:column>
-    </ui:row>
+    <layout:row>
+    <layout:column columnType="twelve">
+    <ui:panel title="Node Interfaces" showHeader="true" noPadding="true">
+		  <script type="text/javascript">
+		    var nodeId = ${model.id}
+		  </script>
+		  <div id="interface-panel-gwt">
+		    <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
+		    <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
+		  </div>
+	  </ui:panel>
+    </layout:column>
+    </layout:row>
 	
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
-    <ui:row>
-    <ui:column columnType="twelve">
+    <layout:row>
+    <layout:column columnType="twelve">
+        <ui:panel title="VLAN Information" showHeader="true">
 	    <h3 class="o-box">VLAN Information</h3>
 	    <table class="o-box">
 	      <thead>
@@ -420,77 +428,85 @@
 	        </tr>
 	      </c:forEach>
 	    </table>
-    </ui:column>
-    </ui:row>
+	    </ui:panel>
+    </layout:column>
+    </layout:row>
   </c:if>
   
-    </ui:column>
+    </layout:column>
   
-  <ui:column columnType="seven">
+  <layout:column columnType="seven">
     
-    <ui:row>    
-    <ui:column columnType="twelve">
-  <!-- general info box -->
-  <h3 class="o-box">General (Status: ${model.status})</h3>
-  <div class="boxWrapper">
-    <ul class="plain o-box">
-      <c:if test="${model.showRancid}">
-        <c:url var="rancidLink" value="inventory/rancid.htm">
-          <c:param name="node" value="${model.id}"/>
-        </c:url>
-        <li>
-          <a href="<c:out value="${rancidLink}"/>">View Node Rancid Inventory Info </a>
-        </li>
-      </c:if>
+    <layout:row>    
+    <layout:column columnType="twelve">
+        <!-- general info box -->
+        <ui:panel title="General (Status: ${model.status})" showHeader="true">
 
-      <c:if test="${model.showIpRoute}">
-        <c:url var="ipRouteLink" value="element/routeipnode.jsp">
-          <c:param name="node" value="${model.id}"/>
-        </c:url>
-        <li>
-          <a href="<c:out value="${ipRouteLink}"/>">View Node IP Route Info</a>
-        </li>
-      </c:if>
-     
-      <c:if test="${model.showBridge}">
-        <c:url var="bridgeLink" value="element/bridgenode.jsp">
-          <c:param name="node" value="${model.id}"/>
-        </c:url>
-        <li>
-          <a href="<c:out value="${bridgeLink}"/>">View Node Bridge/STP Info</a>
-        </li>
-      </c:if>
-
-      <c:url var="detailLink" value="element/linkednode.jsp">
-        <c:param name="node" value="${model.id}"/>
-      </c:url>
-      <li>
-        <a href="<c:out value="${detailLink}"/>">View Node Link Detailed Info</a>
-      </li>
-    </ul>	     
-  </div>
-  </ui:column>
-  </ui:row>
+		  <div class="boxWrapper">
+		    <ul class="plain o-box">
+		      <c:if test="${model.showRancid}">
+		        <c:url var="rancidLink" value="inventory/rancid.htm">
+		          <c:param name="node" value="${model.id}"/>
+		        </c:url>
+		        <li>
+		          <a href="<c:out value="${rancidLink}"/>">View Node Rancid Inventory Info </a>
+		        </li>
+		      </c:if>
+		
+		      <c:if test="${model.showIpRoute}">
+		        <c:url var="ipRouteLink" value="element/routeipnode.jsp">
+		          <c:param name="node" value="${model.id}"/>
+		        </c:url>
+		        <li>
+		          <a href="<c:out value="${ipRouteLink}"/>">View Node IP Route Info</a>
+		        </li>
+		      </c:if>
+		     
+		      <c:if test="${model.showBridge}">
+		        <c:url var="bridgeLink" value="element/bridgenode.jsp">
+		          <c:param name="node" value="${model.id}"/>
+		        </c:url>
+		        <li>
+		          <a href="<c:out value="${bridgeLink}"/>">View Node Bridge/STP Info</a>
+		        </li>
+		      </c:if>
+		
+		      <c:url var="detailLink" value="element/linkednode.jsp">
+		        <c:param name="node" value="${model.id}"/>
+		      </c:url>
+		      <li>
+		        <a href="<c:out value="${detailLink}"/>">View Node Link Detailed Info</a>
+		      </li>
+		    </ul>	     
+		  </div>
+        </ui:panel>
+  </layout:column>
+  </layout:row>
   
-  <ui:row>
-  <ui:column columnType="twelve">
+  <layout:row>
+  <layout:column columnType="twelve">
   <!-- Category box -->
-  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" />
-  </ui:column>
-  </ui:row>
+  <ui:panel title="Category Box" noPadding="true">
+    <jsp:include page="/includes/nodeCategory-box.htm" flush="false" />
+  </ui:panel>
+  </layout:column>
+  </layout:row>
   
-  <ui:row>
-  <ui:column columnType="twelve">
+  <layout:row>
+  <layout:column columnType="twelve">
   <!-- notification box -->
+  <ui:panel title="Notification" showHeader="true" noPadding="true">
   <jsp:include page="/includes/notification-box.jsp" flush="false" >
     <jsp:param name="node" value="${model.id}" />
   </jsp:include>
-  </ui:column>
-  </ui:row>
+  </ui:panel>
+  </layout:column>
+  </layout:row>
   
-  <ui:row>
-  <ui:column columnType="twelve">
+  <layout:row>
+  <layout:column columnType="twelve">
   <!-- events list  box -->
+  <ui:panel title="Recent Events" noPadding="true">
   <c:url var="eventListUrl" value="event/list">
     <c:param name="filter" value="node=${model.id}"/>
   </c:url>
@@ -500,22 +516,25 @@
     <jsp:param name="header" value="<a href='${eventListUrl}'>Recent Events</a>" />
     <jsp:param name="moreUrl" value="${eventListUrl}" />
   </jsp:include>
-  </ui:column>
-  </ui:row>
+  </ui:panel>
+  </layout:column>
+  </layout:row>
   
-  <ui:row>
-  <ui:column columnType="twelve">
+  <layout:row>
+  <layout:column columnType="twelve">
   <!-- Recent outages box -->
+  <ui:panel title="Recent Outages" noPadding="true">
   <jsp:include page="/outage/nodeOutages-box.htm" flush="false"> 
     <jsp:param name="node" value="${model.id}" />
   </jsp:include>
-  </ui:column>
-  </ui:row>
+  </ui:panel>
+  </layout:column>
+  </layout:row>
 
-</ui:column>
-    </ui:row>
+</layout:column>
+    </layout:row>
  
 
-</ui:column>
-</ui:row>
+</layout:column>
+</layout:row>
 <jsp:include page="/includes/footer.jsp" flush="false" />

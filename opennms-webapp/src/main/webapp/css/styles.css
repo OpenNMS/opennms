@@ -29,7 +29,7 @@
     menu, nav, output, ruby, section, summary,
     time, mark, audio, video {
         margin: 0;
-        padding: 0;
+/*         padding: 0; */
         border: 0;
 /*         font: inherit; */
         vertical-align: baseline;
@@ -186,12 +186,14 @@
     :: Onms Panel (the o-box)
     -------------------------------------------------- */
 	div.o-box {
-	    background-color: white;
-	    border: 1px solid #999;
-	    border-top: 0;
-	    padding-bottom: 4px;
-	    overflow: auto; 
+	    overflow: auto;
 	    margin-top: 7px;
+	}
+	
+	div.o-box .border{
+	   background-color: white;
+	   border: 1px solid #999;
+       border-top: 0;
 	}
 	
 	div.o-box h3{
@@ -205,6 +207,10 @@
 	    font-size: 70%;
 	    padding: 6px;
 	}
+	
+	div.o-box-spacer{
+        padding: 0px 6px 4px 6px;
+    }
 	
 	div.o-box.slim{
 	    padding:0px;
@@ -230,9 +236,7 @@
 	    color: white;
 	}
 	
-	div.o-box-spacer{
-	    padding: 0px 6px 0px 6px;
-	}
+	
     
 /* --------------------------------------------------
     :: Typography

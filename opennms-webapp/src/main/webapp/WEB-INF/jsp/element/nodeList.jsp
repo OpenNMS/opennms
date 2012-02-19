@@ -33,7 +33,8 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="element" tagdir="/WEB-INF/tags/element" %>
-
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/ui/layout" %>
 <c:if test="${model.nodeCount == 1 && command.snmpParm == null && command.maclike == null}">
   <jsp:forward page="/element/node.jsp?node=${model.nodes[0].node.id}"/>
 </c:if>
@@ -64,16 +65,22 @@
   <jsp:param name="breadcrumb" value="Node List"/>
 </jsp:include>
 
+<layout:row>
+    <layout:column columnType="twelve">
+        <ui:panel title="Nodes" noPadding="true">
+        
 <c:choose>
   <c:when test="${command.listInterfaces}">
-    <h3>Nodes and their interfaces</h3>
+    <ui:onms-header title="Nodes and their interfaces"/>
   </c:when>
   
   <c:otherwise>
-    <h3>Nodes</h3>
+    <ui:onms-header title="Nodes"/>
   </c:otherwise>
 </c:choose>
-<div class="boxWrapper">
+
+
+<div class="o-box-spacer">
   <c:choose>
     <c:when test="${model.nodeCount == 0}">
       <p>
@@ -82,18 +89,22 @@
     </c:when>
 
     <c:otherwise>
-      <div class="TwoColLeft">
-        <element:nodelist nodes="${model.nodesLeft}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/>
-             </div>
-        
-      <div class="TwoColRight">
-        <element:nodelist nodes="${model.nodesRight}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/>
-      </div>
-
+      <layout:row>
+        <layout:column columnType="six">
+            <element:nodelist nodes="${model.nodesLeft}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/>
+        </layout:column>
+      
+          <layout:column columnType="six">
+	        <element:nodelist nodes="${model.nodesRight}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/>
+	      </layout:column>
+      </layout:row>
       <div class="spacer"><!-- --></div>
     </c:otherwise>
   </c:choose>
 </div>
+        </ui:panel>
+    </layout:column>
+</layout:row>
 <p>
   <c:choose>
     <c:when test="${model.nodeCount == 1}">
