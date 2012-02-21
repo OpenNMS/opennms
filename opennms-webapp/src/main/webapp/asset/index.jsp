@@ -37,6 +37,8 @@
 		org.opennms.web.element.NetworkElementFactory
 	"
 %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/ui/layout" %>
 
 <%!
     protected AssetModel model;
@@ -71,8 +73,10 @@
 </jsp:include>
 
   <div class="TwoColLeft">
-    <h3>Search Asset Information</h3>
-    <div class="boxWrapper">
+    <div class="o-box">
+    <div class="border">
+    <ui:onms-header title="Search Asset Information"/>
+    <div class="o-box-spacer">
       <form action="asset/nodelist.jsp" method="get">
         <p align="right">Assets in category: 
         <input type="hidden" name="column" value="category" />
@@ -86,12 +90,17 @@
       <ul class="plain">
         <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
       </ul>
+      
+    </div>
+    </div>
     </div>
   </div>
 
   <div class="TwoColRight">
-    <h3>Assets Inventory</h3>
-    <div class="boxWrapper">
+    <div class="o-box">
+    <div class="border">
+    <ui:onms-header title="Assets Inventory"/>
+    <div class="o-box-spacer">
         <p>The OpenNMS system provides a means for you to easily track and share 
             important information about capital assets in your organization.  This 
             data, when coupled with the information about your network that the 
@@ -117,10 +126,15 @@
             link.
         </p>
       </div>
+      </div>
+      </div>
   </div>
   <hr />
-  <h3>Assets with asset numbers</h3>
-  <div class="boxWrapper">
+  
+  <div class="o-box">
+  <div class="border">
+  <ui:onms-header title="Assets with asset numbers"/>
+  <div class="o-box-spaver">
     <ul class="plain" style="width:48%; margin-right:2%; float:left;">
     <% for( int i=0; i < middle; i++ ) {%>
       <%  Asset asset = (Asset)assetsList.get(i); %>
@@ -134,5 +148,7 @@
     <% } %>
     </ul>
     <hr />
+    </div>
+  </div>
   </div>
 <jsp:include page="/includes/footer.jsp" flush="false"/>

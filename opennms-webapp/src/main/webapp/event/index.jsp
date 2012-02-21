@@ -33,6 +33,8 @@
 	contentType="text/html"
 	session="true"
 %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/ui/layout" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Events" />
@@ -41,9 +43,9 @@
   <jsp:param name="breadcrumb" value="Events" />
 </jsp:include>
 
-  <div class="TwoColLeft">
-      <h3>Event Queries</h3>
-      <div class="boxWrapper">
+<layout:row>
+    <layout:column columnType="five">
+        <ui:panel title="Event Queries" showHeader="true">
       <%--<jsp:include page="/includes/event-querypanel.jsp" flush="false" />--%>
 			<form action="event/detail.jsp" method="get">
 				<p align="right">Event ID:          
@@ -55,12 +57,11 @@
 				<li><a href="event/list" title="View all outstanding events">All events</a></li>
 				<li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
 			</ul>
-		</div>
-  </div>
-      
-  <div class="TwoColRight">
-      <h3>Outstanding and acknowledged events</h3>
-		<div class="boxWrapper">
+		</ui:panel>
+  </layout:column>
+  
+  <layout:column columnType="seven">
+    <ui:panel title="Outstanding and acknowledged events" showHeader="true">    
       <p>Events can be <em>acknowledged</em>, or removed from the view of other users, by
         selecting the event in the <em>Ack</em> check box and clicking the <em>Acknowledge
         Selected Events</em> at the bottom of the page.  Acknowledging an event gives
@@ -78,7 +79,8 @@
         description, type the identifier into the <em>Get details for Event ID</em> box and
         hit <b>[Enter]</b>.  You will then go to the appropriate details page.
       </p>
-		</div>
-  </div>
 	<hr />
+	   </ui:panel>
+	</layout:column>
+</layout:row>
 <jsp:include page="/includes/footer.jsp" flush="false"/>

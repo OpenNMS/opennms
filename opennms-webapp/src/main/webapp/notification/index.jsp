@@ -35,6 +35,9 @@
 	import="java.util.Date"
 %>
 
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/ui/layout" %>
+
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Notification" />
   <jsp:param name="headTitle" value="Notification" />
@@ -43,8 +46,10 @@
 </jsp:include>
 
   <div class="TwoColLeft">
-      <h3>Notification queries</h3>
-      <div class="boxWrapper">
+      <div class="o-box">
+      <div class="border">
+      <ui:onms-header title="Notification queries"/>
+      <div class="o-box-spacer">
         <form method="get" action="notification/browse">
           <p align="right">User:
           <input type="text" name="user"/>
@@ -61,11 +66,15 @@
           <li><a href="notification/browse?acktype=ack">All acknowledged notices</a></li>
         </ul>
       </div>
+      </div>
+      </div>
   </div>
 
   <div class="TwoColRight">
-    <h3>Outstanding and Acknowledged Notices</h3>
-    <div class="boxWrapper">
+    <div class="o-box">
+    <div class="border">
+    <ui:onms-header title="Outstanding and Acknowledged Notices"/>
+    <div class="o-box-spacer">
       <p>When important events are detected by OpenNMS, users may 
         receive a <em>notice</em>, a descriptive message sent automatically
         to a pager, an email address, or both. In order to
@@ -91,8 +100,13 @@
         paging service and receive the numeric notice identifier as part of the page.
       </p>
     </div>
-    <h3>Notification Escalation</h3>
-    <div class="boxWrapper">
+    </div>
+      </div>
+    
+    <div class="o-box">
+    <div class="border">
+    <ui:onms-header title="Notification Escalation"/>
+    <div class="o-box-spacer">
         <p>Once a notice is sent, it is considered <em>outstanding</em> until 
             someone <em>acknowledge</em>s receipt of the notice via the OpenNMS
             Notification interface.&nbsp; If the event that 
@@ -108,6 +122,8 @@
             where all members of that group will be notified at once with no 
             15 minute escalation interval.
         </p>
+        </div>
+      </div>
       </div>
   </div>
   <hr />

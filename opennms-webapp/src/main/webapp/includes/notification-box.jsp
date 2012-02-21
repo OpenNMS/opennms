@@ -54,7 +54,7 @@
     protected NotificationModel model = new NotificationModel();
     protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>
-<div class="boxWrapper">
+
 	<ul class="plain o-box">
 		<% if( nodeIdString == null ) { %>
 			<li><strong>You</strong>: <%
@@ -77,4 +77,3 @@
 				(<a href="notification/browse?acktype=ack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
 		<% } %>
 	</ul>
-</div>

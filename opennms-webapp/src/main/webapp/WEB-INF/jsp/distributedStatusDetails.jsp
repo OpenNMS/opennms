@@ -32,6 +32,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib tagdir="/WEB-INF/tags/ui" prefix="ui"%>
+<%@ taglib tagdir="/WEB-INF/tags/ui/layout" prefix="layout"%>
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Distributed Status Details" />

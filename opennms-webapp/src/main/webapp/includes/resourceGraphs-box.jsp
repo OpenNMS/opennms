@@ -42,7 +42,5 @@
         session="true"
 %>
 
-<div class="boxWrapper">
-    	<opennms:nodeSuggestionCombobox id="combobox" ></opennms:nodeSuggestionCombobox>
-    	<div name="opennms-nodeSuggestionCombobox" id="nodeCombobox"></div>
-</div>
+<opennms:nodeSuggestionCombobox id="combobox" ></opennms:nodeSuggestionCombobox>
+<div name="opennms-nodeSuggestionCombobox" id="nodeCombobox"></div>

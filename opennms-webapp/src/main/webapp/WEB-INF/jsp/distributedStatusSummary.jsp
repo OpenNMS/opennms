@@ -31,6 +31,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib tagdir="/WEB-INF/tags/ui" prefix="ui"%>
+<%@ taglib tagdir="/WEB-INF/tags/ui/layout" prefix="layout"%>
 
 <jsp:include page="/includes/header.jsp" flush="false">
     <jsp:param name="title" value="Distributed Status Summary" />
@@ -56,7 +58,7 @@
  </jsp:include>
  
  
-<h3><c:out value="${webTable.title}" /></h3>
+<ui:onms-header title="<c:out value='${webTable.title}' />"/>
 
 <table>
 

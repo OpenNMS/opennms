@@ -38,6 +38,8 @@
         org.opennms.web.navigate.PageNavEntry,
         java.util.Collection"
 %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/ui/layout" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Alarms" />
@@ -46,9 +48,13 @@
   <jsp:param name="breadcrumb" value="Alarms" />
 </jsp:include>
 
-  <div class="TwoColLeft">
-      <h3>Alarm Queries</h3>
-      <div class="boxWrapper">
+<div class="row">
+    <div class="five columns">
+<%--         <ui:panel title="Alarm Queries" showHeader="true"> --%>
+        <div class="o-box">
+        <div class="border">
+        <ui:onms-header title="Alarm Queries"/>
+        <div class="o-box-spacer">
        <%-- <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />--%>
         <form action="alarm/detail.jsp" method="get">
           <p align="right">Alarm ID:          
@@ -61,12 +67,14 @@
           <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
           <%=getAlarmPageNavItems() %>
         </ul>  
-      </div>
+        </div>
+        </div>
+        </div>
+<%--       </ui:panel> --%>
   </div>
 
-  <div class="TwoColRight">
-    <h3>Outstanding and acknowledged alarms</h3>
-    <div class="boxWrapper">
+  <div class="seven columns">
+    <ui:panel title="Outstanding and ackowledged alarms" showHeader="true">
       <p>Alarms can be <em>acknowledged</em>, or removed from the default view of all users, by
         selecting the alarms' <em>Ack</em> check box and clicking the <em>Acknowledge Selected
         Alarms</em> at the bottom of the page.  Acknowledging an alarm gives
@@ -87,9 +95,10 @@
         description, type the identifier into the <em>Get details for Alarm ID</em> box and
         hit <b>[Enter]</b>.  You will then go to the appropriate details page.
       </p>
-    </div>
-  </div>
   <hr />
+  </ui:panel>
+  </div>
+</div>
 <jsp:include page="/includes/footer.jsp" flush="false"/>
 
 <%!

@@ -173,7 +173,6 @@
 
   <div class="TwoColRight">
     <ui:panel title="Search Options" showHeader="true">
-     <div class="boxWrapper"> 
       <p>Searching by name is a case-insensitive, inclusive search. For example,
         searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>, 
         <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. The underscore
@@ -225,7 +224,6 @@
       <p>Also note that you can quickly search for all nodes which have asset
         information assigned by clicking the <em>List all nodes with asset info</em> link.
       </p>
-		</div>
 		</ui:panel>
   </div>
 <hr />

@@ -57,7 +57,6 @@ function validateId() {
 <layout:row>
     <layout:column columnType="five">
       <ui:panel title="Outage Menu" showHeader="true">
-		<div class="boxWrapper">
         <form name="outageIdForm" method="get" action="outage/detail.htm" onsubmit="return validateId();">
           <p align="right">Outage ID:
 				<input type="text" name="id" />
@@ -67,17 +66,14 @@ function validateId() {
 				<li><a href="outage/list.htm?outtype=current">Current outages</a></li>
 				<li><a href="outage/list.htm?outtype=both">All outages</a></li>
 			</ul>
-      </div>
       </ui:panel>
   </layout:column>
   <layout:column columnType="seven">
       <ui:panel title="Outages and Service Level Availability" showHeader="true">
-		<div class="boxWrapper">
 			<p>Outages are tracked by OpenNMS by polling services that have been
 			provisioned.  If the service does not respond to the poll, a service outage
 			is created and service availability levels are impacted.  Service 
 			outages create notifications.</p>
-		</div>
 		</ui:panel>
   </layout:column>
   <hr /> 

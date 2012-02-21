@@ -32,6 +32,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/ui/layout" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Surveillance View" />
@@ -39,8 +41,7 @@
 	<jsp:param name="breadcrumb" value="Surveillance" />
 </jsp:include>
 
-<h3>Surveillance View: ${webTable.title}</h3>
-
+<ui:onms-header title="Surveillance View: ${webTable.title}"/>
 <table>
 
   <tr>

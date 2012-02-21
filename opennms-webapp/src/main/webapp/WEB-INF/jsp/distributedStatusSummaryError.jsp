@@ -31,6 +31,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib tagdir="/WEB-INF/tags/ui" prefix="ui"%>
+<%@ taglib tagdir="/WEB-INF/tags/ui/layout" prefix="layout"%>
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Distributed Status Summary" />
@@ -38,7 +40,7 @@
 	<jsp:param name="breadcrumb" value="Distributed Status" />
 </jsp:include>
 
-<h3>Distributed Status Summary Error: ${error.shortDescr} </h3>
+<ui:panel title="Distributed Status Summary Error: ${error.shortDescr}" showHeader="true">
 
 <p>
 ${error.longDescr}
@@ -46,5 +48,5 @@ ${error.longDescr}
 <p>
 Click <a href="admin/applications.htm">here</a> to see defined applications
 </p>
-
+</ui:panel>
 <jsp:include page="/includes/footer.jsp" flush="false"/>

@@ -34,7 +34,8 @@
 	session="true"
 %>
 
-
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/ui/layout" %>
 <%@page import="org.opennms.core.resource.Vault"%>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -46,8 +47,10 @@
 
 
   <div class="TwoColLeft">
-    <h3>Reports</h3>
-    <div class="boxWrapper">
+    <div class="o-box">
+    <div class="border">
+    <ui:onms-header title="Reports"/>
+    <div class="o-box-spacer">
       <form action="graph/index.jsp" method="get">
         <p align="right">Name contains
         <input type="text" name="match" size="16" />
@@ -68,12 +71,16 @@
         <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
       </ul>
     </div>
+    </div>
+    </div>
   <!-- more reports will follow -->
   </div>
 
   <div class="TwoColRight">
-    <h3>Descriptions</h3>
-    <div class="boxWrapper">
+    <div class="o-box">
+    <div class="border">
+    <ui:onms-header title="Descriptions"/>
+    <div class="o-box-spacer">
       <p><b>Resource Graphs</b> provide an easy way to visualize the critical
           SNMP, response time, and other data collected from managed nodes
           throughout your network.
@@ -112,6 +119,8 @@
           reports on collected numerical data (response time, SNMP performance
           data, etc.).
       </p>
+    </div>
+    </div>
     </div>
   </div>
   <hr />

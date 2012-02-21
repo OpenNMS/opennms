@@ -11,6 +11,29 @@
  
  */
 
+/* -------------------------------------------------- 
+    Table of Contents
+-----------------------------------------------------
+:: Reset & Standards
+:: Header
+:: Navigation
+:: Layout (Onms Column Layout)
+:: Tables
+:: Treeview from UL/LI -- currently only in the scheduled outage page
+:: List Styles
+:: Main Page content
+:: Onms Panel (the o-box)
+:: Onms Panel (the boxWrapper, want to remove eventually)
+:: Standard Forms
+:: Custom Form Styles
+:: Typography
+:: Pagination
+:: Page Specifics
+:: Image
+:: Footer
+:: Misc.
+*/
+
 /*  --------------------------------------------------
     :: Global Reset & Standards
     -------------------------------------------------- */
@@ -29,12 +52,22 @@
     menu, nav, output, ruby, section, summary,
     time, mark, audio, video {
         margin: 0;
-/*         padding: 0; */
         border: 0;
-/*         font: inherit; */
         vertical-align: baseline;
     }
     
+    p, td, th, li {
+	    font-size: 70%;
+	    line-height: 1.25em;
+	}
+    
+    p {
+        margin: 0 0 7px 0;
+    }
+    
+    p.noBottomMargin {
+	    margin-bottom: 0px;
+	}
     a {
         color: #366903;
         text-decoration:none;
@@ -91,8 +124,46 @@
 		color: #999;
 	}
 	
+	#linkbar{ padding: 0 0 1em 0; }
+	#linkbar ul{ list-style: none; display: inline; padding: 0 0 0 0; }
+	#linkbar li{ list-style: none; display: inline; padding-right: 0.75em; }
+	
+	#headernavbarright {
+	    position: relative;
+	    float: right;
+	    padding: 2px 0px 5px 0px;
+	}
+	
 /*  --------------------------------------------------
-    :: Table Default
+    :: Layout (Onms Column Layout)
+    -------------------------------------------------- */
+    
+	div.TwoColLeft {
+	    width: 40%;
+	    float: left;
+	    position: relative;
+	    margin-right: 2%;
+	}
+	div.TwoColRight {
+	    width: 57%;
+	    float: left;
+	    position: relative;
+	}
+	
+	div.TwoColLAdmin  {
+	        width: 40%;
+	        float: left;
+	        position: relative;
+	    margin-right: 2%;
+	}
+	
+	div.TwoColRAdmin {
+	        width: 58%;
+	        float: left;
+	        position: relative;
+	}
+/*  --------------------------------------------------
+    :: Tables
     -------------------------------------------------- */
     table {
         border-collapse: collapse;
@@ -100,6 +171,8 @@
         margin-top: 0;
         margin-bottom: 10px;
     }
+    
+    table.o-box{ margin-bottom:0px; }
     
     td.bright { padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
     
@@ -140,11 +213,51 @@
 	tr.Cleared td.divider { border-top: 2px solid #999 !important; }
 	tr.Cleared td.bright { background-image: url(../images/bgCleared.png); }
     
-    table.onms-table{
-        margin-bottom: 0px;
-    }
+    table.onms-table{ margin-bottom: 0px; }
     
-    /*table.top {
+    td td { font-size: 100%; }
+    
+    td div.clip {
+	    margin:0; 
+	    padding:0; 
+	    height:1.5em; 
+	    overflow:hidden;
+	}
+	
+	th {
+	    border:1px solid #999;
+	    padding: 4px 5px;
+	    background-color: #444;
+	    font-weight: bold;
+	    text-align: left;
+	    color: #FFF;
+	}
+	th a {
+	    text-decoration: underline;
+	    color: #FFF;
+	}
+	th a:hover {
+	    color: #CCC;
+	}
+	/*Conflicting style*/
+	td {
+	    border: 1px solid #999;
+	    padding: 4px 5px;
+	    background-color: #FFF;
+	}
+	
+	td td, td p {
+	    font-size: 100%;
+	    margin: 0;
+	    padding: 0px;
+	}
+	
+	.onms-table td{
+	    background: #ffffff;
+	}
+    
+    /* This is stupid needs to be consolidated or removed */
+    table.top {
 	    width: auto;
 	    border: none;
 	    background-color: transparent;
@@ -169,7 +282,37 @@
 	td.normal {
 	    border: none;
 	    background-color: transparent;
-	}*/
+	}
+	/*end stupid styles */
+	
+/*  --------------------------------------------------
+   :: Treeview from UL/LI -- currently only in the scheduled outage page
+   -------------------------------------------------- */
+	.treeview
+	{
+	    list-style-type: none;
+	    font-size: 120%;
+	    padding-left: 0;
+	}
+	
+	.treeview ul li
+	{
+	    list-style-type: none;
+	    font-size: 100%;
+	    margin-left: -2em;
+	}
+	
+/*  --------------------------------------------------
+    :: List Styles
+    -------------------------------------------------- */
+	ul.plain {
+	    list-style-type: none;
+	    margin:0;
+	    padding:0px;
+	}
+	ul.plain li { 
+	    line-height:1.6em;
+	}
     
 /*  --------------------------------------------------
     :: Main Page content
@@ -209,7 +352,7 @@
 	}
 	
 	div.o-box-spacer{
-        padding: 0px 6px 4px 6px;
+        padding: 4px 6px;
     }
 	
 	div.o-box.slim{
@@ -236,16 +379,77 @@
 	    color: white;
 	}
 	
+/*  --------------------------------------------------
+    :: Onms Panel (the boxWrapper, want to remove eventually)
+    -------------------------------------------------- */	
+	div.boxWrapper {
+	    background-color: #FFF;
+	    border: 1px solid #999;
+	    border-top: 0;
+	    padding: 4px 6px;
+	    overflow: auto;
+	}
+	
 /* -----------------------------------------
    Standard Forms
 ----------------------------------------- */
     input.input-text, textarea, select { display: inline; }
+    
+    form {
+	    margin: 0;
+	}
+	input, select {
+	    font-family: "lucida grande", verdana, sans-serif;
+	    font-size: 70%;
+	}
+	p input, p select, li input, li select, td input, td select {
+	    font-size: 100%;
+	}
+	.right {
+	    text-align: right;
+	}
+	hr {
+	    position: relative;
+	    visibility: hidden;
+	    margin: 0;
+	    padding: 0;
+	    height: 0;
+	    clear: both;
+	}
+/* -----------------------------------------
+   Custom Form Styles
+----------------------------------------- */
+	div.formOnly {
+	    width:250px; 
+	    text-align:right; 
+	    margin:0 50px; 
+	    padding:50px 0;
+	}
+	
 /* --------------------------------------------------
     :: Typography
     -------------------------------------------------- */
     h2 {
 	    margin: 0;
 	    font-size: 80%;
+	}
+	
+	h3 {
+        background-image: url(../images/headingbg.png);
+        background-repeat: repeat-x;
+        background-position: center center;
+		 background-color: #366903;
+		 color: #FFF;
+		 border:1px solid #999;
+		 border-bottom: 0;
+		 margin-bottom: 0;
+		 margin-top: 7px;
+		 font-size: 70%;
+		 padding: 6px;
+	}
+	
+	p h3, td h3 {
+	    font-size: 100%;
 	}
     
 /*     @media handheld, only screen and (max-width: 767px) { */
@@ -376,17 +580,88 @@
 	#o-report-schedule a:hover {
 	    background: url(../images/reportSchedule.png);
 	}
+	/*End Online Reporting Styles*/
 
-p, td, th, li {
-	font-size: 70%;
-	line-height: 1.25em;
-}
+/* --------------------------------------------------
+    :: Image
+    -------------------------------------------------- */
+	img {
+	    border: none;
+	}
+
+/* --------------------------------------------------
+    :: Footer
+    -------------------------------------------------- */
+	#footer {
+	    clear: both;
+	    text-align: center;
+	    padding: 30px 2px 2px 2px;
+	    background-image: url(../images/footerbg.png);
+	    background-repeat: repeat-x;
+	}
+
+/* --------------------------------------------------
+    :: Misc.
+    -------------------------------------------------- */
+	#index-contentleft {
+	    position: relative;
+	    width: 23%;
+	    float: left;
+	}
+	/*Hack remove the below style its a duplicate*/
+	#contentleft {
+	    width: 48%;
+	    position: relative;
+	    float: left;
+	}
+	
+	#index-contentmiddle {
+	    position: relative;
+	    width: 48%;
+	    float: left;
+	    margin: 0 2%;
+	}
+	
+	#index-contentright {
+	    position: relative;
+	    width: 24%;
+	    float: left;
+	}
+	
+	/*Remove this, and replace with the row and column style*/
+	#contentright {
+	    width: 48%;
+	    float: right;
+	    position: relative;
+	}
+	
+	.normal {
+	    font-size: 70%;
+	    margin: 5px;
+	}
+	
+	.normal p{
+	    font-size: 100%;
+	}
+	
+	.noWrap {
+	    white-space: nowrap;
+	}
+	
+   div.spacer {
+        position: relative;
+        clear: both;
+        height: 1px;
+    }
+	
+/* --------------------------------------------------
+    :: Deprecated Styles, Please do not uncomment, these
+       will eventually be removed after testing.
+    -------------------------------------------------- */
 /* li li { */
 /* 	font-size: 100%; */
 /* } */
-td td {
-	font-size: 100%;
-}
+
 /* td th { */
 /* 	font-size: 100%; */
 /* } */
@@ -396,33 +671,9 @@ td td {
 /* tr.odd td { */
 /* 	background-color: #fff; */
 /* } */
-p {
-	margin: 0 0 7px 0;
-}
-p.noBottomMargin {
-	margin-bottom: 0px;
-}
-form {
-	margin: 0;
-}
-input, select {
-	font-family: "lucida grande", verdana, sans-serif;
-	font-size: 70%;
-}
-p input, p select, li input, li select, td input, td select {
-	font-size: 100%;
-}
-.right {
-	text-align: right;
-}
-hr {
-	position: relative;
-	visibility: hidden;
-	margin: 0;
-	padding: 0;
-	height: 0;
-	clear: both;
-}
+
+
+
 
 /*, td h2 {/*
 	/* 70% * 114% = 80% */
@@ -442,20 +693,11 @@ hr {
 /* 	font-size: 70%; */
 /* 	padding: 6px; */
 /* }  */
-/*p h3, td h3 {
-	font-size: 100%;
-}*/
+
 /* h3 a { */
 /* 	color: #FFF; */
 /* } */
-ul.plain {
-	list-style-type: none;
-	margin:0;
-	padding:0px;
-}
-ul.plain li { 
-	line-height:1.6em;
-}
+
 /*ul.error {
 	list-style-type: none;
 	margin:0;
@@ -468,80 +710,11 @@ ul.error li {
 span.error { 
 	color: #F00;
 }*/
-/* div.boxWrapper { */
-/* 	background-color: #FFF; */
-/* 	border: 1px solid #999; */
-/* 	border-top: 0; */
-/* 	padding: 4px 6px; */
-/* 	overflow: auto; */
-/* } */
+
 /* div.boxWrapper div.col { */
 /* 	margin:  20px auto; */
 /* 	width: 50%; */
 /* } */
-div.formOnly {
-	width:250px; 
-	text-align:right; 
-	margin:0 50px; 
-	padding:50px 0;
-}
-td div.clip {
-	margin:0; 
-	padding:0; 
-	height:1.5em; 
-	overflow:hidden;
-}
-
-.normal {
-	font-size: 70%;
-	margin: 5px;
-}
-
-.normal p{
-    font-size: 100%;
-}
-
-/* Layouts */
-div.TwoColLeft {
-	width: 40%;
-	float: left;
-	position: relative;
-	margin-right: 2%;
-}
-div.TwoColRight {
-	width: 57%;
-	float: left;
-	position: relative;
-}
-
-div.TwoColLAdmin  {
-        width: 40%;
-        float: left;
-        position: relative;
-	margin-right: 2%;
-}
-
-div.TwoColRAdmin {
-        width: 58%;
-        float: left;
-        position: relative;
-}
-
-/* Treeview from UL/LI -- currently only in the scheduled outage page */
-
-.treeview
-{
-	list-style-type: none;
-	font-size: 120%;
-	padding-left: 0;
-}
-
-.treeview ul li
-{
-	list-style-type: none;
-	font-size: 100%;
-	margin-left: -2em;
-}
 
 /* Widget Box Body */
 /*.widget-box
@@ -557,24 +730,7 @@ div.TwoColRAdmin {
 	background: #999999; 
 }*/
 
-#linkbar
-{
-	padding: 0 0 1em 0;
-}
 
-#linkbar ul
-{ 
-	list-style: none;
-	display: inline;
-	padding: 0 0 0 0;
-}
-
-#linkbar li
-{ 
-	list-style: none;
-	display: inline;
-	padding-right: 0.75em;
-}
 
 /* div.standard */
 /* { */
@@ -588,36 +744,7 @@ div.TwoColRAdmin {
 /* 	width: 33%; */
 /* 	margin-top: 0; */
 /* } */
-.noWrap {
-	white-space: nowrap;
-}
-th {
-	border:1px solid #999;
-	padding: 4px 5px;
-	background-color: #444;
-	font-weight: bold;
-	text-align: left;
-	color: #FFF;
-}
-th a {
-	text-decoration: underline;
-	color: #FFF;
-}
-th a:hover {
-	color: #CCC;
-}
-/*Conflicting style*/
-td {
-	border: 1px solid #999;
-	padding: 4px 5px;
-	background-color: #FFF;
-}
 
-td td, td p {
-	font-size: 100%;
-	margin: 0;
-	padding: 0px;
-}
 
 /* table.wdth600 {  */
 /* 	width: 600px; */
@@ -744,20 +871,11 @@ td.availcrit
   text-align: center;
 }*/
 
-
-
-div.spacer {
-	position: relative;
-	clear: both;
-	height: 1px;
-}
 /*div.center {
 	text-align: center;
 }*/
 
-img {
-	border: none;
-}
+
 
 /*#headerdate {
 	float: right;
@@ -766,42 +884,8 @@ img {
 	vertical-align: middle;
 }*/
 
-#headernavbarright {
-	position: relative;
-	float: right;
-	padding: 2px 0px 5px 0px;
-}
 
-/*#contentleft {
-	width: 48%;
-	position: relative;
-	float: left;
-}*/
 
-/*#contentright {
-	width: 48%;
-	float: right;
-	position: relative;
-}*/
-
-#index-contentleft {
-	position: relative;
-	width: 23%;
-	float: left;
-}
-
-#index-contentmiddle {
-	position: relative;
-	width: 48%;
-	float: left;
-	margin: 0 2%;
-}
-
-#index-contentright {
-	position: relative;
-	width: 24%;
-	float: left;
-}
 /*p.pager span {
 	display:block; 
 	float:right; 
@@ -817,13 +901,7 @@ p.key img {
 	margin-left:5px;
 }*/
 
-#footer {
-	clear: both;
-	text-align: center;
-	padding: 30px 2px 2px 2px;
-	background-image: url(../images/footerbg.png);
-	background-repeat: repeat-x;
-}
+
 
 /*.status-critical {
     background-color: red;
@@ -889,6 +967,3 @@ p.key img {
 	margin-left: 240px;
 }*/
 
-.onms-table td{
-    background: #ffffff;
-}
