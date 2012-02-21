@@ -8,6 +8,16 @@ import org.opennms.netmgt.config.collector.Persister;
 /**
  * The Class TcaCollectionAttributeType.
  * 
+ * <p>It is assumed that all metrics are not counters.</p>
+ * <p>The metrics are fixed:</p>
+ * <ul>
+ * <li>delay local-remote ~ current inbound-delay</li>
+ * <li>jitter local-remote ~ current inbound-jitter</li>
+ * <li>delay remote-local ~ current outbound-delay</li>
+ * <li>jitter remote-local ~ current outbound-jitter-</li>
+ * <li>timesync status (1 = good, time is synced, 0 = bad, out-of sync)</li>
+ * </ul>
+ * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class TcaCollectionAttributeType implements CollectionAttributeType {
@@ -35,7 +45,7 @@ public class TcaCollectionAttributeType implements CollectionAttributeType {
 	 */
 	@Override
 	public String getType() {
-		return "gauge";
+		return "Integer32";
 	}
 
 	/* (non-Javadoc)

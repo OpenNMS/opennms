@@ -200,6 +200,7 @@ public class TcaCollectorTest  {
 	@Test
 	public void testCollector() throws Exception {
 		Map<String,Object> parameters = new HashMap<String,Object>();
+		parameters.put("collection", "default");
 
 		// Create Collection Set
 		TcaCollector collector = new TcaCollector();
@@ -223,7 +224,7 @@ public class TcaCollectorTest  {
 		long ts = 1327451787l;
 		for (int i = 0; i < 25; i++) {
 			sb.append(ts++);
-			sb.append(",12,0,12,0,1|");
+			sb.append(",12,-1,12,-2,1|");
 		}
 
 		// Get Current Values
@@ -246,32 +247,34 @@ public class TcaCollectorTest  {
 		collectionSet.visit(persister);
 
 		// Validate Persisted Data
-		RrdDb jrb = new RrdDb(TEST_SNMP_DIR + "/1/" + TcaCollectionResource.RESOURCE_TYPE_NAME + "/171.19.37.60/delayLocalRemote.jrb");
+		RrdDb jrb = new RrdDb(TEST_SNMP_DIR + "/1/" + TcaCollectionResource.RESOURCE_TYPE_NAME + "/171.19.37.60/" + TcaCollectionSet.INBOUND_DELAY + ".jrb");
 
 		// According with the Fixed Step
 		Assert.assertEquals(1, jrb.getArchive(0).getArcStep());
 
 		// According with the Sample Data
 		Assert.assertEquals(ts - 1, jrb.getArchive(0).getEndTime());
-		Robin delayLocalRemote = jrb.getArchive(0).getRobin(0);
-		for (int i = delayLocalRemote.getSize() - 49; i < delayLocalRemote.getSize() - 25; i++) {
-			Assert.assertEquals(new Double(11), Double.valueOf(delayLocalRemote.getValue(i)));
+		Robin inboundDelay = jrb.getArchive(0).getRobin(0);
+		for (int i = inboundDelay.getSize() - 49; i < inboundDelay.getSize() - 25; i++) {
+			Assert.assertEquals(new Double(11), Double.valueOf(inboundDelay.getValue(i)));
 		}
-		for (int i = delayLocalRemote.getSize() - 24; i < delayLocalRemote.getSize(); i++) {
-			Assert.assertEquals(new Double(12), Double.valueOf(delayLocalRemote.getValue(i)));
+		for (int i = inboundDelay.getSize() - 24; i < inboundDelay.getSize(); i++) {
+			Assert.assertEquals(new Double(12), Double.valueOf(inboundDelay.getValue(i)));
 		}
 	}
 
 	/**
 	 * Validate collection set.
-	 *
+	 * <p>Each collection set must contain:<br>
+	 * 25 Samples of each of 2 peers = 50 resources</p>
+	 * 
 	 * @param collectionSet the collection set
 	 */
 	private void validateCollectionSet(CollectionSet collectionSet) {
 		Assert.assertTrue(collectionSet instanceof TcaCollectionSet);
 		TcaCollectionSet tcaCollection = (TcaCollectionSet) collectionSet;
 		Assert.assertFalse(tcaCollection.getCollectionResources().isEmpty());
-		Assert.assertEquals(50, tcaCollection.getCollectionResources().size()); // 25 Samples of each of 2 peers = 50 resources.
+		Assert.assertEquals(50, tcaCollection.getCollectionResources().size());
 	}
 
 }

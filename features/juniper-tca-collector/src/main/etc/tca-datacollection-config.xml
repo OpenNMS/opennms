@@ -4,26 +4,26 @@
     <!-- IMPORTANT: To enable this collector you should add a service definition inside any package on
                     collectd-configuration.xml, like this:
 
-		<service name="TCA" interval="20000" user-defined="false" status="on">
+		<service name="TCA" interval="10000" user-defined="false" status="on">
 			<parameter key="collection" value="default"/>
-			<parameter key="thresholding-enabled" value="false"/>
+			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 
         <collector service="TCA"  class-name="org.opennms.netmgt.collectd.tca.TcaCollector"/>
 
-        Note that the interval should be less than 25 seconds.
+        Note that the interval should be less than 25 seconds. The recommented interval is 10 seconds.
     -->
     <tca-collection name="default">
         <!-- This collector always use 1 second for RRD step. -->
 	    <rrd>
-		    <rra>RRA:AVERAGE:0.5:1:3600</rra>
-		    <rra>RRA:AVERAGE:0.5:300:288</rra>
+		    <rra>RRA:AVERAGE:0.5:1:3600</rra>  <!-- One hour at 1 second interval -->
+		    <rra>RRA:AVERAGE:0.5:300:288</rra> <!-- One day at 5 minutes interval -->
 		    <rra>RRA:MIN:0.5:300:288</rra>
 		    <rra>RRA:MAX:0.5:300:288</rra>
-		    <rra>RRA:AVERAGE:0.5:900:2880</rra>
+		    <rra>RRA:AVERAGE:0.5:900:2880</rra> <!-- One month at 15 minutes interval -->
 		    <rra>RRA:MIN:0.5:900:2880</rra>
 		    <rra>RRA:MAX:0.5:900:2880</rra>
-		    <rra>RRA:AVERAGE:0.5:3600:4300</rra>
+		    <rra>RRA:AVERAGE:0.5:3600:4300</rra> <!-- Six months at one hour interval -->
 		    <rra>RRA:MIN:0.5:3600:4300</rra>
 		    <rra>RRA:MAX:0.5:3600:4300</rra>
 	    </rrd>

@@ -141,13 +141,20 @@ public class TcaCollector implements ServiceCollector {
 	@Override
 	public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
 		try {
+			String collectionName = ParameterMap.getKeyedString(parameters, "collection", null);
+			if (collectionName == null) {
+				collectionName = ParameterMap.getKeyedString(parameters, "tca-collection", null);
+			}
+			if (collectionName == null) {
+				throw new CollectionException("Parameter collection is required for the TCA Collector!");
+			}
 			Collectd.instrumentation().beginCollectingServiceData(agent.getNodeId(), agent.getHostAddress(), m_serviceName);
-			TcaCollectionSet collectionSet = new TcaCollectionSet(agent);
+			TcaCollectionSet collectionSet = new TcaCollectionSet(agent, getRrdRepository(collectionName));
 			collectionSet.setCollectionTimestamp(new Date());
 			collectionSet.collect();
 			return collectionSet;
 		} catch (Throwable t) {
-			CollectionException e = new CollectionException("Unexpected error during node SNMP collection for: " + agent.getHostAddress() + ": " + t, t);
+			CollectionException e = new CollectionException("Unexpected error during node TCA collection for: " + agent.getHostAddress() + ": " + t, t);
 			Collectd.instrumentation().reportCollectionException(agent.getNodeId(), agent.getHostAddress(), m_serviceName, e);
 			throw e;
 		} finally {

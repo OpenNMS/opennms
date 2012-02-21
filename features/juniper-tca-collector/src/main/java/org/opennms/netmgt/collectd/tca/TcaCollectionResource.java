@@ -42,6 +42,17 @@ import org.opennms.netmgt.model.RrdRepository;
 
 /**
  * The Class TcaCollectionResource.
+ * <p>The resource type is fixed to <code>juniperTcaEntry</code></p>
+ * <p>This requires to define a datacollection-group like this:</p>
+ * <pre>
+ * &lt;datacollection-group name="Juniper TCA"&gt;
+ *    &lt;resourceType name="juniperTcaEntry" label="Juniper TCA Entry" resourceLabel="Peer ${index}"&gt;
+ *     &lt;persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/&gt;
+ *     &lt;storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/&gt;
+ *   &lt;/resourceType&gt;
+ * &lt;/datacollection-group&gt;
+ * </pre>
+ * <p>Note: the persistenceSelectorStrategy and storageStrategy won't be used by the collector.</p>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */

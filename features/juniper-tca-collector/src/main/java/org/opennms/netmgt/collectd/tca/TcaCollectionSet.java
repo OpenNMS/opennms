@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collectd.tca;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +43,8 @@ import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
@@ -52,27 +55,50 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  */
 public class TcaCollectionSet implements CollectionSet {
 
-	/** The collection status. */
+	/** The Constant LAST_TIMESTAMP. */
+	public static final String LAST_TIMESTAMP = "__tcaLastTimestamp";
+
+	/** The Constant INBOUND_DELAY. */
+	public static final String INBOUND_DELAY = "inboundDelay";
+
+	/** The Constant INBOUND_JITTER. */
+	public static final String INBOUND_JITTER = "inboundJitter";
+
+	/** The Constant OUTBOUND_DELAY. */
+	public static final String OUTBOUND_DELAY = "outboundDelay";
+
+	/** The Constant OUTBOUND_JITTER. */
+	public static final String OUTBOUND_JITTER = "outboundJitter";
+
+	/** The Constant TIMESYNC_STATUS. */
+	public static final String TIMESYNC_STATUS = "timesyncStatus";
+
+	/** The Collection Status. */
 	private int m_status;
 
 	/** The list of SNMP collection resources. */
 	private List<TcaCollectionResource> m_collectionResources;
 
-	/** The collection timestamp. */
+	/** The Collection timestamp. */
 	private Date m_timestamp;
 
-	/** The m_agent. */
+	/** The Colelction Agent. */
 	private CollectionAgent m_agent;
+
+	/** The RRD Repository. */
+	private RrdRepository m_rrdRepository;
 
 	/**
 	 * Instantiates a new TCA collection set.
 	 *
 	 * @param agent the agent
+	 * @param repository the repository
 	 */
-	public TcaCollectionSet(CollectionAgent agent) {
+	public TcaCollectionSet(CollectionAgent agent, RrdRepository repository) {
 		m_status = ServiceCollector.COLLECTION_FAILED;
 		m_collectionResources = new ArrayList<TcaCollectionResource>();
 		m_agent = agent;
+		m_rrdRepository = repository;
 	}
 
 	/* (non-Javadoc)
@@ -141,10 +167,12 @@ public class TcaCollectionSet implements CollectionSet {
 			m_status = ServiceCollector.COLLECTION_SUCCEEDED;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new CollectionWarning("collect: Collection of node TCA data for interface " + m_agent.getHostAddress() + " interrupted: " + e, e);
+			throw new CollectionWarning("Collection of node TCA data for interface " + m_agent.getHostAddress() + " interrupted: " + e, e);
+		} catch (Exception e) {
+			throw new CollectionException("Can't collect TCA data because " + e.getMessage(), e);
 		}
 	}
-	
+
 	/**
 	 * Gets the collection resources.
 	 *
@@ -156,55 +184,56 @@ public class TcaCollectionSet implements CollectionSet {
 
 	/**
 	 * Process.
-	 *
+	 * 
 	 * <p>A sample TCA Data looks like the following:</p>
 	 * <ul>
 	 * <li>OID=.1.3.6.1.4.1.27091.3.1.6.1.1.172.19.37.60.1, Type=OctetString, Value=172.19.37.60 </li>
 	 * <li>OID=.1.3.6.1.4.1.27091.3.1.6.1.2.172.19.37.60.1, Type=OctetString, Value=
-	 * |25|1327451762,11,0,11,0,1|1327451763,11,0,11,0,1|1327451764,11,0,11,0,1|1327451765,11,0,11,0,1|1327451766,11,0,11,0,1| 
-	 * 1327451767,11,0,11,0,1|1327451768,11,0,11,0,1|1327451769,11,0,11,0,1|1327451770,11,0,11,0,1|1327451771,11,0,11,0,1| 
-	 * 1327451772,11,0,11,0,1|1327451773,11,0,11,0,1|1327451774,11,0,11,0,1|1327451775,11,0,11,0,1|1327451776,11,0,11,0,1| 
-	 * 1327451777,11,0,11,0,1|1327451778,11,0,11,0,1|1327451779,11,0,11,0,1|1327451780,11,0,11,0,1|1327451781,11,0,11,0,1| 
+	 * |25|1327451762,11,0,11,0,1|1327451763,11,0,11,0,1|1327451764,11,0,11,0,1|1327451765,11,0,11,0,1|1327451766,11,0,11,0,1|
+	 * 1327451767,11,0,11,0,1|1327451768,11,0,11,0,1|1327451769,11,0,11,0,1|1327451770,11,0,11,0,1|1327451771,11,0,11,0,1|
+	 * 1327451772,11,0,11,0,1|1327451773,11,0,11,0,1|1327451774,11,0,11,0,1|1327451775,11,0,11,0,1|1327451776,11,0,11,0,1|
+	 * 1327451777,11,0,11,0,1|1327451778,11,0,11,0,1|1327451779,11,0,11,0,1|1327451780,11,0,11,0,1|1327451781,11,0,11,0,1|
 	 * 1327451782,11,0,11,0,1|1327451783,11,0,11,0,1|1327451784,11,0,11,0,1|1327451785,11,0,11,0,1|1327451786,11,0,11,0,1|</li>
 	 * </ul>
 	 * 
 	 * <ul>
 	 * <li>timestamp (epoch)</li>
-	 * <li>delay local-remote</li>
-	 * <li>jitter local-remote</li>
-	 * <li>delay remote-local</li>
-	 * <li>jitter remote-local</li>
-	 * <li>status (1 = good, time is synced, 0 = bad, out-of sync)</li>
+	 * <li>delay local-remote ~ current inbound-delay</li>
+	 * <li>jitter local-remote ~ current inbound-jitter</li>
+	 * <li>delay remote-local ~ current outbound-delay</li>
+	 * <li>jitter remote-local ~ current outbound-jitter-</li>
+	 * <li>timesync status (1 = good, time is synced, 0 = bad, out-of sync)</li>
 	 * </ul>
-	 * 
+	 *
 	 * @param tracker the tracker
+	 * @throws Exception the exception
 	 */
-	private void process(TcaData tracker) {
+	private void process(TcaData tracker) throws Exception {
 		log().debug("process: processing raw TCA data for " + tracker.size() + " peers.");
 		AttributeGroupType attribGroupType = new AttributeGroupType(TcaCollectionResource.RESOURCE_TYPE_NAME, "all"); // It will be treated like a Multi-Instance Resource
+		long timestamp = 0;
 		for (TcaDataEntry entry : tracker.getEntries()) {
+			long lastTimestamp = getLastTimestamp(new TcaCollectionResource(m_agent, entry.getPeerAddress()));
 			String[] rawData = entry.getRawData().split("\\|");
 			int samples = Integer.parseInt(rawData[1]);
 			for (int i=0; i<samples; i++) {
 				log().debug("process: processing row " + i + ": " + rawData[2 + i]);
 				String[] rawEntry = rawData[2 + i].split(",");
-				if (rawEntry[5].equals("1")) {
-					long timestamp = Long.parseLong(rawEntry[0]);
+				timestamp = Long.parseLong(rawEntry[0]);
+				if (timestamp > lastTimestamp) {
 					TcaCollectionResource resource = new TcaCollectionResource(m_agent, entry.getPeerAddress());
 					resource.setTimeKeeper(new ConstantTimeKeeper(timestamp));
-					TcaCollectionAttributeType delayLocalRemote = new TcaCollectionAttributeType(attribGroupType, "delayLocalRemote");
-					resource.setAttributeValue(delayLocalRemote, rawEntry[1]);
-					TcaCollectionAttributeType jitterLocalRemote = new TcaCollectionAttributeType(attribGroupType, "jitterLocalRemote");
-					resource.setAttributeValue(jitterLocalRemote, rawEntry[2]);
-					TcaCollectionAttributeType delayRemoteLocal = new TcaCollectionAttributeType(attribGroupType, "delayRemoteLocal");
-					resource.setAttributeValue(delayRemoteLocal, rawEntry[3]);
-					TcaCollectionAttributeType jitterRemoteLocal = new TcaCollectionAttributeType(attribGroupType, "jitterRemoteLocal");
-					resource.setAttributeValue(jitterRemoteLocal, rawEntry[4]);
+					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, INBOUND_DELAY), rawEntry[1]);
+					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, INBOUND_JITTER), rawEntry[2]);
+					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, OUTBOUND_DELAY), rawEntry[3]);
+					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, OUTBOUND_JITTER), rawEntry[4]);
+					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, TIMESYNC_STATUS), rawEntry[5]);
 					m_collectionResources.add(resource);
 				} else {
-					log().info("process: skipping row " + i + " " + rawData[2 + i] + " because the status is not valid.");
+					log().debug("process: skipping row " + i + " " + rawData[2 + i] + " because it was already processed.");
 				}
 			}
+			setLastTimestamp(new TcaCollectionResource(m_agent, entry.getPeerAddress()), timestamp);
 		}
 	}
 
@@ -223,6 +252,38 @@ public class TcaCollectionSet implements CollectionSet {
 		}
 		String message = "collection failed for " + m_agent.getHostAddress()  + " due to: " + walker.getErrorMessage();
 		throw new CollectionWarning(message, walker.getErrorThrowable());
+	}
+
+	/**
+	 * Gets the last timestamp.
+	 *
+	 * @param resource the TCA resource
+	 * @return the last timestamp
+	 * @throws Exception the exception
+	 */
+	private long getLastTimestamp(TcaCollectionResource resource) throws Exception {
+		File file = null;
+		long timestamp = 0;
+		try {
+			file  = resource.getResourceDir(m_rrdRepository);
+			String ts = ResourceTypeUtils.getStringProperty(resource.getResourceDir(m_rrdRepository), LAST_TIMESTAMP);
+			if (ts != null)
+				timestamp = Long.parseLong(ts);
+		} catch (Exception e) {
+			log().info("getLastFilename: creating a new filename tracker on " + file);
+		}
+		return timestamp;
+	}
+
+	/**
+	 * Sets the last timestamp.
+	 *
+	 * @param resource the resource
+	 * @param timestamp the timestamp
+	 * @throws Exception the exception
+	 */
+	private void setLastTimestamp(TcaCollectionResource resource, long timestamp) throws Exception {
+		ResourceTypeUtils.updateStringProperty(resource.getResourceDir(m_rrdRepository), Long.toString(timestamp), LAST_TIMESTAMP);
 	}
 
 	/**
