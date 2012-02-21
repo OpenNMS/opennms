@@ -241,6 +241,7 @@
 <%!
     public String buildDelaySelect(String[] intervals, String name, String currValue)
     {
+          boolean gotCurrValue = false;
           StringBuffer buffer = new StringBuffer("<select name=\"" + name  + "\">");
                     
           for (int i = 0; i < intervals.length; i++)
@@ -248,11 +249,16 @@
              if (intervals[i].equals(currValue))
              {
                  buffer.append("<option selected=\"selected\" value=\"" + intervals[i] + "\">").append(intervals[i]).append("</option>");
+                 gotCurrValue = true;
              }
              else
              {
                   buffer.append("<option value=\"" + intervals[i] + "\">").append(intervals[i]).append("</option>");
              }
+          }
+          if (!gotCurrValue)
+          {
+              buffer.append("<option selected=\"selected\" value=\"" + currValue + "\">").append(currValue).append("</option>");
           }
           buffer.append("</select>");
           
