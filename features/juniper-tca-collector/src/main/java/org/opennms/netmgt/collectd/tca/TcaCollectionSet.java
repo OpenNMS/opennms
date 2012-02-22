@@ -220,16 +220,17 @@ public class TcaCollectionSet implements CollectionSet {
 				log().debug("process: processing row " + i + ": " + rawData[2 + i]);
 				String[] rawEntry = rawData[2 + i].split(",");
 				timestamp = Long.parseLong(rawEntry[0]);
-				if (timestamp > lastTimestamp && rawEntry[5].equals("1")) {
+				if (timestamp > lastTimestamp) {
 					TcaCollectionResource resource = new TcaCollectionResource(m_agent, entry.getPeerAddress());
 					resource.setTimeKeeper(new ConstantTimeKeeper(timestamp));
 					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, INBOUND_DELAY), rawEntry[1]);
 					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, INBOUND_JITTER), rawEntry[2]);
 					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, OUTBOUND_DELAY), rawEntry[3]);
 					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, OUTBOUND_JITTER), rawEntry[4]);
+					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, TIMESYNC_STATUS), rawEntry[5]);
 					m_collectionResources.add(resource);
 				} else {
-					log().debug("process: skipping row " + i + " " + rawData[2 + i] + " because it was already processed or it is out of sync.");
+					log().debug("process: skipping row " + i + " " + rawData[2 + i] + " because it was already processed.");
 				}
 			}
 			setLastTimestamp(new TcaCollectionResource(m_agent, entry.getPeerAddress()), timestamp);
