@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.vmmgr;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +86,7 @@ public class DaemonManagerDefault implements DaemonManager {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			stati.put(serviceDaemon.getName(), serviceDaemon.status());
 		}
-		return stati;
+		return Collections.unmodifiableMap(stati);
 	}
 
 	/**

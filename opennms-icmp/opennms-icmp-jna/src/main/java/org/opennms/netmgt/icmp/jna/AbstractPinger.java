@@ -93,7 +93,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
         }
     }
 
-    abstract public void ping(T addr, int identifier, int sequenceNumber, long threadId, long count, long interval) throws InterruptedException;
+    abstract public void ping(T addr, int identifier, int sequenceNumber, long threadId, long count, long interval, int packetSize) throws InterruptedException;
 
     public void addPingReplyListener(PingReplyListener listener) {
         m_listeners.add(listener);

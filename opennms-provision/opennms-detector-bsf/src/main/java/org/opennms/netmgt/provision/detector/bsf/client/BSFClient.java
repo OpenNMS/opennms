@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -214,7 +215,7 @@ public class BSFClient implements Client<BSFRequest, BSFResponse> {
         map.put("bsf-engine", getBsfEngine());
         map.put("file-extensions", getFileExtensions());
         map.put("run-type", getRunType());
-        return map;
+        return Collections.unmodifiableMap(map);
     }
 
 }

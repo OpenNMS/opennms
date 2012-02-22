@@ -28,26 +28,27 @@
 
 package org.opennms.netmgt.ticketer.jira;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.Calendar;
+import java.util.Properties;
+
+import org.apache.commons.io.IOUtils;
+import org.opennms.api.integration.ticketing.Plugin;
+import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.core.utils.ThreadCategory;
+
 import com.atlassian.jira.rpc.soap.client.JiraSoapService;
 import com.atlassian.jira.rpc.soap.client.JiraSoapServiceService;
 import com.atlassian.jira.rpc.soap.client.JiraSoapServiceServiceLocator;
 import com.atlassian.jira.rpc.soap.client.RemoteComment;
 import com.atlassian.jira.rpc.soap.client.RemoteFieldValue;
 import com.atlassian.jira.rpc.soap.client.RemoteIssue;
-import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.api.integration.ticketing.Ticket;
-import org.opennms.api.integration.ticketing.Plugin;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.rmi.RemoteException;
-import java.util.Calendar;
-import java.util.Properties;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 
 /**

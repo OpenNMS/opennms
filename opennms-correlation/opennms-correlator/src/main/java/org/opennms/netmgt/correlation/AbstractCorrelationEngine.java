@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.correlation;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -50,7 +49,7 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
 	private static final AtomicInteger s_lastTimerId = new AtomicInteger(0);
     private EventIpcManager m_eventIpcManager;
     private Timer m_scheduler;
-    private final Map<Integer, TimerTask> m_pendingTasks = Collections.synchronizedMap(new HashMap<Integer, TimerTask>());
+    private final Map<Integer, TimerTask> m_pendingTasks = new ConcurrentHashMap<Integer, TimerTask>();
 
     /** {@inheritDoc} */
     abstract public void correlate(Event e);

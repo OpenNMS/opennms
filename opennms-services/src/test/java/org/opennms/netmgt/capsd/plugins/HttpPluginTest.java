@@ -32,9 +32,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -64,7 +63,7 @@ public class HttpPluginTest {
     @Ignore("This operation is not supported yet, see http://issues.opennms.org/browse/NMS-2963")
     @JUnitHttpServer(port=10342, basicAuth=true)
     public void testHttpBasicAuth() throws UnknownHostException {
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         HttpPlugin plugin = new HttpPlugin();

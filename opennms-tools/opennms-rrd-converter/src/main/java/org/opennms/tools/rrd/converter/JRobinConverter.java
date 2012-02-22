@@ -41,7 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -149,7 +149,7 @@ public class JRobinConverter {
         LogUtils.setLevel(Level.valueOf(cmd.getOptionValue("l", DEFAULT_LOG_LEVEL)));
         RrdBackendFactory.setDefaultFactory(cmd.getOptionValue("f", DEFAULT_JROBIN_FACTORY));
 
-        final Set<File> rrds = Collections.synchronizedSet(new TreeSet<File>());
+        final Set<File> rrds = new ConcurrentSkipListSet<File>();
 
         if (cmd.hasOption("h")) {
             new HelpFormatter().printHelp("jrobin-converter [options] [file-or-directory1] [...file-or-directoryN]", options);

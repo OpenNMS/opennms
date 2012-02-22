@@ -38,6 +38,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -111,7 +112,7 @@ public final class SnmpThresholder implements ServiceThresholder {
        
         log().debug("initialize: successfully instantiated RRD subsystem");
        
-        m_snmpThresholdNetworkInterfaces = Collections.synchronizedMap(new HashMap<NetworkInterface<InetAddress>, SnmpThresholdNetworkInterface>()); 
+        m_snmpThresholdNetworkInterfaces = new ConcurrentHashMap<NetworkInterface<InetAddress>, SnmpThresholdNetworkInterface>(); 
     }
 
     private void setupIfInfoGetter() {
@@ -808,7 +809,7 @@ public final class SnmpThresholder implements ServiceThresholder {
         		thresholdMap.get(entity.getDataSourceExpression()).add(entity.clone());
         	}
         }
-        return thresholdMap;
+        return Collections.unmodifiableMap(thresholdMap);
     }
 
     private ThreadCategory log() {

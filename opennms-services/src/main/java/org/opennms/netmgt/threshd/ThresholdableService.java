@@ -31,7 +31,7 @@ package org.opennms.netmgt.threshd;
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -124,7 +124,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
      * The map of service parameters. These parameters are mapped by the
      * composite key <em>(package name, service name)</em>.
      */
-    private static Map<String,Map<?,?>> SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap<String,Map<?,?>>());
+    private static Map<String,Map<?,?>> SVC_PROP_MAP = new ConcurrentSkipListMap<String,Map<?,?>>();
 
     private Threshd m_threshd;
 
@@ -179,7 +179,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
         m_svcPropKey = m_package.getName() + "." + m_service.getName();
         synchronized (SVC_PROP_MAP) {
             if (!SVC_PROP_MAP.containsKey(m_svcPropKey)) {
-                Map<String,String> m = Collections.synchronizedMap(new TreeMap<String,String>());
+                Map<String,String> m = new ConcurrentSkipListMap<String,String>();
                 for (final Parameter p : m_service.getParameterCollection()) {
                     m.put(p.getKey(), p.getValue());
                 }
@@ -379,7 +379,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
     }
 
     Map<?,?> getPropertyMap() {
-        return (Map<?,?>) SVC_PROP_MAP.get(m_svcPropKey);
+        return Collections.unmodifiableMap((Map<?,?>) SVC_PROP_MAP.get(m_svcPropKey));
     }
 
     /**

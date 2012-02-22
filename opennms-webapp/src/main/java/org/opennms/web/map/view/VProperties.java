@@ -45,43 +45,43 @@ import org.opennms.web.map.config.Status;
  * @since 1.8.1
  */
 public class VProperties {
-    boolean isUserAdmin=false;
-    boolean reload=false;
+    private boolean isUserAdmin=false;
+    private boolean reload=false;
 
-	boolean doubleClickEnabled=true;
-	boolean contextMenuEnabled=true;
-    boolean availEnabled=true;
+	private boolean doubleClickEnabled=true;
+	private boolean contextMenuEnabled=true;
+    private boolean availEnabled=true;
     
-    boolean useSemaphore=true;
+    private boolean useSemaphore=true;
 
-    int unknownstatusid;
-    int maxLinks;
-    int summaryLink;
+    private int unknownstatusid;
+    private int maxLinks;
+    private int summaryLink;
     
-    String summaryLinkColor;
-    String multilinkIgnoreColor;
-    String multilinkStatus;
+    private String summaryLinkColor;
+    private String multilinkIgnoreColor;
+    private String multilinkStatus;
 
-    ContextMenu contextMenu;
+    private ContextMenu contextMenu;
 
 	
-	List<Link> links;
-	List<LinkStatus> linkStatuses;
-	List<Status> statuses;
-	List<Severity> severities;
-	List<Avail> avails;
+	private List<Link> links;
+	private List<LinkStatus> linkStatuses;
+	private List<Status> statuses;
+	private List<Severity> severities;
+	private List<Avail> avails;
 	
-    int defaultMapElementDimension;
+    private int defaultMapElementDimension;
 
-    java.util.Map<String,String> icons;
-	java.util.Map<String,String> backgroundImages;
-	java.util.Map<String, String> mapElementDimensions;
+    private java.util.Map<String,String> icons;
+	private java.util.Map<String,String> backgroundImages;
+	private java.util.Map<String, String> mapElementDimensions;
     
-    String defaultNodeIcon;
-    String defaultMapIcon;
-    String defaultBackgroundColor;
+    private String defaultNodeIcon;
+    private String defaultMapIcon;
+    private String defaultBackgroundColor;
 	
-	List<String> categories;
+	private List<String> categories;
 	
     /**
      * <p>Getter for the field <code>multilinkIgnoreColor</code>.</p>

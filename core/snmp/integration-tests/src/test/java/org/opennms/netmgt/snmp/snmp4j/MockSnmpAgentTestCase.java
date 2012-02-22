@@ -64,7 +64,7 @@ public abstract class MockSnmpAgentTestCase extends TestCase {
         
         MockLogAppender.setupLogging();
 
-        m_agent = MockSnmpAgent.createAgentAndRun(m_propertiesResource, m_agentAddress.getHostAddress() + "/" + m_agentPort);
+        m_agent = MockSnmpAgent.createAgentAndRun(m_propertiesResource.getURL(), m_agentAddress.getHostAddress() + "/" + m_agentPort);
     }
 
     @Override

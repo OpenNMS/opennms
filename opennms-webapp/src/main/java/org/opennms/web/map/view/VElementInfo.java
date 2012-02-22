@@ -37,7 +37,7 @@ package org.opennms.web.map.view;
  */
 public class VElementInfo implements Cloneable {
     
-	private int id;
+	private final int id;
 
     private String uei;
     

@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -115,7 +116,7 @@ public final class Threshd extends AbstractServiceDaemon {
     Threshd() {
     	super("OpenNMS.Threshd");
         m_scheduler = null;
-        m_svcThresholders = Collections.synchronizedMap(new TreeMap<String, ServiceThresholder>());
+        m_svcThresholders = new ConcurrentSkipListMap<String, ServiceThresholder>();
         m_thresholdableServices = Collections.synchronizedList(new LinkedList<ThresholdableService>());
 
         m_proxy = new EventProxy() {

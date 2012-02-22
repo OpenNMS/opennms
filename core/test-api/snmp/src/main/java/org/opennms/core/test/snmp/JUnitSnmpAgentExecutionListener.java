@@ -33,6 +33,7 @@ package org.opennms.core.test.snmp;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.BindException;
 import java.net.InetAddress;
@@ -45,7 +46,6 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.mock.snmp.MockSnmpDataProvider;
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.SnmpAgentConfigProxyMapper;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
@@ -127,7 +127,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         }
     }
 
-    private void handleSnmpAgent(final TestContext testContext, final JUnitSnmpAgent config, MockSnmpDataProvider provider) throws UnknownHostException, InterruptedException {
+    private void handleSnmpAgent(final TestContext testContext, final JUnitSnmpAgent config, MockSnmpDataProvider provider) throws IOException, UnknownHostException, InterruptedException {
         if (config == null) return;
 
         String factoryClassName = "unknown";
@@ -186,7 +186,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 		    MockSnmpAgent agent = null;
 		    while (agent == null) {
 	            try {
-	                agent = MockSnmpAgent.createAgentAndRun(resource, str(listenAddress.getAddress()) + "/" + listenAddress.getPort());
+	                agent = MockSnmpAgent.createAgentAndRun(resource.getURL(), str(listenAddress.getAddress()) + "/" + listenAddress.getPort());
 	                break;
 	            } catch (final InterruptedException e) {
 	                if (e.getCause() instanceof BindException && e.getCause().getMessage().contains("already in use")) {
@@ -258,13 +258,13 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 		}
 
 		@Override
-		public void setDataForAddress(final SnmpAgentAddress address, final Resource resource) {
+		public void setDataForAddress(final SnmpAgentAddress address, final Resource resource) throws IOException {
 			final MockSnmpAgent agent = m_agents.get(address);
 			if (agent == null) {
 				LogUtils.warnf(this, "Unable to set mock SNMP data for %s: no such agent", address);
 				return;
 			}
-			agent.updateValuesFromResource(resource);
+			agent.updateValuesFromResource(resource.getURL());
 		}
 
 		@Override

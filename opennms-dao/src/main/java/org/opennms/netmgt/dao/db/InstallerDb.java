@@ -753,7 +753,7 @@ public class InstallerDb {
      */
     public Map<String, Integer> getTypesFromDB() throws SQLException {
         if (m_dbtypes != null) {
-            return m_dbtypes;
+            return Collections.unmodifiableMap(m_dbtypes);
         }
 
         final Statement st = getConnection().createStatement();
@@ -771,7 +771,7 @@ public class InstallerDb {
         }
 
         m_dbtypes = m;
-        return m_dbtypes;
+        return Collections.unmodifiableMap(m_dbtypes);
     }
     
     /**
@@ -2487,7 +2487,7 @@ public class InstallerDb {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, List<Insert>> getInserts() {
-        return m_inserts;
+        return Collections.unmodifiableMap(m_inserts);
     }
 
     /**

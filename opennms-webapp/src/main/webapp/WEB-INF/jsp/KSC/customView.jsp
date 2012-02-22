@@ -91,9 +91,6 @@
       <c:if test="${!empty report}">
         <input type="hidden" name="<%=FormProcViewController.Parameters.report%>" value="${report}">
       </c:if>
-      <c:if test="${!empty domain}">
-        <input type="hidden" name="<%=FormProcViewController.Parameters.domain%>" value="${domain}">
-      </c:if>
 
             <table class="normal" align="center">
               <c:set var="graphNum" value="0"/>

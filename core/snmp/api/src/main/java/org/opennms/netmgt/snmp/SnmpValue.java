@@ -58,7 +58,7 @@ public interface SnmpValue {
     
     public final static int SNMP_NO_SUCH_INSTANCE = (0x81);
 
-    public final static int SNMP_END_OF_MIB = (0x82);
+    public final static int SNMP_END_OF_MIB = (0x82); // 8*16 + 2 = 130
     
     public abstract boolean isEndOfMib();
     

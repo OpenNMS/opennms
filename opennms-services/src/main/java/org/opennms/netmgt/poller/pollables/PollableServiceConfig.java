@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.pollables;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollOutagesConfig;
@@ -159,7 +160,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     }
 
     private Map<String,Object> createPropertyMap(Service svc) {
-        Map<String,Object> m = Collections.synchronizedMap(new TreeMap<String,Object>());
+        Map<String,Object> m = new ConcurrentSkipListMap<String,Object>();
         for (Parameter p : svc.getParameterCollection()) {
             String val = p.getValue();
             if (val == null) {

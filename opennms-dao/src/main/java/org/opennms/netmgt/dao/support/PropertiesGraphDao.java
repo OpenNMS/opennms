@@ -941,7 +941,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, Resource> getAdhocConfigs() {
-        return m_adhocConfigs;
+        return Collections.unmodifiableMap(m_adhocConfigs);
     }
 
     /**
@@ -964,7 +964,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, Resource> getPrefabConfigs() {
-        return m_prefabConfigs;
+        return Collections.unmodifiableMap(m_prefabConfigs);
     }
 
     /**

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
@@ -61,7 +62,7 @@ public class LatencyParameters {
 	 * @return a {@link java.util.Map} object.
 	 */
 	public Map<?,?> getParameters() {
-		return m_parameters;
+		return Collections.unmodifiableMap(m_parameters);
 	}
 	
 

@@ -86,7 +86,7 @@ public class JMXNodeInfo {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, BeanInfo> getMBeans() {
-        return m_mbeans;
+        return Collections.unmodifiableMap(m_mbeans);
     }
 
     /**
@@ -113,7 +113,7 @@ public class JMXNodeInfo {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, List<Attrib>> getAttributeMap() {
-        return m_oidList;
+        return Collections.unmodifiableMap(m_oidList);
     }
 
     /**
@@ -131,7 +131,7 @@ public class JMXNodeInfo {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, JMXDataSource> getDsMap() {
-        return m_dsList;
+        return Collections.unmodifiableMap(m_dsList);
     }
 
 } // end class

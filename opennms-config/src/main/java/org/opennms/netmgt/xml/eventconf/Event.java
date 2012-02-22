@@ -33,9 +33,12 @@ import org.exolab.castor.xml.Unmarshaller;
  */
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.FIELD)
-@SuppressWarnings("serial")
 public class Event implements java.io.Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2733176689376409920L;
 
       //--------------------------/
      //- Class/Member Variables -/
@@ -166,6 +169,8 @@ public class Event implements java.io.Serializable {
 	@XmlElement(name="alarm-data", required=false)
     private AlarmData m_alarmData;
 
+    @XmlElement(name="filters", required=false)
+	private org.opennms.netmgt.xml.eventconf.Filters _filters;
 
       //----------------/
      //- Constructors -/
@@ -568,6 +573,13 @@ public class Event implements java.io.Serializable {
             }
             else if (temp.m_alarmData != null)
                 return false;
+            if (this._filters != null) {
+                if (temp._filters == null) return false;
+                else if (!(this._filters.equals(temp._filters))) 
+                    return false;
+            }
+            else if (temp._filters != null)
+                return false;
             return true;
         }
         return false;
@@ -711,7 +723,19 @@ public class Event implements java.io.Serializable {
         return (Forward) m_forwardList.get(index);
     }
 
-    /**
+     /**
+      * Returns the value of field 'filters'. The field 'filters'
+      * has the following description: The event filters to be
+      * applied to the event data
+      * 
+      * @return the value of field 'Filters'.
+      */
+     public org.opennms.netmgt.xml.eventconf.Filters getFilters(
+     ) {
+         return this._filters;
+     }
+
+     /**
      * Method getForward.Returns the contents of the collection in
      * an Array.  <p>Note:  Just in case the collection contents
      * are changing in another thread, we pass a 0-length Array of
@@ -1086,7 +1110,7 @@ public class Event implements java.io.Serializable {
         	append(getAutoacknowledge()).append(getAutoaction()).append(getCorrelation()).append(getDescr()).append(getEventLabel()).
         	append(getForward()).append(getLoggroup()).append(getLogmsg()).append(getMask()).append(getMouseovertext()).
         	append(getOperaction()).append(getOperinstruct()).append(getScript()).append(getSeverity()).append(getSnmp()).
-        	append(getTticket()).append(getUei()).append(getVarbindsdecode()).toHashCode();
+        	append(getTticket()).append(getUei()).append(getVarbindsdecode()).append(getFilters()).toHashCode();
         	
     }
 
@@ -1508,6 +1532,10 @@ public class Event implements java.io.Serializable {
     public void setEventLabel(
             final String eventLabel) {
         this.m_eventLabel = eventLabel;
+    }
+
+    public void setFilters(final org.opennms.netmgt.xml.eventconf.Filters filters) {
+        this._filters = filters;
     }
 
     /**

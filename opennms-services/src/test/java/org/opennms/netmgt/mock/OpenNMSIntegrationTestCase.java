@@ -183,7 +183,7 @@ public abstract class OpenNMSIntegrationTestCase extends AbstractTransactionalDa
         if (mockAgentConfig != null) {
 
             String localhost = InetAddressUtils.getLocalHostAddressAsString();
-            m_agent = MockSnmpAgent.createAgentAndRun(mockAgentConfig.getSnmpDataResource(), localhost + "/9161");
+            m_agent = MockSnmpAgent.createAgentAndRun(mockAgentConfig.getSnmpDataResource().getURL(), localhost + "/9161");
 
             File snmpConfigFile = new File(etcDestDir, "snmp-config.xml");
             SnmpConfig config = readSnmpConfig(snmpConfigFile);

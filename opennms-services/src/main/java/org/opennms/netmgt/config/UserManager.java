@@ -38,6 +38,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -210,7 +211,7 @@ public abstract class UserManager {
     
         update();
     
-        return m_users;
+        return Collections.unmodifiableMap(m_users);
     }
 
     public OnmsUserList getOnmsUserList() throws MarshalException, ValidationException, IOException {

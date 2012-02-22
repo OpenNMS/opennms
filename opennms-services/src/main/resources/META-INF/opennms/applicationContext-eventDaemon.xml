@@ -31,8 +31,12 @@
       </list>
     </property>
   </bean>
-  
+
   <bean id="eventExpander" class="org.opennms.netmgt.eventd.processor.EventExpander">
+    <property name="eventConfDao" ref="eventConfDao"/>
+  </bean>
+
+  <bean id="eventParmRegexFilter" class="org.opennms.netmgt.eventd.processor.EventParmRegexFilterProcessor">
     <property name="eventConfDao" ref="eventConfDao"/>
   </bean>
 
@@ -57,6 +61,11 @@
   <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
     <property name="eventProcessors">
       <list>
+        <!-- 
+          This EventProcessor can be used to perform regex replacements on incoming parm values.
+          It was added in 1.11 and because of performance concerns, it is commented-out for now.
+        -->
+        <!-- <ref local="eventParmRegexFilter"/> -->
         <ref local="eventExpander"/>
         <ref local="eventWriter"/>
         <ref local="eventIpcBroadcastProcessor"/>

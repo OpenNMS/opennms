@@ -360,16 +360,16 @@ public final class SnmpCollection implements ReadyRunnable {
 
             boolean collectIpRouteTable = m_collectIpRouteTable;
             if (collectIpRouteTable) {
-                Class<?> ipRouteGetter = null;
+                Class<SnmpTable<SnmpStore>> ipRouteGetter = null;
                 try {
-                        ipRouteGetter = Class.forName(m_ipRouteClass);
+                        ipRouteGetter = (Class<SnmpTable<SnmpStore>>)Class.forName(m_ipRouteClass);
                 } catch (ClassNotFoundException e) {
                         LogUtils.errorf(this, e, "run: " + m_ipRouteClass + " class not found ");
                         collectIpRouteTable = false;
                 }
 
                 Class<?>[] classes = { InetAddress.class };
-                Constructor<?> constr = null;
+                Constructor<SnmpTable<SnmpStore>> constr = null;
                 try {
                         constr = ipRouteGetter.getConstructor(classes);
                 } catch (Throwable e) {
@@ -387,16 +387,16 @@ public final class SnmpCollection implements ReadyRunnable {
 			    			
 			boolean collectVlanTable = m_collectVlanTable;
             if (collectVlanTable) {
-				Class<?> vlanGetter = null;
+				Class<SnmpTable<SnmpStore>> vlanGetter = null;
 				try {
-					vlanGetter = Class.forName(m_vlanClass);
+					vlanGetter = (Class<SnmpTable<SnmpStore>>)Class.forName(m_vlanClass);
 				} catch (ClassNotFoundException e) {
 				    LogUtils.warnf(this, e, "run: %s class not found", m_vlanClass);
 				    collectVlanTable = false;
 				}
 
 				Class<?>[] classes = { InetAddress.class };
-				Constructor<?> constr = null;
+				Constructor<SnmpTable<SnmpStore>> constr = null;
 				try {
 					constr = vlanGetter.getConstructor(classes);
 				} catch (NoSuchMethodException e) {

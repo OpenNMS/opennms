@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -118,7 +119,7 @@ public abstract class DestinationPathManager {
     public Map<String, Path> getPaths() throws IOException, MarshalException, ValidationException {
         update();
     
-        return m_destinationPaths;
+        return Collections.unmodifiableMap(m_destinationPaths);
     }
 
     /**

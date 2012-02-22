@@ -35,9 +35,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -77,7 +76,7 @@ public class HttpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
@@ -127,7 +126,7 @@ public class HttpMonitorTest {
     public void callTestResponseRange(boolean preferIPv6) throws UnknownHostException {
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
@@ -207,7 +206,7 @@ public class HttpMonitorTest {
     public void callTestTimeout(boolean preferIPv6) throws UnknownHostException {
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
@@ -253,7 +252,7 @@ public class HttpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
         PollStatus status = null;
 
@@ -325,7 +324,7 @@ public class HttpMonitorTest {
     public void testBase64Encoding() {
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
         p.setKey("basic-authentication");
         p.setValue("Aladdin:open sesame");
@@ -350,7 +349,7 @@ public class HttpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
         PollStatus status = null;
 
@@ -423,7 +422,7 @@ public class HttpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
         PollStatus status = null;
 
@@ -488,7 +487,7 @@ public class HttpMonitorTest {
     public void callTestWithUrl(boolean preferIPv6) throws UnknownHostException {
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
         PollStatus status = null;
 
@@ -549,7 +548,7 @@ public class HttpMonitorTest {
     public void callTestWithInvalidNodelabelHostName(boolean preferIPv6) throws UnknownHostException {
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
         PollStatus status = null;
 
@@ -605,7 +604,7 @@ public class HttpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
@@ -655,7 +654,7 @@ public class HttpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
@@ -693,7 +692,7 @@ public class HttpMonitorTest {
     @JUnitHttpServer(port=10342)
     public void testNMS2702() throws UnknownHostException {
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
         parameters.put("port", "10342");
         parameters.put("url", "/test-NMS2702.html");
         parameters.put("retry", "1");

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.10.1-SNAPSHOT</version>
+    <version>1.11.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -39,8 +39,8 @@
     <module>rxtx</module>
     <module>servlet</module>
     <module>snmp4j</module>
+    <module>snmp4j-agent</module>
     <module>snmp</module>
-    <module>snmp-agent</module>
     <module>snmp-test</module>
     <module>spring</module>
     <module>spring-security</module>
@@ -50,7 +50,7 @@
     <module>twitter4j</module>
   </modules>
   <properties>
-    <springVersion>3.0.5.RELEASE</springVersion>
+    <springVersion>3.1.0.RELEASE</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.6.8</aspectjVersion>
     <springWebFlowVersion>2.0.9.RELEASE</springWebFlowVersion>

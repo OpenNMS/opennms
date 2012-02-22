@@ -249,7 +249,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
             }
         }
 
-        return eventLabels;
+        return Collections.unmodifiableMap(eventLabels);
     }
 
     /* (non-Javadoc)

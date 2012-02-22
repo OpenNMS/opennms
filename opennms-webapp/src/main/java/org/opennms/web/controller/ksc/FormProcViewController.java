@@ -32,6 +32,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.KscReportEditor;
 import org.opennms.netmgt.config.kscReports.Graph;
@@ -55,7 +56,6 @@ public class FormProcViewController extends AbstractController implements Initia
 
     public enum Parameters {
         action,
-        domain,
         timespan,
         type,
         report,
@@ -75,88 +75,87 @@ public class FormProcViewController extends AbstractController implements Initia
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // Get Form Variables
-        int report_index = -1; 
-        String override_timespan = null;
-        String override_graphtype = null;
-        String report_action = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.action.toString()));
-        String domain = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.domain.toString()));
-        if (report_action == null) {
+        int reportId = -1; 
+        String overrideTimespan = null;
+        String overrideGraphType = null;
+        String reportAction = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.action.toString()));
+        String reportIdString = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.report.toString()));
+        String reportType = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.type.toString()));
+        if (reportAction == null) {
             throw new MissingParameterException ("action", new String[] {"action", "report", "type"});
         }
-        String report_type = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.type.toString()));
-        if (report_type == null) {
+        if (reportType == null) {
             throw new MissingParameterException ("type", new String[] {"action", "report", "type"});
         }
+        if (reportIdString == null) {
+            throw new MissingParameterException ("report", new String[] {"action", "report", "type"});
+            
+        }
 
-        if (Actions.Customize.toString().equals(report_action) || Actions.Update.toString().equals(report_action)) {
-            String r_index = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.report.toString()));
-            if (r_index != null && !r_index.equals("null")) {
-               report_index = WebSecurityUtils.safeParseInt(r_index); 
-            } else if (domain == null) {
-                throw new MissingParameterException("report or domain", new String[] {"report or domain" , "type"});
+        if (Actions.Customize.toString().equals(reportAction) || Actions.Update.toString().equals(reportAction)) {
+            if (reportType.equals("node") || reportType.equals("custom")) {
+                reportId = WebSecurityUtils.safeParseInt(reportIdString);
             }
-            override_timespan = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.timespan.toString()));
-            if ((override_timespan == null) || override_timespan.equals("null")) {
-                override_timespan = "none";
+            overrideTimespan = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.timespan.toString()));
+            if ((overrideTimespan == null) || overrideTimespan.equals("null")) {
+                overrideTimespan = "none";
             }
-            override_graphtype = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.graphtype.toString()));
-            if (override_graphtype == null || override_graphtype.equals("null")) {
-                override_graphtype = "none";
+            overrideGraphType = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.graphtype.toString()));
+            if (overrideGraphType == null || overrideGraphType.equals("null")) {
+                overrideGraphType = "none";
             }
-            if (Actions.Customize.toString().equals(report_action)) {
+            if (Actions.Customize.toString().equals(reportAction)) {
              // Fetch the KscReportEditor or create one if there isn't one already
                 KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
                 
-                if (report_type.equals("node")) {
-                    editor.loadWorkingReport(m_kscReportService.buildNodeReport(report_index)); 
-                } else if (report_type.equals("domain")) {
-                    editor.loadWorkingReport(m_kscReportService.buildDomainReport(domain));
+                log().debug("handleRequestInternal: build report for reportType " + reportType);
+                if (reportType.equals("node")) {
+                    editor.loadWorkingReport(m_kscReportService.buildNodeReport(reportId)); 
+                } else if (reportType.equals("domain")) {
+                    editor.loadWorkingReport(m_kscReportService.buildDomainReport(reportIdString));
                 } else { 
-                    editor.loadWorkingReport(getKscReportFactory(), report_index);
+                    editor.loadWorkingReport(getKscReportFactory(), reportId);
                 }
                 
                 // Now inject any override characteristics into the working report model
                 Report working_report = editor.getWorkingReport();
                 for (int i=0; i<working_report.getGraphCount(); i++) {
                     Graph working_graph = working_report.getGraph(i);
-                    if (!override_timespan.equals("none")) { 
-                        working_graph.setTimespan(override_timespan); 
+                    if (!overrideTimespan.equals("none")) { 
+                        working_graph.setTimespan(overrideTimespan); 
                     }
-                    if (!override_graphtype.equals("none")) { 
-                        working_graph.setGraphtype(override_graphtype); 
+                    if (!overrideGraphType.equals("none")) { 
+                        working_graph.setGraphtype(overrideGraphType); 
                     }
                 }
             }
         } else { 
-            if (!Actions.Exit.toString().equals(report_action)) {
+            if (!Actions.Exit.toString().equals(reportAction)) {
                 throw new ServletException ("Invalid Parameter contents for report_action");
             }
         }
         
-        if (Actions.Update.toString().equals(report_action)) {
+        if (Actions.Update.toString().equals(reportAction)) {
             ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customView.htm");
-            modelAndView.addObject("type", report_type);
+            modelAndView.addObject("type", reportType);
 
-            if (report_index >= 0) {
-                modelAndView.addObject("report", report_index);
+            if (reportIdString != null) {
+                modelAndView.addObject("report", reportIdString);
             }
-            if (domain != null) {
-                modelAndView.addObject("domain", domain);
+            if (overrideTimespan != null) { 
+                modelAndView.addObject("timespan", overrideTimespan);
             }
-            if (override_timespan != null) { 
-                modelAndView.addObject("timespan", override_timespan);
-            }
-            if (override_graphtype != null) { 
-                modelAndView.addObject("graphtype", override_graphtype);
+            if (overrideGraphType != null) { 
+                modelAndView.addObject("graphtype", overrideGraphType);
             }
 
             return modelAndView;
-        } else if (Actions.Customize.toString().equals(report_action)) { 
+        } else if (Actions.Customize.toString().equals(reportAction)) { 
             return new ModelAndView("redirect:/KSC/customReport.htm");
-        } else if (Actions.Exit.toString().equals(report_action)) {
+        } else if (Actions.Exit.toString().equals(reportAction)) {
             return new ModelAndView("redirect:/KSC/index.htm");
         } else {
-            throw new IllegalArgumentException("Parameter action of '" + report_action + "' is not supported.  Must be one of: Update, Customize, or Exit");
+            throw new IllegalArgumentException("Parameter action of '" + reportAction + "' is not supported.  Must be one of: Update, Customize, or Exit");
         }
     }
 
@@ -206,6 +205,8 @@ public class FormProcViewController extends AbstractController implements Initia
         m_kscReportService = kscReportService;
     }
 
-   
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(FormProcViewController.class);
+    }
 
 }

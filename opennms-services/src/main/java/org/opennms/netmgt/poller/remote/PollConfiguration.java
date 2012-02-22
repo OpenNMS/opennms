@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.remote;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -83,7 +84,7 @@ public class PollConfiguration {
 	 * @return a {@link java.util.Map} object.
 	 */
 	public Map<String,Object> getMonitorConfiguration() {
-		return m_monitorConfiguration;
+		return Collections.unmodifiableMap(m_monitorConfiguration);
 	}
 
 	/**

@@ -32,11 +32,11 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,11 +71,11 @@ public class DataCollectionConfigParser {
     
     public DataCollectionConfigParser(String configDirectory) {
         this.configDirectory = configDirectory;
-        this.externalGroupsMap = Collections.synchronizedMap(new HashMap<String, DatacollectionGroup>());
+        this.externalGroupsMap = new ConcurrentHashMap<String, DatacollectionGroup>();
     }
     
     protected Map<String,DatacollectionGroup> getExternalGroupMap() {
-        return externalGroupsMap;
+        return Collections.unmodifiableMap(externalGroupsMap);
     }
     
     /**

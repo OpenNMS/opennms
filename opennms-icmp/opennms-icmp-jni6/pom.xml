@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms-icmp</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.10.1-SNAPSHOT</version>
+    <version>1.11.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-icmp-jni6</artifactId>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>jicmp6-api</artifactId>
-      <version>1.0</version>
+      <version>1.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -31,4 +31,13 @@
       <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <snapshots><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
+  </repositories>
 </project>

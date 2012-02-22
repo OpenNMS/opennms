@@ -45,7 +45,6 @@ import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
@@ -54,8 +53,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 @TestExecutionListeners({
     OpenNMSConfigurationExecutionListener.class,
     DirtiesContextTestExecutionListener.class
-})
-@ContextConfiguration(locations={
 })
 public class InvokerTest {
     private List<InvokerService> m_services = null;
@@ -104,11 +101,11 @@ public class InvokerTest {
         invokeMethods(invoker);
     }
 
-    private void invokeMethods(Invoker invoker) throws Throwable {
+    private static void invokeMethods(Invoker invoker) throws Throwable {
         for (InvokerService iservice : invoker.getServices()) {
             Service service = iservice.getService();
             ObjectName name = new ObjectName(service.getName());
-            System.err.println("object instance = " + getObjectInstanceString(m_server.getObjectInstance(name)));
+            System.err.println("object instance = " + getObjectInstanceString(invoker.getServer().getObjectInstance(name)));
         }
 
         List<InvokerResult> results = invoker.invokeMethods();
@@ -123,14 +120,14 @@ public class InvokerTest {
         }
     }
 
-    private String getObjectInstanceString(ObjectInstance objectInstance) {
+    private static String getObjectInstanceString(ObjectInstance objectInstance) {
         return new ToStringBuilder(objectInstance)
             .append("class", objectInstance.getClassName())
             .append("object", objectInstance.getObjectName())
             .toString();
     }
 
-    private Service[] getServiceList() throws Exception {
+    private static Service[] getServiceList() throws Exception {
         List<Service> serviceList = new ArrayList<Service>();
 
         serviceList.add(Service.unmarshal(new StringReader("  <service>\n" + 
@@ -143,7 +140,7 @@ public class InvokerTest {
         		"    <class-name>mx4j.tools.adaptor.http.HttpAdaptor</class-name>\n" + 
         		"    <attribute>\n" + 
         		"      <name>Port</name>\n" + 
-        		"      <value type=\"java.lang.Integer\">8180</value>\n" + 
+        		"      <value type=\"java.lang.Integer\">58180</value>\n" + 
         		"    </attribute>\n" + 
         		"    <attribute>\n" + 
         		"      <name>Host</name>\n" + 
@@ -169,7 +166,7 @@ public class InvokerTest {
         		"    <class-name>mx4j.tools.adaptor.http.HttpAdaptor</class-name>\n" + 
         		"    <attribute>\n" + 
         		"      <name>Port</name>\n" + 
-        		"      <value type=\"java.lang.Integer\">8181</value>\n" + 
+        		"      <value type=\"java.lang.Integer\">58181</value>\n" + 
         		"    </attribute>\n" + 
         		"    <attribute>\n" + 
         		"      <name>Host</name>\n" + 
@@ -190,7 +187,7 @@ public class InvokerTest {
         return serviceList.toArray(new Service[0]);
     }
 
-    private String getResultString(InvokerResult result) {
+    private static String getResultString(InvokerResult result) {
         return new ToStringBuilder(result)
             .append("result", result.getResult())
             .append("mbean", result.getMbean())
@@ -199,7 +196,7 @@ public class InvokerTest {
             .toString();
     }
 
-    private String getServiceString(Service service) {
+    private static String getServiceString(Service service) {
         return new ToStringBuilder(service)
             .append("name", service.getName())
             .append("class", service.getClassName())

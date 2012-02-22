@@ -30,6 +30,10 @@ package org.openoss.opennms.spring.dao;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.ThreadCategory;
@@ -37,15 +41,12 @@ import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsNode;
 import org.openoss.opennms.spring.qosd.QoSD;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-
-import java.util.Hashtable;
-import java.util.Enumeration;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * <p>OssDaoOpenNMSImpl class.</p>
@@ -58,25 +59,25 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/** 
 	 * local store for OpenNMS alarm list indexed by OpenNMS AlarmID as Integer
 	 */
-	private final Hashtable<Integer,OnmsAlarm> alarmCacheByID = new Hashtable<Integer,OnmsAlarm>(); 
+	private final Map<Integer,OnmsAlarm> alarmCacheByID = new ConcurrentHashMap<Integer,OnmsAlarm>(); 
 
 	/** 
 	 * local store for OpenNMS alarm list indexed by ApplicationDN+OssPrimaryKey() as string
 	 */
-	private final Hashtable<String,OnmsAlarm> alarmCacheByUniqueKey = new Hashtable<String,OnmsAlarm>(); 
+	private final Map<String,OnmsAlarm> alarmCacheByUniqueKey = new ConcurrentHashMap<String,OnmsAlarm>(); 
 
 	/** 
 	 * local store for OpenNMS node list indexed by OpenNMS NodeID as Integer
 	 */
-	private final Hashtable<Integer,OnmsNode> nodeCacheByID = new Hashtable<Integer,OnmsNode>();
+	private final Map<Integer,OnmsNode> nodeCacheByID = new ConcurrentHashMap<Integer,OnmsNode>();
 	/** 
 	 * local store for OpenNMS node list indexed by OpenNMS NodeLabel as String
 	 */
-	private final Hashtable<String,OnmsNode> nodeCacheByLabel = new Hashtable<String,OnmsNode>();
+	private final Map<String,OnmsNode> nodeCacheByLabel = new ConcurrentHashMap<String,OnmsNode>();
 	/** 
 	 * local store for OpenNMS node list indexed by ManagedObjectInstance+ManagedObjectType as string
 	 * */
-	private final Hashtable<String,OnmsNode> nodeCacheByUniqueID = new Hashtable<String,OnmsNode>();
+	private final Map<String,OnmsNode> nodeCacheByUniqueID = new ConcurrentHashMap<String,OnmsNode>();
 
 
 	/**
@@ -446,9 +447,9 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	public OnmsAlarm[] getAlarmCache(){
 		OnmsAlarm[] returnAlarmCache= new OnmsAlarm[alarmCacheByID.size()];
 		int i=0;
-		Enumeration<Integer> alarmIDS = alarmCacheByID.keys();
-		while(alarmIDS.hasMoreElements()) {
-			Integer alarmID = alarmIDS.nextElement();
+		Iterator<Integer> alarmIDS = alarmCacheByID.keySet().iterator();
+		while(alarmIDS.hasNext()) {
+			Integer alarmID = alarmIDS.next();
 			returnAlarmCache[i] = alarmCacheByID.get(alarmID);
 			i++;
 		}

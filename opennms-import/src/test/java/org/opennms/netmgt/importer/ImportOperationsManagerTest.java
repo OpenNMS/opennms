@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -282,14 +283,14 @@ public class ImportOperationsManagerTest implements InitializingBean {
     private Map<String, Integer> getAssetNumberMapInTransaction(final SpecFile specFile) {
         Map<String, Integer> assetNumbers = m_transTemplate.execute(new TransactionCallback<Map<String, Integer>>() {
             public Map<String, Integer> doInTransaction(TransactionStatus status) {
-                return getAssetNumberMap(specFile.getForeignSource());
+                return Collections.unmodifiableMap(getAssetNumberMap(specFile.getForeignSource()));
             }
         });
         return assetNumbers;
     }
 
     protected Map<String, Integer> getAssetNumberMap(String foreignSource) {
-        return m_nodeDao.getForeignIdToNodeIdMap(foreignSource);
+        return Collections.unmodifiableMap(m_nodeDao.getForeignIdToNodeIdMap(foreignSource));
     }
 
     protected void expectServiceTypeCreate(String string) {

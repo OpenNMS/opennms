@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.10.1-SNAPSHOT</version>
+    <version>1.11.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -67,7 +67,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>tomcat-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <configuration>
           <path>/${project.artifactId}</path>
           <port>${web.port}</port>
@@ -80,7 +80,7 @@
         <configuration>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <connectors>
-            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+            <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
               <port>${web.port}</port>
               <maxIdleTime>60000</maxIdleTime>
             </connector>
@@ -172,7 +172,7 @@
                 <configuration>
                     <artifacts>
                         <artifact>
-                            <file>target/opennms-webapp-1.10.1-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.10.1-SNAPSHOT.jar</file>
+                            <file>target/opennms-webapp-1.11.0-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.11.0-SNAPSHOT.jar</file>
                             <type>jar</type>
                         </artifact>
                     </artifacts>
@@ -307,6 +307,14 @@
         <scope>provided</scope>
     </dependency>
 
+    <!-- FIXME: Does this even need to be here? I had to switch it from provided
+         to runtime or it interfered with GWT. -->
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
+      <scope>runtime</scope>
+    </dependency> 
+
     <!-- direct dependencies that should be in WEB-INF/lib -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -314,9 +322,39 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.springframework-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-jrobin</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-tcp</artifactId>
+    </dependency> 
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-reporting</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-persistence</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.extremecomponents</groupId>
       <artifactId>extremecomponents</artifactId>
     </dependency>
+    <!--
+
+      JMesa is the latest version of the extremecomponents library. We
+      should eventually migrate our code to use it.
+
+    <dependency>
+      <groupId>org.jmesa</groupId>
+      <artifactId>jmesa</artifactId>
+    </dependency>
+    -->
     <dependency>
       <groupId>com.google.collections</groupId>
       <artifactId>google-collections</artifactId>

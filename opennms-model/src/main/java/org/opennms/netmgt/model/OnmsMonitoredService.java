@@ -34,7 +34,9 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -105,6 +107,20 @@ Comparable<OnmsMonitoredService> {
     private Set<OnmsOutage> m_currentOutages = new LinkedHashSet<OnmsOutage>();
 
     private Set<OnmsApplication> m_applications = new LinkedHashSet<OnmsApplication>();
+
+	private static final Map<String, String> STATUS_MAP;
+	
+	static {
+        STATUS_MAP = new HashMap<String, String>();
+        STATUS_MAP.put("A", "Managed");
+        STATUS_MAP.put("U", "Unmanaged");
+        STATUS_MAP.put("D", "Deleted");
+        STATUS_MAP.put("F", "Forced Unmanaged");
+        STATUS_MAP.put("N", "Not Monitored");
+        STATUS_MAP.put("R", "Rescan to Resume");
+        STATUS_MAP.put("S", "Rescan to Suspend");
+        STATUS_MAP.put("X", "Remotely Monitored");
+	}
 
     /**
      * <p>Constructor for OnmsMonitoredService.</p>
@@ -260,6 +276,11 @@ Comparable<OnmsMonitoredService> {
      */
     public void setStatus(String status) {
         m_status = status;
+    }
+    
+    @Transient
+    public String getStatusLong() {
+    	return STATUS_MAP.get(getStatus());
     }
 
     /**

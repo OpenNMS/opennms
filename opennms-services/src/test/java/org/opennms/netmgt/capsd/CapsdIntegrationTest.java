@@ -85,7 +85,7 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
     
     @Override
     protected void onSetUpBeforeTransaction() throws Exception {
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), InetAddressUtils.getLocalHostAddressAsString()+"/9161");
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties").getURL(), InetAddressUtils.getLocalHostAddressAsString()+"/9161");
     }
     
     

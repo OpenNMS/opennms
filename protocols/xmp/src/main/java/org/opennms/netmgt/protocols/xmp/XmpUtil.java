@@ -31,18 +31,14 @@ package org.opennms.netmgt.protocols.xmp;
 import java.math.BigInteger;
 
 import org.apache.regexp.RE;
+import org.apache.regexp.RESyntaxException;
 import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpMessage;
 import org.krupczak.Xmp.XmpSession;
 import org.krupczak.Xmp.XmpVar;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 
-/**
- * <p>XmpUtil class.</p>
- *
- * @author jeffg
- * @version $Id: $
- */
 public class XmpUtil {
     /** Constant <code>LESS_THAN="<"</code> */
     public static final String LESS_THAN = "<";
@@ -64,9 +60,13 @@ public class XmpUtil {
             throws XmpUtilException {
         RE valueRegex = null;
         if (MATCHES.equals(valueOperator)) {
-            valueRegex = new RE(valueOperand);
-            if (!caseSensitive) {
-                valueRegex.setMatchFlags(RE.MATCH_CASEINDEPENDENT);
+            try {
+				valueRegex = new RE(valueOperand);
+	            if (!caseSensitive) {
+	            	valueRegex.setMatchFlags(RE.MATCH_CASEINDEPENDENT);
+	            }
+            } catch (final RESyntaxException e) {
+            	LogUtils.debugf(XmpUtil.class, e, "Unable to initialize regular expression.");
             }
         }
         
@@ -160,20 +160,11 @@ public class XmpUtil {
                     log.error("Value operator '" + valueOperator + "' does not apply for non-numeric value operand '" + valueOperand + "', giving up");
                     throw new XmpUtilException("Value operator '" + valueOperator + "' does not apply for non-numeric value operand '" + valueOperand + "'");
                 }
-                if (valueOperand != null) {
-                    if (caseSensitive) {
-                        return valueOperand.equals(replyVar.getValue());                        
-                    } else {
-                        return valueOperand.equalsIgnoreCase(replyVar.getValue());
-                    }
-                /*
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("valueMeetsCriteria: operand is null, considering observed value |" + replyVar.getValue() + "| a match!");
-                    }
-                    return true;
-                */
-                }
+                if (caseSensitive) {
+				    return valueOperand.equals(replyVar.getValue());                        
+				} else {
+				    return valueOperand.equalsIgnoreCase(replyVar.getValue());
+				}
             }
         } else {
             if (log.isDebugEnabled()) {
@@ -214,12 +205,6 @@ public class XmpUtil {
         }
         
         replyVars = reply.getMIBVars();
-        /*
-        if (reply == null) {
-            log.warn("handleScalarQuery: query for object " + object + " from MIB " + mib + " failed, " + Xmp.errorStatusToString(session.getErrorStatus()));
-            throw new XmpUtilException("XMP query failed (MIB " + mib + ", object " + object + "): " + Xmp.errorStatusToString(session.getErrorStatus()));
-        }
-        */
         if (replyVars[0].getMibName().equals(mib) && replyVars[0].getObjName().equals(object)) {
             return valueMeetsCriteria(replyVars[0], valueOperator, valueOperand, log, caseSensitive);
         } else {

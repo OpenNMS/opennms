@@ -38,6 +38,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -289,7 +290,7 @@ public final class ThresholdingConfigFactory {
      * @return a {@link java.util.Collection} object.
      */
     public Collection<String> getGroupNames() {
-        return m_groupMap.keySet();
+        return Collections.unmodifiableCollection(m_groupMap.keySet());
     }
     
     /**

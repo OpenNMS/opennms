@@ -29,7 +29,6 @@
 package org.opennms.netmgt.snmp;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -42,11 +41,9 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.springframework.core.io.Resource;
 
 public class SnmpUtils {
 	public static final Pattern HEX_PATTERN = Pattern.compile("^[a-fA-F0-9 :]*$");
@@ -267,27 +264,6 @@ public class SnmpUtils {
         }
         return true;
     }
-
-	/**
-	 * <p>loadProperties</p>
-	 *
-	 * @param propertiesFile a {@link org.springframework.core.io.Resource} object.
-	 * @return a {@link java.util.Properties} object.
-	 */
-	public static  Properties loadProperties(final Resource propertiesFile) {
-		final Properties moProps = new Properties();
-		InputStream inStream = null;
-		try {
-	        inStream = propertiesFile.getInputStream();
-			moProps.load( inStream );
-		} catch (final Exception ex) {
-		    LogUtils.warnf(SnmpUtils.class, ex, "Unable to read property file %s", propertiesFile);
-			return null;
-		} finally {
-	        IOUtils.closeQuietly(inStream);
-		}
-	    return moProps;
-	}
 
 	public static SnmpValue parseMibValue(final String mibVal) {
 	    if (mibVal.startsWith("OID:")) {

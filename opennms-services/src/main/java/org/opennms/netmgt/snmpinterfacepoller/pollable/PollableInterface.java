@@ -32,7 +32,9 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -189,8 +191,8 @@ public class PollableInterface {
      *
      * @return a {@link java.util.HashMap} object.
      */
-    public HashMap<String,PollableSnmpInterface> getSnmpinterfacepollableNodes() {
-        return m_pollablesnmpinterface;
+    public Map<String,PollableSnmpInterface> getSnmpinterfacepollableNodes() {
+        return Collections.unmodifiableMap(m_pollablesnmpinterface);
     }
 
 

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.db;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -99,7 +100,7 @@ public class IndexDao {
      * @return a {@link java.util.Collection} object.
      */
     public Collection<Index> getAllIndexes() {
-        return m_nameMap.values();
+        return Collections.unmodifiableCollection(m_nameMap.values());
     }
     
     /**

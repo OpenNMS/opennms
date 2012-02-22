@@ -29,6 +29,7 @@
 package org.opennms.netmgt.importer.operations;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -97,7 +98,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
         }
 
         private Collection<OnmsMonitoredService> getNewServices() {
-            return m_svcTypToSvcMap.values();
+            return Collections.unmodifiableCollection(m_svcTypToSvcMap.values());
         }
 
         private void markAsProcessed(OnmsMonitoredService svc) {

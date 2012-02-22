@@ -56,7 +56,7 @@ public class CapsdTest extends OpenNMSTestCase {
 
     	super.setUp();
 
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), InetAddressUtils.str(this.myLocalHost()) + "/9161");
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties").getURL(), InetAddressUtils.str(this.myLocalHost()) + "/9161");
 
         InputStream configStream = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(configStream));

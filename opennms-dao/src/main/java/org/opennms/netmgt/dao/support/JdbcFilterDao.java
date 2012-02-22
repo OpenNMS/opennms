@@ -37,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -210,7 +211,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             d.cleanUp();
         }
 
-        return resultMap;
+        return Collections.unmodifiableSortedMap(resultMap);
     }
 
     /** {@inheritDoc} */

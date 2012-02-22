@@ -30,8 +30,9 @@ package org.opennms.netmgt.jetty;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jetty.ajp.Ajp13SocketConnector;
 import org.eclipse.jetty.http.ssl.SslContextFactory;
@@ -57,7 +58,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
     int m_port = 8080;
 
     private Server m_server;
-    private Hashtable<String,ServiceRegistrationStrategy> services = new Hashtable<String,ServiceRegistrationStrategy>();
+    private Map<String,ServiceRegistrationStrategy> services = new ConcurrentHashMap<String,ServiceRegistrationStrategy>();
     
     /**
      * <p>Constructor for JettyServer.</p>
@@ -179,7 +180,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         try {
             ServiceRegistrationStrategy srs = ServiceRegistrationFactory.getStrategy();
             String host = InetAddress.getLocalHost().getHostName().replace(".local", "").replace(".", "-");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
+            Map<String, String> properties = new ConcurrentHashMap<String, String>();
             properties.put("path", contextPath);
             
             srs.initialize("HTTP", contextName + "-" + host, port, properties);

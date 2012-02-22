@@ -35,7 +35,7 @@ import java.util.Map;
 
 /**
  * <pre>
- * The key for an event - it extends the Hashtable and basically is a
+ * The key for an event - it extends the {@link LinkedHashMap} and basically is a
  *  map of name/value pairs of the 'maskelements' block in the event.
  *  While the names are maskelement names,
  *  - if the event is a 'org.opennms.netmgt.xml.eventconf.Event',
@@ -128,7 +128,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
     /**
      * Constructor for this class
      *
-     * @see java.util.Hashtable#Hashtable(int)
+     * @see java.util.HashMap#HashMap(int)
      * @param initCapacity a int.
      */
     public EventKey(int initCapacity) {
@@ -139,7 +139,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
     /**
      * Constructor for this class
      *
-     * @see java.util.Hashtable#Hashtable(int, float)
+     * @see java.util.HashMap#HashMap(int, float)
      * @param initCapacity a int.
      * @param loadFactor a float.
      */
@@ -243,7 +243,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
     /**
      * Override to re-evaluate hashcode
      *
-     * @see java.util.Hashtable#clear()
+     * @see java.util.HashMap#clear()
      */
     public void clear() {
         super.clear();
@@ -254,7 +254,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      * {@inheritDoc}
      *
      * Override to re-evaluate hashcode
-     * @see java.util.Hashtable#put(Object, Object)
+     * @see java.util.HashMap#put(Object, Object)
      */
     public Object put(String key, Object value) {
         Object ret = super.put(key, value);
@@ -266,7 +266,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      * {@inheritDoc}
      *
      * Override to re-evaluate hashcode
-     * @see java.util.Hashtable#putAll(Map)
+     * @see java.util.HashMap#putAll(Map)
      */
     public void putAll(Map<? extends String, ? extends Object> m) {
         super.putAll(m);
@@ -277,7 +277,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      * {@inheritDoc}
      *
      * Override to re-evaluate hashcode
-     * @see java.util.Hashtable#remove(Object)
+     * @see java.util.HashMap#remove(Object)
      */
     public Object remove(Object key) {
         Object ret = super.remove(key);

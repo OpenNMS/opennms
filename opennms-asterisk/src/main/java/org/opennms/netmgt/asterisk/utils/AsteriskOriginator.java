@@ -31,6 +31,7 @@ package org.opennms.netmgt.asterisk.utils;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -474,7 +475,7 @@ public class AsteriskOriginator {
      * @return A Map of channel variable names and values
      */
     public Map<String,String> getChannelVariables() {
-        return m_channelVars;
+        return Collections.unmodifiableMap(m_channelVars);
     }
     
     /**

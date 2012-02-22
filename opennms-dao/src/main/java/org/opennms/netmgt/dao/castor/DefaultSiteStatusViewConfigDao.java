@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao.castor;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
@@ -100,7 +101,7 @@ public class DefaultSiteStatusViewConfigDao implements SiteStatusViewConfigDao {
      * @return <code>Map</> of View classes.
      */
     public Map<String, View> getViewMap() {
-        return SiteStatusViewsFactory.getViewsMap();
+        return Collections.unmodifiableMap(SiteStatusViewsFactory.getViewsMap());
     }
 
     /**

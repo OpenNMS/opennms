@@ -7,13 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Command {
-    private BufferedReader out;
-    private Process p;
-    String firstLine;
-    boolean scheduledtoremove;
-    int scheduletoremoverequest=0;
+    private final BufferedReader out;
+    private final Process p;
+    private boolean scheduledtoremove;
+    private int scheduletoremoverequest = 0;
     
-    private List<String> lines = new ArrayList<String>();
+    private final List<String> lines = new ArrayList<String>();
 
     public Command(String command) throws IOException, IllegalStateException
     {

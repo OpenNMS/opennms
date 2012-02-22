@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -329,7 +330,7 @@ public class MapPropertiesFactory extends Object {
 	 * @return a {@link java.util.Map} object.
 	 */
 	public Map<String,Severity> getSeveritiesMap() {
-		return severitiesMap;
+		return Collections.unmodifiableMap(severitiesMap);
 	}
 
 	/**
@@ -341,7 +342,7 @@ public class MapPropertiesFactory extends Object {
 	 * @return a {@link java.util.Map} object.
 	 */
 	public Map<String, Avail> getAvailabilitiesMap() {
-		return availsMap;
+		return Collections.unmodifiableMap(availsMap);
 	}
 
 	/**
@@ -444,7 +445,7 @@ public class MapPropertiesFactory extends Object {
 	 * @throws FileNotFoundException if any.
 	 */
 	public Map<String, Status> getStatusesMap() {
-		return statusesMap;
+		return Collections.unmodifiableMap(statusesMap);
 	}
 
 	/**
@@ -912,7 +913,7 @@ public class MapPropertiesFactory extends Object {
      * @return a {@link java.util.Map} object.
      */
     public Map<String,String> getIconsBySysoidMap() {
-	    return iconsBySysoidMap;
+	    return Collections.unmodifiableMap(iconsBySysoidMap);
 	}
 
 	/**
@@ -921,7 +922,7 @@ public class MapPropertiesFactory extends Object {
 	 * @return a {@link java.util.Map} object.
 	 */
 	public Map<String,String> getBackgroundImagesMap() {
-		return bgImagesMap;
+		return Collections.unmodifiableMap(bgImagesMap);
 	}
 
 	/**
@@ -1170,7 +1171,7 @@ public class MapPropertiesFactory extends Object {
      * @throws org.opennms.web.map.MapsException if any.
      */
     public java.util.Map<String,String> getIcons() throws MapsException{
-    	return iconsMap;
+    	return Collections.unmodifiableMap(iconsMap);
     }
     
     /**
@@ -1180,7 +1181,7 @@ public class MapPropertiesFactory extends Object {
      * @throws org.opennms.web.map.MapsException if any.
      */
     public java.util.Map<String,String> getIconsBySysoid() throws MapsException{
-        return getIconsBySysoidMap();
+        return Collections.unmodifiableMap(getIconsBySysoidMap());
     }
     
     /**
@@ -1190,7 +1191,7 @@ public class MapPropertiesFactory extends Object {
      * @throws org.opennms.web.map.MapsException if any.
      */
     public java.util.Map<String, String> getBackgroundImages() throws MapsException {
-    	return getBackgroundImagesMap();
+    	return Collections.unmodifiableMap(getBackgroundImagesMap());
     }
     
     /**
