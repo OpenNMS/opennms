@@ -114,7 +114,7 @@ FROM
 			(category_node.categoryid = categories.categoryid)
 		WHERE
 			nodetype = 'A' AND
-			categories.categoryname like 'Routers')
+			categories.categoryname like '$P!{CATEGORY_NAME}')
 		AS
 			active_nodes
 	ON
