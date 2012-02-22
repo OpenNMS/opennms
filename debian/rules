@@ -102,6 +102,14 @@ install: build
 	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/var/lib/opennms/xsds
 	install -d -m 755 debian/opennms-plugin-protocol-xml/etc/opennms/{datacollection,xml-datacollection,snmp-graph.properties.d}
 	
+	# Setup Juniper TCA collector
+	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/usr/share/opennms/contrib
+	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/etc/opennms
+	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine
+	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/xsds
+	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/etc/opennms/{datacollection,snmp-graph.properties.d}
+	
 	# DHCP
 	mv debian/temp/lib/org.opennms.protocols.dhcp-*.jar                                        debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
 	mv debian/temp/etc/dhcpd-configuration.xml                                                 debian/opennms-plugin-protocol-dhcp/etc/opennms/
@@ -136,6 +144,16 @@ install: build
 	mv debian/temp/etc/xmp*-config.xml                                                         debian/opennms-plugin-protocol-xmp/etc/opennms/
 	mv debian/temp/share/xsds/xmp*.xsd                                                         debian/opennms-plugin-protocol-xmp/var/lib/opennms/xsds/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/xmp*-config.xml                      debian/opennms-plugin-protocol-xmp/var/lib/opennms/etc-pristine/
+	
+	# Juniper TCA
+	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/{datacollection,snmp-graph.properties.d}
+	mv debian/temp/lib/org.opennms.features.juniper-tca-collector-*.jar                        debian/opennms-plugin-collector-juniper-tca/usr/share/java/opennms/
+	mv debian/temp/etc/tca*-config.xml                                                         debian/opennms-plugin-collector-juniper-tca/etc/opennms/
+	mv debian/temp/etc/datacollection/juniper-tca*                                             debian/opennms-plugin-collector-juniper-tca/etc/opennms/datacollection/
+	mv debian/temp/etc/snmp-graph.properties.d/juniper-tca*                                    debian/opennms-plugin-collector-juniper-tca/etc/opennms/snmp-graph.properties.d/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/tca*-config.xml                      debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/datacollection/juniper-tca*          debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/datacollection/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-graph.properties.d/juniper-tca* debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/snmp-graph.properties.d/
 	
 	##
 	## Setup the libopennms-java package
