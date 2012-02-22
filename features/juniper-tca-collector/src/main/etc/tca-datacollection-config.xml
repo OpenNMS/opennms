@@ -16,16 +16,16 @@
     <tca-collection name="default">
         <!-- This collector always use 1 second for RRD step. -->
 	    <rrd>
-		    <rra>RRA:AVERAGE:0.5:1:3600</rra>  <!-- One hour at 1 second interval -->
-		    <rra>RRA:AVERAGE:0.5:300:288</rra> <!-- One day at 5 minutes interval -->
-		    <rra>RRA:MIN:0.5:300:288</rra>
-		    <rra>RRA:MAX:0.5:300:288</rra>
-		    <rra>RRA:AVERAGE:0.5:900:2880</rra> <!-- One month at 15 minutes interval -->
-		    <rra>RRA:MIN:0.5:900:2880</rra>
-		    <rra>RRA:MAX:0.5:900:2880</rra>
-		    <rra>RRA:AVERAGE:0.5:3600:4300</rra> <!-- Six months at one hour interval -->
-		    <rra>RRA:MIN:0.5:3600:4300</rra>
-		    <rra>RRA:MAX:0.5:3600:4300</rra>
+		    <rra>RRA:AVERAGE:0.5:1:3600</rra> <!-- One hour at 1 second interval -->
+		    <rra>RRA:AVERAGE:0.5:60:2880</rra> <!-- Two days at 1 minute interval -->
+		    <rra>RRA:MIN:0.5:60:2880</rra>
+		    <rra>RRA:MAX:0.5:60:2880</rra>
+		    <rra>RRA:AVERAGE:0.5:3600:1440</rra> <!-- Two months at 60 minutes interval -->
+		    <rra>RRA:MIN:0.5:3600:1440</rra>
+		    <rra>RRA:MAX:0.5:3600:1440</rra>
+		    <rra>RRA:AVERAGE:0.5:86400:366</rra> <!-- One year at 1 day interval -->
+		    <rra>RRA:MIN:0.5:86400:366</rra>
+		    <rra>RRA:MAX:0.5:86400:366</rra>
 	    </rrd>
     </tca-collection>
 </tca-datacollection-config>
