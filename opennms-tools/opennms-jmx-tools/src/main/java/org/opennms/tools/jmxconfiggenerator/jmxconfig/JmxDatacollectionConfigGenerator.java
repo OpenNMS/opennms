@@ -77,7 +77,6 @@ public class JmxDatacollectionConfigGenerator {
 	private static ArrayList<String> standardVmBeans = new ArrayList<String>();
 	private static ArrayList<String> ignores = new ArrayList<String>();
 	private static ArrayList<String> numbers = new ArrayList<String>();
-	private static ArrayList<String> justDo = new ArrayList<String>();
 
 	private static ArrayList<String> rras = new ArrayList<String>();
 
@@ -88,10 +87,6 @@ public class JmxDatacollectionConfigGenerator {
 	private static MBeanServerConnection jmxServerConnection;
 
 	static {
-
-		justDo.add("java.lang");
-
-		ignores.add("");
 
 		standardVmBeans.add("JMImplementation");
 		standardVmBeans.add("com.sun.management");
@@ -114,7 +109,7 @@ public class JmxDatacollectionConfigGenerator {
 		rrd.getRra().addAll(rras);
 	}
 
-	public static void generateJmxConfig(String serviceName, String hostName, String port, Boolean runStandardVmBeans, Boolean runCompositeData) throws AttributeNotFoundException, MBeanException {
+	public static void generateJmxConfig(String serviceName, String hostName, String port, Boolean runStandardVmBeans, Boolean runCompositeData, String outFile) throws AttributeNotFoundException, MBeanException {
 	logger.debug("Startup values: \n serviceName: " + serviceName + "\n hostName: " + hostName + "\n port:" + port + "\n runStandardVmBeans: " + runStandardVmBeans + "\n runCompositeData: " + runCompositeData);
 		JMXServiceURL jmxServiceURL;
 		JmxDatacollectionConfig xmlJmxDatacollectionConfig = xmlObjectFactory.createJmxDatacollectionConfig();
@@ -189,7 +184,7 @@ public class JmxDatacollectionConfigGenerator {
 				}
 			}
 
-			JAXB.marshal(xmlJmxDatacollectionConfig, new File("test.xml"));
+			JAXB.marshal(xmlJmxDatacollectionConfig, new File(outFile));
 
 		} catch (MalformedURLException e) {
 			logger.error("MalformedURLException '{}'", e.getMessage());

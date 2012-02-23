@@ -57,7 +57,7 @@ public class SnmpGraphConfigGenerator {
 	private static String graphList = "";
 	private static String graphBodies = "";
 	private static String output = "";
-	private static String serviceName = "cassandra";
+	private static String serviceName = "";
 	
 	private static List<String> tangoColors = new ArrayList<String>();
 	private static int colorIndex = 0;

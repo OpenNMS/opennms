@@ -87,8 +87,8 @@ public class Starter {
 			if (!jmx && !graph) {
 				throw new CmdLineException(parser, "set jmx or graph.");
 			}
-			if (jmx && hostName != null && port != null) {
-				JmxDatacollectionConfigGenerator.generateJmxConfig(serviceName, hostName, port, !skipDefaultVM, runCompositeData);
+			if (jmx && hostName != null && port != null && outFile != null) {
+				JmxDatacollectionConfigGenerator.generateJmxConfig(serviceName, hostName, port, !skipDefaultVM, runCompositeData, outFile);
 				return;
 			}
 			if (graph && inputFile != null && outFile != null) {
@@ -98,14 +98,14 @@ public class Starter {
 			throw new CmdLineException(parser, "no valid call found.");
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
-			System.err.println("JmxSaugBlaser [options...] arguments...");
+			System.err.println("JmxConfigGenerator [options...] arguments...");
 			parser.printUsage(System.err);
 			System.err.println();
-			// System.err.println("  Example: java -jar JmxSaugBlaser" +
+			// System.err.println("  Example: java -jar JmxConfigGenerator" +
 			// parser.printExample(ALL));
 			System.err.println("Use a call linke:");
-			System.err.println("  Example generation of jmx-datacollection.xml: java -jar JmxSaugBlaser.jar -jmx -host localhost -port 7199 [-service cassandra] [-runCompositeData] [-skipDefaultVM]");
-			System.err.println("  Example generation of  snmp-graph.properties: java -jar JmxSaugBlaser.jar -graph -input test.xml -out test.properies [-service cassandra]");
+			System.err.println("  Example generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-runCompositeData] [-skipDefaultVM]");
+			System.err.println("  Example generation of  snmp-graph.properties: java -jar JmxConfigGenerator.jar -graph -input test.xml -out test.properies [-service cassandra]");
 			return;
 		}
 	}
