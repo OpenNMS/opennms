@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<xml-datacollection-config rrdRepository="target/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/xml-datacollection">
+    <xml-collection name="RPC">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:8928</rra>
+        </rrd>
+        <xml-source url="http://{ipaddr}/rpc">
+            <xml-group name="rpc-reply" resource-type="cfmEntry"
+                resource-xpath="/rpc-reply/cfm-iterator-statistics/cfm-entry">
+                <resource-key>
+                    <key-xpath>cfm-iter-mep-summary/cfm-maintenance-domain-name</key-xpath>
+                    <key-xpath>cfm-iter-mep-summary/cfm-maintenance-association-name</key-xpath>
+                </resource-key>
+                <xml-object name="V01" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-lmm-sent" />
+                <xml-object name="V02" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-lmm-skipped-for-threshold-hit" />
+                <xml-object name="V03" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-lmm-skipped-for-threshold-hit-window" />
+                <xml-object name="V04" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-lmr-received" />
+                <xml-object name="V05" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-lmr-out-of-seq" />
+                <xml-object name="V06" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-lmr-fc-mismatch" />
+                <xml-object name="V07" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-tx-near-end-cir-loss-stats" />
+                <xml-object name="V08" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-tx-far-end-cir-loss-stats" />
+                <xml-object name="V09" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-tx-near-end-eir-loss-stats" />
+                <xml-object name="V10" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-tx-far-end-eir-loss-stats" />
+                <xml-object name="V11" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-loss-near-end-cir-loss-stats" />
+                <xml-object name="V12" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-loss-near-end-cir-loss-stats-percent" />
+                <xml-object name="V13" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-loss-far-end-cir-loss-stats" />
+                <xml-object name="V14" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-loss-far-end-cir-loss-stats-percent" />
+                <xml-object name="V15" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-loss-near-end-eir-loss-stats" />
+                <xml-object name="V16" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-loss-near-end-eir-loss-stats-percent" />
+                <xml-object name="V17" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-loss-far-end-eir-loss-stats" />
+                <xml-object name="V18" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-accu-loss-far-end-eir-loss-stats-percent" />
+                <xml-object name="V19" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-last-measured-near-end-cir-loss-stats" />
+                <xml-object name="V20" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-last-measured-far-end-cir-loss-stats" />
+                <xml-object name="V21" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-last-measured-near-end-eir-loss-stats" />
+                <xml-object name="V22" type="GAUGE" xpath="cfm-iter-ethlm-entry/cfm-last-measured-far-end-eir-loss-stats" />
+            </xml-group>
+        </xml-source>
+    </xml-collection>
+ </xml-datacollection-config>

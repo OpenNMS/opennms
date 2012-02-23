@@ -33,6 +33,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.opennms.core.utils.Base64;
@@ -1075,7 +1076,19 @@ public class EventConstants {
 
     static final ThreadLocal<DateFormat> FORMATTER_FULL = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+            int timeFormat = DateFormat.FULL;
+            // The DateFormat.FULL format for France/Germany do not include the seconds digit
+            // which is necessary to have sub-minute resolution in event times. For these
+            // locales, we'll fall back to using DateFormat.LONG.
+            //
+            // @see org.opennms.netmgt.DateFormatLocaleTest
+            //
+            if (Locale.getDefault().getLanguage().equals(Locale.FRANCE.getLanguage())) {
+                timeFormat = DateFormat.LONG;
+            } else if (Locale.getDefault().getLanguage().equals(Locale.GERMANY.getLanguage())) {
+                timeFormat = DateFormat.LONG;
+            }
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, timeFormat);
             formatter.setLenient(true);
             return formatter;
         }
@@ -1091,7 +1104,19 @@ public class EventConstants {
     
     static final ThreadLocal<DateFormat> FORMATTER_FULL_GMT = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+            int timeFormat = DateFormat.FULL;
+            // The DateFormat.FULL format for France/Germany do not include the seconds digit
+            // which is necessary to have sub-minute resolution in event times. For these
+            // locales, we'll fall back to using DateFormat.LONG.
+            //
+            // @see org.opennms.netmgt.DateFormatLocaleTest
+            //
+            if (Locale.getDefault().getLanguage().equals(Locale.FRANCE.getLanguage())) {
+                timeFormat = DateFormat.LONG;
+            } else if (Locale.getDefault().getLanguage().equals(Locale.GERMANY.getLanguage())) {
+                timeFormat = DateFormat.LONG;
+            }
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, timeFormat);
             formatter.setLenient(true);
             formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
             return formatter;
