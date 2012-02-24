@@ -692,7 +692,7 @@
    <!-- dependency versions -->
    <gmavenVersion>1.0</gmavenVersion>
 	<gwtVersion>2.1.1</gwtVersion>
-   <jettyVersion>6.1.24</jettyVersion>
+   <jettyVersion>6.1.26</jettyVersion>
    <jettyServletVersion>6.1.14</jettyServletVersion>
    <log4jVersion>1.2.15</log4jVersion>
    <minaVersion>2.0.2</minaVersion>
