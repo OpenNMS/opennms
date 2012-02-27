@@ -303,6 +303,18 @@ The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
 %{extrainfo2}
 
 
+%package plugin-collector-juniper-tca
+Summary:    Juniper TCA Collectorf or OpenNMS
+Group:      Applications/System
+Requires:   opennms-core = %{version}-%{release}
+
+%description plugin-collector-juniper-tca
+The Juniper JCA collector provides a collector plugin for Collectd to collect data from TCA devices.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %prep
 
 tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
@@ -434,6 +446,8 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
+	grep -v 'tca-datacollection-config.xml' | \
+	grep -v 'juniper-tca' | \
 	sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
@@ -450,6 +464,8 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
+	grep -v 'tca-datacollection-config.xml' | \
+	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
@@ -463,6 +479,8 @@ find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
 	grep -v 'nsclient-datacollection.xsd' | \
 	grep -v 'xmp-config.xsd' | \
 	grep -v 'xmp-datacollection-config.xsd' | \
+	grep -v 'tca-datacollection-config.xml' | \
+	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/contrib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
@@ -477,6 +495,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'gnu-crypto' | \
 	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
+	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -600,6 +619,16 @@ rm -rf $RPM_BUILD_ROOT
 %{instprefix}/lib/org.opennms.protocols.xmp-*.jar
 %{sharedir}/etc-pristine/xmp*.xml
 %{sharedir}/xsds/xmp*.xsd
+
+%files plugin-collector-juniper-tca
+%defattr(664 root root 775)
+%config(noreplace) %{instprefix}/etc/tca*.xml
+%config(noreplace) %{instprefix}/etc/datacollection/juniper-tca*
+%config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/juniper-tca*
+%{instprefix}/lib/org.opennms.features.juniper-tca-collector-*.jar
+%{sharedir}/etc-pristine/tca*.xml
+%{sharedir}/etc-pristine/datacollection/juniper-tca*
+%{sharedir}/etc-pristine/snmp-graph.properties.d/juniper-tca*
 
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "

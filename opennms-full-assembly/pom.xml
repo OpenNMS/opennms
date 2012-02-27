@@ -390,5 +390,17 @@
       <type>tar.gz</type>
       <classifier>etc</classifier>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>etc</classifier>
+    </dependency>
   </dependencies>
 </project>
