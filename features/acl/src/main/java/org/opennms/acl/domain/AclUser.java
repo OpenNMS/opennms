@@ -43,11 +43,12 @@
 package org.opennms.acl.domain;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.acl.util.Constants;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.userdetails.User;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
 /**
  * This entity is a ACL application user, extends the {@link org.springframework.security.userdetails.User} to use authentication and authorization Spring Security infrastructure.
@@ -65,11 +66,11 @@ public class AclUser extends User implements Serializable {
      * @param username a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
      * @param isEnabled a boolean.
-     * @param authorities an array of {@link org.springframework.security.GrantedAuthority} objects.
+     * @param collection an array of {@link org.springframework.security.GrantedAuthority} objects.
      * @param userInfo a {@link java.util.Map} object.
      */
-    public AclUser(String username, String password, boolean isEnabled, GrantedAuthority[] authorities, Map<String, ?> userInfo) {
-        super(username, password, isEnabled, true, true, true, authorities);
+    public AclUser(String username, String password, boolean isEnabled, Collection<? extends GrantedAuthority> collection, Map<String, ?> userInfo) {
+        super(username, password, isEnabled, true, true, true, collection);
         this.userInfo = userInfo;
     }
 

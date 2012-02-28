@@ -46,8 +46,8 @@ import org.apache.commons.cli.PosixParser;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * <p>Main class.</p>

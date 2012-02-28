@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -38,8 +39,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @XmlRootElement(name="user")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -59,7 +60,7 @@ public class OnmsUser implements UserDetails {
 	private String m_password;
     
     @XmlTransient
-	private GrantedAuthority[] m_authorities;
+	private Collection<? extends GrantedAuthority> m_authorities;
 
     @XmlElement(name="duty-schedule", required=false)
     private List<String> m_dutySchedule = new ArrayList<String>();
@@ -169,7 +170,7 @@ public class OnmsUser implements UserDetails {
 	 *
 	 * @return an array of {@link org.springframework.security.GrantedAuthority} objects.
 	 */
-	public GrantedAuthority[] getAuthorities() {
+	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return m_authorities;
 	}
 	
@@ -178,7 +179,7 @@ public class OnmsUser implements UserDetails {
 	 *
 	 * @param authorities an array of {@link org.springframework.security.GrantedAuthority} objects.
 	 */
-	public void setAuthorities(GrantedAuthority[] authorities) {
+	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
 		m_authorities = authorities;
 	}
 

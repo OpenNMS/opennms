@@ -16,8 +16,8 @@
   </description>
   <dependencies>
     <dependency>
-      <groupId>org.springframework.ldap</groupId>
-      <artifactId>spring-ldap</artifactId>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-ldap</artifactId>
       <version>${springLdapVersion}</version>
       <exclusions>
         <exclusion>
@@ -68,7 +68,7 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-core-tiger</artifactId>
+      <artifactId>spring-security-config</artifactId>
       <version>${springSecurityVersion}</version>
       <exclusions>
         <exclusion>

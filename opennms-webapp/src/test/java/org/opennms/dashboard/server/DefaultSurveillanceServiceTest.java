@@ -54,12 +54,11 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.web.svclayer.support.DefaultRtcService;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.userdetails.User;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * 
@@ -91,7 +90,7 @@ public class DefaultSurveillanceServiceTest {
     
     @Test
     public void testGetUsernameWithStringPrincipal() {
-        Authentication auth = new UsernamePasswordAuthenticationToken("user", null, new GrantedAuthority[0]);
+        org.springframework.security.core.Authentication auth = new UsernamePasswordAuthenticationToken("user", null, new ArrayList<GrantedAuthority>());
         SecurityContextHolder.getContext().setAuthentication(auth);
         
         String user = m_service.getUsername();
@@ -115,7 +114,7 @@ public class DefaultSurveillanceServiceTest {
     
     @Test
     public void testGetUsernameNoPrincipalObject() {
-        Authentication auth = new UsernamePasswordAuthenticationToken(null, null, new GrantedAuthority[0]);
+        org.springframework.security.core.Authentication auth = new UsernamePasswordAuthenticationToken(null, null, new ArrayList<GrantedAuthority>());
         SecurityContextHolder.getContext().setAuthentication(auth);
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -174,8 +173,8 @@ public class DefaultSurveillanceServiceTest {
     }
     
     private UserDetails populateSecurityContext() {
-        UserDetails details = new User("user", "password", true, true, true, true, new GrantedAuthority[0]);
-        Authentication auth = new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
+        UserDetails details = new User("user", "password", true, true, true, true, new ArrayList<GrantedAuthority>());
+        org.springframework.security.core.Authentication auth = new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
         return details;
     }

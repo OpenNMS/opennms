@@ -54,7 +54,7 @@
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.6.8</aspectjVersion>
     <springWebFlowVersion>2.0.9.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>2.0.7.RELEASE</springSecurityVersion>
-    <springLdapVersion>1.2.1</springLdapVersion>
+    <springSecurityVersion>3.1.0.RELEASE</springSecurityVersion>
+    <springLdapVersion>3.1.0.RELEASE</springLdapVersion>
   </properties>
 </project>
