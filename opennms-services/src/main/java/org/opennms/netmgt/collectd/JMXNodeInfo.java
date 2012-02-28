@@ -31,7 +31,7 @@ package org.opennms.netmgt.collectd;
 import java.util.*;
 
 import org.opennms.netmgt.config.BeanInfo;
-import org.opennms.netmgt.config.collectd.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
 
 /**
  * This class encapsulates all of the node-level data required by the JMX data

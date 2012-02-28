@@ -29,7 +29,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -40,21 +39,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.collectd.Attr;
-import org.opennms.netmgt.config.collectd.Attrib;
-import org.opennms.netmgt.config.collectd.CompAttrib;
-import org.opennms.netmgt.config.collectd.CompMember;
-import org.opennms.netmgt.config.collectd.JmxCollection;
-import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
-import org.opennms.netmgt.config.collectd.Mbean;
-import org.opennms.netmgt.config.collectd.Mbeans;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.opennms.netmgt.config.collectd.jmx.Mbeans;
 import org.opennms.netmgt.model.RrdRepository;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 
 /**
  * This class is the main respository for JMX data collection configuration
@@ -99,40 +97,31 @@ public final class JMXDataCollectionConfigFactory {
     private Map<String, JmxCollection> m_collectionMap;
 
     /**
-     * Private constructor
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     */
-    private JMXDataCollectionConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = null;
-        try {
-            cfgIn = new FileInputStream(configFile);
-            initialize(cfgIn);
-        } finally {
-            if (cfgIn != null) {
-                IOUtils.closeQuietly(cfgIn);
-            }
-        }
-    }
-
-    /**
      * <p>Constructor for JMXDataCollectionConfigFactory.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public JMXDataCollectionConfigFactory(InputStream stream) throws MarshalException, ValidationException {
-        initialize(stream);
+    public JMXDataCollectionConfigFactory(InputStream stream) {
+        initialize(new InputStreamResource(stream));
     }
 
-    private void initialize(InputStream stream) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(JmxDatacollectionConfig.class, stream);
+    /**
+     * Private constructor
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     */
+    private JMXDataCollectionConfigFactory(String configFile) throws IOException {
+        initialize(new FileSystemResource(configFile));
+    }
+    
+    private void initialize(Resource resource) {
+        JMXDataCollectionConfigDao dao = new JMXDataCollectionConfigDao();
+        dao.setConfigResource(resource);
+        dao.afterPropertiesSet();
+        m_config = dao.getConfig();
         buildCollectionMap();
     }
 
@@ -197,7 +186,7 @@ public final class JMXDataCollectionConfigFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -213,12 +202,6 @@ public final class JMXDataCollectionConfigFactory {
         } catch (IOException ioe) {
         	log().error("Unable to open JMX data collection config file", ioe);
         	throw ioe;
-        } catch (MarshalException me) {
-        	log().error("Error unmarshalling JMX data collection config file", me);
-        	throw me;
-        } catch (ValidationException ve) {
-        	log().error("Error validating JMX data collection config file", ve);
-        	throw ve;
         }
 
         m_loaded = true;
@@ -237,7 +220,7 @@ public final class JMXDataCollectionConfigFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException {
         m_singleton = null;
         m_loaded = false;
 
@@ -298,7 +281,7 @@ public final class JMXDataCollectionConfigFactory {
 
         // Retrieve the appropriate Collection object
         // 
-        org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
+        JmxCollection collection = m_collectionMap.get(cName);
         if (collection == null) {
             return attributeMap;
         }
@@ -341,7 +324,7 @@ public final class JMXDataCollectionConfigFactory {
         
         // Retrieve the appropriate Collection object
         // 
-        org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
+        JmxCollection collection = m_collectionMap.get(cName);
 
         if (collection == null) {
             log().warn("no collection named '" + cName + "' was found");
@@ -398,7 +381,7 @@ public final class JMXDataCollectionConfigFactory {
         
         // Retrieve the appropriate Collection object
         // 
-        org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
+        JmxCollection collection = m_collectionMap.get(cName);
         
         Mbeans beans = collection.getMbeans();
         Enumeration<Mbean> en = beans.enumerateMbean();
@@ -456,7 +439,7 @@ public final class JMXDataCollectionConfigFactory {
      * @return RRD step size for the specified collection
      */
     public int getStep(String cName) {
-        org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
+        JmxCollection collection = m_collectionMap.get(cName);
         if (collection != null)
             return collection.getRrd().getStep();
         else
