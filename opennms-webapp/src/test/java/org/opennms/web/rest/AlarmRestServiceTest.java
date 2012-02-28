@@ -51,6 +51,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	private DatabasePopulator m_databasePopulator;
 
+	@Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
 		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());

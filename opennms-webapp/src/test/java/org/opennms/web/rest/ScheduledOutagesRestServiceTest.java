@@ -58,7 +58,7 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
     private String m_onmsHome;
 
     @Override
-    public void beforeServletStart() throws Exception {
+    protected void beforeServletStart() throws Exception {
         MockLogAppender.setupLogging();
         File etc = new File("target/test-work-dir/etc");
         etc.mkdirs();

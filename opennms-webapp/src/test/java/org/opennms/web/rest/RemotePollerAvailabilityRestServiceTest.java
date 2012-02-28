@@ -159,7 +159,8 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         System.err.println("------------------------------------------------------------------------------");
     }
     
-    public void afterServletStart() {
+    @Override
+    protected void afterServletStart() {
         MockLogAppender.setupLogging();
         
         m_databasePopulator = getBean("databasePopulator", DatabasePopulator.class);

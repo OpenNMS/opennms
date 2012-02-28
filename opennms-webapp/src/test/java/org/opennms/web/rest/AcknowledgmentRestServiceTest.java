@@ -43,6 +43,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class AcknowledgmentRestServiceTest extends AbstractSpringJerseyRestTestCase {
+    @Override
 	protected void afterServletStart() {
 		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		final DatabasePopulator dbp = context.getBean("databasePopulator", DatabasePopulator.class);

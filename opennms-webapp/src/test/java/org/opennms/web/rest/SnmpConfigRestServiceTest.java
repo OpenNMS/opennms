@@ -53,7 +53,7 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
     private File m_snmpConfigFile;
 
     @Override
-    public void beforeServletStart() throws Exception {
+    protected void beforeServletStart() throws Exception {
         
         File dir = new File("target/test-work-dir");
         dir.mkdirs();

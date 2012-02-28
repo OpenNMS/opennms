@@ -52,7 +52,8 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	private EventDao m_eventDao;
 	private DistPollerDao m_distPollerDao;
 
-	protected void afterServletStart() {
+	@Override
+	protected void afterServletStart() throws Exception {
 		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		DatabasePopulator dbp = context.getBean("databasePopulator", DatabasePopulator.class);
 		dbp.populateDatabase();

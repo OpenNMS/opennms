@@ -153,11 +153,16 @@ public abstract class AbstractSpringJerseyRestTestCase {
     	return servletContext;
     }
 
+    /**
+     * By default, don't do anything.
+     */
     protected void beforeServletStart() throws Exception {
     }
-    
+
+    /**
+     * By default, don't do anything.
+     */
     protected void afterServletStart() throws Exception {
-        
     }
 
     @After
@@ -171,11 +176,16 @@ public abstract class AbstractSpringJerseyRestTestCase {
         afterServletDestroy();
     }
 
+    /**
+     * By default, don't do anything.
+     */
     protected void beforeServletDestroy() throws Exception {
     }
-    
+
+    /**
+     * By default, don't do anything.
+     */
     protected void afterServletDestroy() throws Exception {
-        
     }
 
     protected void dispatch(final MockHttpServletRequest request, final MockHttpServletResponse response) throws Exception {
