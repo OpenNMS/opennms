@@ -24,7 +24,8 @@ public enum SyslogFacility {
     LOCAL4(20, "local use 4"),
     LOCAL5(21, "local use 5"),
     LOCAL6(22, "local use 6"),
-    LOCAL7(23, "local use 7");
+    LOCAL7(23, "local use 7"),
+    UNKNOWN(99, "unknown");
 
     public static final int MASK = 0x03F8;
     
