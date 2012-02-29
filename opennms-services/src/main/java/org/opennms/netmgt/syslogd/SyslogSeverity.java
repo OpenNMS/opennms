@@ -10,7 +10,8 @@ public enum SyslogSeverity {
     NOTICE(5, "normal but significant condition"),
     INFORMATIONAL(6, "informational messages"),
     DEBUG(7, "debug-level messages"),
-    ALL(8, "all levels");
+    ALL(8, "all levels"),
+    UNKNOWN(99, "unknown");
 
     public static final int MASK = 0x0007;
 

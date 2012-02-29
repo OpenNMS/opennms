@@ -82,7 +82,7 @@ public class SyslogParser {
 
     /* override this to return your own class */
     public static SyslogParser getParser(final String text) throws SyslogParserException {
-        return new SyslogParser(text);
+        throw new UnsupportedOperationException("You must implement getParser() in your subclass!");
     }
 
     /* override this to get your custom pattern */
