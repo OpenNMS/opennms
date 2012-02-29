@@ -67,4 +67,8 @@ public class Restrictions {
 		return new OrRestriction(lhs, rhs);
 	}
 
+	public static Restriction sql(final String sql) {
+		return new AttributeRestriction(RestrictionType.SQL, sql);
+	}
+
 }

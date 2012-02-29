@@ -42,11 +42,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.hibernate.FetchMode;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -113,13 +112,10 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsAlarmCollection getAlarms() {
-        OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters(), false)));
+        final Criteria criteria = getCriteria(m_uriInfo.getQueryParameters(), false);
+        final OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(criteria));
 
         //For getting totalCount
-        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        addFiltersToCriteria(m_uriInfo.getQueryParameters(), criteria, OnmsAlarm.class);
-        criteria.setFetchMode("firstEvent", FetchMode.JOIN);
-        criteria.setFetchMode("lastEvent", FetchMode.JOIN);
         coll.setTotalCount(m_alarmDao.countMatching(criteria));
 
         return coll;

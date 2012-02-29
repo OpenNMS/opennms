@@ -348,6 +348,22 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     }
     
     /** {@inheritDoc} */
+    public int countMatching(final org.opennms.core.criteria.Criteria criteria) throws DataAccessException {
+    	final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
+
+            public Integer doInHibernate(final Session session) throws HibernateException, SQLException {
+            	final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
+            	LogUtils.debugf(this, "hibernateCriteria = " + hibernateCriteria);
+            	hibernateCriteria.setProjection(Projections.rowCount());
+                return (Integer)hibernateCriteria.uniqueResult();
+                
+            }
+            
+        };
+        return getHibernateTemplate().execute(callback).intValue();
+    }
+
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<T> findMatching(final OnmsCriteria onmsCrit) throws DataAccessException {
         onmsCrit.resultsOfType(m_entityClass); //FIXME: why is this here?

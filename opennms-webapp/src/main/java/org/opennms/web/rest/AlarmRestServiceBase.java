@@ -8,6 +8,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.CriteriaSpecification;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -21,11 +24,29 @@ public class AlarmRestServiceBase extends OnmsRestService {
         m_severityPattern = Pattern.compile("\\s+(\\{alias\\}.)?severity\\s*(\\!\\=|\\<\\>|\\<\\=|\\>\\=|\\=|\\<|\\>)\\s*'?(" + severities + ")'?");
     }
 
+    protected Criteria getCriteria(final MultivaluedMap<String,String> params, final boolean stripOrdering) {
+    	translateSeverity(params);
+
+    	final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
+
+    	applyQueryFilters(params, cb);
+    	if (stripOrdering) {
+    		cb.clearOrder();
+    		cb.limit(DEFAULT_LIMIT);
+    		cb.offset(0);
+    	}
+    	cb.distinct();
+
+    	final Criteria criteria = cb.toCriteria();
+    	LogUtils.debugf(this, "criteria = %s", criteria);
+		return criteria;
+    }
+
     protected OnmsCriteria getQueryFilters(final MultivaluedMap<String,String> params) {
         return getQueryFilters(params, false);
     }
 
-    protected OnmsCriteria getQueryFilters(final MultivaluedMap<String,String> params, boolean stripOrdering) {
+    protected OnmsCriteria getQueryFilters(final MultivaluedMap<String,String> params, final boolean stripOrdering) {
         translateSeverity(params);
 
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);

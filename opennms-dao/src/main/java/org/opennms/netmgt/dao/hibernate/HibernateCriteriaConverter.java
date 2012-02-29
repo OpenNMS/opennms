@@ -11,10 +11,12 @@ import org.hibernate.criterion.Subqueries;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Criteria.FetchType;
 import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.restrictions.OrRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.netmgt.dao.CriteriaConverter;
 
 public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCriteria> {
+	private static final Restriction[] EMPTY_RESTRICTION_ARRAY = new Restriction[0];
 
 	public org.hibernate.Criteria convert(final Criteria criteria, final Session session) {
 		final org.hibernate.Criteria hibernateCriteria = convert(criteria).getExecutableCriteria(session);
@@ -31,8 +33,13 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 		final List<Alias> joins = criteria.getAliases();
 		addJoinsToCriteria(joins, hibernateCriteria);
 		
-		for (final Restriction restriction : criteria.getRestrictions()) {
+		if (criteria.getMatchType().equals("any")) {
+			final Restriction restriction = new OrRestriction(criteria.getRestrictions().toArray(EMPTY_RESTRICTION_ARRAY));
 			hibernateCriteria.add(restriction.toCriterion());
+		} else {
+			for (final Restriction restriction : criteria.getRestrictions()) {
+				hibernateCriteria.add(restriction.toCriterion());
+			}
 		}
 
 		if (criteria.isDistinct()) {

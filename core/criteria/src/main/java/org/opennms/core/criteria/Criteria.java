@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.criteria.restrictions.Restriction;
 
 public class Criteria {
@@ -22,6 +23,22 @@ public class Criteria {
 	private boolean m_distinct = false;
 	private Integer m_limit = null;
 	private Integer m_offset = null;
+	private String m_matchType = "all";
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+			.append("class", m_class)
+			.append("orders", m_orders)
+			.append("aliases", m_aliases)
+			.append("fetchTypes", m_fetchTypes)
+			.append("restrictions", m_restrictions)
+			.append("distinct", m_distinct)
+			.append("limit", m_limit)
+			.append("offset", m_offset)
+			.append("matchType", m_matchType)
+			.toString();
+	}
 
 	public Criteria(final Class<?> clazz) {
 		m_class = clazz;
@@ -30,7 +47,15 @@ public class Criteria {
 	public Class<?> getCriteriaClass() {
 		return m_class;
 	}
-	
+
+	public String getMatchType() {
+		return m_matchType;
+	}
+
+	public void setMatchType(final String type) {
+		m_matchType = type;
+	}
+
 	public List<Order> getOrders() {
 		return Collections.unmodifiableList(m_orders);
 	}

@@ -9,6 +9,7 @@ import java.util.Set;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.utils.LogUtils;
 
 
 public class CriteriaBuilder {
@@ -21,6 +22,7 @@ public class CriteriaBuilder {
 	private boolean m_negateNext = false;
 	private Integer m_limit = null;
 	private Integer m_offset = null;
+	private String m_matchType = "all";
 
 	public CriteriaBuilder(final Class<?> clazz) {
 		m_class = clazz;
@@ -28,6 +30,7 @@ public class CriteriaBuilder {
 
 	public Criteria toCriteria() {
 		final Criteria criteria = new Criteria(m_class);
+		criteria.setMatchType(m_matchType);
 		criteria.setOrders(m_orderBuilder.getOrderCollection());
 		criteria.setAliases(m_aliasBuilder.getAliasCollection());
 		criteria.setFetchTypes(m_fetch);
@@ -36,6 +39,15 @@ public class CriteriaBuilder {
 		criteria.setLimit(m_limit);
 		criteria.setOffset(m_offset);
 		return criteria;
+	}
+
+	public CriteriaBuilder match(final String type) {
+		if ("all".equals(type) || "any".equals(type)) {
+			m_matchType  = type;
+		} else {
+			throw new IllegalArgumentException("match type must be 'all' or 'any'");
+		}
+		return this;
 	}
 
 	public CriteriaBuilder fetch(final String attribute) {
@@ -65,12 +77,12 @@ public class CriteriaBuilder {
 		return this;
 	}
 	public CriteriaBuilder limit(final Integer limit) {
-		m_limit = limit;
+		m_limit = (limit == 0? null : limit);
 		return this;
 	}
 	
 	public CriteriaBuilder offset(final Integer offset) {
-		m_offset = offset;
+		m_offset = (offset == 0? null : offset);
 		return this;
 	}
 
@@ -177,6 +189,11 @@ public class CriteriaBuilder {
 		return this;
 	}
 
+	public CriteriaBuilder contains(final String attribute, final Object comparator) {
+		addRestriction(Restrictions.ilike(attribute, "*" + comparator + "*"));
+		return this;
+	}
+
 	public CriteriaBuilder in(final String attribute, final List<?> list) {
 		addRestriction(Restrictions.in(attribute, list));
 		return this;
@@ -184,6 +201,15 @@ public class CriteriaBuilder {
 
 	public CriteriaBuilder between(final String attribute, final Object begin, final Object end) {
 		addRestriction(Restrictions.between(attribute, begin, end));
+		return this;
+	}
+
+	public CriteriaBuilder sql(final Object sql) {
+		if (sql instanceof String) {
+			addRestriction(Restrictions.sql((String)sql));
+		} else {
+			LogUtils.warnf(this, "sql(): " + sql.getClass().getName() + " is not a string type, can't add");
+		}
 		return this;
 	}
 
