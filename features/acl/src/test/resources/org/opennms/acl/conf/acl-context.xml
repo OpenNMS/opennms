@@ -78,8 +78,8 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 	</aop:config>
 
 	<!--  S E C U R I T Y -->
-	<sec:http>
-		<sec:intercept-url pattern="/log*.jsp" filters="none" />
+	<sec:http pattern="/log*.jsp" security="none" />
+	<sec:http pattern="/**">
 		<sec:intercept-url pattern="/*.page" access="ROLE_ADMIN" />
 		<sec:form-login login-page="/login.jsp"
 			default-target-url="/" login-processing-url="/j_security_check"
@@ -88,11 +88,14 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 			logout-success-url="/login.jsp" />
 	</sec:http>
 
-	<sec:authentication-provider
-		user-service-ref="userDetailsService">
-		<sec:password-encoder hash="sha" />
-	</sec:authentication-provider>
+	<sec:authentication-manager>
+		<sec:authentication-provider user-service-ref="userDetailsService">
+			<sec:password-encoder hash="sha" />
+		</sec:authentication-provider>
+	</sec:authentication-manager>
 
+	<!--
+	Not compatible with Spring Security 3.1
 	<bean id="accessManager" class="org.springframework.security.vote.AffirmativeBased">
 		<property name="decisionVoters">
 			<list>
@@ -101,6 +104,7 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 			</list>
 		</property>
 	</bean>
+	-->
 
 	<bean id="userDetailsService"
 		class="org.opennms.acl.repository.jdbc.AuthenticationJdbcDaoImpl">
@@ -114,7 +118,7 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 	<!-- CACHE -->
 
 	<bean id="aclCache"
-		class="org.springframework.security.acls.jdbc.EhCacheBasedAclCache">
+		class="org.springframework.security.acls.domain.EhCacheBasedAclCache">
 		<constructor-arg ref="aclEhCache" />
 	</bean>
 
