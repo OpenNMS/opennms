@@ -11,26 +11,16 @@
   <packaging>bundle</packaging>
   <name>OpenNMS Criteria Tools</name>
   <dependencies>
-<!--
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-dependencies</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
-      <type>pom</type>
-    </dependency>
--->
-    <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>jsr311-api</artifactId>
-      <version>1.0</version>
-    </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>hibernate-dependencies</artifactId>
       <scope>provided</scope>
       <optional>true</optional>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>

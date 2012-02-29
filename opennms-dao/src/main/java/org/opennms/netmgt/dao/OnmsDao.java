@@ -104,6 +104,14 @@ public interface OnmsDao<T, K extends Serializable> {
     /**
      * <p>countMatching</p>
      *
+     * @param onmsCrit a {@link org.opennms.core.criteria.Criteria} object.
+     * @return a int.
+     */
+    int countMatching(final Criteria onmsCrit);
+
+    /**
+     * <p>countMatching</p>
+     *
      * @param onmsCrit a {@link org.opennms.netmgt.model.OnmsCriteria} object.
      * @return a int.
      */

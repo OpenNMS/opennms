@@ -5,7 +5,7 @@ import org.hibernate.criterion.Criterion;
 public class AndRestriction extends VarargsRestrictionRestriction {
 
 	public AndRestriction(final Restriction... restrictions) {
-		super(RestrictionType.ALL);
+		super(RestrictionType.ALL, restrictions);
 	}
 
 	protected Criterion getCriterion(final Criterion lhs, final Criterion rhs) {

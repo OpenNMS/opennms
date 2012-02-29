@@ -20,6 +20,7 @@ public class AttributeRestriction extends BaseRestriction {
 		switch(getType()) {
 			case NULL: return org.hibernate.criterion.Restrictions.isNull(getAttribute());
 			case NOTNULL: return org.hibernate.criterion.Restrictions.isNotNull(getAttribute());
+			case SQL: return org.hibernate.criterion.Restrictions.sqlRestriction(getAttribute());
 		}
 		throw new UnsupportedOperationException("unknown type: " + getType());
 	}
