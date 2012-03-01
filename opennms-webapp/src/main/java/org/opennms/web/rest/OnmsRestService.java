@@ -234,7 +234,7 @@ public class OnmsRestService {
     			} else if ("notnull".equals(stringValue)) {
     				criteriaList.add(Restrictions.isNotNull(key));
     			} else {
-    				
+    				LogUtils.debugf(this, "key = %s, propertyType = %s", key, wrapper.getPropertyType(key));
 					Object thisValue;
     				if ("node.id".equals(key)) {
     					thisValue = Integer.valueOf(stringValue);
@@ -244,7 +244,6 @@ public class OnmsRestService {
     				    thisValue = convertIfNecessary(wrapper, key, stringValue);
     				}
     				
-    				LogUtils.warnf(this, "key = %s, propertyType = %s", key, wrapper.getPropertyType(key));
     				switch(op) {
     		   		case EQ:
     		    		criteriaList.add(Restrictions.eq(key, thisValue));
