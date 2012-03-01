@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 import org.opennms.core.utils.LogUtils;
 
 public class JuniperSyslogParser extends SyslogParser {
-    //                                                               TIMESTAMP                                        HOST   PROCESS/ID          MESSAGE
-    private static final Pattern m_juniperPattern = Pattern.compile("^(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d) (\\S+) (\\S+)\\[(\\d+)\\]: (.*?)$", Pattern.MULTILINE);
+    //                                                                PRI         TIMESTAMP                                        HOST   PROCESS/ID          MESSAGE
+    private static final Pattern m_juniperPattern = Pattern.compile("^<(\\d+)>\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d) (\\S+) (\\S+)\\[(\\d+)\\]: (.*?)$", Pattern.MULTILINE);
 
     protected JuniperSyslogParser(final String text) {
         super(text);
@@ -35,19 +35,26 @@ public class JuniperSyslogParser extends SyslogParser {
         final Matcher matcher = getMatcher();
         final SyslogMessage message = new SyslogMessage();
 
-        Date date = parseDate(matcher.group(1));
+        try {
+            final int priorityField = Integer.parseInt(matcher.group(1));
+            message.setFacility(SyslogFacility.getFacilityForCode(priorityField));
+            message.setSeverity(SyslogSeverity.getSeverityForCode(priorityField));
+        } catch (final NumberFormatException nfe) {
+            LogUtils.debugf(this, nfe, "Unable to parse '%s' as a PRI code.", matcher.group(1));
+        }
+        Date date = parseDate(matcher.group(2));
         if (date == null) date = new Date();
         message.setDate(date);
 
-        message.setHostName(matcher.group(2));
-        message.setProcessName(matcher.group(3));
+        message.setHostName(matcher.group(3));
+        message.setProcessName(matcher.group(4));
         try {
-            final Integer pid = Integer.parseInt(matcher.group(4));
+            final Integer pid = Integer.parseInt(matcher.group(5));
             message.setProcessId(pid);
         } catch (final NumberFormatException nfe) {
-            LogUtils.debugf(this, nfe, "Unable to parse '%s' as a process ID.", matcher.group(4));
+            LogUtils.debugf(this, nfe, "Unable to parse '%s' as a process ID.", matcher.group(5));
         }
-        message.setMessage(matcher.group(5));
+        message.setMessage(matcher.group(6));
 
         return message;
     }
