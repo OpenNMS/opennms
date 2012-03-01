@@ -85,9 +85,8 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{alarmId}")
     @Transactional
-    public OnmsAlarm getAlarm(@PathParam("alarmId") String alarmId) {
-    	OnmsAlarm result= m_alarmDao.get(new Integer(alarmId));
-    	return result;
+    public OnmsAlarm getAlarm(@PathParam("alarmId") final String alarmId) {
+    	return m_alarmDao.get(new Integer(alarmId));
     }
     
     /**
@@ -131,13 +130,10 @@ public class AlarmRestService extends AlarmRestServiceBase {
 	@Path("{alarmId}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
-	public void updateAlarm(@PathParam("alarmId")
-	String alarmId, @FormParam("ack")
-	Boolean ack) {
-		OnmsAlarm alarm = m_alarmDao.get(new Integer(alarmId));
+	public void updateAlarm(@PathParam("alarmId") final String alarmId, @FormParam("ack") final Boolean ack) {
+    	final OnmsAlarm alarm = m_alarmDao.get(new Integer(alarmId));
 		if (ack == null) {
-			throw new IllegalArgumentException(
-					"Must supply the 'ack' parameter, set to either 'true' or 'false'");
+			throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
 		}
 		processAlarmAck(alarm, ack);
 	}
@@ -157,12 +153,12 @@ public class AlarmRestService extends AlarmRestServiceBase {
 			ack="true".equals(formProperties.getFirst("ack"));
 			formProperties.remove("ack");
 		}
-		for (OnmsAlarm alarm : m_alarmDao.findMatching(getQueryFilters(formProperties, false))) {
+		for (final OnmsAlarm alarm : m_alarmDao.findMatching(getQueryFilters(formProperties, false))) {
 			processAlarmAck(alarm, ack);
 		}
 	}
 
-	private void processAlarmAck(OnmsAlarm alarm, Boolean ack) {
+	private void processAlarmAck(final OnmsAlarm alarm, final Boolean ack) {
 		if (ack) {
 			alarm.setAlarmAckTime(new Date());
 			alarm.setAlarmAckUser(m_securityContext.getUserPrincipal().getName());
