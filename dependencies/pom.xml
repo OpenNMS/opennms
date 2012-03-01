@@ -50,7 +50,7 @@
     <module>twitter4j</module>
   </modules>
   <properties>
-    <springVersion>3.0.4.RELEASE</springVersion>
+    <springVersion>3.0.5.RELEASE</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.6.8</aspectjVersion>
     <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>

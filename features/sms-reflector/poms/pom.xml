@@ -15,7 +15,7 @@
     <module>compiled</module>
   </modules>
   <properties>
-    <spring.version>3.0.4.RELEASE</spring.version>
+    <spring.version>3.0.5.RELEASE</spring.version>
     <spring.osgi.version>1.2.1</spring.osgi.version>
   </properties>
   <build>
