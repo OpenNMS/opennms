@@ -42,7 +42,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
@@ -111,11 +111,12 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsAlarmCollection getAlarms() {
-        final Criteria criteria = getCriteria(m_uriInfo.getQueryParameters(), false);
-        final OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(criteria));
+        final CriteriaBuilder builder = getCriteriaBuilder(m_uriInfo.getQueryParameters(), false);
+        builder.distinct();
+        final OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(builder.toCriteria()));
 
         //For getting totalCount
-        coll.setTotalCount(m_alarmDao.countMatching(criteria));
+        coll.setTotalCount(m_alarmDao.countMatching(builder.clearOrder().limit(0).offset(0).toCriteria()));
 
         return coll;
     }
@@ -153,7 +154,12 @@ public class AlarmRestService extends AlarmRestServiceBase {
 			ack="true".equals(formProperties.getFirst("ack"));
 			formProperties.remove("ack");
 		}
-		for (final OnmsAlarm alarm : m_alarmDao.findMatching(getCriteria(formProperties, false))) {
+		
+		final CriteriaBuilder builder = getCriteriaBuilder(formProperties, false);
+		builder.distinct();
+		builder.limit(0);
+		builder.offset(0);
+		for (final OnmsAlarm alarm : m_alarmDao.findMatching(builder.toCriteria())) {
 			processAlarmAck(alarm, ack);
 		}
 	}
