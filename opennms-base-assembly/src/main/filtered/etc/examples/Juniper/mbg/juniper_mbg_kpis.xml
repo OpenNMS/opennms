@@ -1,0 +1,474 @@
+<?xml version="1.0"?>
+<datacollection-group name="Juniper-MBG-KPIs">
+
+    <!-- Juniper SGW Resource Types -->
+
+	<resourceType name="jnxMbgGwIndexTable-index" label="jnxMbgGwIndexTable-index"
+        resourceLabel="${GwType}:${GwName} (index ${index})">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgSgwSMStatsTable-index" label="jnxMbgSgwSMStatsTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgSgwSMStatusTable-index" label="jnxMbgSgwSMStatusTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgSgwCgLpsStatsTable-index" label="jnxMbgSgwCgLpsStatsTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+
+	<resourceType name="jnxMbgSgwGtpCPerPeerStatsTable-index" label="jnxMbgSgwGtpCPerPeerStatsTable-index"
+		resourceLabel="Gateway: ${subIndex(0,1)}, Peer:${subIndex(1,4)}/Local:${subIndex(5,4)}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgSgwGtpCGlbStatsTable-index" label="jnxMbgSgwGtpCGlbStatsTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+    <!-- Juniper PGW Resource Types -->
+
+	<resourceType name="jnxMbgPgwSMOperStatsTable-index" label="jnxMbgPgwSMOperStatsTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+	<resourceType name="jnxMbgPgwSMStatusTable-index" label="jnxMbgPgwSMStatusTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgPgwApnSMStatsTable-index" label="jnxMbgPgwApnSMStatsTable-index"
+		resourceLabel="Gateway: ${subIndex(0,1)}, APN: ${string(subIndex(1, n))} ">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgPgwApnSMStatusTable-index" label="jnxMbgPgwApnSMStatusTable-index"
+		resourceLabel="Gateway: ${subIndex(0,1)}, APN: ${string(subIndex(1, n))} ">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgPgwCgLpsStatsTable-index" label="jnxMbgPgwCgLpsStatsTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+
+	<resourceType name="jnxMbgPgwGtpCPerPeerStatsTable-index" label="jnxMbgPgwGtpCPerPeerStatsTable-index"
+		resourceLabel="Gateway: ${subIndex(0,1)}, Peer:${subIndex(1, 4)}/Local:${subIndex(5,4)}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgPgwGtpCGlbStatsTable-index" label="jnxMbgPgwGtpCGlbStatsTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgAAAAuthStatsTable-index" label="jnxMbgAAAAuthStatsTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+	<resourceType name="jnxMbgAAADynAuthStatsTable-index" label="jnxMbgAAADynAuthStatsTable-index"
+        resourceLabel="Gateway ${index}">
+		resourceLabel="${RadiusAuthSrvrName}:${RadiusAuthSrvrInetAddress} (index ${index})">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+	<resourceType name="jnxMbgRadiusAuthSrvrTable-index" label="jnxMbgRadiusAuthSrvrTable-index"
+		resourceLabel="Gateway: ${subIndex(0,1)}, Radius Server: ${string(subIndex(1, n))} ">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+	<resourceType name="jnxMbgRadiusAcctSrvrTable-index" label="jnxMbgRadiusAcctSrvrTable-index"
+		resourceLabel="Gateway: ${subIndex(0,1)}, Radius Server: ${string(subIndex(1, n))} ">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgIPPoolTable-index" label="jnxMbgIPPoolTable-index"
+		resourceLabel="Pool Name: ${IPPoolName}, Pool Id: ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+	<resourceType name="jnxMbgIPPoolRangeTable-index" label="jnxMbgIPPoolRangeTable-index"
+                resourceLabel="PoolId: ${subIndex(0,1)}, RangeName: ${string(subIndex(1, n))}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+    <!-- Juniper MBG MIBs -->
+
+<!--Start of  jnxMbgPgwSMOperStatsTable-->
+	<group name="jnxMbgPgwSMOperStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.1" instance="jnxMbgPgwSMOperStatsTable-index" alias="SessnEstAttmpts" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.2" instance="jnxMbgPgwSMOperStatsTable-index" alias="SuccSessnEst" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.3" instance="jnxMbgPgwSMOperStatsTable-index" alias="PeerInitDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.4" instance="jnxMbgPgwSMOperStatsTable-index" alias="PeerInitSuccDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.5" instance="jnxMbgPgwSMOperStatsTable-index" alias="GwInitDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.6" instance="jnxMbgPgwSMOperStatsTable-index" alias="GwInitSuccDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.7" instance="jnxMbgPgwSMOperStatsTable-index" alias="StatsGnS5S8InpPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.8" instance="jnxMbgPgwSMOperStatsTable-index" alias="StatsGnS5S8InpByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.9" instance="jnxMbgPgwSMOperStatsTable-index" alias="StatsGnS5S8OutPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.10" instance="jnxMbgPgwSMOperStatsTable-index" alias="StatsGnS5S8OutByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.11" instance="jnxMbgPgwSMOperStatsTable-index" alias="StatsGiInpPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.12" instance="jnxMbgPgwSMOperStatsTable-index" alias="StatsGiInpByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.13" instance="jnxMbgPgwSMOperStatsTable-index" alias="StatsGiOutPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.4.1.14" instance="jnxMbgPgwSMOperStatsTable-index" alias="StatsGiOutByt" type="Counter64" />
+	</group>
+<!-- End of jnxMbgPgwSMOperStatsTable -->
+
+
+
+<!--Start of  jnxMbgPgwSMStatusTable-->
+	<group name="jnxMbgPgwSMStatusTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.5.1.1" instance="jnxMbgPgwSMStatusTable-index" alias="ActvSubscribers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.5.1.2" instance="jnxMbgPgwSMStatusTable-index" alias="ActvSessions" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.5.1.3" instance="jnxMbgPgwSMStatusTable-index" alias="ActvBearers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.5.1.4" instance="jnxMbgPgwSMStatusTable-index" alias="IdleSubscribers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.5.1.5" instance="jnxMbgPgwSMStatusTable-index" alias="IdleSessions" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.5.1.6" instance="jnxMbgPgwSMStatusTable-index" alias="IdleBearers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.5.1.7" instance="jnxMbgPgwSMStatusTable-index" alias="SuspSubscribers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.5.1.8" instance="jnxMbgPgwSMStatusTable-index" alias="SuspSessions" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.5.1.9" instance="jnxMbgPgwSMStatusTable-index" alias="SuspBearers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.5.1.10" instance="jnxMbgPgwSMStatusTable-index" alias="CPUUtil" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.5.1.11" instance="jnxMbgPgwSMStatusTable-index" alias="MemoryUtil" type="gauge" />
+	</group>
+<!-- End of jnxMbgPgwSMStatusTable -->
+
+
+
+<!--Start of  jnxMbgPgwApnSMStatsTable-->
+	<group name="jnxMbgPgwApnSMStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.1" instance="jnxMbgPgwApnSMStatsTable-index" alias="ApnName" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.2" instance="jnxMbgPgwApnSMStatsTable-index" alias="SessnEstAttmpts" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.3" instance="jnxMbgPgwApnSMStatsTable-index" alias="SuccSessnEst" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.4" instance="jnxMbgPgwApnSMStatsTable-index" alias="PeerInitDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.5" instance="jnxMbgPgwApnSMStatsTable-index" alias="PeerInitSuccDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.6" instance="jnxMbgPgwApnSMStatsTable-index" alias="GwInitDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.7" instance="jnxMbgPgwApnSMStatsTable-index" alias="GwInitSuccDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.8" instance="jnxMbgPgwApnSMStatsTable-index" alias="GtpGnS5S8InpPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.9" instance="jnxMbgPgwApnSMStatsTable-index" alias="GtpGnS5S8InpByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.10" instance="jnxMbgPgwApnSMStatsTable-index" alias="GtpGnS5S8OutPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.11" instance="jnxMbgPgwApnSMStatsTable-index" alias="GtpGnS5S8OutByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.12" instance="jnxMbgPgwApnSMStatsTable-index" alias="GtpGiInpPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.13" instance="jnxMbgPgwApnSMStatsTable-index" alias="GtpGiInpByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.14" instance="jnxMbgPgwApnSMStatsTable-index" alias="GtpGiOutPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.15" instance="jnxMbgPgwApnSMStatsTable-index" alias="GtpGiOutByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.16" instance="jnxMbgPgwApnSMStatsTable-index" alias="SessnFailSrvcUnaval" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.17" instance="jnxMbgPgwApnSMStatsTable-index" alias="SessnFailSysFailure" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.18" instance="jnxMbgPgwApnSMStatsTable-index" alias="SessnFailNoResource" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.19" instance="jnxMbgPgwApnSMStatsTable-index" alias="SessnFailNoAddr" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.20" instance="jnxMbgPgwApnSMStatsTable-index" alias="SessnFailSrvcDenied" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.21" instance="jnxMbgPgwApnSMStatsTable-index" alias="SessnFailAuthFailed" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.6.1.22" instance="jnxMbgPgwApnSMStatsTable-index" alias="SessnFailAccsDenied" type="Counter64" />
+	</group>
+<!-- End of jnxMbgPgwApnSMStatsTable -->
+
+
+
+<!--Start of  jnxMbgPgwApnSMStatusTable-->
+	<group name="jnxMbgPgwApnSMStatusTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.7.1.1" instance="jnxMbgPgwApnSMStatusTable-index" alias="ApnActvSubscribers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.7.1.2" instance="jnxMbgPgwApnSMStatusTable-index" alias="ApnActvSessions" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.7.1.3" instance="jnxMbgPgwApnSMStatusTable-index" alias="ApnActvBearers" type="Gauge64" />
+	</group>
+<!-- End of jnxMbgPgwApnSMStatusTable -->
+
+
+<!--Start of  jnxMbgPgwCgLpsStatsTable-->
+	<group name="jnxMbgPgwCgLpsStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.5.1.1" instance="jnxMbgPgwCgLpsStatsTable-index" alias="FilesOnLcStorage" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.5.1.2" instance="jnxMbgPgwCgLpsStatsTable-index" alias="StorageAvailSpace" type="gauge" />
+	</group>
+<!-- End of jnxMbgPgwCgLpsStatsTable -->
+
+
+<!--Start of  jnxMbgPgwGtpCPerPeerStatsTable-->
+	<group name="jnxMbgPgwGtpCPerPeerStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.1" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="GtpRmtAddr" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.2" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="GtpLclAddr" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.3" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="GtpRtgInst" type="COUNTER" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.16" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V2NumMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.17" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V2NumMsgTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.18" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V2NumBytesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.19" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V2NumBytesTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.175" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V1NumMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.176" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V1NumMsgTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.177" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V1NumBytesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.178" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V1NumBytesTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.292" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V0NumMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.293" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V0NumMsgTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.294" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V0NumBytesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.9.1.295" instance="jnxMbgPgwGtpCPerPeerStatsTable-index" alias="V0NumBytesTx" type="Counter64" />
+	</group>
+<!-- End of jnxMbgPgwGtpCPerPeerStatsTable -->
+
+
+
+<!--Start of  jnxMbgPgwGtpCGlbStatsTable-->
+	<group name="jnxMbgPgwGtpCGlbStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.13" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V2NumMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.14" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V2NumMsgTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.15" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V2NumBytesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.16" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V2NumBytesTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.174" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V1NumMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.175" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V1NumMsgTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.176" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V1NumBytesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.177" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V1NumBytesTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.291" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V0NumMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.292" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V0NumMsgTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.293" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V0NumBytesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.10.1.294" instance="jnxMbgPgwGtpCGlbStatsTable-index" alias="V0NumBytesTx" type="Counter64" />
+	</group>
+<!-- End of jnxMbgPgwGtpCGlbStatsTable -->
+
+<!--Start of  jnxMbgAAAAuthStatsTable-->
+	<group name="jnxMbgAAAAuthStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.8.1.1" instance="jnxMbgAAAAuthStatsTable-index" alias="Requests" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.8.1.3" instance="jnxMbgAAAAuthStatsTable-index" alias="Rejects" type="Counter64" />
+	</group>
+<!-- End of jnxMbgAAAAuthStatsTable -->
+
+
+
+
+<!--Start of  jnxMbgAAADynAuthStatsTable-->
+	<group name="jnxMbgAAADynAuthStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.10.1.1" instance="jnxMbgAAADynAuthStatsTable-index" alias="AuthReceived" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.10.1.13" instance="jnxMbgAAADynAuthStatsTable-index" alias="AuthErrors" type="Counter64" />
+	</group>
+<!-- End of jnxMbgAAADynAuthStatsTable -->
+
+
+
+<!--Start of  jnxMbgRadiusAuthSrvrTable-->
+	<group name="jnxMbgRadiusAuthSrvrTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.1" instance="jnxMbgRadiusAuthSrvrTable-index" alias="SrvrName" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.2" instance="jnxMbgRadiusAuthSrvrTable-index" alias="InetAddrType" type="Integer" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.3" instance="jnxMbgRadiusAuthSrvrTable-index" alias="InetAddress" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.4" instance="jnxMbgRadiusAuthSrvrTable-index" alias="InetPort" type="COUNTER" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.5" instance="jnxMbgRadiusAuthSrvrTable-index" alias="RtngInstance" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.6" instance="jnxMbgRadiusAuthSrvrTable-index" alias="Status" type="Integer" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.18" instance="jnxMbgRadiusAuthSrvrTable-index" alias="RTTAvg" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.19" instance="jnxMbgRadiusAuthSrvrTable-index" alias="RTTMin" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.20" instance="jnxMbgRadiusAuthSrvrTable-index" alias="RTTMax" type="gauge" />
+	</group>
+<!-- End of jnxMbgRadiusAuthSrvrTable -->
+
+
+
+<!--Start of  jnxMbgRadiusAcctSrvrTable-->
+	<group name="jnxMbgRadiusAcctSrvrTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.1" instance="jnxMbgRadiusAcctSrvrTable-index" alias="AcctSrvrName" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.2" instance="jnxMbgRadiusAcctSrvrTable-index" alias="InetAddrType" type="Integer" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.3" instance="jnxMbgRadiusAcctSrvrTable-index" alias="InetAddress" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.4" instance="jnxMbgRadiusAcctSrvrTable-index" alias="InetPort" type="COUNTER" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.5" instance="jnxMbgRadiusAcctSrvrTable-index" alias="RtngInstance" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.6" instance="jnxMbgRadiusAcctSrvrTable-index" alias="Status" type="Integer" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.16" instance="jnxMbgRadiusAcctSrvrTable-index" alias="RTTAvg" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.17" instance="jnxMbgRadiusAcctSrvrTable-index" alias="RTTMin" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.18" instance="jnxMbgRadiusAcctSrvrTable-index" alias="RTTMax" type="gauge" />
+	</group>
+<!-- End of jnxMbgRadiusAcctSrvrTable -->
+
+
+
+<!--Start of  jnxMbgIPPoolTable-->
+	<group name="jnxMbgIPPoolTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.3.1.1" instance="jnxMbgIPPoolTable-index" alias="IPPoolId" type="Integer32" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.3.1.2" instance="jnxMbgIPPoolTable-index" alias="IPPoolLogicalSystem" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.3.1.3" instance="jnxMbgIPPoolTable-index" alias="IPPoolRoutingInstance" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.3.1.4" instance="jnxMbgIPPoolTable-index" alias="IPPoolName" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.3.1.5" instance="jnxMbgIPPoolTable-index" alias="IPPoolType" type="Integer" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.3.1.6" instance="jnxMbgIPPoolTable-index" alias="IPPoolFree" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.3.1.7" instance="jnxMbgIPPoolTable-index" alias="IPPoolInUse" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.3.1.8" instance="jnxMbgIPPoolTable-index" alias="IPPoolUtil" type="gauge" />
+	</group>
+<!-- End of jnxMbgIPPoolTable -->
+
+
+<!--Start of  jnxMbgIPPoolRangeTable-->
+	<group name="jnxMbgIPPoolRangeTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.4.1.1" instance="jnxMbgIPPoolRangeTable-index" alias="IPPoolRangeName" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.4.1.2" instance="jnxMbgIPPoolRangeTable-index" alias="IPPoolRangeType" type="Integer" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.4.1.3" instance="jnxMbgIPPoolRangeTable-index" alias="IPPoolRangeFree" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.4.1.4" instance="jnxMbgIPPoolRangeTable-index" alias="IPPoolRangeInUse" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.4.1.5" instance="jnxMbgIPPoolRangeTable-index" alias="IPPoolRangeUtil" type="gauge" />
+	</group>
+<!-- End of jnxMbgIPPoolRangeTable -->
+
+<!--Start of  jnxMbgGwIndexTable-->
+	<group name="jnxMbgGwIndexTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.4.1.1.1" instance="jnxMbgGwIndexTable-index" alias="GwIndex" type="Integer32" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.4.1.1.2" instance="jnxMbgGwIndexTable-index" alias="GwName" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.4.1.1.3" instance="jnxMbgGwIndexTable-index" alias="GwType" type="String" />
+	</group>
+<!-- End of jnxMbgGwIndexTable -->
+
+<!--Start of  jnxMbgSgwSMStatsTable-->
+	<group name="jnxMbgSgwSMStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.1" instance="jnxMbgSgwSMStatsTable-index" alias="SessnEstAttmpts" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.2" instance="jnxMbgSgwSMStatsTable-index" alias="SuccSessnEst" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.3" instance="jnxMbgSgwSMStatsTable-index" alias="PeerInitDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.4" instance="jnxMbgSgwSMStatsTable-index" alias="PeerInitSuccDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.5" instance="jnxMbgSgwSMStatsTable-index" alias="GwInitDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.6" instance="jnxMbgSgwSMStatsTable-index" alias="GwInitSuccDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.7" instance="jnxMbgSgwSMStatsTable-index" alias="GtpGnS5S8InpPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.8" instance="jnxMbgSgwSMStatsTable-index" alias="GtpGnS5S8InpByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.9" instance="jnxMbgSgwSMStatsTable-index" alias="GtpGnS5S8OutPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.10" instance="jnxMbgSgwSMStatsTable-index" alias="GtpGnS5S8OutByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.11" instance="jnxMbgSgwSMStatsTable-index" alias="GtpS1uInpPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.12" instance="jnxMbgSgwSMStatsTable-index" alias="GtpS1uInpByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.13" instance="jnxMbgSgwSMStatsTable-index" alias="GtpS1uOutPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.14" instance="jnxMbgSgwSMStatsTable-index" alias="GtpS1uOutByt" type="Counter64" />
+	</group>
+<!-- End of jnxMbgSgwSMStatsTable -->
+
+
+
+<!--Start of  jnxMbgSgwSMStatusTable-->
+	<group name="jnxMbgSgwSMStatusTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.1" instance="jnxMbgSgwSMStatusTable-index" alias="ActvSubscribers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.2" instance="jnxMbgSgwSMStatusTable-index" alias="ActvSessions" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.3" instance="jnxMbgSgwSMStatusTable-index" alias="ActvBearers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.4" instance="jnxMbgSgwSMStatusTable-index" alias="IdleSubscribers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.5" instance="jnxMbgSgwSMStatusTable-index" alias="IdleSessions" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.6" instance="jnxMbgSgwSMStatusTable-index" alias="IdleBearers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.7" instance="jnxMbgSgwSMStatusTable-index" alias="SuspSubscribers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.8" instance="jnxMbgSgwSMStatusTable-index" alias="SuspSessions" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.9" instance="jnxMbgSgwSMStatusTable-index" alias="SuspBearers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.10" instance="jnxMbgSgwSMStatusTable-index" alias="CPUUtil" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.11" instance="jnxMbgSgwSMStatusTable-index" alias="MemoryUtil" type="gauge" />
+	</group>
+<!-- End of jnxMbgSgwSMStatusTable -->
+
+<!--Start of  jnxMbgSgwCgLpsStatsTable-->
+	<group name="jnxMbgSgwCgLpsStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.1.1.1" instance="jnxMbgSgwCgLpsStatsTable-index" alias="FilesOnLcStorage" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.1.1.2" instance="jnxMbgSgwCgLpsStatsTable-index" alias="LcStorageAvailSpace" type="gauge" />
+	</group>
+<!-- End of jnxMbgSgwCgLpsStatsTable -->
+
+
+
+
+
+
+<!--Start of  jnxMbgSgwGtpCPerPeerStatsTable-->
+	<group name="jnxMbgSgwGtpCPerPeerStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.1" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="GtpRmtAddr" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.2" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="GtpLclAddr" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.3" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="GtpRtgInst" type="Integer32" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.16" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2NumMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.17" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2NumMsgTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.18" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2NumBytesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.19" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2NumBytesTx" type="Counter64" />
+	</group>
+<!-- End of jnxMbgSgwGtpCPerPeerStatsTable -->
+
+
+
+<!--Start of  jnxMbgSgwGtpCGlbStatsTable-->
+	<group name="jnxMbgSgwGtpCGlbStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.13" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2NumMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.14" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2NumMsgTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.15" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2NumBytesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.16" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2NumBytesTx" type="Counter64" />
+	</group>
+<!-- End of jnxMbgSgwGtpCGlbStatsTable -->
+
+      <systemDef name="Juniper MBG MX480">
+        <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.25</sysoid>
+        <collect>
+			<includeGroup>jnxMbgGwIndexTable</includeGroup>
+			<includeGroup>jnxMbgPgwSMOperStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgPgwApnSMStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwApnSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgPgwCgLpsStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwGtpCPerPeerStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwGtpCGlbStatsTable</includeGroup>
+			<includeGroup>jnxMbgAAAAuthStatsTable</includeGroup>
+			<includeGroup>jnxMbgAAADynAuthStatsTable</includeGroup>
+			<includeGroup>jnxMbgRadiusAuthSrvrTable</includeGroup>
+			<includeGroup>jnxMbgRadiusAcctSrvrTable</includeGroup>
+			<includeGroup>jnxMbgIPPoolTable</includeGroup>
+			<includeGroup>jnxMbgIPPoolRangeTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgLpsStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
+        </collect>
+      </systemDef>
+      <systemDef name="Juniper MBG MX960">
+        <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.21</sysoid>
+        <collect>
+			<includeGroup>jnxMbgGwIndexTable</includeGroup>
+			<includeGroup>jnxMbgPgwSMOperStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgPgwApnSMStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwApnSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgPgwCgLpsStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwGtpCPerPeerStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwGtpCGlbStatsTable</includeGroup>
+			<includeGroup>jnxMbgAAAAuthStatsTable</includeGroup>
+			<includeGroup>jnxMbgAAADynAuthStatsTable</includeGroup>
+			<includeGroup>jnxMbgRadiusAuthSrvrTable</includeGroup>
+			<includeGroup>jnxMbgRadiusAcctSrvrTable</includeGroup>
+			<includeGroup>jnxMbgIPPoolTable</includeGroup>
+			<includeGroup>jnxMbgIPPoolRangeTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgLpsStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
+        </collect>
+      </systemDef>
+      <systemDef name="Juniper MBG MX240">
+        <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.29</sysoid>
+        <collect>
+			<includeGroup>jnxMbgGwIndexTable</includeGroup>
+			<includeGroup>jnxMbgPgwSMOperStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgPgwApnSMStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwApnSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgPgwCgLpsStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwGtpCPerPeerStatsTable</includeGroup>
+			<includeGroup>jnxMbgPgwGtpCGlbStatsTable</includeGroup>
+			<includeGroup>jnxMbgAAAAuthStatsTable</includeGroup>
+			<includeGroup>jnxMbgAAADynAuthStatsTable</includeGroup>
+			<includeGroup>jnxMbgRadiusAuthSrvrTable</includeGroup>
+			<includeGroup>jnxMbgRadiusAcctSrvrTable</includeGroup>
+			<includeGroup>jnxMbgIPPoolTable</includeGroup>
+			<includeGroup>jnxMbgIPPoolRangeTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgLpsStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

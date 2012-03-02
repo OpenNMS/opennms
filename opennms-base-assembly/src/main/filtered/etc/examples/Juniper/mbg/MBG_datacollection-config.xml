@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<datacollection-config rrdRepository="/opt/opennms/share/rrd/snmp/">
+  <snmp-collection name="default" maxVarsPerPdu = "20" snmpStorageFlag="primary">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+
+	<include-collection systemDef="Juniper MBG MX240 Routers"/>
+	<include-collection systemDef="Juniper MBG MX480 Routers"/>
+	<include-collection systemDef="Juniper MBG MX960 Routers"/>
+	<include-collection systemDef="Juniper MBG-SGW MX240 Routers"/>
+	<include-collection systemDef="Juniper MBG-SGW MX480 Routers"/>
+	<include-collection systemDef="Juniper MBG-SGW MX960 Routers"/>
+  </snmp-collection>
+
+  <snmp-collection name="PGW" maxVarsPerPdu = "40" snmpStorageFlag="primary">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+
+	<include-collection systemDef="Juniper MBG MX240 Routers"/>
+	<include-collection systemDef="Juniper MBG MX480 Routers"/>
+	<include-collection systemDef="Juniper MBG MX960 Routers"/>
+  </snmp-collection>
+
+  <snmp-collection name="SGW" maxVarsPerPdu = "40" snmpStorageFlag="primary">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+
+	<include-collection systemDef="Juniper MBG MX240 Routers"/>
+	<include-collection systemDef="Juniper MBG MX480 Routers"/>
+	<include-collection systemDef="Juniper MBG MX960 Routers"/>
+  </snmp-collection>
+
+  <snmp-collection name="MBG-KPIs" maxVarsPerPdu = "40" snmpStorageFlag="primary">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+
+	<include-collection dataCollectionGroup="Juniper-MBG-KPIs"/>
+  </snmp-collection>
+
+</datacollection-config>
