@@ -29,6 +29,7 @@
 
 package org.opennms.web.rest;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,12 +46,15 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsRestrictions;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.web.rest.support.InetAddressTypeEditor;
+import org.opennms.web.rest.support.OnmsSeverityTypeEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -150,6 +154,110 @@ public class OnmsRestService {
 		
 	}
 
+    protected void applyQueryFilters(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
+		final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+	    params.putAll(p);
+
+	    builder.limit(DEFAULT_LIMIT);
+
+    	if (params.containsKey("limit")) {
+    		builder.limit(Integer.valueOf(params.getFirst("limit")));
+    		params.remove("limit");
+    	}
+    	if (params.containsKey("offset")) {
+    		builder.offset(Integer.valueOf(params.getFirst("offset")));
+    		params.remove("offset");
+    	}
+    	// Is this necessary anymore? setLimitOffset() comments implies it's for Ext-JS.
+    	if (params.containsKey("start")) {
+    		builder.offset(Integer.valueOf(params.getFirst("start")));
+    		params.remove("start");
+    	}
+    	
+	    if(params.containsKey("orderBy")) {
+	    	builder.orderBy(params.getFirst("orderBy"));
+			params.remove("orderBy");
+			
+			if(params.containsKey("order")) {
+				if("desc".equalsIgnoreCase(params.getFirst("order"))) {
+					builder.desc();
+				} else {
+					builder.asc();
+				}
+				params.remove("order");
+			}
+		}
+
+        // Set default ordering
+	    builder.orderBy("lastEventTime").desc();
+
+	    final String query = removeParameter(params, "query");
+	    if (query != null) builder.sql(query);
+
+		final String matchType;
+		final String match = removeParameter(params, "match");
+		if (match == null) {
+			matchType = "all";
+		} else {
+			matchType = match;
+		}
+		builder.match(matchType);
+
+		final BeanWrapper wrapper = new BeanWrapperImpl(builder.toCriteria().getCriteriaClass());
+		wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
+		wrapper.registerCustomEditor(java.net.InetAddress.class, new InetAddressTypeEditor());
+		wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityTypeEditor());
+
+		final String comparatorParam = removeParameter(params, "comparator", "eq").toLowerCase();
+
+		for (final String key : params.keySet()) {
+			for (final String paramValue : params.get(key)) {
+				if ("null".equalsIgnoreCase(paramValue)) {
+					builder.isNull(key);
+				} else if ("notnull".equalsIgnoreCase(paramValue)) {
+					builder.isNotNull(key);
+				} else {
+					final Object value;
+					if ("node.id".equals(key)) {
+						value = Integer.valueOf(paramValue);
+					} else if (comparatorParam.equals("contains") || comparatorParam.equals("iplike") || comparatorParam.equals("ilike") || comparatorParam.equals("like")) {
+						value = paramValue;
+					} else {
+						value = convertIfNecessary(wrapper, key, paramValue);
+					}
+    				LogUtils.warnf(this, "comparator = %s, key = %s, propertyType = %s", comparatorParam, key, wrapper.getPropertyType(key));
+
+					try {
+	    				final Method m = builder.getClass().getMethod(comparatorParam, String.class, Object.class);
+						m.invoke(builder, new Object[] { key, value });
+					} catch (final Throwable t) {
+    					LogUtils.warnf(this, t, "Unable to find method for comparator: %s, key: %s, value: %s", comparatorParam, key, value);
+					}
+				}
+			}
+		}
+    }
+
+
+    protected String removeParameter(final MultivaluedMap<java.lang.String, java.lang.String> params, final String key) {
+    	if (params.containsKey(key)) {
+    		final String value = params.getFirst(key);
+    		params.remove(key);
+    		return value;
+    	} else {
+    		return null;
+    	}
+    }
+    
+    protected String removeParameter(final MultivaluedMap<java.lang.String, java.lang.String> params, final String key, final String defaultValue) {
+    	final String value = removeParameter(params, key);
+    	if (value == null) {
+    		return defaultValue;
+    	} else {
+    		return value;
+    	}
+    }
+    
 	/**
 	 * Method to pull out all the named params in params and use them to add restriction filters to a criteria object.
 	 * Uses the objectClass to determine parameters and types; auto converts from strings to appropriate types, if at all possible.
@@ -169,29 +277,19 @@ public class OnmsRestService {
 		MultivaluedMap<String, String> paramsCopy = new MultivaluedMapImpl();
 	    paramsCopy.putAll(params);
 
-		if(paramsCopy.containsKey("query")) {
-			String query=paramsCopy.getFirst("query");
-			criteria.add(Restrictions.sqlRestriction(query));
-			paramsCopy.remove("query");
-		}
+	    final String query = removeParameter(paramsCopy, "query");
+	    if (query != null) criteria.add(Restrictions.sqlRestriction(query));
 
 		paramsCopy.remove("_dc");
 
-		String matchType="all";
-		if (paramsCopy.containsKey("match")) {
-		    matchType = paramsCopy.getFirst("match");
-		    paramsCopy.remove("match");
+		final String matchType;
+		final String match = removeParameter(paramsCopy, "match");
+		if (match == null) {
+			matchType = "all";
+		} else {
+			matchType = match;
 		}
 
-		/*
-        if(paramsCopy.containsKey("node.id") && !matchType.equalsIgnoreCase("any")) {
-            String nodeId = paramsCopy.getFirst("node.id");
-            Integer id = Integer.valueOf(nodeId);
-            criteria.createCriteria("node").add(Restrictions.eq("id", id));
-            paramsCopy.remove("node.id");
-        }
-        */
-        
 		//By default, just do equals comparison
 		ComparisonOperation op=ComparisonOperation.EQ;
 		if(paramsCopy.containsKey("comparator")) {
@@ -301,7 +399,8 @@ public class OnmsRestService {
 	}
 
 	@SuppressWarnings("unchecked")
-    private Object convertIfNecessary(BeanWrapper wrapper, String key, String stringValue) {
+    private Object convertIfNecessary(final BeanWrapper wrapper, final String key, final String stringValue) {
+		LogUtils.debugf(this, "convertIfNecessary(%s, %s)", key, stringValue);
         return wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
     }
 
@@ -443,7 +542,6 @@ public class OnmsRestService {
      * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
      * @param req a {@link java.lang.Object} object.
      */
-    @SuppressWarnings("unchecked")
 	protected void setProperties(org.opennms.web.rest.MultivaluedMapImpl params, Object req) {
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(req);
         wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());

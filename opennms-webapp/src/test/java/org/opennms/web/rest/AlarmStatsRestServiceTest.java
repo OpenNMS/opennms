@@ -9,7 +9,6 @@ import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -32,7 +31,7 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
 	@Override
 	protected void afterServletStart() throws Exception {
 	    count = 0;
-        MockLogAppender.setupLogging();
+        MockLogAppender.setupLogging(true, "DEBUG");
         m_context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
         m_databasePopulator = m_context.getBean("databasePopulator", DatabasePopulator.class);
         m_databasePopulator.populateDatabase();
@@ -65,7 +64,6 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
     }
 
     @Test
-    @Ignore("testing complicated criteria that we don't support at the moment")
     public void testGetAlarmStatsBySeverity() throws Exception {
         createAlarm(OnmsSeverity.CLEARED, "admin");
         createAlarm(OnmsSeverity.MAJOR, "admin");
@@ -83,10 +81,10 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
 
     @Test
     public void testNewestAndOldestBySeverity() throws Exception {
-        createAlarm(OnmsSeverity.WARNING, "admin");
-        createAlarm(OnmsSeverity.WARNING, "admin");
-        createAlarm(OnmsSeverity.WARNING, null);
-        createAlarm(OnmsSeverity.WARNING, null);
+    	final OnmsAlarm oldestAckedAlarm   = createAlarm(OnmsSeverity.WARNING, "admin");
+    	final OnmsAlarm newestAckedAlarm   = createAlarm(OnmsSeverity.WARNING, "admin");
+    	final OnmsAlarm oldestUnackedAlarm = createAlarm(OnmsSeverity.WARNING, null);
+    	final OnmsAlarm newestUnackedAlarm = createAlarm(OnmsSeverity.WARNING, null);
         
         final String xml = sendRequest(GET, "/stats/alarms/by-severity", 200);
 
@@ -95,16 +93,16 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
         final String oldestUnackedXml = getXml("oldestUnacked", xml);
         final String newestUnackedXml = getXml("newestUnacked", xml);
 
-        // assertTrue(oldestAckedXml.contains("<alarm severity=\"WARNING\" id=\"" + oldestAckedAlarm.getId() + "\""));
+        assertTrue("should contain WARNING with ID#" + oldestAckedAlarm.getId(), oldestAckedXml.contains("<alarm severity=\"WARNING\" id=\"" + oldestAckedAlarm.getId() + "\""));
         assertTrue(oldestAckedXml.contains("<firstEventTime>2010-01-01T00:00:00"));
 
-        // assertTrue(newestAckedXml.contains("<alarm severity=\"WARNING\" id=\"" + newestAckedAlarm.getId() + "\""));
+        assertTrue("should contain WARNING with ID#" + newestAckedAlarm.getId(), newestAckedXml.contains("<alarm severity=\"WARNING\" id=\"" + newestAckedAlarm.getId() + "\""));
         assertTrue(newestAckedXml.contains("<firstEventTime>2010-01-01T01:00:00"));
 
-        // assertTrue(oldestUnackedXml.contains("<alarm severity=\"WARNING\" id=\"" + oldestUnackedAlarm.getId() + "\""));
+        assertTrue("should contain WARNING with ID#" + oldestUnackedAlarm.getId(), oldestUnackedXml.contains("<alarm severity=\"WARNING\" id=\"" + oldestUnackedAlarm.getId() + "\""));
         assertTrue(oldestUnackedXml.contains("<firstEventTime>2010-01-01T02:00:00"));
 
-        // assertTrue(newestUnackedXml.contains("<alarm severity=\"WARNING\" id=\"" + newestUnackedAlarm.getId() + "\""));
+        assertTrue("should contain WARNING with ID#" + newestUnackedAlarm.getId(), newestUnackedXml.contains("<alarm severity=\"WARNING\" id=\"" + newestUnackedAlarm.getId() + "\""));
         assertTrue(newestUnackedXml.contains("<firstEventTime>2010-01-01T03:00:00"));
     }
 
