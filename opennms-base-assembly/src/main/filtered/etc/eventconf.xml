@@ -2040,6 +2040,76 @@
   <event-file>events/Juniper.events.xml</event-file>
   <event-file>events/Junos.events.xml</event-file>
   <event-file>events/JunosV1.events.xml</event-file>
+<!-- Start of Juniper customized Event Files -->
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-bfd-exp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-bfd.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-bgpmib2.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-cfgmgmt.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-chassis.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-coll.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-cos.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-dfc.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-dom.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-event.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-ex-mac-notification.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-jdhcpv6.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-jdhcp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-js-auth.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-js-idp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-js-nat.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-js-packet-mirror.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-jsrpd.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-js-screening.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-js-utm-av.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-l2ald.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-l2cp-features.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-ldp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-license.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-mag.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-mimstp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-mpls-ldp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-mpls.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-ospfv3mib.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-otn.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-p2mp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-ping.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-pmon.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-rmon.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-secure-access-port.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-sonetaps.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-sonet.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-sp-nat.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-sp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-syslog.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-user-aaa.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-virtualchassis.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mib-jnx-vpn.xml</event-file>
+<!-- Events for the tcaos family -->
+<event-file>/opt/opennms/etc/events/JuniperEvents/tcaos/mib-jnx-tca-chassis.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/tcaos/mib-jnx-tca-gps.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/tcaos/mib-jnx-tca-interface.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/tcaos/mib-jnx-tca-ntp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/tcaos/mib-jnx-tca-timing.xml</event-file>
+<!-- Events for the mbg mx family -->
+<event-file>/opt/opennms/etc/events/JuniperEvents/mbg/mib-jnx-mobile-gateway-aaa.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mbg/mib-jnx-mobile-gateway-appfw.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mbg/mib-jnx-mobile-gateway-charging.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mbg/mib-jnx-mobile-gateway-dhcp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mbg/mib-jnx-mobile-gateway-gtp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mbg/mib-jnx-mobile-gateway-rmps.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mbg/mib-jnx-mobile-gateway-sm-ip-pool.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mbg/mib-jnx-mobile-gateway-sgw-charging.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mbg/mib-jnx-mobile-gateway-sgw-gtp.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mbg/mib-jnx-mobile-gateway-sgw-mfwd.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mbg/mib-jnx-mobile-gateway-sgw-sm.xml</event-file>
+<!-- Events for the vse-mcg family -->
+<event-file>/opt/opennms/etc/events/JuniperEvents/vse-mcg/MME4.0_036.1.39_VSE_eventconf.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/vse-mcg/MME4.0_036.1.39_APP_eventconf.xml</event-file>
+<!-- Events for the mfc family -->
+<event-file>/opt/opennms/etc/events/JuniperEvents/mfc/Juniper.MFD.events.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mfc/NodeIface.Correlator.events.xml</event-file>
+<event-file>/opt/opennms/etc/events/JuniperEvents/mfc/TallMaple.events.xml</event-file>
+<!-- End of Juniper Event Files -->
   <event-file>events/K5Systems.events.xml</event-file>
   <event-file>events/LLDP.events.xml</event-file>
   <event-file>events/Liebert.events.xml</event-file>
