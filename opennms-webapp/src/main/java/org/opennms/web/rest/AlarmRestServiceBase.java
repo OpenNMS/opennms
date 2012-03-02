@@ -6,13 +6,10 @@ import java.util.regex.Pattern;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.FetchMode;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 public class AlarmRestServiceBase extends OnmsRestService {
@@ -25,7 +22,15 @@ public class AlarmRestServiceBase extends OnmsRestService {
     }
 
     protected Criteria getCriteria(final MultivaluedMap<String,String> params, final boolean stripOrdering) {
-    	translateSeverity(params);
+    	final CriteriaBuilder cb = getCriteriaBuilder(params, stripOrdering);
+
+    	final Criteria criteria = cb.toCriteria();
+    	LogUtils.debugf(this, "criteria = %s", criteria);
+		return criteria;
+    }
+
+	protected CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params, final boolean stripOrdering) {
+		translateSeverity(params);
 
     	final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 
@@ -37,49 +42,14 @@ public class AlarmRestServiceBase extends OnmsRestService {
     	}
     	cb.distinct();
 
-    	final Criteria criteria = cb.toCriteria();
-    	LogUtils.debugf(this, "criteria = %s", criteria);
-		return criteria;
-    }
-
-    protected OnmsCriteria getQueryFilters(final MultivaluedMap<String,String> params) {
-        return getQueryFilters(params, false);
-    }
-
-    protected OnmsCriteria getQueryFilters(final MultivaluedMap<String,String> params, final boolean stripOrdering) {
-        translateSeverity(params);
-
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-
-        if (!stripOrdering) {
-            setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
-            addOrdering(params, criteria, false);
-            // Set default ordering
-            addOrdering(
-                new MultivaluedMapImpl(
-                    new String[][] { 
-                        new String[] { "orderBy", "lastEventTime" }, 
-                        new String[] { "order", "desc" } 
-                    }
-                ), criteria, false
-            );
-        }
-
-        addFiltersToCriteria(params, criteria, OnmsAlarm.class);
-
-
-        criteria.setFetchMode("firstEvent", FetchMode.JOIN);
-        criteria.setFetchMode("lastEvent", FetchMode.JOIN);
-        
-        criteria.createAlias("node", "node", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("node.snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("node.ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
-
-        return getDistinctIdCriteria(OnmsAlarm.class, criteria);
-    }
+    	return cb;
+	}
 
     protected void translateSeverity(final MultivaluedMap<String, String> params) {
-        final String query = params.getFirst("query");
+    	// this is handled by a @QueryParam annotation, ignore it from the UriInfo object
+    	params.remove("severities");
+
+    	final String query = params.getFirst("query");
         // System.err.println("tranlateSeverity: query = " + query + ", pattern = " + p);
         if (query != null) {
             final Matcher m = m_severityPattern.matcher(query);

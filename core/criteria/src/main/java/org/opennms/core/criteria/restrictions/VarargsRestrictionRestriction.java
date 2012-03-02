@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.criterion.Criterion;
+import org.springframework.core.style.ToStringCreator;
 
 public abstract class VarargsRestrictionRestriction extends BaseRestriction {
 
@@ -62,8 +62,8 @@ public abstract class VarargsRestrictionRestriction extends BaseRestriction {
 
     @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.appendSuper(super.toString())
+    	return new ToStringCreator(this)
+    		.append("type", getType())
     		.append("restrictions", m_restrictions)
     		.toString();
     }

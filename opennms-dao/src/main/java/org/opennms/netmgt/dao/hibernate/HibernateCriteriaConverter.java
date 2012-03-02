@@ -8,9 +8,9 @@ import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Subqueries;
+import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Criteria.FetchType;
-import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.restrictions.OrRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.netmgt.dao.CriteriaConverter;
@@ -68,6 +68,16 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 			}
 		}
 		
+		for (final org.opennms.core.criteria.Order order : criteria.getOrders()) {
+			final org.hibernate.criterion.Order hibernateOrder;
+			if (order.asc()) {
+				hibernateOrder = org.hibernate.criterion.Order.asc(order.getAttribute());
+			} else {
+				hibernateOrder = org.hibernate.criterion.Order.desc(order.getAttribute());
+			}
+			hibernateCriteria.addOrder(hibernateOrder);
+		}
+
 		return hibernateCriteria;
 	}
 

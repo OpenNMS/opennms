@@ -1,5 +1,6 @@
 package org.opennms.netmgt.dao.stats;
 
+import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,4 +20,11 @@ public abstract class AbstractBaseStatisticsService<T> implements StatisticsServ
     public int getTotalCount(final OnmsCriteria criteria) {
         return getDao().countMatching(criteria);
     }
+    
+    @Transactional
+	public int getTotalCount(final Criteria criteria) {
+        return getDao().countMatching(criteria);
+	}
+
+
 }

@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.criteria.restrictions.Restriction;
+import org.springframework.core.style.ToStringCreator;
 
 public class Criteria {
 
@@ -27,7 +27,7 @@ public class Criteria {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this)
+		return new ToStringCreator(this)
 			.append("class", m_class)
 			.append("orders", m_orders)
 			.append("aliases", m_aliases)
@@ -90,6 +90,10 @@ public class Criteria {
 	public void setRestrictions(Collection<Restriction> restrictions) {
 		m_restrictions.clear();
 		m_restrictions.addAll(restrictions);
+	}
+
+	public void addRestriction(final Restriction restriction) {
+		m_restrictions.add(restriction);
 	}
 
 	public boolean isDistinct() {

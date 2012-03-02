@@ -2,7 +2,7 @@ package org.opennms.core.criteria.restrictions;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.springframework.core.style.ToStringCreator;
 
 public class NotRestriction extends BaseRestriction {
 
@@ -45,8 +45,8 @@ public class NotRestriction extends BaseRestriction {
 
     @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.appendSuper(super.toString())
+    	return new ToStringCreator(this)
+    		.append("type", getType())
     		.append("restriction", m_restriction)
     		.toString();
     }
