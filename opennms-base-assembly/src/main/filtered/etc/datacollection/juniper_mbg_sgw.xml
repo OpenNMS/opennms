@@ -1,0 +1,550 @@
+<?xml version="1.0"?>
+<datacollection-group name="Juniper-MBG-SGW">
+
+    <!-- Juniper SGW Resource Types -->
+
+	<resourceType name="jnxMbgGwIndexTable-index" label="jnxMbgGwIndexTable-index"
+        resourceLabel="${GwType}:${GwName} (index ${index})">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgSgwSMStatsTable-index" label="jnxMbgSgwSMStatsTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgSgwSMStatusTable-index" label="jnxMbgSgwSMStatusTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgSgwCgLpsStatsTable-index" label="jnxMbgSgwCgLpsStatsTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgSgwCgCgfGroupsStatsTable-index" label="jnxMbgSgwCgCgfGroupsStatsTable-index"
+		resourceLabel="Gateway: ${subIndex(0,1)}, Profile: ${GroupProfName} ">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+			<parameter key="sibling-column-name" value="GroupProfName" />
+		</storageStrategy>
+	</resourceType>
+
+	<resourceType name="jnxMbgSgwCgCgfStatsTable-index" label="jnxMbgSgwCgCgfStatsTable-index"
+		resourceLabel="Gateway: ${subIndex(0,1)}, Profile/Server: ${ProfileName}/${IpAddress}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+			<parameter key="sibling-column-name" value="ProfileName" />
+		</storageStrategy>
+	</resourceType>
+
+	<resourceType name="jnxMbgSgwGtpCPerPeerStatsTable-index" label="jnxMbgSgwGtpCPerPeerStatsTable-index"
+		resourceLabel="Gateway: ${subIndex(0,1)}, Peer:${subIndex(1,4)}/Local:${subIndex(5,4)}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+	<resourceType name="jnxMbgSgwGtpCGlbStatsTable-index" label="jnxMbgSgwGtpCGlbStatsTable-index"
+        resourceLabel="Gateway ${index}">
+		<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+		<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+	</resourceType>
+
+      <!-- Juniper MBG MIBs -->
+
+<!--Start of  jnxMbgGwIndexTable-->
+	<group name="jnxMbgGwIndexTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.4.1.1.1" instance="jnxMbgGwIndexTable-index" alias="GwIndex" type="Integer32" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.4.1.1.2" instance="jnxMbgGwIndexTable-index" alias="GwName" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.4.1.1.3" instance="jnxMbgGwIndexTable-index" alias="GwType" type="String" />
+	</group>
+<!-- End of jnxMbgGwIndexTable -->
+
+<!--Start of  jnxMbgSgwSMStatsTable-->
+	<group name="jnxMbgSgwSMStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.1" instance="jnxMbgSgwSMStatsTable-index" alias="SessnEstAttmpts" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.2" instance="jnxMbgSgwSMStatsTable-index" alias="SuccSessnEst" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.3" instance="jnxMbgSgwSMStatsTable-index" alias="PeerInitDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.4" instance="jnxMbgSgwSMStatsTable-index" alias="PeerInitSuccDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.5" instance="jnxMbgSgwSMStatsTable-index" alias="GwInitDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.6" instance="jnxMbgSgwSMStatsTable-index" alias="GwInitSuccDeactv" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.7" instance="jnxMbgSgwSMStatsTable-index" alias="GtpGnS5S8InpPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.8" instance="jnxMbgSgwSMStatsTable-index" alias="GtpGnS5S8InpByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.9" instance="jnxMbgSgwSMStatsTable-index" alias="GtpGnS5S8OutPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.10" instance="jnxMbgSgwSMStatsTable-index" alias="GtpGnS5S8OutByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.11" instance="jnxMbgSgwSMStatsTable-index" alias="GtpS1uInpPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.12" instance="jnxMbgSgwSMStatsTable-index" alias="GtpS1uInpByt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.13" instance="jnxMbgSgwSMStatsTable-index" alias="GtpS1uOutPkt" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.1.1.14" instance="jnxMbgSgwSMStatsTable-index" alias="GtpS1uOutByt" type="Counter64" />
+	</group>
+<!-- End of jnxMbgSgwSMStatsTable -->
+
+
+
+<!--Start of  jnxMbgSgwSMStatusTable-->
+	<group name="jnxMbgSgwSMStatusTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.1" instance="jnxMbgSgwSMStatusTable-index" alias="ActvSubscribers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.2" instance="jnxMbgSgwSMStatusTable-index" alias="ActvSessions" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.3" instance="jnxMbgSgwSMStatusTable-index" alias="ActvBearers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.4" instance="jnxMbgSgwSMStatusTable-index" alias="IdleSubscribers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.5" instance="jnxMbgSgwSMStatusTable-index" alias="IdleSessions" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.6" instance="jnxMbgSgwSMStatusTable-index" alias="IdleBearers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.7" instance="jnxMbgSgwSMStatusTable-index" alias="SuspSubscribers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.8" instance="jnxMbgSgwSMStatusTable-index" alias="SuspSessions" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.9" instance="jnxMbgSgwSMStatusTable-index" alias="SuspBearers" type="Gauge64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.10" instance="jnxMbgSgwSMStatusTable-index" alias="CPUUtil" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.4.1.2.1.11" instance="jnxMbgSgwSMStatusTable-index" alias="MemoryUtil" type="gauge" />
+	</group>
+<!-- End of jnxMbgSgwSMStatusTable -->
+
+<!--Start of  jnxMbgSgwCgLpsStatsTable-->
+	<group name="jnxMbgSgwCgLpsStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.1.1.1" instance="jnxMbgSgwCgLpsStatsTable-index" alias="FilesOnLcStorage" type="gauge" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.1.1.2" instance="jnxMbgSgwCgLpsStatsTable-index" alias="LcStorageAvailSpace" type="gauge" />
+	</group>
+<!-- End of jnxMbgSgwCgLpsStatsTable -->
+
+
+
+<!--Start of  jnxMbgSgwCgCgfGroupsStatsTable-->
+	<group name="jnxMbgSgwCgCgfGroupsStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.1" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GrpProfId" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.2" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GrpDRTReqTx" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.4" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GrpDRTReqTmout" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.5" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GrpDRTSucRspRx" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.6" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GrpDRTErrRspRx" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.7" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GrpRediReqRx" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.8" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GrpRediRspTx" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.9" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GrpSwitchovers" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.10" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GrpBatchReqTx" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.11" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GrpBatchRspErrors" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.12" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GrpBatchCDRsTx" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.13" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GroupTotalWFA" type="counter" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.2.1.14" instance="jnxMbgSgwCgCgfGroupsStatsTable-index" alias="GroupProfName" type="String" />
+	</group>
+<!-- End of jnxMbgSgwCgCgfGroupsStatsTable -->
+
+
+
+<!--Start of  jnxMbgSgwCgCgfStatsTable-->
+	<group name="jnxMbgSgwCgCgfStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.1" instance="jnxMbgSgwCgCgfStatsTable-index" alias="Index" type="Integer32" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.2" instance="jnxMbgSgwCgCgfStatsTable-index" alias="IpAddress" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.3" instance="jnxMbgSgwCgCgfStatsTable-index" alias="Status" type="Integer32" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.6" instance="jnxMbgSgwCgCgfStatsTable-index" alias="EchoReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.7" instance="jnxMbgSgwCgCgfStatsTable-index" alias="EchoReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.8" instance="jnxMbgSgwCgCgfStatsTable-index" alias="EchoReqTmout" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.9" instance="jnxMbgSgwCgCgfStatsTable-index" alias="EchoRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.10" instance="jnxMbgSgwCgCgfStatsTable-index" alias="EchoRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.11" instance="jnxMbgSgwCgCgfStatsTable-index" alias="VerUnsuppTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.12" instance="jnxMbgSgwCgCgfStatsTable-index" alias="VerUnsuppRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.14" instance="jnxMbgSgwCgCgfStatsTable-index" alias="NodeAliveReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.16" instance="jnxMbgSgwCgCgfStatsTable-index" alias="NodeAliveRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.18" instance="jnxMbgSgwCgCgfStatsTable-index" alias="RedirectReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.19" instance="jnxMbgSgwCgCgfStatsTable-index" alias="RedirectRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.20" instance="jnxMbgSgwCgCgfStatsTable-index" alias="DRTReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.22" instance="jnxMbgSgwCgCgfStatsTable-index" alias="DRTSuccRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.23" instance="jnxMbgSgwCgCgfStatsTable-index" alias="DRTErrRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.3.1.4.1.30" instance="jnxMbgSgwCgCgfStatsTable-index" alias="ProfileName" type="String" />
+	</group>
+<!-- End of jnxMbgSgwCgCgfStatsTable -->
+
+<!--Start of  jnxMbgSgwGtpCPerPeerStatsTable-->
+	<group name="jnxMbgSgwGtpCPerPeerStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.1" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="GtpRmtAddr" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.2" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="GtpLclAddr" type="String" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.3" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="GtpRtgInst" type="Integer32" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.4" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="RxPacketsDropped" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.5" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="PacketAllocFail" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.6" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="PacketSendFail" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.7" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="IPVerErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.8" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="IPProtoErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.9" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="GTPPortErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.10" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="GTPUnknVerRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.11" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="PcktLenErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.12" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="UnknMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.13" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="ProtocolErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.14" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="UnSupportedMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.15" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="T3RespTmrExpRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.16" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2NumMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.17" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2NumMsgTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.18" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2NumBytesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.19" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2NumBytesTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.20" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2EchoReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.21" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2EchoReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.22" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2EchoRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.23" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2EchoRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.24" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2VerNotSupRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.25" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2VerNotSupTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.26" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CreateSessReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.27" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CreateSessReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.28" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CreateSessRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.29" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CreateSessRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.30" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="ModBrReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.31" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="ModBrReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.32" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="ModBrRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.33" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="ModBrRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.34" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelSessReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.35" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelSessReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.36" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelSessRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.37" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelSessRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.38" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CrtBrReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.39" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CrtBrReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.40" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CrtBrRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.41" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CrtBrRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.42" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="UpdBrReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.43" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="UpdBrReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.44" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="UpdBrRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.45" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="UpdBrRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.46" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelBrReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.47" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelBrReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.48" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelBrRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.49" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelBrRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.50" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelConnSetReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.51" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelConnSetReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.52" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelConnSetRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.53" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelConnSetRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.54" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="UpdConnSetReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.55" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="UpdConnSetReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.56" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="UpdConnSetRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.57" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="UpdConnSetRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.58" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="ModBrCmdRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.59" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="ModBrCmdTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.60" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="ModBrFlrIndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.61" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="ModBrFlrIndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.62" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelBrCmdRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.63" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelBrCmdTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.64" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelBrFlrIndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.65" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelBrFlrIndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.66" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="BrResCmdRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.67" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="BrResCmdTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.68" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="BrResFlrIndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.69" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="BrResFlrIndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.70" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="RelAcsBrReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.71" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="RelAcsBrReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.72" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="RelAcsBrRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.73" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="RelAcsBrRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.74" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CrIndTunReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.75" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CrIndTunReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.76" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CrIndTunRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.77" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="CrIndTunRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.78" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelIndTunReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.79" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelIndTunReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.80" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelIndTunRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.81" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DelIndTunRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.82" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DlDataNotifRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.83" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DlDataNotifTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.84" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DlDataAckRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.85" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DlDataAckTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.86" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DlDataNotiFlrIndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.87" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="DlDataNotiFlrIndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.88" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="StopPagingIndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.89" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="StopPagingIndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.90" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsPageRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.91" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsPageTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.92" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsReqAcceptRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.93" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsReqAcceptTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.94" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsAcceptPartRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.95" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsAcceptPartTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.96" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsNewPTNPrefRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.97" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsNewPTNPrefTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.98" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsNPTSIAdbrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.99" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsNPTSIAdbrTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.100" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsCtxNotFndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.101" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsCtxNotFndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.102" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsInvMsgFmtRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.103" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsInvMsgFmtTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.104" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsVerNotSuppRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.105" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsVerNotSuppTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.106" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsInvLenRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.107" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsInvLenTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.108" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsServNotSupRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.109" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsServNotSupTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.110" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsManIEIncorRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.111" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsManIEIncorTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.112" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsManIEMissRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.113" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsManIEMissTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.114" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsOptIEIncorRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.115" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsOptIEIncorTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.116" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsSysFailRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.117" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsSysFailTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.118" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsNoResRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.119" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsNoResTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.120" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsTFTSMANTErRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.121" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsTFTSMANTErTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.122" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsTFTSysErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.123" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsTFTSysErrTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.124" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsPkFltManErRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.125" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsPkFltManErTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.126" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsPkFltSynErRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.127" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsPkFltSynErTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.128" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsMisUnknAPNRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.129" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsMisUnknAPNTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.130" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUnexpRptIERx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.131" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUnexpRptIETx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.132" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsGREKeyNtFdRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.133" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsGREKeyNtFdTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.134" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsRelocFailRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.135" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsRelocFailTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.136" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsDenINRatRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.137" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsDenINRatTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.138" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsPTNotSuppRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.139" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsPTNotSuppTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.140" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsAllDynAdOcRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.141" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsAllDynAdOcTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.142" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsNOTFTUECTXRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.143" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsNOTFTUECTXTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.144" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsProtoNtSupRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.145" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsProtoNtSupTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.146" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUENotRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.147" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUENotRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.148" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUERefusesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.149" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUERefusesTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.150" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsServDeniedRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.151" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsServDeniedTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.152" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUnabPageUERx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.153" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUnabPageUETx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.154" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsNoMemRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.155" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsNoMemTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.156" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUserAUTHFlRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.157" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUserAUTHFlTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.158" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsAPNAcsDenRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.159" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsAPNAcsDenTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.160" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsReqRejRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.161" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsReqRejTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.162" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsPTMSISigMMRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.163" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsPTMSISigMMTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.164" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsIMSINotKnRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.165" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsIMSINotKnTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.166" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsCondIEMsRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.167" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsCondIEMsTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.168" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsAPNResTIncRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.169" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsAPNResTIncTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.170" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUnknownRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.1.1.171" instance="jnxMbgSgwGtpCPerPeerStatsTable-index" alias="V2ICsUnknownTx" type="Counter64" />
+	</group>
+<!-- End of jnxMbgSgwGtpCPerPeerStatsTable -->
+
+
+
+<!--Start of  jnxMbgSgwGtpCGlbStatsTable-->
+	<group name="jnxMbgSgwGtpCGlbStatsTable" ifType="all">
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.1" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="RxPacketsDropped" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.2" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="PacketAllocFail" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.3" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="PacketSendFail" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.4" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="IPVerErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.5" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="IPProtoErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.6" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="GTPPortErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.7" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="GTPUnknVerRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.8" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="PcktLenErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.9" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="UnknMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.10" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="ProtocolErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.11" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="UnSupportedMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.12" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="T3RespTmrExpRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.13" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2NumMsgRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.14" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2NumMsgTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.15" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2NumBytesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.16" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2NumBytesTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.19" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2EchoReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.20" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2EchoReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.21" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2EchoRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.22" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2EchoRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.23" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2VerNotSupRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.24" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2VerNotSupTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.25" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CreateSessReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.26" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CreateSessReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.27" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CreateSessRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.28" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CreateSessRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.29" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="ModBrReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.30" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="ModBrReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.31" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="ModBrRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.32" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="ModBrRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.33" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelSessReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.34" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelSessReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.35" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelSessRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.36" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelSessRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.37" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CrtBrReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.38" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CrtBrReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.39" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CrtBrRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.40" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CrtBrRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.41" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="UpdBrReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.42" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="UpdBrReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.43" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="UpdBrRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.44" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="UpdBrRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.45" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelBrReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.46" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelBrReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.47" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelBrRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.48" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelBrRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.49" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelConnSetReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.50" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelConnSetReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.51" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelConnSetRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.52" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelConnSetRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.53" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="UpdConnSetReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.54" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="UpdConnSetReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.55" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="UpdConnSetRspRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.56" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="UpdConnSetRspTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.57" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="ModBrCmdRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.58" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="ModBrCmdTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.59" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="ModBrFlrIndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.60" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="ModBrFlrIndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.61" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelBrCmdRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.62" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelBrCmdTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.63" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelBrFlrIndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.64" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelBrFlrIndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.65" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="BrResCmdRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.66" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="BrResCmdTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.67" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="BrResFlrIndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.68" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="BrResFlrIndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.69" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="RelAcsBrReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.70" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="RelAcsBrReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.71" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="RelAcsBrRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.72" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="RelAcsBrRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.73" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CrIndTunReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.74" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CrIndTunReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.75" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CrIndTunRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.76" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="CrIndTunRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.77" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelIndTunReqRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.78" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelIndTunReqTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.79" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelIndTunRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.80" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DelIndTunRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.81" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DlDataNotifRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.82" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DlDataNotifTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.83" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DlDataAckRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.84" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DlDataAckTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.85" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DlDataNotiFlrIndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.86" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="DlDataNotiFlrIndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.87" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="StopPagingIndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.88" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="StopPagingIndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.89" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsPageRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.90" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsPageTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.91" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsReqAcceptRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.92" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsReqAcceptTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.93" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsAcceptPartRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.94" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsAcceptPartTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.95" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsNewPTNPrefRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.96" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsNewPTNPrefTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.97" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsNewPTSIAdbrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.98" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsNewPTSIAdbrTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.99" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsCtxNotFndRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.100" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsCtxNotFndTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.101" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsInvMsgFmtRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.102" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsInvMsgFmtTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.103" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsVerNotSuppRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.104" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsVerNotSuppTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.105" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsInvLenRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.106" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsInvLenTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.107" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsServNotSuppRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.108" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsServNotSuppTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.109" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsManIEIncorrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.110" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsManIEIncorrTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.111" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsManIEMissRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.112" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsManIEMissTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.113" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsOptIEIncorrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.114" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsOptIEIncorrTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.115" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsSysFailRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.116" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsSysFailTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.117" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsNoResRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.118" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsNoResTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.119" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsTFTSMANTErRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.120" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsTFTSMANTErTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.121" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsTFTSysErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.122" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsTFTSysErrTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.123" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsPkFltManErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.124" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsPkFltManErrTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.125" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsPkFltSynErrRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.126" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsPkFltSynErrTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.127" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsMisUnknAPNRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.128" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsMisUnknAPNTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.129" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUnexpRptIERx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.130" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUnexpRptIETx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.131" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsGREKeyNtFdRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.132" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsGREKeyNtFdTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.133" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsRelocFailRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.134" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsRelocFailTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.135" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsDeniedINRatRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.136" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsDeniedINRatTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.137" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsPTNotSuppRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.138" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsPTNotSuppTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.139" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsAllDynAdOccRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.140" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsAllDynAdOccTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.141" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsNOTFTUECTXRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.142" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsNOTFTUECTXTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.143" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsProtoNtSupRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.144" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsProtoNtSupTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.145" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUENotRespRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.146" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUENotRespTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.147" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUERefusesRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.148" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUERefusesTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.149" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsServDeniedRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.150" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsServDeniedTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.151" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUnabPageUERx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.152" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUnabPageUETx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.153" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsNoMemRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.154" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsNoMemTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.155" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUserAUTHFlRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.156" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUserAUTHFlTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.157" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsAPNAcsDenRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.158" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsAPNAcsDenTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.159" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsReqRejRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.160" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsReqRejTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.161" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsPTMSISigMMRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.162" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsPTMSISigMMTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.163" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsIMSINotKnRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.164" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsIMSINotKnTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.165" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsCondIEMsRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.166" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsCondIEMsTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.167" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsAPNResTIncRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.168" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsAPNResTIncTx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.169" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUnknownRx" type="Counter64" />
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.2.2.1.2.1.170" instance="jnxMbgSgwGtpCGlbStatsTable-index" alias="V2ICsUnknownTx" type="Counter64" />
+	</group>
+<!-- End of jnxMbgSgwGtpCGlbStatsTable -->
+
+
+
+      <systemDef name="Juniper MBG-SGW MX480 Routers">
+        <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.25</sysoid>
+        <collect>
+			<includeGroup>jnxMbgGwIndexTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgLpsStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgCgfGroupsStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgCgfStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
+        </collect>
+      </systemDef>
+      <systemDef name="Juniper MBG-SGW MX960 Routers">
+        <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.21</sysoid>
+        <collect>
+			<includeGroup>jnxMbgGwIndexTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgLpsStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgCgfGroupsStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgCgfStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
+        </collect>
+      </systemDef>
+      <systemDef name="Juniper MBG-SGW MX240 Routers">
+        <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.29</sysoid>
+        <collect>
+			<includeGroup>jnxMbgGwIndexTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwSMStatusTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgLpsStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgCgfGroupsStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwCgCgfStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
+			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

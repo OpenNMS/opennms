@@ -1,0 +1,542 @@
+<?xml version="1.0"?>
+<datacollection-group name="Juniper-Mobility">
+
+    <!-- Juniper Resource Types -->
+    <resourceType name="jnxMbgRadiusAuthServerName" label="Juniper MBG PGW Auth Radius server"
+                  resourceLabel="Radius Server - ${string(subIndex(0,n))}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="jnxMbgRadiusAcctServerName" label="Juniper MBG PGW Acct Radius server"
+                  resourceLabel="Radius Server - ${string(subIndex(0,n))}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="jnxMbgPgwAPNName" label="Juniper MBG PGW APN"
+                  resourceLabel="APN - ${string(subIndex(0,8))}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="jnxMbgPgwCgCgfGrpProfName" label="Juniper MBG PGW Charging Group"
+                  resourceLabel="Transport Profile - ${string(subIndex(0,4))}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="jnxMbgPgwCgCgfIndex" label="Juniper MBG PGW Charging server " >
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="jnxMbgSMIPPoolName" label="Juniper MBG PGW Pool Name"
+                  resourceLabel="Address Pools - LS ${string(subIndex(0,n))}:RI ${string(subIndex(n,n))} Pool ${string(subIndex(n,n))} ">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+      <!-- Juniper MBG MIBs -->
+
+      <!-- Juniper MBG AAA stats  -->
+      <group name="juniper-mbg-pgw-aaa-auth" ifType="ignore">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.1.1" instance="0" alias="AuthRequests" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.1.2" instance="0" alias="AuthAccepts" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.1.3" instance="0" alias="AuthRejects" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.1.4" instance="0" alias="AuthChallenges" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.1.5" instance="0" alias="AuthRequestTimeouts" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.1.6" instance="0" alias="AuthRequestTxErrors" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.1.7" instance="0" alias="AuthResponseErrors" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.1.8" instance="0" alias="AuthPendingRequests" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.1" instance="0" alias="DynAuthReceived" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.2" instance="0" alias="DynAuthCoaReceived" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.3" instance="0" alias="DynAuthDmReceived" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.4" instance="0" alias="DynAuthCoaAckSent" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.5" instance="0" alias="DynAuthCoaNackSent" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.6" instance="0" alias="DynAuthDmAckSent" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.7" instance="0" alias="DynAuthDmNackSent" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.8" instance="0" alias="DynAuthDropped" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.9" instance="0" alias="DynAuthDuplicate" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.10" instance="0" alias="DynAuthDispatched" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.11" instance="0" alias="DynAuthTimeouts" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.12" instance="0" alias="DynAuthSentToSmd" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.13" instance="0" alias="DynAuthErrors" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.14" instance="0" alias="DynAuthUnknownClnts" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.15" instance="0" alias="DynAuthInvalidCode" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.16" instance="0" alias="DynAuthInvalidAuth" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.17" instance="0" alias="DynAuthInvalidChId" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.18" instance="0" alias="DynAuthRcmErrors" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.3.19" instance="0" alias="DynAuthInvalidTrId" type="Counter64" />
+      </group>
+
+      <group name="juniper-mbg-pgw-aaa-acct" ifType="ignore">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.2.1" instance="0" alias="AcctRequests" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.2.2" instance="0" alias="AcctResponses" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.2.3" instance="0" alias="AcctRequestTimeouts" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.2.4" instance="0" alias="AcctRequestTxErrors" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.2.5" instance="0" alias="AcctResponseErrors" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.2.6" instance="0" alias="AcctPendingRequests" type="Counter64" />
+      </group>
+
+      <group name="juniper-mbg-pgw-aaa-auth-serverspecific" ifType="all">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.6" instance="jnxMbgRadiusAuthServerName" alias="Status" type="Integer" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.7" instance="jnxMbgRadiusAuthServerName" alias="Requests" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.8" instance="jnxMbgRadiusAuthServerName" alias="Retransmissions" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.9" instance="jnxMbgRadiusAuthServerName" alias="Accepts" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.10" instance="jnxMbgRadiusAuthServerName" alias="Rejects" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.11" instance="jnxMbgRadiusAuthServerName" alias="Challenges" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.12" instance="jnxMbgRadiusAuthServerName" alias="MalformedResponses" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.13" instance="jnxMbgRadiusAuthServerName" alias="BadAuthenticators" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.14" instance="jnxMbgRadiusAuthServerName" alias="PendingRequests" type="Counter64" />
+	<mibObj oid=".1..6.1.4.1.2636.3.66.3.1.4.1.15" instance="jnxMbgRadiusAuthServerName" alias="Timeouts" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.16" instance="jnxMbgRadiusAuthServerName" alias="UnknownTypes" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.17" instance="jnxMbgRadiusAuthServerName" alias="PacketsDropped" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.18" instance="jnxMbgRadiusAuthServerName" alias="RTTAvg" type="Integer32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.19" instance="jnxMbgRadiusAuthServerName" alias="RTTMin" type="Integer32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.4.1.20" instance="jnxMbgRadiusAuthServerName" alias="RTTMax" type="Integer32" />
+
+      </group>
+
+      <group name="juniper-mbg-pgw-aaa-acct-serverspecific" ifType="all">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.6" instance="jnxMbgRadiusAcctServerName" alias="Status" type="Integer" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.7" instance="jnxMbgRadiusAcctServerName" alias="Requests" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.8" instance="jnxMbgRadiusAcctServerName" alias="Retransmissions" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.9" instance="jnxMbgRadiusAcctServerName" alias="Responses" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.10" instance="jnxMbgRadiusAcctServerName" alias="MalformedResponses" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.11" instance="jnxMbgRadiusAcctServerName" alias="BadAuthenticators" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.12" instance="jnxMbgRadiusAcctServerName" alias="PendingRequests" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.13" instance="jnxMbgRadiusAcctServerName" alias="Timeouts" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.14" instance="jnxMbgRadiusAcctServerName" alias="UnknownTypes" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.15" instance="jnxMbgRadiusAcctServerName" alias="PacketsDropped" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.16" instance="jnxMbgRadiusAcctServerName" alias="RTTAvg" type="Integer32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.17" instance="jnxMbgRadiusAcctServerName" alias="RTTMin" type="Integer32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.5.1.18" instance="jnxMbgRadiusAcctServerName" alias="RTTMax" type="Integer32" />
+
+      </group>
+
+      <group name="juniper-mbg-pgw-aaa-auth-clientspecific" ifType="all">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.4" instance="jnxMbgRadiusAuthServerName" alias="CoaReceived" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.5" instance="jnxMbgRadiusAuthServerName" alias="DmReceived" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.6" instance="jnxMbgRadiusAuthServerName" alias="CoaAckSent" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.7" instance="jnxMbgRadiusAuthServerName" alias="CoaNackSent" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.8" instance="jnxMbgRadiusAuthServerName" alias="DmAckSent" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.9" instance="jnxMbgRadiusAuthServerName" alias="DmNackSent" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.10" instance="jnxMbgRadiusAuthServerName" alias="Dropped" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.11" instance="jnxMbgRadiusAuthServerName" alias="Duplicate" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.12" instance="jnxMbgRadiusAuthServerName" alias="Dispatched" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.13" instance="jnxMbgRadiusAuthServerName" alias="Timeouts" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.14" instance="jnxMbgRadiusAuthServerName" alias="SentToSmd" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.15" instance="jnxMbgRadiusAuthServerName" alias="Errors" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.17" instance="jnxMbgRadiusAuthServerName" alias="InvalidAuth" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.18" instance="jnxMbgRadiusAuthServerName" alias="InvalidCode" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.19" instance="jnxMbgRadiusAuthServerName" alias="InvalidChId" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.6.1.20" instance="jnxMbgRadiusAuthServerName" alias="RcmErrors" type="Counter64" />
+
+      </group>
+
+      <!-- End of Juniper MBG AAA stats  -->
+
+      <!-- Juniper MBG Subscriber stats  -->
+
+      <group name="juniper-mbg-pgw-subcriber-stats" ifType="ignore">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.2.1" instance="0" alias="ActiveSubscribers" type="Gauge64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.2.2" instance="0" alias="ActiveSessions" type="Gauge64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.2.3" instance="0" alias="ActiveBearers" type="Gauge64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.2.4" instance="0" alias="CPUUtilization" type="Gauge" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.2.5" instance="0" alias="MemoryUtilization" type="Gauge" />
+      </group>
+
+
+      <group name="juniper-mbg-pgw-apn-subcriber-stats" ifType="all">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.2" instance="jnxMbgPgwAPNName" alias="SnEstAttempts" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.3" instance="jnxMbgPgwAPNName" alias="SuccSnsEst" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.4" instance="jnxMbgPgwAPNName" alias="SnFailServcUnaval" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.5" instance="jnxMbgPgwAPNName" alias="SnFailSysFailure" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.6" instance="jnxMbgPgwAPNName" alias="SnFailNoResource" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.7" instance="jnxMbgPgwAPNName" alias="SnFailNoAddr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.8" instance="jnxMbgPgwAPNName" alias="SnFailServcDenied" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.9" instance="jnxMbgPgwAPNName" alias="SnFailAuthFail" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.10" instance="jnxMbgPgwAPNName" alias="SnFailAccessDenied" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.11" instance="jnxMbgPgwAPNName" alias="PeerSessnDeact" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.12" instance="jnxMbgPgwAPNName" alias="SuccPeerSessnDeact" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.13" instance="jnxMbgPgwAPNName" alias="GWSessnDeact" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.1.1.14" instance="jnxMbgPgwAPNName" alias="SuccGWSessnDeact" type="Counter64" />
+
+      </group>
+
+      <!-- End of Juniper MBG Subscriber stats  -->
+
+      <!-- Juniper MBG Charging related stats  -->
+
+      <group name="juniper-mbg-pgw-charging-storage-stats" ifType="ignore">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.1.1" instance="0" alias="FilesOnLcStorage" type="Gauge64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.1.2" instance="0" alias="LcStorageAvailSpace" type="Gauge64" />
+      </group>
+
+      <group name="juniper-mbg-pgw-charging-group-stats" ifType="all">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.1" instance="jnxMbgPgwCgCgfGrpProfName" alias="Name" type="String" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.2" instance="jnxMbgPgwCgCgfGrpProfName" alias="DRTReqTx" type="Counter32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.3" instance="jnxMbgPgwCgCgfGrpProfName" alias="DRTReqRx" type="Counter32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.4" instance="jnxMbgPgwCgCgfGrpProfName" alias="DRTReqTmout" type="Counter32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.5" instance="jnxMbgPgwCgCgfGrpProfName" alias="DRTSucRspRx" type="Counter32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.6" instance="jnxMbgPgwCgCgfGrpProfName" alias="DRTErrRspRx" type="Counter32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.7" instance="jnxMbgPgwCgCgfGrpProfName" alias="RediReqRx" type="Counter32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.8" instance="jnxMbgPgwCgCgfGrpProfName" alias="RediReqTx" type="Counter32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.9" instance="jnxMbgPgwCgCgfGrpProfName" alias="Switchovers" type="Counter32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.10" instance="jnxMbgPgwCgCgfGrpProfName" alias="BatchReqTx" type="Counter32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.11" instance="jnxMbgPgwCgCgfGrpProfName" alias="BatchRspErrors" type="Counter32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.12" instance="jnxMbgPgwCgCgfGrpProfName" alias="BatchCDRsTx" type="Counter32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.2.1.13" instance="jnxMbgPgwCgCgfGrpProfName" alias="GroupTotalWFA" type="Counter32" />
+
+      </group>
+
+      <group name="juniper-mbg-pgw-charging-server-stats" ifType="all">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.1" instance="jnxMbgPgwCgCgfIndex" alias="Name" type="String" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.2" instance="jnxMbgPgwCgCgfIndex" alias="Index" type="Integer32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.3" instance="jnxMbgPgwCgCgfIndex" alias="IpAddress" type="Integer32" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.4" instance="jnxMbgPgwCgCgfIndex" alias="Status" type="Gauge" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.5" instance="jnxMbgPgwCgCgfIndex" alias="UpDuration" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.6" instance="jnxMbgPgwCgCgfIndex" alias="DownDuration" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.7" instance="jnxMbgPgwCgCgfIndex" alias="EchoReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.8" instance="jnxMbgPgwCgCgfIndex" alias="EchoReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.9" instance="jnxMbgPgwCgCgfIndex" alias="EchoReqTmout" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.10" instance="jnxMbgPgwCgCgfIndex" alias="EchoRespTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.11" instance="jnxMbgPgwCgCgfIndex" alias="EchoRespRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.12" instance="jnxMbgPgwCgCgfIndex" alias="VerUnsuppTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.13" instance="jnxMbgPgwCgCgfIndex" alias="VerUnsuppRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.14" instance="jnxMbgPgwCgCgfIndex" alias="NodeAliveReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.15" instance="jnxMbgPgwCgCgfIndex" alias="NodeAliveReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.16" instance="jnxMbgPgwCgCgfIndex" alias="NodeAliveReqTmout" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.17" instance="jnxMbgPgwCgCgfIndex" alias="NodeAliveRespTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.18" instance="jnxMbgPgwCgCgfIndex" alias="NodeAliveRespRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.19" instance="jnxMbgPgwCgCgfIndex" alias="RedirectReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.20" instance="jnxMbgPgwCgCgfIndex" alias="RedirectRespTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.21" instance="jnxMbgPgwCgCgfIndex" alias="DRTReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.22" instance="jnxMbgPgwCgCgfIndex" alias="DRTReqTmout" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.23" instance="jnxMbgPgwCgCgfIndex" alias="DRTSuccRespRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.24" instance="jnxMbgPgwCgCgfIndex" alias="DRTErrRespRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.25" instance="jnxMbgPgwCgCgfIndex" alias="CdrTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.26" instance="jnxMbgPgwCgCgfIndex" alias="DRTRTTMean" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.27" instance="jnxMbgPgwCgCgfIndex" alias="DRTRTTMin" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.28" instance="jnxMbgPgwCgCgfIndex" alias="DRTRTTMax" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.29" instance="jnxMbgPgwCgCgfIndex" alias="TransToDownState" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.3.1.4.1.30" instance="jnxMbgPgwCgCgfIndex" alias="Containers" type="Counter64" />
+      </group>
+
+      <!-- End of Juniper MBG Charging related stats  -->
+
+      <!-- Juniper MBG GTP related stats  -->
+      <group name="juniper-mbg-pgw-gtpv2-stats" ifType="ignore">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.1" instance="0" alias="V2NumMsgRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.2" instance="0" alias="V2NumBytesRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.3" instance="0" alias="UnSupportedMsg" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.4" instance="0" alias="ProtocolErr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.5" instance="0" alias="T3RespTmrExp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.6" instance="0" alias="msgRedirectRX" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.7" instance="0" alias="msgRedirectTX" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.8" instance="0" alias="CreateSessReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.9" instance="0" alias="CreateSessRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.10" instance="0" alias="ModBrReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.11" instance="0" alias="ModBrRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.12" instance="0" alias="DelSessReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.13" instance="0" alias="DelSessRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.14" instance="0" alias="CngNotifReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.15" instance="0" alias="CngNotifRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.16" instance="0" alias="ModBrCmdRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.17" instance="0" alias="ModBrFlrIndRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.18" instance="0" alias="DelBrCmdRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.19" instance="0" alias="DelBrFlrIndRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.20" instance="0" alias="BrResCmdRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.21" instance="0" alias="BrResFlrIndRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.22" instance="0" alias="DlDataNotiFlrIndRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.23" instance="0" alias="TraceSessActRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.24" instance="0" alias="TraceSessDeactRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.25" instance="0" alias="CrtBrReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.26" instance="0" alias="CrtBrRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.27" instance="0" alias="UpdBrReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.28" instance="0" alias="UpdBrRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.29" instance="0" alias="DelBrReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.30" instance="0" alias="DelBrRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.31" instance="0" alias="DelConnSetReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.32" instance="0" alias="DelConnSetRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.33" instance="0" alias="DlDataNotifRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.34" instance="0" alias="DlDataAckRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.35" instance="0" alias="UpdConnSetReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.36" instance="0" alias="UpdConnSetRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.37" instance="0" alias="V2EchoReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.38" instance="0" alias="V2EchoRespRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.39" instance="0" alias="V2ICsPage" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.40" instance="0" alias="V2ICsReqAccept" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.41" instance="0" alias="V2ICsAcceptPart" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.42" instance="0" alias="V2ICsNewPTSubLT" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.43" instance="0" alias="V2ICsNewPTNPref" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.44" instance="0" alias="V2ICsNewPTSIAddrbr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.45" instance="0" alias="V2ICsCtxNotFnd" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.46" instance="0" alias="V2ICsInvMsgFmt" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.47" instance="0" alias="V2ICsVerNotSupp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.48" instance="0" alias="V2ICsInvLen" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.49" instance="0" alias="V2ICsServNotSupp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.50" instance="0" alias="V2ICsManIEIncorr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.51" instance="0" alias="V2ICsManIEMiss" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.52" instance="0" alias="V2ICsOptIEIncorr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.53" instance="0" alias="V2ICsSysFail" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.54" instance="0" alias="V2ICsNoRes" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.55" instance="0" alias="V2ICsTFTSMANTErr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.56" instance="0" alias="V2ICsTFTSysErr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.57" instance="0" alias="V2ICsPktFltrMantErr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.58" instance="0" alias="V2ICsPktFltrSynErr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.59" instance="0" alias="V2ICsMissUnkownAPN" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.60" instance="0" alias="V2ICsUnexpRepeatIE" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.61" instance="0" alias="V2ICsGREKeyNotFnd" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.62" instance="0" alias="V2ICsRelocFail" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.63" instance="0" alias="V2ICsDeniedINRat" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.64" instance="0" alias="V2ICsPTNotSupp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.65" instance="0" alias="V2ICsAllDynAddrOcc" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.66" instance="0" alias="V2ICsNOTFTUECTXEXIS" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.67" instance="0" alias="V2ICsProtoNotSupp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.68" instance="0" alias="V2ICsUENotResp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.69" instance="0" alias="V2ICsUERefuses" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.70" instance="0" alias="V2ICsServDenied" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.71" instance="0" alias="V2ICsUnablePageUE" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.72" instance="0" alias="V2ICsNoMem" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.73" instance="0" alias="V2ICsUserAUTHFail" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.74" instance="0" alias="V2ICsAPNAccDenied" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.75" instance="0" alias="V2ICsReqRej" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.76" instance="0" alias="V2NumMsgTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.77" instance="0" alias="V2NumBytesTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.78" instance="0" alias="CreateSessReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.79" instance="0" alias="CreateSessRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.80" instance="0" alias="ModBrReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.81" instance="0" alias="ModBrRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.82" instance="0" alias="DelSessReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.83" instance="0" alias="DelSessRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.84" instance="0" alias="CngNotifReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.85" instance="0" alias="CngNotifRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.86" instance="0" alias="ModBrCmdTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.87" instance="0" alias="ModBrFlrIndTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.88" instance="0" alias="DelBrCmdTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.89" instance="0" alias="DelBrFlrIndTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.90" instance="0" alias="BrResCmdTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.91" instance="0" alias="BrResFlrIndTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.92" instance="0" alias="DlDataNotiFlrIndTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.93" instance="0" alias="TraceSessActTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.94" instance="0" alias="TraceSessDeactTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.95" instance="0" alias="CrtBrReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.96" instance="0" alias="CrtBrRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.97" instance="0" alias="UpdBrReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.98" instance="0" alias="UpdBrRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.99" instance="0" alias="DelBrReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.100" instance="0" alias="DelBrRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.101" instance="0" alias="DelConnSetReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.102" instance="0" alias="DelConnSetRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.103" instance="0" alias="DlDataNotifTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.104" instance="0" alias="DlDataAckTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.105" instance="0" alias="UpdConnSetReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.106" instance="0" alias="UpdConnSetRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.107" instance="0" alias="V2EchoReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.4.108" instance="0" alias="V2EchoRespTx" type="Counter64" />
+      </group>
+
+      <group name="juniper-mbg-pgw-gtpv1-stats" ifType="ignore">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.1" instance="0" alias="V1NumMsgRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.2" instance="0" alias="V1NumBytesRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.3" instance="0" alias="V1UnSupportedMsg" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.4" instance="0" alias="ProtErr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.5" instance="0" alias="V1T3RespTmrExp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.6" instance="0" alias="MsgRedirectRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.7" instance="0" alias="MsgRedirectTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.8" instance="0" alias="SuppExtHdrNot" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.9" instance="0" alias="V1EchoReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.10" instance="0" alias="V1EchoRespRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.11" instance="0" alias="CrtPdpCxtReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.12" instance="0" alias="CrtPdpCxtRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.13" instance="0" alias="UpdPdpCxtReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.14" instance="0" alias="UpdPdpCxtRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.15" instance="0" alias="DelPdpCxtReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.16" instance="0" alias="DelPdpCxtRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.17" instance="0" alias="CrtAAPdpCxtReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.18" instance="0" alias="CrtAAPdpCxtRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.19" instance="0" alias="DelAAPdpCxtReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.20" instance="0" alias="DelAAPdpCxtRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.21" instance="0" alias="ErrorIndRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.22" instance="0" alias="NotifReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.23" instance="0" alias="NotifRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.24" instance="0" alias="NotifRejReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.25" instance="0" alias="NotifRejRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.26" instance="0" alias="RtInfReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.27" instance="0" alias="RtInfRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.28" instance="0" alias="FailRptReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.29" instance="0" alias="FailRptRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.30" instance="0" alias="NotMSPresReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.31" instance="0" alias="NotMSPresRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.32" instance="0" alias="ICsReqAccepted" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.33" instance="0" alias="ICsNonExist" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.34" instance="0" alias="ICsInvMsgFmt" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.35" instance="0" alias="ICsIMSINotKnown" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.36" instance="0" alias="ICsMSGRPSDetach" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.37" instance="0" alias="ICsMSNotGRPSResp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.38" instance="0" alias="ICsMSRefuses" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.39" instance="0" alias="ICsVerNotSupp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.40" instance="0" alias="ICsNoRes" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.41" instance="0" alias="ICsServNotSupp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.42" instance="0" alias="ICsManIEIncrt" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.43" instance="0" alias="ICsManIEMiss" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.44" instance="0" alias="ICsOptIEIncrt" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.45" instance="0" alias="ICsSysFail" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.46" instance="0" alias="ICsRoamRestrict" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.47" instance="0" alias="PTMSISigMismatch" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.48" instance="0" alias="ICsGPRSConnSupp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.49" instance="0" alias="ICsAuthFail" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.50" instance="0" alias="ICsUserAuthFail" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.51" instance="0" alias="V1ICsCtxNotFnd" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.52" instance="0" alias="V1ICsAllDynPDPAddr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.53" instance="0" alias="V1ICsNoMem" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.54" instance="0" alias="V1ICsRelocFail" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.55" instance="0" alias="V1ICsUnkManExthdr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.56" instance="0" alias="V1ICsSMANTTFTErr1" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.57" instance="0" alias="V1ICsSYNTFTErr2" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.58" instance="0" alias="V1ICsSMNTPktFltErr1" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.59" instance="0" alias="V1ICsSYNPktFltErr2" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.60" instance="0" alias="V1ICsMissUnknownAPN" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.61" instance="0" alias="V1ICsUnknownPDPAddr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.62" instance="0" alias="V1ICsNoTFTCtxExist" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.63" instance="0" alias="V1NumMsgTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.64" instance="0" alias="V1NumBytesTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.65" instance="0" alias="V1EchoReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.66" instance="0" alias="V1EchoRespTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.67" instance="0" alias="CrtPdpCxtReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.68" instance="0" alias="CrtPdpCxtRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.69" instance="0" alias="UpdPdpCxtReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.70" instance="0" alias="UpdPdpCxtRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.71" instance="0" alias="DelPdpCxtReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.72" instance="0" alias="DelPdpCxtRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.73" instance="0" alias="CrtAAPdpCxtReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.74" instance="0" alias="CrtAAPdpCxtRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.75" instance="0" alias="DelAAPdpCxtReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.76" instance="0" alias="DelAAPdpCxtRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.77" instance="0" alias="ErrorIndTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.78" instance="0" alias="NotifReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.79" instance="0" alias="NotifRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.80" instance="0" alias="NotifRejReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.81" instance="0" alias="NotifRejRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.82" instance="0" alias="RtInfReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.83" instance="0" alias="RtInfRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.84" instance="0" alias="FailRptReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.85" instance="0" alias="FailRptRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.86" instance="0" alias="NotMSPresReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.5.87" instance="0" alias="NotMSPresRspTx" type="Counter64" />
+      </group>
+
+      <group name="juniper-mbg-pgw-gtpv0-stats" ifType="ignore">
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.1" instance="0" alias="V0NumMsgRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.2" instance="0" alias="V0NumBytesRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.3" instance="0" alias="V0UnSupportedMsg" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.4" instance="0" alias="V0ProtErr" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.5" instance="0" alias="V0T3RespTmrExp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.6" instance="0" alias="V0MsgRedirectRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.7" instance="0" alias="V0MsgRedirectTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.8" instance="0" alias="V0SuppExtHdrNot" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.9" instance="0" alias="V0EchoReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.10" instance="0" alias="V0EchoRespRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.11" instance="0" alias="V0CrtPdpCxtReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.12" instance="0" alias="V0CrtPdpCxtRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.13" instance="0" alias="V0UpdPdpCxtReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.14" instance="0" alias="V0UpdPdpCxtRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.15" instance="0" alias="V0DelPdpCxtReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.16" instance="0" alias="V0DelPdpCxtRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.17" instance="0" alias="V0CrtAAPdpCxtReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.18" instance="0" alias="V0CrtAAPdpCxtRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.19" instance="0" alias="V0DelAAPdpCxtReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.20" instance="0" alias="V0DelAAPdpCxtRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.21" instance="0" alias="V0ErrorIndRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.22" instance="0" alias="V0NotifReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.23" instance="0" alias="V0NotifRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.24" instance="0" alias="V0NotifRejReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.25" instance="0" alias="V0NotifRejRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.26" instance="0" alias="V0RtInfReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.27" instance="0" alias="V0RtInfRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.28" instance="0" alias="V0FailRptReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.29" instance="0" alias="V0FailRptRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.30" instance="0" alias="V0NotMSPresReqRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.31" instance="0" alias="V0NotMSPresRspRx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.32" instance="0" alias="V0ICsReqAccepted" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.33" instance="0" alias="V0ICsNonExist" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.34" instance="0" alias="V0ICsInvMsgFmt" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.35" instance="0" alias="V0ICsIMSINotKnown" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.36" instance="0" alias="V0ICsMSGRPSDetach" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.37" instance="0" alias="V0ICsMSNotGRPSResp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.38" instance="0" alias="V0ICsMSRefuses" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.39" instance="0" alias="V0ICsVerNotSupp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.40" instance="0" alias="V0ICsNoRes" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.41" instance="0" alias="V0ICsServNotSupp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.42" instance="0" alias="V0ICsManIEIncrt" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.43" instance="0" alias="V0ICsManIEMiss" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.44" instance="0" alias="V0ICsOptIEIncrt" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.45" instance="0" alias="V0ICsSysFail" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.46" instance="0" alias="V0ICsRoamRestrict" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.47" instance="0" alias="V0PTMSISigMismatch" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.48" instance="0" alias="V0ICsGPRSConnSupp" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.49" instance="0" alias="V0ICsAuthFail" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.50" instance="0" alias="V0ICsUserAuthFail" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.51" instance="0" alias="V0NumMsgTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.52" instance="0" alias="V0NumBytesTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.53" instance="0" alias="V0EchoReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.54" instance="0" alias="V0EchoRespTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.55" instance="0" alias="V0CrtPdpCxtReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.56" instance="0" alias="V0CrtPdpCxtRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.57" instance="0" alias="V0UpdPdpCxtReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.58" instance="0" alias="V0UpdPdpCxtRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.59" instance="0" alias="V0DelPdpCxtReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.60" instance="0" alias="V0DelPdpCxtRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.61" instance="0" alias="V0CrtAAPdpCxtReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.62" instance="0" alias="V0CrtAAPdpCxtRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.63" instance="0" alias="V0DelAAPdpCxtReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.64" instance="0" alias="V0DelAAPdpCxtRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.65" instance="0" alias="V0ErrorIndTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.66" instance="0" alias="V0NotifReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.67" instance="0" alias="V0NotifRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.68" instance="0" alias="V0NotifRejReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.69" instance="0" alias="V0NotifRejRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.70" instance="0" alias="V0RtInfReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.71" instance="0" alias="V0RtInfRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.72" instance="0" alias="V0FailRptReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.73" instance="0" alias="V0FailRptRspTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.74" instance="0" alias="V0NotMSPresReqTx" type="Counter64" />
+	<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.2.1.8.75" instance="0" alias="V0NotMSPresRspTx" type="Counter64" />
+      </group>
+      <!-- End of Juniper MBG GTP related stats  -->
+
+      <!-- Juniper MBG Pool related stats  -->
+      <group name="juniper-mbg-pgw-pool-stats" ifType="all">
+<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.1.1.4" instance="jnxMbgSMIPPoolName" alias="SMIPPoolType" type="Integer32" />
+<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.1.1.5" instance="jnxMbgSMIPPoolName" alias="SMIPPoolFree" type="Gauge32" />
+<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.1.1.6" instance="jnxMbgSMIPPoolName" alias="SMIPPoolInUse" type="Gauge32" />
+<mibObj oid=".1.3.6.1.4.1.2636.3.66.5.1.1.1.7" instance="jnxMbgSMIPPoolName" alias="SMIPPoolUtil" type="Gauge32" />
+      </group>
+      <!-- End of Juniper MBG Pool related stats  -->
+
+
+      <systemDef name="Juniper MBG Routers">
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.21</sysoidMask>
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.25</sysoidMask>
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.29</sysoidMask>
+        <collect>
+	  <includeGroup>juniper-mbg-pgw-subcriber-stats</includeGroup>
+	  <includeGroup>juniper-mbg-pgw-apn-subcriber-stats</includeGroup>
+	  <includeGroup>juniper-mbg-pgw-pool-stats</includeGroup>
+          <includeGroup>juniper-mbg-pgw-aaa-auth</includeGroup>
+          <includeGroup>juniper-mbg-pgw-aaa-acct</includeGroup>
+          <includeGroup>juniper-mbg-pgw-aaa-auth-serverspecific</includeGroup>
+          <includeGroup>juniper-mbg-pgw-aaa-acct-serverspecific</includeGroup>
+          <includeGroup>juniper-mbg-pgw-aaa-auth-clientspecific</includeGroup>
+          <includeGroup>juniper-mbg-pgw-charging-server-stats</includeGroup>
+          <includeGroup>juniper-mbg-pgw-charging-storage-stats</includeGroup>
+          <includeGroup>juniper-mbg-pgw-charging-group-stats</includeGroup>
+	  <includeGroup>juniper-mbg-pgw-gtpv0-stats</includeGroup>
+          <includeGroup>juniper-mbg-pgw-gtpv1-stats</includeGroup>
+          <includeGroup>juniper-mbg-pgw-gtpv2-stats</includeGroup>
+
+        </collect>
+      </systemDef>
+
+</datacollection-group>

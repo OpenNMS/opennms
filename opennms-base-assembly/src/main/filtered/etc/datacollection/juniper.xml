@@ -12,20 +12,21 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-      <!-- Juniper MIBs -->
+      <!-- Juniper Router MIBs -->
       <group name="juniper-router" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.6.1.0"  instance="0" alias="juniperCpuFeb"     type="gauge32" />
+        <!--<mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.6.1.0"  instance="0" alias="juniperCpuFeb"     type="gauge32" />-->
         <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.7.1.0"  instance="0" alias="juniperCpuFpc0"    type="gauge32" />
         <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.7.2.0"  instance="0" alias="juniperCpuFpc1"    type="gauge32" />
         <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.9.1.0"  instance="0" alias="juniperCpuRe"      type="gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.6.1.0"  instance="0" alias="juniperTempFeb"    type="gauge32" />
+        <!--<mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.6.1.0"  instance="0" alias="juniperTempFeb"    type="gauge32" />-->
         <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.7.1.0"  instance="0" alias="juniperTempFpc0"   type="gauge32" />
         <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.7.2.0"  instance="0" alias="juniperTempFpc1"   type="gauge32" />
         <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.9.1.0"  instance="0" alias="juniperTempRe"     type="gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.6.1.0" instance="0" alias="juniperBufferFeb"  type="gauge32" />
+        <!--<mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.6.1.0" instance="0" alias="juniperBufferFeb"  type="gauge32" />-->
         <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.7.1.0" instance="0" alias="juniperBufferFpc0" type="gauge32" />
         <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.7.2.0" instance="0" alias="juniperBufferFpc1" type="gauge32" />
       </group>
+
 
       <group name="juniper-erx-router" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.4874.2.2.20.1.8.1" instance="0" alias="juniSubsMaxCount"  type="integer" />
@@ -129,6 +130,7 @@
           <includeGroup>juniper-router</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
           <includeGroup>ietf-bgp4-peer-stats</includeGroup>
+          <includeGroup>ietf-ospf-stats</includeGroup>
         </collect>
       </systemDef>
 
@@ -139,6 +141,7 @@
           <includeGroup>juniper-erx-systemslot</includeGroup>
           <includeGroup>juniper-erx-temperature</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>ietf-ospf-stats</includeGroup>
         </collect>
       </systemDef>
 
@@ -148,6 +151,7 @@
           <includeGroup>juniper-jrouter</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
           <includeGroup>ietf-bgp4-peer-stats</includeGroup>
+          <includeGroup>ietf-ospf-stats</includeGroup>
         </collect>
       </systemDef>
 
