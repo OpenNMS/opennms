@@ -3,7 +3,7 @@ package org.opennms.core.criteria;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.springframework.core.style.ToStringCreator;
 
 public class Order implements Comparable<Order> {
 	private final String m_attribute;
@@ -65,7 +65,7 @@ public class Order implements Comparable<Order> {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this)
+		return new ToStringCreator(this)
 			.append("attribute", m_attribute)
 			.append("order", (m_ascending? "asc" : "desc"))
 			.toString();

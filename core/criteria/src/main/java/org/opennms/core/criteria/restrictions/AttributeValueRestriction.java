@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.springframework.core.style.ToStringCreator;
 
 
 public class AttributeValueRestriction extends AttributeRestriction {
@@ -79,8 +79,9 @@ public class AttributeValueRestriction extends AttributeRestriction {
 
     @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.appendSuper(super.toString())
+    	return new ToStringCreator(this)
+    		.append("type", getType())
+    		.append("attribute", getAttribute())
     		.append("value", getValue())
     		.toString();
     }

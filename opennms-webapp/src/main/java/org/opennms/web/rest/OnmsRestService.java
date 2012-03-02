@@ -400,6 +400,7 @@ public class OnmsRestService {
 
 	@SuppressWarnings("unchecked")
     private Object convertIfNecessary(final BeanWrapper wrapper, final String key, final String stringValue) {
+		LogUtils.debugf(this, "convertIfNecessary(%s, %s)", key, stringValue);
         return wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
     }
 

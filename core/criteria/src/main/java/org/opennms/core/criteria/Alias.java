@@ -1,5 +1,7 @@
 package org.opennms.core.criteria;
 
+import org.springframework.core.style.ToStringCreator;
+
 public class Alias {
 	public enum JoinType { LEFT_JOIN, INNER_JOIN, FULL_JOIN }
 
@@ -25,5 +27,13 @@ public class Alias {
 		return m_type;
 	}
 
+	@Override
+	public String toString() {
+		return new ToStringCreator(this)
+			.append("association-path", m_associationPath)
+			.append("alias", m_alias)
+			.append("type", m_type)
+			.toString();
+	}
 }
 

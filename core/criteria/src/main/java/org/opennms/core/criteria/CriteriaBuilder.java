@@ -77,12 +77,12 @@ public class CriteriaBuilder {
 		return this;
 	}
 	public CriteriaBuilder limit(final Integer limit) {
-		m_limit = (limit == 0? null : limit);
+		m_limit = ((limit == null || limit == 0)? null : limit);
 		return this;
 	}
 	
 	public CriteriaBuilder offset(final Integer offset) {
-		m_offset = (offset == 0? null : offset);
+		m_offset = ((offset == null || offset == 0)? null : offset);
 		return this;
 	}
 

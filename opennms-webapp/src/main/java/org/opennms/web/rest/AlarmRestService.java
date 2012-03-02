@@ -146,14 +146,14 @@ public class AlarmRestService extends AlarmRestServiceBase {
 	@PUT
 	@Transactional
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void updateAlarms(MultivaluedMapImpl formProperties) {
+	public void updateAlarms(final MultivaluedMapImpl formProperties) {
 
 		Boolean ack=false;
 		if(formProperties.containsKey("ack")) {
 			ack="true".equals(formProperties.getFirst("ack"));
 			formProperties.remove("ack");
 		}
-		for (final OnmsAlarm alarm : m_alarmDao.findMatching(getQueryFilters(formProperties, false))) {
+		for (final OnmsAlarm alarm : m_alarmDao.findMatching(getCriteria(formProperties, false))) {
 			processAlarmAck(alarm, ack);
 		}
 	}
