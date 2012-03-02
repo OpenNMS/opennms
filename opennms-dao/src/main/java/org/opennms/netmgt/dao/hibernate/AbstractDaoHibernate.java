@@ -60,6 +60,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     
     Class<T> m_entityClass;
     private String m_lockName;
+    private final HibernateCriteriaConverter m_criteriaConverter = new HibernateCriteriaConverter();
     
     /**
      * <p>Constructor for AbstractDaoHibernate.</p>
@@ -332,6 +333,35 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         return getHibernateTemplate().executeFind(callback);
     }
     
+    @SuppressWarnings("unchecked")
+	public List<T> findMatching(final org.opennms.core.criteria.Criteria criteria) {
+    	final HibernateCallback<List<T>> callback = new HibernateCallback<List<T>>() {
+
+			public List<T> doInHibernate(final Session session) throws HibernateException, SQLException {
+            	final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
+            	LogUtils.debugf(this, "hibernateCriteria = " + hibernateCriteria);
+				return (List<T>)(hibernateCriteria.list());
+            }
+            
+        };
+        return getHibernateTemplate().executeFind(callback);
+    }
+    
+    /** {@inheritDoc} */
+    public int countMatching(final org.opennms.core.criteria.Criteria criteria) throws DataAccessException {
+    	final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
+
+            public Integer doInHibernate(final Session session) throws HibernateException, SQLException {
+            	final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
+            	LogUtils.debugf(this, "hibernateCriteria = " + hibernateCriteria);
+            	hibernateCriteria.setProjection(Projections.rowCount());
+                return (Integer)hibernateCriteria.uniqueResult();
+                
+            }
+            
+        };
+        return getHibernateTemplate().execute(callback).intValue();
+    }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
