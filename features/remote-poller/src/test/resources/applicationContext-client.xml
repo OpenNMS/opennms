@@ -4,8 +4,8 @@
        xmlns:tx="http://www.springframework.org/schema/tx" 
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
   <tx:annotation-driven />
   
@@ -20,7 +20,7 @@
     <property name="serviceUrl" value="http://localhost:9162/simpleBackEnd"/>
     <property name="serviceInterface" value="org.opennms.poller.remote.SimpleBackEnd"/>
     <property name="httpInvokerRequestExecutor">
-      <bean class="org.springframework.security.context.httpinvoker.AuthenticationSimpleHttpInvokerRequestExecutor"/>
+      <bean class="org.springframework.security.remoting.httpinvoker.AuthenticationSimpleHttpInvokerRequestExecutor"/>
     </property>
   </bean>
   
