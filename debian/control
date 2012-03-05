@@ -87,6 +87,21 @@ Description: Enterprise-grade Open-source Network Management Platform (Jetty Web
  embedded in the main OpenNMS daemon.  The default URL for this
  web UI is 'http://yourhost:8180/opennms/'
 
+Package: opennms-ncs
+Architecture: all
+Depends: opennms-webapp-jetty (=${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (NCS)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides a framework for doing correlation of services across
+ disparate nodes.
+
 Package: opennms-common
 Architecture: all
 Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libgetopt-mixed-perl

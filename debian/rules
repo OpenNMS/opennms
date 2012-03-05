@@ -110,6 +110,11 @@ install: build
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/xsds
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/etc/opennms/{datacollection,snmp-graph.properties.d}
 	
+	# Setup NCS
+	install -d -m 755 debian/opennms-ncs/usr/share/java/opennms
+	install -d -m 755 debian/opennms-ncs/etc/opennms/examples
+	install -d -m 755 debian/opennms-ncs/var/lib/opennms/xsds
+	
 	# DHCP
 	mv debian/temp/lib/org.opennms.protocols.dhcp-*.jar                                        debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
 	mv debian/temp/etc/dhcpd-configuration.xml                                                 debian/opennms-plugin-protocol-dhcp/etc/opennms/
@@ -154,6 +159,11 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/tca*-config.xml                      debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/datacollection/juniper-tca*          debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/datacollection/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-graph.properties.d/juniper-tca* debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/snmp-graph.properties.d/
+	
+	# NCS
+	mv debian/temp/lib/ncs-*.jar                                                               debian/opennms-ncs/usr/share/java/opennms/
+	mv debian/temp/etc/examples/ncs                                                            debian/opennms-ncs/etc/opennms/examples/
+	mv debian/opennms-common/var/lib/opennms/xsds/ncs-*.xsd                                    debian/opennms-ncs/var/lib/opennms/xsds/
 	
 	##
 	## Setup the libopennms-java package

@@ -490,6 +490,7 @@ find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
 	grep -v 'etc-pristine' | \
+	grep -v 'ncs-' | \
 	grep -v 'nsclient-config.xsd' | \
 	grep -v 'nsclient-datacollection.xsd' | \
 	grep -v 'xmp-config.xsd' | \
@@ -562,8 +563,9 @@ rm -rf $RPM_BUILD_ROOT
 %files ncs
 %defattr(644 root root 755)
 %{instprefix}/lib/ncs-*.jar
-%config(noreplace) %{instprefix}/etc/examples/ncs/*.*
-%config(noreplace) %{instprefix}/etc/examples/ncs/drools/*.*
+%{instprefix}/etc/examples/ncs/*.*
+%{instprefix}/etc/examples/ncs/drools/*.*
+%{sharedir}/xsds/ncs-*.xsd
 
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
