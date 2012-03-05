@@ -44,6 +44,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
@@ -55,10 +56,12 @@ public class ValidatingMessageBodyReader<T> implements MessageBodyReader<T> {
 	@Context
 	protected Providers providers;
 
+	/**
+	 * @return true if the class is a JAXB-marshallable class that has 
+	 * an {@link javax.xml.bind.annotation.XmlRootElement} annotation.
+	 */
 	public boolean isReadable(final Class<?> clazz, final Type type, final Annotation[] annotations, final MediaType mediaType) {
-		
-		LogUtils.debugf(this, "isReadable");
-		return true;
+		return (clazz.getAnnotation(XmlRootElement.class) != null);
 	}
 
 	public T readFrom(final Class<T> clazz, final Type type, final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> parameters, final InputStream stream) throws IOException, WebApplicationException {
