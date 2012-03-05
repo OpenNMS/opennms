@@ -163,7 +163,7 @@ install: build
 	# NCS
 	mv debian/temp/lib/ncs-*.jar                                                               debian/opennms-ncs/usr/share/java/opennms/
 	mv debian/temp/etc/examples/ncs                                                            debian/opennms-ncs/etc/opennms/examples/
-	mv debian/opennms-common/var/lib/opennms/xsds/ncs-*.xsd                                    debian/opennms-ncs/var/lib/opennms/xsds/
+	mv debian/temp/share/xsds/ncs-*.xsd                                                        debian/opennms-ncs/var/lib/opennms/xsds/
 	
 	##
 	## Setup the libopennms-java package
