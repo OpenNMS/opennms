@@ -185,12 +185,10 @@
     </plugins>
   </build>
   <modules>
-<!--
     <module>../opennms-install</module>
     <module>../opennms-assemblies</module>
     <module>../opennms-doc</module>
     <module>../opennms-base-assembly</module>
--->
   </modules>
   <dependencies>
     <dependency>
