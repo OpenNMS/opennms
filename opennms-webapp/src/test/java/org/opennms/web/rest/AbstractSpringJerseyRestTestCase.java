@@ -207,26 +207,57 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return request;
     }
 
+    /**
+     * @param url
+     * @param xml
+     */
     protected void sendPost(String url, String xml) throws Exception {
         sendData(POST, MediaType.APPLICATION_XML, url, xml);
     }
 
+    /**
+     * @param url
+     * @param xml
+     * @param statusCode
+     */
     protected void sendPost(String url, String xml, int statusCode) throws Exception {
         sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);
     }
 
+    /**
+     * @param url
+     * @param formData
+     */
     protected void sendPut(String url, String formData) throws Exception {
         sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData);
     }
     
+    /**
+     * @param url
+     * @param formData
+     * @param statusCode
+     */
     protected void sendPut(String url, String formData, int statusCode) throws Exception {
         sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, statusCode);
     }
     
+    /**
+     * @param requestType
+     * @param contentType
+     * @param url
+     * @param data
+     */
     protected void sendData(String requestType, String contentType, String url, String data) throws Exception {
     	sendData(requestType, contentType, url, data, 200);
     }
     
+    /**
+     * @param requestType
+     * @param contentType
+     * @param url
+     * @param data
+     * @param statusCode
+     */
     protected void sendData(String requestType, String contentType, String url, String data, int statusCode) throws Exception {
         MockHttpServletRequest request = createRequest(requestType, url);
         request.setContentType(contentType);
