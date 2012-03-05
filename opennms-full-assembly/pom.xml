@@ -185,10 +185,12 @@
     </plugins>
   </build>
   <modules>
+<!--
     <module>../opennms-install</module>
     <module>../opennms-assemblies</module>
     <module>../opennms-doc</module>
     <module>../opennms-base-assembly</module>
+-->
   </modules>
   <dependencies>
     <dependency>
@@ -386,6 +388,40 @@
     <dependency>
       <groupId>org.opennms.protocols</groupId>
       <artifactId>selenium-monitor</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>etc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ncs</groupId>
+      <artifactId>ncs-model</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ncs</groupId>
+      <artifactId>ncs-persistence</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ncs</groupId>
+      <artifactId>ncs-drools</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ncs</groupId>
+      <artifactId>ncs-drools</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>etc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ncs</groupId>
+      <artifactId>ncs-northbounder</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ncs</groupId>
+      <artifactId>ncs-northbounder</artifactId>
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>etc</classifier>

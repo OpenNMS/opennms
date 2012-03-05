@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://xmlns.opennms.org/xsd/model/ncs" xmlns:tns="http://xmlns.opennms.org/xsd/model/ncs" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="attribute" type="tns:jaxbMapEntry"/>
+
+  <xs:element name="attributes" type="tns:jaxbMap"/>
+
+  <xs:element name="component" type="tns:ncsComponent"/>
+
+  <xs:element name="node" type="tns:nodeIdentification"/>
+
+  <xs:complexType name="nodeIdentification">
+    <xs:sequence/>
+    <xs:attribute name="foreignSource" type="xs:string" use="required"/>
+    <xs:attribute name="foreignId" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="ncsComponent">
+    <xs:sequence>
+      <xs:element name="id" type="xs:long" minOccurs="0"/>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element ref="tns:node" minOccurs="0"/>
+      <xs:element name="upEventUei" type="xs:string" minOccurs="0"/>
+      <xs:element name="downEventUei" type="xs:string" minOccurs="0"/>
+      <xs:element name="dependenciesRequired" type="tns:dependencyRequirements" default="ALL" minOccurs="0"/>
+      <xs:element ref="tns:attributes" minOccurs="0"/>
+      <xs:element ref="tns:component" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="foreignSource" type="xs:string" use="required"/>
+    <xs:attribute name="foreignId" type="xs:string" use="required"/>
+    <xs:attribute name="type" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="jaxbMap">
+    <xs:sequence>
+      <xs:element ref="tns:attribute" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="jaxbMapEntry">
+    <xs:sequence>
+      <xs:element name="key" type="xs:string"/>
+      <xs:element name="value" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="dependencyRequirements">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ALL"/>
+      <xs:enumeration value="ANY"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

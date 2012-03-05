@@ -152,6 +152,19 @@ embedded in the main OpenNMS core process.
 %{extrainfo2}
 
 
+%package ncs
+Summary:	Network Component Services for OpenNMS
+Group:		Applications/System
+Requires:	opennms-webapp-jetty = %{version}-%{release}
+
+%description ncs
+NCS provides a framework for doing correlation of service events across
+disparate nodes.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package plugins
 Summary:	All Plugins for OpenNMS
 Group:		Applications/System
@@ -435,6 +448,7 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
+	grep -v 'ncs/' | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
@@ -453,6 +467,7 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
+	grep -v 'ncs/' | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
@@ -488,6 +503,7 @@ find $RPM_BUILD_ROOT%{instprefix}/contrib ! -type d | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	grep -v 'ncs-' | \
 	grep -v 'provisioning-adapter' | \
 	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
@@ -542,6 +558,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/opennms-remote-poller
 %attr(755,root,root) %{bindir}/remote-poller.sh
 %{instprefix}/bin/remote-poller.jar
+
+%files ncs
+%defattr(644 root root 755)
+%{instprefix}/lib/ncs-*.jar
+%config(noreplace) %{instprefix}/etc/examples/ncs/*.*
+%config(noreplace) %{instprefix}/etc/examples/ncs/drools/*.*
 
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
