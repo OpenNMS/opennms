@@ -30,7 +30,7 @@ public class AlarmRestServiceBase extends OnmsRestService {
     }
 
 	protected CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params, final boolean stripOrdering) {
-		translateSeverity(params);
+		translateParameters(params);
 
     	final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 
@@ -45,9 +45,21 @@ public class AlarmRestServiceBase extends OnmsRestService {
     	return cb;
 	}
 
-    protected void translateSeverity(final MultivaluedMap<String, String> params) {
+    protected void translateParameters(final MultivaluedMap<String, String> params) {
     	// this is handled by a @QueryParam annotation, ignore it from the UriInfo object
     	params.remove("severities");
+
+    	if (params.containsKey("nodeId")) {
+    		final String nodeId = params.getFirst("nodeId");
+    		params.remove("nodeId");
+    		params.add("node.id", nodeId);
+    	}
+
+    	if (params.containsKey("nodeLabel")) {
+    		final String nodeLabel = params.getFirst("nodeLabel");
+    		params.remove("nodeLabel");
+    		params.add("node.label", nodeLabel);
+    	}
 
     	final String query = params.getFirst("query");
         // System.err.println("tranlateSeverity: query = " + query + ", pattern = " + p);

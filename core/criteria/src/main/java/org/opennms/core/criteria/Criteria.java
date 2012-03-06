@@ -1,6 +1,11 @@
 package org.opennms.core.criteria;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,11 +13,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.springframework.core.style.ToStringCreator;
 
 public class Criteria {
+	private static final Pattern SPLIT_ON = Pattern.compile("\\.");
 
 	public enum FetchType { DEFAULT, LAZY, EAGER }
 	private Class<?> m_class;
@@ -119,5 +126,33 @@ public class Criteria {
 	public void setOffset(final Integer offset) {
 		m_offset = offset;
 	}
+
+	public Class<?> getType(final String path) throws IntrospectionException {
+		return getType(this.getCriteriaClass(), path);
+	}
+	
+	private Class<?> getType(final Class<?> clazz, final String path) throws IntrospectionException {
+		final String[] split = SPLIT_ON.split(path);
+		final List<String> pathSections = Arrays.asList(split);
+		return getType(clazz, pathSections);
+	}
+
+	private Class<?> getType(final Class<?> clazz, final List<String> pathSections) throws IntrospectionException {
+		if (pathSections.isEmpty()) {
+			return clazz;
+		}
+		
+		final String pathElement = pathSections.get(0);
+
+		final BeanInfo bi = Introspector.getBeanInfo(clazz);
+		for (final PropertyDescriptor pd : bi.getPropertyDescriptors()) {
+			if (pathElement.equals(pd.getName())) {
+				return getType(pd.getPropertyType(), pathSections.subList(1, pathSections.size()));
+			}
+		}
+		
+		return null;
+	}
+
 
 }

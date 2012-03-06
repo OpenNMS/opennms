@@ -218,9 +218,7 @@ public class OnmsRestService {
 					builder.isNotNull(key);
 				} else {
 					final Object value;
-					if ("node.id".equals(key)) {
-						value = Integer.valueOf(paramValue);
-					} else if (comparatorParam.equals("contains") || comparatorParam.equals("iplike") || comparatorParam.equals("ilike") || comparatorParam.equals("like")) {
+					if (comparatorParam.equals("contains") || comparatorParam.equals("iplike") || comparatorParam.equals("ilike") || comparatorParam.equals("like")) {
 						value = paramValue;
 					} else {
 						value = convertIfNecessary(wrapper, key, paramValue);
@@ -334,9 +332,7 @@ public class OnmsRestService {
     			} else {
     				LogUtils.debugf(this, "key = %s, propertyType = %s", key, wrapper.getPropertyType(key));
 					Object thisValue;
-    				if ("node.id".equals(key)) {
-    					thisValue = Integer.valueOf(stringValue);
-    				}else if(op == ComparisonOperation.CONTAINS || op == ComparisonOperation.IPLIKE) {
+    				if(op == ComparisonOperation.CONTAINS || op == ComparisonOperation.IPLIKE) {
     				    thisValue = stringValue;
     				}else {
     				    thisValue = convertIfNecessary(wrapper, key, stringValue);
@@ -554,6 +550,5 @@ public class OnmsRestService {
             }
         }
     }
-
 
 }
