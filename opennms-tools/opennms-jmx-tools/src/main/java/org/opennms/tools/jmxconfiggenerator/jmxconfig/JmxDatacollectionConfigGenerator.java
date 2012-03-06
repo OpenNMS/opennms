@@ -109,8 +109,8 @@ public class JmxDatacollectionConfigGenerator {
 		rrd.getRra().addAll(rras);
 	}
 
-	public static void generateJmxConfig(String serviceName, String hostName, String port, Boolean runStandardVmBeans, Boolean runCompositeData, String outFile) throws AttributeNotFoundException, MBeanException {
-	logger.debug("Startup values: \n serviceName: " + serviceName + "\n hostName: " + hostName + "\n port:" + port + "\n runStandardVmBeans: " + runStandardVmBeans + "\n runCompositeData: " + runCompositeData);
+	public static void generateJmxConfig(String serviceName, String hostName, String port, String username, String password, Boolean runStandardVmBeans, Boolean runCompositeData, String outFile) throws AttributeNotFoundException, MBeanException {
+	logger.debug("Startup values: \n serviceName: " + serviceName + "\n hostName: " + hostName + "\n port:" + port + "\n runStandardVmBeans: " + runStandardVmBeans + "\n runCompositeData: " + runCompositeData + "\n username: " + username + "\n password: " + password + "\n");
 		JMXServiceURL jmxServiceURL;
 		JmxDatacollectionConfig xmlJmxDatacollectionConfig = xmlObjectFactory.createJmxDatacollectionConfig();
 		JmxCollection xmlJmxCollection = xmlObjectFactory.createJmxCollection();
@@ -126,8 +126,17 @@ public class JmxDatacollectionConfigGenerator {
 		
 		try {
 			jmxServiceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + ":" + port + "/jmxrmi");
-			JMXConnector jmxConnector = JMXConnectorFactory.connect(jmxServiceURL);
-			jmxConnector.connect();
+			JMXConnector jmxConnector = null;
+ 			if (username != null && password != null) { 
+				jmxConnector = JMXConnectorFactory.newJMXConnector(jmxServiceURL, null);
+ 				HashMap<String,String[]> env = new HashMap<String,String[]>();
+ 				String[] credentials = new String[] { username , password };
+ 				env.put("jmx.remote.credentials", credentials);
+ 				jmxConnector.connect(env);
+ 			} else {
+				jmxConnector = JMXConnectorFactory.connect(jmxServiceURL);
+ 				jmxConnector.connect();
+ 			}
 			jmxServerConnection = jmxConnector.getMBeanServerConnection();
 			logger.debug("count: " + jmxServerConnection.getMBeanCount());
 			for (String domainName : jmxServerConnection.getDomains()) {

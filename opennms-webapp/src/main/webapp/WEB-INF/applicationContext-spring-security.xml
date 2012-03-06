@@ -6,7 +6,7 @@
               http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd"> 
   
   <!-- Only use BASIC auth for the RESTful APIs -->
-  <http pattern="/rest/**" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm">
+  <http pattern="/rest/**" realm="OpenNMS Realm">
     <intercept-url pattern="/rest/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>

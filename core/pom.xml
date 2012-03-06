@@ -31,6 +31,7 @@
     <module>snmp</module>
     <module>soa</module>
     <module>tasks</module>
+    <module>criteria</module>
     <!--<module>web</module>-->
     <module>doc</module>
     <module>xml</module>

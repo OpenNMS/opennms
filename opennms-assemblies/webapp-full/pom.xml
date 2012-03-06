@@ -27,7 +27,6 @@
           <archiveClasses>true</archiveClasses>
           <webappDirectory>${project.build.directory}/warmerge-temp</webappDirectory>
           <overlays>
-            <overlay/>
             <overlay>
               <groupId>org.opennms</groupId>
               <artifactId>opennms-webapp</artifactId>
@@ -38,6 +37,14 @@
               <excludes>
                 <exclude>includes/header.jsp</exclude>
                 <exclude>includes/footer.jsp</exclude>
+              </excludes>
+            </overlay>
+            <overlay>
+              <groupId>org.opennms.features.ncs</groupId>
+              <artifactId>ncs-alarm-gui</artifactId>
+              <excludes>
+                <exclude>META-INF/MANIFEST.MF</exclude>
+                <exclude>WEB-INF/web.xml</exclude>
               </excludes>
             </overlay>
           </overlays>
@@ -78,6 +85,13 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.features.ncs</groupId>
+      <artifactId>ncs-alarm-gui</artifactId>
+      <type>war</type>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller-gwt</artifactId>

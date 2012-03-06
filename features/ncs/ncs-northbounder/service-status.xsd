@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Juniper Networks, Inc. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://junosspace.juniper.net/monitoring" targetNamespace="http://junosspace.juniper.net/monitoring" elementFormDefault="qualified" >
+    <xs:complexType name="MonitorableServiceStatus">
+                <xs:sequence>
+                        <xs:element name="Id" type="xs:string"/>
+                        <xs:element name="Name" type="xs:string"/>
+                        <xs:element name="Status" type="xs:string"/>
+                </xs:sequence>
+        </xs:complexType>
+    <xs:element name="ServiceAlarmNotification">
+        <xs:complexType>
+            <xs:sequence>
+                    <xs:element name="ServiceAlarm" type="MonitorableServiceStatus" minOccurs="1" maxOccurs="unbounded">
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

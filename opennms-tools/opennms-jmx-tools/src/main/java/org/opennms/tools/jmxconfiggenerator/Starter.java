@@ -51,6 +51,12 @@ public class Starter {
 	@Option(name = "-host", usage = "Hostname or IP-Adress of JMX-RMI host")
 	private String hostName;
 
+	@Option(name = "-username", usage = "Username for JMX-RMI Authentication")
+	private String username;
+
+	@Option(name = "-password", usage = "Password for JMX-RMI Authentication")
+	private String password;
+
 	@Option(name = "-port", usage = "Port of JMX-RMI service")
 	private String port;
 	
@@ -88,7 +94,7 @@ public class Starter {
 				throw new CmdLineException(parser, "set jmx or graph.");
 			}
 			if (jmx && hostName != null && port != null && outFile != null) {
-				JmxDatacollectionConfigGenerator.generateJmxConfig(serviceName, hostName, port, !skipDefaultVM, runCompositeData, outFile);
+				JmxDatacollectionConfigGenerator.generateJmxConfig(serviceName, hostName, port, username, password, !skipDefaultVM, runCompositeData, outFile);
 				return;
 			}
 			if (graph && inputFile != null && outFile != null) {

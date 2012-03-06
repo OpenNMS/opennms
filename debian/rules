@@ -110,6 +110,14 @@ install: build
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/xsds
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/etc/opennms/{datacollection,snmp-graph.properties.d}
 	
+	# Setup NCS
+	install -d -m 755 debian/opennms-ncs/usr/share/java/opennms
+	install -d -m 755 debian/opennms-ncs/etc/opennms/{drools-engine.d,drools}
+	install -d -m 755 debian/opennms-ncs/var/lib/opennms/etc-pristine/{drools-engine.d,drools}
+	install -d -m 755 debian/opennms-ncs/var/lib/opennms/xsds
+	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm
+	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/META-INF/opennms
+	
 	# DHCP
 	mv debian/temp/lib/org.opennms.protocols.dhcp-*.jar                                        debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
 	mv debian/temp/etc/dhcpd-configuration.xml                                                 debian/opennms-plugin-protocol-dhcp/etc/opennms/
@@ -154,6 +162,26 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/tca*-config.xml                      debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/datacollection/juniper-tca*          debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/datacollection/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-graph.properties.d/juniper-tca* debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/snmp-graph.properties.d/
+	
+	# NCS
+	mv debian/temp/lib/ncs-*.jar                                                               debian/opennms-ncs/usr/share/java/opennms/
+	mv debian/temp/etc/drools-engine.d/ncs.xml                                                 debian/opennms-ncs/etc/opennms/drools-engine.d/
+	mv debian/temp/etc/drools/dependencyLoadingRules.drl                                       debian/opennms-ncs/etc/opennms/drools/
+	mv debian/temp/etc/drools/dependencyRules-context.xml                                      debian/opennms-ncs/etc/opennms/drools/
+	mv debian/temp/etc/drools/eventMappingRules.drl                                            debian/opennms-ncs/etc/opennms/drools/
+	mv debian/temp/etc/drools/impactPropagationRules.drl                                       debian/opennms-ncs/etc/opennms/drools/
+	mv debian/temp/etc/ncs-northbounder-configuration.xml                                      debian/opennms-ncs/etc/opennms/
+	mv debian/temp/share/xsds/ncs-*.xsd                                                        debian/opennms-ncs/var/lib/opennms/xsds/
+	mv debian/temp/jetty-webapps/opennms/WEB-INF/ncs*.xml                                      debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/
+	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/alarm/ncs-*                               debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm/
+	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/ncs                                       debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/
+	mv debian/temp/jetty-webapps/opennms/META-INF/opennms/component-service.xml                debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/META-INF/opennms/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/drools-engine.d/ncs*                 debian/opennms-ncs/var/lib/opennms/etc-pristine/drools-engine.d/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/drools/dependencyLoadingRules.drl    debian/opennms-ncs/var/lib/opennms/etc-pristine/drools/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/drools/dependencyRules-context.xml   debian/opennms-ncs/var/lib/opennms/etc-pristine/drools/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/drools/eventMappingRules.drl         debian/opennms-ncs/var/lib/opennms/etc-pristine/drools/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/drools/impactPropagationRules.drl    debian/opennms-ncs/var/lib/opennms/etc-pristine/drools/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/ncs-northbounder-configuration.xml   debian/opennms-ncs/var/lib/opennms/etc-pristine/
 	
 	##
 	## Setup the libopennms-java package
