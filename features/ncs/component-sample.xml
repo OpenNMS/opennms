@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<component xmlns="http://xmlns.opennms.org/xsd/model/ncs" type="Service" foreignId="123" foreignSource="NA-Service">
+    <id>1</id>
+    <name>CokeP2P</name>
+    <component type="ServiceElement" foreignId="8765" foreignSource="NA-ServiceElement">
+        <id>2</id>
+        <name>PE1:SE1</name>
+        <node foreignId="1111-PE1" foreignSource="space"/>
+        <component type="ServiceElementComponent" foreignId="8765:jnxVpnIf" foreignSource="NA-SvcElemComp">
+            <id>3</id>
+            <name>jnxVpnIf</name>
+            <node foreignId="1111-PE1" foreignSource="space"/>
+            <upEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</upEventUei>
+            <downEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</downEventUei>
+            <attributes>
+                <attribute>
+                    <key>jnxVpnIfVpnType</key>
+                    <value>5</value>
+                </attribute>
+                <attribute>
+                    <key>jnxVpnIfVpnName</key>
+                    <value>ge-1/0/2.50</value>
+                </attribute>
+            </attributes>
+            <component type="ServiceElementComponent" foreignId="8765:link" foreignSource="NA-SvcElemComp">
+                <id>4</id>
+                <name>link</name>
+                <node foreignId="1111-PE1" foreignSource="space"/>
+                <upEventUei>uei.opennms.org/vendor/Juniper/traps/linkUp</upEventUei>
+                <downEventUei>uei.opennms.org/vendor/Juniper/traps/linkDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>linkName</key>
+                        <value>ge-1/0/2</value>
+                    </attribute>
+                </attributes>
+            </component>
+        </component>
+        <component type="ServiceElementComponent" foreignId="8765:jnxVpnPw-vcid(50)" foreignSource="NA-SvcElemComp">
+            <id>5</id>
+            <name>jnxVpnPw-vcid(50)</name>
+            <node foreignId="1111-PE1" foreignSource="space"/>
+            <upEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</upEventUei>
+            <downEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</downEventUei>
+            <dependenciesRequired>ANY</dependenciesRequired>
+            <attributes>
+                <attribute>
+                    <key>jnxVpnPwVpnType</key>
+                    <value>5</value>
+                </attribute>
+                <attribute>
+                    <key>jnxVpnPwVpnName</key>
+                    <value>ge-1/0/2.50</value>
+                </attribute>
+            </attributes>
+            <component type="ServiceElementComponent" foreignId="8765:lspA-PE1-PE2" foreignSource="NA-SvcElemComp">
+                <id>6</id>
+                <name>lspA-PE1-PE2</name>
+                <node foreignId="1111-PE1" foreignSource="space"/>
+                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</upEventUei>
+                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>mplsLspName</key>
+                        <value>lspA-PE1-PE2</value>
+                    </attribute>
+                </attributes>
+            </component>
+            <component type="ServiceElementComponent" foreignId="8765:lspB-PE1-PE2" foreignSource="NA-SvcElemComp">
+                <id>7</id>
+                <name>lspB-PE1-PE2</name>
+                <node foreignId="1111-PE1" foreignSource="space"/>
+                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</upEventUei>
+                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>mplsLspName</key>
+                        <value>lspB-PE1-PE2</value>
+                    </attribute>
+                </attributes>
+            </component>
+        </component>
+    </component>
+    <component type="ServiceElement" foreignId="9876" foreignSource="NA-ServiceElement">
+        <id>8</id>
+        <name>PE2:SE1</name>
+        <node foreignId="2222-PE2" foreignSource="space"/>
+        <component type="ServiceElementComponent" foreignId="9876:jnxVpnIf" foreignSource="NA-SvcElemComp">
+            <id>9</id>
+            <name>jnxVpnIf</name>
+            <node foreignId="2222-PE2" foreignSource="space"/>
+            <upEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</upEventUei>
+            <downEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</downEventUei>
+            <attributes>
+                <attribute>
+                    <key>jnxVpnIfVpnType</key>
+                    <value>5</value>
+                </attribute>
+                <attribute>
+                    <key>jnxVpnIfVpnName</key>
+                    <value>ge-3/1/4.50</value>
+                </attribute>
+            </attributes>
+            <component type="ServiceElementComponent" foreignId="9876:link" foreignSource="NA-SvcElemComp">
+                <id>10</id>
+                <name>link</name>
+                <node foreignId="2222-PE2" foreignSource="space"/>
+                <upEventUei>uei.opennms.org/vendor/Juniper/traps/linkUp</upEventUei>
+                <downEventUei>uei.opennms.org/vendor/Juniper/traps/linkDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>linkName</key>
+                        <value>ge-3/1/4</value>
+                    </attribute>
+                </attributes>
+            </component>
+        </component>
+        <component type="ServiceElementComponent" foreignId="9876:jnxVpnPw-vcid(50)" foreignSource="NA-SvcElemComp">
+            <id>11</id>
+            <name>jnxVpnPw-vcid(50)</name>
+            <node foreignId="2222-PE2" foreignSource="space"/>
+            <upEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</upEventUei>
+            <downEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</downEventUei>
+            <dependenciesRequired>ANY</dependenciesRequired>
+            <attributes>
+                <attribute>
+                    <key>jnxVpnPwVpnType</key>
+                    <value>5</value>
+                </attribute>
+                <attribute>
+                    <key>jnxVpnPwVpnName</key>
+                    <value>ge-3/1/4.50</value>
+                </attribute>
+            </attributes>
+            <component type="ServiceElementComponent" foreignId="9876:lspA-PE2-PE1" foreignSource="NA-SvcElemComp">
+                <id>12</id>
+                <name>lspA-PE2-PE1</name>
+                <node foreignId="2222-PE2" foreignSource="space"/>
+                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</upEventUei>
+                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>mplsLspName</key>
+                        <value>lspA-PE2-PE1</value>
+                    </attribute>
+                </attributes>
+            </component>
+            <component type="ServiceElementComponent" foreignId="9876:lspB-PE2-PE1" foreignSource="NA-SvcElemComp">
+                <id>13</id>
+                <name>lspB-PE2-PE1</name>
+                <node foreignId="2222-PE2" foreignSource="space"/>
+                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</upEventUei>
+                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>mplsLspName</key>
+                        <value>lspB-PE2-PE1</value>
+                    </attribute>
+                </attributes>
+            </component>
+        </component>
+    </component>
+</component>
+

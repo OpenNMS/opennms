@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ServiceAlarmNotification xmlns="http://junosspace.juniper.net/monitoring" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://junosspace.juniper.net/monitoring service-status.xsd ">
+  <ServiceAlarm>
+    <Id>Id</Id>
+    <Name>Name</Name>
+    <Status>Status</Status>
+  </ServiceAlarm>
+  <ServiceAlarm>
+    <Id>Id</Id>
+    <Name>Name</Name>
+    <Status>Status</Status>
+  </ServiceAlarm>
+  <ServiceAlarm>
+    <Id>Id</Id>
+    <Name>Name</Name>
+    <Status>Status</Status>
+  </ServiceAlarm>
+  <ServiceAlarm>
+    <Id>Id</Id>
+    <Name>Name</Name>
+    <Status>Status</Status>
+  </ServiceAlarm>
+</ServiceAlarmNotification>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<component xmlns="http://xmlns.opennms.org/xsd/model/ncs" type="Service" foreignId="123" foreignSource="NA-Service">
+    <!-- service name, id (MOID) from NA model -->
+    <name>CokeP2P</name>
+    <component type="ServiceElement" foreignId="8765" foreignSource="NA-ServiceElement">
+            <!-- service name, id (DB id) from NA model -->
+        <name>PE1:SE1</name>
+        <node foreignSource="space" foreignId="1111-PE1" />
+        <component type="ServiceElementComponent" foreignSource="NA" foreignId="8765:jnxVpnIfVpn">
+            <!--  Service Element Component id is Service Element ID + component name -->
+            <name>jnxVpnIfVpn</name>
+            <upEventUei>jnxVpnVpnIfUp</upEventUei>
+            <downEventUei>jnxVpnIfVpnDown</downEventUei>
+            <attributes>
+                <attribute>
+                    <key>jnxVpnIfVpnType</key>
+                    <value>5</value>
+                </attribute>
+                <attribute>
+                    <key>jnxVpnIfVpnName</key>
+                    <value>ge-1/0/2.50</value>
+                </attribute>
+            </attributes>
+            <component type="ServiceElementComponent" foreignId="8765:link" foreignSource="NA-SvcElemComp">
+                <name>link</name>
+                <upEventUei>linkUp</upEventUei>
+                <downEventUei>linkDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>linkName</key>
+                        <value>ge-1/0/2</value>
+                    </attribute>
+                </attributes>
+            </component>
+        </component>
+        <component type="ServiceElementComponent" foreignId="8765:jnxVpnPwVpn-vcid(50)" foreignSource="NA-SvcElemComp">
+            <name>jnxVpnPwVpn-vcid(50)</name>
+            <upEventUei>jnxVpnPwVpnUp</upEventUei>
+            <downEventUei>jnxVpnPwVpnDown</downEventUei>
+            <!-- default dependency from parent to children is ALL -->
+            <dependenciesRequired>ANY</dependenciesRequired>
+            <attributes>
+                <attribute>
+                    <key>jnxVpnPwVpnType</key>
+                    <value>5</value>
+                </attribute>
+                <attribute>
+                    <key>jnxVpnPwVpnName</key>
+                    <value>ge-1/0/2.50</value>
+                </attribute>
+            </attributes>
+            <component type="ServiceElementComponent" foreignId="8765:lspA-PE1-PE2" foreignSource="NA-SvcElemComp">
+                <name>lspA-PE1-PE2</name>
+                <upEventUei>mplsLspPathUp</upEventUei>
+                <downEventUei>mplsLspPathDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>mplsLspName</key>
+                        <value>lspA-PE1-PE2</value>
+                    </attribute>
+                </attributes>
+            </component>
+            <component type="ServiceElementComponent" foreignId="8765:lspB-PE1-PE2" foreignSource="NA-SvcElemComp">
+                <name>lspB-PE1-PE2</name>
+                <upEventUei>mplsLspPathUp</upEventUei>
+                <downEventUei>mplsLspPathDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>mplsLspName</key>
+                        <value>lspA-PE1-PE2</value>
+                    </attribute>
+                </attributes>
+            </component>
+        </component>
+    </component>
+    <component type="ServiceElement" foreignId="9876" foreignSource="NA-ServiceElement">
+        <name>PE2:SE1</name>
+        <node foreignSource="space" foreignId="2222-PE2" />
+        <component type="ServiceElementComponent"  foreignId="9876:jnxVpnIfVpn" foreignSource="NA-SvcElemComp">
+            <name>jnxVpnIfVpn</name>
+            <upEventUei>jnxVpnIfVpnUp</upEventUei>
+            <downEventUei>jnxVpnIfVpnDown</downEventUei>
+            <attributes>
+                <attribute>
+                    <key>jnxVpnIfVpnType</key>
+                    <value>5</value>
+                </attribute>
+                <attribute>
+                    <key>jnxVpnIfVpnName</key>
+                    <value>ge-3/1/4.50</value>
+                </attribute>
+            </attributes>
+            <component type="ServiceElementComponent" foreignId="9876:link" foreignSource="NA-SvcElemComp">
+                <name>link</name>
+                <upEventUei>linkUp</upEventUei>
+                <downEventUei>linkDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>linkName</key>
+                        <value>ge-3/1/4</value>
+                    </attribute>
+                </attributes>
+            </component>
+        </component>
+        <component type="ServiceElementComponent" foreignId="9876:jnxVpnPwVpn-vcid(50)" foreignSource="NA-SvcElemComp">
+            <name>jnxVpnPwVpn-vcid(50)</name>
+            <upEventUei>jnxVpnPwVpnUp</upEventUei>
+            <downEventUei>jnxVpnPwVpnDown</downEventUei>
+            <dependenciesRequired>ANY</dependenciesRequired>
+            <attributes>
+                <attribute>
+                    <key>jnxVpnPwVpnType</key>
+                    <value>5</value>
+                </attribute>
+                <attribute>
+                    <key>jnxVpnPwVpnName</key>
+                    <value>ge-3/1/4.50</value>
+                </attribute>
+            </attributes>
+            <component type="ServiceElementComponent" foreignId="9876:lspA-PE2-PE1" foreignSource="NA-SvcElemComp">
+                <name>lspA-PE2-PE1</name>
+                <upEventUei>mplsLspPathUp</upEventUei>
+                <downEventUei>mplsLspPathDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>mplsLspName</key>
+                        <value>lspA-PE2-PE1</value>
+                    </attribute>
+                </attributes>
+            </component>
+            <component type="ServiceElementComponent" foreignId="9876:lspB-PE2-PE1" foreignSource="NA-SvcElemComp">
+                <name>lspB-PE2-PE1</name>
+                <upEventUei>mplsLspPathUp</upEventUei>
+                <downEventUei>mplsLspPathDown</downEventUei>
+                <attributes>
+                    <attribute>
+                        <key>mplsLspName</key>
+                        <value>lspB-PE2-PE1</value>
+                    </attribute>
+                </attributes>
+            </component>
+        </component>
+    </component>
+</component>
+
