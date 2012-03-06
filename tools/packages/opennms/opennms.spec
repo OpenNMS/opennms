@@ -523,6 +523,13 @@ find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
+	grep -v '/WEB-INF/jsp/alarm/ncs' | \
+	grep -v '/WEB-INF/jsp/ncs/' | \
+	grep -v '/META-INF/opennms/component-service.xml' | \
+	sort >> %{_tmppath}/files.jetty
+find $RPM_BUILD_ROOT%{jettydir}/%{servletdir}/WEB-INF/*.xml | \
+	sed -e "s,^$RPM_BUILD_ROOT,%config ," | \
+	grep -v '/WEB-INF/ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir} -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -566,11 +573,14 @@ rm -rf $RPM_BUILD_ROOT
 %{instprefix}/etc/examples/ncs/*.*
 %{instprefix}/etc/examples/ncs/drools/*.*
 %{sharedir}/xsds/ncs-*.xsd
+%config %{jettydir}/%{servletdir}/WEB-INF/ncs*.xml
+%config %{jettydir}/%{servletdir}/WEB-INF/jsp/alarm/ncs-*
+%config %{jettydir}/%{servletdir}/WEB-INF/jsp/ncs
+%config %{jettydir}/%{servletdir}/META-INF/opennms/component-service.xml
 
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
 %{instprefix}/jetty-webapps
-%config %{jettydir}/%{servletdir}/WEB-INF/*.xml
 %config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
 %config %{jettydir}/opennms-remoting/WEB-INF/*.properties

@@ -114,6 +114,8 @@ install: build
 	install -d -m 755 debian/opennms-ncs/usr/share/java/opennms
 	install -d -m 755 debian/opennms-ncs/etc/opennms/examples
 	install -d -m 755 debian/opennms-ncs/var/lib/opennms/xsds
+	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm
+	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/META-INF/opennms
 	
 	# DHCP
 	mv debian/temp/lib/org.opennms.protocols.dhcp-*.jar                                        debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
@@ -164,6 +166,10 @@ install: build
 	mv debian/temp/lib/ncs-*.jar                                                               debian/opennms-ncs/usr/share/java/opennms/
 	mv debian/temp/etc/examples/ncs                                                            debian/opennms-ncs/etc/opennms/examples/
 	mv debian/temp/share/xsds/ncs-*.xsd                                                        debian/opennms-ncs/var/lib/opennms/xsds/
+	mv debian/temp/jetty-webapps/opennms/WEB-INF/ncs*.xml                                      debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/
+	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/alarm/ncs-*                               debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm/
+	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/ncs                                       debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/
+	mv debian/temp/jetty-webapps/opennms/META-INF/opennms/component-service.xml                debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/META-INF/opennms/
 	
 	##
 	## Setup the libopennms-java package
