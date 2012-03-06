@@ -84,7 +84,7 @@ public class MultivaluedMapImpl extends HashMap<String, List<String>> implements
 	 */
 	public String getFirst(String key) {
 		List<String> values=super.get(key);
-		if(values.size()==0) {
+		if(values == null || values.size()==0) {
 			return null;
 		}
 		return values.get(0);
