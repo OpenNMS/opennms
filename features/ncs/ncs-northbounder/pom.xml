@@ -8,6 +8,28 @@
   <groupId>org.opennms.features.ncs</groupId>
   <artifactId>ncs-northbounder</artifactId>
   <name>OpenNMS NCS Northbounder</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/etc.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>

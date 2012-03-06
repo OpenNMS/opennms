@@ -448,7 +448,12 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'ncs/' | \
+	grep -v 'ncs-northbounder-configuration.xml' | \
+	grep -v 'ncs.xml' | \
+	grep -v 'drools/dependencyLoadingRules.drl' | \
+	grep -v 'drools/dependencyRules-context.xml' | \
+	grep -v 'drools/eventMappingRules.drl' | \
+	grep -v 'drools/impactPropagationRules.drl' | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
@@ -467,7 +472,12 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'ncs/' | \
+	grep -v 'ncs-northbounder-configuration.xml' | \
+	grep -v 'ncs.xml' | \
+	grep -v 'drools/dependencyLoadingRules.drl' | \
+	grep -v 'drools/dependencyRules-context.xml' | \
+	grep -v 'drools/eventMappingRules.drl' | \
+	grep -v 'drools/impactPropagationRules.drl' | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
@@ -570,13 +580,23 @@ rm -rf $RPM_BUILD_ROOT
 %files ncs
 %defattr(644 root root 755)
 %{instprefix}/lib/ncs-*.jar
-%{instprefix}/etc/examples/ncs/*.*
-%{instprefix}/etc/examples/ncs/drools/*.*
+%config(noreplace) %{instprefix}/etc/drools-engine.d/ncs.xml
+%config(noreplace) %{instprefix}/etc/drools/dependencyLoadingRules.drl
+%config(noreplace) %{instprefix}/etc/drools/dependencyRules-context.xml
+%config(noreplace) %{instprefix}/etc/drools/eventMappingRules.drl
+%config(noreplace) %{instprefix}/etc/drools/impactPropagationRules.drl
+%config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
 %{sharedir}/xsds/ncs-*.xsd
 %config %{jettydir}/%{servletdir}/WEB-INF/ncs*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/alarm/ncs-*
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/ncs
 %config %{jettydir}/%{servletdir}/META-INF/opennms/component-service.xml
+%{sharedir}/etc-pristine/drools-engine.d/ncs.xml
+%{sharedir}/etc-pristine/drools/dependencyLoadingRules.drl
+%{sharedir}/etc-pristine/drools/dependencyRules-context.xml
+%{sharedir}/etc-pristine/drools/eventMappingRules.drl
+%{sharedir}/etc-pristine/drools/impactPropagationRules.drl
+%{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
 
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)

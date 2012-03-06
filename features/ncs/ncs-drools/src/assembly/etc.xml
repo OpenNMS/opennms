@@ -8,8 +8,8 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-    <outputDirectory>.</outputDirectory>
-      <directory>src/main/opennms-home</directory>
+      <directory>src/main/opennms-home/etc</directory>
+      <outputDirectory>etc</outputDirectory>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>

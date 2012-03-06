@@ -15,5 +15,20 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
+    <!-- configuration files -->
+    <dependencySet>
+      <unpack>true</unpack>
+      <unpackOptions><filtered>true</filtered></unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>/</outputDirectory>
+      <outputFileNameMapping></outputFileNameMapping>
+      <includes>
+        <include>org.opennms.features.ncs:ncs-drools:tar.gz:etc:${project.version}</include>
+        <include>org.opennms.features.ncs:ncs-northbounder:tar.gz:etc:${project.version}</include>
+      </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
   </dependencySets>
 </component>
