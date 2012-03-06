@@ -29,7 +29,6 @@
 package org.opennms.web.rest;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -146,7 +145,13 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public OnmsAcknowledgment acknowledge(@FormParam("alarmId") String alarmId, @FormParam("notifId") String notifId, @FormParam("action") String action) {
+    public OnmsAcknowledgment acknowledge(MultivaluedMap<String, String> formParams) {
+        String alarmId = formParams.getFirst("alarmId");
+        String notifId = formParams.getFirst("notifId");
+        String action = formParams.getFirst("action");
+        if (action == null) {
+            action = "ack";
+        }
     	OnmsAcknowledgment ack = null;
     	if (alarmId == null && notifId == null) {
     		throw new IllegalArgumentException("You must supply either an alarmId or notifId!");
@@ -159,10 +164,6 @@ public class AcknowledgmentRestService extends OnmsRestService {
     		final OnmsNotification notification = m_notificationDao.get(Integer.valueOf(notifId));
     		ack = new OnmsAcknowledgment(notification);
     	}
-        
-        if (action == null) {
-            action = "ack";
-        }
         
         if ("ack".equals(action)) {
             ack.setAckAction(AckAction.ACKNOWLEDGE);
