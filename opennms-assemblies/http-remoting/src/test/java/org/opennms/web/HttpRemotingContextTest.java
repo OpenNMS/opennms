@@ -77,17 +77,12 @@ public class HttpRemotingContextTest extends TestCase {
 
 		servletContext.addInitParameter(
 				"contextConfigLocation", 
-				//"classpath:/org/opennms/web/rest/applicationContext-test.xml " +
 				"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml " +
 				"classpath:/META-INF/opennms/applicationContext-dao.xml " +
 				"classpath*:/META-INF/opennms/component-service.xml " +
 				"classpath*:/META-INF/opennms/component-dao.xml " +
-				//"classpath:/META-INF/opennms/applicationContext-reportingCore.xml " +
-				//"classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml " +
-				//"classpath:/META-INF/opennms/applicationContext-reporting.xml " +
 				"/WEB-INF/applicationContext-svclayer.xml " +
-				"/WEB-INF/applicationContext-spring-security.xml " //+
-				//"/WEB-INF/applicationContext-spring-webflow.xml"
+				"/WEB-INF/applicationContext-spring-security.xml "
 		);
 
 		servletContext.addInitParameter("parentContextKey", "daoContext");
