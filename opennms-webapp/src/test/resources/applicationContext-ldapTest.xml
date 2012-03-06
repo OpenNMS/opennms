@@ -5,17 +5,19 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
               http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd"> 
 
-  <http auto-config="true">
+  <http pattern="/**" auto-config="true">
     <intercept-url pattern="/**" access="ROLE_USER" />
   </http> 
 
   <ldap-server ldif="classpath:users.ldif" />
 
-  <authentication-provider>
-    <user-service>
-      <user name="jimi" password="jimispassword" authorities="ROLE_USER, ROLE_ADMIN" />
-      <user name="bob" password="bobspassword" authorities="ROLE_USER" />
-    </user-service>
-  </authentication-provider>
-  
- </beans:beans>
+  <authentication-manager>
+    <authentication-provider>
+      <user-service>
+        <user name="jimi" password="jimispassword" authorities="ROLE_USER, ROLE_ADMIN" />
+        <user name="bob" password="bobspassword" authorities="ROLE_USER" />
+      </user-service>
+    </authentication-provider>
+  </authentication-manager>
+
+</beans:beans>

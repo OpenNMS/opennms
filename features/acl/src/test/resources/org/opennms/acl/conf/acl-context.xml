@@ -94,17 +94,14 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 		</sec:authentication-provider>
 	</sec:authentication-manager>
 
-	<!--
-	Not compatible with Spring Security 3.1
-	<bean id="accessManager" class="org.springframework.security.vote.AffirmativeBased">
+	<bean id="accessManager" class="org.springframework.security.access.vote.AffirmativeBased">
 		<property name="decisionVoters">
 			<list>
-				<bean class="org.springframework.security.vote.RoleVoter" />
-				<bean class="org.springframework.security.vote.AuthenticatedVoter" />
+				<bean class="org.springframework.security.access.vote.RoleVoter" />
+				<bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
 			</list>
 		</property>
 	</bean>
-	-->
 
 	<bean id="userDetailsService"
 		class="org.opennms.acl.repository.jdbc.AuthenticationJdbcDaoImpl">
