@@ -70,6 +70,18 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	}
 
     @Test
+    public void testAlarmQueryByNode() throws Exception {
+		String xml = sendRequest(GET, "/alarms", parseParamData("nodeId=6&limit=1"), 200);
+		assertTrue(xml.contains("<alarms"));
+		xml = sendRequest(GET, "/alarms", parseParamData("node.id=6&limit=1"), 200);
+		assertTrue(xml.contains("<alarms"));
+		xml = sendRequest(GET, "/alarms", parseParamData("node.label=node1&limit=1"), 200);
+		assertTrue(xml.contains("node1"));
+        xml = sendRequest(GET, "/alarms", parseParamData("ipInterface.ipAddress=192.168.1.2&limit=1"), 200);
+        assertTrue(xml.contains("node1"));
+    }
+
+    @Test
     public void testAlarmQueryBySeverityEquals() throws Exception {
         String xml = null;
         
@@ -107,7 +119,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         xml = sendRequest(GET, "/alarms", parseParamData("comparator=gt&severity=CLEARED&limit=1"), 200);
         assertTrue(xml.contains("This is a test alarm"));
     }
-
+    
     @Test
     public void testComplexQuery() throws Exception {
         String xml = null;

@@ -47,7 +47,11 @@ public class Restrictions {
 		return new AttributeValueRestriction(RestrictionType.ILIKE, attribute, comparator);
 	}
 
-	public static Restriction in(final String attribute, final List<?> list) {
+    public static Restriction iplike(final String attribute, final Object comparator) {
+        return new AttributeValueRestriction(RestrictionType.IPLIKE, attribute, comparator);
+    }
+
+    public static Restriction in(final String attribute, final List<?> list) {
 		return new AttributeValueRestriction(RestrictionType.IN, attribute, list);
 	}
 

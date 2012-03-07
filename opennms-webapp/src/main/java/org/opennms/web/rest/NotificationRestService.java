@@ -39,12 +39,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.NotificationDao;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsNotificationCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,12 +111,13 @@ public class NotificationRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsNotificationCollection getNotifications() {
-        OnmsNotificationCollection coll = new OnmsNotificationCollection(m_notifDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
+        applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+        builder.orderBy("notifyId").desc();
 
-        //For getting totalCount
-        OnmsCriteria crit = new OnmsCriteria(OnmsNotification.class);
-        addFiltersToCriteria(m_uriInfo.getQueryParameters(), crit, OnmsNotification.class);
-        coll.setTotalCount(m_notifDao.countMatching(crit));
+        OnmsNotificationCollection coll = new OnmsNotificationCollection(m_notifDao.findMatching(builder.toCriteria()));
+
+        coll.setTotalCount(m_notifDao.countMatching(builder.count().toCriteria()));
 
         return coll;
     }
@@ -143,25 +143,23 @@ public class NotificationRestService extends OnmsRestService {
 	/**
 	 * <p>updateNotifications</p>
 	 *
-	 * @param formProperties a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+	 * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
 	 */
 	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
-	public void updateNotifications(MultivaluedMapImpl formProperties) {
+	public void updateNotifications(final MultivaluedMapImpl params) {
 
 		Boolean ack=false;
-		if(formProperties.containsKey("ack")) {
-			ack="true".equals(formProperties.getFirst("ack"));
-			formProperties.remove("ack");
+		if(params.containsKey("ack")) {
+			ack="true".equals(params.getFirst("ack"));
+			params.remove("ack");
 		}
-		
-		OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class);
-		setLimitOffset(formProperties, criteria, DEFAULT_LIMIT, true);
-		addFiltersToCriteria(formProperties, criteria, OnmsNotification.class);
 
+		final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
+		applyQueryFilters(params, builder);
 		
-		for (OnmsNotification notif : m_notifDao.findMatching(criteria)) {
+		for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
 			processNotifAck(notif, ack);
 		}
 	}
@@ -177,23 +175,4 @@ public class NotificationRestService extends OnmsRestService {
     	}
        	m_notifDao.save(notif);
 	}
-
-    private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class);
-
-        setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
-        addOrdering(params, criteria, false);
-        // Set default ordering
-        addOrdering(
-            new MultivaluedMapImpl(
-                new String[][] { 
-                    new String[] { "orderBy", "notifyId" }, 
-                    new String[] { "order", "desc" } 
-                }
-            ), criteria, false
-        );
-        addFiltersToCriteria(params, criteria, OnmsNotification.class);
-
-        return getDistinctIdCriteria(OnmsNotification.class, criteria);
-    }
 }
