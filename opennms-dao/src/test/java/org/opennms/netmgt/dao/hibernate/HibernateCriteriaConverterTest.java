@@ -70,7 +70,7 @@ public class HibernateCriteriaConverterTest {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.isNotNull("id").eq("label", "node1").alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN).ilike("ipInterface.ipAddress", "1%");
         final List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
-        assertEquals(1, nodes.size());
+        assertEquals(3, nodes.size());
     }
 
 	@Test
