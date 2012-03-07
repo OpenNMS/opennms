@@ -41,12 +41,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,10 +90,8 @@ public class EventRestService extends OnmsRestService {
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("{eventId}")
 	@Transactional
-	public OnmsEvent getEvent(@PathParam("eventId")
-	String eventId) {
-		OnmsEvent result = m_eventDao.get(new Integer(eventId));
-		return result;
+	public OnmsEvent getEvent(@PathParam("eventId") final String eventId) {
+		return m_eventDao.get(new Integer(eventId));
 	}
 
 	/**
@@ -120,12 +117,11 @@ public class EventRestService extends OnmsRestService {
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Transactional
 	public OnmsEventCollection getEvents() throws ParseException {
-		OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
-		
-		//For getting totalCount
-		OnmsCriteria crit = new OnmsCriteria(OnmsEvent.class);
-		addFiltersToCriteria(m_uriInfo.getQueryParameters(), crit, OnmsEvent.class);
-		coll.setTotalCount(m_eventDao.countMatching(crit));
+	    final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
+	    applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+
+	    final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
+		coll.setTotalCount(m_eventDao.countMatching(builder.clearOrder().toCriteria()));
 		
 		return coll;
 	}
@@ -141,10 +137,8 @@ public class EventRestService extends OnmsRestService {
 	@Path("{eventId}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
-	public void updateEvent(@PathParam("eventId")
-	String eventId, @FormParam("ack")
-	Boolean ack) {
-		OnmsEvent event = m_eventDao.get(new Integer(eventId));
+	public void updateEvent(@PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
+	    final OnmsEvent event = m_eventDao.get(new Integer(eventId));
 		if (ack == null) {
 			throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
 		}
@@ -160,46 +154,30 @@ public class EventRestService extends OnmsRestService {
 	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
-	public void updateEvents(MultivaluedMapImpl formProperties) {
+	public void updateEvents(final MultivaluedMapImpl formProperties) {
 		Boolean ack=false;
 		if(formProperties.containsKey("ack")) {
 			ack="true".equals(formProperties.getFirst("ack"));
 			formProperties.remove("ack");
 		}
-		
-		for (OnmsEvent event : m_eventDao.findMatching(getQueryFilters(formProperties))) {
+
+		final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
+		applyQueryFilters(formProperties, builder);
+		builder.orderBy("eventTime").desc();
+
+		for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
 			processEventAck(event, ack);
 		}
 	}
 
-	private void processEventAck(OnmsEvent event, Boolean ack) {
+	private void processEventAck(final OnmsEvent event, final Boolean ack) {
 		if (ack) {
 			event.setEventAckTime(new Date());
-			event.setEventAckUser(m_securityContext.getUserPrincipal()
-					.getName());
+			event.setEventAckUser(m_securityContext.getUserPrincipal().getName());
 		} else {
 			event.setEventAckTime(null);
 			event.setEventAckUser(null);
 		}
 		m_eventDao.save(event);
-	}
-
-	private OnmsCriteria getQueryFilters(final MultivaluedMap<String,String> params) {
-	    OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
-
-	    setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
-	    addOrdering(params, criteria, false);
-        // Set default ordering
-        addOrdering(
-            new MultivaluedMapImpl(
-                new String[][] { 
-                    new String[] { "orderBy", "eventTime" }, 
-                    new String[] { "order", "desc" } 
-                }
-            ), criteria, false
-        );
-	    addFiltersToCriteria(params, criteria, OnmsEvent.class);
-
-	    return getDistinctIdCriteria(OnmsEvent.class, criteria);
 	}
 }

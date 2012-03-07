@@ -1,6 +1,7 @@
 package org.opennms.core.criteria.restrictions;
 
-import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Junction;
+import org.hibernate.criterion.Restrictions;
 
 public class AndRestriction extends VarargsRestrictionRestriction {
 
@@ -8,8 +9,9 @@ public class AndRestriction extends VarargsRestrictionRestriction {
 		super(RestrictionType.ALL, restrictions);
 	}
 
-	protected Criterion getCriterion(final Criterion lhs, final Criterion rhs) {
-		return org.hibernate.criterion.Restrictions.and(lhs, rhs);
-	}
+    @Override
+    protected Junction getJunction() {
+        return Restrictions.conjunction();
+    }
 
 }

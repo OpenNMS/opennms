@@ -115,6 +115,13 @@ public class CriteriaBuilder {
 		return this;
 	}
 
+	public CriteriaBuilder count() {
+	    m_orderBuilder.clear();
+	    m_limit = null;
+	    m_offset = null;
+	    return this;
+	}
+	
 	public CriteriaBuilder distinct(final boolean isDistinct) {
 		m_distinct = isDistinct;
 		return this;
@@ -184,13 +191,18 @@ public class CriteriaBuilder {
 		return this;
 	}
 
-	public CriteriaBuilder ilike(final String attribute, final Object comparator) {
-		addRestriction(Restrictions.ilike(attribute, comparator));
-		return this;
-	}
+    public CriteriaBuilder ilike(final String attribute, final Object comparator) {
+        addRestriction(Restrictions.ilike(attribute, comparator));
+        return this;
+    }
+
+    public CriteriaBuilder iplike(final String attribute, final Object comparator) {
+        addRestriction(Restrictions.iplike(attribute, comparator));
+        return this;
+    }
 
 	public CriteriaBuilder contains(final String attribute, final Object comparator) {
-		addRestriction(Restrictions.ilike(attribute, "*" + comparator + "*"));
+		addRestriction(Restrictions.ilike(attribute, "%" + comparator + "%"));
 		return this;
 	}
 

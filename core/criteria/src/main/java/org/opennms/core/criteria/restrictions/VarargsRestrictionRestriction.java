@@ -1,12 +1,12 @@
 package org.opennms.core.criteria.restrictions;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Junction;
 import org.springframework.core.style.ToStringCreator;
 
 public abstract class VarargsRestrictionRestriction extends BaseRestriction {
@@ -24,19 +24,15 @@ public abstract class VarargsRestrictionRestriction extends BaseRestriction {
 
 	@Override
 	public Criterion toCriterion() {
-		final List<Restriction> restrictions = new ArrayList<Restriction>(getRestrictions());
-		if (restrictions.size() < 2) {
-			throw new UnsupportedOperationException("Restriction type is vararg (" + getType().name().toLowerCase() + "), but there aren't enough arguments: " + restrictions);
-		}
-		Criterion lhs = restrictions.remove(restrictions.size() - 1).toCriterion();
-		while (restrictions.size() > 2) {
-			final Criterion rhs = restrictions.remove(restrictions.size() - 1).toCriterion();
-			lhs = getCriterion(lhs, rhs);
-		}
-		return getCriterion(lhs, restrictions.remove(0).toCriterion());
+	    final Junction junction = getJunction();
+	    
+	    for (final Restriction restriction : getRestrictions()) {
+	        junction.add(restriction.toCriterion());
+	    }
+	    return junction;
 	}
 
-	protected abstract Criterion getCriterion(final Criterion lhs, final Criterion rhs);
+	protected abstract Junction getJunction();
 	
 	@Override
 	public int hashCode() {
