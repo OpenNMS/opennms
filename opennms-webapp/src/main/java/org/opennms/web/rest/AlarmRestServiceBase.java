@@ -8,6 +8,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria.FetchType;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -33,6 +35,13 @@ public class AlarmRestServiceBase extends OnmsRestService {
 		translateParameters(params);
 
     	final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
+
+    	cb.fetch("firstEvent", FetchType.EAGER);
+        cb.fetch("lastEvent", FetchType.EAGER);
+        
+        cb.alias("node", "node", JoinType.LEFT_JOIN);
+        cb.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
+        cb.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
 
     	applyQueryFilters(params, cb);
     	if (stripOrdering) {
