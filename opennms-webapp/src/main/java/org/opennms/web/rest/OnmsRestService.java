@@ -80,6 +80,9 @@ public class OnmsRestService {
 	    builder.distinct();
 	    builder.limit(DEFAULT_LIMIT);
 
+	    // not sure why we remove this, but that's what the old query filter code did, I presume there's a reason  :)
+	    params.remove("_dc");
+
     	if (params.containsKey("limit")) {
     		builder.limit(Integer.valueOf(params.getFirst("limit")));
     		params.remove("limit");
