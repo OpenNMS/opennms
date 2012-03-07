@@ -173,7 +173,7 @@ public class JmxToSnmpGraphConfigGenerator {
     public Collection<Report> generateReportsByJmxDatacollectionConfig(String jmxDatacollectionConfig) {
         Collection<Report> reports = new ArrayList<Report>();
         JmxDatacollectionConfig inputConfig = JAXB.unmarshal(new File(jmxDatacollectionConfig), JmxDatacollectionConfig.class);
-
+        
         for (JmxCollection jmxCollection : inputConfig.getJmxCollection()) {
             logger.debug("jmxCollection: '{}'", jmxCollection.getName());
             Mbeans mbeans = jmxCollection.getMbeans();

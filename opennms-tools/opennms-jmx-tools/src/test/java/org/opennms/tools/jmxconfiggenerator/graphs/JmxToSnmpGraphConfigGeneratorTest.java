@@ -62,7 +62,8 @@ public class JmxToSnmpGraphConfigGeneratorTest {
 
     @Test
     public void testVelociteyRun() {
-        Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/test.xml");
+        Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/jmx-datacollection-config.xml");
+        System.out.println("reports:\n" + reports);
         String snmpGraphConfig = jmxToSnmpGraphConfigGen.generateSnmpGraph(reports, "src/main/resources/graphTemplate.vm");
         System.out.println(snmpGraphConfig);
     }
