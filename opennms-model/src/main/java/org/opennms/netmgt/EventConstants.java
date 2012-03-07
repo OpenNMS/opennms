@@ -1175,6 +1175,18 @@ public class EventConstants {
 
     /**
      * A utility method to format a 'Date' into a string in the locale-specific
+     * FULL DateFormat style for both the date and time.
+     *
+     * @see java.text.DateFormat
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static final String formatToFullString(final Date date) {
+    	return FORMATTER_FULL_GMT.get().format(date);
+    }
+
+    /**
+     * A utility method to format a 'Date' into a string in the locale-specific
      * LONG DateFormat style for both the date and time.
      *
      * @see java.text.DateFormat
