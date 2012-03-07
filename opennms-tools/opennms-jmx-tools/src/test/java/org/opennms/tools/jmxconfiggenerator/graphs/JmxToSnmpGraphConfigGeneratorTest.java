@@ -26,53 +26,44 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.tools.jmxconfiggenerator.jmxconfig;
+package org.opennms.tools.jmxconfiggenerator.graphs;
 
-import java.io.IOException;
-
-import javax.management.AttributeNotFoundException;
-import javax.management.MBeanException;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.Ignore;
-import org.opennms.tools.jmxconfiggenerator.graphs.SnmpGraphConfigGenerator;
+import java.util.Collection;
+import org.junit.*;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
  * @author Markus Neumann <markus@opennms.com>
  */
 
-@Ignore
-public class JmxDatacollectionConfigGeneratorTest {
+public class JmxToSnmpGraphConfigGeneratorTest {
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
+    private JmxToSnmpGraphConfigGenerator jmxToSnmpGraphConfigGen;
 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
+    public JmxToSnmpGraphConfigGeneratorTest() {
+    }
 
-	@Before
-	public void setUp() throws Exception {
-	}
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
 
-	@After
-	public void tearDown() throws Exception {
-	}
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
 
-	@Test
-	public void testGenerateJmxConfig() throws AttributeNotFoundException, MBeanException {
-		JmxDatacollectionConfigGenerator.generateJmxConfig("cassandra", "localhost", "7199", "username", "password", true, true, "test.xml");
-	}
+    @Before
+    public void setUp() {
+        jmxToSnmpGraphConfigGen = new JmxToSnmpGraphConfigGenerator();
+    }
 
-	@Test
-	public void testGenerateGraphs() throws IOException {
-		SnmpGraphConfigGenerator.generateGraphs("cassandra", "test.xml", "wtf.properties");
-	}
-	
+    @After
+    public void tearDown() {
+    }
+
+    @Test
+    public void testVelociteyRun() {
+        Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/test.xml");
+        String snmpGraphConfig = jmxToSnmpGraphConfigGen.generateSnmpGraph(reports, "src/main/resources/graphTemplate.vm");
+        System.out.println(snmpGraphConfig);
+    }
 }
