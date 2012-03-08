@@ -4,10 +4,13 @@ import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StringType;
 import org.springframework.core.style.ToStringCreator;
 
 
 public class AttributeValueRestriction extends AttributeRestriction {
+    private static final StringType STRING_TYPE = new StringType();
 	private final Object m_value;
 
 	public AttributeValueRestriction(final RestrictionType type, final String attribute, final Object value) {
@@ -38,6 +41,7 @@ public class AttributeValueRestriction extends AttributeRestriction {
 			case GE: return org.hibernate.criterion.Restrictions.ge(getAttribute(), getValue());
 			case GT: return org.hibernate.criterion.Restrictions.gt(getAttribute(), getValue());
 			case ILIKE: return org.hibernate.criterion.Restrictions.ilike(getAttribute(), getValue());
+			case IPLIKE: return Restrictions.sqlRestriction("iplike({alias}.ipAddr, ?)", (String)getValue(), STRING_TYPE);
 			case IN: {
 				final Object o = getValue();
 				if (o instanceof List) {

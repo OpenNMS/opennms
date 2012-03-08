@@ -59,12 +59,16 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 			switch(fetchType.getValue()) {
 				case DEFAULT:
 					hibernateCriteria.setFetchMode(fetchType.getKey(), FetchMode.DEFAULT);
+					break;
 				case EAGER:
 					hibernateCriteria.setFetchMode(fetchType.getKey(), FetchMode.JOIN);
+                    break;
 				case LAZY:
 					hibernateCriteria.setFetchMode(fetchType.getKey(), FetchMode.SELECT);
+                    break;
 				default:
 					hibernateCriteria.setFetchMode(fetchType.getKey(), FetchMode.DEFAULT);
+                    break;
 			}
 		}
 		
@@ -83,12 +87,20 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
 	private void addJoinsToCriteria(final List<Alias> joins, final DetachedCriteria criteria) {
 		for (final Alias join : joins) {
-			int joinType;
+			int joinType = 0;
 			switch(join.getType()) {
-				case FULL_JOIN: joinType = org.hibernate.Criteria.FULL_JOIN;
-				case LEFT_JOIN: joinType = org.hibernate.Criteria.LEFT_JOIN;
-				case INNER_JOIN: joinType = org.hibernate.Criteria.INNER_JOIN;
-				default: joinType = org.hibernate.Criteria.INNER_JOIN;
+				case FULL_JOIN:
+				    joinType = org.hibernate.Criteria.FULL_JOIN;
+				    break;
+				case LEFT_JOIN:
+				    joinType = org.hibernate.Criteria.LEFT_JOIN;
+				    break;
+				case INNER_JOIN:
+				    joinType = org.hibernate.Criteria.INNER_JOIN;
+				    break;
+				default:
+				    joinType = org.hibernate.Criteria.INNER_JOIN;
+				    break;
 			}
 			criteria.createAlias(join.getAssociationPath(), join.getAlias(), joinType);
 		}

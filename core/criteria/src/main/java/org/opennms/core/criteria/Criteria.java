@@ -1,18 +1,29 @@
 package org.opennms.core.criteria;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.springframework.core.style.ToStringCreator;
 
 public class Criteria {
+	private static final Pattern SPLIT_ON = Pattern.compile("\\.");
 
 	public enum FetchType { DEFAULT, LAZY, EAGER }
 	private Class<?> m_class;
@@ -118,6 +129,85 @@ public class Criteria {
 	
 	public void setOffset(final Integer offset) {
 		m_offset = offset;
+	}
+
+	public Class<?> getType(final String path) throws IntrospectionException {
+		return getType(this.getCriteriaClass(), path);
+	}
+	
+	private Class<?> getType(final Class<?> clazz, final String path) throws IntrospectionException {
+		final String[] split = SPLIT_ON.split(path);
+		final List<String> pathSections = Arrays.asList(split);
+		return getType(clazz, pathSections, new ArrayList<Alias>(getAliases()));
+	}
+
+	/**
+	 * Given a class, a list of spring-resource-style path sections, and an array of aliases to process,
+	 * return the type of class associated with the resource.
+	 * 
+	 * @param clazz The class to process for properties.
+	 * @param pathSections The path sections, eg: node.ipInterfaces
+	 * @param aliases A list of aliases that have not yet been processed yet.  We use this to detect whether an alias has already been resolved
+	 * so it doesn't loop.  See {@class ConcreteObjectTest#testAliases()} for an example of why this is necessary.
+	 * @return The class type that matches.
+	 * @throws IntrospectionException
+	 */
+	private Class<?> getType(final Class<?> clazz, final List<String> pathSections, final List<Alias> aliases) throws IntrospectionException {
+        if (pathSections.isEmpty()) {
+			return clazz;
+		}
+		
+		final String pathElement = pathSections.get(0);
+		final List<String> remaining = pathSections.subList(1, pathSections.size());
+
+		final Iterator<Alias> aliasIterator = aliases.iterator();
+		while (aliasIterator.hasNext()) {
+			final Alias alias = aliasIterator.next();
+			if (alias.getAlias().equals(alias.getAssociationPath())) {
+				// in some cases, we will alias eg "node" -> "node", skip if they're identical
+				continue;
+			}
+
+			if (alias.getAlias().equals(pathElement)) {
+				aliasIterator.remove();
+
+				final String associationPath = alias.getAssociationPath();
+				// LogUtils.debugf(this, "match: class = %s, pathSections = %s, alias = %s", clazz.getName(), pathSections, alias);
+				// we have a match, retry with the "real" path
+				final List<String> paths = new ArrayList<String>();
+				paths.addAll(Arrays.asList(SPLIT_ON.split(associationPath)));
+				paths.addAll(remaining);
+				return getType(clazz, paths, aliases);
+			}
+		}
+
+		final BeanInfo bi = Introspector.getBeanInfo(clazz);
+		for (final PropertyDescriptor pd : bi.getPropertyDescriptors()) {
+			if (pathElement.equals(pd.getName())) {
+				final Class<?> propertyType = pd.getPropertyType();
+				if (Collection.class.isAssignableFrom(propertyType)) {
+					final Type[] t = getGenericReturnType(pd);
+					if (t != null && t.length == 1) {
+						return getType((Class<?>)t[0], remaining, aliases);
+					}
+				}
+				return getType(propertyType, remaining, aliases);
+			}
+		}
+		
+		return null;
+	}
+
+	private Type[] getGenericReturnType(final PropertyDescriptor pd) {
+		final Method m = pd.getReadMethod();
+		if (m != null) {
+			final Type returnType = m.getGenericReturnType();
+			if (returnType != null && returnType instanceof ParameterizedType) {
+				final ParameterizedType pt = (ParameterizedType)returnType;
+				return pt.getActualTypeArguments();
+			}
+		}
+		return new Type[0];
 	}
 
 }

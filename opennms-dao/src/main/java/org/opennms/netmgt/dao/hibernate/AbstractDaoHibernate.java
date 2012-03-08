@@ -338,6 +338,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     	final HibernateCallback<List<T>> callback = new HibernateCallback<List<T>>() {
 
 			public List<T> doInHibernate(final Session session) throws HibernateException, SQLException {
+				LogUtils.debugf(this, "criteria = " + criteria);
             	final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
             	LogUtils.debugf(this, "hibernateCriteria = " + hibernateCriteria);
 				return (List<T>)(hibernateCriteria.list());
@@ -352,6 +353,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     	final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
 
             public Integer doInHibernate(final Session session) throws HibernateException, SQLException {
+                LogUtils.debugf(this, "criteria = " + criteria);
             	final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
             	LogUtils.debugf(this, "hibernateCriteria = " + hibernateCriteria);
             	hibernateCriteria.setProjection(Projections.rowCount());
