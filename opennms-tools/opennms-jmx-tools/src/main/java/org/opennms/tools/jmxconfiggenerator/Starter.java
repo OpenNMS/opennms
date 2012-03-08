@@ -81,7 +81,7 @@ public class Starter {
         try {
             parser.parseArgument(args);
             if (jmx && graph) {
-                throw new CmdLineException(parser, "jmx and graph is set. Just use on at a time.");
+                throw new CmdLineException(parser, "jmx and graph is set. Just use one at a time.");
             }
             if (!jmx && !graph) {
                 throw new CmdLineException(parser, "set jmx or graph.");
