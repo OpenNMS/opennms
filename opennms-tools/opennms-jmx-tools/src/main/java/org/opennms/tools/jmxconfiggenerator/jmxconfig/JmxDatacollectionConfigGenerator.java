@@ -332,6 +332,14 @@ public class JmxDatacollectionConfigGenerator {
         dictionary.put("System", "Sys");
         dictionary.put("Error", "Err");
         dictionary.put("Committed", "Commit");
+
+        dictionary.put("Identity", "Idnt");
+        dictionary.put("Tokenized", "Toknz");
+        dictionary.put("Token", "Tok");
+        dictionary.put("Count", "Cnt");
+        dictionary.put("User", "Usr");
+        dictionary.put("Users", "Usrs");
+        dictionary.put("Default", "Dflt");
         
         String result = "";
         String[] nameParts = StringUtils.splitByCharacterTypeCamelCase(name);

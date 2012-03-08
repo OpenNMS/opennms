@@ -115,9 +115,9 @@ public class Starter {
             System.err.println();
             // System.err.println("  Example: java -jar JmxConfigGenerator" +
             // parser.printExample(ALL));
-            System.err.println("Use a call linke:");
-            System.err.println(" Example generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-runCompositeData] [-skipDefaultVM]");
-            System.err.println(" Example generation of  snmp-graph.properties: java -jar JmxConfigGenerator.jar -graph -input test.xml -out test.properies [-template graphTemplate.vm] [-service cassandra]");
+            System.err.println("Examples:");
+            System.err.println(" Generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-runCompositeData] [-skipDefaultVM]");
+            System.err.println(" Generation of snmp-graph.properties: java -jar JmxConfigGenerator.jar -graph -input test.xml -out test.properies [-template graphTemplate.vm] [-service cassandra]");
         }
     }
 }
