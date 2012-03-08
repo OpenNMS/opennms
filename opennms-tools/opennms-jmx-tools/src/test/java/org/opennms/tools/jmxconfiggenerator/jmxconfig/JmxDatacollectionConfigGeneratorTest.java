@@ -53,9 +53,10 @@ public class JmxDatacollectionConfigGeneratorTest {
     public void tearDown() throws Exception {
     }
 
+    @Ignore
     @Test
     public void testGenerateJmxConfig() throws AttributeNotFoundException, MBeanException {
-        JmxDatacollectionConfigGenerator.generateJmxConfig("cassandra", "localhost", "7199", null, null, true, true, "test.xml");
+        JmxDatacollectionConfigGenerator.generateJmxConfig("cassandra", "localhost", "7199", null, null, true, "test.xml");
     }
 
     @Ignore

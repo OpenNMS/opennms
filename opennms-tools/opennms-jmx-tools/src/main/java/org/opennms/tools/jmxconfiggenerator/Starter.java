@@ -58,8 +58,6 @@ public class Starter {
     private String port;
     @Option(name = "-skipDefaultVM", usage = "set to process default JavaVM Beans.")
     private boolean skipDefaultVM = false;
-    @Option(name = "-runCompositeData", usage = "set to process CompositeData of Beans.")
-    private boolean runCompositeData = false;
     @Option(name = "-graph", usage = "Generate snmp-graph.properties linke file to out, by reading jmx-datacollection.xml like file from input")
     private boolean graph = false;
     @Option(name = "-input", usage = "Jmx-datacolletion.xml like file to parse")
@@ -88,7 +86,7 @@ public class Starter {
                 throw new CmdLineException(parser, "set jmx or graph.");
             }
             if (jmx && hostName != null && port != null && outFile != null) {
-                JmxDatacollectionConfigGenerator.generateJmxConfig(serviceName, hostName, port, username, password, !skipDefaultVM, runCompositeData, outFile);
+                JmxDatacollectionConfigGenerator.generateJmxConfig(serviceName, hostName, port, username, password, !skipDefaultVM, outFile);
                 return;
             }
             if (graph && inputFile != null && outFile != null) {
@@ -119,7 +117,7 @@ public class Starter {
             // System.err.println("  Example: java -jar JmxConfigGenerator" +
             // parser.printExample(ALL));
             System.err.println("Examples:");
-            System.err.println(" Generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-runCompositeData] [-skipDefaultVM]");
+            System.err.println(" Generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-skipDefaultVM]");
             System.err.println(" Generation of snmp-graph.properties: java -jar JmxConfigGenerator.jar -graph -input test.xml -out test.properies [-template graphTemplate.vm] [-service cassandra]");
         }
     }
