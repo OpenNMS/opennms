@@ -201,11 +201,20 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return new MockHttpServletResponse();
     }
 
-    protected MockHttpServletRequest createRequest(final String requestType, final String urlPath) {
-    	final MockHttpServletRequest request = new MockHttpServletRequest(getServletContext(), requestType, contextPath + urlPath);
-    	request.setContextPath(contextPath);
-        return request;
-    }
+	protected MockHttpServletRequest createRequest(final String requestType, final String urlPath) {
+		final MockHttpServletRequest request = new MockHttpServletRequest(getServletContext(), requestType, contextPath + urlPath) {
+
+			@Override
+			// FIXME: remove when we update to Spring 3.1
+			public void setContentType(final String contentType) {
+				super.setContentType(contentType);
+				super.addHeader("Content-Type", contentType);
+			}
+
+		};
+		request.setContextPath(contextPath);
+		return request;
+	}
 
     /**
      * @param url
@@ -381,21 +390,18 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     }
     
-    protected void putXmlObject(JAXBContext context, String url, int expectedStatus, Object object) throws Exception {
-        
-        ByteArrayOutputStream out = new ByteArrayOutputStream(); 
-        Marshaller marshaller = context.createMarshaller();
+    protected void putXmlObject(final JAXBContext context, final String url, final int expectedStatus, final Object object) throws Exception {
+    	final ByteArrayOutputStream out = new ByteArrayOutputStream(); 
+        final Marshaller marshaller = context.createMarshaller();
         marshaller.marshal(object, out);
-        byte[] content = out.toByteArray();
+        final byte[] content = out.toByteArray();
         
-
-        MockHttpServletRequest request = createRequest(PUT, url);
+        final MockHttpServletRequest request = createRequest(PUT, url);
         request.setContentType(MediaType.APPLICATION_XML);
         request.setContent(content);
-        MockHttpServletResponse response = createResponse();
+        final MockHttpServletResponse response = createResponse();
         dispatch(request, response);
         assertEquals(expectedStatus, response.getStatus());
-        
     }
 
 	protected void createNode() throws Exception {
