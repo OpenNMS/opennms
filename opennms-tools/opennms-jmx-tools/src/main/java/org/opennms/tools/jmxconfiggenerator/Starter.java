@@ -25,14 +25,15 @@
  */
 package org.opennms.tools.jmxconfiggenerator;
 
-import java.io.*;
-import java.net.URL;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.opennms.tools.jmxconfiggenerator.graphs.JmxToSnmpGraphConfigGenerator;
+import org.opennms.tools.jmxconfiggenerator.graphs.GraphConfigGenerator;
+import org.opennms.tools.jmxconfiggenerator.graphs.JmxConfigReader;
 import org.opennms.tools.jmxconfiggenerator.graphs.Report;
 import org.opennms.tools.jmxconfiggenerator.graphs.SnmpGraphConfigGenerator;
 import org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfigGenerator;
@@ -93,14 +94,16 @@ public class Starter {
             if (graph && inputFile != null && outFile != null) {
                 SnmpGraphConfigGenerator.generateGraphs(serviceName, inputFile, "old_" + outFile);
 
-                JmxToSnmpGraphConfigGenerator jmxToSnmpGraphConfigGen = new JmxToSnmpGraphConfigGenerator();
+                JmxConfigReader jmxToSnmpGraphConfigGen = new JmxConfigReader();
                 Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig(inputFile);
+
+                GraphConfigGenerator graphConfigGenerator = new GraphConfigGenerator();
 
                 String snmpGraphConfig;
                 if (templateFile != null) {
-                    snmpGraphConfig = jmxToSnmpGraphConfigGen.generateSnmpGraph(reports, templateFile);
+                    snmpGraphConfig = graphConfigGenerator.generateSnmpGraph(reports, templateFile);
                 } else {
-                    snmpGraphConfig = jmxToSnmpGraphConfigGen.generateSnmpGraph(reports);
+                    snmpGraphConfig = graphConfigGenerator.generateSnmpGraph(reports);
                 }
 
                 System.out.println(snmpGraphConfig);

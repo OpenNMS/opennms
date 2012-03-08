@@ -28,34 +28,18 @@ package org.opennms.tools.jmxconfiggenerator.jmxconfig;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.*;
-
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.IntrospectionException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanException;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectInstance;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+import javax.management.*;
 import javax.management.openmbean.CompositeData;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.xml.bind.JAXB;
-
 import org.apache.commons.lang3.StringUtils;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxCollection;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.ObjectFactory;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Rrd;
+import org.opennms.tools.jmxconfiggenerator.helper.NameTools;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -276,8 +260,8 @@ public class JmxDatacollectionConfigGenerator {
         xmlJmxAttribute.setType("gauge");
         
         logger.debug("alias untuched: '{}'", jmxMBeanAttributeInfo.getName());
-        logger.debug("alias dicttrim: '{}'", trimByDictionary(jmxMBeanAttributeInfo.getName()));
-        xmlJmxAttribute.setName(trimByDictionary(jmxMBeanAttributeInfo.getName()));
+        logger.debug("alias dicttrim: '{}'", NameTools.trimByDictionary(jmxMBeanAttributeInfo.getName()));
+        xmlJmxAttribute.setName(NameTools.trimByDictionary(jmxMBeanAttributeInfo.getName()));
 
         if (!aliasMap.containsKey(jmxMBeanAttributeInfo.getName())) {
             xmlJmxAttribute.setAlias(0 + jmxMBeanAttributeInfo.getName());
@@ -288,77 +272,14 @@ public class JmxDatacollectionConfigGenerator {
         }
 
         //find alias crashes caused by cuting down alias length to 19 chars
-        if (aliasList.contains(trimByCamelCase(xmlJmxAttribute.getAlias(), 19))) {
-            logger.error("ALIAS CRASH AT :" + xmlJmxAttribute.getAlias() + "\t as: " + trimByCamelCase(xmlJmxAttribute.getAlias(), 19));
+        if (aliasList.contains(NameTools.trimByCamelCase(xmlJmxAttribute.getAlias(), 19))) {
+            logger.error("ALIAS CRASH AT :" + xmlJmxAttribute.getAlias() + "\t as: " + NameTools.trimByCamelCase(xmlJmxAttribute.getAlias(), 19));
             xmlJmxAttribute.setAlias(xmlJmxAttribute.getAlias() + "_NAME_CRASH_AS_19_CHAR_VALUE");
         } else {
-            aliasList.add(trimByCamelCase(xmlJmxAttribute.getAlias(), 19));
-            xmlJmxAttribute.setAlias(trimByCamelCase(xmlJmxAttribute.getAlias(), 19));
+            aliasList.add(NameTools.trimByCamelCase(xmlJmxAttribute.getAlias(), 19));
+            xmlJmxAttribute.setAlias(NameTools.trimByCamelCase(xmlJmxAttribute.getAlias(), 19));
         }
 
         return xmlJmxAttribute;
-    }
-
-    protected static String trimByCamelCase(String name, Integer maxLength) {
-        String result = "";
-        String[] nameParts = StringUtils.splitByCharacterTypeCamelCase(name);
-        Integer charsOver = name.length() - maxLength;
-        for (int i = 0; i < charsOver; i++) {
-            Integer largest = 0;
-            Integer index = 0;
-            for (int j = 0; j < nameParts.length; j++) {
-                if (nameParts[j].length() > largest) {
-                    largest = nameParts[j].length();
-                    index = j;
-                }
-            }
-            nameParts[index] = StringUtils.chop(nameParts[index]);
-        }
-        for (String namePart : nameParts) {
-            result = result + namePart;
-        }
-        return result;
-    }
-
-    protected static String trimByDictionary(String name) {
-        Map<String, String> dictionary = new HashMap<String, String>();
-        dictionary.put("Number", "Num");
-        dictionary.put("Average", "Avg");
-        dictionary.put("Compression", "Comp");
-        dictionary.put("Auxillary", "Auxil");
-        dictionary.put("Memory", "Mem");
-        dictionary.put("Virtual", "Virt");
-        dictionary.put("Available", "Avail");
-        dictionary.put("System", "Sys");
-        dictionary.put("Error", "Err");
-        dictionary.put("Committed", "Commit");
-
-        dictionary.put("Identity", "Idnt");
-        dictionary.put("Tokenized", "Toknz");
-        dictionary.put("Token", "Tok");
-        dictionary.put("Count", "Cnt");
-        dictionary.put("User", "Usr");
-        dictionary.put("Users", "Usrs");
-        dictionary.put("Default", "Dflt");
-        
-        String result = "";
-        String[] nameParts = StringUtils.splitByCharacterTypeCamelCase(name);
-
-        for (int i = 0; i < nameParts.length; i++) {
-            String namePart = nameParts[i];
-            
-            for (String word : dictionary.keySet()) {
-                if (namePart.equalsIgnoreCase(word)) {
-                    logger.debug("dictionary Hit at '{}' for '{}'", name ,word);
-                    nameParts[i] = dictionary.get(word);
-                    logger.debug("namePart after dictionary: '{}', replaced to '{}'", namePart, dictionary.get(word));
-                }
-            }
-        }
-
-        for (String namePart : nameParts) {
-            result = result + namePart;
-        }
-        return result;
     }
 }
