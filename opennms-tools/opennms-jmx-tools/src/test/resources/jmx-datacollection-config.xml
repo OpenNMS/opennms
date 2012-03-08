@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<jmx-datacollection-config rrdRepository="/opt/opennms/share/rrd/snmp/">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jmx-datacollection-config rrdRepository="/opt/opennms/share/rrd/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/jmx-datacollection">
     <jmx-collection name="jboss">
         <rrd step="300">
             <rra>RRA:AVERAGE:0.5:1:2016</rra>

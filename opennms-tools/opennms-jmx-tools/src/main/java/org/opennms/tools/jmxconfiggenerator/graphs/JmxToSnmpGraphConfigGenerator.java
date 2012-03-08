@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.xml.bind.JAXB;
+import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -192,7 +193,9 @@ public class JmxToSnmpGraphConfigGenerator {
     private Collection<Report> generateAttributeReporsByMBean(Mbean mbean) {
         Collection<Report> reports = new ArrayList<Report>();
         for (Attrib attrib : mbean.getAttrib()) {
-            Report report = new Report(mbean.getName() + "." + attrib.getAlias() + "." + ATTRIBUTEREPORT, attrib.getName(), attrib.getName(), "verticalLabel");
+
+            String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + attrib.getAlias() + "." + ATTRIBUTEREPORT;
+            Report report = new Report(reportId, attrib.getName(), attrib.getName(), "verticalLabel");
             report.addGraph(new Graph(attrib.getAlias(), attrib.getName(), attrib.getAlias(), getNextColor(), getNextColor(), getNextColor()));
             reports.add(report);
             restetColor();
@@ -203,7 +206,9 @@ public class JmxToSnmpGraphConfigGenerator {
     private Collection<Report> generateMbeanReportsByMBean(Mbean mbean) {
         Collection<Report> reports = new ArrayList<Report>();
         if (!mbean.getAttrib().isEmpty()) {
-            Report report = new Report(mbean.getName() + "." + MBEANREPORT, mbean.getName(), mbean.getName(), "verticalLabel");
+
+            String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + MBEANREPORT;
+            Report report = new Report(reportId, mbean.getName(), mbean.getName(), "verticalLabel");
             for (Attrib attrib : mbean.getAttrib()) {
                 report.addGraph(new Graph(attrib.getAlias(), attrib.getName(), attrib.getAlias(), getNextColor(), getNextColor(), getNextColor()));
             }
@@ -217,7 +222,10 @@ public class JmxToSnmpGraphConfigGenerator {
         Collection<Report> reports = new ArrayList<Report>();
 
         for (CompAttrib compAttrib : mbean.getCompAttrib()) {
-            Report report = new Report(mbean.getName() + "." + compAttrib.getName() + "." + COMPOSITEREPORT, compAttrib.getName(), compAttrib.getName(), "verticalLabel");
+
+            String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + compAttrib.getName() + "." + COMPOSITEREPORT;
+
+            Report report = new Report(reportId, reportId, reportId, "verticalLabel");
             for (CompMember compMember : compAttrib.getCompMember()) {
                 report.addGraph(new Graph(compMember.getAlias(), compMember.getName(), compMember.getAlias(), getNextColor(), getNextColor(), getNextColor()));
             }
@@ -232,7 +240,10 @@ public class JmxToSnmpGraphConfigGenerator {
 
         for (CompAttrib compAttrib : mbean.getCompAttrib()) {
             for (CompMember compMember : compAttrib.getCompMember()) {
-                Report report = new Report(mbean.getName() + "." + compAttrib.getName() + "." + compMember.getName() + "." + COMPOSITATTRIBEREPORT, "name", "title", "verticalLabel");
+                
+                String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + compAttrib.getName() + "." + compMember.getName() + "." + COMPOSITATTRIBEREPORT;
+                
+                Report report = new Report(reportId, reportId, reportId, "verticalLabel");
                 report.addGraph(new Graph(compMember.getAlias(), compMember.getName(), compMember.getAlias(), getNextColor(), getNextColor(), getNextColor()));
                 reports.add(report);
                 restetColor();

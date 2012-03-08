@@ -15,9 +15,9 @@ report.${report.id}.type=interfaceSnmp
 report.${report.id}.command=--title="${report.title}" \
  --vertical-label="${report.verticalLabel}" \
 #foreach($graph in $report.graphs )
- DEF:${graph.id}={rrd${foreach.count}:${graph.resourceName}:AVERAGE \
- AREA:${graph.id}#${graph.coloreA} \
- LINE2:${graph.id}#${graph.coloreB}:"${graph.description}" \
+ DEF:${graph.id}={rrd${foreach.count}}:${graph.resourceName}:AVERAGE \
+ AREA:${graph.id}#${graph.coloreB} \
+ LINE2:${graph.id}#${graph.coloreA}:"${graph.description}" \
  GPRINT:${graph.id}:AVERAGE:" Avg \\: %8.2lf %s" \
  GPRINT:${graph.id}:MIN:" Min \\: %8.2lf %s" \
  GPRINT:${graph.id}:MAX:" Max \\: %8.2lf %s\\n" \

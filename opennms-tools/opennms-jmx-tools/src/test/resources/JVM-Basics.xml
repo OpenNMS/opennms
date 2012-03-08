@@ -1,5 +1,6 @@
-<?xml version="1.0"?>
-<jmx-datacollection-config rrdRepository="/opt/opennms/share/rrd/snmp/">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- jmx-datacollection-config rrdRepository="/opt/opennms/share/rrd/snmp/" -->
+<jmx-datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/jmx-datacollection">
   <jmx-collection name="jsr160">
     <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:2016</rra>
@@ -56,7 +57,7 @@
         <attrib name="UnloadedClassCount" alias="UnloadedClass" type="gauge"/>
       </mbean>
       <!-- JAVA MemoryPool Eden Space -->
-      <mbean name="JVM MemoryPool:Eden Space" objectname="java.lang:type=MemoryPool,name=Eden Space">
+      <mbean name="JVM MemoryPool Eden Space" objectname="java.lang:type=MemoryPool,name=Eden Space">
         <attrib name="CollectionUsageThreshold" alias="EdenCollUseThrsh" type="gauge"/>
         <attrib name="CollectionUsageThresholdCount" alias="EdenCollUseThrshCnt" type="gauge"/>
         <comp-attrib name="Usage" type="Composite" alias="EdenUsage">
@@ -73,7 +74,7 @@
         </comp-attrib>
       </mbean>
       <!-- JVM MemoryPool SurvivorSpace -->
-      <mbean name="JVM MemoryPool:Survivor Space" objectname="java.lang:type=MemoryPool,name=Survivor Space">
+      <mbean name="JVM MemoryPool Survivor Space" objectname="java.lang:type=MemoryPool,name=Survivor Space">
         <attrib name="CollectionUsageThreshold" alias="SurvCollUseThresh" type="gauge"/>
         <attrib name="CollectionUsageThresholdCount" alias="SurvCollUseThrshCnt" type="gauge"/>
         <comp-attrib name="Usage" type="Composite" alias="SurvUsage">
@@ -90,7 +91,7 @@
         </comp-attrib>
       </mbean>
       <!-- JVM MemoryPool PERM GEN -->
-      <mbean name="JVM MemoryPool:Perm Gen" objectname="java.lang:type=MemoryPool,name=Perm Gen">
+      <mbean name="JVM MemoryPool Perm Gen" objectname="java.lang:type=MemoryPool,name=Perm Gen">
         <attrib name="CollectionUsageThreshold" alias="PermCollUseThresh" type="gauge"/>
         <attrib name="CollectionUsageThresholdCount" alias="PermCollUseThrshCnt" type="gauge"/>
         <comp-attrib name="Usage" type="Composite" alias="PermUsage">
@@ -101,7 +102,7 @@
         </comp-attrib>
       </mbean>
       <!-- JVM MemoryPool OLD GEN -->
-      <mbean name="JVM MemoryPool:Old Gen" objectname="java.lang:type=MemoryPool,name=Old Gen">
+      <mbean name="JVM MemoryPool Old Gen" objectname="java.lang:type=MemoryPool,name=Old Gen">
         <attrib name="CollectionUsageThreshold" alias="OGenCollUseThresh" type="gauge"/>
         <attrib name="CollectionUsageThresholdCount" alias="OGenCollUseThrshCnt" type="gauge"/>
         <comp-attrib name="Usage" type="Composite" alias="OGenUsage">
@@ -112,7 +113,7 @@
         </comp-attrib>
       </mbean>
       <!-- JVM GC Copy -->
-      <mbean name="JVM GarbageCollector:Copy" objectname="java.lang:type=GarbageCollector,name=Copy">
+      <mbean name="JVM GarbageCollector Copy" objectname="java.lang:type=GarbageCollector,name=Copy">
         <attrib name="CollectionCount" alias="GcCoCollCnt" type="counter"/>
         <attrib name="CollectionTime" alias="GcCoCollTime" type="counter"/>
         <comp-attrib name="LastGcInfo" type="Composite" alias="GcCoLastGcInfo">
@@ -122,7 +123,7 @@
         </comp-attrib>
       </mbean>
       <!-- JVM GC MarkSweepCompact -->
-      <mbean name="JVM GarbageCollector:MarkSweepCompact" objectname="java.lang:type=GarbageCollector,name=MarkSweepCompact">
+      <mbean name="JVM GarbageCollector MarkSweepCompact" objectname="java.lang:type=GarbageCollector,name=MarkSweepCompact">
         <attrib name="CollectionCount" alias="GcMscCollCnt" type="counter"/>
         <attrib name="CollectionTime" alias="GcMscCollTime" type="counter"/>
         <comp-attrib name="LastGcInfo" type="Composite" alias="GcMscLastGcInfo">
@@ -132,7 +133,7 @@
         </comp-attrib>
       </mbean>
       <!-- JVM GC ParNew -->
-      <mbean name="JVM GarbageCollector:ParNew" objectname="java.lang:type=GarbageCollector,name=ParNew">
+      <mbean name="JVM GarbageCollector ParNew" objectname="java.lang:type=GarbageCollector,name=ParNew">
         <attrib name="CollectionCount" alias="GcParNewCollCnt" type="counter"/>
         <attrib name="CollectionTime" alias="GcParNewCollTime" type="counter"/>
         <comp-attrib name="LastGcInfo" type="Composite" alias="GcParNewLastGcInfo">
@@ -142,7 +143,7 @@
         </comp-attrib>
       </mbean>
       <!-- JVM GC ConcurrentMarkSweep -->
-      <mbean name="JVM GarbageCollector:ConcurrentMarkSweep" objectname="java.lang:type=GarbageCollector,name=ConcurrentMarkSweep">
+      <mbean name="JVM GarbageCollector ConcurrentMarkSweep" objectname="java.lang:type=GarbageCollector,name=ConcurrentMarkSweep">
         <attrib name="CollectionCount" alias="GcCmsCollCnt" type="counter"/>
         <attrib name="CollectionTime" alias="GcCmsCollTime" type="counter"/>
         <comp-attrib name="LastGcInfo" type="Composite" alias="GcCmsLastGcInfo">
@@ -152,7 +153,7 @@
         </comp-attrib>
       </mbean>
       <!-- JVM GC PSMarkSweep -->
-      <mbean name="JVM GarbageCollector:PS MarkSweep" objectname="java.lang:type=GarbageCollector,name=PS MarkSweep">
+      <mbean name="JVM GarbageCollector PS MarkSweep" objectname="java.lang:type=GarbageCollector,name=PS MarkSweep">
         <attrib name="CollectionCount" alias="GcPsMsCollCnt" type="counter"/>
         <attrib name="CollectionTime" alias="GcPsMsCollTime" type="counter"/>
         <comp-attrib name="LastGcInfo" alias="GcPsMsLastGcInfo" type="Composite">
@@ -161,7 +162,7 @@
         </comp-attrib>
       </mbean>
       <!-- JVM GC PSScavenge -->
-      <mbean name="JVM GarbageCollector:PS Scavenge" objectname="java.lang:type=GarbageCollector,name=PS Scavenge">
+      <mbean name="JVM GarbageCollector PS Scavenge" objectname="java.lang:type=GarbageCollector,name=PS Scavenge">
         <attrib name="CollectionCount" alias="GcPssCollCnt" type="counter"/>
         <attrib name="CollectionTime" alias="GcPssCollTime" type="counter"/>
         <comp-attrib name="LastGcInfo" type="Composite" alias="GcPssLastGcInfo">

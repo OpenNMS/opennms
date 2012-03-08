@@ -61,8 +61,20 @@ public class JmxToSnmpGraphConfigGeneratorTest {
     }
 
     @Test
+    public void testGenerateReportsByJmxDatacollectionConfig() {
+        Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/test.xml");
+        Assert.assertEquals("read structure from test.xml", 7, reports.size());
+
+        reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/JVM-Basics.xml");
+        Assert.assertEquals("read structure from JVM-Basics.xml", 117, reports.size());
+
+        reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/jmx-datacollection-config.xml");
+        Assert.assertEquals("read structure from jmx-datacollection-config.xml", 139, reports.size());
+    }
+
+    @Test
     public void testVelociteyRun() {
-        Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/jmx-datacollection-config.xml");
+        Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/JVM-Basics.xml");
         System.out.println("reports:\n" + reports);
         String snmpGraphConfig = jmxToSnmpGraphConfigGen.generateSnmpGraph(reports, "src/main/resources/graphTemplate.vm");
         System.out.println(snmpGraphConfig);
