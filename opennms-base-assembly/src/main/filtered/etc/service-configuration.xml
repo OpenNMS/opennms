@@ -91,28 +91,9 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <!--  Dhcpd is now distributed separately. You will need to ensure
-        it is installed before you enable it here. -->
-  <!-- 
-  <service>
-    <name>OpenNMS:Name=Dhcpd</name>
-    <class-name>org.opennms.netmgt.dhcpd.jmx.Dhcpd</class-name>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
- -->
    <service>
     <name>OpenNMS:Name=Actiond</name>
     <class-name>org.opennms.netmgt.actiond.jmx.Actiond</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
-    <name>OpenNMS:Name=Capsd</name>
-    <class-name>org.opennms.netmgt.capsd.jmx.Capsd</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>
@@ -151,32 +132,6 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service>
-    <name>OpenNMS:Name=PollerBackEnd</name>
-    <class-name>org.opennms.netmgt.poller.jmx.RemotePollerBackEnd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-<!--
-  <service>
-     <name>OpenNMS:Name=SnmpPoller</name>
-     <class-name>org.opennms.netmgt.snmpinterfacepoller.jmx.SnmpPollerd</class-name>
-     <invoke at="start" pass="0" method="init"/>
-     <invoke at="start" pass="1" method="start"/>
-     <invoke at="status" pass="0" method="status"/>
-     <invoke at="stop" pass="0" method="stop"/>
-  </service>
--->
-  <service>
-    <name>OpenNMS:Name=Ticketer</name>
-    <class-name>org.opennms.netmgt.ticketd.jmx.TroubleTicketer</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
     <name>OpenNMS:Name=Collectd</name>
     <class-name>org.opennms.netmgt.collectd.jmx.Collectd</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -187,14 +142,6 @@ maintained
   <service>
     <name>OpenNMS:Name=Threshd</name>
     <class-name>org.opennms.netmgt.threshd.jmx.Threshd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
-    <name>OpenNMS:Name=Discovery</name>
-    <class-name>org.opennms.netmgt.discovery.jmx.Discovery</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>
@@ -282,14 +229,6 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service>
-    <name>OpenNMS:Name=AsteriskGateway</name>
-    <class-name>org.opennms.netmgt.asterisk.agi.jmx.AsteriskGateway</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
     <name>OpenNMS:Name=Ackd</name>
     <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
     <attribute>
@@ -306,6 +245,14 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service>
+    <name>OpenNMS:Name=Correlator</name>
+    <class-name>org.opennms.netmgt.correlation.jmx.Correlator</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
     <name>OpenNMS:Name=JettyServer</name>
     <class-name>org.opennms.netmgt.jetty.jmx.JettyServer</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -313,7 +260,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-<!--
+<!-- Disabled Daemons
   <service>
     <name>OpenNMS:Name=Linkd</name>
     <class-name>org.opennms.netmgt.linkd.jmx.Linkd</class-name>
@@ -325,14 +272,6 @@ maintained
   <service>
     <name>OpenNMS:Name=Importer</name>
     <class-name>org.opennms.netmgt.importer.jmx.ImporterService</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
-    <name>OpenNMS:Name=Correlator</name>
-    <class-name>org.opennms.netmgt.correlation.jmx.Correlator</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>
@@ -365,6 +304,61 @@ maintained
   <service>
     <name>OpenNMS:Name=XmlrpcProvisioner</name>
     <class-name>org.opennms.netmgt.xmlrpcd.jmx.Provisioner</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
+    <name>OpenNMS:Name=PollerBackEnd</name>
+    <class-name>org.opennms.netmgt.poller.jmx.RemotePollerBackEnd</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
+     <name>OpenNMS:Name=SnmpPoller</name>
+     <class-name>org.opennms.netmgt.snmpinterfacepoller.jmx.SnmpPollerd</class-name>
+     <invoke at="start" pass="0" method="init"/>
+     <invoke at="start" pass="1" method="start"/>
+     <invoke at="status" pass="0" method="status"/>
+     <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
+    <name>OpenNMS:Name=Ticketer</name>
+    <class-name>org.opennms.netmgt.ticketd.jmx.TroubleTicketer</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
+    <name>OpenNMS:Name=Discovery</name>
+    <class-name>org.opennms.netmgt.discovery.jmx.Discovery</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
+    <name>OpenNMS:Name=AsteriskGateway</name>
+    <class-name>org.opennms.netmgt.asterisk.agi.jmx.AsteriskGateway</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
+    <name>OpenNMS:Name=Dhcpd</name>
+    <class-name>org.opennms.netmgt.dhcpd.jmx.Dhcpd</class-name>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
+    <name>OpenNMS:Name=Capsd</name>
+    <class-name>org.opennms.netmgt.capsd.jmx.Capsd</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>
