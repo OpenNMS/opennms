@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration debug="true" scan="true" scanPeriod="300 seconds">
+<configuration debug="true" scan="false" scanPeriod="300 seconds">
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -17,7 +17,7 @@
 		</encoder>
 	</appender>
 
-	<root level="error">
+	<root level="debug">
 		<appender-ref ref="STDOUT" />
 		<!-- appender-ref ref="FILE" / -->
 	</root>
