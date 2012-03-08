@@ -69,18 +69,13 @@ public class JmxDatacollectionConfigGeneratorTest {
     public void testTrimByDictionary() {
         Assert.assertEquals("CommitVirtMemSize", JmxDatacollectionConfigGenerator.trimByDictionary("CommittedVirtualMemorySize"));
         Assert.assertEquals("AvgCompRatio" , JmxDatacollectionConfigGenerator.trimByDictionary("AverageCompressionRatio"));
-
-        Assert.assertEquals("AllIdentityTokenizedCount" , JmxDatacollectionConfigGenerator.trimByDictionary("AllIdentityTokenizedCount"));
-
-        Assert.assertEquals("AvgCompRatio" , JmxDatacollectionConfigGenerator.trimByDictionary("AverageCompressionRatio"));
+        Assert.assertEquals("AllIdntToknzCnt" , JmxDatacollectionConfigGenerator.trimByDictionary("AllIdentityTokenizedCount"));
     }
 
     @Test
     public void testTrimByCamelCase() {
         Assert.assertEquals("CommitteVirtMemSize", JmxDatacollectionConfigGenerator.trimByCamelCase("CommittedVirtMemSize", 19));
         Assert.assertEquals("CommiVirtuMemorSize", JmxDatacollectionConfigGenerator.trimByCamelCase("CommittedVirtualMemorySize", 19));
-
-        Assert.assertEquals("AllIdentityTokenizedCount", JmxDatacollectionConfigGenerator.trimByCamelCase("AllIdentityTokenizedCount", 19));
-        Assert.assertEquals("CommiVirtuMemorSize", JmxDatacollectionConfigGenerator.trimByCamelCase("CommittedVirtualMemorySize", 19));
+        Assert.assertEquals("AllIdentTokeniCount", JmxDatacollectionConfigGenerator.trimByCamelCase("AllIdentityTokenizedCount", 19));
     }
 }
