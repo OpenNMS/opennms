@@ -89,7 +89,6 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
     
     @Test
     public void testSetNewValue() throws Exception {
-        
         String url = "/snmpConfig/1.1.1.1";
         // Testing GET Collection
         
