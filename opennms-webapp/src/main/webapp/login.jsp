@@ -34,6 +34,19 @@
   <jsp:param name="title" value="Login" />
   <jsp:param name="nonavbar" value="true" />
 </jsp:include>
+<%
+     if (request.getServletPath().endsWith("login.jsp")) {
+       // generate JavaScript to see if this is needed
+       // if i am in an iframe, go to jmp to login
+%>
+<script type="text/javascript">
+  if (window.top != window.self) {
+    window.top.location = '../mainui/unsecured/logout?appName=CMP';
+  }
+</script>
+<%
+     }
+%>
 
 <%-- this form-login-page form is also used as the 
          form-error-page to ask for a login again.
@@ -62,7 +75,7 @@
     <input name="Login" type="submit" value="Login" />
 
     <script type="text/javascript">
-      if (document.getElementById) {
+      if (window.top == window.self && document.getElementById) {
         document.getElementById('input_j_username').focus();
       }
     </script>

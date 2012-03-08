@@ -217,7 +217,10 @@ final String baseHref = Util.calculateUrlBase( request );
 <div class="onms">
 <h2>
 <c:if test="${((param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)) && param.nobreadcrumbs != 'true'}">
-   <a href="<%= baseHref %>index.jsp">Home</a>
+<%--
+  JMP customization
+--%>
+   Network Monitoring
    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
      <c:if test="${breadcrumb != ''}">
            / <c:out value="${breadcrumb}" escapeXml="false"/>

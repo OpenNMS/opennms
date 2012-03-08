@@ -13,10 +13,10 @@
  */
 
 body, table td, select {
-  font-family: "Lucida Grande", Verdana, sans-serif;
+  font-family: Verdana, Arial, sans-serif;
 }
 pre {
-  font-family: "courier new", courier;
+  font-family: Verdana, Arial, sans-serif;
   font-size: small;
 }
 
@@ -1170,3 +1170,38 @@ td.datePickerMonth {
     border: none;
     background-color: inherit;
 }
+
+/***********   SPACE  modifications *************/
+
+.gwt-TabLayoutPanel {
+	background: transparent;
+	color: black;
+}
+.GALD-WOHC {
+	color: black;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTab-selected {
+     background-image: url("images/grid-paging-background-1x24.png");
+     color: white !important;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTab {
+     background-image: url("images/grid-paging-background-1x24.png");
+     color: Silver;
+}
+
+.onms-table-no-borders-margin td{
+        color: black;
+}
+
+/*  needed for hard-coded bg in Admin->UsersAndGroups */
+body form table a, body form table td  {
+    color: black ;
+}
+
+body form table th a  {
+    color: white !important ;
+}
+
+

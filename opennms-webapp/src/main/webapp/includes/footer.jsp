@@ -75,11 +75,11 @@
     <div id="prefooter"></div>
 
     <div id="footer">
-      <p>
-        OpenNMS <a href="support/about.jsp">Copyright</a> &copy; 2002-2012
+      <p class="jlogofooter">
+<!--        OpenNMS <a href="support/about.jsp">Copyright</a> &copy; 2002-2012
 	    <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
 	    OpenNMS&reg; is a registered trademark of
-        <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
+        <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>  -->
 	  </p>
     </div>
   </c:otherwise>
@@ -98,6 +98,30 @@
 	  }
   }
 %>
+
+
+<%--
+  Pass user session timeout reset events back to JxMainUI.js
+--%>
+<script>
+  if (window.top != window.self) { // inside an iframe
+    document.onclick = function(e) {
+                        if (parent.resetIdle != null)
+                            parent.resetIdle();
+                     }
+
+    document.onkeypress = function(e) {
+                        if (parent.resetIdle != null)
+                            parent.resetIdle();
+                     }
+
+    document.onmousemove = function(e) {
+                        if (parent.resetIdle != null)
+                            parent.resetIdle();
+                     }
+  } 
+</script>
+
 <%-- The </body> and </html> tags are unmatched in this file (the matching
      tags are in the header), so we hide them in JSP code fragments so the
      Eclipse HTML validator doesn't complain.  See bug #1728. --%>

@@ -13,8 +13,9 @@
 
 /* height and width stuff, width not really neccesary. */
 a {
-	color: #366903;
-	text-decoration:none;
+	color: white;
+/*	text-decoration:none;*/
+	text-decoration: underline;
 }
 a:hover {
 	text-decoration: underline;
@@ -22,9 +23,9 @@ a:hover {
 body {
 	margin: 0px;
 	padding: 0px;
-	background: #FFF;
-	color: #000;
-	font-family: "Lucida Grande", Verdana, sans-serif;
+	background: #3a6d88;
+	color: white; /*#000;*/
+	font-family: Verdana, arial, sans-serif;
 }
 p, td, th, li {
 	font-size: 70%;
@@ -55,7 +56,7 @@ form {
 	margin: 0;
 }
 input, select {
-	font-family: "lucida grande", verdana, sans-serif;
+	font-family: Verdana,arial,sans-serif;
 	font-size: 70%;
 }
 p input, p select, li input, li select, td input, td select {
@@ -82,10 +83,10 @@ p h2, td h2 {
 }
 
 h3 {
-	background-image: url(../images/headingbg.png);
+	background-image: url(../images/grid-paging-background-1x24.png);
 	background-repeat: repeat-x;
 	background-position: center center;
-	background-color: #366903;
+	background-color: transparent;
 	color: #FFF;
 	border:1px solid #999;
 	border-bottom: 0;
@@ -121,7 +122,7 @@ span.error {
 	color: #F00;
 }
 div.boxWrapper {
-	background-color: #FFF;
+	background-color: transparent;
 	border: 1px solid #999;
 	border-top: 0;
 	padding: 4px 6px;
@@ -155,13 +156,20 @@ td div.clip {
 
 /* Layouts */
 div.TwoColLeft {
-	width: 40%;
+	width: 40%; /*60%;*/
 	float: left;
 	position: relative;
-	margin-right: 2%;
+	margin-right: 2%; /* 1% */
 }
+div.TwoColLeft table.o-box{
+        word-wrap: break-word\0/; /* ie8,9 */
+        table-layout:fixed\0/;
+        *word-wrap: break-word; /* ie7 */
+        *table-layout:fixed;
+}
+
 div.TwoColRight {
-	width: 57%;
+	width: 57%; /*39%;*/
 	float: left;
 	position: relative;
 }
@@ -244,7 +252,7 @@ div.TwoColRAdmin {
 #nav li a
 {
 	width: 11em;
-	w\idth: 10em;
+	width: 10em;
 	display: block;
 	text-decoration: none;
 	background-color: white;
@@ -270,12 +278,19 @@ div.TwoColRAdmin {
 
 #content {
 	position: relative;
-	background-image: url(../images/mainbg.png);
+ 	background-image: none; 
 	background-repeat: repeat-x;
-	background-color: #EEE;
+	background-color: transparent;
 	margin: 0;
 	padding: 15px 20px 30px 20px;
 }
+
+/* Josy: Add my code here */
+.navbar 
+{
+	display: none;
+}
+/* end of Josy: Add my code here */
 
 .navbar ul
 { 
@@ -383,7 +398,8 @@ th a:hover {
 td {
 	border: 1px solid #999;
 	padding: 4px 5px;
-	background-color: #FFF;
+	background-color: transparent;
+	color: white;
 }
 
 td td, td p {
@@ -526,6 +542,13 @@ td.availcrit
 	background-repeat: repeat-x;
 	color: #FFF;
 }
+
+/* Josy: Add my code here */
+#header {
+	display: none;
+}
+/* end of Josy: Add my code here */
+
 #header a {
 	color:#FFF;
 }
@@ -620,8 +643,13 @@ p.key img {
 	clear: both;
 	text-align: center;
 	padding: 30px 2px 2px 2px;
-	background-image: url(../images/footerbg.png);
-	background-repeat: repeat-x;
+    background-image: url(../images/openNMS3.png);
+    background-repeat: no-repeat;
+    background-position: 100% 25%;
+    background-repeat: no-repeat;
+    background-size: 90px auto;
+    line-height: 2.5em;
+
 }
 
 .status-critical {
@@ -680,10 +708,11 @@ tr.Indeterminate td.divider { border-top: 2px solid #999900 !important; }
 tr.Indeterminate td.bright { background-image: url(../images/bgIndeterminate.png); }
 
 tr.Normal td { background-color: #D7E1CD; }
+tr.Critical td {color: black; }
 tr.Normal td.divider { border-top: 2px solid #336600 !important; }
 tr.Normal td.bright { background-image: url(../images/bgNormal.png); }
 
-tr.Cleared td { background-color: #EEE; }
+tr.Cleared td { background-color: transparent;}
 tr.Cleared td.divider { border-top: 2px solid #999 !important; }
 tr.Cleared td.bright { background-image: url(../images/bgCleared.png); }
 
@@ -691,6 +720,7 @@ tr.CellStatus td {
 	padding-left: 20px;
 	background-position: top left;
 	background-repeat: repeat-y;
+	color: black;
 }
 
 tr.CellStatus td.Critical
@@ -755,8 +785,7 @@ tr.CellStatus td.nobright
         text-align: right;
         margin-top: 5px;
         margin-bottom: 5px;
-        font-size: 90%;
-        float: right;
+        font-size: 70%;        float: right;
 }
 
 .pagination span.page-sep {
@@ -812,74 +841,45 @@ li.pagination {
 }
 
 .stdform p select, .stdform p input, .stdform p option, .stdform p options {
-	font-size: 100%;
+	font-size: 70%;
 }
 
 .stdform .indent {
 	margin-left: 240px;
 }
-
-.onms-table td{
-    background: #ffffff;
+span.filter a  {
+    color: black;
 }
 
-/* Style for list reports */
-
-#o-repository-title {
-	background-image: url(../images/headingbg.png);
-	background-repeat: repeat-x;
-	background-position: center center;
-	color: #fff;
-	font-size: 1em;
-	font-weight: bold;
+.jlogofooter {
+  background-image: url(../images/openNMS3.png);
+      background-repeat: no-repeat;
+    background-position: 100px 25%;
+    background-repeat: no-repeat;
+    background-size: 130px auto;
+    line-height: 2.5em;
 }
 
-#o-report-subscribe {
-	font-weight: bold;
-	color: #a20200;
-	text-align: center;
-	width:20px;
+td.divider nobr a, td.Indeterminate a, td.Normal a, td.Warning a {
+        color: black;
 }
 
-#o-report-online, #o-report-deliver, #o-report-schedule {
-	width: 24px;
-	height: 24px;
-	vertical-align: middle;
-	text-align: center;
+tr.CellStatus td.divider nobr a, tr.CellStatus td.Indeterminate a, tr.CellStatus td.Normal a, tr.CellStatus td.Warning a, tr.CellStatus td.Critical a {
+        color: black;
 }
 
-#o-report-online a {
-	background:url(../images/reportOnline_grey.png);
-	background-repeat:no-repeat;
-	width: 24px;
-	height: 24px;
-	display:block;
+tr.Indeterminate td, tr.Normal td , tr.Warning td , tr.Minor td , tr.Major td, tr.Critical td  {
+        color: black;
+}
+tr.Indeterminate td a, tr.Normal td a, tr.Warning td a, tr.Minor td a, tr.Major td a , tr.Critical td a {
+        color: black;
 }
 
-#o-report-online a:hover {
-	background: url(../images/reportOnline.png);
+tr.Cleared td.divider a, td nobr a {
+        color: white;
 }
 
-#o-report-deliver a {
-	background:url(../images/reportDeliver_grey.png);
-	background-repeat:no-repeat;
-	width: 24px;
-	height: 24px;
-	display:block;
+.GALD-WOGF{
+        color: black !important;
 }
 
-#o-report-deliver a:hover {
-	background: url(../images/reportDeliver.png);
-}
-
-#o-report-schedule a {
-	background:url(../images/reportSchedule_grey.png);
-	background-repeat:no-repeat;
-	width: 24px;
-	height: 24px;
-	display:block;
-}
-
-#o-report-schedule a:hover {
-	background: url(../images/reportSchedule.png);
-}
