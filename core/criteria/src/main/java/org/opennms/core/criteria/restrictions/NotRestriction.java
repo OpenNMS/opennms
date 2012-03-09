@@ -1,9 +1,5 @@
 package org.opennms.core.criteria.restrictions;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.springframework.core.style.ToStringCreator;
-
 public class NotRestriction extends BaseRestriction {
 
 	private final Restriction m_restriction;
@@ -17,37 +13,36 @@ public class NotRestriction extends BaseRestriction {
 		return m_restriction;
 	}
 
-	public org.hibernate.criterion.Criterion toCriterion() {
-		return org.hibernate.criterion.Restrictions.not(getRestriction().toCriterion());
+	public void visit(final RestrictionVisitor visitor) {
+		visitor.visitNot(this);
+		getRestriction().visit(visitor);
+		visitor.visitNotComplete(this);
 	}
-
-    @Override
+	
+	@Override
 	public int hashCode() {
-		return new HashCodeBuilder()
-			.appendSuper(super.hashCode())
-			.append(m_restriction)
-			.toHashCode();
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((m_restriction == null) ? 0 : m_restriction.hashCode());
+		return result;
 	}
 
-    @Override
-    public boolean equals(final Object obj) {
-            if (obj == null) { return false; }
-            if (obj == this) { return true; }
-            if (obj.getClass() != getClass()) {
-            	return false;
-            }
-            final NotRestriction that = (NotRestriction) obj;
-            return new EqualsBuilder()
-            	.appendSuper(super.equals(obj))
-            	.append(this.getRestriction(), that.getRestriction())
-            	.isEquals();
-    }
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		if (!(obj instanceof NotRestriction)) return false;
+		final NotRestriction other = (NotRestriction) obj;
+		if (m_restriction == null) {
+			if (other.m_restriction != null) return false;
+		} else if (!m_restriction.equals(other.m_restriction)) {
+			return false;
+		}
+		return true;
+	}
 
-    @Override
-    public String toString() {
-    	return new ToStringCreator(this)
-    		.append("type", getType())
-    		.append("restriction", m_restriction)
-    		.toString();
-    }
+	@Override
+	public String toString() {
+		return "NotRestriction [restriction=" + m_restriction + "]";
+	}
 }

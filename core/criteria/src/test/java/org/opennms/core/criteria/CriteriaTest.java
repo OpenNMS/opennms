@@ -8,21 +8,27 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.criteria.Criteria.FetchType;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 public class CriteriaTest {
 
 	private static final Order[] EMPTY_ORDER_ARRAY = new Order[0];
+
+	@Before
+	public void setUp() {
+		LogUtils.logToConsole();
+		LogUtils.enableDebugging();
+	}
 
 	@Test
 	public void testBuilder() {
@@ -37,20 +43,35 @@ public class CriteriaTest {
 
 		final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 
+		// ascending
 		cb.orderBy("firstEventTime");
 		orders.add(Order.asc("firstEventTime"));
 		assertArrayEquals(orders.toArray(EMPTY_ORDER_ARRAY), cb.toCriteria().getOrders().toArray(EMPTY_ORDER_ARRAY));
 
-		cb.desc();
+		// descending
+		cb.clearOrder();
 		orders.clear();
+		cb.orderBy("firstEventTime").desc();
 		orders.add(Order.desc("firstEventTime"));
 		assertArrayEquals(orders.toArray(), cb.toCriteria().getOrders().toArray());
 
+		// multiple unrelated attributes, using .desc()
+		cb.clearOrder();
+		orders.clear();
+		cb.orderBy("firstEventTime").desc();
 		cb.orderBy("id").desc();
+		orders.add(Order.desc("firstEventTime"));
 		orders.add(Order.desc("id"));
 		assertArrayEquals(orders.toArray(), cb.toCriteria().getOrders().toArray());
 
-		// should be ignored, adding "id" should have already frozen firstEventTime
+		assertEquals(Order.asc("firstEventTime"), Order.desc("firstEventTime"));
+		cb.clearOrder();
+		orders.clear();
+		cb.orderBy("firstEventTime").desc();
+		cb.orderBy("id").desc();
+		orders.add(Order.desc("firstEventTime"));
+		orders.add(Order.desc("id"));
+		// this should be ignored, we already have an orderBy=firstEventTime
 		cb.orderBy("firstEventTime").asc();
 		assertArrayEquals(orders.toArray(), cb.toCriteria().getOrders().toArray());
 
@@ -69,8 +90,8 @@ public class CriteriaTest {
 		final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 
 		cb.fetch("firstEvent").fetch("lastEvent").fetch("distPoller", FetchType.LAZY);
-		assertEquals(FetchType.DEFAULT, cb.toCriteria().getFetchTypes().get("firstEvent"));
-		assertEquals(FetchType.LAZY, cb.toCriteria().getFetchTypes().get("distPoller"));
+		assertEquals(FetchType.DEFAULT, cb.toCriteria().getFetchTypes().get(0).getFetchType());
+		assertEquals(FetchType.LAZY, cb.toCriteria().getFetchTypes().get(2).getFetchType());
 	}
 	
 	@Test
@@ -113,7 +134,7 @@ public class CriteriaTest {
 	public void testRestrictions() {
 		CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 		
-		final Set<Restriction> expected = new LinkedHashSet<Restriction>();
+		final List<Restriction> expected = new ArrayList<Restriction>();
 		expected.add(Restrictions.isNull("tticketId"));
 		expected.add(Restrictions.isNotNull("severity"));
 		cb.isNull("tticketId").isNotNull("severity");

@@ -1,11 +1,11 @@
 package org.opennms.core.criteria;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.springframework.core.style.ToStringCreator;
-
-public class Order implements Comparable<Order> {
+public class Order {
+	public static interface OrderVisitor {
+		public void visitAttribute(final String attribute);
+		public void visitAscending(final boolean ascending);
+	}
+	
 	private final String m_attribute;
 	private final boolean m_ascending;
 
@@ -14,6 +14,11 @@ public class Order implements Comparable<Order> {
 		m_ascending = ascending;
 	}
 
+	public void visit(final OrderVisitor visitor) {
+		visitor.visitAttribute(getAttribute());
+		visitor.visitAscending(asc());
+	}
+	
 	public String getAttribute() {
 		return m_attribute;
 	}
@@ -34,40 +39,35 @@ public class Order implements Comparable<Order> {
 		return new Order(attribute, false);
 	}
 
+	/* we don't include m_ascending since a single order attribute should only be used once */
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(m_attribute)
-			.append(m_ascending)
-			.toHashCode();
+		final int prime = 31;
+		int result = 1;
+		// result = prime * result + (m_ascending ? 1231 : 1237);
+		result = prime * result + ((m_attribute == null) ? 0 : m_attribute.hashCode());
+		return result;
 	}
 
+	/* we don't include m_ascending since a single order attribute should only be used once */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) { return false; }
-		if (obj == this) { return true; }
-		if (obj.getClass() != getClass()) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Order)) return false;
+		final Order other = (Order) obj;
+		// if (m_ascending != other.m_ascending) return false;
+		if (m_attribute == null) {
+			if (other.m_attribute != null) return false;
+		} else if (!m_attribute.equals(other.m_attribute)) {
 			return false;
 		}
-		final Order that = (Order) obj;
-		return new EqualsBuilder()
-			.append(this.asc(), that.asc())
-			.append(this.getAttribute(), that.getAttribute())
-			.isEquals();
-	}
-	
-	@Override
-	public int compareTo(final Order that) {
-		return new CompareToBuilder()
-			.append(this.getAttribute(), that.getAttribute())
-			.toComparison();
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this)
-			.append("attribute", m_attribute)
-			.append("order", (m_ascending? "asc" : "desc"))
-			.toString();
+		return "Order [attribute=" + m_attribute + ", ascending=" + m_ascending + "]";
 	}
+
 }
