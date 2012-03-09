@@ -104,14 +104,14 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	
 	@Test
 	public void testNodes() throws Exception {
-		Map<String, Object> parameters = new HashMap<String, Object>();
+	    final Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("comparator", "ilike");
 		parameters.put("match", "any");
 		parameters.put("label", "1%");
 		parameters.put("ipInterface.ipAddress", "1%");
 		parameters.put("ipInterface.ipHostName", "1%");
 		String xml = sendRequest(GET, "/nodes", parameters, 200);
-		assertTrue(xml.contains("<node id=\"1\""));
+		assertTrue(xml.contains("<node "));
 		assertTrue(xml.contains("label=\"node1\""));
 
 		parameters.clear();
