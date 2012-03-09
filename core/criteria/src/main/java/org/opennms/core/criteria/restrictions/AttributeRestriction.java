@@ -1,10 +1,6 @@
 package org.opennms.core.criteria.restrictions;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.springframework.core.style.ToStringCreator;
-
-public class AttributeRestriction extends BaseRestriction {
+public abstract class AttributeRestriction extends BaseRestriction {
 	private final String m_attribute;
 	
 	public AttributeRestriction(final RestrictionType type, final String attribute) {
@@ -16,42 +12,32 @@ public class AttributeRestriction extends BaseRestriction {
 		return m_attribute;
 	}
 
-	public org.hibernate.criterion.Criterion toCriterion() {
-		switch(getType()) {
-			case NULL: return org.hibernate.criterion.Restrictions.isNull(getAttribute());
-			case NOTNULL: return org.hibernate.criterion.Restrictions.isNotNull(getAttribute());
-			case SQL: return org.hibernate.criterion.Restrictions.sqlRestriction(getAttribute());
-		}
-		throw new UnsupportedOperationException("unknown type: " + getType());
-	}
-	
+    protected static String lower(final String string) {
+    	return string == null? null : string.toLowerCase();
+    }
+
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder()
-			.appendSuper(super.hashCode())
-			.append(lower(m_attribute))
-			.toHashCode();
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((m_attribute == null) ? 0 : m_attribute.hashCode());
+		return result;
 	}
 
-    @Override
-    public boolean equals(final Object obj) {
-            if (obj == null) { return false; }
-            if (obj == this) { return true; }
-            if (obj.getClass() != getClass()) {
-                    return false;
-            }
-            final AttributeRestriction that = (AttributeRestriction) obj;
-            return new EqualsBuilder()
-            	.appendSuper(super.equals(obj))
-            	.append(lower(this.getAttribute()), lower(that.getAttribute()))
-            	.isEquals();
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		if (!(obj instanceof AttributeRestriction)) return false;
+		final AttributeRestriction other = (AttributeRestriction) obj;
+		if (m_attribute == null) {
+			if (other.m_attribute != null) return false;
+		} else if (!m_attribute.equals(other.m_attribute)) return false;
+		return true;
+	}
 
-    @Override
-    public String toString() {
-    	return new ToStringCreator(this)
-    		.append("type", getType())
-    		.append("attribute", getAttribute())
-    		.toString();
-    }
+	@Override
+	public String toString() {
+		return "AttributeRestriction [type=" + getType() + ", attribute=" + m_attribute + "]";
+	}
 }

@@ -14,6 +14,7 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,11 +54,19 @@ public class HibernateCriteriaConverterTest {
     }
 
 	@Test
-	public void testNode() {
+	public void testNodeQuery() throws Exception {
+		List<OnmsNode> nodes;
+
+		// first, try with OnmsCriteria
+		final OnmsCriteria crit = new OnmsCriteria(OnmsNode.class);
+		crit.add(org.hibernate.criterion.Restrictions.isNotNull("id"));
+		nodes = m_nodeDao.findMatching(crit);
+		assertEquals(6, nodes.size());
+
+		// then the same with the builder
 		final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
 		cb.isNotNull("id");
-		
-		List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
+		nodes = m_nodeDao.findMatching(cb.toCriteria());
 		assertEquals(6, nodes.size());
 		
 		cb.eq("label", "node1").join("ipInterfaces", "ipInterface").eq("ipInterface.ipAddress", "192.168.1.1");
@@ -66,7 +75,7 @@ public class HibernateCriteriaConverterTest {
 	}
 
     @Test
-    public void testNodeIlike() {
+    public void testNodeIlikeQuery() {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.isNotNull("id").eq("label", "node1").alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN).ilike("ipInterface.ipAddress", "1%");
         final List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
@@ -75,7 +84,7 @@ public class HibernateCriteriaConverterTest {
 
 	@Test
 	@Transactional
-	public void testDistinct() {
+	public void testDistinctQuery() {
 		List<OnmsNode> nodes = null;
 
 		final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);

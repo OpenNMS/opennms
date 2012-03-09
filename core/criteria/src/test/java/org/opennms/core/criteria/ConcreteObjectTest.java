@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.criteria.Alias.JoinType;
-import org.opennms.core.criteria.Criteria.FetchType;
+import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsIpInterface;

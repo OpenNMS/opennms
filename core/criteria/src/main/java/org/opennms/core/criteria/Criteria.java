@@ -11,45 +11,74 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.opennms.core.criteria.restrictions.Restriction;
-import org.springframework.core.style.ToStringCreator;
 
 public class Criteria {
+	public static interface CriteriaVisitor {
+		public void visitClass(final Class<?> clazz);
+
+		public void visitOrder(final Order order);
+		public void visitOrdersFinished();
+
+		public void visitAlias(final Alias alias);
+		public void visitAliasesFinished();
+		
+		public void visitFetch(final Fetch fetch);
+		public void visitFetchesFinished();
+		
+		public void visitRestriction(final Restriction restriction);
+		public void visitRestrictionsFinished();
+
+		public void visitDistinct(final boolean distinct);
+		public void visitLimit(final Integer limit);
+		public void visitOffset(final Integer offset);
+	}
+
+	public void visit(final CriteriaVisitor visitor) {
+		visitor.visitClass(getCriteriaClass());
+
+		for (final Order order : getOrders()) {
+			visitor.visitOrder(order);
+		}
+		visitor.visitOrdersFinished();
+		
+		for (final Alias alias : getAliases()) {
+			visitor.visitAlias(alias);
+		}
+		visitor.visitAliasesFinished();
+		
+		for (final Fetch fetch : getFetchTypes()) {
+			visitor.visitFetch(fetch);
+		}
+		visitor.visitFetchesFinished();
+		
+		for (final Restriction restriction : getRestrictions()) {
+			visitor.visitRestriction(restriction);
+		}
+		visitor.visitRestrictionsFinished();
+		
+		visitor.visitDistinct(isDistinct());
+		visitor.visitLimit(getLimit());
+		visitor.visitOffset(getOffset());
+	}
+
+
 	private static final Pattern SPLIT_ON = Pattern.compile("\\.");
 
-	public enum FetchType { DEFAULT, LAZY, EAGER }
 	private Class<?> m_class;
 	private List<Order> m_orders = new ArrayList<Order>();
 	private List<Alias> m_aliases = new ArrayList<Alias>();
-	private Map<String,FetchType> m_fetchTypes = new HashMap<String,FetchType>();
+	private Set<Fetch> m_fetchTypes = new LinkedHashSet<Fetch>();
 	private Set<Restriction> m_restrictions = new LinkedHashSet<Restriction>();
 	private boolean m_distinct = false;
 	private Integer m_limit = null;
 	private Integer m_offset = null;
-	private String m_matchType = "all";
-
-	@Override
-	public String toString() {
-		return new ToStringCreator(this)
-			.append("class", m_class)
-			.append("orders", m_orders)
-			.append("aliases", m_aliases)
-			.append("fetchTypes", m_fetchTypes)
-			.append("restrictions", m_restrictions)
-			.append("distinct", m_distinct)
-			.append("limit", m_limit)
-			.append("offset", m_offset)
-			.append("matchType", m_matchType)
-			.toString();
-	}
 
 	public Criteria(final Class<?> clazz) {
 		m_class = clazz;
@@ -59,46 +88,38 @@ public class Criteria {
 		return m_class;
 	}
 
-	public String getMatchType() {
-		return m_matchType;
-	}
-
-	public void setMatchType(final String type) {
-		m_matchType = type;
-	}
-
 	public List<Order> getOrders() {
 		return Collections.unmodifiableList(m_orders);
 	}
 
-	public void setOrders(final Collection<Order> orderCollection) {
+	public void setOrders(final Collection<? extends Order> orderCollection) {
 		m_orders.clear();
 		m_orders.addAll(orderCollection);
 	}
 
-	public Map<String,FetchType> getFetchTypes() {
-		return Collections.unmodifiableMap(m_fetchTypes);
+	public List<Fetch> getFetchTypes() {
+		return Collections.unmodifiableList(new ArrayList<Fetch>(m_fetchTypes));
 	}
 
-	public void setFetchTypes(final Map<String, FetchType> types) {
+	public void setFetchTypes(final Collection<? extends Fetch> fetchTypes) {
 		m_fetchTypes.clear();
-		m_fetchTypes.putAll(types);
+		m_fetchTypes.addAll(fetchTypes);
 	}
 
 	public List<Alias> getAliases() {
 		return Collections.unmodifiableList(m_aliases);
 	}
 
-	public void setAliases(final Collection<Alias> aliases) {
+	public void setAliases(final Collection<? extends Alias> aliases) {
 		m_aliases.clear();
 		m_aliases.addAll(aliases);
 	}
 
-	public Set<Restriction> getRestrictions() {
-		return Collections.unmodifiableSet(m_restrictions);
+	public List<Restriction> getRestrictions() {
+		return Collections.unmodifiableList(new ArrayList<Restriction>(m_restrictions));
 	}
 
-	public void setRestrictions(Collection<Restriction> restrictions) {
+	public void setRestrictions(Collection<? extends Restriction> restrictions) {
 		m_restrictions.clear();
 		m_restrictions.addAll(restrictions);
 	}
@@ -208,6 +229,15 @@ public class Criteria {
 			}
 		}
 		return new Type[0];
+	}
+
+	@Override
+	public String toString() {
+		return "Criteria [class=" + m_class + ", orders=" + m_orders
+				+ ", aliases=" + m_aliases + ", fetchTypes=" + m_fetchTypes
+				+ ", restrictions=" + m_restrictions + ", distinct="
+				+ m_distinct + ", limit=" + m_limit + ", offset="
+				+ m_offset + "]";
 	}
 
 }

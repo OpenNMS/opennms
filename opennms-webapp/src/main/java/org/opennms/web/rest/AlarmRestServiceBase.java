@@ -6,10 +6,10 @@ import java.util.regex.Pattern;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.criteria.Alias.JoinType;
-import org.opennms.core.criteria.Criteria.FetchType;
+import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
