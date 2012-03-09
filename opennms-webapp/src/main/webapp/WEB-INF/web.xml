@@ -13,9 +13,11 @@
 		 
   <display-name>opennms</display-name>
 
+  <!-- Uncomment this to set the webapp timeout to infinite.
   <session-config>
     <session-timeout>-1</session-timeout>
   </session-config>
+  -->
   
   <context-param>
     <param-name>dontBlameOpenNMS</param-name>
@@ -47,7 +49,7 @@
         /WEB-INF/applicationContext-spring-security.xml
         /WEB-INF/applicationContext-jersey.xml
         /WEB-INF/applicationContext-spring-webflow.xml
-
+        <!-- WARMERGE: insert contextConfigLocation -->
     </param-value>
   </context-param>
   
@@ -56,6 +58,7 @@
     <param-value>daoContext</param-value>
   </context-param>
 
+  <!-- WARMERGE: insert context-param -->  
 
   <filter>
     <!--  note the name of this filter is important and is used in the app contexts -->
@@ -140,11 +143,7 @@
     </init-param>
   </filter>
 
-  <filter>
-    <filter-name>cache-filter</filter-name>
-    <filter-class>org.opennms.features.poller.remote.gwt.CacheFilter</filter-class>
-  </filter>
-
+  <!-- WARMERGE: insert filter -->
 
   <filter-mapping>
     <filter-name>openSessionInViewFilter</filter-name>
@@ -224,11 +223,7 @@
     <url-pattern>*.jnlp</url-pattern>
   </filter-mapping>
 
-  <filter-mapping>
-    <filter-name>cache-filter</filter-name>
-    <url-pattern>/RemotePollerMap/*</url-pattern>
-  </filter-mapping>
-
+  <!-- WARMERGE: insert filter-mapping -->
 
   <listener>
     <!-- This listener handles our custom startup/shutdown behavior. -->
@@ -263,6 +258,7 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   
+  <!-- WARMERGE: insert listener -->
 
   <!-- ==================================================================== -->
   <!-- The default servlet.                                                 -->
@@ -434,7 +430,7 @@
     <init-param>
       <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
-      <param-value>../../asset/nodelist.jsp?column=address1&amp;searchvalue=</param-value>
+      <param-value>../../asset/nodelist.jsp?column=_allNonEmpty</param-value>
     </init-param>
   </servlet>
   <servlet>
@@ -1111,27 +1107,8 @@
         <url-pattern>/graph/graph.png</url-pattern>
   </servlet-mapping>
 
-  <servlet>
-    <servlet-name>EventService</servlet-name>
-    <servlet-class>de.novanic.eventservice.service.EventServiceImpl</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>LocationStatusService</servlet-name>
-    <servlet-class>org.opennms.features.poller.remote.gwt.server.LocationStatusServiceImpl</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>EventService</servlet-name>
-    <url-pattern>/RemotePollerMap/gwteventservice</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>LocationStatusService</servlet-name>
-    <url-pattern>/RemotePollerMap/locationStatus</url-pattern>
-  </servlet-mapping>
-
+  <!-- WARMERGE: insert servlet -->  
+  <!-- WARMERGE: insert servlet-mapping -->  
 
   <error-page>
     <exception-type>org.opennms.web.category.CategoryNotFoundException</exception-type>
