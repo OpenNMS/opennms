@@ -4,7 +4,9 @@ import java.util.List;
 
 public class Restrictions {
 
-	public static NullRestriction isNull(final String attribute) {
+	private static final Restriction[] EMPTY_RESTRICTION_ARRAY = new Restriction[0];
+
+    public static NullRestriction isNull(final String attribute) {
 		return new NullRestriction(attribute);
 	}
 	
@@ -19,6 +21,10 @@ public class Restrictions {
 	public static EqRestriction eq(final String attribute, final Object comparator) {
 		return new EqRestriction(attribute, comparator);
 	}
+
+    public static Restriction ne(final String attribute, final Object comparator) {
+        return new NeRestriction(attribute, comparator);
+    }
 
 	public static GtRestriction gt(final String attribute, final Object comparator) {
 		return new GtRestriction(attribute, comparator);
@@ -68,13 +74,21 @@ public class Restrictions {
 		return new AnyRestriction(lhs, rhs);
 	}
 
-	public static AllRestriction all(final Restriction... restrictions) {
-		return new AllRestriction(restrictions);
-	}
+    public static AllRestriction all(final Restriction... restrictions) {
+        return new AllRestriction(restrictions);
+    }
+
+    public static AllRestriction all(final List<Restriction> restrictions) {
+        return new AllRestriction(restrictions.toArray(EMPTY_RESTRICTION_ARRAY));
+    }
 
 	public static AnyRestriction any(final Restriction... restrictions) {
 		return new AnyRestriction(restrictions);
 	}
+
+    public static AnyRestriction any(final List<Restriction> restrictions) {
+        return new AnyRestriction(restrictions.toArray(EMPTY_RESTRICTION_ARRAY));
+    }
 
 	public static AttributeRestriction sql(final String sql) {
 		return new SqlRestriction(sql);

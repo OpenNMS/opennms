@@ -5,8 +5,10 @@ public interface RestrictionVisitor {
 	public void visitNullComplete(final NullRestriction restriction);
 	public void visitNotNull(final NotNullRestriction restriction);
 	public void visitNotNullComplete(final NotNullRestriction restriction);
-	public void visitEq(final EqRestriction restriction);
-	public void visitEqComplete(final EqRestriction restriction);
+    public void visitEq(final EqRestriction restriction);
+    public void visitEqComplete(final EqRestriction restriction);
+    public void visitNe(final NeRestriction restriction);
+    public void visitNeComplete(final NeRestriction restriction);
 	public void visitGt(final GtRestriction restriction);
 	public void visitGtComplete(final GtRestriction restriction);
 	public void visitGe(final GeRestriction restriction);

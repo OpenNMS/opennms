@@ -32,6 +32,7 @@ import org.opennms.core.criteria.restrictions.IplikeRestriction;
 import org.opennms.core.criteria.restrictions.LeRestriction;
 import org.opennms.core.criteria.restrictions.LikeRestriction;
 import org.opennms.core.criteria.restrictions.LtRestriction;
+import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.criteria.restrictions.NotRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
@@ -215,10 +216,15 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 			m_criterions.add(org.hibernate.criterion.Restrictions.isNotNull(restriction.getAttribute()));
 		}
 
-		@Override
-		public void visitEq(final EqRestriction restriction) {
-			m_criterions.add(org.hibernate.criterion.Restrictions.eq(restriction.getAttribute(), restriction.getValue()));
-		}
+        @Override
+        public void visitEq(final EqRestriction restriction) {
+            m_criterions.add(org.hibernate.criterion.Restrictions.eq(restriction.getAttribute(), restriction.getValue()));
+        }
+
+        @Override
+        public void visitNe(final NeRestriction restriction) {
+            m_criterions.add(org.hibernate.criterion.Restrictions.ne(restriction.getAttribute(), restriction.getValue()));
+        }
 
 		@Override
 		public void visitGt(final GtRestriction restriction) {

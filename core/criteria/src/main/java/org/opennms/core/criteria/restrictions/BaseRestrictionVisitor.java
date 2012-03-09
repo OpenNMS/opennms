@@ -6,8 +6,10 @@ public class BaseRestrictionVisitor implements RestrictionVisitor {
 	@Override public void visitNullComplete(final NullRestriction restriction) {}
 	@Override public void visitNotNull(final NotNullRestriction restriction) {}
 	@Override public void visitNotNullComplete(final NotNullRestriction restriction) {}
-	@Override public void visitEq(final EqRestriction restriction) {}
-	@Override public void visitEqComplete(final EqRestriction restriction) {}
+    @Override public void visitEq(final EqRestriction restriction) {}
+    @Override public void visitEqComplete(final EqRestriction restriction) {}
+    @Override public void visitNe(final NeRestriction restriction) {}
+    @Override public void visitNeComplete(final NeRestriction restriction) {}
 	@Override public void visitGt(final GtRestriction restriction) {}
 	@Override public void visitGtComplete(final GtRestriction restriction) {}
 	@Override public void visitGe(final GeRestriction restriction) {}
