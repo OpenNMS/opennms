@@ -30,8 +30,8 @@ package org.opennms.netmgt.vulnscand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
-import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -55,7 +55,7 @@ final class BroadcastEventProcessor implements EventListener {
      * The location where suspectInterface events are enqueued for processing.
      */
     @SuppressWarnings("unused")
-    private final FifoQueue<Runnable> m_suspectQ;
+    private final ExecutorService m_suspectExecutor;
 
     /**
      * The Vulnscand rescan scheduler
@@ -82,16 +82,16 @@ final class BroadcastEventProcessor implements EventListener {
      * the endpoint for broadcast events. When a new event arrives it is
      * processed and the appropriate action is taken.
      * 
-     * @param suspectQ
+     * @param suspectExecutor
      *            The queue where new Runnable objects are enqueued for
      *            running..
      * @param scheduler
      *            Rescan scheduler.
      * 
      */
-    BroadcastEventProcessor(FifoQueue<Runnable> suspectQ, Object scheduler) {
+    BroadcastEventProcessor(ExecutorService suspectExecutor, Object scheduler) {
         // Suspect queue
-        m_suspectQ = suspectQ;
+        m_suspectExecutor = suspectExecutor;
 
         // Scheduler
         m_scheduler = scheduler;

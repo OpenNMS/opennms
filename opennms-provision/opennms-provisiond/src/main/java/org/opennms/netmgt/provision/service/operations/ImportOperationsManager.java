@@ -48,13 +48,20 @@ import org.opennms.netmgt.provision.service.RequisitionAccountant;
 import org.opennms.netmgt.provision.service.ProvisionService;
 
 /**
- * This nodes job is to tracks nodes that need to be deleted, added, or changed
+ * This class tracks nodes that need to be deleted, inserted, or updated during
+ * provisioning import operations.
  *
  * @author david
  */
 public class ImportOperationsManager {
     
-	private final List<ImportOperation> m_inserts = new LinkedList<ImportOperation>();
+    /**
+     * TODO: Seth 2012-03-08: These lists may consume a lot of RAM for large provisioning 
+     * groups. We may need to figure out how to use flyweight objects instead of heavier 
+     * {@link OnmsNode} objects in these lists. Our goal is to handle 50,000+ nodes per 
+     * import operation.
+     */
+    private final List<ImportOperation> m_inserts = new LinkedList<ImportOperation>();
     private final List<ImportOperation> m_updates = new LinkedList<ImportOperation>();
     
     private final ProvisionService m_provisionService;
@@ -159,7 +166,7 @@ public class ImportOperationsManager {
     	return m_foreignIdToNodeMap.size();
     }
     
-    class DeleteIterator implements Iterator<ImportOperation> {
+    private class DeleteIterator implements Iterator<ImportOperation> {
     	
     	private final Iterator<Entry<String, Integer>> m_foreignIdIterator = m_foreignIdToNodeMap.entrySet().iterator();
 
@@ -179,7 +186,7 @@ public class ImportOperationsManager {
     	
     }
     
-    class OperationIterator implements Iterator<ImportOperation>, Enumeration<ImportOperation> {
+    private class OperationIterator implements Iterator<ImportOperation>, Enumeration<ImportOperation> {
     	
     	Iterator<Iterator<ImportOperation>> m_iterIter;
     	Iterator<ImportOperation> m_currentIter;

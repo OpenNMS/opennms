@@ -36,8 +36,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
@@ -57,9 +59,6 @@ import org.springframework.util.StringUtils;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
     /**
@@ -80,7 +79,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * The thread pool handling the events
      */
-    private RunnableConsumerThreadPool m_eventHandlerPool;
+    private ExecutorService m_eventHandlerPool;
 
     private EventHandler m_eventHandler;
 
@@ -252,14 +251,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.notNull(eventLog, "eventLog argument cannot be null");
 
         try {
-            m_eventHandlerPool.getRunQueue().add(m_eventHandler.createRunnable(eventLog));
-        } catch (InterruptedException e) {
+            m_eventHandlerPool.execute(m_eventHandler.createRunnable(eventLog));
+        } catch (RejectedExecutionException e) {
             log().warn("Unable to queue event log to the event handler pool queue: " + e, e);
-
-            throw new UndeclaredEventException(e);
-        } catch (FifoQueueException e) {
-            log().warn("Unable to queue event log to the event handler pool queue: " + e, e);
-
             throw new UndeclaredEventException(e);
         }
     }
@@ -514,8 +508,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.state(m_eventHandler != null, "eventHandler not set");
         Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
         
-        m_eventHandlerPool = new RunnableConsumerThreadPool("EventHandlerPool", 0.6f, 1.0f, m_handlerPoolSize);
-        m_eventHandlerPool.start();
+        m_eventHandlerPool = Executors.newFixedThreadPool(m_handlerPoolSize);
         
         // If the proxy is set, make this class its delegate.
         if (m_eventIpcManagerProxy != null) {
