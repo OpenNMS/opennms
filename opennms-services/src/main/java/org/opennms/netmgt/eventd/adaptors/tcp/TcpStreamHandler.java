@@ -200,7 +200,6 @@ final class TcpStreamHandler implements Runnable {
                 tchunker.wait();
             } catch (final InterruptedException e) {
             	LogUtils.errorf(this, e, "The thread was interrupted.");
-            	Thread.currentThread().interrupt();
             }
         }
 
@@ -214,7 +213,6 @@ final class TcpStreamHandler implements Runnable {
                             pipeXchange.wait(500);
                         } catch (final InterruptedException e) {
                             LogUtils.errorf(this, e, "The thread was interrupted.");
-                            Thread.currentThread().interrupt();
                             break MAINLOOP;
                         }
                     } else {
@@ -431,7 +429,6 @@ final class TcpStreamHandler implements Runnable {
             LogUtils.debugf(this, "record handler stopped");
         } catch (final InterruptedException e) {
             LogUtils.warnf(this, e, "The thread was interrupted while trying to close the record handler.");
-            Thread.currentThread().interrupt();
         }
 
         // regardless of any errors, be sure to release the socket.

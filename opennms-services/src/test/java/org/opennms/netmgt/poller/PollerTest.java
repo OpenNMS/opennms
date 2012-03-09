@@ -1184,7 +1184,6 @@ public class PollerTest {
 		try {
 			Thread.sleep(millis);
 		} catch (final InterruptedException e) {
-			Thread.currentThread().interrupt();
 		}
 	}
 

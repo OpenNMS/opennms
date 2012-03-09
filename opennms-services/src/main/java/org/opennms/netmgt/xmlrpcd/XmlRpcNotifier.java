@@ -677,9 +677,8 @@ public final class XmlRpcNotifier {
 
                 try {
                     Thread.sleep(m_elapseTime);
-                } catch (InterruptedException ie) {
+                } catch (final InterruptedException ie) {
                 	LogUtils.infof(this, ie, "Interrupted while waiting to retry.");
-                	Thread.currentThread().interrupt();
                 }
             }
 
