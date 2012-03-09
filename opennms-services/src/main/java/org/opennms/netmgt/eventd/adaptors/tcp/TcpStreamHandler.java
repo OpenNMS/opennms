@@ -61,7 +61,7 @@ import org.xml.sax.InputSource;
 /**
  * Provides the logic and context of execution necessary to actually process a
  * client's event XML document. When a new stream handler is created and
- * assigned to an execution context it will unmarshall the remote document. The
+ * assigned to an execution context it will unmarshal the remote document. The
  * events from the remote document are then passed to the registered event
  * handlers. All successfully processed events are acknowledged to the client by
  * the generation of an XML event receipt.
