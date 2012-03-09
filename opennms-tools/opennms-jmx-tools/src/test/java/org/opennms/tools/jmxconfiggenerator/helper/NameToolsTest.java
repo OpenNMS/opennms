@@ -21,47 +21,48 @@
  *
  * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
  * http://www.opennms.org/ http://www.opennms.com/
- ******************************************************************************
+ * *****************************************************************************
  */
-package org.opennms.tools.jmxconfiggenerator.jmxconfig;
+package org.opennms.tools.jmxconfiggenerator.helper;
 
-import java.io.IOException;
-import javax.management.AttributeNotFoundException;
-import javax.management.MBeanException;
 import org.junit.*;
-import org.opennms.tools.jmxconfiggenerator.graphs.SnmpGraphConfigGenerator;
 
 /**
- * @author Simon Walter <simon.walter@hp-factory.de>
+ *
  * @author Markus Neumann <markus@opennms.com>
  */
-public class JmxDatacollectionConfigGeneratorTest {
+public class NameToolsTest {
+
+    public NameToolsTest() {
+    }
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void setUpClass() throws Exception {
     }
 
     @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    public static void tearDownClass() throws Exception {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
     }
 
-    @Ignore
     @Test
-    public void testGenerateJmxConfig() throws AttributeNotFoundException, MBeanException {
-        JmxDatacollectionConfigGenerator.generateJmxConfig("cassandra", "localhost", "7199", null, null, true, "test.xml");
+    public void testTrimByDictionary() {
+        Assert.assertEquals("CommitVirtMemSize", NameTools.trimByDictionary("CommittedVirtualMemorySize"));
+        Assert.assertEquals("AvgCompRatio" , NameTools.trimByDictionary("AverageCompressionRatio"));
+        Assert.assertEquals("AllIdntToknzCnt" , NameTools.trimByDictionary("AllIdentityTokenizedCount"));
     }
 
-    @Ignore
     @Test
-    public void testGenerateGraphs() throws IOException {
-        SnmpGraphConfigGenerator.generateGraphs("cassandra", "test.xml", "wtf.properties");
+    public void testTrimByCamelCase() {
+        Assert.assertEquals("CommitteVirtMemSize", NameTools.trimByCamelCase("CommittedVirtMemSize", 19));
+        Assert.assertEquals("CommiVirtuMemorSize", NameTools.trimByCamelCase("CommittedVirtualMemorySize", 19));
+        Assert.assertEquals("AllIdentTokeniCount", NameTools.trimByCamelCase("AllIdentityTokenizedCount", 19));
     }
 }
