@@ -13,11 +13,9 @@
 		 
   <display-name>opennms</display-name>
 
-  <!-- Uncomment this to set the webapp timeout to infinite.
   <session-config>
     <session-timeout>-1</session-timeout>
   </session-config>
-  -->
   
   <context-param>
     <param-name>dontBlameOpenNMS</param-name>
@@ -430,7 +428,7 @@
     <init-param>
       <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
-      <param-value>../../asset/nodelist.jsp?column=_allNonEmpty</param-value>
+      <param-value>../../asset/nodelist.jsp?column=address1&amp;searchvalue=</param-value>
     </init-param>
   </servlet>
   <servlet>
