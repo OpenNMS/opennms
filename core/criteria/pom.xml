@@ -12,28 +12,12 @@
   <name>OpenNMS Criteria Tools</name>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>hibernate-dependencies</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-test-dependencies</artifactId>
-      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -51,29 +35,10 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.core.criteria.*;version="${project.version}"</Export-Package>
+            <Export-Package>org.opennms.core.criteria,org.opennms.core.criteria.restrictions;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
-<!--
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/xsds.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
--->
     </plugins>
   </build>
 </project>

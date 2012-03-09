@@ -1,12 +1,12 @@
 package org.opennms.core.criteria;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.utils.LogUtils;
@@ -15,7 +15,7 @@ import org.opennms.core.utils.LogUtils;
 public class CriteriaBuilder {
 	private Class<?> m_class;
 	private OrderBuilder m_orderBuilder = new OrderBuilder();
-	private Map<String, Criteria.FetchType> m_fetch = new HashMap<String, Criteria.FetchType>();
+	private Set<Fetch> m_fetch = new LinkedHashSet<Fetch>();
 	private AliasBuilder m_aliasBuilder = new AliasBuilder();
 	private boolean m_distinct = false;
 	private Set<Restriction> m_restrictions = new LinkedHashSet<Restriction>();
@@ -23,6 +23,7 @@ public class CriteriaBuilder {
 	private Integer m_limit = null;
 	private Integer m_offset = null;
 	private String m_matchType = "all";
+	private static final Restriction[] EMPTY_RESTRICTION_ARRAY = new Restriction[0];
 
 	public CriteriaBuilder(final Class<?> clazz) {
 		m_class = clazz;
@@ -30,14 +31,19 @@ public class CriteriaBuilder {
 
 	public Criteria toCriteria() {
 		final Criteria criteria = new Criteria(m_class);
-		criteria.setMatchType(m_matchType);
 		criteria.setOrders(m_orderBuilder.getOrderCollection());
 		criteria.setAliases(m_aliasBuilder.getAliasCollection());
 		criteria.setFetchTypes(m_fetch);
-		criteria.setRestrictions(m_restrictions);
 		criteria.setDistinct(m_distinct);
 		criteria.setLimit(m_limit);
 		criteria.setOffset(m_offset);
+		
+		if ("any".equals(m_matchType)) {
+			criteria.setRestrictions(Collections.singleton(Restrictions.any(m_restrictions.toArray(EMPTY_RESTRICTION_ARRAY))));
+		} else {
+			criteria.setRestrictions(m_restrictions);
+		}
+
 		return criteria;
 	}
 
@@ -51,12 +57,12 @@ public class CriteriaBuilder {
 	}
 
 	public CriteriaBuilder fetch(final String attribute) {
-		m_fetch.put(attribute, Criteria.FetchType.DEFAULT);
+		m_fetch.add(new Fetch(attribute));
 		return this;
 	}
 
-	public CriteriaBuilder fetch(final String attribute, final Criteria.FetchType type) {
-		m_fetch.put(attribute, type);
+	public CriteriaBuilder fetch(final String attribute, final FetchType type) {
+		m_fetch.add(new Fetch(attribute, type));
 		return this;
 	}
 
