@@ -28,34 +28,18 @@ package org.opennms.tools.jmxconfiggenerator.jmxconfig;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.*;
-
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.IntrospectionException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanException;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectInstance;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+import javax.management.*;
 import javax.management.openmbean.CompositeData;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.xml.bind.JAXB;
-
 import org.apache.commons.lang3.StringUtils;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxCollection;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.ObjectFactory;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Rrd;
+import org.opennms.tools.jmxconfiggenerator.helper.NameTools;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,8 +83,8 @@ public class JmxDatacollectionConfigGenerator {
         rrd.getRra().addAll(rras);
     }
 
-    public static void generateJmxConfig(String serviceName, String hostName, String port, String username, String password, Boolean runStandardVmBeans, Boolean runCompositeData, String outFile) throws AttributeNotFoundException, MBeanException {
-        logger.debug("Startup values: \n serviceName: " + serviceName + "\n hostName: " + hostName + "\n port:" + port + "\n runStandardVmBeans: " + runStandardVmBeans + "\n runCompositeData: " + runCompositeData + "\n username: " + username + "\n password: " + password + "\n");
+    public static void generateJmxConfig(String serviceName, String hostName, String port, String username, String password, Boolean runStandardVmBeans, String outFile) throws AttributeNotFoundException, MBeanException {
+        logger.debug("Startup values: \n serviceName: " + serviceName + "\n hostName: " + hostName + "\n port:" + port + "\n runStandardVmBeans: " + runStandardVmBeans + "\n username: " + username + "\n password: " + password + "\n");
         JMXServiceURL jmxServiceURL;
         JmxDatacollectionConfig xmlJmxDatacollectionConfig = xmlObjectFactory.createJmxDatacollectionConfig();
         JmxCollection xmlJmxCollection = xmlObjectFactory.createJmxCollection();
@@ -152,8 +136,8 @@ public class JmxDatacollectionConfigGenerator {
                             if (jmxBeanAttributeInfo.isReadable() && !jmxBeanAttributeInfo.isWritable()) {
                                 logger.info("Add Elements for mBean: '{}'", jmxObjectInstance.getObjectName().toString());
 
-                                // just process CompositeData if activated
-                                if (runCompositeData && "javax.management.openmbean.CompositeData".equals(jmxBeanAttributeInfo.getType())) {
+                                // check for CompositeData
+                                if ("javax.management.openmbean.CompositeData".equals(jmxBeanAttributeInfo.getType())) {
                                     logger.error("actual mBean: '{}'", jmxObjectInstance.getObjectName());
                                     CompAttrib compAttrib = createCompAttrib(jmxObjectInstance, jmxBeanAttributeInfo);
                                     if (compAttrib != null) {
@@ -211,14 +195,6 @@ public class JmxDatacollectionConfigGenerator {
     }
 
     private static CompAttrib createCompAttrib(ObjectInstance jmxObjectInstance, MBeanAttributeInfo jmxMBeanAttributeInfo) {
-
-        // <comp-attrib name="Usage" type="Composite" alias="EdenUsage">
-        // <comp-member name="init" type="gauge" alias="EdenUsage.init"/>
-        // <comp-member name="max" type="gauge" alias="EdenUsage.max"/>
-        // <comp-member name="used" type="gauge" alias="EdenUsage.used"/>
-        // <comp-member name="committed" type="gauge" alias="EdenUsg.cmmttd"/>
-        // </comp-attrib>
-
         Boolean contentAdded = false;
 
         CompAttrib xmlCompAttrib = xmlObjectFactory.createCompAttrib();
@@ -226,23 +202,11 @@ public class JmxDatacollectionConfigGenerator {
         xmlCompAttrib.setType("Composite");
         xmlCompAttrib.setAlias(jmxMBeanAttributeInfo.getName());
 
-        // logger.error("\t Description: '{}'",
-        // jmxMBeanAttributeInfo.getDescription());
-        // logger.error("\t Descriptor: '{}'",
-        // jmxMBeanAttributeInfo.getDescriptor());
-        // logger.error("\t\t Descriptor(): '{}'",
-        // jmxMBeanAttributeInfo.getDescriptor());
-        // logger.error("\t\t Type: '{}'", jmxMBeanAttributeInfo.getType());
-
-        // logger.error("found CompositeData at attrib: '{}'",
-        // jmxMBeanAttributeInfo.getName());
-
         CompositeData compositeData;
         try {
-            logger.error("Try to get data");
+            logger.debug("Try to get composite data");
             compositeData = (CompositeData) jmxServerConnection.getAttribute(jmxObjectInstance.getObjectName(), jmxMBeanAttributeInfo.getName());
-
-            logger.error("compositeData.getCompositeType: '{}'", compositeData.getCompositeType());
+            logger.debug("compositeData.getCompositeType: '{}'", compositeData.getCompositeType());
 
             Set<String> keys = compositeData.getCompositeType().keySet();
 
@@ -252,7 +216,13 @@ public class JmxDatacollectionConfigGenerator {
                     contentAdded = true;
                     CompMember xmlCompMember = xmlObjectFactory.createCompMember();
                     xmlCompMember.setName(key);
-                    xmlCompMember.setAlias(key);
+
+                    logger.debug("composite member pure alias: '{}'", jmxMBeanAttributeInfo.getName() + StringUtils.capitalize(key));
+                    String alias = NameTools.trimByDictionary(jmxMBeanAttributeInfo.getName() + StringUtils.capitalize(key));
+                    alias = createAndRegisterUniceAlias(alias);
+                    xmlCompMember.setAlias(alias);
+                    logger.debug("composite member trimmed alias: '{}'", alias);
+
                     xmlCompMember.setType("gauge");
                     xmlCompAttrib.getCompMember().add(xmlCompMember);
                 }
@@ -274,91 +244,32 @@ public class JmxDatacollectionConfigGenerator {
         Attrib xmlJmxAttribute = xmlObjectFactory.createAttrib();
 
         xmlJmxAttribute.setType("gauge");
-        
-        logger.debug("alias untuched: '{}'", jmxMBeanAttributeInfo.getName());
-        logger.debug("alias dicttrim: '{}'", trimByDictionary(jmxMBeanAttributeInfo.getName()));
-        xmlJmxAttribute.setName(trimByDictionary(jmxMBeanAttributeInfo.getName()));
+        xmlJmxAttribute.setName(jmxMBeanAttributeInfo.getName());
 
-        if (!aliasMap.containsKey(jmxMBeanAttributeInfo.getName())) {
-            xmlJmxAttribute.setAlias(0 + jmxMBeanAttributeInfo.getName());
-            aliasMap.put(jmxMBeanAttributeInfo.getName(), 0);
-        } else {
-            aliasMap.put(jmxMBeanAttributeInfo.getName(), aliasMap.get(jmxMBeanAttributeInfo.getName()) + 1);
-            xmlJmxAttribute.setAlias(aliasMap.get(jmxMBeanAttributeInfo.getName()).toString() + jmxMBeanAttributeInfo.getName());
-        }
-
-        //find alias crashes caused by cuting down alias length to 19 chars
-        if (aliasList.contains(trimByCamelCase(xmlJmxAttribute.getAlias(), 19))) {
-            logger.error("ALIAS CRASH AT :" + xmlJmxAttribute.getAlias() + "\t as: " + trimByCamelCase(xmlJmxAttribute.getAlias(), 19));
-            xmlJmxAttribute.setAlias(xmlJmxAttribute.getAlias() + "_NAME_CRASH_AS_19_CHAR_VALUE");
-        } else {
-            aliasList.add(trimByCamelCase(xmlJmxAttribute.getAlias(), 19));
-            xmlJmxAttribute.setAlias(trimByCamelCase(xmlJmxAttribute.getAlias(), 19));
-        }
+        String alias = NameTools.trimByDictionary(jmxMBeanAttributeInfo.getName());
+        alias = createAndRegisterUniceAlias(alias);
+        xmlJmxAttribute.setAlias(alias);
 
         return xmlJmxAttribute;
     }
 
-    protected static String trimByCamelCase(String name, Integer maxLength) {
-        String result = "";
-        String[] nameParts = StringUtils.splitByCharacterTypeCamelCase(name);
-        Integer charsOver = name.length() - maxLength;
-        for (int i = 0; i < charsOver; i++) {
-            Integer largest = 0;
-            Integer index = 0;
-            for (int j = 0; j < nameParts.length; j++) {
-                if (nameParts[j].length() > largest) {
-                    largest = nameParts[j].length();
-                    index = j;
-                }
-            }
-            nameParts[index] = StringUtils.chop(nameParts[index]);
+    private static String createAndRegisterUniceAlias(String originalAlias) {
+        String uniceAlias = originalAlias;
+        if (!aliasMap.containsKey(originalAlias)) {
+            aliasMap.put(originalAlias, 0);
+            uniceAlias = 0 + uniceAlias;
+        } else {
+            aliasMap.put(originalAlias, aliasMap.get(originalAlias) + 1);
+            uniceAlias = aliasMap.get(originalAlias).toString() + originalAlias;
         }
-        for (String namePart : nameParts) {
-            result = result + namePart;
+        //find alias crashes caused by cuting down alias length to 19 chars
+        if (aliasList.contains(NameTools.trimByCamelCase(uniceAlias, 19))) {
+            logger.error("ALIAS CRASH AT :" + uniceAlias + "\t as: " + NameTools.trimByCamelCase(uniceAlias, 19));
+            uniceAlias = uniceAlias + "_NAME_CRASH_AS_19_CHAR_VALUE";
+        } else {
+            uniceAlias = NameTools.trimByCamelCase(uniceAlias, 19);
+            aliasList.add(uniceAlias);
         }
-        return result;
-    }
-
-    protected static String trimByDictionary(String name) {
-        Map<String, String> dictionary = new HashMap<String, String>();
-        dictionary.put("Number", "Num");
-        dictionary.put("Average", "Avg");
-        dictionary.put("Compression", "Comp");
-        dictionary.put("Auxillary", "Auxil");
-        dictionary.put("Memory", "Mem");
-        dictionary.put("Virtual", "Virt");
-        dictionary.put("Available", "Avail");
-        dictionary.put("System", "Sys");
-        dictionary.put("Error", "Err");
-        dictionary.put("Committed", "Commit");
-
-        dictionary.put("Identity", "Idnt");
-        dictionary.put("Tokenized", "Toknz");
-        dictionary.put("Token", "Tok");
-        dictionary.put("Count", "Cnt");
-        dictionary.put("User", "Usr");
-        dictionary.put("Users", "Usrs");
-        dictionary.put("Default", "Dflt");
-        
-        String result = "";
-        String[] nameParts = StringUtils.splitByCharacterTypeCamelCase(name);
-
-        for (int i = 0; i < nameParts.length; i++) {
-            String namePart = nameParts[i];
-            
-            for (String word : dictionary.keySet()) {
-                if (namePart.equalsIgnoreCase(word)) {
-                    logger.debug("dictionary Hit at '{}' for '{}'", name ,word);
-                    nameParts[i] = dictionary.get(word);
-                    logger.debug("namePart after dictionary: '{}', replaced to '{}'", namePart, dictionary.get(word));
-                }
-            }
-        }
-
-        for (String namePart : nameParts) {
-            result = result + namePart;
-        }
-        return result;
+        return uniceAlias;
     }
 }

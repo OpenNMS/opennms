@@ -32,16 +32,13 @@ import org.opennms.core.fiber.InitializableFiber;
 
 /**
  * This interface defines the contract that every type of adaptor event receiver
- * must fulfill. Every reciever is a fiber and will run independently of other
+ * must fulfill. Every receiver is a fiber and will run independently of other
  * receivers in the system. When an event is received by an instance of this
  * interface it will pass the new event to the <code>EventHandler.event()</code>
  * method.
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http;//www.opennms.org">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http;//www.opennms.org">OpenNMS </a>
- * @version $Id: $
  */
 public interface EventReceiver extends InitializableFiber {
     /**
@@ -51,7 +48,7 @@ public interface EventReceiver extends InitializableFiber {
      * @param handler
      *            A reference to an event handler
      */
-    public void addEventHandler(EventHandler handler);
+    void addEventHandler(EventHandler handler);
 
     /**
      * Removes an event handler from the list of handler called when an event is
@@ -61,5 +58,5 @@ public interface EventReceiver extends InitializableFiber {
      * @param handler
      *            A reference to the event handler.
      */
-    public void removeEventHandler(EventHandler handler);
+    void removeEventHandler(EventHandler handler);
 }

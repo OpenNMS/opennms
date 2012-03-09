@@ -167,7 +167,6 @@ final class TcpRecordHandler implements Runnable {
             }
         } catch (final InterruptedException e) {
         	LogUtils.debugf(this, e, "An I/O error occured.");
-        	Thread.currentThread().interrupt();
             throw new IOException("The thread was interrupted");
         }
 
@@ -186,7 +185,6 @@ final class TcpRecordHandler implements Runnable {
             }
         } catch (final IOException e) {
         	LogUtils.debugf(this, e, "An I/O error occured.");
-        	Thread.currentThread().interrupt();
             throw e;
         }
     }
@@ -365,7 +363,6 @@ final class TcpRecordHandler implements Runnable {
             // check to see if the thread is interrupted
             if (Thread.interrupted()) {
                 LogUtils.debugf(this, "Thread Interrupted");
-                Thread.currentThread().interrupt();
                 break;
             }
 
@@ -378,7 +375,6 @@ final class TcpRecordHandler implements Runnable {
 
             } catch (final InterruptedIOException e) {
                 // this was expected
-            	Thread.currentThread().interrupt();
                 continue;
             } catch (final EOFException e) {
                 m_xchange.add(e);

@@ -64,7 +64,7 @@ import org.opennms.core.utils.ThreadCategory;
         } catch (FifoQueueException e) {
             // log.debug("Caught an exception adding to queue");
         } catch (InterruptedException e) {
-        	Thread.currentThread().interrupt();
+            // Error handling by ignoring the problem.
         }
         // wake up getByteFromQueue() if it has invoked wait().
         notify();
@@ -87,7 +87,6 @@ import org.opennms.core.utils.ThreadCategory;
             }// end while
         } catch (InterruptedException E) {
             log.info("InterruptedException: " + E, E);
-            Thread.currentThread().interrupt();
         }// end catch block
 
         // get the byte from the queue
@@ -98,7 +97,6 @@ import org.opennms.core.utils.ThreadCategory;
             log.debug("FifoQueue exception " + e);
         } catch (InterruptedException e) {
             log.debug("Interrupted exception " + e);
-            Thread.currentThread().interrupt();
         }
 
         // wake up putByteInQueue() if it has invoked wait().

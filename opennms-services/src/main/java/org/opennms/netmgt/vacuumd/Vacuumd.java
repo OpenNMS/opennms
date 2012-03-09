@@ -35,6 +35,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 
@@ -345,12 +346,13 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         try {
             log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled()+"; calling stop on scheduler...");
             stop();
-            while (m_scheduler.getRunner().getStatus() != STOPPED || m_scheduler.getStatus() != STOPPED) {
+            ExecutorService runner = m_scheduler.getRunner();
+            while (!runner.isShutdown() || m_scheduler.getStatus() != STOPPED) {
                 log().debug("onEvent: waiting for scheduler to stop." +
-                        " Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.getRunner().getStatus());
+                        " Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+(runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
                 Thread.sleep(500);
             }
-            log().debug("onEvent: Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.getRunner().getStatus());
+            log().debug("onEvent: Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+(runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
             log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled());
             log().debug("onEvent: reloading vacuumd configuration.");
 

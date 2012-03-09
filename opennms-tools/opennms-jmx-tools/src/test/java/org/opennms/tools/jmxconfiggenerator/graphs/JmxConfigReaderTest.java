@@ -36,11 +36,12 @@ import org.junit.*;
  * @author Markus Neumann <markus@opennms.com>
  */
 
-public class JmxToSnmpGraphConfigGeneratorTest {
+public class JmxConfigReaderTest {
 
-    private JmxToSnmpGraphConfigGenerator jmxToSnmpGraphConfigGen;
+    private JmxConfigReader jmxConfigReader;
+    private GraphConfigGenerator graphConfigGenerator;
 
-    public JmxToSnmpGraphConfigGeneratorTest() {
+    public JmxConfigReaderTest() {
     }
 
     @BeforeClass
@@ -53,7 +54,8 @@ public class JmxToSnmpGraphConfigGeneratorTest {
 
     @Before
     public void setUp() {
-        jmxToSnmpGraphConfigGen = new JmxToSnmpGraphConfigGenerator();
+        jmxConfigReader = new JmxConfigReader();
+        graphConfigGenerator = new GraphConfigGenerator();
     }
 
     @After
@@ -62,21 +64,21 @@ public class JmxToSnmpGraphConfigGeneratorTest {
 
     @Test
     public void testGenerateReportsByJmxDatacollectionConfig() {
-        Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/test.xml");
+        Collection<Report> reports = jmxConfigReader.generateReportsByJmxDatacollectionConfig("src/test/resources/test.xml");
         Assert.assertEquals("read structure from test.xml", 7, reports.size());
 
-        reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/JVM-Basics.xml");
+        reports = jmxConfigReader.generateReportsByJmxDatacollectionConfig("src/test/resources/JVM-Basics.xml");
         Assert.assertEquals("read structure from JVM-Basics.xml", 117, reports.size());
 
-        reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/jmx-datacollection-config.xml");
+        reports = jmxConfigReader.generateReportsByJmxDatacollectionConfig("src/test/resources/jmx-datacollection-config.xml");
         Assert.assertEquals("read structure from jmx-datacollection-config.xml", 139, reports.size());
     }
 
+    //TODO move to GraphConfigGenerator
     @Test
     public void testVelociteyRun() {
-        Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig("src/test/resources/JVM-Basics.xml");
-        System.out.println("reports:\n" + reports);
-        String snmpGraphConfig = jmxToSnmpGraphConfigGen.generateSnmpGraph(reports, "src/main/resources/graphTemplate.vm");
+        Collection<Report> reports = jmxConfigReader.generateReportsByJmxDatacollectionConfig("src/test/resources/JVM-Basics.xml");
+        String snmpGraphConfig = graphConfigGenerator.generateSnmpGraph(reports, "src/main/resources/graphTemplate.vm");
         System.out.println(snmpGraphConfig);
     }
 }

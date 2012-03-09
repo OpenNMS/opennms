@@ -242,7 +242,6 @@ class EventQueueProcessor implements Runnable, PausableFiber {
             LogUtils.errorf(this, e, "Failed to push the event back to queue");
         } catch (final InterruptedException e) {
             LogUtils.errorf(this, e, "Failed to push the event back to queue");
-            Thread.currentThread().interrupt();
         }
     }
 
@@ -276,7 +275,6 @@ class EventQueueProcessor implements Runnable, PausableFiber {
                 try {
                     wait();
                 } catch (final InterruptedException e) {
-                	Thread.currentThread().interrupt();
                     m_status = STOP_PENDING;
                 }
             } else if (m_status == RUNNING) {
@@ -391,7 +389,6 @@ class EventQueueProcessor implements Runnable, PausableFiber {
                 event = m_eventQ.remove(1000);
             } catch (final InterruptedException iE) {
             	LogUtils.debugf(this, iE, "Caught interrupted exception, transitioning to STOP_PENDING status");
-                Thread.currentThread().interrupt();
 
                 event = null;
 

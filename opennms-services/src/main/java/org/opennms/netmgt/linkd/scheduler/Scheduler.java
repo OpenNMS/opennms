@@ -33,10 +33,10 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.LogUtils;
@@ -64,12 +64,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * The pool of threads that are used to executed the runnable instances
 	 * scheduled by the class' instance.
 	 */
-	public RunnableConsumerThreadPool m_runner;
-
-	/**
-	 * The name of this fiber.
-	 */
-	private String m_name;
+	public ExecutorService m_runner;
 
 	/**
 	 * The status for this fiber.
@@ -202,11 +197,8 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *            The maximum size of the thread pool.
 	 */
 	public Scheduler(String parent, int maxSize) {
-
-		m_name = parent + "Scheduler-" + maxSize;
 		m_status = START_PENDING;
-		m_runner = new RunnableConsumerThreadPool(m_name + " Pool", 0.6f, 1.0f,
-				maxSize);
+		m_runner = Executors.newFixedThreadPool(maxSize);
 		m_queues = new ConcurrentSkipListMap<Long,PeekableFifoQueue<ReadyRunnable>>();
 		m_scheduled = 0;
 		m_worker = null;
@@ -231,10 +223,8 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *            threads are started.
 	 */
 	public Scheduler(String parent, int maxSize, float lowMark, float hiMark) {
-		m_name = parent + "Scheduler-" + maxSize;
 		m_status = START_PENDING;
-		m_runner = new RunnableConsumerThreadPool(m_name + " Pool", lowMark,
-				hiMark, maxSize);
+		m_runner = Executors.newFixedThreadPool(maxSize);
 		m_queues = new ConcurrentSkipListMap<Long,PeekableFifoQueue<ReadyRunnable>>();
 		m_scheduled = 0;
 		m_worker = null;
@@ -519,7 +509,6 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 			throw new IllegalStateException(
 					"The fiber has already run or is running");
 
-		m_runner.start();
 		m_worker = new Thread(this, getName());
 		m_worker.start();
 		m_status = STARTING;
@@ -540,7 +529,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 
 		m_status = STOP_PENDING;
 		m_worker.interrupt();
-		m_runner.stop();
+		m_runner.shutdown();
 
 		LogUtils.debugf(this, "stop: scheduler stopped");
 	}
@@ -608,7 +597,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String getName() {
-		return m_runner.getName();
+		return m_runner.toString();
 	}
 
 	/**
@@ -656,7 +645,6 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 			// are peekable fifo queues.
 			//
 			int runned = 0;
-			FifoQueue<Runnable> out = m_runner.getRunQueue();
 			synchronized (m_queues) {
 				// get an iterator so that we can cycle
 				// through the queue elements.
@@ -689,7 +677,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 								in.remove();
 
 								// Add runnable to the execution queue
-								out.add(readyRun);
+								m_runner.execute(readyRun);
 								++runned;
 							}
 						} catch (InterruptedException ex) {
