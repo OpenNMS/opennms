@@ -85,8 +85,9 @@ import org.opennms.core.utils.ThreadCategory;
             while (m_backlogQ.isEmpty()) {
                 wait();
             }// end while
-        } catch (InterruptedException E) {
+        } catch (final InterruptedException E) {
             log.info("InterruptedException: " + E, E);
+            Thread.currentThread().interrupt();
         }// end catch block
 
         // get the byte from the queue
