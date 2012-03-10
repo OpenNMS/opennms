@@ -42,6 +42,12 @@ public class MockCorrelator implements CorrelationEngineRegistrar {
         m_engines.add(engine);
     }
     
+    public void addCorrelationEngines(CorrelationEngine... engines) {
+    	for(CorrelationEngine engine : engines) {
+    		m_engines.add(engine);
+    	}
+    }
+    
     public CorrelationEngine findEngineByName(String name) {
         for (CorrelationEngine engine : m_engines) {
             if (name.equals(engine.getName())) {
