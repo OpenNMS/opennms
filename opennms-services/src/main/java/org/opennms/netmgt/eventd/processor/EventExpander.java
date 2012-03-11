@@ -715,8 +715,6 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 e.setMouseovertext(econf.getMouseovertext());
             }
 
-            // TODO Do we need an isSecureTag() check here to see if any AlarmData fields 
-            // should be overridden?
             if (e.getAlarmData() == null && econf.getAlarmData() != null) {
                 AlarmData alarmData = new AlarmData();
                 alarmData.setAlarmType(econf.getAlarmData().getAlarmType());

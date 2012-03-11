@@ -911,7 +911,9 @@
       Node %parm[nodelabel]% is down. %parm[eventReason]%
     </logmsg>
     <severity>Major</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false" />
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false" >
+          <update-field name="severity" update-on-reduction="true" />
+        </alarm-data>
   </event>
   <event>
                 <uei>uei.opennms.org/nodes/pathOutage</uei>

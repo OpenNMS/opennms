@@ -586,6 +586,9 @@
       <documentation>This element is used for converting events into alarms.</documentation>
     </annotation>
     <complexType>
+      <sequence>
+        <element ref="this:update-field" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
       <attribute name="reduction-key" type="string" use="required" />
       <attribute name="alarm-type" use="required" >
         <simpleType>
@@ -598,6 +601,13 @@
       <attribute name="auto-clean" type="boolean" use="optional" default="false" />
       <attribute name="x733-alarm-type" type="this:x733-alarm-type" use="optional" />
       <attribute name="x733-probable-cause" type="int" use="optional" />
+    </complexType>
+  </element>
+  
+  <element name="update-field">
+    <complexType>
+      <attribute name="name" use="required" />
+      <attribute name="update-on-reduction" use="optional" default="true" />
     </complexType>
   </element>
   

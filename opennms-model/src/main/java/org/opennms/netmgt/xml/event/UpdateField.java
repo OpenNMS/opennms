@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Object identifieis which alarm fields should be updated during Alarm reduction.
+ * Object used to identify which alarm fields should be updated during Alarm reduction.
  * 
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
  */
