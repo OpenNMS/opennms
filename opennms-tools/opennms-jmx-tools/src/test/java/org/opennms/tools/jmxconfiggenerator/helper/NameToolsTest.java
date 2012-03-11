@@ -38,6 +38,8 @@ public class NameToolsTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        //The loaded extermal dictionary will be the internal dictionary if the application is packaged as a jar file
+        NameTools.loadExtermalDictionary("src/main/resources/dictionary.properties");
     }
 
     @AfterClass
@@ -54,6 +56,9 @@ public class NameToolsTest {
 
     @Test
     public void testTrimByDictionary() {
+        Assert.assertEquals("Blo", NameTools.trimByDictionary("Bloom"));
+        Assert.assertEquals("Tok", NameTools.trimByDictionary("Token"));
+
         Assert.assertEquals("CommitVirtMemSize", NameTools.trimByDictionary("CommittedVirtualMemorySize"));
         Assert.assertEquals("AvgCompRatio" , NameTools.trimByDictionary("AverageCompressionRatio"));
         Assert.assertEquals("AllIdntToknzCnt" , NameTools.trimByDictionary("AllIdentityTokenizedCount"));
