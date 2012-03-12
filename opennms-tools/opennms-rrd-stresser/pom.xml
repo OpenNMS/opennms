@@ -44,16 +44,20 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd-dependencies</artifactId>
+      <type>pom</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!--
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
       <scope>runtime</scope>
     </dependency>
--->
   </dependencies>
 </project>
