@@ -40,6 +40,8 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.drools.RuleBase;
+import org.drools.RuleBaseConfiguration;
+import org.drools.RuleBaseConfiguration.AssertBehaviour;
 import org.drools.RuleBaseFactory;
 import org.drools.WorkingMemory;
 import org.drools.compiler.DroolsParserException;
@@ -63,6 +65,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private List<Resource> m_rules;
     private Map<String, Object> m_globals = new HashMap<String, Object>();
     private String m_name;
+    private String m_assertBehaviour;
     
     /** {@inheritDoc} */
     @Override
@@ -128,8 +131,12 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         final PackageBuilder builder = new PackageBuilder( conf );
         
         loadRules(builder);
+        
+        AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_assertBehaviour);
+        RuleBaseConfiguration config = new RuleBaseConfiguration();
+        config.setAssertBehaviour(behaviour);
 
-        final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
+        final RuleBase ruleBase = RuleBaseFactory.newRuleBase( config );
         ruleBase.addPackage( builder.getPackage() );
 
         m_workingMemory = ruleBase.newStatefulSession();
@@ -211,4 +218,8 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     public void setGlobal(final String name, final Object value) {
         m_workingMemory.setGlobal(name, value);
     }
+
+	public void setAssertBehaviour(String assertBehaviour) {
+		m_assertBehaviour = assertBehaviour;
+	}
 }

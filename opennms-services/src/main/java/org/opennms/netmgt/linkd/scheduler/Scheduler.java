@@ -82,107 +82,24 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *  
 	 */
 	public static final class PeekableFifoQueue<T> extends FifoQueueImpl<T> {
-		/**
-		 * The object hold. This holds the last object peeked at by the
-		 * application.
-		 */
-		private T m_hold;
-
-		/**
-		 * Default constructor.
-		 */
-		PeekableFifoQueue() {
-			m_hold = null;
-		}
-
-		/**
-		 * This method allows the caller to peek at the next object that would
-		 * be returned on a <code>remove</code> call. If the queue is
-		 * currently empty then the caller is blocked until an object is put
-		 * into the queue.
-		 * 
-		 * @return The object that would be returned on the next call to
-		 *         <code>remove</code>.
-		 * 
-		 * @throws java.lang.InterruptedException
-		 *             Thrown if the thread is interrupted.
-		 * @throws org.opennms.core.queue.FifoQueueException
-		 *             Thrown if an error occurs removing an item from the
-		 *             queue.
-		 */
-		public synchronized T peek() throws InterruptedException,
-				FifoQueueException {
-			if (m_hold == null)
-				m_hold = super.remove(1L);
-
-			return m_hold;
-		}
-
-		/**
-		 * Removes the next element from the queue and returns it to the caller.
-		 * If there is no objects available then the caller is blocked until an
-		 * item is available.
-		 * 
-		 * @return The next element in the queue.
-		 * 
-		 * @throws java.lang.InterruptedException
-		 *             Thrown if the thread is interrupted.
-		 * @throws org.opennms.core.queue.FifoQueueException
-		 *             Thrown if an error occurs removing an item from the
-		 *             queue.
-		 */
-		public synchronized T remove() throws InterruptedException,
-				FifoQueueException {
-			T rval = null;
-			if (m_hold != null) {
-				rval = m_hold;
-				m_hold = null;
-			} else {
-				rval = super.remove();
-			}
-
-			return rval;
-		}
-
-		/**
-		 * Removes the next element from the queue and returns it to the caller.
-		 * If there is no objects available then the caller is blocked until an
-		 * item is available. If an object is not available within the time
-		 * frame specified by <code>timeout</code>.
-		 * 
-		 * @param timeout
-		 *            The maximum time to wait.
-		 * 
-		 * @return The next element in the queue.
-		 * 
-		 * @throws java.lang.InterruptedException
-		 *             Thrown if the thread is interrupted.
-		 * @throws org.opennms.core.queue.FifoQueueException
-		 *             Thrown if an error occurs removing an item from the
-		 *             queue.
-		 */
-		public synchronized T remove(long timeout)
-				throws InterruptedException, FifoQueueException {
-			T rval = null;
-			if (m_hold != null) {
-				rval = m_hold;
-				m_hold = null;
-			} else {
-				rval = super.remove(timeout);
-			}
-
-			return rval;
-		}
-		
-		   /**
-	     * Used to test if the current queue has no stored elements.
-	     * 
-	     * @return True if the queue is empty.
-	     */
-	    public boolean isEmpty() {
-	        if (m_hold != null ) return false;    
-	    	return super.isEmpty();
-	    }
+        /**
+         * This method allows the caller to peek at the next object that would
+         * be returned on a <code>remove</code> call. If the queue is
+         * currently empty then the caller is blocked until an object is put
+         * into the queue.
+         * 
+         * @return The object that would be returned on the next call to
+         *         <code>remove</code>.
+         * 
+         * @throws java.lang.InterruptedException
+         *             Thrown if the thread is interrupted.
+         * @throws org.opennms.core.queue.FifoQueueException
+         *             Thrown if an error occurs removing an item from the
+         *             queue.
+         */
+        public T peek() throws InterruptedException {
+            return m_delegate.peek();
+        }
 	}
 
 	/**
@@ -261,8 +178,6 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		} catch (InterruptedException ie) {
 		    LogUtils.infof(this, ie, "schedule: failed to add new ready runnable instance %s to scheduler", runnable);
 			Thread.currentThread().interrupt();
-		} catch (FifoQueueException ex) {
-		    LogUtils.infof(this, ex, "schedule: failed to add new ready runnable instance %s to scheduler", runnable);
 		}
 	}
 
@@ -398,9 +313,6 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 				} catch (InterruptedException ie) {
 				    LogUtils.infof(this, ie, "unschedule: failed to remove instance %s from scheduler", runnable.getInfo());
 					Thread.currentThread().interrupt();
-				} catch (FifoQueueException ex) {
-				    LogUtils.infof(this, ex, "unschedule: failed to remove instance %s from scheduler", runnable.getInfo());
-					throw new UndeclaredThrowableException(ex);
 				}
 			} while ( --maxLoops > 0) ; 
 		}
@@ -475,9 +387,6 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 				} catch (InterruptedException ie) {
 				    LogUtils.infof(this, ie, "getReadyRunnable: failed to get instance %s from scheduler", readyRun.getInfo());
 					Thread.currentThread().interrupt();
-				} catch (FifoQueueException ex) {
-                    LogUtils.infof(this, ex, "getReadyRunnable: failed to get instance %s from scheduler", readyRun.getInfo());
-					throw new UndeclaredThrowableException(ex);
 				} 
 
 			} while (--maxLoops > 0) ;
@@ -682,8 +591,6 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 							}
 						} catch (InterruptedException ex) {
 							return; // jump all the way out
-						} catch (FifoQueueException qe) {
-							throw new UndeclaredThrowableException(qe);
 						}
 					} while (readyRun != null && readyRun.isReady()
 							&& --maxLoops > 0);

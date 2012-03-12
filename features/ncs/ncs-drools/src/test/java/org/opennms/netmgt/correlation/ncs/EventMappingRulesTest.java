@@ -219,7 +219,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
     }
 	
 	@Test
-	@Ignore( "Not ready for this yet")
+	//@Ignore( "Not ready for this yet")
     @DirtiesContext
     public void testDupPwDown() throws Exception {
 		

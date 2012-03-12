@@ -69,6 +69,8 @@ public class RuleSet implements Serializable {
 	@XmlAttribute(name="name")
     private String _name;
 
+	@XmlAttribute(name="assert-behaviour")
+	private String _assertBehaviour = "identity";
     /**
      * Field _ruleFileList.
      */
@@ -110,7 +112,17 @@ public class RuleSet implements Serializable {
      //- Methods -/
     //-----------/
 
-    /**
+    public String getAssertBehaviour() {
+		return _assertBehaviour;
+	}
+
+
+	public void setAssertBehaviour(String assertBehaviour) {
+		this._assertBehaviour = assertBehaviour;
+	}
+
+
+	/**
      * 
      * 
      * @param vEvent
@@ -884,6 +896,7 @@ public class RuleSet implements Serializable {
 		
 		final DroolsCorrelationEngine engine = new DroolsCorrelationEngine();
 		engine.setName(getName());
+		engine.setAssertBehaviour(getAssertBehaviour());
 		engine.setEventIpcManager(eventIpcManager);
 		engine.setScheduler(new Timer(getName()+"-Timer"));
 		engine.setInterestingEvents(getInterestingEvents());

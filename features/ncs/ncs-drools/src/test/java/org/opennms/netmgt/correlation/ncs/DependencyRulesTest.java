@@ -473,7 +473,7 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
 
     @Test
     @DirtiesContext
-    @Ignore("not yet implemented")
+    //@Ignore("not yet implemented")
     public void testMultipleDownAndSingleUpCase() throws Exception {
 
         // Get engine

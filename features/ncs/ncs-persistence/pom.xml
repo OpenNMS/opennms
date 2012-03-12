@@ -12,7 +12,6 @@
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
       <artifactId>ncs-model</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -61,7 +60,6 @@
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
       <artifactId>ncs-test</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

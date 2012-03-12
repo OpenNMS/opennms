@@ -50,13 +50,6 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     /**
@@ -94,19 +87,6 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      */
     public static final class PeekableFifoQueue<T> extends FifoQueueImpl<T> {
         /**
-         * The object hold. This holds the last object peeked at by the
-         * application.
-         */
-        private T m_hold;
-
-        /**
-         * Default constructor.
-         */
-        PeekableFifoQueue() {
-            m_hold = null;
-        }
-
-        /**
          * This method allows the caller to peek at the next object that would
          * be returned on a <code>remove</code> call. If the queue is
          * currently empty then the caller is blocked until an object is put
@@ -121,66 +101,8 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
          *             Thrown if an error occurs removing an item from the
          *             queue.
          */
-        public synchronized T peek() throws InterruptedException, FifoQueueException {
-            if (m_hold == null) {
-                m_hold = super.remove(1L);
-            }
-
-            return m_hold;
-        }
-
-        /**
-         * Removes the next element from the queue and returns it to the caller.
-         * If there is no objects available then the caller is blocked until an
-         * item is available.
-         * 
-         * @return The next element in the queue.
-         * 
-         * @throws java.lang.InterruptedException
-         *             Thrown if the thread is interrupted.
-         * @throws org.opennms.core.queue.FifoQueueException
-         *             Thrown if an error occurs removing an item from the
-         *             queue.
-         */
-        public synchronized T remove() throws InterruptedException, FifoQueueException {
-            T rval = null;
-            if (m_hold != null) {
-                rval = m_hold;
-                m_hold = null;
-            } else {
-                rval = super.remove();
-            }
-
-            return rval;
-        }
-
-        /**
-         * Removes the next element from the queue and returns it to the caller.
-         * If there is no objects available then the caller is blocked until an
-         * item is available. If an object is not available within the time
-         * frame specified by <code>timeout</code>.
-         * 
-         * @param timeout
-         *            The maximum time to wait.
-         * 
-         * @return The next element in the queue.
-         * 
-         * @throws java.lang.InterruptedException
-         *             Thrown if the thread is interrupted.
-         * @throws org.opennms.core.queue.FifoQueueException
-         *             Thrown if an error occurs removing an item from the
-         *             queue.
-         */
-        public synchronized T remove(long timeout) throws InterruptedException, FifoQueueException {
-            T rval = null;
-            if (m_hold != null) {
-                rval = m_hold;
-                m_hold = null;
-            } else {
-                rval = super.remove(timeout);
-            }
-
-            return rval;
+        public T peek() throws InterruptedException {
+            return m_delegate.peek();
         }
     }
 
@@ -264,9 +186,6 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         } catch (InterruptedException e) {
             log().info("schedule: failed to add new ready runnable instance " + runnable + " to scheduler: " + e, e);
             Thread.currentThread().interrupt();
-        } catch (FifoQueueException e) {
-            log().info("schedule: failed to add new ready runnable instance " + runnable + " to scheduler: " + e, e);
-            throw new UndeclaredThrowableException(e);
         }
     }
 

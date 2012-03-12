@@ -104,7 +104,7 @@ LI.Collapsed ul
     color: blue;
 }
 </style>
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
 
 Array.prototype.indexOf = IndexOf;
 
@@ -187,7 +187,7 @@ function SetupTreeView(elementId)
     <%=treeView%>
 
 </div>
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
 
 SetupTreeView("TreeView");
 

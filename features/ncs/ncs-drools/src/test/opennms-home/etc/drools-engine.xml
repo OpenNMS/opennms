@@ -16,7 +16,7 @@
     <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
     <global name="correlationService" ref="ncsCorrelationService"/>
   </rule-set>
-  <rule-set name="eventMappingRules">
+  <rule-set name="eventMappingRules" assert-behaviour="equality">
     <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/eventMappingRules.drl</rule-file>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>
@@ -29,7 +29,7 @@
     <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
     <global name="correlationService" ref="ncsCorrelationService"/>
   </rule-set>
-  <rule-set name="dependencyLoadingRules">
+  <rule-set name="dependencyLoadingRules" assert-behaviour="equality">
     <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyLoadingRules.drl</rule-file>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>

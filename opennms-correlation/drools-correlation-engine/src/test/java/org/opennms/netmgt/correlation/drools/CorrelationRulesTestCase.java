@@ -52,7 +52,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:test-context.xml"
 })
 @JUnitConfigurationEnvironment
-public class CorrelationRulesTestCase {
+public abstract class CorrelationRulesTestCase {
 
     @Autowired
     private MockEventIpcManager m_eventIpcMgr;

@@ -75,6 +75,19 @@
         </simpleType>
       </attribute>
 
+      <attribute name="queueLength" use="optional" default="-1">
+        <annotation>
+          <documentation>The maximum number of incoming events that can be 
+          queued inside eventd for processing.</documentation>
+        </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
       <attribute name="getNextEventID" type="string" use="required">
         <annotation>
           <documentation>SQL query to get next value of the 'nodeNxtId'
