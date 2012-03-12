@@ -42,7 +42,7 @@ public class ComponentEvent {
 		int result = 1;
 		result = prime * result
 				+ ((m_component == null) ? 0 : m_component.hashCode());
-		result = prime * result + ((m_event == null) ? 0 : m_event.hashCode());
+		//result = prime * result + ((m_event == null) ? 0 : m_event.hashCode());
 		return result;
 	}
 
@@ -54,17 +54,20 @@ public class ComponentEvent {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+		
 		ComponentEvent other = (ComponentEvent) obj;
 		if (m_component == null) {
 			if (other.m_component != null)
 				return false;
 		} else if (!m_component.equals(other.m_component))
 			return false;
-		if (m_event == null) {
-			if (other.m_event != null)
-				return false;
-		} else if (!m_event.equals(other.m_event))
-			return false;
+		
+//		if (m_event == null) {
+//			if (other.m_event != null)
+//				return false;
+//		} else if (!m_event.equals(other.m_event))
+//			return false;
+
 		return true;
 	}
 
