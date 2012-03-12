@@ -36,8 +36,8 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.test.ThrowableAnticipator;
-import org.springframework.security.userdetails.UserDetails;
-import org.springframework.security.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class OpenNMSUserDetailsServiceTest extends TestCase {
 	

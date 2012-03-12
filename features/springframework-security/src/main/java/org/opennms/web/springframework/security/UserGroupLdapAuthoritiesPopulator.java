@@ -40,11 +40,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.ldap.LdapAuthoritiesPopulator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.ldap.SpringSecurityLdapTemplate;
-import org.springframework.security.ldap.populator.DefaultLdapAuthoritiesPopulator;
+import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 
 /**
  * This class adds the ability to provide a concrete map of associations between specific

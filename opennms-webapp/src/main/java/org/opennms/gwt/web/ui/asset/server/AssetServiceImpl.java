@@ -41,6 +41,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.SecurityContextService;
 import org.opennms.web.svclayer.support.SpringSecurityContextService;
 import org.springframework.beans.BeanUtils;
@@ -106,12 +107,12 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 	/**
 	 * ROLE_ADMIN is allowed to edit
 	 */
-	private static final String ALLOW_EDIT_ROLE_ADMIN = "ROLE_ADMIN";
+	private static final String ALLOW_EDIT_ROLE_ADMIN = Authentication.ROLE_ADMIN;
 
 	/**
 	 * ROLE_PROVISIONING is allowed to edit
 	 */
-	private static final String ALLOW_EDIT_ROLE_PROVISION = "ROLE_PROVISION";
+	private static final String ALLOW_EDIT_ROLE_PROVISION = Authentication.ROLE_PROVISION;
 
 	/**
 	 * Constant

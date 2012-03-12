@@ -91,9 +91,6 @@ import org.opennms.netmgt.utils.IpValidator;
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Observer {
 
@@ -278,7 +275,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     }
 
     /**
-     * The main routine of the DHCP server. This method accepts incomming client
+     * The main routine of the DHCP server. This method accepts incoming client
      * requests and starts new client handlers to process each request.
      */
     public void run() {
@@ -333,7 +330,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
                 }
             }
         } catch (IOException ioE) {
-            log().error("I/O exception occured processing incomming request", ioE);
+            log().error("I/O exception occured processing incoming request", ioE);
         } catch (Throwable t) {
             log().error("An undeclared throwable was caught", t);
         } finally {

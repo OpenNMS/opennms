@@ -28,11 +28,13 @@
 
 package org.opennms.web.svclayer.support;
 
+import java.util.Collection;
+
 import org.opennms.web.svclayer.SecurityContextService;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.context.SecurityContext;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class SpringSecurityContextService implements SecurityContextService {
 
@@ -67,7 +69,7 @@ public class SpringSecurityContextService implements SecurityContextService {
 		UserDetails userDetails = getUserDetails();
 		if (userDetails != null) {
 
-			GrantedAuthority[] authorities = userDetails.getAuthorities();
+			Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
 			if (isRolePresent(authorities, role)) {
 				hasRole = true;
 			}
@@ -90,7 +92,7 @@ public class SpringSecurityContextService implements SecurityContextService {
 	 *            - required role authority
 	 * @return true if role is present, otherwise false
 	 */
-	private boolean isRolePresent(GrantedAuthority[] authorities, String role) {
+	private boolean isRolePresent(Collection<? extends GrantedAuthority> authorities, String role) {
 		boolean isRolePresent = false;
 		for (GrantedAuthority grantedAuthority : authorities) {
 			isRolePresent = grantedAuthority.getAuthority().equals(role);

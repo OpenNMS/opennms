@@ -43,6 +43,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.easymock.IAnswer;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.DemandPollDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.DemandPoll;
@@ -146,12 +147,20 @@ public class DemandPollServiceTest extends TestCase {
                 public void lock() {
 		}
 
+        public List<DemandPoll> findMatching(Criteria criteria) {
+            throw new UnsupportedOperationException("not yet implemeneted");
+        }
+
+        public int countMatching(Criteria criteria) {
+            throw new UnsupportedOperationException("not yet implemented");
+        }
+
         public List<DemandPoll> findMatching(OnmsCriteria criteria) {
             throw new UnsupportedOperationException("not yet implemeneted");
         }
 
-        public int countMatching(OnmsCriteria onmsCrit) {
-            throw new UnsupportedOperationException("OnmsDao<DemandPoll,Integer>.countMatching is not yet implemented");
+        public int countMatching(OnmsCriteria criteria) {
+            throw new UnsupportedOperationException("not yet implemented");
         }
 		
 		

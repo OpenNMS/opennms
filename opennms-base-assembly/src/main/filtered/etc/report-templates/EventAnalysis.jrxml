@@ -161,6 +161,8 @@ FROM
 		events.eventuei,
 		events.nodeid,
 		events.eventdisplay
+	ORDER BY
+		tally DESC
 	LIMIT
 		25)
 	AS events_by_node

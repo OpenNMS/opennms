@@ -31,31 +31,33 @@ package org.opennms.web.svclayer.support;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.context.SecurityContext;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.context.SecurityContextImpl;
-import org.springframework.security.providers.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.security.userdetails.User;
+import org.opennms.web.springframework.security.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 public class SpringSecurityContextServiceTest {
 
 	private SpringSecurityContextService m_securityContextService;
 	private final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(
-			"ROLE_USER");
+			Authentication.ROLE_USER);
 	private final GrantedAuthority ROLE_ADMIN = new GrantedAuthorityImpl(
-			"ROLE_ADMIN");
+			Authentication.ROLE_ADMIN);
 	private final GrantedAuthority ROLE_PROVISION = new GrantedAuthorityImpl(
-			"ROLE_PROVISION");
+			Authentication.ROLE_PROVISION);
 	private final GrantedAuthority ROLE_ANONYMOUS = new GrantedAuthorityImpl(
 			"ROLE_ANONYMOUS");
 	private final GrantedAuthority ROLE_DASHBOARD = new GrantedAuthorityImpl(
-			"ROLE_DASHBOARD");
+			Authentication.ROLE_DASHBOARD);
 
 	private final String USERNAME = "opennms";
 
@@ -65,8 +67,8 @@ public class SpringSecurityContextServiceTest {
 	public void setUp() throws Exception {
 		SecurityContext context = new SecurityContextImpl();
 		User principal = new User(USERNAME, PASS, true, true, true, true,
-				new GrantedAuthority[] { ROLE_ADMIN, ROLE_PROVISION });
-		Authentication auth = new PreAuthenticatedAuthenticationToken(
+				Arrays.asList(new GrantedAuthority[] { ROLE_ADMIN, ROLE_PROVISION }));
+		org.springframework.security.core.Authentication auth = new PreAuthenticatedAuthenticationToken(
 				principal, new Object());
 		context.setAuthentication(auth);
 		SecurityContextHolder.setContext(context);

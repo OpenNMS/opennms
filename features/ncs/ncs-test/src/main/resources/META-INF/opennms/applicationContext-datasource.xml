@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd		
+	">
+
+<!-- --> 
+	<jdbc:embedded-database id="dataSource" />
+<!-- -->
+ <!-- 
+	<bean name="dataSource" class="org.postgresql.ds.PGSimpleDataSource">
+	  <property name="databaseName" value="ncs" />
+	  <property name="user" value="opennms" />
+	</bean>
+ -->	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+      <property name="dataSource" ref="dataSource" />
+    </bean>
+    
+    <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
+    	<constructor-arg ref="jdbcTemplate" />
+ 	</bean>
+
+    
+</beans>

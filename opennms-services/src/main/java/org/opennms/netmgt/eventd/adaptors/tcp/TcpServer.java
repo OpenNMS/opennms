@@ -45,7 +45,7 @@ import org.opennms.netmgt.eventd.adaptors.EventHandler;
 
 /**
  * This class implement the server features necessary to receive events from
- * incomming connections.
+ * incoming connections.
  * 
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http;//www.opennms.org">OpenNMS </a>
@@ -123,7 +123,7 @@ final class TcpServer implements Runnable {
     private InetAddress m_ipAddress;
 
     /**
-     * Constructs a new instance of an server to handle incomming tcp
+     * Constructs a new instance of an server to handle incoming tcp
      * connections.
      *
      * @param parent
@@ -136,7 +136,7 @@ final class TcpServer implements Runnable {
     }
 
     /**
-     * Constructs a new instance of an server to handle incomming tcp
+     * Constructs a new instance of an server to handle incoming TCP
      * connections.
      *
      * @param parent
@@ -240,9 +240,9 @@ final class TcpServer implements Runnable {
     }
 
     /**
-     * The logic execution context to accept and process incomming connection
+     * The logic execution context to accept and process incoming connection
      * requests. When a new connection is received a new thread of control is
-     * crated to process the connection. This method encapsulates that control
+     * created to process the connection. This method encapsulates that control
      * logic so that it can be executed in it's own java thread.
      */
     public void run() {
@@ -281,7 +281,7 @@ final class TcpServer implements Runnable {
         /*
          *
          * Set the initial timeout on the socket. This allows
-         * the thread to wakeup every 1/2 second and check the
+         * the thread to wake up every 1/2 second and check the
          * shutdown status.
          */
         try {

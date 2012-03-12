@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- jmx-datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/jmx-datacollection" -->
+<jmx-datacollection-config rrdRepository="/opt/opennms/share/rrd/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/jmx-datacollection">
+    <jmx-collection name="JSR160-testservice">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+
+            <mbean name="org.opennms.test.MBeanSimple" objectname="org.opennms.test:type=MBeanSimple">
+                <attrib name="AttributeSimpleGauge" alias="AttributeSimpleGau" type="gauge"/>
+            </mbean>
+
+            <mbean name="org.opennms.test.MBeanComposite" objectname="org.opennms.test:type=MBeanComposite">
+                <comp-attrib name="CompositeAttribute" alias="CompositeAttribute" type="Composite">
+                    <comp-member name="committed" alias="committed" type="gauge"/>
+                    <comp-member name="init" alias="init" type="gauge"/>
+                    <comp-member name="max" alias="max" type="gauge"/>
+                    <comp-member name="used" alias="used" type="gauge"/>
+                </comp-attrib>
+            </mbean>
+
+        </mbeans>
+    </jmx-collection>
+</jmx-datacollection-config>

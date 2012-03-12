@@ -36,8 +36,10 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.web.springframework.security.Authentication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.util.AuthorityUtils;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -50,9 +52,14 @@ public class AclUtils {
      *
      * @return a boolean.
      */
-    public static boolean shouldFilter() {
-        return System.getProperty("org.opennms.web.aclsEnabled", "false").equalsIgnoreCase("true") 
-            && !AuthorityUtils.userHasAuthority("ROLE_ADMIN");
+    public static boolean shouldFilter(Collection<? extends GrantedAuthority> authorities) {
+    	for (GrantedAuthority authority : authorities) {
+    		if (Authentication.ROLE_ADMIN.equals(authority.getAuthority())) {
+    			// If the user is in an admin role, then do not filter
+    			return false;
+    		}
+    	}
+    	return System.getProperty("org.opennms.web.aclsEnabled", "false").equalsIgnoreCase("true");
     }
     
     public static interface NodeAccessChecker {
@@ -67,7 +74,7 @@ public class AclUtils {
      */
     public static NodeAccessChecker getNodeAccessChecker(ServletContext sc) {
         
-        if (!shouldFilter()) return new NonFilteringNodeAccessChecker();
+        if (!shouldFilter(SecurityContextHolder.getContext().getAuthentication().getAuthorities())) return new NonFilteringNodeAccessChecker();
         
         ApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(sc);
         

@@ -32,10 +32,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
@@ -74,7 +75,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * The pool of threads that are used to executed the runnable instances
      * scheduled by the class' instance.
      */
-    private RunnableConsumerThreadPool m_runner;
+    private ExecutorService m_runner;
 
     /**
      * The status for this fiber.
@@ -195,9 +196,8 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *            The maximum size of the thread pool.
      */
     public LegacyScheduler(String parent, int maxSize) {
-        String name = parent + "Scheduler-" + maxSize;
         m_status = START_PENDING;
-        m_runner = new RunnableConsumerThreadPool(name + " Pool", 0.6f, 1.0f, maxSize);
+        m_runner = Executors.newFixedThreadPool(maxSize);
         m_queues = new ConcurrentSkipListMap<Long, PeekableFifoQueue<ReadyRunnable>>();
         m_scheduled = 0;
         m_worker = null;
@@ -221,9 +221,8 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *            threads are started.
      */
     public LegacyScheduler(String parent, int maxSize, float lowMark, float hiMark) {
-        String name = parent + "Scheduler-" + maxSize;
         m_status = START_PENDING;
-        m_runner = new RunnableConsumerThreadPool(name + " Pool", lowMark, hiMark, maxSize);
+        m_runner = Executors.newFixedThreadPool(maxSize);
         m_queues = new ConcurrentSkipListMap<Long, PeekableFifoQueue<ReadyRunnable>>();
         m_scheduled = 0;
         m_worker = null;
@@ -312,7 +311,6 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     public synchronized void start() {
         Assert.state(m_worker == null, "The fiber has already run or is running");
 
-        m_runner.start();
         m_worker = new Thread(this, getName());
         m_worker.start();
         m_status = STARTING;
@@ -331,7 +329,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
 
         m_status = STOP_PENDING;
         m_worker.interrupt();
-        m_runner.stop();
+        m_runner.shutdown();
 
         log().info("stop: scheduler stopped");
     }
@@ -393,7 +391,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * @return a {@link java.lang.String} object.
      */
     public String getName() {
-        return m_runner.getName();
+        return m_runner.toString();
     }
     
     /**
@@ -411,7 +409,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *
      * @return thread pool
      */
-    public RunnableConsumerThreadPool getRunner() {
+    public ExecutorService getRunner() {
         return m_runner;
     }
 
@@ -485,7 +483,6 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
              * are peekable fifo queues.
              */
             int runned = 0;
-            FifoQueue<Runnable> out = m_runner.getRunQueue();
             synchronized (m_queues) {
                 /*
                  * Get an iterator so that we can cycle
@@ -518,12 +515,12 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                                 in.remove();
 
                                 // Add runnable to the execution queue
-                                out.add(readyRun);
+                                m_runner.execute(readyRun);
                                 ++runned;
                             }
                         } catch (InterruptedException e) {
                             return; // jump all the way out
-                        } catch (FifoQueueException e) {
+                        } catch (RejectedExecutionException e) {
                             throw new UndeclaredThrowableException(e);
                         }
 

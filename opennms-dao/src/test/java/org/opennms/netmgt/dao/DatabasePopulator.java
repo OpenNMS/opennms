@@ -145,7 +145,7 @@ public class DatabasePopulator {
         
         final NetworkBuilder builder = new NetworkBuilder(distPoller);
         
-        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").getNode());
+        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType("A").getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());
         builder.addCategory(ac);
         builder.addCategory(mid);
@@ -185,7 +185,7 @@ public class DatabasePopulator {
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
         
-        builder.addNode("node2").setForeignSource("imported:").setForeignId("2");
+        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType("A");
         builder.addCategory(mid);
         builder.addCategory(catServers);
         builder.setBuilding("HQ");
@@ -203,7 +203,7 @@ public class DatabasePopulator {
         getNodeDao().flush();
         setNode2(node2);
         
-        builder.addNode("node3").setForeignSource("imported:").setForeignId("3");
+        builder.addNode("node3").setForeignSource("imported:").setForeignId("3").setType("A");
         builder.addCategory(ops);
         builder.addInterface("192.168.3.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(getServiceType("ICMP"));
@@ -218,7 +218,7 @@ public class DatabasePopulator {
         getNodeDao().flush();
         setNode3(node3);
         
-        builder.addNode("node4").setForeignSource("imported:").setForeignId("4");
+        builder.addNode("node4").setForeignSource("imported:").setForeignId("4").setType("A");
         builder.addCategory(ac);
         builder.addInterface("192.168.4.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(getServiceType("ICMP"));
@@ -234,7 +234,7 @@ public class DatabasePopulator {
         setNode4(node4);
         
         //This node purposely doesn't have a foreignId style assetNumber
-        builder.addNode("alternate-node1").getAssetRecord().setAssetNumber("5");
+        builder.addNode("alternate-node1").setType("A").getAssetRecord().setAssetNumber("5");
         builder.addCategory(ac);
         builder.addCategory(catSwitches);
         builder.addInterface("10.1.1.1").setIsManaged("M").setIsSnmpPrimary("P");
@@ -251,7 +251,7 @@ public class DatabasePopulator {
         setNode5(node5);
         
         //This node purposely doesn't have a assetNumber and is used by a test to check the category
-        builder.addNode("alternate-node2").getAssetRecord().setDisplayCategory("category1");
+        builder.addNode("alternate-node2").setType("A").getAssetRecord().setDisplayCategory("category1");
         builder.addCategory(ac);
         builder.addInterface("10.1.2.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(getServiceType("ICMP"));

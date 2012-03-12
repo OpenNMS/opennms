@@ -30,9 +30,9 @@ package org.opennms.netmgt.rtc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -50,7 +50,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * The location where incoming events of interest are enqueued
      */
-    private final FifoQueue<Runnable> m_updaterQ;
+    private final ExecutorService m_updater;
 
     /**
      * Constructor
@@ -58,8 +58,8 @@ final class BroadcastEventProcessor implements EventListener {
      * @param updaterQ
      *            The queue where events of interest are added.
      */
-    BroadcastEventProcessor(FifoQueue<Runnable> updaterQ) {
-        m_updaterQ = updaterQ;
+    BroadcastEventProcessor(ExecutorService updaterQ) {
+        m_updater = updaterQ;
     }
 
     /**
@@ -145,17 +145,14 @@ final class BroadcastEventProcessor implements EventListener {
             if (uei == null)
                 return;
 
-            m_updaterQ.add(new DataUpdater(event));
+            m_updater.execute(new DataUpdater(event));
 
             if (log.isDebugEnabled())
                 log.debug("Event " + uei + " added to updater queue");
 
             // Reset the user timer
             RTCManager.getInstance().resetUserTimer();
-        } catch (InterruptedException ex) {
-            log.error("Failed to process event", ex);
-            return;
-        } catch (FifoQueueException ex) {
+        } catch (RejectedExecutionException ex) {
             log.error("Failed to process event", ex);
             return;
         } catch (Throwable t) {

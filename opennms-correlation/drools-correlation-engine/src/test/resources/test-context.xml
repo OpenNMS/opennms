@@ -7,10 +7,15 @@
         <constructor-arg value="file:src/test/opennms-home/etc/drools-engine.xml" />
     </bean>
 
+    <bean id="droolsCorrelationEngineBuilderConfigurationDirectory" class="java.lang.String">
+        <constructor-arg value="file:src/test/opennms-home/etc/drools-engine.d" />
+    </bean>
+
     <bean id="droolsCorrelationEngineBuilder" class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngineBuilder">
     	<property name="eventIpcManager" ref="eventIpcManager" />
     	<property name="correlationEngineRegistrar" ref="correlator" />
     	<property name="configurationResource" ref="droolsCorrelationEngineBuilderConfigurationResource"/>
+    	<property name="configurationDirectory" ref="droolsCorrelationEngineBuilderConfigurationDirectory"/>
     </bean>
 
     <bean name="correlator" class="org.opennms.netmgt.correlation.drools.MockCorrelator" />

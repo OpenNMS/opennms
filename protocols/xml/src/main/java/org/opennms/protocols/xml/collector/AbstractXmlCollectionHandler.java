@@ -33,8 +33,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,6 +45,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -136,8 +139,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             NodeList resourceList = (NodeList) xpath.evaluate(group.getResourceXpath(), doc, XPathConstants.NODESET);
             for (int j = 0; j < resourceList.getLength(); j++) {
                 Node resource = resourceList.item(j);
-                Node resourceNameNode = group.getKeyXpath() == null ? null : (Node) xpath.evaluate(group.getKeyXpath(), resource, XPathConstants.NODE);
-                String resourceName = resourceNameNode == null ? "node" : resourceNameNode.getNodeValue(); // if key-xpath doesn't exist or not found, a node resource will be assumed.
+                String resourceName = getResourceName(xpath, group, resource);
                 log().debug("fillCollectionSet: processing XML resource " + resourceName);
                 XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
                 AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
@@ -150,6 +152,36 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
                 collectionSet.getCollectionResources().add(collectionResource);
             }
         }
+    }
+
+    /**
+     * Gets the resource name.
+     *
+     * @param xpath the Xpath
+     * @param group the group
+     * @param resource the resource
+     * @return the resource name
+     * @throws XPathExpressionException the x path expression exception
+     */
+    private String getResourceName(XPath xpath, XmlGroup group, Node resource) throws XPathExpressionException {
+        // Processing multiple-key resource name.
+        if (group.hasMultipleResourceKey()) {
+            List<String> keys = new ArrayList<String>();
+            for (String key : group.getXmlResourceKey().getKeyXpathList()) {
+                log().debug("getResourceName: getting key for resource'name using " + key);
+                Node keyNode = (Node) xpath.evaluate(key, resource, XPathConstants.NODE);
+                keys.add(keyNode.getNodeValue() == null ? keyNode.getTextContent() : keyNode.getNodeValue());
+            }
+            return StringUtils.join(keys, "_");
+        }
+        // If key-xpath doesn't exist or not found, a node resource will be assumed.
+        if (group.getKeyXpath() == null) {
+            return "node";
+        }
+        // Processing single-key resource name.
+        log().debug("getResourceName: getting key for resource'name using " + group.getKeyXpath());
+        Node keyNode = (Node) xpath.evaluate(group.getKeyXpath(), resource, XPathConstants.NODE);
+        return keyNode.getNodeValue() == null ? keyNode.getTextContent() : keyNode.getNodeValue();
     }
 
     /**

@@ -957,6 +957,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.criteria</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.lib</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1024,6 +1029,37 @@
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.mdns</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.ncs</groupId>
+        <artifactId>ncs-alarm-gui</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.ncs</groupId>
+        <artifactId>ncs-drools</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.ncs</groupId>
+        <artifactId>ncs-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.ncs</groupId>
+        <artifactId>ncs-northbounder</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.ncs</groupId>
+        <artifactId>ncs-persistence</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.ncs</groupId>
+        <artifactId>ncs-test</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
@@ -2105,7 +2141,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.0</version>
+        <version>2.1</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>

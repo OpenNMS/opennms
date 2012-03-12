@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao;
 import java.io.Serializable;
 import java.util.List;
 
+import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.model.OnmsCriteria;
 
 /**
@@ -87,10 +88,26 @@ public interface OnmsDao<T, K extends Serializable> {
     /**
      * <p>findMatching</p>
      *
+     * @param criteria a {@link org.opennms.core.criteria.Criteria} object.
+     * @return a {@link java.util.List} object.
+     */
+    List<T> findMatching(Criteria criteria);
+
+    /**
+     * <p>findMatching</p>
+     *
      * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria} object.
      * @return a {@link java.util.List} object.
      */
     List<T> findMatching(OnmsCriteria criteria);
+
+    /**
+     * <p>countMatching</p>
+     *
+     * @param onmsCrit a {@link org.opennms.core.criteria.Criteria} object.
+     * @return a int.
+     */
+    int countMatching(final Criteria onmsCrit);
 
     /**
      * <p>countMatching</p>

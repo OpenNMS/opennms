@@ -34,10 +34,10 @@ import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -80,15 +80,15 @@ final class Scheduler implements Runnable, PausableFiber {
     /**
      * The rescan queue where new NessusScan objects are enqueued for execution.
      */
-    private FifoQueue<Runnable> m_scheduledScanQ;
+    private ExecutorService m_scheduledScan;
 
     /**
      * Constructs a new instance of the scheduler.
      * @param vulnscand TODO
      * 
      */
-    Scheduler(FifoQueue<Runnable> rescanQ) throws SQLException {
-        m_scheduledScanQ = rescanQ;
+    Scheduler(ExecutorService rescanQ) throws SQLException {
+        m_scheduledScan = rescanQ;
 
         m_status = START_PENDING;
         m_worker = null;
@@ -311,12 +311,9 @@ final class Scheduler implements Runnable, PausableFiber {
                         //
                         log().debug("Scheduler.run: adding node " + addressInfo + " to the rescan queue.");
 
-                        m_scheduledScanQ.add(addressInfo.getJob());
+                        m_scheduledScan.execute(addressInfo.getJob());
                         added++;
-                    } catch (InterruptedException ex) {
-                        log().info("Scheduler.schedule: failed to add new node to rescan queue", ex);
-                        throw new UndeclaredThrowableException(ex);
-                    } catch (FifoQueueException ex) {
+                    } catch (RejectedExecutionException ex) {
                         log().info("Scheduler.schedule: failed to add new node to rescan queue", ex);
                         throw new UndeclaredThrowableException(ex);
                     }

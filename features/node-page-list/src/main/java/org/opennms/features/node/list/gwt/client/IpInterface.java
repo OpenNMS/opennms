@@ -30,4 +30,8 @@ public class IpInterface extends JavaScriptObject {
     public final native String getMonitoredServiceCount()/*-{
         return this["@monitoredServiceCount"];
     }-*/;
+
+    public final native String getIfIndex() /*-{
+        return this["@ifIndex"];
+    }-*/;
 }

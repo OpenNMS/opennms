@@ -1,9 +1,9 @@
 package org.opennms.netmgt.dao.stats;
 
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.core.criteria.Criteria;
 
 public interface StatisticsService<T> {
 
-    int getTotalCount(final OnmsCriteria criteria);
+    int getTotalCount(final Criteria criteria);
 
 }

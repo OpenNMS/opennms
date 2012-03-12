@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Collection;
+import java.util.Iterator;
 
 import junit.framework.TestCase;
 
@@ -52,7 +54,7 @@ import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.GrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -96,11 +98,12 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
         assertEquals("Comments", null, user.getComments());
         assertEquals("Password", "21232F297A57A5A743894A0E4A801FC3", user.getPassword());
 
-        GrantedAuthority[] authorities = user.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
-        assertEquals("authorities size", 2, authorities.length);
-        assertEquals("authorities 0 name", "ROLE_USER", authorities[0].getAuthority());
-        assertEquals("authorities 2 name", "ROLE_ADMIN", authorities[1].getAuthority());
+        assertEquals("authorities size", 2, authorities.size());
+        Iterator<? extends GrantedAuthority> itr = authorities.iterator();
+        assertEquals("authorities 0 name", Authentication.ROLE_USER, itr.next().getAuthority());
+        assertEquals("authorities 2 name", Authentication.ROLE_ADMIN, itr.next().getAuthority());
     }
 
     @Test
@@ -117,10 +120,10 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
         assertEquals("Comments", null, user.getComments());
         assertEquals("Password", "68154466F81BFB532CD70F8C71426356", user.getPassword());
 
-        GrantedAuthority[] authorities = user.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
-        assertEquals("authorities size", 1, authorities.length);
-        assertEquals("authorities 0 name", "ROLE_RTC", authorities[0].getAuthority());
+        assertEquals("authorities size", 1, authorities.size());
+        assertEquals("authorities 0 name", Authentication.ROLE_RTC, authorities.iterator().next().getAuthority());
     }
 
     @Test
@@ -137,10 +140,10 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
         assertEquals("Comments", null, user.getComments());
         assertEquals("Password", "18126E7BD3F84B3F3E4DF094DEF5B7DE", user.getPassword());
 
-        GrantedAuthority[] authorities = user.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
-        assertEquals("authorities size", 1, authorities.length);
-        assertEquals("authorities 0 name", "ROLE_USER", authorities[0].getAuthority());
+        assertEquals("authorities size", 1, authorities.size());
+        assertEquals("authorities 0 name", Authentication.ROLE_USER, authorities.iterator().next().getAuthority());
     }
     
     @Test
@@ -157,10 +160,10 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
         assertEquals("Comments", null, user.getComments());
         assertEquals("Password", "DC7161BE3DBF2250C8954E560CC35060", user.getPassword());
 
-        GrantedAuthority[] authorities = user.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
-        assertEquals("authorities size", 1, authorities.length);
-        assertEquals("authorities 0 name", "ROLE_DASHBOARD", authorities[0].getAuthority());
+        assertEquals("authorities size", 1, authorities.size());
+        assertEquals("authorities 0 name", Authentication.ROLE_DASHBOARD, authorities.iterator().next().getAuthority());
     }
     
     @Test
@@ -187,14 +190,14 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
             ((SpringSecurityUserDaoImpl) m_springSecurityDao).setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
 
             OnmsUser user;
-            GrantedAuthority[] authorities;
+            Collection<? extends GrantedAuthority> authorities;
             
             user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
-            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.length);
-            assertEquals("user GrantedAuthorities[0]", "ROLE_DASHBOARD", authorities[0].getAuthority());
+            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.size());
+            assertEquals("user GrantedAuthorities[0]", Authentication.ROLE_DASHBOARD, authorities.iterator().next().getAuthority());
 
             /*
              *  On UNIX, the resolution of the last modified time is 1 second,
@@ -210,8 +213,8 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
-            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.length);
-            assertEquals("user GrantedAuthorities[0]", "ROLE_USER", authorities[0].getAuthority());
+            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.size());
+            assertEquals("user GrantedAuthorities[0]", Authentication.ROLE_USER, authorities.iterator().next().getAuthority());
         } finally {
             fa.deleteExpected();
             fa.tearDown();
@@ -257,14 +260,14 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
             ((SpringSecurityUserDaoImpl) m_springSecurityDao).setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
 
             OnmsUser user;
-            GrantedAuthority[] authorities;
+            Collection<? extends GrantedAuthority> authorities;
             
             user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
-            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.length);
-            assertEquals("user GrantedAuthorities[0]", "ROLE_DASHBOARD", authorities[0].getAuthority());
+            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.size());
+            assertEquals("user GrantedAuthorities[0]", Authentication.ROLE_DASHBOARD, authorities.iterator().next().getAuthority());
 
             /*
              *  On UNIX, the resolution of the last modified time is 1 second,
@@ -280,8 +283,8 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
-            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.length);
-            assertEquals("user GrantedAuthorities[0]", "ROLE_USER", authorities[0].getAuthority());
+            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.size());
+            assertEquals("user GrantedAuthorities[0]", Authentication.ROLE_USER, authorities.iterator().next().getAuthority());
 
             long ourLastModifiedTime = magicUsers.lastModified();
             long daoLastModifiedTime = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getMagicUsersLastModified();

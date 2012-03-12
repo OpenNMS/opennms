@@ -61,6 +61,15 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
         };
         addColumn(ipHostNameColumn, "IP Host Name");
         
+        DblClickTextColumn<IpInterface> ifIndexColumn = new DblClickTextColumn<IpInterface>() {
+            
+            @Override
+            public String getValue(IpInterface ipIface) {
+                return ipIface.getIfIndex();
+            }
+        };
+        addColumn(ifIndexColumn, "ifIndex");
+        
         DblClickTextColumn<IpInterface> managedColumn = new DblClickTextColumn<IpInterface>() {
 
             @Override
@@ -69,6 +78,7 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
             }
         };
         addColumn(managedColumn, "Managed");
+        
         
         final SingleSelectionModel<IpInterface> selectionModel = new SingleSelectionModel<IpInterface>();
         setSelectionModel(selectionModel);
