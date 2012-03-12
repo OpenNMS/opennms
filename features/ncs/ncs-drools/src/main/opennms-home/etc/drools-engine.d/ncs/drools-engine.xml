@@ -3,7 +3,7 @@
 	xmlns="http://xmlns.opennms.org/xsd/drools-engine" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://xmlns.opennms.org/xsd/drools-engine http://xmlns.opennms.org/xsd/drools-engine.xsd ">
-  <rule-set name="dependencyRules">
+  <rule-set name="ncs">
     <rule-file>eventMappingRules.drl</rule-file>
     <rule-file>dependencyLoadingRules.drl</rule-file>
     <rule-file>impactPropagationRules.drl</rule-file>
