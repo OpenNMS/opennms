@@ -36,7 +36,6 @@ import org.opennms.core.utils.ThreadCategory;
  /**
   * <p>QueueManager class.</p>
   *
-  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
   * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
   * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
   * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
@@ -45,29 +44,25 @@ import org.opennms.core.utils.ThreadCategory;
 
     FifoQueue<ConvertToEvent> m_backlogQ = new FifoQueueImpl<ConvertToEvent>();
 
-    ConvertToEvent ret;
-
     /**
      * <p>putInQueue</p>
      *
      * @param re a {@link org.opennms.netmgt.syslogd.ConvertToEvent} object.
      */
-    public synchronized void putInQueue(ConvertToEvent re) {
+    public void putInQueue(ConvertToEvent re) {
         // This synchronized method places a message in the queue
         // Category log = ThreadCategory.getInstance(this.getClass());
 
-        ret = re;
 
         try {
-            m_backlogQ.add(ret);
+            m_backlogQ.add(re);
 
         } catch (FifoQueueException e) {
             // log.debug("Caught an exception adding to queue");
         } catch (InterruptedException e) {
             // Error handling by ignoring the problem.
         }
-        // wake up getByteFromQueue() if it has invoked wait().
-        notify();
+
     }// end method putByteInQueue()
 
     // -----------------------------------------------------//
@@ -77,32 +72,21 @@ import org.opennms.core.utils.ThreadCategory;
      *
      * @return a {@link org.opennms.netmgt.syslogd.ConvertToEvent} object.
      */
-    public synchronized ConvertToEvent getFromQueue() {
+    public ConvertToEvent getFromQueue() {
         // This synchronized method removes a message from the queue
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-
-        try {
-            while (m_backlogQ.isEmpty()) {
-                wait();
-            }// end while
-        } catch (final InterruptedException E) {
-            log.info("InterruptedException: " + E, E);
-            Thread.currentThread().interrupt();
-        }// end catch block
 
         // get the byte from the queue
 
         try {
-            ret = m_backlogQ.remove();
+        	return m_backlogQ.remove();
         } catch (FifoQueueException e) {
             log.debug("FifoQueue exception " + e);
         } catch (InterruptedException e) {
             log.debug("Interrupted exception " + e);
         }
 
-        // wake up putByteInQueue() if it has invoked wait().
-        notify();
-        return ret;
+        return null;
     }// end getByteFromQueue()
 
 }

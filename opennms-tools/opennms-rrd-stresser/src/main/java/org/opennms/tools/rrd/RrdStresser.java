@@ -59,6 +59,8 @@ public class RrdStresser {
 
     static Date firstUpdateComplete = null;
 
+    static final String[] RRA_LIST = System.getProperty("rras.list", "RRA:AVERAGE:0.5:1:8928,RRA:AVERAGE:0.5:12:8784,RRA:MIN:0.5:12:8784,RRA:MAX:0.5:12:8784").split(",");
+
     //This is the number of updates that will be performed during a run of this tool 
     static final int MAX_UPDATES = Integer.getInteger("stresstest.maxupdates", 1000).intValue();
 
@@ -172,10 +174,10 @@ public class RrdStresser {
 
     public static void main(final String[] args) throws Exception {
     	
-    	System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+    	//System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
     	
         printHeader();
-        print("Starting demo at " + new Date());
+        print("Starting demo at " + new Date() + " using " + System.getProperty("org.opennms.rrd.strategyClass"));
 
         rrdInitialize();
 
@@ -261,6 +263,7 @@ public class RrdStresser {
         System.out.println("threadCount = " + THREAD_COUNT);
         System.out.println("useQueuing = " + USE_QUEUE);
         System.out.println("queueCreates = " + QUEUE_CREATES);
+        System.out.println("rraList = " + Arrays.asList(RRA_LIST));
         System.out.println();
 
     }
@@ -277,13 +280,12 @@ public class RrdStresser {
         String fileName = getFileName(fileNum);
         File file = new File(fileName);
         String dir = file.getParent();
-        String[] rraList = { "RRA:AVERAGE:0.5:1:8928", "RRA:AVERAGE:0.5:12:8784", "RRA:MIN:0.5:12:8784", "RRA:MAX:0.5:12:8784", };
         String dsName = file.getName();
         if (dsName.endsWith(EXTENSION)) {
             dsName = dsName.substring(0, dsName.length() - EXTENSION.length());
         }
         RrdDataSource rrdDataSource = new RrdDataSource(dsName, "GAUGE", 600, "U", "U");
-		return rrd.createDefinition("stressTest", dir, dsName, 300, Collections.singletonList(rrdDataSource), Arrays.asList(rraList));
+		return rrd.createDefinition("stressTest", dir, dsName, 300, Collections.singletonList(rrdDataSource), Arrays.asList(RRA_LIST));
     }
 
     private static void rrdCreateFile(Object rrdDef) throws Exception {

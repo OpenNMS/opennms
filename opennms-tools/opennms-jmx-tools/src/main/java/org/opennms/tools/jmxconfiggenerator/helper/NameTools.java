@@ -23,11 +23,15 @@
  * http://www.opennms.org/ http://www.opennms.com/
  * *****************************************************************************
  */
-
 package org.opennms.tools.jmxconfiggenerator.helper;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +41,9 @@ import org.slf4j.LoggerFactory;
  * @author Markus Neumann <markus@opennms.com>
  */
 public class NameTools {
-    
+
     private final static Logger logger = LoggerFactory.getLogger(NameTools.class);
+    private static Map<String, String> dictionary = new HashMap<String, String>();
 
     public static String trimByCamelCase(String name, Integer maxLength) {
         String result = "";
@@ -62,44 +67,59 @@ public class NameTools {
     }
 
     public static String trimByDictionary(String name) {
-        Map<String, String> dictionary = new HashMap<String, String>();
-        dictionary.put("Number", "Num");
-        dictionary.put("Average", "Avg");
-        dictionary.put("Compression", "Comp");
-        dictionary.put("Auxillary", "Auxil");
-        dictionary.put("Memory", "Mem");
-        dictionary.put("Virtual", "Virt");
-        dictionary.put("Available", "Avail");
-        dictionary.put("System", "Sys");
-        dictionary.put("Error", "Err");
-        dictionary.put("Committed", "Commit");
-
-        dictionary.put("Identity", "Idnt");
-        dictionary.put("Tokenized", "Toknz");
-        dictionary.put("Token", "Tok");
-        dictionary.put("Count", "Cnt");
-        dictionary.put("User", "Usr");
-        dictionary.put("Users", "Usrs");
-        dictionary.put("Default", "Dflt");
-
         String result = "";
-        String[] nameParts = StringUtils.splitByCharacterTypeCamelCase(name);
 
-        for (int i = 0; i < nameParts.length; i++) {
+        String[] nameParts = StringUtils.splitByCharacterTypeCamelCase(name);
+        for (int i = 0;
+                i < nameParts.length;
+                i++) {
             String namePart = nameParts[i];
 
             for (String word : dictionary.keySet()) {
                 if (namePart.equalsIgnoreCase(word)) {
-                    logger.debug("dictionary Hit at '{}' for '{}'", name ,word);
+                    logger.debug("dictionary Hit at '{}' result '{}'", name, name.replaceAll(word, dictionary.get(word)));
                     nameParts[i] = dictionary.get(word);
-                    logger.debug("namePart after dictionary: '{}', replaced to '{}'", namePart, dictionary.get(word));
                 }
             }
         }
-
         for (String namePart : nameParts) {
             result = result + namePart;
         }
         return result;
     }
+
+    public static void loadExtermalDictionary(String dictionaryFile) {
+        Properties properties = new Properties();
+        try {
+            BufferedInputStream stream = new BufferedInputStream(new FileInputStream(dictionaryFile));
+            properties.load(stream);
+            stream.close();
+        } catch (FileNotFoundException ex) {
+            logger.error("'{}'", ex.getMessage());
+        } catch (IOException ex) {
+            logger.error("'{}'", ex.getMessage());
+        }
+        logger.info("Loaded '{}' external dictionary entiers from '{}'", properties.size(), dictionaryFile);
+        for (Object key : properties.keySet()) {
+            dictionary.put(key.toString(), properties.get(key).toString());
+        }
+        logger.info("Dictionary entries loaded: '{}'", dictionary.size());
+    }
+
+    public static void loadInternalDictionary() {
+        Properties properties = new Properties();
+        try {
+            BufferedInputStream stream = new BufferedInputStream(NameTools.class.getClassLoader().getResourceAsStream("dictionary.properties"));
+            properties.load(stream);
+            stream.close();
+        } catch (IOException ex) {
+            logger.error("Load dictionary entires from internal properties files error: '{}'", ex.getMessage());
+        }
+        logger.info("Loaded '{}' internal dictionary entiers", properties.size());
+        for (Object key : properties.keySet()) {
+            dictionary.put(key.toString(), properties.get(key).toString());
+        }
+        logger.info("Dictionary entries loaded: '{}'", dictionary.size());
+    }
+
 }

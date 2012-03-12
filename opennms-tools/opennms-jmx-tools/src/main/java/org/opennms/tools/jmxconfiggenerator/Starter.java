@@ -36,6 +36,7 @@ import org.opennms.tools.jmxconfiggenerator.graphs.GraphConfigGenerator;
 import org.opennms.tools.jmxconfiggenerator.graphs.JmxConfigReader;
 import org.opennms.tools.jmxconfiggenerator.graphs.Report;
 import org.opennms.tools.jmxconfiggenerator.graphs.SnmpGraphConfigGenerator;
+import org.opennms.tools.jmxconfiggenerator.helper.NameTools;
 import org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfigGenerator;
 
 /**
@@ -46,26 +47,39 @@ public class Starter {
 
     @Option(name = "-jmx", usage = "Generate jmx-datacollection.xml by reading JMX over RMI")
     private boolean jmx = false;
+
     @Option(name = "-service", usage = "Your optional service-name. Like cassandra, jboss, tomcat")
     private String serviceName = "anyservice";
+
     @Option(name = "-host", usage = "Hostname or IP-Adress of JMX-RMI host")
     private String hostName;
+
     @Option(name = "-username", usage = "Username for JMX-RMI Authentication")
     private String username;
+
     @Option(name = "-password", usage = "Password for JMX-RMI Authentication")
     private String password;
+
     @Option(name = "-port", usage = "Port of JMX-RMI service")
     private String port;
+
     @Option(name = "-skipDefaultVM", usage = "set to process default JavaVM Beans.")
     private boolean skipDefaultVM = false;
+
     @Option(name = "-graph", usage = "Generate snmp-graph.properties linke file to out, by reading jmx-datacollection.xml like file from input")
     private boolean graph = false;
+
     @Option(name = "-input", usage = "Jmx-datacolletion.xml like file to parse")
     private String inputFile;
+
     @Option(name = "-out", usage = "File to write generated snmp-graph.properties linke content")
     private String outFile;
+
     @Option(name = "-template", usage = "Template file for SnmpGraphs")
     private String templateFile;
+
+    @Option(name = "-dictionary", usage = "Dictionary properties file for replacing attribute names and parts of this names")
+    private String dictionaryFile;
 
     public static void main(String[] args) throws IOException {
         new Starter().doMain(args);
@@ -86,6 +100,10 @@ public class Starter {
                 throw new CmdLineException(parser, "set jmx or graph.");
             }
             if (jmx && hostName != null && port != null && outFile != null) {
+                NameTools.loadInternalDictionary();
+                if (dictionaryFile != null) {
+                    NameTools.loadExtermalDictionary(dictionaryFile);
+                }
                 JmxDatacollectionConfigGenerator.generateJmxConfig(serviceName, hostName, port, username, password, !skipDefaultVM, outFile);
                 return;
             }
@@ -117,7 +135,7 @@ public class Starter {
             // System.err.println("  Example: java -jar JmxConfigGenerator" +
             // parser.printExample(ALL));
             System.err.println("Examples:");
-            System.err.println(" Generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-skipDefaultVM]");
+            System.err.println(" Generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-skipDefaultVM] [-dictionary dictionary.properties]");
             System.err.println(" Generation of snmp-graph.properties: java -jar JmxConfigGenerator.jar -graph -input test.xml -out test.properies [-template graphTemplate.vm] [-service cassandra]");
         }
     }

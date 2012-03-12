@@ -13,11 +13,11 @@
     <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</event>
     <event>uei.opennms.org/nodes/nodeDown</event>
     <event>uei.opennms.org/nodes/nodeUp</event>
-    <app-context>file:src/main/opennms-home/etc/drools/dependencyRules-context.xml</app-context>
+    <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
     <global name="correlationService" ref="ncsCorrelationService"/>
   </rule-set>
   <rule-set name="eventMappingRules">
-    <rule-file>file:src/main/opennms-home/etc/drools/eventMappingRules.drl</rule-file>
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/eventMappingRules.drl</rule-file>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</event>
@@ -26,11 +26,11 @@
     <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</event>
     <event>uei.opennms.org/nodes/nodeDown</event>
     <event>uei.opennms.org/nodes/nodeUp</event>
-    <app-context>file:src/main/opennms-home/etc/drools/dependencyRules-context.xml</app-context>
+    <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
     <global name="correlationService" ref="ncsCorrelationService"/>
   </rule-set>
   <rule-set name="dependencyLoadingRules">
-    <rule-file>file:src/main/opennms-home/etc/drools/dependencyLoadingRules.drl</rule-file>
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyLoadingRules.drl</rule-file>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</event>
@@ -39,11 +39,11 @@
     <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</event>
     <event>uei.opennms.org/nodes/nodeDown</event>
     <event>uei.opennms.org/nodes/nodeUp</event>
-    <app-context>file:src/main/opennms-home/etc/drools/dependencyRules-context.xml</app-context>
+    <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
     <global name="correlationService" ref="ncsCorrelationService"/>
   </rule-set>
   <rule-set name="impactPropagationRules">
-    <rule-file>file:src/main/opennms-home/etc/drools/impactPropagationRules.drl</rule-file>
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/impactPropagationRules.drl</rule-file>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</event>
@@ -52,13 +52,13 @@
     <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</event>
     <event>uei.opennms.org/nodes/nodeDown</event>
     <event>uei.opennms.org/nodes/nodeUp</event>
-    <app-context>file:src/main/opennms-home/etc/drools/dependencyRules-context.xml</app-context>
+    <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
     <global name="correlationService" ref="ncsCorrelationService"/>
   </rule-set>
   <rule-set name="dependencyRules">
-    <rule-file>file:src/main/opennms-home/etc/drools/eventMappingRules.drl</rule-file>
-    <rule-file>file:src/main/opennms-home/etc/drools/dependencyLoadingRules.drl</rule-file>
-    <rule-file>file:src/main/opennms-home/etc/drools/impactPropagationRules.drl</rule-file>
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/eventMappingRules.drl</rule-file>
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyLoadingRules.drl</rule-file>
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/impactPropagationRules.drl</rule-file>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</event>
@@ -67,7 +67,7 @@
     <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</event>
     <event>uei.opennms.org/nodes/nodeDown</event>
     <event>uei.opennms.org/nodes/nodeUp</event>
-    <app-context>file:src/main/opennms-home/etc/drools/dependencyRules-context.xml</app-context>
+    <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
     <global name="correlationService" ref="ncsCorrelationService"/>
   </rule-set>
 </engine-configuration>
