@@ -37,8 +37,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
@@ -85,6 +87,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
     private Integer m_handlerPoolSize;
     
+    private Integer m_handlerQueueLength;
+
     private EventIpcManagerProxy m_eventIpcManagerProxy;
 
     /**
@@ -504,12 +508,18 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      */
     public synchronized void afterPropertiesSet() {
         Assert.state(m_eventHandlerPool == null, "afterPropertiesSet() has already been called");
-        
+
         Assert.state(m_eventHandler != null, "eventHandler not set");
         Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
-        
-        m_eventHandlerPool = Executors.newFixedThreadPool(m_handlerPoolSize);
-        
+
+        m_eventHandlerPool = new ThreadPoolExecutor(
+            m_handlerPoolSize,
+            m_handlerPoolSize,
+            0L,
+            TimeUnit.MILLISECONDS,
+            m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength)
+        );
+
         // If the proxy is set, make this class its delegate.
         if (m_eventIpcManagerProxy != null) {
             m_eventIpcManagerProxy.setDelegate(this);
@@ -552,6 +562,25 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.state(m_eventHandlerPool == null, "handlerPoolSize property cannot be set after afterPropertiesSet() is called");
         
         m_handlerPoolSize = handlerPoolSize;
+    }
+
+    /**
+     * <p>getHandlerQueueLength</p>
+     *
+     * @return a int.
+     */
+    public int getHandlerQueueLength() {
+        return m_handlerQueueLength;
+    }
+
+    /**
+     * <p>setHandlerQueueLength</p>
+     *
+     * @param size a int.
+     */
+    public void setHandlerQueueLength(int size) {
+        Assert.state(m_eventHandlerPool == null, "handlerPoolSize property cannot be set after afterPropertiesSet() is called");
+        m_handlerQueueLength = size;
     }
 
     /**
