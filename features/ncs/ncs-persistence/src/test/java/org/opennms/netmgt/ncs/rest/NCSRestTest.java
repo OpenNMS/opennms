@@ -1,18 +1,10 @@
 package org.opennms.netmgt.ncs.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-import java.io.StringReader;
-import java.util.Properties;
-
-//import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.BasicConfigurator;
-import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.netmgt.model.ncs.NCSComponent;
 
 public class NCSRestTest extends AbstractSpringJerseyRestTestCase {
 	
