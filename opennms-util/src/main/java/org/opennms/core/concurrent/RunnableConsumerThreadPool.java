@@ -114,7 +114,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      * </p>
      * 
      * <p>
-     * To avoid the condition of toggleing a single thread the lo and hi water
+     * To avoid the condition of toggling a single thread the lo and hi water
      * marks should have a large cushion between them.
      * </p>
      * 

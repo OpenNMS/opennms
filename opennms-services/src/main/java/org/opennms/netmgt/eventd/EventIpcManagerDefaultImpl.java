@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -63,6 +64,29 @@ import org.springframework.util.StringUtils;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
+
+    public static class DiscardTrapsAndSyslogEvents implements RejectedExecutionHandler {
+        /**
+         * Creates a <tt>DiscardOldestPolicy</tt> for the given executor.
+         */
+        public DiscardTrapsAndSyslogEvents() { }
+
+        /**
+         * Obtains and ignores the next task that the executor
+         * would otherwise execute, if one is immediately available,
+         * and then retries execution of task r, unless the executor
+         * is shut down, in which case task r is instead discarded.
+         * @param r the runnable task requested to be executed
+         * @param e the executor attempting to execute this task
+         */
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
+            if (!e.isShutdown()) {
+                e.getQueue().poll();
+                e.execute(r);
+            }
+        }
+    }
+
     /**
      * Hash table of list of event listeners keyed by event UEI
      */
