@@ -150,11 +150,11 @@ public class WillItUnmarshalTest {
      */
     @Test
     public void testGoodOrdering() throws Exception {
-        LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
+    	// LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
 
         Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-good-ordering.xml");
         System.out.println("Unmarshalling: " + resource.getURI());
-        CastorUtils.unmarshal(Events.class, resource);
+        JaxbUtils.unmarshal(Events.class, resource);
     }
 
     /**
@@ -163,11 +163,11 @@ public class WillItUnmarshalTest {
      */
     @Test
     public void testLenientOrdering() throws Exception {
-        LocalConfiguration.getInstance().getProperties().put(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY, "true");
+    	// LocalConfiguration.getInstance().getProperties().put(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY, "true");
 
         Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml");
         System.out.println("Unmarshalling: " + resource.getURI());
-        CastorUtils.unmarshal(Events.class, resource);
+        JaxbUtils.unmarshal(Events.class, resource);
     }
 
     /**
@@ -178,7 +178,7 @@ public class WillItUnmarshalTest {
     public void testLenientOrderingAsDefault() throws Exception {
         Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml");
         System.out.println("Unmarshalling: " + resource.getURI());
-        CastorUtils.unmarshal(Events.class, resource);
+        JaxbUtils.unmarshal(Events.class, resource);
     }
     
     /**
@@ -731,19 +731,19 @@ public class WillItUnmarshalTest {
     private void unmarshalAndAnticipateException(String file, String exceptionText) throws ValidationException, IOException, AssertionFailedError {
         boolean gotException = false;
         try {
-            CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, file));
-        } catch (MarshalException e) {
+            JaxbUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, file));
+        } catch (final Exception e) {
             if (e.getMessage().contains(exceptionText)) {
                 gotException = true;
             } else {
-                AssertionFailedError newE = new AssertionFailedError("unmarshal threw MarshalException but did not contain expected text: " + exceptionText);
+                AssertionFailedError newE = new AssertionFailedError("unmarshal threw an exception but did not contain expected text: " + exceptionText);
                 newE.initCause(e);
                 throw newE;
             }
         }
 
         if (!gotException) {
-            fail("unmarshal did not throw MarshalException containing expected text: " + exceptionText);
+            fail("unmarshal did not throw exception containing expected text: " + exceptionText);
         }
     }
 }

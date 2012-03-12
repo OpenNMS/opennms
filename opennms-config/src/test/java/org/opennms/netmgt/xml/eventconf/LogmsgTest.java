@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class LogmsgTest extends XmlTest<Logmsg> {
+public class LogmsgTest extends XmlTestNoCastor<Logmsg> {
 
-	public LogmsgTest(final Logmsg sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public LogmsgTest(final Logmsg sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 

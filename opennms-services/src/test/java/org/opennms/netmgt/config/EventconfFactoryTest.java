@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
@@ -377,9 +378,9 @@ public class EventconfFactoryTest {
             } });
         Set<File> eventFilesOnDisk = new HashSet<File>(Arrays.asList(eventFilesOnDiskArray));
 
-        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("eventconf.xml");
-        Events events = CastorUtils.unmarshal(Events.class, is);
-        is.close();
+        Reader r = ConfigurationTestUtils.getReaderForConfigFile("eventconf.xml");
+        Events events = JaxbUtils.unmarshal(Events.class, r);
+        r.close();
         Set<File> eventFilesIncluded = new HashSet<File>(events.getEventFileCollection().size());
         for (String eventFile : events.getEventFileCollection()) {
             eventFilesIncluded.add(new File(eventConfFile.getParentFile(), eventFile));

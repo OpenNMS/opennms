@@ -1,277 +1,148 @@
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 package org.opennms.netmgt.xml.eventconf;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-
-/**
- * The mask element
- * 
- * @version $Revision$ $Date$
- */
+import org.exolab.castor.xml.ValidationException;
+import org.exolab.castor.xml.Validator;
+import org.opennms.core.xml.ValidateUsing;
+import org.xml.sax.ContentHandler;
 
 @XmlRootElement(name="filter")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Filter implements java.io.Serializable {
+@ValidateUsing("eventconf.xsd")
+public class Filter implements Serializable {
+	private static final long serialVersionUID = -5048479164713766981L;
 
+	private String m_eventparm;
+    private String m_pattern;
+    private String m_replacement;
 
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -1342650136073016207L;
-
-    /**
-     * Field _eventparm.
-     */
-    private java.lang.String _eventparm;
-
-    /**
-     * Field _pattern.
-     */
-    private java.lang.String _pattern;
-
-    /**
-     * Field _replacement.
-     */
-    private java.lang.String _replacement;
-
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
-
-    public Filter() {
-        super();
-    }
-
-
-      //-----------/
-     //- Methods -/
-    //-----------/
-
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override()
-    public boolean equals(
-            final java.lang.Object obj) {
-        if ( this == obj )
-            return true;
-        
-        if (obj instanceof Filter) {
-        
-            Filter temp = (Filter)obj;
-            if (this._eventparm != null) {
-                if (temp._eventparm == null) return false;
-                else if (!(this._eventparm.equals(temp._eventparm))) 
-                    return false;
-            }
-            else if (temp._eventparm != null)
-                return false;
-            if (this._pattern != null) {
-                if (temp._pattern == null) return false;
-                else if (!(this._pattern.equals(temp._pattern))) 
-                    return false;
-            }
-            else if (temp._pattern != null)
-                return false;
-            if (this._replacement != null) {
-                if (temp._replacement == null) return false;
-                else if (!(this._replacement.equals(temp._replacement))) 
-                    return false;
-            }
-            else if (temp._replacement != null)
-                return false;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the value of field 'eventparm'.
-     * 
-     * @return the value of field 'Eventparm'.
-     */
     @XmlAttribute(name="eventparm")
-    public java.lang.String getEventparm(
-    ) {
-        return this._eventparm;
+    public String getEventparm() {
+        return m_eventparm;
     }
 
-    /**
-     * Returns the value of field 'pattern'.
-     * 
-     * @return the value of field 'Pattern'.
-     */
     @XmlAttribute(name="pattern")
-    public java.lang.String getPattern(
-    ) {
-        return this._pattern;
+    public String getPattern() {
+        return m_pattern;
     }
 
-    /**
-     * Returns the value of field 'replacement'.
-     * 
-     * @return the value of field 'Replacement'.
-     */
     @XmlAttribute(name="replacement")
-    public java.lang.String getReplacement(
-    ) {
-        return this._replacement;
+    public String getReplacement() {
+        return m_replacement;
     }
 
     /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode(
-    ) {
-        int result = 17;
-        
-        if (_eventparm != null) {
-           result = 37 * result + _eventparm.hashCode();
-        }
-        if (_pattern != null) {
-           result = 37 * result + _pattern.hashCode();
-        }
-        if (_replacement != null) {
-           result = 37 * result + _replacement.hashCode();
-        }
-        
-        return result;
-    }
-
-    /**
-     * Method isValid.
-     * 
      * @return true if this object is valid according to the schema
      */
-    public boolean isValid(
-    ) {
+    public boolean isValid() {
         try {
             validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
+        } catch (final ValidationException vex) {
             return false;
         }
         return true;
     }
 
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final Writer out) throws MarshalException, ValidationException {
         Marshaller.marshal(this, out);
     }
 
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
         Marshaller.marshal(this, handler);
     }
 
-    /**
-     * Sets the value of field 'eventparm'.
-     * 
-     * @param eventparm the value of field 'eventparm'.
-     */
-    public void setEventparm(
-            final java.lang.String eventparm) {
-        this._eventparm = eventparm;
+    public void setEventparm(final String eventparm) {
+        m_eventparm = eventparm.intern();
     }
 
-    /**
-     * Sets the value of field 'pattern'.
-     * 
-     * @param pattern the value of field 'pattern'.
-     */
-    public void setPattern(
-            final java.lang.String pattern) {
-        this._pattern = pattern;
+    public void setPattern(final String pattern) {
+        m_pattern = pattern.intern();
     }
 
-    /**
-     * Sets the value of field 'replacement'.
-     * 
-     * @param replacement the value of field 'replacement'.
-     */
-    public void setReplacement(
-            final java.lang.String replacement) {
-        this._replacement = replacement;
+    public void setReplacement(final String replacement) {
+        m_replacement = replacement.intern();
     }
 
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * org.opennms.netmgt.xml.eventconf.Filter
-     */
-    public static org.opennms.netmgt.xml.eventconf.Filter unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.eventconf.Filter) Unmarshaller.unmarshal(org.opennms.netmgt.xml.eventconf.Filter.class, reader);
+    public static Filter unmarshal(final Reader reader) throws MarshalException, ValidationException {
+        return (Filter) Unmarshaller.unmarshal(Filter.class, reader);
     }
 
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
+    public void validate() throws ValidationException {
+        new Validator().validate(this);
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((m_eventparm == null) ? 0 : m_eventparm.hashCode());
+		result = prime * result + ((m_pattern == null) ? 0 : m_pattern.hashCode());
+		result = prime * result + ((m_replacement == null) ? 0 : m_replacement.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Filter)) return false;
+		final Filter other = (Filter) obj;
+		if (m_eventparm == null) {
+			if (other.m_eventparm != null) return false;
+		} else if (!m_eventparm.equals(other.m_eventparm)) {
+			return false;
+		}
+		if (m_pattern == null) {
+			if (other.m_pattern != null) return false;
+		} else if (!m_pattern.equals(other.m_pattern)) {
+			return false;
+		}
+		if (m_replacement == null) {
+			if (other.m_replacement != null) return false;
+		} else if (!m_replacement.equals(other.m_replacement)) {
+			return false;
+		}
+		return true;
+	}
 
 }
