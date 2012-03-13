@@ -51,6 +51,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	private DatabasePopulator m_databasePopulator;
 
+	@Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
 		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
@@ -67,6 +68,18 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		assertTrue(xml.contains("This is a test alarm"));
 		assertTrue(xml.contains("<nodeLabel>node1</nodeLabel>"));
 	}
+
+    @Test
+    public void testAlarmQueryByNode() throws Exception {
+		String xml = sendRequest(GET, "/alarms", parseParamData("nodeId=6&limit=1"), 200);
+		assertTrue(xml.contains("<alarms"));
+		xml = sendRequest(GET, "/alarms", parseParamData("node.id=6&limit=1"), 200);
+		assertTrue(xml.contains("<alarms"));
+		xml = sendRequest(GET, "/alarms", parseParamData("node.label=node1&limit=1"), 200);
+		assertTrue(xml.contains("node1"));
+        xml = sendRequest(GET, "/alarms", parseParamData("ipInterface.ipAddress=192.168.1.2&limit=1"), 200);
+        assertTrue(xml.contains("node1"));
+    }
 
     @Test
     public void testAlarmQueryBySeverityEquals() throws Exception {
@@ -106,7 +119,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         xml = sendRequest(GET, "/alarms", parseParamData("comparator=gt&severity=CLEARED&limit=1"), 200);
         assertTrue(xml.contains("This is a test alarm"));
     }
-
+    
     @Test
     public void testComplexQuery() throws Exception {
         String xml = null;

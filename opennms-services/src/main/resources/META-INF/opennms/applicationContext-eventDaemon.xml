@@ -42,11 +42,13 @@
 
   <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
     <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
+    <property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength"/>
     <property name="eventHandler" ref="eventdEventHandler"/>
     <property name="eventIpcManagerProxy" ref="eventIpcManager"/>
   </bean>
 
   <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
+  <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
   
   <!-- 
   <bean id="eventdServiceManager" class="org.opennms.netmgt.eventd.JdbcEventdServiceManager">

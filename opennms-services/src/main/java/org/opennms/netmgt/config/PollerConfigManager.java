@@ -957,7 +957,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private void initializeServiceMonitors() {
         // Load up an instance of each monitor from the config
         // so that the event processor will have them for
-        // new incomming events to create pollable service objects.
+        // new incoming events to create pollable service objects.
         //
         LogUtils.debugf(this, "start: Loading monitors");
 

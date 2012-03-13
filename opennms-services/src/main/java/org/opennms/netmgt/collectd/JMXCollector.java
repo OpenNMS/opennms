@@ -55,7 +55,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
-import org.opennms.netmgt.config.collectd.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;

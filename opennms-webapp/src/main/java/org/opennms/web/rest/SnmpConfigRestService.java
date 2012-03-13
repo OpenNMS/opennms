@@ -126,14 +126,14 @@ public class SnmpConfigRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_XML)
     @Path("{ipAddr}")
-    public Response setSnmpInfo(@PathParam("ipAddr") String ipAddr, SnmpInfo snmpInfo) {
+    public Response setSnmpInfo(@PathParam("ipAddr") final String ipAddr, final SnmpInfo snmpInfo) {
         try {
-            SnmpEventInfo eventInfo = snmpInfo.createEventInfo(ipAddr);
+        	final SnmpEventInfo eventInfo = snmpInfo.createEventInfo(ipAddr);
             m_snmpPeerFactory.define(eventInfo);
             //TODO: this shouldn't be a static call
             SnmpPeerFactory.saveCurrent();
             return Response.ok().build();
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             return Response.serverError().build();
         }
         
@@ -150,15 +150,15 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Path("{ipAddr}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateInterface(@PathParam("ipAddr") String ipAddress, MultivaluedMapImpl params) {
+    public Response updateInterface(@PathParam("ipAddr") final String ipAddress, final MultivaluedMapImpl params) {
         try {
-            SnmpInfo info = new SnmpInfo();
+        	final SnmpInfo info = new SnmpInfo();
             setProperties(params, info);
-            SnmpEventInfo eventInfo = info.createEventInfo(ipAddress);
+            final SnmpEventInfo eventInfo = info.createEventInfo(ipAddress);
             m_snmpPeerFactory.define(eventInfo);
             SnmpPeerFactory.saveCurrent();
             return Response.ok().build();
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             return Response.serverError().build();
         }
     }

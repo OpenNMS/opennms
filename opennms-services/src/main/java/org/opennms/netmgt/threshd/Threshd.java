@@ -143,7 +143,7 @@ public final class Threshd extends AbstractServiceDaemon {
         //
         // Load up an instance of each thresholder from the config
         // so that the event processor will have them for
-        // new incomming events to create collectable service objects.
+        // new incoming events to create collectable service objects.
         //
         initializeThresholders();
 

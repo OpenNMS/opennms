@@ -3,33 +3,51 @@
   xmlns:beans="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd"> 
-              
-          
-  <http access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" entry-point-ref="mappedEntryPoint">
-    <intercept-url pattern="/" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
-    <intercept-url pattern="/favicon.ice" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/logoff.jsp" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
-    <intercept-url pattern="/login.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
-    <intercept-url pattern="/accessDenied.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
-    <intercept-url pattern="/css/*.css" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
-    <intercept-url pattern="/js/pngfix.js" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
-    <intercept-url pattern="/js/global.js" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
-    <intercept-url pattern="/images/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
-    <intercept-url pattern="/webstart/**" filters="none" />
-    <intercept-url pattern="/admin/node/add.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
-    <intercept-url pattern="/admin/provisioningGroups.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
-    <intercept-url pattern="/admin/editForeignSource.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
-    <intercept-url pattern="/admin/editProvisioningGroup.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
-    <intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
-    <intercept-url pattern="/rtc/post/**" access="ROLE_RTC" />
-    
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd"> 
+  
+  <!-- Only use BASIC auth for the RESTful APIs -->
+  <http pattern="/rest/**" realm="OpenNMS Realm">
     <intercept-url pattern="/rest/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
     <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
     <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+
+    <http-basic />
+
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
+  </http>
+  
+  <!-- Only use BASIC auth for the RSS URL -->
+  <http pattern="/rss.jsp*" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm">
+    <intercept-url pattern="/rss.jsp*" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+
+    <http-basic />
+
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
+  </http>
+  
+  <!-- Allow anonymous access to the webstart portion of the app -->
+  <http pattern="/webstart/**" security="none"/>
+
+  <!-- Only one <http> section can match the implicit '/**' pattern -->
+  <http pattern="/**" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm">
+    <intercept-url pattern="/" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/favicon.ice" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/logoff.jsp" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/login.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/accessDenied.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/css/*.css" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/js/pngfix.js" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/js/global.js" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/images/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/admin/node/add.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
+    <intercept-url pattern="/admin/provisioningGroups.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
+    <intercept-url pattern="/admin/editForeignSource.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
+    <intercept-url pattern="/admin/editProvisioningGroup.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
+    <intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
+    <intercept-url pattern="/rtc/post/**" access="ROLE_RTC" />
     
     <intercept-url pattern="/frontpage.htm" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/dashboard.jsp" access="ROLE_USER,ROLE_DASHBOARD" />
@@ -42,47 +60,24 @@
     <intercept-url pattern="/**" access="ROLE_USER" />
     
     <form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" />
-    <anonymous />
     <http-basic />
     <logout logout-success-url="/logoff.jsp" />
-    <!-- 
     
-    I have not used auto-config because I am not certain that the remember me service will work with LDAP  
-    If you can get remember-me to work with LDAP then it may be an interesting service to use
-    
-    Since I'm relying on others help with LDAP I didn't want to have anything here to make it harder for them :-)
-        
-    <remember-me />
-    -->
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
-   <authentication-provider user-service-ref="openNMSUserDetailsService">
-     <password-encoder ref="upperCaseMd5PasswordEncoder" />
-   </authentication-provider>
-   
-  <beans:bean id="mappedEntryPoint" class="org.opennms.web.springframework.security.AntPatternBasedAuthenticationEntryPointChain">
-    <beans:property name="patterns">
-      <beans:list>
-        <beans:value>/rss.jsp*</beans:value>
-        <beans:value>/rest/**</beans:value>
-      </beans:list>
-    </beans:property>
-    <!-- This bean is the entry point defined by the <http-basic> element above -->
-    <beans:property name="matchingEntryPoint" ref="_basicAuthenticationEntryPoint" />
-    <!-- This bean is the entry point defined by the <form-login> element above -->
-    <beans:property name="nonMatchingEntryPoint" ref="_formLoginEntryPoint" />
+  <authentication-manager>
+    <authentication-provider user-service-ref="openNMSUserDetailsService">
+      <password-encoder ref="upperCaseMd5PasswordEncoder" />
+    </authentication-provider>
+  </authentication-manager>
+  
+  <!--  This filter is used to setup the Hibernate query filtering to authorized nodes only -->
+  <beans:bean id="authFilterEnabler" class="org.opennms.web.springframework.security.AuthFilterEnabler">
+    <beans:property name="filterManager" ref="filterManager" />
+    <beans:property name="groupDao" ref="groupDao" />
   </beans:bean>
 
-   <!--  This filter is used to setup the Hibernate query filtering to authorized nodes only -->
-   <beans:bean id="authFilterEnabler" class="org.opennms.web.springframework.security.AuthFilterEnabler">
-     <custom-filter position="LAST"/>
-     <beans:property name="filterManager" ref="filterManager" />
-     <beans:property name="groupDao" ref="groupDao" />
-   </beans:bean>
-
-
-  <!--  We need a mechanism to return the correct entryPoint for rss and restful api's  -->
-              
   <!-- ===================== USER DAO AUTHENTICATION ==================== -->
   <beans:bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
     <beans:property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />

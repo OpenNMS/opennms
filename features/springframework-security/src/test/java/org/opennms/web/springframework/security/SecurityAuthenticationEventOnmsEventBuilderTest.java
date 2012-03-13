@@ -33,6 +33,8 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
+import java.util.Arrays;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -47,13 +49,12 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.security.Authentication;
-import org.springframework.security.BadCredentialsException;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.event.authentication.AuthenticationFailureBadCredentialsEvent;
-import org.springframework.security.event.authentication.AuthenticationSuccessEvent;
-import org.springframework.security.providers.AbstractAuthenticationToken;
-import org.springframework.security.ui.WebAuthenticationDetails;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
@@ -74,7 +75,7 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
         WebAuthenticationDetails details = new WebAuthenticationDetails(request);
         verify(request, session);
         
-        Authentication authentication = new TestingDetailsAuthenticationToken(userName, "cheesiness", new GrantedAuthority[0], details);
+        org.springframework.security.core.Authentication authentication = new TestingDetailsAuthenticationToken(userName, "cheesiness", new GrantedAuthority[0], details);
         AuthenticationSuccessEvent authEvent = new AuthenticationSuccessEvent(authentication);
         
         SecurityAuthenticationEventOnmsEventBuilder builder = new SecurityAuthenticationEventOnmsEventBuilder();
@@ -107,7 +108,7 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
         WebAuthenticationDetails details = new WebAuthenticationDetails(request);
         verify(request, session);
         
-        Authentication authentication = new TestingDetailsAuthenticationToken(userName, "cheesiness", new GrantedAuthority[0], details);
+        org.springframework.security.core.Authentication authentication = new TestingDetailsAuthenticationToken(userName, "cheesiness", new GrantedAuthority[0], details);
         AuthenticationFailureBadCredentialsEvent authEvent = new AuthenticationFailureBadCredentialsEvent(authentication, new BadCredentialsException("you are bad!"));
         
         SecurityAuthenticationEventOnmsEventBuilder builder = new SecurityAuthenticationEventOnmsEventBuilder();
@@ -178,7 +179,7 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
         private Object m_details;
 
         public TestingDetailsAuthenticationToken(Object principal, Object credentials, GrantedAuthority[] authorities, Object details) {
-            super(authorities);
+            super(Arrays.asList(authorities));
             m_principal = principal;
             m_credentials = credentials;
             m_details = details;

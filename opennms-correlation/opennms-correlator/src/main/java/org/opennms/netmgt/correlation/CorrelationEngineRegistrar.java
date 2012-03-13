@@ -46,6 +46,13 @@ public interface CorrelationEngineRegistrar {
     public abstract void addCorrelationEngine(CorrelationEngine engine);
     
     /**
+     * <p>addCorrelationEngine</p>
+     *
+     * @param engine a {@link org.opennms.netmgt.correlation.CorrelationEngine} object.
+     */
+    public abstract void addCorrelationEngines(CorrelationEngine... engines);
+    
+    /**
      * <p>getEngines</p>
      *
      * @return a {@link java.util.List} object.

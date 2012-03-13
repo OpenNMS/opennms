@@ -423,7 +423,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 			throw new UndeclaredThrowableException(ex);
 		}
 
-		// set up thread to handle incomming OpenNMS events
+		// set up thread to handle incoming OpenNMS events
 		log.info("Qosd.start(): initialising OpenNMSEventHandlerThread");
 		try {
 			openNMSEventHandlerThread= new OpenNMSEventHandlerThread();

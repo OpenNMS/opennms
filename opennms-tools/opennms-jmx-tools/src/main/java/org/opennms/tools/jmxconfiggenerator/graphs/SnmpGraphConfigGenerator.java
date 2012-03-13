@@ -32,16 +32,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.bind.JAXB;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxCollection;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbeans;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Neumann <markus@opennms.com>
  */
 
+@Deprecated
 public class SnmpGraphConfigGenerator {
 	
 	private static Logger logger = LoggerFactory.getLogger(SnmpGraphConfigGenerator.class);
@@ -57,7 +52,7 @@ public class SnmpGraphConfigGenerator {
 	private static String graphList = "";
 	private static String graphBodies = "";
 	private static String output = "";
-	private static String serviceName = "cassandra";
+	private static String serviceName = "";
 	
 	private static List<String> tangoColors = new ArrayList<String>();
 	private static int colorIndex = 0;

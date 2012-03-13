@@ -16,7 +16,7 @@
    | with <optional>true</optional>
   -->
   <properties>
-    <spring.version>3.0.2.RELEASE</spring.version>
+    <spring.version>3.0.7.RELEASE</spring.version>
     <spring.osgi.version>1.2.1</spring.osgi.version>
   </properties>
   <dependencies>

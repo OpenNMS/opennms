@@ -46,7 +46,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.fiber.Fiber;
@@ -62,7 +61,7 @@ import org.xml.sax.InputSource;
 /**
  * Provides the logic and context of execution necessary to actually process a
  * client's event XML document. When a new stream handler is created and
- * assigned to an execution context it will unmarshall the remote document. The
+ * assigned to an execution context it will unmarshal the remote document. The
  * events from the remote document are then passed to the registered event
  * handlers. All successfully processed events are acknowledged to the client by
  * the generation of an XML event receipt.
@@ -201,7 +200,6 @@ final class TcpStreamHandler implements Runnable {
                 tchunker.wait();
             } catch (final InterruptedException e) {
             	LogUtils.errorf(this, e, "The thread was interrupted.");
-            	Thread.currentThread().interrupt();
             }
         }
 
@@ -215,7 +213,6 @@ final class TcpStreamHandler implements Runnable {
                             pipeXchange.wait(500);
                         } catch (final InterruptedException e) {
                             LogUtils.errorf(this, e, "The thread was interrupted.");
-                            Thread.currentThread().interrupt();
                             break MAINLOOP;
                         }
                     } else {
@@ -300,7 +297,7 @@ final class TcpStreamHandler implements Runnable {
                         return 0;
                     }
 
-                    final DateFormat fmt = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, Locale.US);
+                    final DateFormat fmt = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
 
                     Date de1 = null;
                     try {
@@ -432,7 +429,6 @@ final class TcpStreamHandler implements Runnable {
             LogUtils.debugf(this, "record handler stopped");
         } catch (final InterruptedException e) {
             LogUtils.warnf(this, e, "The thread was interrupted while trying to close the record handler.");
-            Thread.currentThread().interrupt();
         }
 
         // regardless of any errors, be sure to release the socket.

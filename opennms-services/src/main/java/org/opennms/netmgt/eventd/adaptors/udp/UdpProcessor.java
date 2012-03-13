@@ -53,7 +53,7 @@ final class UdpProcessor implements Runnable {
     private Thread m_context;
 
     /**
-     * The list of incomming events.
+     * The list of incoming events.
      */
     private List<UdpReceivedEvent> m_eventsIn;
 

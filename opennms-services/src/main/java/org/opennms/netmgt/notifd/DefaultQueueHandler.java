@@ -113,7 +113,6 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
                     try {
                         wait();
                     } catch (final InterruptedException ex) {
-                    	Thread.currentThread().interrupt();
                         // exit
                         break;
                     }
@@ -132,7 +131,6 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
                 try {
                     wait(m_interval);
                 } catch (final InterruptedException ex) {
-                	Thread.currentThread().interrupt();
                     // exit
                     break;
                 }

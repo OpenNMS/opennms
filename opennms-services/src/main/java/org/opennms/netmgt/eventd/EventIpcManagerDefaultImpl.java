@@ -36,8 +36,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
@@ -57,11 +62,31 @@ import org.springframework.util.StringUtils;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
+
+    public static class DiscardTrapsAndSyslogEvents implements RejectedExecutionHandler {
+        /**
+         * Creates a <tt>DiscardOldestPolicy</tt> for the given executor.
+         */
+        public DiscardTrapsAndSyslogEvents() { }
+
+        /**
+         * Obtains and ignores the next task that the executor
+         * would otherwise execute, if one is immediately available,
+         * and then retries execution of task r, unless the executor
+         * is shut down, in which case task r is instead discarded.
+         * @param r the runnable task requested to be executed
+         * @param e the executor attempting to execute this task
+         */
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
+            if (!e.isShutdown()) {
+                e.getQueue().poll();
+                e.execute(r);
+            }
+        }
+    }
+
     /**
      * Hash table of list of event listeners keyed by event UEI
      */
@@ -80,12 +105,14 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * The thread pool handling the events
      */
-    private RunnableConsumerThreadPool m_eventHandlerPool;
+    private ExecutorService m_eventHandlerPool;
 
     private EventHandler m_eventHandler;
 
     private Integer m_handlerPoolSize;
     
+    private Integer m_handlerQueueLength;
+
     private EventIpcManagerProxy m_eventIpcManagerProxy;
 
     /**
@@ -252,14 +279,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.notNull(eventLog, "eventLog argument cannot be null");
 
         try {
-            m_eventHandlerPool.getRunQueue().add(m_eventHandler.createRunnable(eventLog));
-        } catch (InterruptedException e) {
+            m_eventHandlerPool.execute(m_eventHandler.createRunnable(eventLog));
+        } catch (RejectedExecutionException e) {
             log().warn("Unable to queue event log to the event handler pool queue: " + e, e);
-
-            throw new UndeclaredEventException(e);
-        } catch (FifoQueueException e) {
-            log().warn("Unable to queue event log to the event handler pool queue: " + e, e);
-
             throw new UndeclaredEventException(e);
         }
     }
@@ -510,13 +532,18 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      */
     public synchronized void afterPropertiesSet() {
         Assert.state(m_eventHandlerPool == null, "afterPropertiesSet() has already been called");
-        
+
         Assert.state(m_eventHandler != null, "eventHandler not set");
         Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
-        
-        m_eventHandlerPool = new RunnableConsumerThreadPool("EventHandlerPool", 0.6f, 1.0f, m_handlerPoolSize);
-        m_eventHandlerPool.start();
-        
+
+        m_eventHandlerPool = new ThreadPoolExecutor(
+            m_handlerPoolSize,
+            m_handlerPoolSize,
+            0L,
+            TimeUnit.MILLISECONDS,
+            m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength)
+        );
+
         // If the proxy is set, make this class its delegate.
         if (m_eventIpcManagerProxy != null) {
             m_eventIpcManagerProxy.setDelegate(this);
@@ -559,6 +586,25 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.state(m_eventHandlerPool == null, "handlerPoolSize property cannot be set after afterPropertiesSet() is called");
         
         m_handlerPoolSize = handlerPoolSize;
+    }
+
+    /**
+     * <p>getHandlerQueueLength</p>
+     *
+     * @return a int.
+     */
+    public int getHandlerQueueLength() {
+        return m_handlerQueueLength;
+    }
+
+    /**
+     * <p>setHandlerQueueLength</p>
+     *
+     * @param size a int.
+     */
+    public void setHandlerQueueLength(int size) {
+        Assert.state(m_eventHandlerPool == null, "handlerPoolSize property cannot be set after afterPropertiesSet() is called");
+        m_handlerQueueLength = size;
     }
 
     /**

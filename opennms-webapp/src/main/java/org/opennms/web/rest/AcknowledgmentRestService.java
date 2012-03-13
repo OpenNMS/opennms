@@ -29,7 +29,6 @@
 package org.opennms.web.rest;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -41,6 +40,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.NotificationDao;
@@ -48,7 +48,6 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAcknowledgmentCollection;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,12 +125,14 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsAcknowledgmentCollection getAcks() {
-        OnmsAcknowledgmentCollection coll = new OnmsAcknowledgmentCollection(m_ackDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
+        final CriteriaBuilder builder = getQueryFilters(m_uriInfo.getQueryParameters());
+        OnmsAcknowledgmentCollection coll = new OnmsAcknowledgmentCollection(m_ackDao.findMatching(builder.toCriteria()));
 
         //For getting totalCount
-        OnmsCriteria crit = new OnmsCriteria(OnmsAcknowledgment.class);
-        addFiltersToCriteria(m_uriInfo.getQueryParameters(), crit, OnmsAcknowledgment.class);
-        coll.setTotalCount(m_ackDao.countMatching(crit));
+        builder.clearOrder();
+        builder.limit(null);
+        builder.offset(null);
+        coll.setTotalCount(m_ackDao.countMatching(builder.toCriteria()));
 
         return coll;
     }
@@ -146,7 +147,13 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public OnmsAcknowledgment acknowledge(@FormParam("alarmId") String alarmId, @FormParam("notifId") String notifId, @FormParam("action") String action) {
+    public OnmsAcknowledgment acknowledge(MultivaluedMap<String, String> formParams) {
+        String alarmId = formParams.getFirst("alarmId");
+        String notifId = formParams.getFirst("notifId");
+        String action = formParams.getFirst("action");
+        if (action == null) {
+            action = "ack";
+        }
     	OnmsAcknowledgment ack = null;
     	if (alarmId == null && notifId == null) {
     		throw new IllegalArgumentException("You must supply either an alarmId or notifId!");
@@ -159,10 +166,6 @@ public class AcknowledgmentRestService extends OnmsRestService {
     		final OnmsNotification notification = m_notificationDao.get(Integer.valueOf(notifId));
     		ack = new OnmsAcknowledgment(notification);
     	}
-        
-        if (action == null) {
-            action = "ack";
-        }
         
         if ("ack".equals(action)) {
             ack.setAckAction(AckAction.ACKNOWLEDGE);
@@ -182,22 +185,10 @@ public class AcknowledgmentRestService extends OnmsRestService {
         
     }
 
-    private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsAcknowledgment.class);
-
-        setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
-        addOrdering(params, criteria, false);
-        // Set default ordering
-        addOrdering(
-            new MultivaluedMapImpl(
-                new String[][] { 
-                    new String[] { "orderBy", "ackTime" }, 
-                    new String[] { "order", "desc" } 
-                }
-            ), criteria, false
-        );
-        addFiltersToCriteria(params, criteria, OnmsAcknowledgment.class);
-
-        return getDistinctIdCriteria(OnmsAcknowledgment.class, criteria);
+    private CriteriaBuilder getQueryFilters(MultivaluedMap<String,String> params) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsAcknowledgment.class);
+        applyQueryFilters(params, builder);
+        builder.orderBy("ackTime").desc();
+        return builder;
     }
 }

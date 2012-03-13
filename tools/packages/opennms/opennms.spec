@@ -152,6 +152,19 @@ embedded in the main OpenNMS core process.
 %{extrainfo2}
 
 
+%package ncs
+Summary:	Network Component Services for OpenNMS
+Group:		Applications/System
+Requires:	opennms-webapp-jetty = %{version}-%{release}
+
+%description ncs
+NCS provides a framework for doing correlation of service events across
+disparate nodes.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package plugins
 Summary:	All Plugins for OpenNMS
 Group:		Applications/System
@@ -303,6 +316,18 @@ The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
 %{extrainfo2}
 
 
+%package plugin-collector-juniper-tca
+Summary:    Juniper TCA Collectorf or OpenNMS
+Group:      Applications/System
+Requires:   opennms-core = %{version}-%{release}
+
+%description plugin-collector-juniper-tca
+The Juniper JCA collector provides a collector plugin for Collectd to collect data from TCA devices.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %prep
 
 tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
@@ -423,6 +448,8 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
+	grep -v 'ncs-northbounder-configuration.xml' | \
+	grep -v 'drools-engine.d/ncs' | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
@@ -434,11 +461,16 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
+	grep -v 'tca-datacollection-config.xml' | \
+	grep -v 'juniper-tca' | \
 	sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
+	grep -v 'ncs-northbounder-configuration.xml' | \
+	grep -v 'ncs.xml' | \
+	grep -v 'drools-engine.d/ncs' | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
@@ -450,6 +482,8 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
+	grep -v 'tca-datacollection-config.xml' | \
+	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
@@ -459,10 +493,13 @@ find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
 	grep -v 'etc-pristine' | \
+	grep -v 'ncs-' | \
 	grep -v 'nsclient-config.xsd' | \
 	grep -v 'nsclient-datacollection.xsd' | \
 	grep -v 'xmp-config.xsd' | \
 	grep -v 'xmp-datacollection-config.xsd' | \
+	grep -v 'tca-datacollection-config.xml' | \
+	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/contrib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
@@ -470,6 +507,7 @@ find $RPM_BUILD_ROOT%{instprefix}/contrib ! -type d | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	grep -v 'ncs-' | \
 	grep -v 'provisioning-adapter' | \
 	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
@@ -477,6 +515,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'gnu-crypto' | \
 	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
+	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -487,6 +526,13 @@ find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
+	grep -v '/WEB-INF/jsp/alarm/ncs' | \
+	grep -v '/WEB-INF/jsp/ncs/' | \
+	grep -v '/META-INF/opennms/component-service.xml' | \
+	sort >> %{_tmppath}/files.jetty
+find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
+	sed -e "s,^$RPM_BUILD_ROOT,%config ," | \
+	grep -v '/WEB-INF/ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir} -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -524,10 +570,21 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{bindir}/remote-poller.sh
 %{instprefix}/bin/remote-poller.jar
 
+%files ncs
+%defattr(644 root root 755)
+%{instprefix}/lib/ncs-*.jar
+%config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
+%config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
+%{sharedir}/xsds/ncs-*.xsd
+%config %{jettydir}/%{servletdir}/WEB-INF/ncs*.xml
+%config %{jettydir}/%{servletdir}/WEB-INF/jsp/alarm/ncs-*
+%config %{jettydir}/%{servletdir}/WEB-INF/jsp/ncs
+%config %{jettydir}/%{servletdir}/META-INF/opennms/component-service.xml
+%{sharedir}/etc-pristine/drools-engine.d/ncs/*
+%{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
+
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
-%{instprefix}/jetty-webapps
-%config %{jettydir}/%{servletdir}/WEB-INF/*.xml
 %config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
 %config %{jettydir}/opennms-remoting/WEB-INF/*.properties
@@ -600,6 +657,16 @@ rm -rf $RPM_BUILD_ROOT
 %{instprefix}/lib/org.opennms.protocols.xmp-*.jar
 %{sharedir}/etc-pristine/xmp*.xml
 %{sharedir}/xsds/xmp*.xsd
+
+%files plugin-collector-juniper-tca
+%defattr(664 root root 775)
+%config(noreplace) %{instprefix}/etc/tca*.xml
+%config(noreplace) %{instprefix}/etc/datacollection/juniper-tca*
+%config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/juniper-tca*
+%{instprefix}/lib/org.opennms.features.juniper-tca-collector-*.jar
+%{sharedir}/etc-pristine/tca*.xml
+%{sharedir}/etc-pristine/datacollection/juniper-tca*
+%{sharedir}/etc-pristine/snmp-graph.properties.d/juniper-tca*
 
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
