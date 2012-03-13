@@ -98,7 +98,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * Hash table of event listener threads keyed by the listener's id
      */
-    private Map<String, ListenerThread> m_listenerThreads = new HashMap<String, ListenerThread>();
+    private Map<String, EventListenerExecutor> m_listenerThreads = new HashMap<String, EventListenerExecutor>();
 
     /**
      * The thread pool handling the events
@@ -119,7 +119,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * ListenerThread reads events off of this queue and sends them to the
      * appropriate listener.
      */
-    private static class ListenerThread {
+    private static class EventListenerExecutor {
         /**
          * Listener to which this thread is dedicated
          */
@@ -133,7 +133,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         /**
          * Constructor
          */
-        ListenerThread(EventListener listener) {
+        EventListenerExecutor(EventListener listener) {
             m_listener = listener;
             m_delegateThread = Executors.newFixedThreadPool(1);
         }
@@ -421,7 +421,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             return;
         }
         
-        ListenerThread listenerThread = new ListenerThread(listener);
+        EventListenerExecutor listenerThread = new EventListenerExecutor(listener);
         m_listenerThreads.put(listener.getName(), listenerThread);
     }
 
