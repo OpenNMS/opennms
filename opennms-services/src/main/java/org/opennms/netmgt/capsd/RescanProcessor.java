@@ -105,11 +105,11 @@ public final class RescanProcessor implements Runnable {
 
     final static String SQL_DB_REPARENT_IP_INTERFACE = "UPDATE ipinterface SET nodeID=? WHERE nodeID=? AND ipaddr=? AND isManaged!='D'";
 
-    final static String SQL_DB_REPARENT_SNMP_IF_LOOKUP = "SELECT ipaddr FROM snmpinterface " + "WHERE nodeID=? AND snmpifindex=?";
+    final static String SQL_DB_REPARENT_SNMP_IF_LOOKUP = "SELECT id FROM snmpinterface WHERE nodeID=? AND snmpifindex=?";
 
     final static String SQL_DB_REPARENT_SNMP_IF_DELETE = "DELETE FROM snmpinterface " + "WHERE nodeID=? AND snmpifindex=?";
 
-    final static String SQL_DB_REPARENT_SNMP_INTERFACE = "UPDATE snmpinterface SET nodeID=? " + "WHERE nodeID=? AND ipaddr=? AND snmpifindex=?";
+    final static String SQL_DB_REPARENT_SNMP_INTERFACE = "UPDATE snmpinterface SET nodeID=? WHERE nodeID=? AND snmpifindex=?";
 
     final static String SQL_DB_REPARENT_IF_SERVICES_LOOKUP = "SELECT serviceid FROM ifservices " + "WHERE nodeID=? AND ipaddr=? AND ifindex = ? " + "AND status!='D'";
 
@@ -2055,8 +2055,7 @@ public final class RescanProcessor implements Runnable {
                     
                     snmpInterfaceStmt.setInt(1, newNodeId);
                     snmpInterfaceStmt.setInt(2, oldNodeId);
-                    snmpInterfaceStmt.setString(3, ipaddr);
-                    snmpInterfaceStmt.setInt(4, ifIndex);
+                    snmpInterfaceStmt.setInt(3, ifIndex);
 
                     // execute and log
                     snmpInterfaceStmt.executeUpdate();
