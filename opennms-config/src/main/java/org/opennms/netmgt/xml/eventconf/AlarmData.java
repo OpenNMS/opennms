@@ -35,6 +35,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -58,9 +61,11 @@ import org.xml.sax.ContentHandler;
 public class AlarmData implements Serializable {
 	private static final long serialVersionUID = -4111377873947389525L;
 
-	@XmlAttribute(name="reduction-key")
+	@NotNull
+	@XmlAttribute(name="reduction-key", required=true)
     private String m_reductionKey;
 
+	@Min(1)
 	@XmlAttribute(name="alarm-type")
     private Integer m_alarmType;
 
@@ -70,6 +75,7 @@ public class AlarmData implements Serializable {
     @XmlAttribute(name="auto-clean")
     private Boolean m_autoClean;
 
+    @Pattern(regexp="(CommunicationsAlarm|ProcessingErrorAlarm|EnvironmentalAlarm|QualityOfServiceAlarm|EquipmentAlarm|IntegrityViolation|SecurityViolation|TimeDomainViolation|OperationalViolation|PhysicalViolation)")
     @XmlAttribute(name="x733-alarm-type")
     private String m_x733AlarmType;
 
@@ -93,7 +99,7 @@ public class AlarmData implements Serializable {
     }
 
     public Boolean getAutoClean() {
-        return m_autoClean;
+        return m_autoClean == null? Boolean.FALSE : m_autoClean; // XSD default is false
     }
 
     public String getClearKey() {

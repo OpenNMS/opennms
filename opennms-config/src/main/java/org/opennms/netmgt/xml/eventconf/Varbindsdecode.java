@@ -35,10 +35,13 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -55,6 +58,7 @@ import org.xml.sax.ContentHandler;
 @XmlRootElement(name="varbindsdecode")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("eventconf.xsd")
+@XmlType(propOrder={"m_parmid", "m_decodes"})
 public class Varbindsdecode implements Serializable {
 	private static final long serialVersionUID = -6483547334892439888L;
 	private static final Decode[] EMPTY_DECODE_ARRAY = new Decode[0];
@@ -62,13 +66,16 @@ public class Varbindsdecode implements Serializable {
 	/**
      * The identifier of the parameters to be decoded
      */
+	@NotNull
 	@XmlElement(name="parmid", required=true)
     private String m_parmid;
 
     /**
      * The value to string decoding map
      */
-	@XmlElement(name="decode")
+	@Size(min=1)
+	@NotNull
+	@XmlElement(name="decode", required=true)
     private List<Decode> m_decodes = new ArrayList<Decode>();
 
     public String getParmid() {

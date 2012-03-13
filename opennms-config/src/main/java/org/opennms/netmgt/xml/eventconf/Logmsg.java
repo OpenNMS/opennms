@@ -33,6 +33,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -70,6 +71,7 @@ public class Logmsg implements Serializable {
 	@XmlAttribute(name="notify", required=false)
     private Boolean m_notify;
 
+	@Pattern(regexp="(logndisplay|displayonly|logonly|suppress|donotpersist|discardtraps)")
 	@XmlAttribute(name="dest", required=false)
     private String m_dest;
 
@@ -82,7 +84,7 @@ public class Logmsg implements Serializable {
     }
 
     public String getDest() {
-        return m_dest;
+        return m_dest == null ? "logndisplay" : m_dest; // Default is "logndisplay" according to XSD
     }
 
     public Boolean getNotify() {

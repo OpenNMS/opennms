@@ -33,10 +33,12 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.exolab.castor.xml.MarshalException;
@@ -55,6 +57,7 @@ import org.xml.sax.ContentHandler;
 @XmlRootElement(name="operaction")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("eventconf.xsd")
+@XmlType(propOrder={"m_state", "m_menutext"})
 public class Operaction implements Serializable {
 	private static final long serialVersionUID = -576703485771037486L;
 
@@ -64,7 +67,8 @@ public class Operaction implements Serializable {
 	@XmlAttribute(name="state")
     private String m_state;
 
-	@XmlAttribute(name="menutext")
+	@NotNull
+	@XmlAttribute(name="menutext", required=true)
     private String m_menutext;
 
     public String getContent() {
@@ -76,7 +80,7 @@ public class Operaction implements Serializable {
     }
 
     public String getState() {
-        return m_state;
+        return m_state == null? "on" : m_state; // Default state is "on" according to the XSD
     }
 
     /**

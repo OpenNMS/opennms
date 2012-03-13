@@ -33,6 +33,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -60,6 +61,7 @@ public class Script implements Serializable {
 	@XmlValue
     private String m_content = "";
 
+	@NotNull
 	@XmlAttribute(name="language", required=true)
     private String m_language;
 

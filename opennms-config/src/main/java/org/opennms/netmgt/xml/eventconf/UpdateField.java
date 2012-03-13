@@ -31,6 +31,7 @@ package org.opennms.netmgt.xml.eventconf;
 import java.io.Reader;
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -53,6 +54,7 @@ import org.opennms.core.xml.ValidateUsing;
 public class UpdateField implements Serializable {
 	private static final long serialVersionUID = 6199096374743077928L;
 
+	@NotNull
 	@XmlAttribute(name="field-name", required=true)
     private String m_fieldName;
     

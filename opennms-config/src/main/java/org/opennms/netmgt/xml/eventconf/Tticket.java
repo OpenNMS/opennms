@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -59,6 +60,7 @@ public class Tticket implements java.io.Serializable {
 	@XmlValue
     private String m_content;
 
+	@Pattern(regexp="(on|off)", message="'state' must be 'on' or 'off'")
 	@XmlAttribute(name="state", required=false)
     private String m_state;
 
@@ -67,7 +69,7 @@ public class Tticket implements java.io.Serializable {
     }
 
     public String getState() {
-        return m_state;
+        return m_state == null? "on" : m_state; // Default state is "on" according to the XSD
     }
 
     public void setContent(final String content) {

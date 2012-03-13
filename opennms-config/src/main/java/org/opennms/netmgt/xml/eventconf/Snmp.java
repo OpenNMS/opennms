@@ -33,10 +33,12 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -52,12 +54,14 @@ import org.xml.sax.ContentHandler;
 @XmlRootElement(name="snmp")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("eventconf.xsd")
+@XmlType(propOrder={"m_id", "m_idText", "m_version", "m_specific", "m_generic", "m_community"})
 public class Snmp implements Serializable {
 	private static final long serialVersionUID = 7180451834403181827L;
 
 	/**
      * The SNMP enterprise ID
      */
+	@NotNull
 	@XmlElement(name="id", required=true)
     private String m_id;
 
@@ -70,6 +74,7 @@ public class Snmp implements Serializable {
     /**
      * The SNMP version
      */
+	@NotNull
 	@XmlElement(name="version", required=true)
     private String m_version;
 

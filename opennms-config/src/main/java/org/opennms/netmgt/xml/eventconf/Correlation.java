@@ -38,6 +38,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -66,18 +68,21 @@ public class Correlation implements Serializable {
 	/**
      * The state determines if event is correlated
      */
+	@Pattern(regexp="(on|off)")
 	@XmlAttribute(name="state")
     private String m_state;
 
     /**
      * The correlation path
      */
+	@Pattern(regexp="(suppressDuplicates|cancellingEvent|suppressAndCancel|pathOutage")
 	@XmlAttribute(name="path")
     private String m_path;
 
     /**
      * A canceling UEI for this event
      */
+	@Size(min=0)
 	@XmlElement(name="cuei")
     private List<String> m_cueis = new ArrayList<String>();
 
@@ -140,11 +145,11 @@ public class Correlation implements Serializable {
     }
 
     public String getPath() {
-        return m_path;
+        return m_path == null? "suppressDuplicates" : m_path; // XSD default is suppressDuplicates
     }
 
     public String getState() {
-        return m_state;
+        return m_state == null? "off" : m_state; // XSD default is off
     }
 
     /**

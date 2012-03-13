@@ -144,62 +144,23 @@ public class WillItUnmarshalTest {
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
-    /**
-     * Ensure we can load a good configuration file without enabling
-     * lenient sequence ordering.
-     */
     @Test
     public void testGoodOrdering() throws Exception {
-    	// LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
-
         Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-good-ordering.xml");
         System.out.println("Unmarshalling: " + resource.getURI());
         JaxbUtils.unmarshal(Events.class, resource);
     }
 
-    /**
-     * Ensure we can load a bad configuration file with
-     * lenient sequence ordering enabled explicitly.
-     */
     @Test
     public void testLenientOrdering() throws Exception {
-    	// LocalConfiguration.getInstance().getProperties().put(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY, "true");
-
         Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml");
         System.out.println("Unmarshalling: " + resource.getURI());
         JaxbUtils.unmarshal(Events.class, resource);
     }
 
-    /**
-     * Ensure we can load a bad configuration file with
-     * lenient sequence ordering enabled in castor.properties.
-     */
     @Test
-    public void testLenientOrderingAsDefault() throws Exception {
-        Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml");
-        System.out.println("Unmarshalling: " + resource.getURI());
-        JaxbUtils.unmarshal(Events.class, resource);
-    }
-    
-    /**
-     * Ensure we fail to load a bad configuration file with
-     * lenient sequence ordering disabled explicitly.
-     */
-    @Test
-    public void testLenientOrderingDisabled() throws Exception {
-        LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
-
-        unmarshalAndAnticipateException("eventconf-bad-ordering.xml", "Element with name event passed to type events in incorrect order");
-    }
-    
-    @Test
-    public void testNotIgnoreExtraAttributeAsDefault() throws Exception {
-        unmarshalAndAnticipateException("eventconf-bad-attribute.xml", "The attribute 'bad-attribute' appears illegally on element 'event'");
-    }
-
-    @Test
-    public void testNotIgnoreExtraElementAsDefault() throws Exception {
-        unmarshalAndAnticipateException("eventconf-bad-element.xml", "unable to find FieldDescriptor for 'bad-element' in ClassDescriptor of events");
+    public void testFailOnInvalidElement() throws Exception {
+        unmarshalAndAnticipateException("eventconf-bad-element.xml", "unexpected element (uri:\"http://xmlns.opennms.org/xsd/eventconf\", local:\"bad-element\")");
     }
 
     @Test
@@ -728,7 +689,7 @@ public class WillItUnmarshalTest {
         return config;
     }
 
-    private void unmarshalAndAnticipateException(String file, String exceptionText) throws ValidationException, IOException, AssertionFailedError {
+    private void unmarshalAndAnticipateException(final String file,  final String exceptionText) throws ValidationException, IOException, AssertionFailedError {
         boolean gotException = false;
         try {
             JaxbUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, file));

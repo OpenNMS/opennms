@@ -38,11 +38,14 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -55,6 +58,7 @@ import org.xml.sax.ContentHandler;
 @XmlRootElement(name="varbind")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("eventconf.xsd")
+@XmlType(propOrder={"m_vbnumber", "m_values"})
 public class Varbind implements Serializable {
 	private static final long serialVersionUID = 2387062723322720364L;
 
@@ -63,9 +67,12 @@ public class Varbind implements Serializable {
     @XmlAttribute(name="textual-convention", required=false)
     private String m_textualConvention;
 
+	@NotNull
 	@XmlElement(name="vbnumber", required=true)
     private Integer m_vbnumber;
 
+	@Size(min=1)
+	@NotNull
 	@XmlElement(name="vbvalue", required=true)
     private List<String> m_values = new ArrayList<String>();
 

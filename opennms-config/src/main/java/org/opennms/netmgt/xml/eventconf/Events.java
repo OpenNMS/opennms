@@ -39,10 +39,12 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -55,6 +57,7 @@ import org.xml.sax.ContentHandler;
 @XmlRootElement(name="events")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("eventconf.xsd")
+@XmlType(propOrder={})
 public class Events implements Serializable {
 	private static final long serialVersionUID = -49037181336311348L;
 
@@ -67,12 +70,11 @@ public class Events implements Serializable {
 	@XmlElement(name="global", required=false)
     private Global m_global;
 
+	@Size(min=1)
 	@XmlElement(name="event", required=true)
     private List<Event> m_events = new ArrayList<Event>();
 
-    /**
-     * Field _eventFileList.
-     */
+	@Size(min=0)
 	@XmlElement(name="event-file", required=false)
     private List<String> m_eventFiles = new ArrayList<String>();
 

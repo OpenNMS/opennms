@@ -11,6 +11,33 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>com.sun.tools.jxc.maven2</groupId>
+        <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+        <version>1.2</version>
+        <configuration>
+          <destdir>${project.build.directory}/xsds</destdir>
+          <srcdir>${basedir}/src/main/java</srcdir>
+          <verbose>false</verbose>
+          <includes>
+            <include>org/opennms/netmgt/xml/eventconf/*.java</include>
+          </includes>
+          <schemas>
+            <schema>
+              <namespace>http://xmlns.opennms.org/xsd/eventconf</namespace>
+              <file>eventconf.xsd</file>
+            </schema>
+          </schemas>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>castor-maven-plugin</artifactId>
       </plugin>

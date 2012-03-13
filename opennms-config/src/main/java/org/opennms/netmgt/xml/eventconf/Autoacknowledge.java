@@ -33,6 +33,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -61,6 +62,7 @@ public class Autoacknowledge implements Serializable {
 	@XmlValue
     private String m_content = "";
 
+	@Pattern(regexp="(on|off)")
 	@XmlAttribute(name="state", required=false)
     private String m_state;
 
@@ -69,7 +71,7 @@ public class Autoacknowledge implements Serializable {
     }
 
     public String getState() {
-        return m_state;
+        return m_state == null? "on" : m_state; // XSD default is on
     }
 
     /**

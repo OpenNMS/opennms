@@ -33,6 +33,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -57,6 +58,7 @@ public class Global implements Serializable {
 	/**
      * Security settings for this configuration
      */
+	@NotNull
 	@XmlElement(name="security", required=true)
     private Security m_security;
 

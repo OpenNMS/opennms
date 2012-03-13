@@ -33,6 +33,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -52,21 +53,26 @@ import org.xml.sax.ContentHandler;
 public class Filter implements Serializable {
 	private static final long serialVersionUID = -5048479164713766981L;
 
+    @NotNull
+    @XmlAttribute(name="eventparm", required=true)
 	private String m_eventparm;
+
+    @NotNull
+    @XmlAttribute(name="pattern", required=true)
     private String m_pattern;
+    
+    @NotNull
+    @XmlAttribute(name="replacement", required=true)
     private String m_replacement;
 
-    @XmlAttribute(name="eventparm")
     public String getEventparm() {
         return m_eventparm;
     }
 
-    @XmlAttribute(name="pattern")
     public String getPattern() {
         return m_pattern;
     }
 
-    @XmlAttribute(name="replacement")
     public String getReplacement() {
         return m_replacement;
     }

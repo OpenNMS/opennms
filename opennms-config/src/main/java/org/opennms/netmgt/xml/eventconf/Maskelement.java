@@ -38,10 +38,13 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -57,13 +60,17 @@ import org.xml.sax.ContentHandler;
 @XmlRootElement(name="maskelement")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("eventconf.xsd")
+@XmlType(propOrder={"m_name", "m_values"})
 public class Maskelement implements Serializable {
 	private static final long serialVersionUID = -3932312038903008806L;
 	private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
+	@NotNull
 	@XmlElement(name="mename", required=true)
     private String m_name;
 
+	@NotNull
+	@Size(min=1)
 	@XmlElement(name="mevalue", required=true)
     private List<String> m_values = new ArrayList<String>();
 
