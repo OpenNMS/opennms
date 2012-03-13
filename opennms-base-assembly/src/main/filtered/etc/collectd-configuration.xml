@@ -18,6 +18,12 @@
 			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 
+        <service name="TCA" interval="10000" user-defined="false" status="on">
+            <parameter key="collection" value="default"/>
+            <parameter key="thresholding-enabled" value="true"/>
+        </service>
+
+
 		<service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
 			<parameter key="port" value="18980"/>
 			<parameter key="retry" value="2"/>
@@ -35,5 +41,6 @@
 	<collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
 	<collector service="WMI"  class-name="org.opennms.netmgt.collectd.WmiCollector"/>
 	<collector service="OpenNMS-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+    <collector service="TCA"  class-name="org.opennms.netmgt.collectd.tca.TcaCollector"/>
 </collectd-configuration>
 
