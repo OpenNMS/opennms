@@ -70,7 +70,7 @@ public class RuleSet implements Serializable {
     private String _name;
 
 	@XmlAttribute(name="assert-behaviour")
-	private String _assertBehaviour = "identity";
+	private String _assertBehaviour;
     /**
      * Field _ruleFileList.
      */
@@ -113,7 +113,7 @@ public class RuleSet implements Serializable {
     //-----------/
 
     public String getAssertBehaviour() {
-		return _assertBehaviour;
+		return _assertBehaviour == null? "identity" : _assertBehaviour;
 	}
 
 
