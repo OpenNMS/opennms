@@ -51,7 +51,7 @@ import org.opennms.netmgt.model.OnmsUser;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 
 /**
@@ -71,7 +71,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
     private static final UpperCaseMd5PasswordEncoder PASSWORD_ENCODER = new UpperCaseMd5PasswordEncoder();
 
-    private static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.ROLE_USER);
+    private static final GrantedAuthority ROLE_USER = new SimpleGrantedAuthority(Authentication.ROLE_USER);
 
     private String m_usersConfigurationFile;
     
@@ -266,7 +266,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         }
 
         for (String role : roleList) {
-            authorities.add(new GrantedAuthorityImpl(role));
+            authorities.add(new SimpleGrantedAuthority(role));
         }
 
         return authorities;

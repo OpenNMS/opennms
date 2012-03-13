@@ -31,7 +31,7 @@ package org.opennms.core.queue;
 /**
  * <p>
  * The root of all exceptions dealing with queues that implement the
- * {@link FifoQueue FifoQueue}interface. This exception is the general purpose
+ * {@link FifoQueue FifoQueue} interface. This exception is the general purpose
  * exception that is thrown when a queue error occurs.
  * </p>
  *
@@ -51,7 +51,7 @@ public class FifoQueueException extends RuntimeException {
     }
 
     /**
-     * Constructs a new instace of the exception with the specific message.
+     * Constructs a new instance of the exception with the specific message.
      *
      * @param why
      *            The message associated with the exception

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Increase the acceptable size of a category group to 64 characters. -->
+    <changeSet author="rangerrick" id="1.10.1-increase-group-size">
+        <modifyDataType tableName="category_group" columnName="groupid" newDataType="varchar(64)" />
+        <rollback>
+          <modifyDataType tableName="category_group" columnName="groupid" newDataType="varchar(16)" />
+        </rollback>
+    </changeSet>
+
+
+</databaseChangeLog>
