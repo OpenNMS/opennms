@@ -57,7 +57,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
@@ -259,9 +259,9 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         }
 
         String[] rolesArray = roles.replaceAll("\\s*","").split(",");
-        Collection<GrantedAuthorityImpl> authorities = new ArrayList<GrantedAuthorityImpl>(rolesArray.length);
+        Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(rolesArray.length);
         for (String role : rolesArray) {
-            authorities.add(new GrantedAuthorityImpl(role));
+            authorities.add(new SimpleGrantedAuthority(role));
         }
         if(logger.isDebugEnabled()) {
             StringBuffer readRoles = new StringBuffer();

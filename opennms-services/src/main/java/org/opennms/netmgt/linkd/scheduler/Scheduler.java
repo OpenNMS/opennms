@@ -29,7 +29,6 @@
 package org.opennms.netmgt.linkd.scheduler;
 
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -37,7 +36,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.LogUtils;
 

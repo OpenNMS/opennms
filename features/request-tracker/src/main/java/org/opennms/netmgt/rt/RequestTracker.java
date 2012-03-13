@@ -419,7 +419,6 @@ public class RequestTracker {
         return ticketAttributes;
     }
 
-    @SuppressWarnings("unchecked")
     protected Map<String,String> parseResponseStream(final InputStream responseStream) throws IOException {
         final Map<String,String> ticketAttributes = new HashMap<String,String>();
 
