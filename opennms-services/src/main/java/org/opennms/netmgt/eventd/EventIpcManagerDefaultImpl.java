@@ -121,7 +121,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * ListenerThread reads events off of this queue and sends it to the
      * appropriate listener
      */
-    private class ListenerThread implements Runnable {
+    private static class ListenerThread implements Runnable {
         /**
          * Listener to which this thread is dedicated
          */
@@ -523,8 +523,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         return m_listeners.remove(listener);
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(EventIpcManagerDefaultImpl.class);
     }
 
     /**
@@ -536,6 +536,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.state(m_eventHandler != null, "eventHandler not set");
         Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
 
+        /**
+         * Create a fixed-size thread pool. The number of threads can be configured by using
+         * the "receivers" attribute in the config. The queue length for the pool can be configured
+         * with the "queueLength" attribute in the config.
+         */
         m_eventHandlerPool = new ThreadPoolExecutor(
             m_handlerPoolSize,
             m_handlerPoolSize,
@@ -603,7 +608,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * @param size a int.
      */
     public void setHandlerQueueLength(int size) {
-        Assert.state(m_eventHandlerPool == null, "handlerPoolSize property cannot be set after afterPropertiesSet() is called");
+        Assert.state(m_eventHandlerPool == null, "handlerQueueLength property cannot be set after afterPropertiesSet() is called");
         m_handlerQueueLength = size;
     }
 

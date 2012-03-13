@@ -204,6 +204,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * 
          * @return True if the queue is open.
          */
+        @Override
         public boolean isOpen() {
             return !m_isClosed;
         }
@@ -213,6 +214,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * 
          * @return True if the queue is closed.
          */
+        @Override
         public boolean isClosed() {
             return m_isClosed;
         }
@@ -225,6 +227,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * @exception org.opennms.core.queue.FifoQueueException
          *                Thrown if an error occurs closing the queue.
          */
+        @Override
         public void close() throws FifoQueueException {
             m_isClosed = true;
         }
@@ -236,6 +239,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * @exception org.opennms.core.queue.FifoQueueException
          *                Thrown if an error occurs opening the queue.
          */
+        @Override
         public void open() throws FifoQueueException {
             m_isClosed = false;
         }
@@ -251,7 +255,8 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * @exception java.lang.InterruptedException
          *                Thrown if the thread is interrupted.
          */
-        public void add(T element) throws FifoQueueException, InterruptedException {
+        @Override
+        public void add(T element) throws InterruptedException {
             if (m_isClosed) {
                 throw new FifoQueueClosedException("Queue Closed");
             }
@@ -278,8 +283,10 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * 
          * @return True if the element was successfully added to the queue
          *         before the timeout expired, false otherwise.
+         * @throws  
          */
-        public boolean add(T element, long timeout) throws FifoQueueException, InterruptedException {
+        @Override
+        public boolean add(T element, long timeout) throws InterruptedException {
             if (m_isClosed) {
                 throw new FifoQueueClosedException("Queue Closed");
             }
@@ -299,7 +306,8 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * 
          * @return The oldest object in the queue.
          */
-        public T remove() throws FifoQueueException, InterruptedException {
+        @Override
+        public T remove() throws InterruptedException {
             if (m_isClosed && size() == 0) {
                 throw new FifoQueueClosedException("Queue Closed");
             }
@@ -326,7 +334,8 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * @return The oldest object in the queue, or <code>null</code> if one
          *         is not available.
          */
-        public T remove(long timeout) throws FifoQueueException, InterruptedException {
+        @Override
+        public T remove(long timeout) throws InterruptedException {
             if (m_isClosed && size() == 0) {
                 throw new FifoQueueClosedException("Queue Closed");
             }
@@ -397,6 +406,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * </p>
          * 
          */
+        @Override
         public void run() {
             ThreadCategory.setPrefix(m_log4jPrefix);
             m_status = RUNNING;
@@ -410,8 +420,9 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
                 } catch (InterruptedException e) {
                     m_status = STOP_PENDING;
                     break; // exit, log?
-                } catch (FifoQueueException e) {
+                } catch (Throwable e) {
                     m_status = STOP_PENDING;
+                    log().error("An unexpected exception stopped a RunnableConsumerThreadPool: " + e.getMessage(), e);
                     break; // exit, log?
                 }
 
@@ -429,7 +440,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
                         }
                     }
                 } catch (Throwable t) {
-                    log().debug("run: an unexpected error occured during fiber run, calling error liseners");
+                    log().debug("run: an unexpected error occured during fiber run, calling error listeners");
 
                     /*
                      * call a listener to handle errors?
@@ -454,6 +465,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
         /**
          * Starts up the thread.
          */
+        @Override
         public void start() {
             m_status = STARTING;
             m_shutdown = false;
@@ -463,6 +475,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
         /**
          * Sets the stop flag in the thread.
          */
+        @Override
         public void stop() {
             m_status = STOP_PENDING;
             m_shutdown = true;
@@ -472,6 +485,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
         /**
          * Returns the name of the thread.
          */
+        @Override
         public String getName() {
             return m_delegateThread.getName();
         }
@@ -479,6 +493,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
         /**
          * Returns the current status of the fiber.
          */
+        @Override
         public int getStatus() {
             return m_status;
         }
@@ -509,10 +524,10 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
     }
 
     /**
-     * This interface is used to define a listerer for the thread pool that is
+     * This interface is used to define a listener for the thread pool that is
      * notified if an error occurs processing a runnable. The instance is passed
-     * as an object just incase the actually object does not implement the
-     * {@link java.lang.Runnable Runnable}interface.
+     * as an object just in case the actual object does not implement the
+     * {@link java.lang.Runnable Runnable} interface.
      * 
      * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
      * @author <a href="http://www.opennms.org">OpenNMS </a>
@@ -616,6 +631,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      * Starts the thread pool. The first thread is delayed until at least one
      * element is added to the input queue.
      */
+    @Override
     public void start() {
         try {
             m_delegateQ.open();
@@ -629,6 +645,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      * Begins the shutdown process of the thread pool. The status is set to stop
      * pending and each thread is notified of the new status.
      */
+    @Override
     public void stop() {
         synchronized (m_fibers) {
             for (Fiber fiber : m_fibers) {
@@ -651,6 +668,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      *
      * @return The current pool status.
      */
+    @Override
     public int getStatus() {
         if (m_poolStatus == STOP_PENDING) {
             if (livingFiberCount() == 0) {
@@ -666,6 +684,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      *
      * @return The name of the pool.
      */
+    @Override
     public String getName() {
         return m_poolName;
     }
