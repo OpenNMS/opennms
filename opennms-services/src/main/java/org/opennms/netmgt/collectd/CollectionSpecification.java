@@ -264,22 +264,10 @@ public class CollectionSpecification {
     public CollectionSet collect(CollectionAgent agent) throws CollectionException {
         Collectd.instrumentation().beginCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
-            return getCollector().collect(agent, eventProxy(), getPropertyMap());
+            return getCollector().collect(agent, EventIpcManagerFactory.getIpcManager(), getPropertyMap());
         } finally {
             Collectd.instrumentation().endCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
-    }
-
-    private EventProxy eventProxy() {
-        return new EventProxy() {
-            public void send(Event e) {
-                EventIpcManagerFactory.getIpcManager().sendNow(e);
-            }
-
-            public void send(Log log) {
-                EventIpcManagerFactory.getIpcManager().sendNow(log);
-            }
-        };
     }
 
     /**

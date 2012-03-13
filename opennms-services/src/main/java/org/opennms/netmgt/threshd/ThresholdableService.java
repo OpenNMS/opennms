@@ -40,6 +40,7 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.InetNetworkInterface;
@@ -148,7 +149,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
         m_status = ServiceThresholder.THRESHOLDING_SUCCEEDED;
 
         m_threshd = threshd;
-        m_proxy = threshd.getEventProxy();
+        m_proxy = EventIpcManagerFactory.getIpcManager();
         m_scheduler = threshd.getScheduler();
         m_thresholder = threshd.getServiceThresholder(svcName);
         m_updates = new ThresholderUpdates();
