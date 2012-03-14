@@ -85,7 +85,7 @@ public class SyslogNGParser extends SyslogParser {
                 LogUtils.debugf(this, nfe, "Unable to parse '%s' as a process ID.", matcher.group(6));
             }
         }
-        message.setMessage(matcher.group(7));
+        message.setMessage(matcher.group(7).trim());
 
         return message;
     }

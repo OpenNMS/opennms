@@ -30,11 +30,13 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,8 +88,13 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             this('N');
         }
 
-        private PrimaryType(char collType) {
+        private PrimaryType(final char collType) {
             m_collType = collType;
+        }
+
+        @Transient
+        public String getCode() {
+            return String.valueOf(m_collType);
         }
 
         @Column(name="isSnmpPrimary")
@@ -95,7 +102,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             return m_collType;
         }
 
-        public void setCharCode(char collType) {
+        public void setCharCode(final char collType) {
             m_collType = collType;
         }
 
@@ -109,17 +116,17 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         }
         
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(final Object o) {
             if (o instanceof PrimaryType) {
                 return this.compareTo((PrimaryType)o) == 0;
             } else return false;
         }
 
-        public int compareTo(PrimaryType collType) {
+        public int compareTo(final PrimaryType collType) {
             return getIndex(m_collType) - getIndex(collType.m_collType);
         }
 
-        private static int getIndex(char code) {
+        private static int getIndex(final char code) {
             for (int i = 0; i < s_order.length; i++) {
                 if (s_order[i] == code) {
                     return i;
@@ -133,23 +140,23 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             return String.valueOf(m_collType);
         }
 
-        public boolean isLessThan(PrimaryType collType) {
+        public boolean isLessThan(final PrimaryType collType) {
             return compareTo(collType) < 0;
         }
 
-        public boolean isGreaterThan(PrimaryType collType) {
+        public boolean isGreaterThan(final PrimaryType collType) {
             return compareTo(collType) > 0;
         }
 
-        public PrimaryType max(PrimaryType collType) {
+        public PrimaryType max(final PrimaryType collType) {
             return this.isLessThan(collType) ? collType : this;
         }
 
-        public PrimaryType min(PrimaryType collType) {
+        public PrimaryType min(final PrimaryType collType) {
             return this.isLessThan(collType) ? this : collType;
         }
 
-        public static PrimaryType get(char code) {
+        public static PrimaryType get(final char code) {
             switch (code) {
             case 'P': return PRIMARY;
             case 'S': return SECONDARY;
@@ -173,6 +180,14 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             }
         }
 
+        public static List<PrimaryType> getAllTypes() {
+            final List<PrimaryType> types = new ArrayList<PrimaryType>();
+            for (final char c : s_order) {
+                types.add(PrimaryType.get(c));
+            }
+            return types;
+        }
+        
         public static final PrimaryType PRIMARY = new PrimaryType('P');
         public static final PrimaryType SECONDARY = new PrimaryType('S');
         public static final PrimaryType NOT_ELIGIBLE = new PrimaryType('N');

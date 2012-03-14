@@ -101,7 +101,7 @@ public class Rfc5424SyslogParser extends SyslogParser {
         }
         final String messageText = matcher.group(9);
         if (messageText != null && messageText.length() != 0) {
-            message.setMessage(messageText);
+            message.setMessage(messageText.trim());
         }
         return message;
     }

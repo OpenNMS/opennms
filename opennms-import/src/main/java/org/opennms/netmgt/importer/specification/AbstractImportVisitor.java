@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.importer.specification;
 
-import org.opennms.netmgt.config.modelimport.Asset;
-import org.opennms.netmgt.config.modelimport.Category;
-import org.opennms.netmgt.config.modelimport.Interface;
-import org.opennms.netmgt.config.modelimport.ModelImport;
-import org.opennms.netmgt.config.modelimport.MonitoredService;
-import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.importer.config.Asset;
+import org.opennms.netmgt.importer.config.Category;
+import org.opennms.netmgt.importer.config.Interface;
+import org.opennms.netmgt.importer.config.ModelImport;
+import org.opennms.netmgt.importer.config.MonitoredService;
+import org.opennms.netmgt.importer.config.Node;
 
 /**
  * <p>AbstractImportVisitor class.</p>

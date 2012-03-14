@@ -36,7 +36,7 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
+import org.opennms.netmgt.importer.config.types.InterfaceSnmpPrimaryType;
 
 public class UpdateOperationTest extends TestCase {
 

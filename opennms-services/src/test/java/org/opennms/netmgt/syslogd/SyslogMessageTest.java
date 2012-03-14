@@ -30,6 +30,7 @@ package org.opennms.netmgt.syslogd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -119,6 +120,53 @@ public class SyslogMessageTest {
         assertEquals("mgmtd", message.getProcessName());
         assertEquals(8326, message.getProcessId().intValue());
         assertEquals("[mgmtd.NOTICE]: Configuration saved to database initial", message.getMessage());
+    }
+    
+    @Test
+    public void testCustomParserNms5242() throws Exception {
+        final InputStream stream = new ByteArrayInputStream(("<?xml version=\"1.0\"?>\n" + 
+        		"<syslogd-configuration>\n" + 
+        		"    <configuration\n" + 
+        		"            syslog-port=\"10514\"\n" + 
+        		"            new-suspect-on-message=\"false\"\n" + 
+        		"            parser=\"org.opennms.netmgt.syslogd.CustomSyslogParser\"\n" + 
+        		"            forwarding-regexp=\"^((.+?) (.*))\\n?$\"\n" + 
+        		"            matching-group-host=\"2\"\n" + 
+        		"            matching-group-message=\"3\"\n" + 
+        		"            discard-uei=\"DISCARD-MATCHING-MESSAGES\"\n" + 
+        		"            />\n" + 
+        		"\n" + 
+        		"    <hideMessage>\n" + 
+        		"        <hideMatch>\n" + 
+        		"            <match type=\"substr\" expression=\"TEST\"/>\n" + 
+        		"        </hideMatch>\n" + 
+        		"    </hideMessage>\n" +
+        		"</syslogd-configuration>\n").getBytes());
+        final SyslogdConfigFactory factory = new SyslogdConfigFactory(stream);
+        SyslogdConfigFactory.setInstance(factory);
+
+        final SyslogParser parser = CustomSyslogParser.getParser("<0>Mar 14 17:10:25 petrus sudo:  cyrille : user NOT in sudoers ; TTY=pts/2 ; PWD=/home/cyrille ; USER=root ; COMMAND=/usr/bin/vi /etc/aliases");
+        assertTrue(parser.find());
+        final SyslogMessage message = parser.parse();
+        LogUtils.debugf(this, "message = %s", message);
+
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        cal.set(Calendar.MONTH, Calendar.MARCH);
+        cal.set(Calendar.DAY_OF_MONTH, 14);
+        cal.set(Calendar.HOUR_OF_DAY, 17);
+        cal.set(Calendar.MINUTE, 10);
+        cal.set(Calendar.SECOND, 25);
+        cal.set(Calendar.MILLISECOND, 0);
+        
+        assertEquals(SyslogFacility.KERNEL, message.getFacility());
+        assertEquals(SyslogSeverity.EMERGENCY, message.getSeverity());
+        assertNull(message.getMessageID());
+        assertEquals(cal.getTime(), message.getDate());
+        assertEquals("petrus", message.getHostName());
+        assertEquals("sudo", message.getProcessName());
+        assertEquals(0, message.getProcessId().intValue());
+        assertEquals("cyrille : user NOT in sudoers ; TTY=pts/2 ; PWD=/home/cyrille ; USER=root ; COMMAND=/usr/bin/vi /etc/aliases", message.getMessage());
     }
     
     @Test

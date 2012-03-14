@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import last-import="2011-03-01T01:28:55.813Z" foreign-source="postgres" date-stamp="2011-03-01T01:28:55.666Z" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="barbacoa.somemediathing.net" foreign-id="1241674181872" building="postgres">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.0.112" descr="">
+            <monitored-service service-name="heartbeat_resource"/>
+            <monitored-service service-name="heartbeat"/>
+            <monitored-service service-name="megaRaid"/>
+            <monitored-service service-name="somethingsvn_utilweb"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Servers"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="asada.somemediathing.net" foreign-id="1241674171807" building="postgres">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.0.111" descr="">
+            <monitored-service service-name="heartbeat_resource"/>
+            <monitored-service service-name="heartbeat"/>
+            <monitored-service service-name="megaRaid"/>
+            <monitored-service service-name="memcached-staging"/>
+            <monitored-service service-name="memcached"/>
+            <monitored-service service-name="somethingsvn_utilweb"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Servers"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="db1.somemediathing.net" foreign-id="1241674023135" building="postgres">
+        <interface status="1" snmp-primary="S" ip-addr="10.0.0.36" descr="">
+            <monitored-service service-name="ICMP"/>
+            <monitored-service service-name="Postgres-dev_staging"/>
+            <monitored-service service-name="Postgres-pricemonkey"/>
+            <monitored-service service-name="Postgres"/>
+        </interface>
+        <category name="VIP"/>
+        <category name="Production"/>
+    </node>
+</model-import>

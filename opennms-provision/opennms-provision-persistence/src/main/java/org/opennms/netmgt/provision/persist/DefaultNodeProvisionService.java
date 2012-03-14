@@ -36,6 +36,7 @@ import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -110,7 +111,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         RequisitionInterface reqIface = new RequisitionInterface();
         reqIface.setIpAddr(ipAddress);
         reqIface.setManaged(true);
-        reqIface.setSnmpPrimary("P");
+        reqIface.setSnmpPrimary(PrimaryType.get("P"));
         reqIface.setStatus(1);
 
         reqIface.putMonitoredService(new RequisitionMonitoredService("ICMP"));
