@@ -11,8 +11,8 @@
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</event>
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</event>
-    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</event>
-    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</event>
     <event>uei.opennms.org/nodes/nodeDown</event>
     <event>uei.opennms.org/nodes/nodeUp</event>
     <app-context>dependencyRules-context.xml</app-context>

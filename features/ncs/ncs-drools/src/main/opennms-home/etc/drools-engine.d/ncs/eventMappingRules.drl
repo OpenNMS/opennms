@@ -88,10 +88,10 @@ end
 rule "mpls lsp path component down"
 	salience 100
 when
-	$e : Event( uei matches ".*mplsLspPathDown" )
+	$e : Event( uei matches ".*mplsLspInfoDown" )
 then
 	retract( $e );
-	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("mplsLspName", 1));
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("mplsLspInfoName", 1));
 	for ( NCSComponent ncs : list ) {
 		Component c = new Component( ncs );
 		insert( new ComponentDownEvent( c, $e ) );
@@ -101,10 +101,10 @@ end
 rule "mpls lsp path component up"
 	salience 100
 when
-	$e : Event( uei matches ".*mplsLspPathUp" )
+	$e : Event( uei matches ".*mplsLspInfoUp" )
 then
 	retract( $e );
-	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("mplsLspName", 1));
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("mplsLspInfoName", 1));
 	for ( NCSComponent ncs : list ) {
 		Component c = new Component( ncs );
 		insert( new ComponentUpEvent( c, $e ) );

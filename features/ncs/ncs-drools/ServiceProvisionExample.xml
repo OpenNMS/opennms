@@ -51,22 +51,22 @@
             </attributes>
             <component type="ServiceElementComponent" foreignId="8765:lspA-PE1-PE2" foreignSource="NA-SvcElemComp">
                 <name>lspA-PE1-PE2</name>
-                <upEventUei>mplsLspPathUp</upEventUei>
-                <downEventUei>mplsLspPathDown</downEventUei>
+                <upEventUei>mplsLspInfoUp</upEventUei>
+                <downEventUei>mplsLspInfoDown</downEventUei>
                 <attributes>
                     <attribute>
-                        <key>mplsLspName</key>
+                        <key>mplsLspInfoName</key>
                         <value>lspA-PE1-PE2</value>
                     </attribute>
                 </attributes>
             </component>
             <component type="ServiceElementComponent" foreignId="8765:lspB-PE1-PE2" foreignSource="NA-SvcElemComp">
                 <name>lspB-PE1-PE2</name>
-                <upEventUei>mplsLspPathUp</upEventUei>
-                <downEventUei>mplsLspPathDown</downEventUei>
+                <upEventUei>mplsLspInfoUp</upEventUei>
+                <downEventUei>mplsLspInfoDown</downEventUei>
                 <attributes>
                     <attribute>
-                        <key>mplsLspName</key>
+                        <key>mplsLspInfoName</key>
                         <value>lspA-PE1-PE2</value>
                     </attribute>
                 </attributes>
@@ -119,22 +119,22 @@
             </attributes>
             <component type="ServiceElementComponent" foreignId="9876:lspA-PE2-PE1" foreignSource="NA-SvcElemComp">
                 <name>lspA-PE2-PE1</name>
-                <upEventUei>mplsLspPathUp</upEventUei>
-                <downEventUei>mplsLspPathDown</downEventUei>
+                <upEventUei>mplsLspInfoUp</upEventUei>
+                <downEventUei>mplsLspInfoDown</downEventUei>
                 <attributes>
                     <attribute>
-                        <key>mplsLspName</key>
+                        <key>mplsLspInfoName</key>
                         <value>lspA-PE2-PE1</value>
                     </attribute>
                 </attributes>
             </component>
             <component type="ServiceElementComponent" foreignId="9876:lspB-PE2-PE1" foreignSource="NA-SvcElemComp">
                 <name>lspB-PE2-PE1</name>
-                <upEventUei>mplsLspPathUp</upEventUei>
-                <downEventUei>mplsLspPathDown</downEventUei>
+                <upEventUei>mplsLspInfoUp</upEventUei>
+                <downEventUei>mplsLspInfoDown</downEventUei>
                 <attributes>
                     <attribute>
-                        <key>mplsLspName</key>
+                        <key>mplsLspInfoName</key>
                         <value>lspB-PE2-PE1</value>
                     </attribute>
                 </attributes>

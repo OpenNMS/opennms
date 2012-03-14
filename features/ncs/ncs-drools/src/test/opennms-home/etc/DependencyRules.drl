@@ -106,9 +106,9 @@ end
 rule "mpls lsp path component down"
 	salience 100
 when
-	$e : Event( uei matches ".*mplsLspPathDown" )
+	$e : Event( uei matches ".*mplsLspInfoDown" )
 then
-	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndEventParameters($e, "mplsLspName");
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndEventParameters($e, "mplsLspInfoName");
 	for ( NCSComponent ncs : list ) {
 		Component c = new Component( ncs );
 		println( "Component '" + c.getName() + "' is down!" );
@@ -121,10 +121,10 @@ end
 rule "mpls lsp path component up"
 	salience 100
 when
-	$downEvent : Event( uei matches ".*mplsLspPathDown", $downNodeId : nodeid, $downParms : parmCollection )
-	Parm( parmName == "mplsLspName", $downValue: value.content ) from $downParms
-	$upEvent : Event( uei matches ".*mplsLspPathUp", nodeid == $downNodeId, $upParms : parmCollection )
-	Parm( parmName == "mplsLspName", value.content == $downValue ) from $upParms
+	$downEvent : Event( uei matches ".*mplsLspInfoDown", $downNodeId : nodeid, $downParms : parmCollection )
+	Parm( parmName == "mplsLspInfoName", $downValue: value.content ) from $downParms
+	$upEvent : Event( uei matches ".*mplsLspInfoUp", nodeid == $downNodeId, $upParms : parmCollection )
+	Parm( parmName == "mplsLspInfoName", value.content == $downValue ) from $upParms
 	$eventComponent: EventComponent ( $c : component, event == $downEvent )
 	$impacted : Impacted( target == $c, cause == $downEvent )
 then

@@ -134,16 +134,16 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
                     .pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspA-PE1-PE2")
                         .setName("lspA-PE1-PE2")
                         .setNodeIdentity("space", "1111-PE1")
-                        .setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-                        .setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-                        .setAttribute("mplsLspName", "lspA-PE1-PE2")
+                        .setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+                        .setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+                        .setAttribute("mplsLspInfoName", "lspA-PE1-PE2")
                     .popComponent()
                     .pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspB-PE1-PE2")
                         .setName("lspB-PE1-PE2")
                         .setNodeIdentity("space", "1111-PE1")
-                        .setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-                        .setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-                        .setAttribute("mplsLspName", "lspB-PE1-PE2")
+                        .setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+                        .setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+                        .setAttribute("mplsLspInfoName", "lspB-PE1-PE2")
                     .popComponent()
                 .popComponent()
             .popComponent()
@@ -176,16 +176,16 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
                     .pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspA-PE2-PE1")
                         .setName("lspA-PE2-PE1")
                         .setNodeIdentity("space", "2222-PE2")
-                        .setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-                        .setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-                        .setAttribute("mplsLspName", "lspA-PE2-PE1")
+                        .setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+                        .setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+                        .setAttribute("mplsLspInfoName", "lspA-PE2-PE1")
                     .popComponent()
                     .pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspB-PE2-PE1")
                         .setName("lspB-PE2-PE1")
                         .setNodeIdentity("space", "2222-PE2")
-                        .setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-                        .setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-                        .setAttribute("mplsLspName", "lspB-PE2-PE1")
+                        .setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+                        .setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+                        .setAttribute("mplsLspInfoName", "lspB-PE2-PE1")
                     .popComponent()
                 .popComponent()
             .popComponent()
@@ -209,8 +209,8 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
         anticipate(  createComponentImpactedEvent( findSubcomponent (m_svc, "NA-SvcElemComp", "8765:lspA-PE1-PE2"), 17 ) );
 
         // Generate down event
-        System.err.println("SENDING MplsLspPathDown on LspA EVENT!!");
-        engine.correlate( createMplsLspPathDownEvent( 17, m_pe1NodeId, "10.1.1.1", "lspA-PE1-PE2" ) );
+        System.err.println("SENDING mplsLspInfoDown on LspA EVENT!!");
+        engine.correlate( createmplsLspInfoDownEvent( 17, m_pe1NodeId, "10.1.1.1", "lspA-PE1-PE2" ) );
 
         // Check lspA component impacted
         getAnticipator().verifyAnticipated();
@@ -224,8 +224,8 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
         anticipate(  createComponentImpactedEvent( findSubcomponent (m_svc, "NA-Service", "123"), 18) );
         
         // Generate down event
-        System.err.println("SENDING MplsLspPathDown on LspB EVENT!!");
-        engine.correlate( createMplsLspPathDownEvent( 18, m_pe1NodeId, "10.1.1.1", "lspB-PE1-PE2" ) );
+        System.err.println("SENDING mplsLspInfoDown on LspB EVENT!!");
+        engine.correlate( createmplsLspInfoDownEvent( 18, m_pe1NodeId, "10.1.1.1", "lspB-PE1-PE2" ) );
 
         // verify components were impacted
         getAnticipator().verifyAnticipated();
@@ -238,8 +238,8 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
         anticipate(  createComponentResolvedEvent( findSubcomponent (m_svc, "NA-Service", "123"), 18) );
 
         // Generate up event
-        System.err.println("SENDING MplsLspPathUp on LspA EVENT!!");
-        engine.correlate( createMplsLspPathUpEvent( 19, m_pe1NodeId, "10.1.1.1", "lspA-PE1-PE2" ) );
+        System.err.println("SENDING mplsLspInfoUp on LspA EVENT!!");
+        engine.correlate( createmplsLspInfoUpEvent( 19, m_pe1NodeId, "10.1.1.1", "lspA-PE1-PE2" ) );
 
         // verify components are resolved
         getAnticipator().verifyAnticipated();	
@@ -597,24 +597,24 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
     // ignore duplicate cause events
     // ignore duplicate resolution events
 
-    private Event createMplsLspPathDownEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
+    private Event createmplsLspInfoDownEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
 
-        Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown", "Test")
+        Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown", "Test")
         .setNodeid(nodeid)
         .setInterface( addr( ipaddr ) )
-        .addParam("mplsLspName", lspname )
+        .addParam("mplsLspInfoName", lspname )
         .getEvent();
 
         event.setDbid(dbId);
         return event;
     }
 
-    private Event createMplsLspPathUpEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
+    private Event createmplsLspInfoUpEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
 
-        Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp", "Drools")
+        Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp", "Drools")
         .setNodeid(nodeid)
         .setInterface( addr( ipaddr ) )
-        .addParam("mplsLspName", lspname )
+        .addParam("mplsLspInfoName", lspname )
         .getEvent();
         event.setDbid(dbId);
         return event;

@@ -129,16 +129,16 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspA-PE1-PE2")
 					.setName("lspA-PE1-PE2")
 					.setNodeIdentity("space", "1111-PE1")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspA-PE1-PE2")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspA-PE1-PE2")
 				.popComponent()
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspB-PE1-PE2")
 					.setName("lspB-PE1-PE2")
 					.setNodeIdentity("space", "1111-PE1")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspB-PE1-PE2")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspB-PE1-PE2")
 				.popComponent()
 			.popComponent()
 		.popComponent()
@@ -171,16 +171,16 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspA-PE2-PE1")
 					.setName("lspA-PE2-PE1")
 					.setNodeIdentity("space", "2222-PE2")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspA-PE2-PE1")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspA-PE2-PE1")
 				.popComponent()
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspB-PE2-PE1")
 					.setName("lspB-PE2-PE1")
 					.setNodeIdentity("space", "2222-PE2")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspB-PE2-PE1")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspB-PE2-PE1")
 				.popComponent()
 			.popComponent()
 		.popComponent()
@@ -365,24 +365,24 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
         .getEvent();
     }
 
-    private Event createMplsLspPathDownEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
+    private Event createmplsLspInfoDownEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
         
-        Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown", "Test")
+        Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown", "Test")
                 .setNodeid(nodeid)
                 .setInterface( addr( ipaddr ) )
-                .addParam("mplsLspName", lspname )
+                .addParam("mplsLspInfoName", lspname )
                 .getEvent();
         
         event.setDbid(dbId);
 		return event;
     }
     
-    private Event createMplsLspPathUpEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
+    private Event createmplsLspInfoUpEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
         
-        Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp", "Drools")
+        Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp", "Drools")
                 .setNodeid(nodeid)
                 .setInterface( addr( ipaddr ) )
-                .addParam("mplsLspName", lspname )
+                .addParam("mplsLspInfoName", lspname )
                 .getEvent();
         event.setDbid(dbId);
 		return event;

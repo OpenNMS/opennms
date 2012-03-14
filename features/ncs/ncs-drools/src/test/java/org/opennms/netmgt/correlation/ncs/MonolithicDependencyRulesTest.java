@@ -115,16 +115,16 @@ public class MonolithicDependencyRulesTest extends CorrelationRulesTestCase {
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspA-PE1-PE2")
 					.setName("lspA-PE1-PE2")
 					.setNodeIdentity("space", "1111-PE1")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspA-PE1-PE2")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspA-PE1-PE2")
 				.popComponent()
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspB-PE1-PE2")
 					.setName("lspB-PE1-PE2")
 					.setNodeIdentity("space", "1111-PE1")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspB-PE1-PE2")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspB-PE1-PE2")
 				.popComponent()
 			.popComponent()
 		.popComponent()
@@ -157,16 +157,16 @@ public class MonolithicDependencyRulesTest extends CorrelationRulesTestCase {
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspA-PE2-PE1")
 					.setName("lspA-PE2-PE1")
 					.setNodeIdentity("space", "2222-PE2")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspA-PE2-PE1")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspA-PE2-PE1")
 				.popComponent()
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspB-PE2-PE1")
 					.setName("lspB-PE2-PE1")
 					.setNodeIdentity("space", "2222-PE2")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspB-PE2-PE1")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspB-PE2-PE1")
 				.popComponent()
 			.popComponent()
 		.popComponent()
@@ -189,9 +189,9 @@ public class MonolithicDependencyRulesTest extends CorrelationRulesTestCase {
         getAnticipator().reset();
         anticipate(  createComponentImpactedEvent( "ServiceElementComponent", "lspA-PE1-PE2", "NA-SvcElemComp", "8765:lspA-PE1-PE2", 17 ) );
         // Generate down event
-		Event event = createMplsLspPathDownEvent( m_pe1NodeId, "10.1.1.1", "lspA-PE1-PE2" );
+		Event event = createmplsLspInfoDownEvent( m_pe1NodeId, "10.1.1.1", "lspA-PE1-PE2" );
 		event.setDbid(17);
-		System.err.println("SENDING MplsLspPathDown on LspA EVENT!!");
+		System.err.println("SENDING mplsLspInfoDown on LspA EVENT!!");
 		engine.correlate( event );
 		// Check down event
 		getAnticipator().verifyAnticipated();
@@ -207,9 +207,9 @@ public class MonolithicDependencyRulesTest extends CorrelationRulesTestCase {
         
         //anticipate(  createComponentImpactedEvent( "Service", "NA-Service", "123", 17 ) );
         // Generate down event
-        event = createMplsLspPathDownEvent( m_pe1NodeId, "10.1.1.1", "lspB-PE1-PE2" );
+        event = createmplsLspInfoDownEvent( m_pe1NodeId, "10.1.1.1", "lspB-PE1-PE2" );
         event.setDbid(18);
-        System.err.println("SENDING MplsLspPathDown on LspB EVENT!!");
+        System.err.println("SENDING mplsLspInfoDown on LspB EVENT!!");
         engine.correlate( event );
         // Check down event
         getAnticipator().verifyAnticipated();
@@ -223,9 +223,9 @@ public class MonolithicDependencyRulesTest extends CorrelationRulesTestCase {
         anticipate(  createComponentResolvedEvent( "Service", "CokeP2P", "NA-Service", "123", 18) );
         
         //Generate up event
-        event = createMplsLspPathUpEvent( m_pe1NodeId, "10.1.1.1", "lspA-PE1-PE2" );
+        event = createmplsLspInfoUpEvent( m_pe1NodeId, "10.1.1.1", "lspA-PE1-PE2" );
         event.setDbid(17);
-        System.err.println("SENDING MplsLspPathUp on LspA EVENT!!");
+        System.err.println("SENDING mplsLspInfoUp on LspA EVENT!!");
         engine.correlate( event );
         
         // Check up event
@@ -345,21 +345,21 @@ public class MonolithicDependencyRulesTest extends CorrelationRulesTestCase {
     // ignore duplicate cause events
     // ignore duplicate resolution events
     
-    private Event createMplsLspPathDownEvent( int nodeid, String ipaddr, String lspname ) {
+    private Event createmplsLspInfoDownEvent( int nodeid, String ipaddr, String lspname ) {
         
-        return new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown", "Test")
+        return new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown", "Test")
                 .setNodeid(nodeid)
                 .setInterface( addr( ipaddr ) )
-                .addParam("mplsLspName", lspname )
+                .addParam("mplsLspInfoName", lspname )
                 .getEvent();
     }
     
-    private Event createMplsLspPathUpEvent( int nodeid, String ipaddr, String lspname ) {
+    private Event createmplsLspInfoUpEvent( int nodeid, String ipaddr, String lspname ) {
         
-        return new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp", "Drools")
+        return new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp", "Drools")
                 .setNodeid(nodeid)
                 .setInterface( addr( ipaddr ) )
-                .addParam("mplsLspName", lspname )
+                .addParam("mplsLspInfoName", lspname )
                 .getEvent();
     }
 

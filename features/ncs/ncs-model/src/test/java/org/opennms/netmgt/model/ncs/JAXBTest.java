@@ -79,22 +79,22 @@ public class JAXBTest {
 				"            </attributes>\n" + 
 				"            <component type=\"ServiceElementComponent\" foreignId=\"8765:lspA-PE1-PE2\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"                <name>lspA-PE1-PE2</name>\n" + 
-				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</upEventUei>\n" + 
-				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</downEventUei>\n" + 
+				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</upEventUei>\n" + 
+				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</downEventUei>\n" + 
 				"                <attributes>\n" + 
 				"                    <attribute>\n" + 
-				"                        <key>mplsLspName</key>\n" + 
+				"                        <key>mplsLspInfoName</key>\n" + 
 				"                        <value>lspA-PE1-PE2</value>\n" + 
 				"                    </attribute>\n" + 
 				"                </attributes>\n" + 
 				"            </component>\n" + 
 				"            <component type=\"ServiceElementComponent\" foreignId=\"8765:lspB-PE1-PE2\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"                <name>lspB-PE1-PE2</name>\n" + 
-				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</upEventUei>\n" + 
-				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</downEventUei>\n" + 
+				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</upEventUei>\n" + 
+				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</downEventUei>\n" + 
 				"                <attributes>\n" + 
 				"                    <attribute>\n" + 
-				"                        <key>mplsLspName</key>\n" + 
+				"                        <key>mplsLspInfoName</key>\n" + 
 				"                        <value>lspB-PE1-PE2</value>\n" + 
 				"                    </attribute>\n" + 
 				"                </attributes>\n" + 
@@ -147,22 +147,22 @@ public class JAXBTest {
 				"            </attributes>\n" + 
 				"            <component type=\"ServiceElementComponent\" foreignId=\"9876:lspA-PE2-PE1\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"                <name>lspA-PE2-PE1</name>\n" + 
-				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</upEventUei>\n" + 
-				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</downEventUei>\n" + 
+				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</upEventUei>\n" + 
+				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</downEventUei>\n" + 
 				"                <attributes>\n" + 
 				"                    <attribute>\n" + 
-				"                        <key>mplsLspName</key>\n" + 
+				"                        <key>mplsLspInfoName</key>\n" + 
 				"                        <value>lspA-PE2-PE1</value>\n" + 
 				"                    </attribute>\n" + 
 				"                </attributes>\n" + 
 				"            </component>\n" + 
 				"            <component type=\"ServiceElementComponent\" foreignId=\"9876:lspB-PE2-PE1\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"                <name>lspB-PE2-PE1</name>\n" + 
-				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</upEventUei>\n" + 
-				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</downEventUei>\n" + 
+				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</upEventUei>\n" + 
+				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</downEventUei>\n" + 
 				"                <attributes>\n" + 
 				"                    <attribute>\n" + 
-				"                        <key>mplsLspName</key>\n" + 
+				"                        <key>mplsLspInfoName</key>\n" + 
 				"                        <value>lspB-PE2-PE1</value>\n" + 
 				"                    </attribute>\n" + 
 				"                </attributes>\n" + 
@@ -200,15 +200,15 @@ public class JAXBTest {
 				.setDependenciesRequired(DependencyRequirements.ANY)
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspA-PE1-PE2")
 					.setName("lspA-PE1-PE2")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspA-PE1-PE2")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspA-PE1-PE2")
 				.popComponent()
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspB-PE1-PE2")
 					.setName("lspB-PE1-PE2")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspB-PE1-PE2")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspB-PE1-PE2")
 				.popComponent()
 			.popComponent()
 		.popComponent()
@@ -237,15 +237,15 @@ public class JAXBTest {
 				.setDependenciesRequired(DependencyRequirements.ANY)
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspA-PE2-PE1")
 					.setName("lspA-PE2-PE1")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspA-PE2-PE1")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspA-PE2-PE1")
 				.popComponent()
 				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspB-PE2-PE1")
 					.setName("lspB-PE2-PE1")
-					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
-					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
-					.setAttribute("mplsLspName", "lspB-PE2-PE1")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
+					.setAttribute("mplsLspInfoName", "lspB-PE2-PE1")
 				.popComponent()
 			.popComponent()
 		.popComponent()
