@@ -16,7 +16,7 @@
       <attribute name="non-ip-interfaces" type="boolean" use="optional" default="false">
         <annotation><documentation>This attribute is ignored, and kept only to preserve compatibility with old import XML files.</documentation></annotation>
       </attribute>
-      <attribute name="non-ip-snmp-primary" use="optional" default="N">
+      <attribute name="non-ip-snmp-primary" type="string" use="optional" default="N">
         <annotation><documentation>This attribute is ignored, and kept only to preserve compatibility with old import XML files.</documentation></annotation>
       </attribute>
     </complexType>
