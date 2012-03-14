@@ -13,21 +13,11 @@
       <attribute name="date-stamp" type="dateTime" />
       <attribute name="last-import" type="dateTime" />
       <attribute name="foreign-source" type="string" use="optional" default="imported:" />
-      <attribute name="non-ip-interfaces" type="boolean" use="optional" default="false" />
-      <attribute name="non-ip-snmp-primary" use="optional" default="N">
-        <annotation>
-          <documentation>
-            This attribute is used by OpenNMS to control SNMP data collection for non-IP interfaces when "non-ip-interfaces" is set to "true". 
-            C - Collectable interface. Data for non-IP interfaces will be collected if the snmpStorageFlag for the package is "all" or "select".
-            N - Not a collectable interface. Data for non-IP interfaces will never be collected regardless of the snmpStorageFlag setting.
-          </documentation>
-        </annotation>
-        <simpleType>
-          <restriction base="string">
-            <pattern value="(C|N)" />
-            <length value="1" />
-          </restriction>
-        </simpleType>
+      <attribute name="non-ip-interfaces" type="boolean" use="optional" default="false">
+        <annotation><documentation>This attribute is ignored, and kept only to preserve compatibility with old import XML files.</documentation></annotation>
+      </attribute>
+      <attribute name="non-ip-snmp-primary" type="string" use="optional" default="N">
+        <annotation><documentation>This attribute is ignored, and kept only to preserve compatibility with old import XML files.</documentation></annotation>
       </attribute>
     </complexType>
   </element>
@@ -39,12 +29,13 @@
       <sequence>
         <element ref="this:interface" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:category" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:asset" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="node-label" use="required">
         <simpleType>
           <restriction base="string">
-<!--             <pattern value="^[0-9A-Za-z][-0-9A-Za-z._]+$"></pattern> -->
-            <pattern value=".*$"></pattern>
+<!--             <pattern value="[0-9A-Za-z][-0-9A-Za-z._]+"></pattern> -->
+            <pattern value=".*"></pattern>
           </restriction>
         </simpleType>
       </attribute>
@@ -110,17 +101,19 @@
         <annotation>
           <documentation>
             This attribute is used by OpenNMS to control SNMP data collection. P - Primary interface. This is the "preferred interface used in data collection.
-            S - Secondary interface. This interface meets all the qualifications to be a primary interface. C - Collectable interface. This is a manual setting
-            controlled by the user. N - Not a collectable interface. This is a manual setting controlled by the user.
+            S - Secondary interface. This interface meets all the qualifications to be a primary interface. N - Not a collectable interface.
+            This is a manual setting controlled by the user.
 
             If the snmpStorageFlag is set to "all", then all interfaces not set to 'N' will be collected. If the snmpStorageFlag is set to "select", then all
-            interfaces with 'P|S|C' will be collected. If the snmpStorageFlag is set to "primary", then only the interfaces set to 'P' will be collected.
+            interfaces with 'P|S' will be collected. If the snmpStorageFlag is set to "primary", then only the interfaces set to 'P' will be collected.
           </documentation>
         </annotation>
         <simpleType>
           <restriction base="string">
-            <pattern value="(P|S|C|N)" />
-            <length value="1" />
+            <enumeration value="P"/>
+            <enumeration value="S"/>
+            <enumeration value="C"/> <!-- only for backwards compatibility with very old requisitions -->
+            <enumeration value="N"/>
           </restriction>
         </simpleType>
       </attribute>
@@ -145,12 +138,21 @@
     <annotation>
       <documentation>
         This element is used to specify OpenNMS specific categories.  Note: currently, these categories are defined in a separate configuration file and
-        are related directly to monitored services. I have separated out this element so that it can be refereneced by other entities (nodes, interfaces, etc.)
+        are related directly to monitored services. I have separated out this element so that it can be referenced by other entities (nodes, interfaces, etc.)
         however, they will be ignored until the domain model is changed and the service layer is adapted for this behavior. 
       </documentation>
     </annotation>
     <complexType>
     	  <attribute name="name" type="string" use="required" />
+    </complexType>
+  </element>
+  <element name="asset">
+    <annotation>
+      <documentation>This element is used to specify an asset record attribute.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="value" type="string" use="required" />
     </complexType>
   </element>
 </schema>

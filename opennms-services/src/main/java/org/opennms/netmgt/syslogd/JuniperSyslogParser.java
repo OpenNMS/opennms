@@ -54,7 +54,7 @@ public class JuniperSyslogParser extends SyslogParser {
         } catch (final NumberFormatException nfe) {
             LogUtils.debugf(this, nfe, "Unable to parse '%s' as a process ID.", matcher.group(5));
         }
-        message.setMessage(matcher.group(6));
+        message.setMessage(matcher.group(6).trim());
 
         return message;
     }

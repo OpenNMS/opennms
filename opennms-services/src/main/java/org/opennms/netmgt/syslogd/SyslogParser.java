@@ -30,13 +30,13 @@ package org.opennms.netmgt.syslogd;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.statsd.RelativeTime;
 
 
 public class SyslogParser {
@@ -93,7 +93,7 @@ public class SyslogParser {
     /* override this to parse data from the matcher */
     public SyslogMessage parse() throws SyslogParserException {
         final SyslogMessage message = new SyslogMessage();
-        message.setMessage(getMatcher().group());
+        message.setMessage(getMatcher().group().trim());
         return message;
     }
 
@@ -104,7 +104,6 @@ public class SyslogParser {
         return m_matcher;
     }
 
-    @SuppressWarnings("deprecation")
     protected Date parseDate(final String dateString) {
         Date date;
         try {
@@ -116,9 +115,12 @@ public class SyslogParser {
                 final DateFormat df = new SimpleDateFormat("MMM d HH:mm:ss");
                 df.setTimeZone(TimeZone.getTimeZone("UTC"));
                 
-                // Ugh, what's the non-lame way of forcing it to parse to "this year"?
+                // Ugh, what's a non-lame way of forcing it to parse to "this year"?
                 date = df.parse(dateString);
-                date.setYear(RelativeTime.THISYEAR.getStart().getYear());
+                final Calendar c = df.getCalendar();
+                c.setTime(date);
+                c.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
+                date = c.getTime();
             } catch (final Exception e2) {
                 LogUtils.debugf(this, e2, "Unable to parse date '%s'", dateString);
                 date = null;

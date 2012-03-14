@@ -36,7 +36,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.importer.config.Node;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;

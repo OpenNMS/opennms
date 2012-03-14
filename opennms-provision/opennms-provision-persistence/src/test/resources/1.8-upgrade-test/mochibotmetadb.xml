@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import last-import="2011-05-12T23:54:50.151Z" foreign-source="somethingbotmetadb" date-stamp="2011-05-12T23:54:50.020Z" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="mariovip.somemediathing.net" foreign-id="1270937987920" building="somethingbotmetadb">
+        <interface status="1" snmp-primary="S" ip-addr="10.0.0.140" descr="">
+            <monitored-service service-name="solr"/>
+            <monitored-service service-name="MySQL"/>
+            <monitored-service service-name="Postgres"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="luigi.somemediathing.net" foreign-id="1270937861231" building="somethingbotmetadb">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.0.95" descr="">
+            <monitored-service service-name="hpRaid"/>
+            <monitored-service service-name="heartbeat_resource"/>
+            <monitored-service service-name="heartbeat"/>
+            <monitored-service service-name="datawad_riak2"/>
+            <monitored-service service-name="datawad"/>
+            <monitored-service service-name="datawad_erl_stats"/>
+            <monitored-service service-name="memcached"/>
+            <monitored-service service-name="UnixTime"/>
+            <monitored-service service-name="somethingsvn_utilweb"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="Servers"/>
+    </node>
+    <node node-label="mario.somemediathing.net" foreign-id="1270937775439" building="somethingbotmetadb">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.0.94" descr="">
+            <monitored-service service-name="hpRaid"/>
+            <monitored-service service-name="heartbeat_resource"/>
+            <monitored-service service-name="heartbeat"/>
+            <monitored-service service-name="datawad_riak2"/>
+            <monitored-service service-name="datawad"/>
+            <monitored-service service-name="datawad_erl_stats"/>
+            <monitored-service service-name="memcached"/>
+            <monitored-service service-name="UnixTime"/>
+            <monitored-service service-name="somethingsvn_utilweb"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="Servers"/>
+    </node>
+</model-import>

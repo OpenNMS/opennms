@@ -40,9 +40,8 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.config.modelimport.ModelImport;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -68,7 +67,7 @@ public class FilesystemForeignSourceRepositoryTest {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        m_defaultForeignSourceName = new ModelImport().getForeignSource();
+        m_defaultForeignSourceName = "imported:";
     }
 
     private Requisition createRequisition() throws Exception {
