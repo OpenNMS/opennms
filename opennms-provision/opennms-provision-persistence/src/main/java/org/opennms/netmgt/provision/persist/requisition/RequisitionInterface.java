@@ -44,19 +44,21 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
+import org.opennms.netmgt.provision.persist.PrimaryTypeAdapter;
 
 
 /**
  * <p>RequisitionInterface class.</p>
- *
- * @author ranger
- * @version $Id: $
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name="", propOrder = { "m_monitoredServices", "m_categories" })
@@ -64,7 +66,6 @@ import org.opennms.core.utils.InetAddressUtils;
 public class RequisitionInterface implements Comparable<RequisitionInterface> {
 
     //TODO Change these to be sets so that we don't have to verify duplicates in the lists
-    
     @XmlElement(name="monitored-service")
     protected List<RequisitionMonitoredService> m_monitoredServices = new ArrayList<RequisitionMonitoredService>();
 
@@ -80,7 +81,8 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     @XmlAttribute(name="managed")
     protected Boolean m_isManaged;
     
-    protected String m_snmpPrimary;
+    // annotated on the class, for some compatibility/initialization
+    protected PrimaryType m_snmpPrimary;
     
     @XmlAttribute(name="status")
     protected Integer m_status;
@@ -338,8 +340,9 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      * @return a {@link java.lang.String} object.
      */
     @XmlAttribute(name="snmp-primary")
-    public String getSnmpPrimary() {
-        return m_snmpPrimary == "C"? null : m_snmpPrimary;
+    @XmlJavaTypeAdapter(PrimaryTypeAdapter.class)
+    public PrimaryType getSnmpPrimary() {
+        return m_snmpPrimary;
     }
 
     /**
@@ -347,9 +350,8 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      *
      * @param value a {@link java.lang.String} object.
      */
-    public void setSnmpPrimary(final String value) {
-        // very old requisitions can still have "C" in here, which is no longer valid
-        m_snmpPrimary = value == "C"? null : value;
+    public void setSnmpPrimary(final PrimaryType value) {
+        m_snmpPrimary = value;
     }
 
     /**

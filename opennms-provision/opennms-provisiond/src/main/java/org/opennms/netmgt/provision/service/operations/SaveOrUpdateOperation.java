@@ -32,13 +32,12 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.provision.service.ProvisionService;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
@@ -104,11 +103,11 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 	 *
 	 * @param ipAddr a {@link java.lang.String} object.
 	 * @param descr a {@link java.lang.Object} object.
-	 * @param snmpPrimary a {@link InterfaceSnmpPrimaryType} object.
+	 * @param primaryType a {@link InterfaceSnmpPrimaryType} object.
 	 * @param managed a boolean.
 	 * @param status a int.
 	 */
-	public void foundInterface(String ipAddr, Object descr, InterfaceSnmpPrimaryType snmpPrimary, boolean managed, int status) {
+	public void foundInterface(String ipAddr, Object descr, final PrimaryType primaryType, boolean managed, int status) {
 		
 		if (ipAddr == null || "".equals(ipAddr.trim())) {
 		    log().error(String.format("Found interface on node %s with an empty ipaddr! Ignoring!", m_node.getLabel()));
@@ -117,9 +116,9 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 
         m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
-        m_currentInterface.setIsSnmpPrimary(PrimaryType.get(snmpPrimary.toString()));
+        m_currentInterface.setIsSnmpPrimary(primaryType);
         
-        if (InterfaceSnmpPrimaryType.P.equals(snmpPrimary)) {
+        if (PrimaryType.PRIMARY.equals(primaryType)) {
         	final InetAddress addr = InetAddressUtils.addr(ipAddr);
         	if (addr == null) {
         		LogUtils.errorf(this, "Unable to resolve address of snmpPrimary interface for node %s with address '%s'", m_node.getLabel(), ipAddr);

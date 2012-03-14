@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.springframework.validation.BindException;
@@ -299,8 +299,8 @@ public class EditProvisioningGroupController extends SimpleFormController {
         
         // Fetch the list of possible values out of the Castor enumeration
         List<String> choices = new ArrayList<String>();
-        for (Object type : Collections.list(InterfaceSnmpPrimaryType.enumerate())) {
-            choices.add(type.toString());
+        for (PrimaryType type : PrimaryType.getAllTypes()) {
+            choices.add(type.getCode());
         }
         map.put("snmpPrimaryChoices", choices);
         
