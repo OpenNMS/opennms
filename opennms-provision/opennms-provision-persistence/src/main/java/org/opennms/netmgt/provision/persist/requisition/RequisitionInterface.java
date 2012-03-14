@@ -58,7 +58,7 @@ import org.opennms.core.utils.InetAddressUtils;
  * @author ranger
  * @version $Id: $
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name="", propOrder = { "m_monitoredServices", "m_categories" })
 @XmlRootElement(name = "interface")
 public class RequisitionInterface implements Comparable<RequisitionInterface> {
@@ -80,7 +80,6 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     @XmlAttribute(name="managed")
     protected Boolean m_isManaged;
     
-    @XmlAttribute(name="snmp-primary")
     protected String m_snmpPrimary;
     
     @XmlAttribute(name="status")
@@ -338,8 +337,9 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlAttribute(name="snmp-primary")
     public String getSnmpPrimary() {
-        return m_snmpPrimary;
+        return m_snmpPrimary == "C"? null : m_snmpPrimary;
     }
 
     /**
@@ -347,8 +347,9 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      *
      * @param value a {@link java.lang.String} object.
      */
-    public void setSnmpPrimary(String value) {
-        m_snmpPrimary = value;
+    public void setSnmpPrimary(final String value) {
+        // very old requisitions can still have "C" in here, which is no longer valid
+        m_snmpPrimary = value == "C"? null : value;
     }
 
     /**
