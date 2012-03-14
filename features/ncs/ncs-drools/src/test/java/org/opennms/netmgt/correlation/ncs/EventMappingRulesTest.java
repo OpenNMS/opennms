@@ -137,6 +137,16 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
 					.setAttribute("mplsLspInfoName", "lspB-PE1-PE2")
 				.popComponent()
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspC-PE1-PE2")
+					.setName("lspC-PE1-PE2")
+					.setNodeIdentity("space", "1111-PE1")
+					.setUpEventUei("uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_none")
+					.setDownEventUei("uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rmep")
+					.setAttribute("cfmLevel", "0")
+					.setAttribute("cfmMD", "MD1" )
+					.setAttribute("cfmMA", "MA1")
+					.setAttribute("cfmMEPInterface", "ge-1/0/1.0")
+				.popComponent()
 			.popComponent()
 		.popComponent()
 		.pushComponent("ServiceElement", "NA-ServiceElement", "9876")
@@ -261,6 +271,27 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 
     }
     
+	@Test
+    @DirtiesContext
+    // Down event for a syslog error
+    public void testMapcfmd_ccm_defect_rmep() throws Exception {
+		
+		Event event = createcfmdDownEvent(37, m_pe1NodeId, "10.1.1.1", "0", "MD1", "MA1", "ge-1/0/1.0");
+
+		testEventMapping(event, ComponentDownEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "8765:lspC-PE1-PE2");
+
+	}
+    
+	@Test
+    @DirtiesContext
+    // Up event for a syslog error
+    public void testMapcfmd_ccm_defect_none() throws Exception {
+		
+		Event event = createcfmdUpEvent(37, m_pe1NodeId, "10.1.1.1", "0", "MD1", "MA1", "ge-1/0/1.0");
+
+		testEventMapping(event, ComponentUpEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "8765:lspC-PE1-PE2");
+    }
+	
 	@Test
     @DirtiesContext
     public void testMapmplsLspInfoDown() throws Exception {
@@ -489,6 +520,36 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
                 .getEvent();
         event.setDbid(dbId);
         return event;
+    }
+    
+    private Event createcfmdDownEvent( int dbId, int nodeid, String ipaddr, String cfmLevel, String cfmMD, String cfmMA, String cfmMEPInterface ) {
+        
+        Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rmep", "Drools")
+                .setNodeid(nodeid)
+                .setInterface( addr( ipaddr ) )
+                .addParam("1.2.3.1", cfmLevel)
+				.addParam("1.2.3.2", cfmMD )
+				.addParam("1.2.3.3", cfmMA )
+				.addParam("1.2.3.4", cfmMEPInterface )
+                .getEvent();
+        
+        event.setDbid(dbId);
+		return event;
+    }
+    
+    private Event createcfmdUpEvent( int dbId, int nodeid, String ipaddr, String cfmLevel, String cfmMD, String cfmMA, String cfmMEPInterface ) {
+        
+        Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_none", "Drools")
+                .setNodeid(nodeid)
+                .setInterface( addr( ipaddr ) )
+                .addParam("1.2.3.1", cfmLevel)
+				.addParam("1.2.3.2", cfmMD )
+				.addParam("1.2.3.3", cfmMA )
+				.addParam("1.2.3.4", cfmMEPInterface )
+                .getEvent();
+        
+        event.setDbid(dbId);
+		return event;
     }
     
     private Set<String> findSubcomponentsOnNode(NCSComponent svc, String nodeForeignSource, String nodeForeignId) {

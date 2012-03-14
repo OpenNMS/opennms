@@ -13,6 +13,13 @@
     <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</event>
     <event>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</event>
     <event>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</event>
+    <event>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_none</event>
+    <event>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rmep</event>
+    <event>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_cross_connect</event>
+    <event>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_error</event>
+    <event>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_mac_status</event>
+    <event>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_unknown</event>
+    <event>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rdi</event>
     <event>uei.opennms.org/nodes/nodeDown</event>
     <event>uei.opennms.org/nodes/nodeUp</event>
     <app-context>dependencyRules-context.xml</app-context>
