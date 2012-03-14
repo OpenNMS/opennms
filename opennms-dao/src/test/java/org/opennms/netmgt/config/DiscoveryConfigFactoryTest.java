@@ -29,19 +29,25 @@
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.ExcludeRange;
+import org.opennms.netmgt.config.discovery.IncludeRange;
+import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 
-/**
- * 
- */
 public class DiscoveryConfigFactoryTest {
     @Test
     public void testAddToSpecificsFromURLViaURL() throws Exception {
@@ -81,5 +87,61 @@ public class DiscoveryConfigFactoryTest {
         assertEquals("0000:0000:0000:0000:0000:0000:0000:0001", InetAddressUtils.str(specifics.get(5).getAddress()));
         assertEquals("fe80:0000:0000:0000:ffff:eeee:dddd:cccd", InetAddressUtils.str(specifics.get(6).getAddress()));
         assertEquals("fe80:0000:0000:0000:ffff:eeee:dddd:cccc", InetAddressUtils.str(specifics.get(7).getAddress()));
+    }
+    
+    @Test
+    public void testMultipleExcludes() throws Exception {
+        final DiscoveryConfigFactory factory = new DiscoveryConfigFactory() {
+            public void saveConfiguration(final DiscoveryConfiguration configuration) throws MarshalException, ValidationException, IOException {}
+            public synchronized DiscoveryConfiguration getConfiguration() {
+                final DiscoveryConfiguration conf = new DiscoveryConfiguration();
+
+                IncludeRange ir = new IncludeRange();
+                ir.setBegin("192.168.0.1");
+                ir.setEnd("192.168.0.254");
+                conf.addIncludeRange(ir);
+
+                ir = new IncludeRange();
+                ir.setBegin("192.168.2.1");
+                ir.setEnd("192.168.2.255");
+                conf.addIncludeRange(ir);
+
+                Specific s = new Specific();
+                s.setContent("192.168.1.1");
+                conf.addSpecific(s);
+
+                s = new Specific();
+                s.setContent("192.168.4.1");
+                conf.addSpecific(s);
+
+                ExcludeRange er = new ExcludeRange();
+                er.setBegin("192.168.0.100");
+                er.setEnd("192.168.0.150");
+                conf.addExcludeRange(er);
+
+                er = new ExcludeRange();
+                er.setBegin("192.168.2.200");
+                er.setEnd("192.168.4.254");
+                conf.addExcludeRange(er);
+
+                return conf;
+            }
+        };
+
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.1")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.2")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.99")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.0.100")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.0.140")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.0.150")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.151")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.1.1")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.2.1")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.2.100")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.2.200")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.2.220")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.2.255")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.4.1")));
+
     }
 }

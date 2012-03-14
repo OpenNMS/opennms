@@ -78,7 +78,7 @@ import org.springframework.core.io.FileSystemResource;
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  */
-public final class DiscoveryConfigFactory {
+public class DiscoveryConfigFactory {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -112,7 +112,15 @@ public final class DiscoveryConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private DiscoveryConfigFactory(final String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(DiscoveryConfiguration.class, new FileSystemResource(configFile));
+        final FileSystemResource resource = new FileSystemResource(configFile);
+        setConfig(resource);
+    }
+
+    protected DiscoveryConfigFactory() {
+    }
+
+    protected void setConfig(final FileSystemResource resource) throws MarshalException, ValidationException, IOException {
+        m_config = CastorUtils.unmarshal(DiscoveryConfiguration.class, resource);
     }
 
     public Lock getReadLock() {
@@ -194,6 +202,14 @@ public final class DiscoveryConfigFactory {
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
+    }
+
+    /**
+     * Set the singleton instance of this factory.
+     */
+    public static synchronized void setInstance(final DiscoveryConfigFactory factory) {
+        m_singleton = factory;
+        m_loaded = true;
     }
 
     /**
@@ -505,7 +521,9 @@ public final class DiscoveryConfigFactory {
                 final byte[] laddr = address.getAddress();
         
                 for (final ExcludeRange range : excludeRange) {
-                    return InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd());
+                    if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
+                        return true;
+                    }
                 }
             }
             return false;
