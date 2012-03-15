@@ -59,7 +59,7 @@ class SyslogReceiver implements Runnable {
     /**
      * The UDP socket for receipt and transmission of packets from agents.
      */
-    private DatagramSocket m_dgSock;
+    private final DatagramSocket m_dgSock;
 
     /**
      * The context thread
@@ -71,17 +71,17 @@ class SyslogReceiver implements Runnable {
      */
     private String m_logPrefix;
 
-    private String m_matchPattern;
+    private final String m_matchPattern;
 
-    private int m_hostGroup;
+    private final int m_hostGroup;
 
-    private int m_messageGroup;
+    private final int m_messageGroup;
     
-    private String m_discardUei;
+    private final String m_discardUei;
 
-    private UeiList m_UeiList;
+    private final UeiList m_UeiList;
 
-    private HideMessage m_HideMessages;
+    private final HideMessage m_HideMessages;
 
     /**
      * construct a new receiver
@@ -133,6 +133,7 @@ class SyslogReceiver implements Runnable {
     /**
      * The execution context.
      */
+    @Override
     public void run() {
         // get the context
         m_context = Thread.currentThread();

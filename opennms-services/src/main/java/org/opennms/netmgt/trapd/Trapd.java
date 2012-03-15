@@ -75,7 +75,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapProcessorFactory, TrapNotificationListener, InitializingBean {
+public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory, TrapNotificationListener {
     /*
      * The last status sent to the service control manager.
      */

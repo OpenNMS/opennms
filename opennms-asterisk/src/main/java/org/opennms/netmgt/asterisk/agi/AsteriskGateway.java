@@ -32,7 +32,6 @@ import org.asteriskjava.fastagi.AgiServerThread;
 import org.asteriskjava.fastagi.ClassNameMappingStrategy;
 import org.asteriskjava.fastagi.DefaultAgiServer;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.daemon.SpringServiceDaemon;
 
 /**
  * <p>AsteriskGateway class.</p>
@@ -43,7 +42,7 @@ import org.opennms.netmgt.daemon.SpringServiceDaemon;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @version $Id: $
  */
-public class AsteriskGateway extends AbstractServiceDaemon implements SpringServiceDaemon {
+public class AsteriskGateway extends AbstractServiceDaemon {
 
     AgiServerThread m_agiServerThread;
     private int m_port = 4573;

@@ -478,7 +478,7 @@ public class RequestTracker {
                     throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
                 } else {
                     if (response.getEntity() != null) {
-                        response.getEntity().consumeContent();
+                        EntityUtils.consume(response.getEntity());
                     }
                     LogUtils.warnf(this, "got user session for username: %s", m_user);
                 }
