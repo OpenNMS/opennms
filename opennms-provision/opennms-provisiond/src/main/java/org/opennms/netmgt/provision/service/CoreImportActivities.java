@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.service;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -46,6 +45,7 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
+import org.opennms.netmgt.provision.service.operations.RequisitionImport;
 import org.springframework.core.io.Resource;
 
 /**
@@ -59,70 +59,44 @@ public class CoreImportActivities {
     
     ProvisionService m_provisionService;
     
-    /**
-     * <p>Constructor for CoreImportActivities.</p>
-     *
-     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     */
-    public CoreImportActivities(ProvisionService provisionService) {
+    public CoreImportActivities(final ProvisionService provisionService) {
         m_provisionService = provisionService;
     }
 
-    /*
-     *
-     *                   LifeCycle importLifeCycle = new LifeCycle("import")
-        .addPhase("validate")
-            .addPhase("audit")
-            .addPhase("scan")
-            .addPhase("delete")
-            .addPhase("update")
-            .addPhase("insert")
-            .addPhase("relate");
-            
- 
-     */
-
-    /*
-     *         LifeCycle nodeScanLifeCycle = new LifeCycle("nodeScan")
-            .addPhase("scan")
-            .addPhase("persist");
-
-     */
-
-    /**
-     * <p>loadSpecFile</p>
-     *
-     * @param resource a {@link org.springframework.core.io.Resource} object.
-     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
-     * @throws org.opennms.netmgt.provision.service.ModelImportException if any.
-     * @throws java.io.IOException if any.
-     */
     @Activity( lifecycle = "import", phase = "validate", schedulingHint="import")
-    public Requisition loadSpecFile(Resource resource) throws ModelImportException, IOException {
-        info("Loading requisition from resource %s", resource);
-        Requisition specFile = m_provisionService.loadRequisition(resource);
-        debug("Finished loading requisition.");
+    public RequisitionImport loadSpecFile(final Resource resource) {
+        final RequisitionImport ri = new RequisitionImport();
 
-        return specFile;
+        info("Loading requisition from resource %s", resource);
+        try {
+            final Requisition specFile = m_provisionService.loadRequisition(resource);
+            ri.setRequisition(specFile);
+            debug("Finished loading requisition.");
+        } catch (final Throwable t) {
+            ri.abort(t);
+        }
+
+        return ri;
     }
     
-    /**
-     * <p>auditNodes</p>
-     *
-     * @param specFile a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
-     * @return a {@link org.opennms.netmgt.provision.service.operations.ImportOperationsManager} object.
-     */
     @Activity( lifecycle = "import", phase = "audit", schedulingHint="import" )
-    public ImportOperationsManager auditNodes(final Requisition specFile, final Boolean rescanExisting) {
+    public ImportOperationsManager auditNodes(final RequisitionImport ri, final Boolean rescanExisting) {
+        if (ri.isAborted()) {
+            info("The import has been aborted, skipping audit phase import.");
+            return null;
+        }
+        
+        final Requisition specFile = ri.getRequisition();
+
         info("Auditing nodes for requisition %s", specFile);
 
         // @ipv6
         m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
         
-        String foreignSource = specFile.getForeignSource();
-        Map<String, Integer> foreignIdsToNodes = m_provisionService.getForeignIdToNodeIdMap(foreignSource);
+        final String foreignSource = specFile.getForeignSource();
+        final Map<String, Integer> foreignIdsToNodes = m_provisionService.getForeignIdToNodeIdMap(foreignSource);
 
-        ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, m_provisionService, rescanExisting);
+        final ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, m_provisionService, rescanExisting);
         
         opsMgr.setForeignSource(foreignSource);
         opsMgr.auditNodes(specFile);
@@ -132,14 +106,12 @@ public class CoreImportActivities {
         return opsMgr;
     }
     
-    /**
-     * <p>scanNodes</p>
-     *
-     * @param currentPhase a {@link org.opennms.netmgt.provision.service.lifecycle.Phase} object.
-     * @param opsMgr a {@link org.opennms.netmgt.provision.service.operations.ImportOperationsManager} object.
-     */
     @Activity( lifecycle = "import", phase = "scan", schedulingHint="import" )
-    public void scanNodes(Phase currentPhase, ImportOperationsManager opsMgr) {
+    public void scanNodes(final Phase currentPhase, final ImportOperationsManager opsMgr, final RequisitionImport ri) {
+        if (ri.isAborted()) {
+            info("The import has been aborted, skipping scan phase import.");
+            return;
+        }
 
         info("Scheduling nodes for phase %s", currentPhase);
         
@@ -151,7 +123,7 @@ public class CoreImportActivities {
             debug("Created lifecycle %s for operation %s", nodeScan, op);
             
             nodeScan.setAttribute("operation", op);
-            nodeScan.setAttribute("rescanExisting", opsMgr.getRescanExisting());
+            nodeScan.setAttribute("requisitionImport", ri);
             nodeScan.trigger();
         }
 
@@ -159,13 +131,13 @@ public class CoreImportActivities {
     }
     
     
-    /**
-     * <p>scanNode</p>
-     *
-     * @param operation a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
-     */
     @Activity( lifecycle = "nodeImport", phase = "scan", schedulingHint="import" )
-    public void scanNode(final ImportOperation operation, final Boolean rescanExisting) {
+    public void scanNode(final ImportOperation operation, final RequisitionImport ri, final Boolean rescanExisting) {
+        if (ri.isAborted()) {
+            info("The import has been aborted, skipping scan phase nodeImport.");
+            return;
+        }
+
         if (rescanExisting == null || rescanExisting) {
             info("Running scan phase of %s", operation);
             operation.scan();
@@ -176,13 +148,12 @@ public class CoreImportActivities {
         }
     }
     
-    /**
-     * <p>persistNode</p>
-     *
-     * @param operation a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
-     */
     @Activity( lifecycle = "nodeImport", phase = "persist" , schedulingHint = "import" )
-    public void persistNode(ImportOperation operation) {
+    public void persistNode(final ImportOperation operation, final RequisitionImport ri) {
+        if (ri.isAborted()) {
+            info("The import has been aborted, skipping persist phase.");
+            return;
+        }
 
         info("Running persist phase of %s", operation);
         operation.persist();
@@ -190,20 +161,19 @@ public class CoreImportActivities {
 
     }
     
-    /**
-     * <p>relateNodes</p>
-     *
-     * @param currentPhase a {@link org.opennms.core.tasks.BatchTask} object.
-     * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
-     */
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "import" )
-    public void relateNodes(final BatchTask currentPhase, final Requisition requisition) {
-        
+    public void relateNodes(final BatchTask currentPhase, final RequisitionImport ri) {
+        if (ri.isAborted()) {
+            info("The import has been aborted, skipping relate phase.");
+            return;
+        }
+
         info("Running relate phase");
         
+        final Requisition requisition = ri.getRequisition();
         RequisitionVisitor visitor = new AbstractRequisitionVisitor() {
             @Override
-            public void visitNode(OnmsNodeRequisition nodeReq) {
+            public void visitNode(final OnmsNodeRequisition nodeReq) {
             	LogUtils.debugf(this, "Scheduling relate of node %s", nodeReq);
                 currentPhase.add(parentSetter(nodeReq, requisition.getForeignSource()));
             }
@@ -218,8 +188,12 @@ public class CoreImportActivities {
     private Runnable parentSetter(final OnmsNodeRequisition nodeReq, final String foreignSource) {
         return new Runnable() {
            public void run() {
-               m_provisionService.setNodeParentAndDependencies(foreignSource, nodeReq.getForeignId(), nodeReq.getParentForeignId(),
-                                                               nodeReq.getParentNodeLabel());
+               m_provisionService.setNodeParentAndDependencies(
+                   foreignSource,
+                   nodeReq.getForeignId(),
+                   nodeReq.getParentForeignId(),
+                   nodeReq.getParentNodeLabel()
+               );
 
                m_provisionService.clearCache();
            }
@@ -229,24 +203,16 @@ public class CoreImportActivities {
         }; 
     }
 
-    /**
-     * <p>info</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
     protected void info(String format, Object... args) {
     	LogUtils.infof(this, format, args);
     }
 
-    /**
-     * <p>debug</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
     protected void debug(String format, Object... args) {
-    	LogUtils.debugf(this, format, args);
+        LogUtils.debugf(this, format, args);
+    }
+
+    protected void warn(String format, Object... args) {
+        LogUtils.warnf(this, format, args);
     }
 
     /**
