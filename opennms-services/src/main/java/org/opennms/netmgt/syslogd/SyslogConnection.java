@@ -32,7 +32,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Random;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -44,31 +43,24 @@ import org.opennms.netmgt.config.syslogd.UeiList;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @version $Id: $
  */
 public class SyslogConnection implements Runnable {
 
-    private DatagramPacket _packet;
+    private final DatagramPacket _packet;
 
     private String m_logPrefix;
 
-    private String _matchPattern;
+    private final String _matchPattern;
 
-    private int _hostGroup;
+    private final int _hostGroup;
 
-    private int _messageGroup;
+    private final int _messageGroup;
 
-    private String _discardUei;
+    private final String _discardUei;
 
-    private UeiList _ueiList;
+    private final UeiList _ueiList;
 
-    private HideMessage _hideMessages;
+    private final HideMessage _hideMessages;
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
@@ -98,6 +90,7 @@ public class SyslogConnection implements Runnable {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
         ThreadCategory.setPrefix(m_logPrefix);
         ThreadCategory log = ThreadCategory.getInstance(getClass());
@@ -115,20 +108,13 @@ public class SyslogConnection implements Runnable {
         log.debug("Sending received packet to the queue");
 
         SyslogHandler.queueManager.putInQueue(re);
-        // delay a random period of time
-        try {
-            Thread.sleep((new Random()).nextInt(100));
-        } catch (final InterruptedException e) {
-            log.debug("Syslogd: Interruption ", e);
-        }
-
     }
 
     void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }
 
-    private DatagramPacket copyPacket(final DatagramPacket packet) {
+    private static DatagramPacket copyPacket(final DatagramPacket packet) {
         byte[] message = new byte[packet.getLength()];
         System.arraycopy(packet.getData(), 0, message, 0, packet.getLength());
         InetAddress addr = null;
@@ -143,7 +129,7 @@ public class SyslogConnection implements Runnable {
                                                       );
                                                       return retPacket;
         } catch (UnknownHostException e) {
-            ThreadCategory.getInstance(getClass()).warn("unable to clone InetAddress object for " + packet.getAddress());
+            ThreadCategory.getInstance(SyslogConnection.class).warn("unable to clone InetAddress object for " + packet.getAddress());
         }
         return null;
     }
