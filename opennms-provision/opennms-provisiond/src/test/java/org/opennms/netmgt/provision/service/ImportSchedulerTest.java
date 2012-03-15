@@ -38,11 +38,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.test.mock.MockLogAppender;
 import org.quartz.Job;
 import org.quartz.JobDetail;
@@ -127,12 +128,12 @@ public class ImportSchedulerTest {
             }
 
             public void triggerComplete(Trigger trigger, JobExecutionContext context, int triggerInstructionCode) {
-                System.err.println("triggerComplete called on trigger listener");
+                LogUtils.infof(this, "triggerComplete called on trigger listener");
                 callTracker.setCalled(true);
             }
 
             public void triggerFired(Trigger trigger, JobExecutionContext context) {
-                System.err.println("triggerFired called on trigger listener");
+                LogUtils.infof(this, "triggerFired called on trigger listener");
                 Job jobInstance = context.getJobInstance();
                 
                 if (jobInstance instanceof ImportJob) {
@@ -144,12 +145,12 @@ public class ImportSchedulerTest {
             }
 
             public void triggerMisfired(Trigger trigger) {
-                System.err.println("triggerMisFired called on trigger listener");
+                LogUtils.infof(this, "triggerMisFired called on trigger listener");
                 callTracker.setCalled(true);
             }
 
             public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {
-                System.err.println("vetoJobExecution called on trigger listener");
+                LogUtils.infof(this, "vetoJobExecution called on trigger listener");
                 callTracker.setCalled(true);
                 return false;
             }
