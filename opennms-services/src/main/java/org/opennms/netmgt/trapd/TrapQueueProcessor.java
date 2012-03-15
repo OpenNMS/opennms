@@ -288,6 +288,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber has already been started.
      */
+    @Override
     public synchronized void start() {
         Assert.state(m_worker == null, "The fiber is running or has already run");
 
@@ -304,6 +305,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
     /**
      * Pauses the current fiber.
      */
+    @Override
     public synchronized void pause() {
         Assert.state(m_worker != null && m_worker.isAlive(), "The fiber is not running");
 
@@ -314,6 +316,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
     /**
      * Resumes the currently paused fiber.
      */
+    @Override
     public synchronized void resume() {
         Assert.state(m_worker != null && m_worker.isAlive(), "The fiber is not running");
 
@@ -330,6 +333,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber has never been started.
      */
+    @Override
     public synchronized void stop() {
         Assert.state(m_worker != null, "The fiber has never run");
 
@@ -343,6 +347,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      *
      * @return The name of the Fiber.
      */
+    @Override
     public String getName() {
         return "TrapQueueProcessor";
     }
@@ -352,6 +357,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      *
      * @return The status of the Fiber.
      */
+    @Override
     public synchronized int getStatus() {
         if (m_worker != null && !m_worker.isAlive()) {
             m_status = STOPPED;
@@ -365,6 +371,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      * object read, process the traps to convert them to events and send them
      * out
      */
+    @Override
     public void run() {
         synchronized (this) {
             m_status = RUNNING;
@@ -480,6 +487,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      *
      * @throws java.lang.IllegalStateException if any.
      */
+    @Override
     public void afterPropertiesSet() throws IllegalStateException {
         Assert.state(m_backlogQ != null, "property backlogQ must be set");
         Assert.state(m_eventConfDao != null, "property eventConfDao must be set");

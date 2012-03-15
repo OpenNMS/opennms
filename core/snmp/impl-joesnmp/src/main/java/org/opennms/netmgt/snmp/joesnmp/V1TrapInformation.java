@@ -67,30 +67,36 @@ public class V1TrapInformation extends TrapInformation {
         m_pdu = pdu;
     }
 
+    @Override
     protected int getPduLength() {
         return m_pdu.getLength();
     }
 
+    @Override
     protected long getTimeStamp() {
         return m_pdu.getTimeStamp();
     }
 
+    @Override
     protected TrapIdentity getTrapIdentity() {
         return new TrapIdentity(SnmpObjId.get(m_pdu.getEnterprise().getIdentifiers()), m_pdu.getGeneric(), m_pdu.getSpecific());
     }
 
+    @Override
     protected InetAddress getTrapAddress() {
         return SnmpIPAddress.toInetAddress(m_pdu.getAgentAddress());
     }
 
-    protected SnmpVarBind getVarBindAt(int index) {
+    private SnmpVarBind getVarBindAt(int index) {
         return m_pdu.getVarBindAt(index);
     }
 
+    @Override
     protected String getVersion() {
         return "v1";
     }
 
+    @Override
     protected void processVarBindAt(int i) {
         SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getName().getIdentifiers());
         SnmpValue value = new JoeSnmpValue(getVarBindAt(i).getValue());

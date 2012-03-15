@@ -44,6 +44,8 @@ import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
 
 /**
+ * @deprecated This class should be combined with {@link SyslogHandler}
+ * 
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed

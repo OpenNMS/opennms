@@ -52,11 +52,6 @@ import org.opennms.netmgt.xml.event.EventReceipt;
  */
 public final class SyslogHandler implements Fiber {
     /**
-     * The default User Datagram Port for the receipt and transmission of
-     * events.
-     */
-
-    /**
      * The UDP receiver thread.
      */
     private SyslogReceiver m_receiver;
@@ -71,18 +66,20 @@ public final class SyslogHandler implements Fiber {
      */
     private DatagramSocket m_dgSock;
 
-    private final boolean m_NewSuspectOnMessage;
-
     private final String m_ForwardingRegexp;
 
     private final int m_MatchingGroupHost;
 
     private final int m_MatchingGroupMessage;
 
-    // A collection of Strings->UEI's
+    /**
+     * A collection of Strings->UEI's
+     */
     private final UeiList m_UeiList;
 
-    // A collection of Strings we do not want to attach to the event.
+    /**
+     * A collection of Strings we do not want to attach to the event.
+     */
     private final HideMessage m_HideMessages;
 
     /**
@@ -107,8 +104,6 @@ public final class SyslogHandler implements Fiber {
      */
     private static SyslogdConfig m_syslogdConfig;
 
-    static QueueManager queueManager = new QueueManager();
-
     /**
      * <p>Constructor for SyslogHandler.</p>
      */
@@ -116,8 +111,6 @@ public final class SyslogHandler implements Fiber {
         m_dgSock = null;
         m_dgPort = m_syslogdConfig.getSyslogPort();
         m_dgIp = m_syslogdConfig.getListenAddress();
-
-        m_NewSuspectOnMessage = m_syslogdConfig.getNewSuspectOnMessage();
 
         // the Matching Regexp is broken out into the config-file of syslogd
 
