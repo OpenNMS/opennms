@@ -32,6 +32,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -48,8 +50,6 @@ public class SyslogConnection implements Runnable {
 
     private final DatagramPacket _packet;
 
-    private String m_logPrefix;
-
     private final String _matchPattern;
 
     private final int _hostGroup;
@@ -62,7 +62,7 @@ public class SyslogConnection implements Runnable {
 
     private final HideMessage _hideMessages;
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
+    private final ExecutorService _eventExecutor;
 
     /**
      * <p>Constructor for SyslogConnection.</p>
@@ -75,7 +75,7 @@ public class SyslogConnection implements Runnable {
      * @param hideMessages a {@link org.opennms.netmgt.config.syslogd.HideMessage} object.
      * @param discardUei a {@link java.lang.String} object.
      */
-    public SyslogConnection(final DatagramPacket packet, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessages, final String discardUei) {
+    public SyslogConnection(final DatagramPacket packet, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessages, final String discardUei, final ExecutorService eventExecutor) {
         _packet = copyPacket(packet);
         _matchPattern = matchPattern;
         _hostGroup = hostGroup;
@@ -83,8 +83,7 @@ public class SyslogConnection implements Runnable {
         _discardUei = discardUei;
         _ueiList = ueiList;
         _hideMessages = hideMessages;
-
-        m_logPrefix = LOG4J_CATEGORY;
+        _eventExecutor = eventExecutor;
     }
 
     /**
@@ -92,26 +91,23 @@ public class SyslogConnection implements Runnable {
      */
     @Override
     public void run() {
-        ThreadCategory.setPrefix(m_logPrefix);
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         ConvertToEvent re = null;
         try {
             re = ConvertToEvent.make(_packet, _matchPattern, _hostGroup,  _messageGroup, _ueiList, _hideMessages, _discardUei);
+
+            log.debug("Sending received packet to the SyslogProcessor queue");
+
+            _eventExecutor.execute(new SyslogProcessor(re));
+
         } catch (final UnsupportedEncodingException e1) {
             log.debug("Failure to convert package", e1);
         } catch (final MessageDiscardedException e) {
             log.debug("Message discarded, returning without enqueueing event.", e);
-            return;
+        } catch (final RejectedExecutionException e) {
+            log.debug("Message discarded, returning without enqueueing event.", e);
         }
-
-        log.debug("Sending received packet to the queue");
-
-        SyslogHandler.queueManager.putInQueue(re);
-    }
-
-    void setLogPrefix(String prefix) {
-        m_logPrefix = prefix;
     }
 
     private static DatagramPacket copyPacket(final DatagramPacket packet) {

@@ -62,11 +62,6 @@ public final class SyslogHandler implements Fiber {
     private SyslogReceiver m_receiver;
 
     /**
-     * The user datagram packet processor
-     */
-    private SyslogProcessor m_processor;
-
-    /**
      * The Fiber's status.
      */
     private volatile int m_status;
@@ -142,7 +137,6 @@ public final class SyslogHandler implements Fiber {
 
         m_dgSock = null;
         m_receiver = null;
-        m_processor = null;
         m_logPrefix = null;
     }
 
@@ -177,17 +171,9 @@ public final class SyslogHandler implements Fiber {
                     m_UeiList,
                     m_HideMessages,
                     m_DiscardUei);
-            m_processor = new SyslogProcessor(m_NewSuspectOnMessage,
-                    m_ForwardingRegexp,
-                    m_MatchingGroupHost,
-                    m_MatchingGroupMessage,
-                    m_UeiList,
-                    m_HideMessages
-            );
 
             if (m_logPrefix != null) {
                 m_receiver.setLogPrefix(m_logPrefix);
-                m_processor.setLogPrefix(m_logPrefix);
             }
         } catch (IOException e) {
             throw new java.lang.reflect.UndeclaredThrowableException(e);
@@ -195,16 +181,12 @@ public final class SyslogHandler implements Fiber {
 
         Thread rThread = new Thread(m_receiver, "Syslog Event Receiver["
                 + getIpAddress() + ":" + m_dgPort + "]");
-        Thread pThread = new Thread(m_processor, "Syslog Event Processor["
-                + getIpAddress() + ":" + m_dgPort + "]");
 
         try {
             rThread.start();
-            pThread.start();
 
         } catch (RuntimeException e) {
             rThread.interrupt();
-            pThread.interrupt();
 
             m_status = STOPPED;
             throw e;
@@ -228,8 +210,6 @@ public final class SyslogHandler implements Fiber {
 
         try {
             m_receiver.stop();
-            m_processor.stop();
-
         } catch (InterruptedException e) {
             ThreadCategory log = ThreadCategory.getInstance(this.getClass());
             log.warn(
