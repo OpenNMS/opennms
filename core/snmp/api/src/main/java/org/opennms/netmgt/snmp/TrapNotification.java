@@ -30,6 +30,6 @@ package org.opennms.netmgt.snmp;
 
 public interface TrapNotification {
 
-    public abstract TrapProcessor getTrapProcessor();
+    TrapProcessor getTrapProcessor();
 
 }

@@ -40,6 +40,8 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
@@ -83,6 +85,8 @@ public class SyslogdTest {
     String m_localhost = "127.0.0.1";
 
     private Syslogd m_syslogd;
+
+    private final ExecutorService m_executorService = Executors.newFixedThreadPool(3);
 
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
@@ -152,7 +156,7 @@ public class SyslogdTest {
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
         final SyslogdConfig config = SyslogdConfigFactory.getInstance();
-        final Thread worker = new Thread(new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()), SyslogConnection.class.getSimpleName());
+        final Thread worker = new Thread(new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei(), m_executorService), SyslogConnection.class.getSimpleName());
         worker.run();
 
         ea.verifyAnticipated(5000,0,0,0,0);

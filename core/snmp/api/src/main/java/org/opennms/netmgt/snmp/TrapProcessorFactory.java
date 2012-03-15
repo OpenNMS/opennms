@@ -30,6 +30,6 @@ package org.opennms.netmgt.snmp;
 
 public interface TrapProcessorFactory {
 
-    public abstract TrapProcessor createTrapProcessor();
+    TrapProcessor createTrapProcessor();
 
 }

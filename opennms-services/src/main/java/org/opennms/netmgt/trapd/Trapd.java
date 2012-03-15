@@ -36,7 +36,6 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.InetAddressUtils;
@@ -48,7 +47,6 @@ import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
@@ -128,11 +126,13 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      *
      * @return a {@link org.opennms.netmgt.snmp.TrapProcessor} object.
      */
+    @Override
     public TrapProcessor createTrapProcessor() {
         return new EventCreator(m_trapdIpMgr);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void trapReceived(TrapNotification trapNotification) {
         addTrap(trapNotification);
     }
@@ -151,6 +151,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     /**
      * <p>onInit</p>
      */
+    @Override
     public synchronized void onInit() {
         Assert.state(m_trapdIpMgr != null, "trapdIpMgr must be set");
         Assert.state(m_eventReader != null, "eventReader must be set");
@@ -211,6 +212,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      * @see org.opennms.protocols.snmp.SnmpTrapHandler
      */
+    @Override
     public synchronized void onStart() {
         m_status = STARTING;
 
@@ -225,6 +227,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     /**
      * Pauses Trapd
      */
+    @Override
     public void onPause() {
         if (m_status != RUNNING) {
             return;
@@ -243,6 +246,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     /**
      * Resumes Trapd
      */
+    @Override
     public void onResume() {
         if (m_status != PAUSED) {
             return;
@@ -262,6 +266,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      * Stops the currently running service. If the service is not running then
      * the command is silently discarded.
      */
+    @Override
     public synchronized void onStop() {
         m_status = STOP_PENDING;
 
@@ -298,11 +303,13 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      *
      * @return The service's status.
      */
+    @Override
     public synchronized int getStatus() {
         return m_status;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void trapError(final int error, final String msg) {
         LogUtils.warnf(this, "Error Processing Received Trap: error = " + error + (msg != null ? ", ref = " + msg : ""));
     }

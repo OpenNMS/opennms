@@ -78,7 +78,8 @@ public abstract class TrapInformation implements TrapNotification {
     protected InetAddress getAgentAddress() {
         return getAgent();
     }
-    
+
+    @Override
     public TrapProcessor getTrapProcessor() {
         // We do this here to processing of the data is delayed until it is requested.
         processTrap();

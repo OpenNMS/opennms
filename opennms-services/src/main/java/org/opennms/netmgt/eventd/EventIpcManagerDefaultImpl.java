@@ -135,6 +135,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
          */
         EventListenerExecutor(EventListener listener) {
             m_listener = listener;
+            // You could also do Executors.newSingleThreadExecutor() here
             m_delegateThread = Executors.newFixedThreadPool(1);
         }
 
