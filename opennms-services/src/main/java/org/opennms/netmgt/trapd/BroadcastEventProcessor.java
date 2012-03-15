@@ -45,9 +45,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class BroadcastEventProcessor implements EventListener, InitializingBean, DisposableBean {
     private final EventIpcManager m_eventMgr;
