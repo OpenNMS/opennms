@@ -14,48 +14,92 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.4</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.reporting</groupId>
+            <artifactId>maven-reporting-impl</artifactId>
+            <version>2.2</version>
+            <exclusions>
+              <exclusion>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${commonsValidatorVersion}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commonsBeanutilsVersion}</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
-            <id>generate-key</id>
-            <phase>generate-resources</phase>
+            <id>unpack-keystore</id>
+            <phase>process-resources</phase>
             <goals>
-              <goal>execute</goal>
+              <goal>unpack</goal>
             </goals>
             <configuration>
-              <source>
-                def keystore = new File(project.properties['webstart.keystore'])
-                if (!keystore.exists()) {
-                  keystore.parentFile.mkdirs();
-                  println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
-                  def args = [
-                    keystore: project.properties['webstart.keystore'],
-                    alias: project.properties['webstart.keyalias'],
-                    storepass: project.properties['webstart.storepass'],
-                    dname: "cn=${project.properties['webstart.dnameCn']}"
-                  ]
-                  if (project.properties['webstart.keypass']) {
-                    args.put('keypass', project.properties['webstart.keypass'])
-                  }
-                  def ant = new AntBuilder();
-                  ant.genkey(args)
-                }
-              </source>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.core.build</groupId>
+                  <artifactId>org.opennms.core.build.keystore</artifactId>
+                  <classifier>keystore</classifier>
+                  <type>tar.gz</type>
+                </artifactItem>
+              </artifactItems>
             </configuration>
-          </execution>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo.webstart</groupId>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>webstart-maven-plugin</artifactId>
-        <version>1.0-beta-2</version>
+        <version>1.0-beta-3</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.reporting</groupId>
+            <artifactId>maven-reporting-impl</artifactId>
+            <version>2.2</version>
+            <exclusions>
+              <exclusion>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${commonsValidatorVersion}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commonsBeanutilsVersion}</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
             <id>gui-app</id>
@@ -138,6 +182,12 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.core.build</groupId>
+      <artifactId>org.opennms.core.build.keystore</artifactId>
+      <classifier>keystore</classifier>
+      <type>tar.gz</type>
+    </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller</artifactId>
