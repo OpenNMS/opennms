@@ -45,6 +45,11 @@
             <artifactId>commons-beanutils</artifactId>
             <version>${commonsBeanutilsVersion}</version>
           </dependency>
+          <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>${xmlApisVersion}</version>
+          </dependency>
         </dependencies>
         <executions>
           <execution>
@@ -98,6 +103,11 @@
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>${commonsBeanutilsVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>${xmlApisVersion}</version>
           </dependency>
         </dependencies>
         <executions>

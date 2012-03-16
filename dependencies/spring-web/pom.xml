@@ -178,5 +178,9 @@
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
     </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+    </dependency>
   </dependencies>
 </project>
