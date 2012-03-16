@@ -1,14 +1,23 @@
 <?xml version="1.0"?>
 <syslogd-configuration>
     <configuration
-            syslog-port="10514"
+            syslog-port="514"
             new-suspect-on-message="false"
-            parser="org.opennms.netmgt.syslogd.CustomSyslogParser"
+            parser="org.opennms.netmgt.syslogd.JuniperSyslogParser"
+
+	    forwarding-regexp="^((.+?) (.*))\r?\n?$"
+            matching-group-host="2"
+            matching-group-message="3"
+
+            discard-uei="DISCARD-MATCHING-MESSAGES"
+            />
+
+ <!--
             forwarding-regexp="^.*\s(19|20)\d\d([-/.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])(\s+)(\S+)(\s)(\S.+)"
             matching-group-host="6"
             matching-group-message="8"
-            discard-uei="DISCARD-MATCHING-MESSAGES"
-            />
+
+ -->
 
     <!--
         NOTE: This uses the CustomSyslogParser and forwarding-regexp for backwards compatibility.  If your
@@ -37,6 +46,28 @@
         anchor your regular expression matches with ^ and $, like in the examples below.  Failure to do so can
         cause extreme slowdowns, especially with large amounts of <ueiMatch> tags.
     -->
+
+     <ueiList>
+	<!--Nov 17 08:25:41 junos-mx480-space cfmd[1461]: CFMD_CCM_DEFECT_RDI: CFM defect: RDI CCM detected by MEP on Level: 3 MD: customer1 MA: customer-site1 Interface: ge-5/0/2.0-->
+        <ueiMatch>
+            <match type="regex" expression="CFMD_CCM_DEFECT_RDI: CFM defect: RDI CCM detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)"/>
+            <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rdi</uei>
+        </ueiMatch>
+	<!--Nov 17 03:38:24 junos-mx480-space cfmd[1461]: CFMD_CCM_DEFECT_RMEP: CFM defect: Remote CCM timeout detected by MEP on Level: 0 MD: customer MA: customer-site1 Interface: ge-5/0/2.0-->
+        <ueiMatch>
+            <match type="regex" expression="CFMD_CCM_DEFECT_RMEP: CFM defect: Remote CCM timeout detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)"/>
+            <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rmep</uei>
+        </ueiMatch>
+	<!--Nov 17 05:14:21 junos-mx480-space cfmd[1461]: CFMD_CCM_DEFECT_ERROR: CFM defect: Error CCM detected by MEP on Level: 6 MD: customer MA: customer-site1 Interface: ge-5/0/2.0-->
+        <ueiMatch>
+            <match type="regex" expression="CFMD_CCM_DEFECT_ERROR: CFM defect: Error CCM detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)"/>
+            <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_error</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*?foo: (\d+) out of (\d+) tests failed for (\S+)$"/>
+            <uei>uei.opennms.org/tests/syslogd/regexUeiRewriteTest</uei>
+        </ueiMatch>
+    </ueiList>
 
     <import-file>syslog/ApacheHTTPD.syslog.xml</import-file>
     <import-file>syslog/LinuxKernel.syslog.xml</import-file>
