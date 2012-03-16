@@ -275,13 +275,18 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jxr-maven-plugin</artifactId>
-        <version>2.2</version>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.3</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
         <version>2.6</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.4</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -332,32 +337,6 @@
               <customClasspathLayout>WEB-INF/lib/$${artifact.groupIdPath}/$${artifact.artifactId}-$${artifact.baseVersion}$${dashClassifier?}.$${artifact.extension}</customClasspathLayout>
             </manifest>
           </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <version>${gmavenVersion}</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.groovy.maven.runtime</groupId>
-            <artifactId>gmaven-runtime-1.6</artifactId>
-            <version>${gmavenVersion}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>1.7.5</version>
-          </dependency>
-          <!-- Needed for AntBuilder calls in remote poller projects -->
-          <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.8.2</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <providerSelection>1.6</providerSelection>
         </configuration>
       </plugin>
       <plugin>
@@ -783,7 +762,8 @@
    <updatePolicy>daily</updatePolicy>
 
    <!-- dependency versions -->
-   <gmavenVersion>1.0</gmavenVersion>
+	<commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
+	<commonsValidatorVersion>1.3.1</commonsValidatorVersion>
 	<gwtVersion>2.3.0</gwtVersion>
    <jasperreportsVersion>3.7.6</jasperreportsVersion>
 	<jettyVersion>7.5.1.v20110908</jettyVersion>
@@ -792,7 +772,9 @@
    <log4jVersion>1.2.16</log4jVersion>
    <minaVersion>2.0.4</minaVersion>
    <oroVersion>2.0.8</oroVersion>
+    <xalanVersion>2.6.0</xalanVersion>
    <xercesVersion>2.9.1</xercesVersion>
+   <xmlApisVersion>1.4.01</xmlApisVersion>
   </properties>
 
   <profiles>
@@ -990,6 +972,15 @@
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.xml</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <!-- only used at build-time -->
+      <dependency>
+        <groupId>org.opennms.core.build</groupId>
+        <artifactId>org.opennms.core.build.keystore</artifactId>
+        <version>${project.version}</version>
+        <classifier>keystore</classifier>
+        <type>tar.gz</type>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
@@ -1893,12 +1884,12 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>1.8.3</version>
+        <version>${commonsBeanutilsVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils-core</artifactId>
-        <version>1.8.3</version>
+        <version>${commonsBeanutilsVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-chain</groupId>
@@ -1970,6 +1961,21 @@
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
         <version>3.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-pool</groupId>
+        <artifactId>commons-pool</artifactId>
+        <version>1.6</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-validator</groupId>
+        <artifactId>commons-validator</artifactId>
+        <version>${commonsValidatorVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-validator</groupId>
+        <artifactId>commons-validator-core</artifactId>
+        <version>${commonsValidatorVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.dbunit</groupId>
@@ -2258,14 +2264,20 @@
         <version>1.1.2</version>
       </dependency>
       <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <version>${xalanVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
         <version>${xercesVersion}</version>
       </dependency>
+      <!-- 2.0.2 and 2.0.0 are invalid, 1.4.01 is the latest -->
       <dependency>
         <groupId>xml-apis</groupId>
         <artifactId>xml-apis</artifactId>
-        <version>2.0.2</version>
+        <version>${xmlApisVersion}</version>
       </dependency>
       <dependency>
         <groupId>xmlrpc</groupId>
@@ -2287,17 +2299,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-jexl</artifactId>
         <version>2.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.groovy.maven.runtime</groupId>
-        <artifactId>gmaven-runtime-1.6</artifactId>
-        <version>${gmavenVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all-minimal</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.groovy</groupId>

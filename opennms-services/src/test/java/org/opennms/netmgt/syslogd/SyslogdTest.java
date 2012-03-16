@@ -37,9 +37,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -49,6 +51,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
@@ -86,7 +89,10 @@ public class SyslogdTest {
 
     private Syslogd m_syslogd;
 
-    private final ExecutorService m_executorService = Executors.newFixedThreadPool(3);
+    private final List<ExecutorService> m_executorServices = Arrays.asList(new ExecutorService[] {
+            Executors.newFixedThreadPool(3),
+            Executors.newFixedThreadPool(3)
+    });
 
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
@@ -140,8 +146,9 @@ public class SyslogdTest {
      * 
      * @throws UnknownHostException 
      * @throws InterruptedException 
+     * @throws ExecutionException 
      */
-    private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg) throws UnknownHostException, InterruptedException {
+    private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg) throws UnknownHostException, InterruptedException, ExecutionException {
         startSyslogdGracefully();
         
         final EventBuilder expectedEventBldr = new EventBuilder(expectedUEI, "syslogd");
@@ -156,8 +163,7 @@ public class SyslogdTest {
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
         final SyslogdConfig config = SyslogdConfigFactory.getInstance();
-        final Thread worker = new Thread(new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei(), m_executorService), SyslogConnection.class.getSimpleName());
-        worker.run();
+        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()));
 
         ea.verifyAnticipated(5000,0,0,0,0);
         final Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
@@ -166,7 +172,7 @@ public class SyslogdTest {
         return ea.getAnticipatedEventsRecieved();
     }
     
-	private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg, Map<String,String> expectedParams) throws UnknownHostException, InterruptedException {
+	private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg, Map<String,String> expectedParams) throws UnknownHostException, InterruptedException, ExecutionException {
     	final List<Event> receivedEvents = doMessageTest(testPDU, expectedHost, expectedUEI, expectedLogMsg);
 
         final Map<String,String> actualParms = new HashMap<String,String>();
