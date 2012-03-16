@@ -14,49 +14,64 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.4</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.reporting</groupId>
+            <artifactId>maven-reporting-impl</artifactId>
+            <version>2.2</version>
+            <exclusions>
+              <exclusion>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${commonsValidatorVersion}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commonsBeanutilsVersion}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>unpack-keystore</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.core.build</groupId>
+                  <artifactId>org.opennms.core.build.keystore</artifactId>
+                  <classifier>keystore</classifier>
+                  <type>tar.gz</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
         <configuration>
           <skip>true</skip>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-key</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <source>
-                def keystore = new File(project.properties['webstart.keystore'])
-                if (!keystore.exists()) {
-                  keystore.parentFile.mkdirs();
-                  println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
-                  def args = [
-                    keystore: project.properties['webstart.keystore'],
-                    alias: project.properties['webstart.keyalias'],
-                    storepass: project.properties['webstart.storepass'],
-                    dname: "cn=${project.properties['webstart.dnameCn']}"
-                  ]
-                  if (project.properties['webstart.keypass']) {
-                    args.put('keypass', project.properties['webstart.keypass'])
-                  }
-                  def ant = new AntBuilder();
-                  ant.genkey(args)
-                }
-              </source>
-            </configuration>
-          </execution>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -123,6 +138,12 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.core.build</groupId>
+      <artifactId>org.opennms.core.build.keystore</artifactId>
+      <classifier>keystore</classifier>
+      <type>tar.gz</type>
+    </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller</artifactId>

@@ -275,5 +275,9 @@
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
   </dependencies>
 </project>

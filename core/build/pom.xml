@@ -11,5 +11,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS Core Build Tools</name>
   <modules>
+    <module>keystore</module>
   </modules>
 </project>
