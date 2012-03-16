@@ -1,0 +1,32 @@
+This project should only be used internally by the build, for the purposes
+of signing jars.  It is recommended that you do not mess with the keystore
+here, but instead create a profile with the properties necessary to bypass
+the keystore generated here.
+
+example ~/.m2/settings.xml:
+
+<settings>
+  <!-- other stuff -->
+  <profiles>
+    <profile>
+     <id>tog-sign</id>
+     <activation>
+       <file>
+         <exists>${user.home}/.m2/certs/my.keystore</exists>
+       </file>
+     </activation>
+     <properties>
+        <webstart.keystore>${user.home}/.m2/certs/my.keystore</webstart.keystore>
+        <webstart.keypass></webstart.keypass>
+        <webstart.storepass>keystorepass</webstart.storepass>
+        <webstart.keyalias>somealias</webstart.keyalias>
+        <webstart.keystore.delete>false</webstart.keystore.delete>
+        <webstart.keygen>false</webstart.keygen>
+        <webstart.dnameCn>${user.name}</webstart.dnameCn>
+        <webstart.dnameL></webstart.dnameL>
+        <webstart.dnameSt></webstart.dnameSt>
+        <webstart.dnameC></webstart.dnameC>
+     </properties>
+    </profile>
+  </profiles>
+</settings>
