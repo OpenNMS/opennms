@@ -31,7 +31,9 @@ package org.opennms.netmgt.syslogd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import org.opennms.core.concurrent.WaterfallExecutor.EndOfTheWaterfall;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -49,7 +51,7 @@ import org.opennms.netmgt.xml.event.Parm;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
-final class SyslogProcessor implements Runnable {
+final class SyslogProcessor implements EndOfTheWaterfall {
 
     private boolean m_NewSuspectOnMessage;
 
@@ -66,7 +68,8 @@ final class SyslogProcessor implements Runnable {
     /**
      * The event processing execution context.
      */
-    public void run() {
+    @Override
+    public Callable<Void> call() {
         // get a logger
         ThreadCategory log = ThreadCategory.getInstance(getClass());
         boolean isTracing = log.isEnabledFor(ThreadCategory.Level.TRACE);
@@ -116,6 +119,9 @@ final class SyslogProcessor implements Runnable {
         } catch (Throwable t) {
             log.error("Unexpected error processing SyslogMessage - Could not send", t);
         }
+
+        // This task is the terminal task of syslogd so it doesn't return a Callable
+        return null;
     }
 
     private static void sendNewSuspectEvent(String localAddr, String trapInterface) {

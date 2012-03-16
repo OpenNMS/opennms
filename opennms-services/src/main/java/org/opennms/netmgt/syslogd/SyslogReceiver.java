@@ -34,11 +34,15 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
@@ -88,9 +92,7 @@ class SyslogReceiver implements Runnable {
 
     private final HideMessage m_HideMessages;
 
-    private final ExecutorService m_convertSyslogToEventThreadPool;
-
-    private final ExecutorService m_enqueueEventThreadPool;
+    private final List<ExecutorService> m_executors = new ArrayList<ExecutorService>();
 
     /**
      * construct a new receiver
@@ -112,21 +114,21 @@ class SyslogReceiver implements Runnable {
         m_HideMessages = hideMessages;
         m_logPrefix = LOG4J_CATEGORY;
 
-        m_convertSyslogToEventThreadPool = new ThreadPoolExecutor(
+        m_executors.add(new ThreadPoolExecutor(
             1,
             Integer.MAX_VALUE,
             100L,
             TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>()
-        );
+        ));
 
-        m_enqueueEventThreadPool = new ThreadPoolExecutor(
+        m_executors.add(new ThreadPoolExecutor(
             1,
             Integer.MAX_VALUE,
             100L,
             TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>()
-        );
+        ));
 }
 
     /*
@@ -137,11 +139,10 @@ class SyslogReceiver implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
 
-        // Shut down the thread pool that is executing SyslogConnection Runnables
-        m_convertSyslogToEventThreadPool.shutdown();
-
-        // Shut down the thread pool that is executing SyslogProcessor Runnables
-        m_enqueueEventThreadPool.shutdown();
+        // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
+        for (ExecutorService service : m_executors) {
+            service.shutdown();
+        }
 
         if (m_context != null) {
             ThreadCategory log = ThreadCategory.getInstance(getClass());
@@ -208,7 +209,7 @@ class SyslogReceiver implements Runnable {
                 m_dgSock.receive(pkt);
 
                 //SyslogConnection *Must* copy packet data and InetAddress as DatagramPacket is a mutable type
-                m_convertSyslogToEventThreadPool.execute(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei, m_enqueueEventThreadPool));
+                WaterfallExecutor.waterfall(m_executors, new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
                 ioInterrupted = false; // reset the flag
             } catch (SocketTimeoutException e) {
                 ioInterrupted = true;
@@ -216,6 +217,12 @@ class SyslogReceiver implements Runnable {
             } catch (InterruptedIOException e) {
                 ioInterrupted = true;
                 continue;
+            } catch (ExecutionException e) {
+                log.error("Task execution failed in " + this.getClass().getSimpleName(), e);
+                break;
+            } catch (InterruptedException e) {
+                log.error("Task interrupted in " + this.getClass().getSimpleName(), e);
+                break;
             } catch (IOException e) {
                 log.error("An I/O exception occured on the datagram receipt port, exiting", e);
                 break;

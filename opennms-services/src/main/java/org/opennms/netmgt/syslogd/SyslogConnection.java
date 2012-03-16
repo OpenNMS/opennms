@@ -32,9 +32,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
+import org.opennms.core.concurrent.WaterfallExecutor.WaterfallCallable;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
@@ -46,7 +46,7 @@ import org.opennms.netmgt.config.syslogd.UeiList;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
-public class SyslogConnection implements Runnable {
+public class SyslogConnection implements WaterfallCallable {
 
     private final DatagramPacket _packet;
 
@@ -62,8 +62,6 @@ public class SyslogConnection implements Runnable {
 
     private final HideMessage _hideMessages;
 
-    private final ExecutorService _eventExecutor;
-
     /**
      * <p>Constructor for SyslogConnection.</p>
      *
@@ -75,7 +73,7 @@ public class SyslogConnection implements Runnable {
      * @param hideMessages a {@link org.opennms.netmgt.config.syslogd.HideMessage} object.
      * @param discardUei a {@link java.lang.String} object.
      */
-    public SyslogConnection(final DatagramPacket packet, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessages, final String discardUei, final ExecutorService eventExecutor) {
+    public SyslogConnection(final DatagramPacket packet, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessages, final String discardUei) {
         _packet = copyPacket(packet);
         _matchPattern = matchPattern;
         _hostGroup = hostGroup;
@@ -83,14 +81,13 @@ public class SyslogConnection implements Runnable {
         _discardUei = discardUei;
         _ueiList = ueiList;
         _hideMessages = hideMessages;
-        _eventExecutor = eventExecutor;
     }
 
     /**
-     * <p>run</p>
+     * <p>call</p>
      */
     @Override
-    public void run() {
+    public SyslogProcessor call() {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         ConvertToEvent re = null;
@@ -99,7 +96,7 @@ public class SyslogConnection implements Runnable {
 
             log.debug("Sending received packet to the SyslogProcessor queue");
 
-            _eventExecutor.execute(new SyslogProcessor(re));
+            return new SyslogProcessor(re);
 
         } catch (final UnsupportedEncodingException e1) {
             log.debug("Failure to convert package", e1);
@@ -108,6 +105,7 @@ public class SyslogConnection implements Runnable {
         } catch (final RejectedExecutionException e) {
             log.debug("Message discarded, returning without enqueueing event.", e);
         }
+        return null;
     }
 
     private static DatagramPacket copyPacket(final DatagramPacket packet) {
