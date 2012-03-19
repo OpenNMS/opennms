@@ -1,10 +1,9 @@
-package org.opennms.web.rest.support;
+package org.opennms.netmgt.model;
 
 import java.beans.PropertyEditorSupport;
 
-import org.opennms.netmgt.model.OnmsSeverity;
 
-public class OnmsSeverityTypeEditor extends PropertyEditorSupport {
+public class OnmsSeverityEditor extends PropertyEditorSupport {
 
 	/** {@inheritDoc} */
 	@Override

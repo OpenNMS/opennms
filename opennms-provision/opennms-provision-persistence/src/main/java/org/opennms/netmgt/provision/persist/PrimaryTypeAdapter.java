@@ -2,7 +2,7 @@ package org.opennms.netmgt.provision.persist;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
+import org.opennms.netmgt.model.PrimaryType;
 
 public class PrimaryTypeAdapter extends XmlAdapter<String, PrimaryType> {
 

@@ -43,12 +43,12 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.OnmsSeverityEditor;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.PrimaryTypeEditor;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.web.rest.support.InetAddressTypeEditor;
-import org.opennms.web.rest.support.OnmsSeverityTypeEditor;
-import org.opennms.web.rest.support.PrimaryTypeTypeEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -129,8 +129,8 @@ public class OnmsRestService {
         wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
 		wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
 		wrapper.registerCustomEditor(java.net.InetAddress.class, new InetAddressTypeEditor());
-		wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityTypeEditor());
-		wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeTypeEditor());
+		wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityEditor());
+		wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeEditor());
 
 		final String comparatorParam = removeParameter(params, "comparator", "eq").toLowerCase();
 		final Criteria currentCriteria = builder.toCriteria();
@@ -274,8 +274,8 @@ public class OnmsRestService {
         wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
         wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
         wrapper.registerCustomEditor(java.net.InetAddress.class, new InetAddressTypeEditor());
-        wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityTypeEditor());
-        wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeTypeEditor());
+        wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityEditor());
+        wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeEditor());
         for(final String key : params.keySet()) {
             final String propertyName = convertNameToPropertyName(key);
             if (wrapper.isWritableProperty(propertyName)) {

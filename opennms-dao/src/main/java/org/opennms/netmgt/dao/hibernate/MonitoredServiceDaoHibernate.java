@@ -39,8 +39,8 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 /**
  * <p>MonitoredServiceDaoHibernate class.</p>
  *
