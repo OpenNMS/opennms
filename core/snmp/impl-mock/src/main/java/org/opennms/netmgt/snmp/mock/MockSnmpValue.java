@@ -31,6 +31,7 @@ package org.opennms.netmgt.snmp.mock;
 import java.math.BigInteger;
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -95,7 +96,7 @@ public class MockSnmpValue implements SnmpValue {
 
         public InetAddress toInetAddress() {
             try {
-                return InetAddress.getByName(toString());
+                return InetAddressUtils.addr(toString());
             } catch (Exception e) {
                 return super.toInetAddress();
             }
