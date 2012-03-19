@@ -40,14 +40,6 @@ import java.util.concurrent.Future;
  * @author Seth
  */
 public class WaterfallExecutor {
-    public interface WaterfallCallable extends Callable<Callable<?>> {}
-
-    /**
-     * This interface is used to denote a WaterfallCallable that terminates the chain of 
-     * execution by not returning a subsequent Callable<Callable<?>> value.
-     */
-    public interface EndOfTheWaterfall extends Callable<Callable<Void>> {}
-
     public static void waterfall(Iterable<ExecutorService> executors, Callable<Callable<?>> callable) throws InterruptedException, ExecutionException {
         waterfall(executors.iterator(), callable);
     }

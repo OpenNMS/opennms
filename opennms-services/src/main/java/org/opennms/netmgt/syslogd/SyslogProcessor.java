@@ -33,7 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.opennms.core.concurrent.WaterfallExecutor.EndOfTheWaterfall;
+import org.opennms.core.concurrent.EndOfTheWaterfall;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -53,7 +53,7 @@ import org.opennms.netmgt.xml.event.Parm;
  */
 final class SyslogProcessor implements EndOfTheWaterfall {
 
-    private boolean m_NewSuspectOnMessage;
+    private final boolean m_NewSuspectOnMessage;
 
     private final String m_localAddr;
 
