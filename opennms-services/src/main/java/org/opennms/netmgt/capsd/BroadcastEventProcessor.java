@@ -29,7 +29,6 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,6 +42,7 @@ import java.util.Set;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -329,8 +329,8 @@ public class BroadcastEventProcessor implements InitializingBean {
                 // table
                 InetAddress ifaddr;
 				try {
-					ifaddr = InetAddress.getByName(ipaddr);
-				} catch (final UnknownHostException e) {
+					ifaddr = InetAddressUtils.addr(ipaddr);
+				} catch (final IllegalArgumentException e) {
 					throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
 				}
                 int nodeId = rs.getInt(1);
@@ -396,8 +396,8 @@ public class BroadcastEventProcessor implements InitializingBean {
             // add the ipaddess to the database
             InetAddress ifaddress;
 			try {
-				ifaddress = InetAddress.getByName(ipaddr);
-			} catch (final UnknownHostException e) {
+				ifaddress = InetAddressUtils.addr(ipaddr);
+			} catch (final IllegalArgumentException e) {
 				throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
 			}
             DbIpInterfaceEntry ipInterface = DbIpInterfaceEntry.create(node.getNodeId(), ifaddress);
@@ -540,8 +540,8 @@ public class BroadcastEventProcessor implements InitializingBean {
 
                 InetAddress inetAddr;
 				try {
-					inetAddr = InetAddress.getByName(ipaddr);
-				} catch (final UnknownHostException e) {
+					inetAddr = InetAddressUtils.addr(ipaddr);
+				} catch (final IllegalArgumentException e) {
 					throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
 				}
                 final int nodeId = rs.getInt(1);
