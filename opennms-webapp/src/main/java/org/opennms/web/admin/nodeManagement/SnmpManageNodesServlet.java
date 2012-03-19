@@ -49,7 +49,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
-import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.WebSecurityUtils;
@@ -98,7 +98,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
         String primeInt = null;
 
         for (final SnmpManagedInterface testInterface : allInterfaces) {
-            if (testInterface.getNodeid() == currNodeId && OnmsIpInterface.PrimaryType.PRIMARY.getCode().equals(testInterface.getStatus())) {
+            if (testInterface.getNodeid() == currNodeId && PrimaryType.PRIMARY.getCode().equals(testInterface.getStatus())) {
                 // Get the IP address of the primary SNMP interface
                 primeInt = NetworkElementFactory.getInstance(this.getServletContext()).getIpPrimaryAddress(currNodeId);
             }

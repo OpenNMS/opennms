@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.springframework.validation.BindException;
@@ -49,10 +49,6 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
  * <p>EditProvisioningGroupController class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
 public class EditProvisioningGroupController extends SimpleFormController {
 
@@ -321,5 +317,4 @@ public class EditProvisioningGroupController extends SimpleFormController {
         
         return map;
     }
-    
 }
