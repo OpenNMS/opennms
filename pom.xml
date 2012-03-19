@@ -757,7 +757,7 @@
     <log4jVersion>1.2.15</log4jVersion>
     <minaVersion>2.0.4</minaVersion>
     <oroVersion>2.0.8</oroVersion>
-    <xalanVersion>2.6.0</xalanVersion>
+    <xalanVersion>2.7.1</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
   </properties>
   <profiles>
