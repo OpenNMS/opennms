@@ -125,7 +125,7 @@ public class CustomSyslogParser extends SyslogParser {
             } else {
                 try {
                     timestamp = SyslogTimeStamp.getInstance().format(new Date());
-                } catch (IllegalArgumentException ex) {
+                } catch (final IllegalArgumentException ex) {
                     LogUtils.debugf(this, "ERROR INTERNAL DATE ERROR!");
                     timestamp = "";
                 }

@@ -32,6 +32,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -107,12 +108,12 @@ public class SyslogParser {
     protected Date parseDate(final String dateString) {
         Date date;
         try {
-            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
             df.setTimeZone(TimeZone.getTimeZone("UTC"));
             date = df.parse(dateString);
         } catch (final Exception e) {
             try {
-                final DateFormat df = new SimpleDateFormat("MMM d HH:mm:ss");
+                final DateFormat df = new SimpleDateFormat("MMM d HH:mm:ss", Locale.ROOT);
                 df.setTimeZone(TimeZone.getTimeZone("UTC"));
                 
                 // Ugh, what's a non-lame way of forcing it to parse to "this year"?
