@@ -29,20 +29,20 @@
     </bean>
     
     
-    <bean name="suspectRunner" class="org.opennms.netmgt.utils.RunnableConsumerThreadPoolFactoryBean">
-        <property name="name" value="Capsd Suspect Pool" />
-        <property name="maxThreads">
+    <bean id="suspectRunner" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+        <constructor-arg/>
           <util:property-path path="capsdConfig.maxSuspectThreadPoolSize" />
-        </property>
+        </constructor-arg>
+        <!-- <property name="name" value="Capsd Suspect Pool" /> -->
     </bean>
     
-    <bean name="rescanRunner" class="org.opennms.netmgt.utils.RunnableConsumerThreadPoolFactoryBean">
-        <property name="name" value="Capsd Rescan Pool" />
-        <property name="maxThreads">
+    <bean id="rescanRunner" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+        <constructor-arg/>
           <util:property-path path="capsdConfig.maxRescanThreadPoolSize" />
-        </property>
+        </constructor-arg>
+        <!-- <property name="name" value="Capsd Rescan Pool" /> -->
     </bean>
-    
+
     <bean name="capsdScheduler" class="org.opennms.netmgt.capsd.Scheduler">
         <constructor-arg>
           <util:property-path path="rescanRunner.runQueue" />

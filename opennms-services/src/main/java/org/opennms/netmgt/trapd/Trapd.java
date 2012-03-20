@@ -338,7 +338,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     /**
      * <p>getBacklogQ</p>
      *
-     * @return a {@link org.opennms.core.queue.FifoQueue} object.
+     * @return a {@link java.util.concurrent.ExecutorService} object.
      */
     public ExecutorService getBacklogQ() {
         return m_backlogQ;
@@ -347,7 +347,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     /**
      * <p>setBacklogQ</p>
      *
-     * @param backlogQ a {@link org.opennms.core.queue.FifoQueue} object.
+     * @param backlogQ a {@link java.util.concurrent.ExecutorService} object.
      */
     public void setBacklogQ(ExecutorService backlogQ) {
         m_backlogQ = backlogQ;

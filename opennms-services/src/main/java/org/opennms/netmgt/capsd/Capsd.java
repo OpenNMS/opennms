@@ -31,8 +31,8 @@ package org.opennms.netmgt.capsd;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashSet;
+import java.util.concurrent.ExecutorService;
 
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfig;
@@ -86,13 +86,13 @@ public class Capsd extends AbstractServiceDaemon {
      * The pool of threads that are used to executed the SuspectEventProcessor
      * instances queued by the event processor (BroadcastEventProcessor).
      */
-    private RunnableConsumerThreadPool m_suspectRunner;
+    private ExecutorService m_suspectRunner;
 
     /**
      * The pool of threads that are used to executed RescanProcessor instances
      * queued by the rescan scheduler thread.
      */
-    private RunnableConsumerThreadPool m_rescanRunner;
+    private ExecutorService m_rescanRunner;
 
     /*
      * Injected properties, the should be asserted in onInit
@@ -132,10 +132,10 @@ public class Capsd extends AbstractServiceDaemon {
         m_eventListener.stop();
 
         // Stop the Suspect Event Processor thread pool
-        m_suspectRunner.stop();
+        m_suspectRunner.shutdown();
 
         // Stop the Rescan Processor thread pool
-        m_rescanRunner.stop();
+        m_rescanRunner.shutdown();
 
         if (m_scheduler != null) m_scheduler.stop();
 	}
@@ -199,12 +199,6 @@ public class Capsd extends AbstractServiceDaemon {
     	// Likewise, a separate Set for the RescanProcessor
     	RescanProcessor.setQueuedRescansTracker(new HashSet<Integer>());
     	
-		// Start the suspect event and rescan thread pools
-        log().debug("start: Starting runnable thread pools...");
-
-        m_suspectRunner.start();
-        m_rescanRunner.start();
-
         // Start the rescan scheduler
         log().debug("start: Starting rescan scheduler");
         
@@ -318,18 +312,18 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * <p>setSuspectRunner</p>
      *
-     * @param suspectRunner a {@link org.opennms.core.concurrent.RunnableConsumerThreadPool} object.
+     * @param suspectRunner a {@link java.util.concurrent.ExecutorService} object.
      */
-    public void setSuspectRunner(RunnableConsumerThreadPool suspectRunner) {
+    public void setSuspectRunner(ExecutorService suspectRunner) {
         m_suspectRunner = suspectRunner;
     }
 
     /**
      * <p>setRescanRunner</p>
      *
-     * @param rescanRunner a {@link org.opennms.core.concurrent.RunnableConsumerThreadPool} object.
+     * @param rescanRunner a {@link java.util.concurrent.ExecutorService} object.
      */
-    public void setRescanRunner(RunnableConsumerThreadPool rescanRunner) {
+    public void setRescanRunner(ExecutorService rescanRunner) {
         m_rescanRunner = rescanRunner;
     }
 
