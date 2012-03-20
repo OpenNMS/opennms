@@ -837,7 +837,7 @@ public class ThresholdingVisitorTest {
     /*
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
-     * - test-thresholds-6.xml
+     * - test-thresholds-bug3333.xml
      */
     @Test
     public void testBug3333() throws Exception {
@@ -1243,7 +1243,39 @@ public class ThresholdingVisitorTest {
          Assert.assertTrue("is node on outage", visitor.isNodeInOutage());
      }
 
-    /*
+     
+     /*
+      * This test uses this files from src/test/resources:
+      * - thresd-configuration.xml
+      * - test-thresholds-bug5258-a.xml
+      * - test-thresholds-bug5258-b.xml
+      */
+     @Test
+     public void testBug5258() throws Exception {
+         initFactories("/threshd-configuration.xml","/test-thresholds-bug5258-a.xml");
+         ThresholdingVisitor visitor = createVisitor();
+
+         // Define Main Events
+         addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, 65.0, "/opt", "1", "hrStorageUsed", null, null);
+         addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, 70.0, "/var", "1", "hrStorageUsed", null, null);
+
+         // Define Rearm Event - This is because the configuration of an already triggered threshold has been changed.
+         addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, Double.NaN, "/opt", "1", "hrStorageUsed", null, null);
+
+         // Trigger high Threshold for /opt
+         runFileSystemDataTest(visitor, 1, "/opt", 65, 100);
+
+         // Change the filter
+         initFactories("/threshd-configuration.xml","/test-thresholds-bug5258-b.xml");
+         visitor.reload();
+         // Trigger high Threshold for /var
+         runFileSystemDataTest(visitor, 1, "/var", 70, 100);
+
+         // Verify Events
+         verifyEvents(0);
+     }
+
+     /*
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
      * - test-thresholds-bug3664.xml
