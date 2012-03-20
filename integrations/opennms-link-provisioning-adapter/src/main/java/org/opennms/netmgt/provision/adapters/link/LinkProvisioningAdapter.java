@@ -189,7 +189,7 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
      * @return a {@link java.lang.String} object.
      */
     public static String max(final String string1, final String string2) {
-        if(string1 == null || string1.compareTo(string2) < 0) {
+        if(string1 == null || (string2 != null && string1.compareTo(string2) < 0)) {
             return string2;
         }else {
             return string1;
@@ -204,7 +204,7 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
      * @return a {@link java.lang.String} object.
      */
     public static String min(final String string1, final String string2) {
-        if(string1 == null || string1.compareTo(string2) < 0) {
+        if(string1 == null || (string2 != null && string1.compareTo(string2) < 0)) {
             return string1;
         }else {
             return string2;

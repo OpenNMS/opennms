@@ -37,7 +37,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.jfree.util.Log;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.tl1d.Tl1Element;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -48,7 +47,6 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * OpenNMS TL1 Daemon!
@@ -57,7 +55,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @version $Id: $
  */
 @EventListener(name="OpenNMS:Tl1d")
-public class Tl1d extends AbstractServiceDaemon implements PausableFiber, InitializingBean {
+public class Tl1d extends AbstractServiceDaemon {
 
     /*
      * The last status sent to the service control manager.

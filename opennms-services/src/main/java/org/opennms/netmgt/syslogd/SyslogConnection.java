@@ -32,8 +32,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Random;
 
+import org.opennms.core.concurrent.WaterfallCallable;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
@@ -44,33 +44,22 @@ import org.opennms.netmgt.config.syslogd.UeiList;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @version $Id: $
  */
-public class SyslogConnection implements Runnable {
+public class SyslogConnection implements WaterfallCallable {
 
-    private DatagramPacket _packet;
+    private final DatagramPacket _packet;
 
-    private String m_logPrefix;
+    private final String _matchPattern;
 
-    private String _matchPattern;
+    private final int _hostGroup;
 
-    private int _hostGroup;
+    private final int _messageGroup;
 
-    private int _messageGroup;
+    private final String _discardUei;
 
-    private String _discardUei;
+    private final UeiList _ueiList;
 
-    private UeiList _ueiList;
-
-    private HideMessage _hideMessages;
-
-    private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
+    private final HideMessage _hideMessages;
 
     /**
      * <p>Constructor for SyslogConnection.</p>
@@ -91,44 +80,32 @@ public class SyslogConnection implements Runnable {
         _discardUei = discardUei;
         _ueiList = ueiList;
         _hideMessages = hideMessages;
-
-        m_logPrefix = LOG4J_CATEGORY;
     }
 
     /**
-     * <p>run</p>
+     * <p>call</p>
      */
-    public void run() {
-        ThreadCategory.setPrefix(m_logPrefix);
+    @Override
+    public SyslogProcessor call() {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         ConvertToEvent re = null;
         try {
             re = ConvertToEvent.make(_packet, _matchPattern, _hostGroup,  _messageGroup, _ueiList, _hideMessages, _discardUei);
+
+            log.debug("Sending received packet to the SyslogProcessor queue");
+
+            return new SyslogProcessor(re);
+
         } catch (final UnsupportedEncodingException e1) {
             log.debug("Failure to convert package", e1);
         } catch (final MessageDiscardedException e) {
             log.debug("Message discarded, returning without enqueueing event.", e);
-            return;
         }
-
-        log.debug("Sending received packet to the queue");
-
-        SyslogHandler.queueManager.putInQueue(re);
-        // delay a random period of time
-        try {
-            Thread.sleep((new Random()).nextInt(100));
-        } catch (final InterruptedException e) {
-            log.debug("Syslogd: Interruption ", e);
-        }
-
+        return null;
     }
 
-    void setLogPrefix(String prefix) {
-        m_logPrefix = prefix;
-    }
-
-    private DatagramPacket copyPacket(final DatagramPacket packet) {
+    private static DatagramPacket copyPacket(final DatagramPacket packet) {
         byte[] message = new byte[packet.getLength()];
         System.arraycopy(packet.getData(), 0, message, 0, packet.getLength());
         InetAddress addr = null;
@@ -143,7 +120,7 @@ public class SyslogConnection implements Runnable {
                                                       );
                                                       return retPacket;
         } catch (UnknownHostException e) {
-            ThreadCategory.getInstance(getClass()).warn("unable to clone InetAddress object for " + packet.getAddress());
+            ThreadCategory.getInstance(SyslogConnection.class).warn("unable to clone InetAddress object for " + packet.getAddress());
         }
         return null;
     }

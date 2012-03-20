@@ -54,8 +54,6 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
         waitForPageToLoad();
 
-        waitForPageToLoad();
-
         selenium.click("link=Manage Provisioning Requisitions");
         waitForPageToLoad();
 

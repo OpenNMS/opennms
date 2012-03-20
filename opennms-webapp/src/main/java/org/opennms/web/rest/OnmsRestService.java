@@ -44,9 +44,11 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.OnmsSeverityEditor;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.PrimaryTypeEditor;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.web.rest.support.InetAddressTypeEditor;
-import org.opennms.web.rest.support.OnmsSeverityTypeEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -173,9 +175,11 @@ public class OnmsRestService {
 
 	protected BeanWrapper getBeanWrapperForClass(final Class<?> criteriaClass) {
 		final BeanWrapper wrapper = new BeanWrapperImpl(criteriaClass);
+		wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
 		wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
 		wrapper.registerCustomEditor(java.net.InetAddress.class, new InetAddressTypeEditor());
-		wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityTypeEditor());
+		wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityEditor());
+		wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeEditor());
 		return wrapper;
 	}
 
@@ -271,14 +275,18 @@ public class OnmsRestService {
      * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
      * @param req a {@link java.lang.Object} object.
      */
-	protected void setProperties(org.opennms.web.rest.MultivaluedMapImpl params, Object req) {
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(req);
+	protected void setProperties(final org.opennms.web.rest.MultivaluedMapImpl params, final Object req) {
+        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(req);
         wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
-        for(String key : params.keySet()) {
-            String propertyName = convertNameToPropertyName(key);
+        wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
+        wrapper.registerCustomEditor(java.net.InetAddress.class, new InetAddressTypeEditor());
+        wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityEditor());
+        wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeEditor());
+        for(final String key : params.keySet()) {
+            final String propertyName = convertNameToPropertyName(key);
             if (wrapper.isWritableProperty(propertyName)) {
                 Object value = null;
-                String stringValue = params.getFirst(key);
+                final String stringValue = params.getFirst(key);
                 value = convertIfNecessary(wrapper, propertyName, stringValue);
                 wrapper.setPropertyValue(propertyName, value);
             }

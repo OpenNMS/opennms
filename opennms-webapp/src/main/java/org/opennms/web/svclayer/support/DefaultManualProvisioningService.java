@@ -50,6 +50,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
@@ -206,10 +207,10 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             Assert.notNull(group, "Group should not be Null and is null groupName: " + groupName);
             final RequisitionNode node = BeanUtils.getPathValue(group, pathToNode, RequisitionNode.class);
             Assert.notNull(node, "Node should not be Null and pathToNode: " + pathToNode);
-            
-            String snmpPrimary = "P";
+
+            PrimaryType snmpPrimary = PrimaryType.PRIMARY;
             if (node.getInterfaceCount() > 0) {
-                snmpPrimary = "S";
+                snmpPrimary = PrimaryType.SECONDARY;
             }
     
             // final int ifaceCount = node.getInterfaceCount();
@@ -224,7 +225,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         }
     }
 
-    private RequisitionInterface createInterface(final String ipAddr, final String snmpPrimary) {
+    private RequisitionInterface createInterface(final String ipAddr, final PrimaryType snmpPrimary) {
         final RequisitionInterface iface = new RequisitionInterface();
         iface.setIpAddr(ipAddr);
         iface.setStatus(1);

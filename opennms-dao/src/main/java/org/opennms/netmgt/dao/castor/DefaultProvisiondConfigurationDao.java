@@ -78,9 +78,12 @@ public class DefaultProvisiondConfigurationDao extends AbstractCastorConfigDao<P
 
     /** {@inheritDoc} */
     public RequisitionDef getDef(String defName) {
-        for (RequisitionDef def : getDefs()) {
-            if (def.getImportName().equals(defName)) {
-                return def;
+        final List<RequisitionDef> defs = getDefs();
+        if (defs != null) {
+            for (RequisitionDef def : defs) {
+                if (def.getImportName().equals(defName)) {
+                    return def;
+                }
             }
         }
         return null;
@@ -119,7 +122,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractCastorConfigDao<P
      * @return a {@link java.lang.Integer} object.
      */
     public Integer getImportThreads() {
-        return Integer.valueOf((int) getConfig().getImportThreads());
+        return Integer.valueOf((int)getConfig().getImportThreads());
     }
 
     /**

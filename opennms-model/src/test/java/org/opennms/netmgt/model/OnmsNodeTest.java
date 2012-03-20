@@ -30,7 +30,6 @@ package org.opennms.netmgt.model;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 
 /**
  * Basic unit tests for OnmsNode Class

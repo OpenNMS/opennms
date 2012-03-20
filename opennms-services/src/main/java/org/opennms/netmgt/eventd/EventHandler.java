@@ -46,5 +46,5 @@ public interface EventHandler {
      * @param eventLog events to be processed
      * @return a ready-to-run Runnable that will process the events
      */
-    public abstract Runnable createRunnable(Log eventLog);
+    Runnable createRunnable(Log eventLog);
 }

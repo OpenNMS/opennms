@@ -258,6 +258,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         
     
 
+    @Override
     public void processPdu(CommandResponderEvent e) {
     	PDU command = new PDU(e.getPDU());
         IpAddress addr = ((IpAddress)e.getPeerAddress());

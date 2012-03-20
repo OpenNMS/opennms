@@ -91,63 +91,61 @@ public class V2TrapInformation extends TrapInformation {
         m_pdu = pdu;
 	}
 
-    /**
-	 * Returns the Protocol Data Unit that was encapsulated within the SNMP
-	 * Trap message
-	 */
-	private SnmpPduPacket getPdu() {
-		return m_pdu;
-	}
-
+    @Override
 	protected int getPduLength() {
-        return getPdu().getLength();
+        return m_pdu.getLength();
     }
     
+    @Override
     protected long getTimeStamp() {
 
         if (log().isDebugEnabled()) {
-            log().debug("V2 trap first varbind value: " + getPdu().getVarBindAt(0).getValue().toString());
+            log().debug("V2 trap first varbind value: " + m_pdu.getVarBindAt(0).getValue().toString());
         }
 
-        switch (getPdu().getVarBindAt(V2TrapInformation.SNMP_SYSUPTIME_OID_INDEX).getValue().typeId()) {
+        switch (m_pdu.getVarBindAt(V2TrapInformation.SNMP_SYSUPTIME_OID_INDEX).getValue().typeId()) {
         case SnmpSMI.SMI_TIMETICKS:
             log().debug("V2 trap first varbind value is of type TIMETICKS (correct)");
-            return ((SnmpTimeTicks) getPdu().getVarBindAt(V2TrapInformation.SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
+            return ((SnmpTimeTicks) m_pdu.getVarBindAt(V2TrapInformation.SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
         case SnmpSMI.SMI_INTEGER:
             log().debug("V2 trap first varbind value is of type INTEGER, casting to TIMETICKS");
-            return ((SnmpInt32) getPdu().getVarBindAt(V2TrapInformation.SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
+            return ((SnmpInt32) m_pdu.getVarBindAt(V2TrapInformation.SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
         default:
             throw new IllegalArgumentException("V2 trap does not have the required first varbind as TIMETICKS - cannot process trap");
         }
     }
 
+    @Override
     protected TrapIdentity getTrapIdentity() {
         // Get the value for the snmpTrapOID
-        SnmpObjectId snmpTrapOid = (SnmpObjectId) getPdu().getVarBindAt(V2TrapInformation.SNMP_TRAP_OID_INDEX).getValue();
-        SnmpObjectId lastVarBindOid = getPdu().getVarBindAt(getPduLength() - 1).getName();
-        SnmpSyntax lastVarBindValue = getPdu().getVarBindAt(getPduLength() - 1).getValue();
+        SnmpObjectId snmpTrapOid = (SnmpObjectId) m_pdu.getVarBindAt(V2TrapInformation.SNMP_TRAP_OID_INDEX).getValue();
+        SnmpObjectId lastVarBindOid = m_pdu.getVarBindAt(getPduLength() - 1).getName();
+        SnmpSyntax lastVarBindValue = m_pdu.getVarBindAt(getPduLength() - 1).getValue();
         return new TrapIdentity(SnmpObjId.get(snmpTrapOid.getIdentifiers()), SnmpObjId.get(lastVarBindOid.getIdentifiers()), new JoeSnmpValue(lastVarBindValue));
     }
 
-    public InetAddress getTrapAddress() {
+    @Override
+    protected InetAddress getTrapAddress() {
         return getAgentAddress();
     }
 
-    protected SnmpVarBind getVarBindAt(int index) {
-        return getPdu().getVarBindAt(index);
+    private SnmpVarBind getVarBindAt(int index) {
+        return m_pdu.getVarBindAt(index);
     }
 
+    @Override
     protected String getVersion() {
         return "v2";
     }
 
+    @Override
     protected void validate() {
         //
         // verify the type
         //
-        if (getPdu().typeId() != (byte) (SnmpPduPacket.V2TRAP)) {
+        if (m_pdu.typeId() != (byte) (SnmpPduPacket.V2TRAP)) {
             // if not V2 trap, do nothing
-            throw new IllegalArgumentException("Received not SNMPv2 Trap from host " + getTrapAddress() + "PDU Type = " + getPdu().getCommand());
+            throw new IllegalArgumentException("Received not SNMPv2 Trap from host " + getTrapAddress() + "PDU Type = " + m_pdu.getCommand());
         }
         if (log().isDebugEnabled()) {
             log().debug("V2 trap numVars or pdu length: " + getPduLength());
@@ -162,8 +160,8 @@ public class V2TrapInformation extends TrapInformation {
         // The second varbind has the snmpTrapOID
         // Confirm that these two are present
         //
-        String varBindName0 = getPdu().getVarBindAt(0).getName().toString();
-        String varBindName1 = getPdu().getVarBindAt(1).getName().toString();
+        String varBindName0 = m_pdu.getVarBindAt(0).getName().toString();
+        String varBindName1 = m_pdu.getVarBindAt(1).getName().toString();
         if (varBindName0.equals(V2TrapInformation.EXTREME_SNMP_SYSUPTIME_OID)) {
             log().info("V2 trap from " + getTrapAddress() + " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
             varBindName0 = V2TrapInformation.SNMP_SYSUPTIME_OID;
@@ -173,6 +171,7 @@ public class V2TrapInformation extends TrapInformation {
         }
     }
 
+    @Override
     protected void processVarBindAt(int i) {
     	if (i<2) {
             if (i == 0) {

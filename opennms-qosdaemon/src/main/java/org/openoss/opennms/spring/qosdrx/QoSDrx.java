@@ -45,7 +45,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author ranger
  * @version $Id: $
  */
-public class QoSDrx extends AbstractServiceDaemon implements PausableFiber {
+public class QoSDrx extends AbstractServiceDaemon {
 
 	/**
 	 * <p>Constructor for QoSDrx.</p>

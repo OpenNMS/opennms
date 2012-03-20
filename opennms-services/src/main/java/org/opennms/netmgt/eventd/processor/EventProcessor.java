@@ -50,5 +50,5 @@ public interface EventProcessor {
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      * @throws java.sql.SQLException if any.
      */
-    public void process(Header eventHeader, Event event) throws SQLException;
+    void process(Header eventHeader, Event event) throws SQLException;
 }

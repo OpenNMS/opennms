@@ -63,13 +63,10 @@ import org.opennms.netmgt.dao.EventDao;
     static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
     /**
-     * The singlton instance.
+     * The singleton instance.
      */
     private static final Syslogd m_singleton = new Syslogd();
 
-    /*
-   * @return Syslogd
-    */
     /**
      * <p>getSingleton</p>
      *

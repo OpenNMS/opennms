@@ -253,11 +253,11 @@ public class Capsd extends AbstractServiceDaemon {
      *             Thrown if the address cannot be converted to aa proper
      *             internet address.
      */
-    public void scanSuspectInterface(String ifAddr) throws UnknownHostException {
-        String prefix = ThreadCategory.getPrefix();
+    public void scanSuspectInterface(final String ifAddr) throws UnknownHostException {
+        final String prefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(getName());
-            final InetAddress addr = InetAddress.getByName(ifAddr);
+            final InetAddress addr = InetAddressUtils.addr(ifAddr);
             final SuspectEventProcessor proc = m_suspectEventProcessorFactory.createSuspectEventProcessor(InetAddressUtils.str(addr));
             proc.run();
         } finally {

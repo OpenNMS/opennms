@@ -23,4 +23,8 @@
   
   <bean class="org.opennms.netmgt.provision.service.MockServiceDetector" />
 
+  <bean id="provisiondConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="classpath:/importerServiceTest-provisiond-configuration.xml" />
+  </bean>
+
 </beans>

@@ -40,7 +40,10 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
@@ -51,6 +54,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -106,6 +110,11 @@ public class SyslogdLoadTest {
     private Eventd m_eventd;
     
     private Syslogd m_syslogd;
+
+    private final List<ExecutorService> m_executorServices = Arrays.asList(new ExecutorService[] {
+            Executors.newFixedThreadPool(3),
+            Executors.newFixedThreadPool(3)
+    });
 
     static {
         UeiMatch ueiMatch;
@@ -194,8 +203,7 @@ public class SyslogdLoadTest {
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
-            worker.start();
+            WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
         }
 
         long mid = System.currentTimeMillis();
@@ -221,14 +229,12 @@ public class SyslogdLoadTest {
         // handle an invalid packet
         byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
-        worker.run();
+        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         // handle a valid packet
         bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
-        worker.run();
+        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         m_eventCounter.waitForFinish(120000);
         
@@ -249,14 +255,12 @@ public class SyslogdLoadTest {
         // handle an invalid packet
         byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
-        worker.run();
+        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         // handle a valid packet
         bytes = "<34>monkeysatemybrain!\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
-        worker.run();
+        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         m_eventCounter.waitForFinish(120000);
         

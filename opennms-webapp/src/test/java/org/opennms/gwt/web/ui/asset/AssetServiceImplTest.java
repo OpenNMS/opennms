@@ -56,7 +56,7 @@ import org.opennms.web.springframework.security.Authentication;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -97,7 +97,7 @@ public class AssetServiceImplTest {
 
 	// private SecurityContextService m_securityContextService;
 
-	private final GrantedAuthority ROLE_ADMIN = new GrantedAuthorityImpl(Authentication.ROLE_ADMIN);
+	private final GrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority(Authentication.ROLE_ADMIN);
 	
 	/*
 	private final GrantedAuthority ROLE_PROVISION = new GrantedAuthorityImpl(Authentication.ROLE_PROVISION);

@@ -156,7 +156,7 @@ public class OnmsNodeRequisition {
 
             final InterfaceBuilder ifBldr = bldr.addInterface(ipAddr);
             ifBldr.setIsManaged(ifaceReq.getStatus() == 3 ? "U" : "M");
-            ifBldr.setIsSnmpPrimary(ifaceReq.getSnmpPrimary());
+            ifBldr.setIsSnmpPrimary(ifaceReq.getSnmpPrimary().getCode());
             
         }
 

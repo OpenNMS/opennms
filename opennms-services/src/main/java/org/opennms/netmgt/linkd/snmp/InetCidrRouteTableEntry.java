@@ -30,6 +30,7 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 
 /**
@@ -321,13 +322,11 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
    }
 
    public InetAddress getInetCidrRouteMask() throws java.net.UnknownHostException {
-
-           Integer prefix = getInt32(InetCidrRouteTableEntry.IP_ROUTE_PFX_LEN);
-           Integer mask = 0xffffffff << (32 - prefix);
-           Integer value = mask;
-           byte[] bytes = new byte[]{ 
-                   (byte)(value >>> 24), (byte)(value >> 16 & 0xff), (byte)(value >> 8 & 0xff), (byte)(value & 0xff) };
-           InetAddress netAddr = InetAddress.getByAddress(bytes);
+       final Integer prefix = getInt32(InetCidrRouteTableEntry.IP_ROUTE_PFX_LEN);
+       final Integer mask = 0xffffffff << (32 - prefix);
+       final Integer value = mask;
+       final byte[] bytes = new byte[]{ (byte)(value >>> 24), (byte)(value >> 16 & 0xff), (byte)(value >> 8 & 0xff), (byte)(value & 0xff) };
+       final InetAddress netAddr = InetAddressUtils.getInetAddress(bytes);
        return netAddr;
    }
 

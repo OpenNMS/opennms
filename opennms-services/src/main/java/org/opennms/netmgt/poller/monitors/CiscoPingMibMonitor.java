@@ -32,13 +32,13 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
@@ -554,10 +554,10 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		if (overrideTarget == null) return svc.getAddress();
 		LogUtils.debugf(getClass(), "Using user-specified override target IP address %s instead of service address %s for service %s", overrideTarget, svc.getAddress(), svc.getSvcName());
 		try {
-			final InetAddress overrideAddr = InetAddress.getByName(overrideTarget);
+			final InetAddress overrideAddr = InetAddressUtils.addr(overrideTarget);
 			LogUtils.debugf(getClass(), "Overriding service address (%s) with user-specified target address (%s) for service %s", svc.getAddress(), overrideAddr, svc.getSvcName());
 			return overrideAddr;
-		} catch (UnknownHostException e) {
+		} catch (final IllegalArgumentException e) {
 			LogUtils.warnf(getClass(), "Failed to look up %s override value %s for service %s. Using service interface %s instead", PARM_TARGET_IP_ADDR, overrideTarget, svc.getSvcName(), svc.getAddress());
 		}
 		return svc.getAddress();
@@ -604,10 +604,10 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		/* No match with any node criteria?  Try for a plain old IP address. */
 		LogUtils.infof(getClass(), "Trying to use address %s as proxy-ping agent address for target interface %s", proxyIpAddr, svc.getAddress());
 		try {
-			if (!"".equals(proxyIpAddr) && InetAddress.getByName(proxyIpAddr) != null) {
-				proxyAddress = InetAddress.getByName(proxyIpAddr);
+			if (!"".equals(proxyIpAddr)) {
+				proxyAddress = InetAddressUtils.addr(proxyIpAddr);
 			}
-		} catch (UnknownHostException uhe) {}
+		} catch (final IllegalArgumentException e) {}
 		if (proxyAddress != null) {
 			LogUtils.infof(getClass(), "Using address %s (user-specified) as proxy for service '%s' on interface %s", proxyAddress, svc.getSvcName(), svc.getIpAddr());
 			return proxyAddress;
