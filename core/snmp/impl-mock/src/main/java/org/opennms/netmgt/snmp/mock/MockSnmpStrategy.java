@@ -69,7 +69,11 @@ public class MockSnmpStrategy implements SnmpStrategy {
             return null;
         }
 
-        return m_loaders.get(aa).findValueForOid(oid);
+        SnmpValue val = m_loaders.get(aa).findValueForOid(oid);
+        if (val.isNull()) {
+        	return null;
+        }
+		return val;
     }
 
     @Override

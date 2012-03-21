@@ -17,6 +17,7 @@ public class PropertyOidContainer {
     private final NavigableMap<SnmpObjId,SnmpValue> m_tree = new TreeMap<SnmpObjId,SnmpValue>();
 
     public PropertyOidContainer(final Resource resource) throws IOException {
+    	MockSnmpValueFactory factory = new MockSnmpValueFactory();
         final Properties moProps = new Properties();
         InputStream inStream = null;
         try {
@@ -34,7 +35,7 @@ public class PropertyOidContainer {
             if (value.contains("No more variables left in this MIB View")) { continue; }
 //          LogUtils.debugf(this, "%s = %s", key, value);
             try {
-                m_tree.put(SnmpObjId.get(key), SnmpUtils.parseMibValue(value));
+                m_tree.put(SnmpObjId.get(key), factory.parseMibValue(value));
             } catch (final NumberFormatException nfe) {
                 LogUtils.debugf(this, "Unable to store '%s = %s', skipping. (%s)", key, value, nfe.getLocalizedMessage());
             }
