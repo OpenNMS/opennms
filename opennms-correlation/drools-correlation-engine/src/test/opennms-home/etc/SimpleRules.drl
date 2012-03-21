@@ -1,0 +1,21 @@
+package org.opennms.netmgt.correlation.drools;
+
+import java.util.Date;
+
+import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.xml.event.Event;
+
+global java.lang.String PROVISIONING_GROUP;
+global java.lang.String SERVICE_NAME;
+global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+
+rule "first down event received"
+	when
+		$e : Event(uei == "uei.opennms.org/nodes/nodeLostService", service == SERVICE_NAME)
+	then
+		println("Hello " + PROVISIONING_GROUP + "!!");
+end
+
+function void println(String msg) {
+	System.out.println(new Date() + " : " + msg);
+}

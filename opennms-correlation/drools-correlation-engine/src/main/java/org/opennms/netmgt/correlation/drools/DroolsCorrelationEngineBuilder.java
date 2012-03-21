@@ -223,7 +223,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         Object constructValue(final ApplicationContext context) {
             
         	final String type = getType();
-        	Class<?> typeClass = Object.class;
+        	Class<?> typeClass = String.class;
             if (type != null) {
             	final PropertyEditor classEditor = getDefaultEditor(Class.class);
                 classEditor.setAsText(type);
@@ -232,9 +232,17 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         
             final String value = getValue();
             if (value != null) {
-            	final PropertyEditor valueEditor = getDefaultEditor(typeClass);
-                valueEditor.setAsText(value);
-                return valueEditor.getValue();
+                if (typeClass == String.class) {
+                    return value;
+                } else {
+                    try {
+                        final PropertyEditor valueEditor = getDefaultEditor(typeClass);
+                        valueEditor.setAsText(value);
+                        return valueEditor.getValue();
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("Unable to find a property editor for " + typeClass);
+                    }
+                }
             }
             
             final String ref = getRef();

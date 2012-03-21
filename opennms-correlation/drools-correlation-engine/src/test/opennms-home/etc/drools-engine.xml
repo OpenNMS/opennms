@@ -25,4 +25,10 @@
     <event>uei.opennms.org/nodes/nodeRegainedService</event>
     <app-context>file:src/test/opennms-home/etc/dependencyRules-context.xml</app-context>
   </rule-set>
+  <rule-set name="simpleRules">
+    <rule-file>file:src/test/opennms-home/etc/SimpleRules.drl</rule-file>
+    <event>uei.opennms.org/nodes/nodeLostService</event>
+    <global name="PROVISIONING_GROUP" type="java.lang.String" value="ApplicationServers" />
+    <global name="SERVICE_NAME" type="java.lang.String" value="Tomcat" />
+  </rule-set>  
 </engine-configuration>
