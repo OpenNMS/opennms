@@ -356,7 +356,7 @@ public class Global implements Serializable {
 
 
 	public Class<?> getTypeClass() {
-		return getType() == null ? String.class : convertStringTo(getType(), Class.class);
+		return getType() == null ? Object.class : convertStringTo(getType(), Class.class);
 	}
 
 
