@@ -28,6 +28,7 @@
     <module>opennms-gwt-theme</module>
     <module>gwt-suggestion-combobox</module>
     <module>gwt-ksc-combobox</module>
+    <module>gwt-ksc-add</module>
     <module>gwt-graph-resource-list</module>
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>
