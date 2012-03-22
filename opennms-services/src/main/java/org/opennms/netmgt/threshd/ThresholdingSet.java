@@ -66,7 +66,6 @@ public class ThresholdingSet {
     protected final RrdRepository m_repository;
     
     protected ThresholdsDao m_thresholdsDao;
-    protected ThreshdConfigManager m_configManager;
     
     protected boolean m_initialized = false;
     protected boolean m_hasThresholds = false;
@@ -370,7 +369,6 @@ public class ThresholdingSet {
                 throw new RuntimeException("Could not initialize ThreshdConfigFactory: " + t, t);
             }
             m_thresholdsDao = defaultThresholdsDao;
-            m_configManager = ThreshdConfigFactory.getInstance();            
         }
     }
     
@@ -382,12 +380,13 @@ public class ThresholdingSet {
      * - For each match, create new ThresholdableService object and schedule it for collection
      */
     private List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) {
+        ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
 
         List<String> groupNameList = new LinkedList<String>();
-        for (org.opennms.netmgt.config.threshd.Package pkg : m_configManager.getConfiguration().getPackage()) {
+        for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackage()) {
 
             // Make certain the the current service is in the package and enabled!
-            if (!m_configManager.serviceInPackageAndEnabled(serviceName, pkg)) {
+            if (!configManager.serviceInPackageAndEnabled(serviceName, pkg)) {
                 if (log().isDebugEnabled())
                     log().debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
                 continue;
@@ -396,7 +395,7 @@ public class ThresholdingSet {
             // Is the interface in the package?
             if (log().isDebugEnabled())
                 log().debug("getThresholdGroupNames: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
-            if (!m_configManager.interfaceInPackage(hostAddress, pkg)) {
+            if (!configManager.interfaceInPackage(hostAddress, pkg)) {
                 if (log().isDebugEnabled())
                     log().debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 continue;
@@ -423,7 +422,8 @@ public class ThresholdingSet {
 
     protected void updateScheduledOutages() {
         m_scheduledOutages.clear();
-        for (org.opennms.netmgt.config.threshd.Package pkg : m_configManager.getConfiguration().getPackage()) {
+        ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
+        for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackage()) {
             for (String outageCal : pkg.getOutageCalendarCollection()) {
                 log().info("updateScheduledOutages[node=" + m_nodeId + "]: checking scheduled outage '" + outageCal + "'");
                 try {
