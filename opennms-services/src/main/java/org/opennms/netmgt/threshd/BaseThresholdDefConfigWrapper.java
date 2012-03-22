@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -243,7 +244,9 @@ public abstract class BaseThresholdDefConfigWrapper {
         && (getRearmedUEI() ==  o.getRearmedUEI() || (getRearmedUEI() != null && getRearmedUEI().equals(o.getRearmedUEI())))
         && getValue() == o.getValue()
         && getRearm() == o.getRearm()
-        && getTrigger() == o.getTrigger();
+        && getTrigger() == o.getTrigger()
+        && getBasethresholddef().getFilterOperator().equals(o.getBasethresholddef().getFilterOperator())
+        && Arrays.equals(getBasethresholddef().getResourceFilter(), o.getBasethresholddef().getResourceFilter());
     }
     
     /**

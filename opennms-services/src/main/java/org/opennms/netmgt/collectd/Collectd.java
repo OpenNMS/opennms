@@ -1077,6 +1077,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 }
                 if (targetFile.equals(threshdFile)) {
                     ThreshdConfigFactory.reload();
+                    ThresholdingConfigFactory.reload(); // This is required if the threshold packages has been changed.
                 }
                 // Sending the threshold configuration change event
                 ebldr = new EventBuilder(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI, "Collectd");

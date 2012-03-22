@@ -38,7 +38,6 @@ import java.util.TreeMap;
 
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class TestAgent {
@@ -83,11 +82,12 @@ public class TestAgent {
     }
 
     public void setAgentData(Properties mibData) {
+    	MockSnmpValueFactory factory = new MockSnmpValueFactory();
         m_agentData = new TreeMap<SnmpObjId, Object>();
         for (Entry<Object, Object> entry : mibData.entrySet()) {
             SnmpObjId objId = SnmpObjId.get(entry.getKey().toString());
             
-            setAgentValue(objId, SnmpUtils.parseMibValue(entry.getValue().toString()));
+            setAgentValue(objId, factory.parseMibValue(entry.getValue().toString()));
         }
     }
 

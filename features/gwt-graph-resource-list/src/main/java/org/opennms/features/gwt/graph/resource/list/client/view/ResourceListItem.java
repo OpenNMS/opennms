@@ -37,4 +37,5 @@ public class ResourceListItem extends JavaScriptObject {
     public final native String getId()/*-{ return this.id }-*/;
     public final native String getValue()/*-{ return this.value }-*/;
     public final native String getType()/*-{ return this.type }-*/;
+
 }
