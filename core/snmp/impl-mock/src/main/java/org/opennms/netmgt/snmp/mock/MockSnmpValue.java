@@ -353,10 +353,10 @@ public class MockSnmpValue extends AbstractSnmpValue {
 
     private int m_type;
     private String m_value;
-    public static final SnmpValue NULL_VALUE = new MockSnmpNullValue(SnmpValue.SNMP_NULL, null);
-    public static final SnmpValue NO_SUCH_INSTANCE = new MockSnmpNullValue(SnmpValue.SNMP_NO_SUCH_INSTANCE, "noSuchInstance");
-    public static final SnmpValue NO_SUCH_OBJECT = new MockSnmpNullValue(SnmpValue.SNMP_NO_SUCH_OBJECT, "noSuchObject") ;
-    public static final SnmpValue END_OF_MIB = new MockSnmpNullValue(SnmpValue.SNMP_END_OF_MIB, "endOfMibView");
+    public static final MockSnmpValue NULL_VALUE = new MockSnmpNullValue(SnmpValue.SNMP_NULL, null);
+    public static final MockSnmpValue NO_SUCH_INSTANCE = new MockSnmpNullValue(SnmpValue.SNMP_NO_SUCH_INSTANCE, "noSuchInstance");
+    public static final MockSnmpValue NO_SUCH_OBJECT = new MockSnmpNullValue(SnmpValue.SNMP_NO_SUCH_OBJECT, "noSuchObject") ;
+    public static final MockSnmpValue END_OF_MIB = new MockSnmpNullValue(SnmpValue.SNMP_END_OF_MIB, "endOfMibView");
 
     public MockSnmpValue(int type, String value) {
         m_type = type;

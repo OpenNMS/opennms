@@ -108,11 +108,11 @@ public class ColumnTracker extends CollectionTracker {
                 } else if (errorStatus == TOO_BIG_ERR) {
                     throw new IllegalArgumentException("Unable to handle tooBigError for next oid request after "+m_last);
                 } else if (errorStatus == GEN_ERR) {
-                    reportGenErr("Received genErr reqeusting next oid after "+m_last+". Marking column is finished.");
+                    reportGenErr("Received genErr requesting next oid after "+m_last+". Marking column is finished.");
                     errorOccurred();
                     return true;
                 } else if (errorStatus == NO_SUCH_NAME_ERR) {
-                    reportNoSuchNameErr("Received noSuchName reqeusting next oid after "+m_last+". Marking column is finished.");
+                    reportNoSuchNameErr("Received noSuchName requesting next oid after "+m_last+". Marking column is finished.");
                     errorOccurred();
                     return true;
                 } else {
