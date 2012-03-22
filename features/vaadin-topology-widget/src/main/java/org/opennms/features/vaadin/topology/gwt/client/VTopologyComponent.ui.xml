@@ -1,0 +1,13 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		
+	</ui:style>
+	<g:HTMLPanel>
+	   <div>Hello World This is Working</div>
+	   <div id="chart-2" ></div>
+	   <g:Button ui:field="m_runButton" >Run</g:Button>
+	</g:HTMLPanel>
+	
+</ui:UiBinder> 

@@ -39,6 +39,7 @@
     <module>gwt-graph-resource-list</module>
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>
+    <module>vaadin-topology-widget</module>
   </modules>
   <profiles>
     <profile>
