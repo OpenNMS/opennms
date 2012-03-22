@@ -30,32 +30,28 @@
     
     
     <bean id="suspectRunner" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
-        <constructor-arg/>
+        <constructor-arg>
           <util:property-path path="capsdConfig.maxSuspectThreadPoolSize" />
         </constructor-arg>
         <!-- <property name="name" value="Capsd Suspect Pool" /> -->
     </bean>
     
     <bean id="rescanRunner" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
-        <constructor-arg/>
+        <constructor-arg>
           <util:property-path path="capsdConfig.maxRescanThreadPoolSize" />
         </constructor-arg>
         <!-- <property name="name" value="Capsd Rescan Pool" /> -->
     </bean>
 
     <bean name="capsdScheduler" class="org.opennms.netmgt.capsd.Scheduler">
-        <constructor-arg>
-          <util:property-path path="rescanRunner.runQueue" />
-        </constructor-arg>
+        <constructor-arg ref="rescanRunner"/>
         <constructor-arg ref="rescanProcessorFactory"/>
     </bean>
     
     <bean name="capsdBroadcastProcessor" class="org.opennms.netmgt.capsd.BroadcastEventProcessor">
         <property name="scheduler" ref="capsdScheduler" />
         <property name="suspectEventProcessorFactory" ref="suspectEventProcessorFactory"/>
-        <property name="suspectQueue">
-          <util:property-path path="suspectRunner.runQueue" />
-        </property>
+        <property name="suspectQueue" ref="suspectRunner"/>
         <property name="localServer">
           <util:property-path path="onmsServerConfig.serverName" />
         </property>

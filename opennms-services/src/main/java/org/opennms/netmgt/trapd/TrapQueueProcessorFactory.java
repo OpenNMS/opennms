@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.trapd;
 
+import javax.annotation.Resource;
+
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.Assert;
 
 /**
@@ -45,8 +46,7 @@ public class TrapQueueProcessorFactory implements InitializingBean {
      * Whether or not a newSuspect event should be generated with a trap from an
      * unknown IP address
      */
-    @Autowired
-    @Qualifier(value="newSuspectOnTrap")
+    @Resource(name="newSuspectOnTrap")
     private Boolean m_newSuspectOnTrap;
 
     /**
