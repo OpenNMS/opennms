@@ -65,10 +65,10 @@ public class KscAddGraphViewImpl extends Composite implements KscAddGraphView<Ks
 
     }
 
-    private static KscComboboxViewImplUiBinder uiBinder = GWT.create(KscComboboxViewImplUiBinder.class);
+    private static KscAddGraphViewImplUiBinder uiBinder = GWT.create(KscAddGraphViewImplUiBinder.class);
     
     @UiTemplate("KscAddGraphViewImpl.ui.xml")
-    interface KscComboboxViewImplUiBinder extends UiBinder<Widget, KscAddGraphViewImpl> {}
+    interface KscAddGraphViewImplUiBinder extends UiBinder<Widget, KscAddGraphViewImpl> {}
     
     @UiField
     LayoutPanel m_layoutPanel;

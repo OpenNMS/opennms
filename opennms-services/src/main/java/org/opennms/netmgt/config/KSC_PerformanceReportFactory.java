@@ -62,7 +62,7 @@ public class KSC_PerformanceReportFactory {
     private static KSC_PerformanceReportFactory s_instance = null;
 
     /** File name of the KSC_PerformanceReport.xml */
-    private static File s_configFile;
+    private static File s_configFile = null;
 
     /** An instance of the ReportsList configuration */
     private ReportsList m_config;
@@ -151,7 +151,7 @@ public class KSC_PerformanceReportFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
-        s_configFile = ConfigFileConstants.getFile(ConfigFileConstants.KSC_REPORT_FILE_NAME);
+        if (s_configFile == null) s_configFile = ConfigFileConstants.getFile(ConfigFileConstants.KSC_REPORT_FILE_NAME);
 
         m_config = CastorUtils.unmarshal(ReportsList.class, new FileSystemResource(s_configFile));
         
@@ -160,6 +160,10 @@ public class KSC_PerformanceReportFactory {
         m_reportList = createReportList();
     }
 
+    public static void setConfigFile(final File configFile) {
+        s_configFile = configFile;
+    }
+    
     private void setIdsOnAllReports() {
         int i = 0;
 
@@ -281,12 +285,12 @@ public class KSC_PerformanceReportFactory {
         saveCurrent();
     }
 
-    void addReport(Report report) {
+    public void addReport(Report report) {
         m_config.addReport(report);
         setIdsOnAllReports();
     }
 
-    void setReport(int index, Report report) {
+    public void setReport(int index, Report report) {
         int arrayIndex = getArrayIndex(index);
         if (arrayIndex == -1) {
             throw new IllegalArgumentException("Could not find report with ID of " + index);

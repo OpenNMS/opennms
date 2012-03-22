@@ -10,4 +10,5 @@
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
 
+  <set-configuration-property name="UiBinder.useSafeHtmlTemplates" value="true" />
 </module>

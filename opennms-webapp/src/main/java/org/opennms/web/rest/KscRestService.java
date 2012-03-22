@@ -35,13 +35,17 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Entity;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -50,6 +54,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.kscReports.Graph;
+import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -66,6 +73,9 @@ public class KscRestService extends OnmsRestService {
     @Autowired
     private KscReportService m_kscReportService;
     
+    @Autowired
+    private KSC_PerformanceReportFactory m_kscReportFactory;
+
 	@Context
 	UriInfo m_uriInfo;
 
@@ -86,11 +96,13 @@ public class KscRestService extends OnmsRestService {
 
 	@GET
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("{index}")
+	@Path("{reportId}")
 	@Transactional
-	public KscReport getReport(@PathParam("index") final Integer reportIndex) {
+	public KscReport getReport(@PathParam("reportId") final Integer reportId) {
         final Map<Integer, String> reportList = m_kscReportService.getReportList();
-        return new KscReport(reportIndex, reportList.get(reportIndex));
+        final String label = reportList.get(reportId);
+        if (label == null) throw getException(Status.NOT_FOUND, "No such report id " + reportId);
+        return new KscReport(reportId, label);
 	}
 
 	@GET
@@ -101,6 +113,21 @@ public class KscRestService extends OnmsRestService {
 	    return Integer.toString(m_kscReportService.getReportList().size());
 	}
 
+	@PUT
+	@Path("{kscReportId}")
+	// @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Transactional
+    public void addGraph(@PathParam("kscReportId") final Integer kscReportId, @FormParam("title") final String title, @FormParam("reportName") final String reportName, @FormParam("resourceId") final String resourceId) {
+	    final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
+	    final Graph graph = new Graph();
+	    graph.setTitle(title);
+	    graph.setGraphtype(reportName);
+	    graph.setResourceId(resourceId);
+	    report.addGraph(graph);
+	    m_kscReportFactory.setReport(kscReportId, report);
+	}
+	
 	@Entity
 	@XmlRootElement(name="kscReports")
 	@XmlAccessorType(XmlAccessType.NONE)

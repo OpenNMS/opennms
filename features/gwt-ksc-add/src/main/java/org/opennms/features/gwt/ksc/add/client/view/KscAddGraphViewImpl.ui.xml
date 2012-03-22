@@ -2,7 +2,7 @@
 
 <!-- Title: [ ] Report: [ ] [Search] -->
 
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" ui:useSafeHtmlTemplates="true">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
 		.outlineBorder {
 			/* border: 1px solid #B5B8C8; */
