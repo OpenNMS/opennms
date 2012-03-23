@@ -10,7 +10,7 @@ import com.vaadin.ui.ClientWidget;
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent {
 
-    private Integer[] m_dataArray;
+    private Integer[] m_dataArray = new Integer[] { 10 };
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {

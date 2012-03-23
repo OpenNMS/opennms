@@ -18,15 +18,31 @@ public class TopologyWidgetTestApplication extends Application {
         m_topologyComponent = new TopologyComponent();
         m_window.addComponent(m_topologyComponent);
         
-        Button myButton = new Button();
-        myButton.addListener(new ClickListener(){
+        Button addButton = new Button("Add");
+        addButton.addListener(new ClickListener(){
 
             public void buttonClick(ClickEvent event) {
-                m_topologyComponent.setDataArray(new Integer[] {1,2,3});
+            	int sz = m_topologyComponent.getDataArray().length;
+            	
+            	Integer[] dataArray = new Integer[sz+1];
+            	for(int i = 0; i < dataArray.length; i++) {
+            		dataArray[i] = (i+1)*10;
+            	}
+                m_topologyComponent.setDataArray(dataArray);
             }
         });
         
-        m_window.addComponent(myButton);
+        Button resetButton = new Button("Reset");
+        resetButton.addListener(new ClickListener() {
+
+			public void buttonClick(ClickEvent event) {
+				m_topologyComponent.setDataArray(new Integer[] { 10 });
+			}
+        	
+        });
+        
+        m_window.addComponent(addButton);
+        m_window.addComponent(resetButton);
     }
 
 }

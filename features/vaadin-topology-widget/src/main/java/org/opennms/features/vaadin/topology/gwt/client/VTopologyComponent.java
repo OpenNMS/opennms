@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
@@ -25,8 +26,6 @@ public class VTopologyComponent extends Composite implements Paintable {
             UiBinder<Widget, VTopologyComponent> {
     }
     
-    @UiField
-    Button m_runButton;
     private ApplicationConnection m_client;
     private String m_paintableId;
     private D3 m_svg;
@@ -49,35 +48,65 @@ public class VTopologyComponent extends Composite implements Paintable {
         m_height = 200;
         m_svg = d3.select("#chart-2").append("svg").attr("width", 300).attr("height", 200);
         
-        m_runButton.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
+//        m_runButton.addClickHandler(new ClickHandler() {
+//
+//            public void onClick(ClickEvent event) {
 //                circle.style("fill", "#aaa").attr("r", 12).attr("cy", y);
 //                circle.transition().duration(500).delay(0).style("fill", "steelBlue");
 //                circle.transition().duration(500).delay(500).attr("cy", 90);
 //                circle.transition().duration(500).delay(1000).attr("r", 30);
-            }
-            
-        });
+//            }
+//            
+//        });
     }
 
     private void drawCircles(int[] data) {
-        
-        
-        JavaScriptObject x = getD3().scale().ordinal().domain(getTestArray()).rangePoints(rangeArray(m_width), 1);
-        final JavaScriptObject y = getD3().scale().ordinal().domain(getTestArray()).rangePoints(rangeArray(m_height), 1);
-        
-        
-        final D3 circle = m_svg.selectAll(".little")
-            .data(data)
-            .enter()
-                .append("circle")
-                .attr("class", "little")
-                .attr("cx", x)
-                .attr("cy", y)
-                .attr("r", 12);
+
+    	Window.alert("Received data " + data);
+
+
+    	JavaScriptObject x = getD3().scale().ordinal().domain(data).rangePoints(rangeArray(m_width), 1);
+    	final JavaScriptObject y = getD3().scale().ordinal().domain(data).rangePoints(rangeArray(m_height), 1);
+
+
+    	final D3 circle = m_svg.selectAll(".little")
+    			.data(data)
+    			.enter()
+    			.append("circle")
+    			.attr("class", "little")
+    			.attr("cx", x)
+    			.attr("cy", y)
+    			.attr("r", 12);
+
+    	circle.style("fill", "#aaa").attr("r", 12).attr("cy", y);
+    	circle.transition().duration(500).delay(0).style("fill", "steelBlue");
+    	circle.transition().duration(500).delay(500).attr("cy", 90);
+    	circle.transition().duration(500).delay(1000).attr("r", 30);
     }
     
+    private final native void drawCirclesJS(int[] data, JavaScriptObject svg, int w, int h) /*-{
+    
+    
+        var d3 =$wnd.d3;
+    	var x = d3.scale.ordinal().domain(data).rangePoints([0, w], 1);
+    	var y = d3.scale.ordinal().domain(data).rangePoints([0, h], 2);
+
+    	var circle = svg.selectAll(".little").data(data);
+    			
+    	circle.enter()
+    			.append("circle")
+    			.attr("class", "little")
+    			.attr("cx", x)
+    			.attr("cy", y)
+    			.attr("r", 0);
+
+    	circle.style("fill", "#aaa")
+    	circle.exit().transition().duration(1000).delay(0).attr("cx", x).attr("r", 0).remove();
+    	circle.transition().duration(1000).delay(0).attr("r", 12).attr("cx", x).attr("cy", y);
+    	circle.transition().duration(500).delay(1500).style("fill", "steelBlue");
+    	circle.transition().duration(500).delay(2000).attr("cy", 90);
+    	circle.transition().duration(500).delay(2500).attr("r", 30);
+    }-*/;
     
     
     private static native JsArray getTestArray() /*-{
@@ -103,7 +132,7 @@ public class VTopologyComponent extends Composite implements Paintable {
         m_client = client;
         m_paintableId = uidl.getId();
         
-        drawCircles(uidl.getIntArrayVariable("dataArray"));
+        drawCirclesJS(uidl.getIntArrayAttribute("dataArray"), m_svg, m_width, m_height);
     }
 
 }

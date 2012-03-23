@@ -7,7 +7,6 @@
 	<g:HTMLPanel>
 	   <div>Hello World This is Working</div>
 	   <div id="chart-2" ></div>
-	   <g:Button ui:field="m_runButton" >Run</g:Button>
 	</g:HTMLPanel>
 	
 </ui:UiBinder> 

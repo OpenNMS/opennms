@@ -15,6 +15,10 @@ public class D3Scale extends JavaScriptObject {
     public final native D3Scale domain(JsArray array) /*-{
         return this.domain(array);
     }-*/;
+    
+    public final native D3Scale domain(int[] data) /*-{
+    	return this.domain(data);
+    }-*/;
 
     public final native JavaScriptObject rangePoints(JsArray rangeArray, int i) /*-{
         return this.rangePoints(rangeArray, i);
