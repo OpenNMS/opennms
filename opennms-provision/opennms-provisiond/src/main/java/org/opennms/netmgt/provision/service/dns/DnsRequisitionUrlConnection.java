@@ -50,7 +50,7 @@ import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;

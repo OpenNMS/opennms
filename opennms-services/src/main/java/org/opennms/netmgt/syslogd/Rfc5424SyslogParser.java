@@ -31,6 +31,7 @@ package org.opennms.netmgt.syslogd;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -110,13 +111,13 @@ public class Rfc5424SyslogParser extends SyslogParser {
     protected Date parseDate(final String dateString) {
         if (dateString.endsWith("Z")) {
             try {
-                final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT);
                 df.setTimeZone(TimeZone.getTimeZone("GMT"));
                 return df.parse(dateString);
             } catch (final Exception e) {
                 // try again with optional decimals
                 try {
-                    final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
+                    final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.ROOT);
                     df.setLenient(true);
                     df.setTimeZone(TimeZone.getTimeZone("GMT"));
                     return df.parse(dateString);
@@ -135,12 +136,12 @@ public class Rfc5424SyslogParser extends SyslogParser {
                 newString = first + last.replace(":", "");
             }
             try {
-                final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
                 return df.parse(newString);
             } catch (final Exception e) {
                 // try again with optional decimals
                 try {
-                    final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
+                    final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ", Locale.ROOT);
                     df.setLenient(true);
                     return df.parse(newString);
                 } catch (final Exception pe) {

@@ -32,9 +32,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.concurrent.RejectedExecutionException;
 
-import org.opennms.core.concurrent.WaterfallExecutor.WaterfallCallable;
+import org.opennms.core.concurrent.WaterfallCallable;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
@@ -101,8 +100,6 @@ public class SyslogConnection implements WaterfallCallable {
         } catch (final UnsupportedEncodingException e1) {
             log.debug("Failure to convert package", e1);
         } catch (final MessageDiscardedException e) {
-            log.debug("Message discarded, returning without enqueueing event.", e);
-        } catch (final RejectedExecutionException e) {
             log.debug("Message discarded, returning without enqueueing event.", e);
         }
         return null;

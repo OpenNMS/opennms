@@ -33,8 +33,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.snmp4j.smi.Counter32;
 import org.snmp4j.smi.Counter64;
@@ -49,7 +49,7 @@ import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.UnsignedInteger32;
 import org.snmp4j.smi.Variable;
 
-class Snmp4JValue implements SnmpValue {
+class Snmp4JValue extends AbstractSnmpValue {
     Variable m_value;
     
     Snmp4JValue(final Variable value) {
@@ -293,7 +293,7 @@ class Snmp4JValue implements SnmpValue {
         }
         
         if (getType() == SnmpValue.SNMP_OCTET_STRING) {
-            return SnmpUtils.allBytesDisplayable(getBytes());
+            return allBytesDisplayable(getBytes());
         }
         
         return false;
@@ -335,4 +335,5 @@ class Snmp4JValue implements SnmpValue {
     	   	.append(this.m_value, that.m_value)
     	   	.isEquals();
     }
+    
 }

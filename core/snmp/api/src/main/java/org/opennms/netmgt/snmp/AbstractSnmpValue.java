@@ -28,55 +28,38 @@
 
 package org.opennms.netmgt.snmp;
 
-import java.math.BigInteger;
-import java.net.InetAddress;
-
 public abstract class AbstractSnmpValue implements SnmpValue {
     
-    private int m_type;
-    
-    public AbstractSnmpValue(int type) {
-        m_type = type;
-    }
-
-    public boolean isEndOfMib() {
-        return false;
-    }
-
-    public String toDisplayString() {
-        return toString();
-    }
-
-    public boolean isNumeric() {
-        return false;
-    }
-
-    public int toInt() {
-        return (int)toLong();
-    }
-
-    public InetAddress toInetAddress() {
-        throw new IllegalArgumentException("Unable to convert " + this + " to an InetAddress");
-    }
-
-    public long toLong() {
-        throw new IllegalArgumentException("Unable to convert " + this + " to a number");
-    }
-
-    public String toHexString() {
-        throw new IllegalArgumentException("Unable to convert " + this + " to a hex string");
-    }
-
-    public int getType() {
-        return m_type;
-    }
-
-    public BigInteger toBigInteger() {
-        throw new IllegalArgumentException("Unable to convert " + this + " to a big integer");
-    }
-
-    public SnmpObjId toSnmpObjId() {
-        throw new IllegalArgumentException("Unable to convert " + this + " to an SnmpObjId");
+    /**
+     * <p>If the value is in the unprintable ASCII range (< 32) and is not a:</p>
+     * <ul>
+     *   <li>Tab (9)</li>
+     *   <li>Linefeed (10)</li>
+     *   <li>Carriage return (13)</li>
+     * <ul>
+     * <p>or the byte is Delete (127) then this method will return false. Also, if the byte 
+     * array has a NULL byte (0) that occurs anywhere besides the last character, return false. 
+     * We will allow the NULL byte as a special case at the end of the string.</p>
+     */
+    protected boolean allBytesDisplayable(byte[] bytes) {
+        for (int i = 0; i < bytes.length; i++) {
+            byte b = bytes[i];
+            // Null (0)
+            if (b == 0) {
+                if (i != (bytes.length - 1)) {
+                    return false;
+                }
+            }
+            // Low or high ASCII (excluding Tab, Carriage Return, and Linefeed)
+            else if (b < 32 && b != 9 && b != 10 && b != 13) {
+                return false;
+            }
+            // Delete (127)
+            else if (b == 127) {
+                return false;
+            }
+        }
+        return true;
     }
 
 

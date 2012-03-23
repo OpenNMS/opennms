@@ -188,6 +188,7 @@ public abstract class SnmpWalker {
         m_signal.await(timeout, TimeUnit.MILLISECONDS);
     }
     
+    // processErrors returns true if we need to retry the request and false otherwise
     protected boolean processErrors(int errorStatus, int errorIndex) {
         return m_responseProcessor.processErrors(errorStatus, errorIndex);
     }

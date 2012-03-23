@@ -31,7 +31,7 @@ package org.opennms.netmgt.collectd;
 import java.net.InetAddress;
 import java.util.Set;
 
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
@@ -73,7 +73,7 @@ public interface CollectionAgentService {
     /**
      * <p>getIsSnmpPrimary</p>
      *
-     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface.PrimaryType} object.
+     * @return a {@link org.opennms.netmgt.model.PrimaryType} object.
      */
     public abstract PrimaryType getIsSnmpPrimary();
     

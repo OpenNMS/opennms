@@ -30,10 +30,11 @@ package org.opennms.netmgt.capsd;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -98,19 +99,17 @@ public class ScanSuspectTest extends OpenNMSTestCase {
         defaultProcessorFactory.setCapsdDbSyncer(syncer);
         defaultProcessorFactory.setPluginManager(pluginManager);
 
-        RunnableConsumerThreadPool suspectRunner = 
-            new RunnableConsumerThreadPool("SuspectRunner", 0.0f, 0.0f, 1);
+        ExecutorService suspectRunner = Executors.newSingleThreadExecutor();
         
-        RunnableConsumerThreadPool rescanRunner = 
-            new RunnableConsumerThreadPool("RescanRunner", 0.0f, 0.0f, 1);
+        ExecutorService rescanRunner = Executors.newSingleThreadExecutor();
         
-        Scheduler scheduler = new Scheduler(rescanRunner.getRunQueue(), defaultProcessorFactory);
+        Scheduler scheduler = new Scheduler(rescanRunner, defaultProcessorFactory);
         
         BroadcastEventProcessor eventHandler = new BroadcastEventProcessor();
         eventHandler.setSuspectEventProcessorFactory(defaultProcessorFactory);
         eventHandler.setLocalServer("localhost");
         eventHandler.setScheduler(scheduler);
-        eventHandler.setSuspectQueue(suspectRunner.getRunQueue());
+        eventHandler.setSuspectQueue(suspectRunner);
         eventHandler.afterPropertiesSet();
         
         AnnotationBasedEventListenerAdapter adapter = 

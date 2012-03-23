@@ -65,7 +65,7 @@ public class JUnitSnmpAgentExecutionListenerTest {
     @JUnitSnmpAgent(resource="classpath:loadSnmpDataTest.properties", host="192.168.0.254")
     public void testClassAgent() throws Exception {
     	assertEquals(
-    			SnmpUtils.parseMibValue("STRING: TestData"),
+    			octetString("TestData"),
     			SnmpUtils.get(SnmpPeerFactory.getInstance().getAgentConfig(addr("192.168.0.254")), m_oid)
     	);
     }
@@ -77,12 +77,16 @@ public class JUnitSnmpAgentExecutionListenerTest {
     })
     public void testMultipleHosts() throws Exception {
     	assertEquals(
-    			SnmpUtils.parseMibValue("STRING: TestData"),
+    			octetString("TestData"),
     			SnmpUtils.get(SnmpPeerFactory.getInstance().getAgentConfig(addr("192.168.0.1")), m_oid)
     	);
     	assertEquals(
-    			SnmpUtils.parseMibValue("STRING: DifferentTestData"),
+    			octetString("DifferentTestData"),
     			SnmpUtils.get(SnmpPeerFactory.getInstance().getAgentConfig(addr("192.168.0.2")), m_oid)
     	);
+    }
+    
+    private SnmpValue octetString(String s) {
+    	return SnmpUtils.getValueFactory().getOctetString(s.getBytes());
     }
 }

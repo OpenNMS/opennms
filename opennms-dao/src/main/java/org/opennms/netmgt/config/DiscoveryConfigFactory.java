@@ -347,8 +347,8 @@ public class DiscoveryConfigFactory {
                 }
 
                 try {
-                    specifics.add(new IPPollAddress(specIP, timeout, retries));
-                } catch (final UnknownHostException e) {
+                    specifics.add(new IPPollAddress(InetAddressUtils.addr(specIP), timeout, retries));
+                } catch (final IllegalArgumentException e) {
                     LogUtils.warnf(DiscoveryConfigFactory.class, "Unknown host \'%s\' inside discovery include file: address ignored", specIP);
                 }
 
@@ -494,10 +494,11 @@ public class DiscoveryConfigFactory {
                     retries = defaultRetries;
                 }
         
+                final String address = s.getContent();
                 try {
-                    specifics.add(new IPPollAddress(s.getContent(), timeout, retries));
-                } catch (final UnknownHostException uhE) {
-                    LogUtils.warnf(this, uhE, "Failed to convert address %s", s.getContent());
+                    specifics.add(new IPPollAddress(InetAddressUtils.addr(address), timeout, retries));
+                } catch (final IllegalArgumentException e) {
+                    LogUtils.warnf(this, e, "Failed to convert address %s", address);
                 }
             }
             return specifics;

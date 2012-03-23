@@ -1,10 +1,8 @@
-package org.opennms.web.rest.support;
+package org.opennms.netmgt.model;
 
 import java.beans.PropertyEditorSupport;
 
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
-
-public class PrimaryTypeTypeEditor extends PropertyEditorSupport {
+public class PrimaryTypeEditor extends PropertyEditorSupport {
 
 	/** {@inheritDoc} */
 	@Override

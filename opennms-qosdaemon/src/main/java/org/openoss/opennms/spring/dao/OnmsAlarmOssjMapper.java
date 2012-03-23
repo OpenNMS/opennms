@@ -333,7 +333,7 @@ public class OnmsAlarmOssjMapper {
 //					//event.setId(new Integer(1));  // This is NOT set since unique constraint in alarms table on Events table
 //					onmsAlarm.setLastEvent(event); 
 
-					onmsAlarm.setIpAddr(InetAddress.getLocalHost()); // needed?
+					onmsAlarm.setIpAddr(InetAddressUtils.getLocalHostAddress()); // needed?
 					onmsAlarm.setId(null); // set null as updating alarm
 					onmsAlarm.setFirstEventTime(alarmValue.getAlarmRaisedTime());
 					onmsAlarm.setLastEventTime(alarmValue.getAlarmChangedTime());

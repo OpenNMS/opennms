@@ -29,7 +29,6 @@
 package org.opennms.netmgt.model.discovery;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -63,28 +62,6 @@ public class IPPollAddress {
      * <P>
      * Constructs an IPPollAddress object with the specified parameters.
      * </P>
-     *
-     * @param ipAddress
-     *            The IP Address.
-     * @param timeout
-     *            The timeout between retries in 1/1000th of a second.
-     * @param retries
-     *            The number of times to attempt to contact the address.
-     * @exception java.net.UnknownHostException
-     *                Thrown by the InetAddress class if the hostname cannot be
-     *                resolved.
-     * @throws java.net.UnknownHostException if any.
-     */
-    public IPPollAddress(final String ipAddress, final long timeout, final int retries) throws UnknownHostException {
-        m_address = InetAddress.getByName(ipAddress);
-        m_timeout = timeout;
-        m_retries = retries;
-    }
-
-    /**
-     * <P>
-     * Constructs an IPPollAddress object with the specified parameters.
-     * </P>
      * 
      * @param ipAddress
      *            The Dotted Decimal IPv4 Address.
@@ -94,7 +71,7 @@ public class IPPollAddress {
      *            The number of times to attempt to contact the address.
      * 
      */
-    IPPollAddress(final InetAddress ipAddress, final long timeout, final int retries) {
+    public IPPollAddress(final InetAddress ipAddress, final long timeout, final int retries) {
         m_address = ipAddress;
         m_timeout = timeout;
         m_retries = retries;
