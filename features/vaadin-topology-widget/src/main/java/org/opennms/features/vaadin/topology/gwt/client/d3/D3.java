@@ -1,5 +1,7 @@
 package org.opennms.features.vaadin.topology.gwt.client.d3;
 
+import org.opennms.features.vaadin.topology.gwt.client.VTopologyComponent.Node;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
@@ -62,4 +64,8 @@ public class D3 extends JavaScriptObject {
     public final native D3 data(int[] data) /*-{
         return this.data(data);
     }-*/;
+
+	public final native D3 data(Node[] nodes) /*-{
+		return this.data(nodes);
+	}-*/;
 }
