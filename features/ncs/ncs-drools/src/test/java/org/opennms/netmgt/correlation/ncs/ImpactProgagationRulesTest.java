@@ -365,6 +365,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
         .getEvent();
     }
 
+	@SuppressWarnings("unused")
     private Event createMplsLspPathDownEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
         
         Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown", "Test")
@@ -377,6 +378,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 		return event;
     }
     
+	@SuppressWarnings("unused")
     private Event createMplsLspPathUpEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
         
         Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp", "Drools")
