@@ -35,16 +35,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Entity;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
@@ -115,17 +115,31 @@ public class KscRestService extends OnmsRestService {
 
 	@PUT
 	@Path("{kscReportId}")
-	// @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
     @Transactional
-    public void addGraph(@PathParam("kscReportId") final Integer kscReportId, @FormParam("title") final String title, @FormParam("reportName") final String reportName, @FormParam("resourceId") final String resourceId) {
+    public Response addGraph(
+        @PathParam("kscReportId") final Integer kscReportId,
+        @QueryParam("title") final String title,
+        @QueryParam("reportName") final String reportName,
+        @QueryParam("resourceId") final String resourceId,
+        @QueryParam("timespan") final String timespan
+    ) {
+	    if (kscReportId == null || title == null || reportName == null || resourceId == null) {
+	        throw getException(Status.BAD_REQUEST, "Invalid request, title, reportName, and resourceId cannot be null!");
+	    }
 	    final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
 	    final Graph graph = new Graph();
 	    graph.setTitle(title);
 	    graph.setGraphtype(reportName);
 	    graph.setResourceId(resourceId);
+	    graph.setTimespan(timespan);
 	    report.addGraph(graph);
 	    m_kscReportFactory.setReport(kscReportId, report);
+	    try {
+            m_kscReportFactory.saveCurrent();
+        } catch (final Exception e) {
+            throw getException(Status.BAD_REQUEST, e.getMessage());
+        }
+	    return Response.ok().build();
 	}
 	
 	@Entity

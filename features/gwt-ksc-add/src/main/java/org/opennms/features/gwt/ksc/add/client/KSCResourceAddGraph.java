@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.opennms.features.gwt.ksc.add.client.rest.DefaultKscReportService;
 import org.opennms.features.gwt.ksc.add.client.rest.KscReportService;
-import org.opennms.features.gwt.ksc.add.client.view.KscReport;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -74,18 +73,9 @@ public class KSCResourceAddGraph implements EntryPoint {
     }
 
     private void createView(final Element elem, final List<KscReport> kscReportList) {
-        final String report = elem.getAttribute("report");
-        final String resourceId = elem.getAttribute("resourceId");
-        if (report == null) {
-            GWT.log("<opennms-addKscReport> tag found without a required report tag!");
-            return;
-        }
-        if (resourceId == null) {
-            GWT.log("<opennms-addKscReport> tag found without a required resourceId tag!");
-            return;
-        }
+        final GraphInfo info = new GraphInfo(elem);
 
-        GWT.log("creating view for report=" + report + ", resourceId=" + resourceId);
-        new AppController(kscReportList, report, resourceId).go(RootPanel.get(elem.getId()));
+        GWT.log("creating view for graph " + info);
+        new AppController(kscReportList, info).go(RootPanel.get(elem.getId()));
     }
 }

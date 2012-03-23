@@ -2,6 +2,8 @@ package org.opennms.features.gwt.ksc.add.client.view;
 
 import java.util.List;
 
+import org.opennms.features.gwt.ksc.add.client.KscReport;
+
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -196,6 +198,11 @@ public class KscAddGraphViewImpl extends Composite implements KscAddGraphView<Ks
         return m_titleBox.getValue();
     }
     
+    @Override
+    public void setTitle(final String title) {
+        m_titleBox.setValue(title == null? "" : title);
+    }
+
     @Override
     public KscReport getSelectedReport() {
         return m_selectionModel.getSelectedObject();

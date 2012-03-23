@@ -3,7 +3,6 @@ package org.opennms.features.gwt.ksc.add.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.gwt.ksc.add.client.view.KscReport;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;

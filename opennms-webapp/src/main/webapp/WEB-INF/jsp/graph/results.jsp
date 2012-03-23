@@ -202,6 +202,7 @@
       
       <div align="center">
         <img id="zoomImage" src="${graphUrl}" alt="Resource graph: ${resultSet.graphs[0].title} (drag to zoom)" />
+	    <opennms-addKscReport id="${resultSet.resource.id}.${resultSet.graphs[0].name}" reportName="${resultSet.graphs[0].name}" resourceId="${resultSet.resource.id}" graphTitle="${resultSet.graphs[0].title}" timespan="${results.relativeTime}"></opennms-addKscReport>
       </div>
     </c:when>
 
@@ -224,6 +225,7 @@
 		</c:url>
 		
 	    <a href="${zoomUrl}"><img src="${graphUrl}" alt="Resource graph: ${graph.title} (click to zoom)" /></a>
+	    <opennms-addKscReport id="foo" reportName="${graph.name}" resourceId="${resultSet.resource.id}" graphTitle="${graph.title}" timespan="${results.relativeTime}"></opennms-addKscReport>
 		<br/>
       </c:forEach>
     </c:when>

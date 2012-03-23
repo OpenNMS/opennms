@@ -73,7 +73,7 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
         params.put("reportName", "bar");
         params.put("resourceId", "baz");
         sendRequest(PUT, "/ksc/0", params, 200);
-        
+
         final String xml = slurp(m_configFile);
         assertTrue(xml.contains("title=\"foo\""));
     }

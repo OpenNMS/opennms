@@ -2,6 +2,8 @@ package org.opennms.features.gwt.ksc.add.client.view;
 
 import java.util.List;
 
+import org.opennms.features.gwt.ksc.add.client.KscReport;
+
 import com.google.gwt.event.dom.client.KeyCodeEvent;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
@@ -20,6 +22,7 @@ public interface KscAddGraphView<T> extends IsWidget {
     Widget asWidget();
 
     String getTitle();
+    void setTitle(String defaultTitle);
 
     KscReport getSelectedReport();
     void select(KscReport report);
