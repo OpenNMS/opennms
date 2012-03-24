@@ -44,7 +44,7 @@ public class KscAddGraphPresenter implements Presenter, KscAddGraphView.Presente
         m_KscReports = kscReports;
         m_graphInfo = graphInfo;
 
-        m_addImage = new Image("plus.gif");
+        m_addImage = new Image("images/plus.gif");
         m_addImage.setAltText("Add this graph to a KSC report.");
         m_addImage.setTitle("Add this graph to a KSC report.");
     }
@@ -121,11 +121,9 @@ public class KscAddGraphPresenter implements Presenter, KscAddGraphView.Presente
             }
         };
 
-        GWT.log("adding resource '" + resourceId + "' from graph report '" + graphName + " to KSC report '" + kscReportName + "' (" + kscReportId + ") with title '" + graphTitle + "' and timespan '" + timeSpan + "'");
+        GWT.log("adding resource '" + resourceId + "' from graph report '" + graphName + "' to KSC report '" + kscReportName + "' (" + kscReportId + ") with title '" + graphTitle + "' and timespan '" + timeSpan + "'");
         m_reportService.addGraphToReport(callback, kscReportId, graphTitle, graphName, resourceId, timeSpan);
         m_mainPopup.hide();
-        m_view.setTitle("");
-        m_view.clearSelection();
     }
 
     @Override

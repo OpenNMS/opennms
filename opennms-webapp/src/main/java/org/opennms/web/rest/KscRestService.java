@@ -123,12 +123,14 @@ public class KscRestService extends OnmsRestService {
         @QueryParam("resourceId") final String resourceId,
         @QueryParam("timespan") final String timespan
     ) {
-	    if (kscReportId == null || title == null || reportName == null || resourceId == null) {
-	        throw getException(Status.BAD_REQUEST, "Invalid request, title, reportName, and resourceId cannot be null!");
+	    if (kscReportId == null || reportName == null || reportName == "" || resourceId == null || resourceId == "") {
+	        throw getException(Status.BAD_REQUEST, "Invalid request: reportName and resourceId cannot be empty!");
 	    }
 	    final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
 	    final Graph graph = new Graph();
-	    graph.setTitle(title);
+	    if (title != null) {
+	        graph.setTitle(title);
+	    }
 	    graph.setGraphtype(reportName);
 	    graph.setResourceId(resourceId);
 	    graph.setTimespan(timespan);

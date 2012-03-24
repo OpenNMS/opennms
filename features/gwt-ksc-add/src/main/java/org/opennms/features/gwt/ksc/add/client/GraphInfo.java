@@ -13,7 +13,7 @@ public final class GraphInfo {
 
     public GraphInfo(final Element elem) {
         // required
-        m_report               = elem.getAttribute("report");
+        m_report               = elem.getAttribute("reportName");
         m_resourceId           = elem.getAttribute("resourceId");
         m_timespan             = elem.getAttribute("timespan");
         if (m_report == null) {
