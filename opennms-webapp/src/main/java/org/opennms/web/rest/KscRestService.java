@@ -54,6 +54,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
@@ -121,7 +122,7 @@ public class KscRestService extends OnmsRestService {
         @QueryParam("title") final String title,
         @QueryParam("reportName") final String reportName,
         @QueryParam("resourceId") final String resourceId,
-        @QueryParam("timespan") final String timespan
+        @QueryParam("timespan") String timespan
     ) {
 	    if (kscReportId == null || reportName == null || reportName == "" || resourceId == null || resourceId == "") {
 	        throw getException(Status.BAD_REQUEST, "Invalid request: reportName and resourceId cannot be empty!");
@@ -131,6 +132,20 @@ public class KscRestService extends OnmsRestService {
 	    if (title != null) {
 	        graph.setTitle(title);
 	    }
+
+	    boolean found = false;
+	    for (final String valid : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
+	    	if (valid.equals(timespan)) {
+	    		found = true;
+	    		break;
+	    	}
+	    }
+
+	    if (!found) {
+	    	LogUtils.debugf(this, "invalid timespan ('%s'), setting to '7_day' instead.", timespan);
+	    	timespan = "7_day";
+	    }
+
 	    graph.setGraphtype(reportName);
 	    graph.setResourceId(resourceId);
 	    graph.setTimespan(timespan);
