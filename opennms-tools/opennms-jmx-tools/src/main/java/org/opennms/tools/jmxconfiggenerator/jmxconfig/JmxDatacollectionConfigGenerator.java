@@ -58,13 +58,14 @@ public class JmxDatacollectionConfigGenerator {
     private static HashMap<String, Integer> aliasMap = new HashMap<String, Integer>();
     private static ArrayList<String> aliasList = new ArrayList<String>();
     private static Rrd rrd = new Rrd();
-    private static MBeanServerConnection jmxServerConnection;
+    public static MBeanServerConnection jmxServerConnection = null;
 
     static {
 
         standardVmBeans.add("JMImplementation");
         standardVmBeans.add("com.sun.management");
         standardVmBeans.add("java.lang");
+        standardVmBeans.add("java.nio");
         standardVmBeans.add("java.util.logging");
 
         numbers.add("int");
@@ -99,19 +100,22 @@ public class JmxDatacollectionConfigGenerator {
         }
 
         try {
-            jmxServiceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + ":" + port + "/jmxrmi");
-            JMXConnector jmxConnector = null;
-            if (username != null && password != null) {
-                jmxConnector = JMXConnectorFactory.newJMXConnector(jmxServiceURL, null);
-                HashMap<String, String[]> env = new HashMap<String, String[]>();
-                String[] credentials = new String[]{username, password};
-                env.put("jmx.remote.credentials", credentials);
-                jmxConnector.connect(env);
-            } else {
-                jmxConnector = JMXConnectorFactory.connect(jmxServiceURL);
-                jmxConnector.connect();
+            if (jmxServerConnection == null) {
+                jmxServiceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + ":" + port + "/jmxrmi");
+                JMXConnector jmxConnector = null;
+                if (username != null && password != null) {
+                    jmxConnector = JMXConnectorFactory.newJMXConnector(jmxServiceURL, null);
+                    HashMap<String, String[]> env = new HashMap<String, String[]>();
+                    String[] credentials = new String[]{username, password};
+                    env.put("jmx.remote.credentials", credentials);
+                    jmxConnector.connect(env);
+                } else {
+                    jmxConnector = JMXConnectorFactory.connect(jmxServiceURL);
+                    jmxConnector.connect();
+                }
+                logger.error("jmxServerConnection: '{}'", jmxServerConnection);
+                jmxServerConnection = jmxConnector.getMBeanServerConnection();
             }
-            jmxServerConnection = jmxConnector.getMBeanServerConnection();
             logger.debug("count: " + jmxServerConnection.getMBeanCount());
             for (String domainName : jmxServerConnection.getDomains()) {
 
@@ -271,5 +275,13 @@ public class JmxDatacollectionConfigGenerator {
             aliasList.add(uniceAlias);
         }
         return uniceAlias;
+    }
+
+    protected static MBeanServerConnection getJmxServerConnection() {
+        return jmxServerConnection;
+    }
+
+    protected static void setJmxServerConnection(MBeanServerConnection jmxServerConnection) {
+        JmxDatacollectionConfigGenerator.jmxServerConnection = jmxServerConnection;
     }
 }

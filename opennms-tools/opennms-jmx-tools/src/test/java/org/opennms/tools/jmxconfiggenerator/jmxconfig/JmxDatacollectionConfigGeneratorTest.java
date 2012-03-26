@@ -26,8 +26,8 @@
 package org.opennms.tools.jmxconfiggenerator.jmxconfig;
 
 import java.io.IOException;
-import javax.management.AttributeNotFoundException;
-import javax.management.MBeanException;
+import java.lang.management.ManagementFactory;
+import javax.management.*;
 import org.junit.*;
 import org.opennms.tools.jmxconfiggenerator.graphs.SnmpGraphConfigGenerator;
 
@@ -36,6 +36,8 @@ import org.opennms.tools.jmxconfiggenerator.graphs.SnmpGraphConfigGenerator;
  * @author Markus Neumann <markus@opennms.com>
  */
 public class JmxDatacollectionConfigGeneratorTest {
+
+    JmxDatacollectionConfigGenerator jmxConfigGen;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -47,16 +49,29 @@ public class JmxDatacollectionConfigGeneratorTest {
 
     @Before
     public void setUp() throws Exception {
+        jmxConfigGen = new JmxDatacollectionConfigGenerator();
     }
 
     @After
     public void tearDown() throws Exception {
+        jmxConfigGen = null;
+    }
+
+    @Test
+    public void testGenerateJmxConfig() throws AttributeNotFoundException, MBeanException, MalformedObjectNameException, ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
+        MBeanServer platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
+        ObjectName objectName = new ObjectName("org.opennms.tools.jmxconfiggenerator.jmxconfig:type=JmxTest");
+        JmxTestMBean testMBean = new JmxTest();
+        platformMBeanServer.registerMBean(testMBean, objectName);
+        jmxConfigGen.setJmxServerConnection(platformMBeanServer);
+        jmxConfigGen.generateJmxConfig("testService", "localhost", "0000", null, null, true, "testOutFile.xml");
     }
 
     @Ignore
     @Test
-    public void testGenerateJmxConfig() throws AttributeNotFoundException, MBeanException {
-        JmxDatacollectionConfigGenerator.generateJmxConfig("cassandra", "localhost", "7199", null, null, true, "test.xml");
+    public void testGenerateJmxConfigCassandraLocal() throws AttributeNotFoundException, MBeanException {
+        jmxConfigGen.setJmxServerConnection(null);
+        jmxConfigGen.generateJmxConfig("cassandra", "localhost", "7199", null, null, true, "test.xml");
     }
 
     @Ignore
