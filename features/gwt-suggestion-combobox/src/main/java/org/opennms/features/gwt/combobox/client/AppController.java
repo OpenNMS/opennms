@@ -22,7 +22,7 @@ public class AppController implements Presenter {
     @Override
     public void go(HasWidgets container) {
         m_container = container;
-        
+
         if(m_suggestionComboboxView == null) {
             m_suggestionComboboxView = new SuggestionComboboxViewImpl();
         }
