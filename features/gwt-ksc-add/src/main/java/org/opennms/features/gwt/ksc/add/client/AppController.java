@@ -34,7 +34,7 @@ public class AppController implements Presenter {
         if (m_popupPanel == null) {
             m_popupPanel = new PopupPanel();
             m_popupPanel.setWidth("300px");
-            m_popupPanel.setHeight("54px");
+            m_popupPanel.setHeight("79px");
             m_popupPanel.add(m_addGraphView);
             m_popupPanel.setAutoHideEnabled(true);
             m_popupPanel.setAnimationEnabled(false);

@@ -103,7 +103,7 @@ public class KscAddGraphViewImpl extends Composite implements KscAddGraphView<Ks
     public KscAddGraphViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
 
-        m_layoutPanel.setSize("100%", "50px");
+        m_layoutPanel.setSize("100%", "75px");
         m_textBox.addKeyDownHandler(new KeyDownHandler() {
             @Override
             public void onKeyDown(final KeyDownEvent event) {
@@ -164,7 +164,7 @@ public class KscAddGraphViewImpl extends Composite implements KscAddGraphView<Ks
             @Override
             public void setPosition(final int offsetWidth, final int offsetHeight) {
                 m_popupPanel.setWidth((getOffsetWidth() - 5) + "px");
-                m_popupPanel.setPopupPosition(getAbsoluteLeft(), getAbsoluteTop() + 49);
+                m_popupPanel.setPopupPosition(getAbsoluteLeft(), getAbsoluteTop() + 74);
             }
         };
         
