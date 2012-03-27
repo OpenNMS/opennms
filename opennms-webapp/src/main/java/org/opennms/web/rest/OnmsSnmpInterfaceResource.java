@@ -101,21 +101,26 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsSnmpInterfaceList getSnmpInterfaces(@PathParam("nodeCriteria") final String nodeCriteria) {
-        final OnmsNode node = m_nodeDao.get(nodeCriteria);
-        
-        final MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
-        
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsSnmpInterface.class);
-        builder.ne("collect", "D");
-        builder.limit(20);
-        applyQueryFilters(params, builder);
-        builder.eq("node.id", node.getId());
-        
-        final OnmsSnmpInterfaceList snmpList = new OnmsSnmpInterfaceList(m_snmpInterfaceDao.findMatching(builder.toCriteria()));
-        
-        snmpList.setTotalCount(m_snmpInterfaceDao.countMatching(builder.count().toCriteria()));
-
-        return snmpList;
+        getReadLock().lock();
+        try {
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            
+            final MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
+            
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsSnmpInterface.class);
+            builder.ne("collect", "D");
+            builder.limit(20);
+            applyQueryFilters(params, builder);
+            builder.eq("node.id", node.getId());
+            
+            final OnmsSnmpInterfaceList snmpList = new OnmsSnmpInterfaceList(m_snmpInterfaceDao.findMatching(builder.toCriteria()));
+            
+            snmpList.setTotalCount(m_snmpInterfaceDao.countMatching(builder.count().toCriteria()));
+    
+            return snmpList;
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -129,7 +134,12 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ifIndex}")
     public OnmsEntity getSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex) {
-        return m_nodeDao.get(nodeCriteria).getSnmpInterfaceWithIfIndex(ifIndex);
+        getReadLock().lock();
+        try {
+            return m_nodeDao.get(nodeCriteria).getSnmpInterfaceWithIfIndex(ifIndex);
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
     /**
@@ -142,19 +152,25 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, final OnmsSnmpInterface snmpInterface) {
-        final OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) throw getException(Status.BAD_REQUEST, "addSnmpInterface: can't find node " + nodeCriteria);
-        if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "addSnmpInterface: SNMP interface object cannot be null");
+        getWriteLock().lock();
         
-        LogUtils.debugf(this, "addSnmpInterface: adding interface %s", snmpInterface);
-        node.addSnmpInterface(snmpInterface);
-        if (snmpInterface.getPrimaryIpInterface() != null) {
-            final OnmsIpInterface iface = snmpInterface.getPrimaryIpInterface();
-            iface.setSnmpInterface(snmpInterface);
-            // TODO Add important events here
+        try {
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) throw getException(Status.BAD_REQUEST, "addSnmpInterface: can't find node " + nodeCriteria);
+            if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "addSnmpInterface: SNMP interface object cannot be null");
+            
+            LogUtils.debugf(this, "addSnmpInterface: adding interface %s", snmpInterface);
+            node.addSnmpInterface(snmpInterface);
+            if (snmpInterface.getPrimaryIpInterface() != null) {
+                final OnmsIpInterface iface = snmpInterface.getPrimaryIpInterface();
+                iface.setSnmpInterface(snmpInterface);
+                // TODO Add important events here
+            }
+            m_snmpInterfaceDao.save(snmpInterface);
+            return Response.ok().build();
+        } finally {
+            getWriteLock().unlock();
         }
-        m_snmpInterfaceDao.save(snmpInterface);
-        return Response.ok().build();
     }
     
     /**
@@ -167,17 +183,23 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @DELETE
     @Path("{ifIndex}")
     public Response deleteSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex) {
-        final OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
+        getWriteLock().lock();
         
-        final OnmsEntity snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
-        if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
-
-        LogUtils.debugf(this, "deletSnmpInterface: deleting interface with ifIndex %d from node %s", ifIndex, nodeCriteria);
-        node.getSnmpInterfaces().remove(snmpInterface);
-        m_nodeDao.saveOrUpdate(node);
-        // TODO Add important events here
-        return Response.ok().build();
+        try {
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
+            
+            final OnmsEntity snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
+            if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
+    
+            LogUtils.debugf(this, "deletSnmpInterface: deleting interface with ifIndex %d from node %s", ifIndex, nodeCriteria);
+            node.getSnmpInterfaces().remove(snmpInterface);
+            m_nodeDao.saveOrUpdate(node);
+            // TODO Add important events here
+            return Response.ok().build();
+        } finally {
+            getWriteLock().unlock();
+        }
     }
     
     /**
@@ -192,50 +214,56 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ifIndex}")
     public Response updateSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex, final MultivaluedMapImpl params) {
-        final OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
-        if (ifIndex < 0) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: invalid ifIndex specified for SNMP interface on node " + node.getId() + ": " + ifIndex);
-
-        final OnmsSnmpInterface snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
-        if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
-
-        LogUtils.debugf(this, "updateSnmpInterface: updating SNMP interface %s", snmpInterface);
-
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(snmpInterface);
-        for(final String key : params.keySet()) {
-            if (wrapper.isWritableProperty(key)) {
-                final String stringValue = params.getFirst(key);
-                final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
-                wrapper.setPropertyValue(key, value);
-            }
-        }
+        getWriteLock().lock();
         
-        Event e = null;
-        if (params.containsKey("collect")) {
-            // we've updated the collection flag so we need to send an event to redo collection
-            final EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "OpenNMS.Webapp");
-            bldr.setNode(node);
-            // Bug NMS-4432 says that sometimes the primary SNMP interface is null
-            // so we need to check for that before we set the interface
-            final OnmsIpInterface iface = node.getPrimaryInterface();
-            if (iface == null) {
-                LogUtils.warnf(this, "updateSnmpInterface: Cannot send %s event because node %d has no primary SNMP interface", EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, node.getId());
-            } else {
-                bldr.setInterface(iface.getIpAddress());
-                e = bldr.getEvent();
+        try {
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
+            if (ifIndex < 0) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: invalid ifIndex specified for SNMP interface on node " + node.getId() + ": " + ifIndex);
+    
+            final OnmsSnmpInterface snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
+            if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
+    
+            LogUtils.debugf(this, "updateSnmpInterface: updating SNMP interface %s", snmpInterface);
+    
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(snmpInterface);
+            for(final String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    final String stringValue = params.getFirst(key);
+                    final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                }
             }
-        }
-        LogUtils.debugf(this, "updateSnmpInterface: SNMP interface %s updated", snmpInterface);
-        m_snmpInterfaceDao.saveOrUpdate(snmpInterface);
-        
-        if (e != null) {
-            try {
-                m_eventProxy.send(e);
-            } catch (final EventProxyException ex) {
-                throw getException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event: "+ex.getMessage());
+            
+            Event e = null;
+            if (params.containsKey("collect")) {
+                // we've updated the collection flag so we need to send an event to redo collection
+                final EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "OpenNMS.Webapp");
+                bldr.setNode(node);
+                // Bug NMS-4432 says that sometimes the primary SNMP interface is null
+                // so we need to check for that before we set the interface
+                final OnmsIpInterface iface = node.getPrimaryInterface();
+                if (iface == null) {
+                    LogUtils.warnf(this, "updateSnmpInterface: Cannot send %s event because node %d has no primary SNMP interface", EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, node.getId());
+                } else {
+                    bldr.setInterface(iface.getIpAddress());
+                    e = bldr.getEvent();
+                }
             }
+            LogUtils.debugf(this, "updateSnmpInterface: SNMP interface %s updated", snmpInterface);
+            m_snmpInterfaceDao.saveOrUpdate(snmpInterface);
+            
+            if (e != null) {
+                try {
+                    m_eventProxy.send(e);
+                } catch (final EventProxyException ex) {
+                    throw getException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event: "+ex.getMessage());
+                }
+            }
+            return Response.ok().build();
+        } finally {
+            getWriteLock().unlock();
         }
-        return Response.ok().build();
     }
 
 }

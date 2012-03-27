@@ -108,12 +108,17 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ipAddr}")
     public SnmpInfo getSnmpInfo(@PathParam("ipAddr") String ipAddr) {
-        final InetAddress addr = InetAddressUtils.addr(ipAddr);
-        if (addr == null) {
-            throw new WebApplicationException(Response.serverError().build());
+        getReadLock().lock();
+        try {
+            final InetAddress addr = InetAddressUtils.addr(ipAddr);
+            if (addr == null) {
+                throw new WebApplicationException(Response.serverError().build());
+            }
+    		SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(addr);
+            return new SnmpInfo(config);
+        } finally {
+            getReadLock().unlock();
         }
-		SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(addr);
-        return new SnmpInfo(config);
     }
 
     /**
@@ -127,6 +132,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_XML)
     @Path("{ipAddr}")
     public Response setSnmpInfo(@PathParam("ipAddr") final String ipAddr, final SnmpInfo snmpInfo) {
+        getWriteLock().lock();
         try {
         	final SnmpEventInfo eventInfo = snmpInfo.createEventInfo(ipAddr);
             m_snmpPeerFactory.define(eventInfo);
@@ -135,8 +141,9 @@ public class SnmpConfigRestService extends OnmsRestService {
             return Response.ok().build();
         } catch (final Throwable e) {
             return Response.serverError().build();
+        } finally {
+            getWriteLock().unlock();
         }
-        
     }
    
     /**
@@ -151,6 +158,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
     public Response updateInterface(@PathParam("ipAddr") final String ipAddress, final MultivaluedMapImpl params) {
+        getWriteLock().lock();
         try {
         	final SnmpInfo info = new SnmpInfo();
             setProperties(params, info);
@@ -160,8 +168,9 @@ public class SnmpConfigRestService extends OnmsRestService {
             return Response.ok().build();
         } catch (final Throwable e) {
             return Response.serverError().build();
+        } finally {
+            getWriteLock().unlock();
         }
     }
-
 
 }
