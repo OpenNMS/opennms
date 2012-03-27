@@ -54,12 +54,10 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-    <!-- TODO: add JSR303 validation when marshalling/unmarshalling
     <dependency>
       <groupId>org.wicketstuff</groupId>
       <artifactId>jsr303</artifactId>
       <version>1.4.9.2</version>
     </dependency>
-    -->
   </dependencies>
 </project>
