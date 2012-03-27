@@ -36,6 +36,8 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -51,6 +53,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.StorageStrategy;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
@@ -261,9 +264,15 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         Map<String, GenericIndexResourceType> resourceTypes;
         resourceTypes = new LinkedHashMap<String, GenericIndexResourceType>();
 
-        Map<String, org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
-            m_dataCollectionConfigDao.getConfiguredResourceTypes();
-        for (org.opennms.netmgt.config.datacollection.ResourceType resourceType : configuredResourceTypes.values()) {
+        Map<String, ResourceType> configuredResourceTypes = m_dataCollectionConfigDao.getConfiguredResourceTypes();
+        List<ResourceType> resourceTypeList = new LinkedList<ResourceType>(configuredResourceTypes.values());
+        Collections.sort(resourceTypeList, new Comparator<ResourceType>() {
+            @Override
+            public int compare(ResourceType r0, ResourceType r1) {
+                return r0.getLabel().compareTo(r1.getLabel());
+            }
+        });
+        for (ResourceType resourceType : resourceTypeList) {
             String className = resourceType.getStorageStrategy().getClazz();
             Class<?> cinst;
             try {
