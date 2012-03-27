@@ -85,29 +85,40 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public AlarmStatistics getStats() {
-        return getStats(null);
+        getReadLock().lock();
+        try {
+            return getStats(null);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     @GET
     @Path("/by-severity")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public AlarmStatisticsBySeverity getStatsForEachSeverity(@QueryParam("severities") final String severitiesString) {
-        final AlarmStatisticsBySeverity stats = new AlarmStatisticsBySeverity();
+        getReadLock().lock();
 
-        String[] severities = StringUtils.split(severitiesString, ",");
-        if (severities == null || severities.length == 0) {
-            severities = OnmsSeverity.names().toArray(EMPTY_STRING_ARRAY);
+        try {
+            final AlarmStatisticsBySeverity stats = new AlarmStatisticsBySeverity();
+    
+            String[] severities = StringUtils.split(severitiesString, ",");
+            if (severities == null || severities.length == 0) {
+                severities = OnmsSeverity.names().toArray(EMPTY_STRING_ARRAY);
+            }
+    
+            for (final String severityName : severities) {
+                final OnmsSeverity severity = OnmsSeverity.get(severityName);
+    
+                final AlarmStatistics stat = getStats(severity);
+                stat.setSeverity(severity);
+                stats.add(stat);
+            }
+            
+            return stats;
+        } finally {
+            getReadLock().unlock();
         }
-
-        for (final String severityName : severities) {
-            final OnmsSeverity severity = OnmsSeverity.get(severityName);
-
-            final AlarmStatistics stat = getStats(severity);
-            stat.setSeverity(severity);
-            stats.add(stat);
-        }
-        
-        return stats;
     }
     
     protected AlarmStatistics getStats(final OnmsSeverity severity) {

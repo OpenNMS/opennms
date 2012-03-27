@@ -86,10 +86,16 @@ public class OnmsMapRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsMapList getMaps() {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsMap.class);
-        applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
-        builder.orderBy("lastModifiedTime").desc();
-        return new OnmsMapList(m_mapDao.findMatching(builder.toCriteria()));
+        getReadLock().lock();
+        
+        try {
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsMap.class);
+            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+            builder.orderBy("lastModifiedTime").desc();
+            return new OnmsMapList(m_mapDao.findMatching(builder.toCriteria()));
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -102,7 +108,12 @@ public class OnmsMapRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{mapId}")
     public OnmsMap getMap(@PathParam("mapId") final int mapId) {
-        return m_mapDao.get(mapId);
+        getReadLock().lock();
+        try {
+            return m_mapDao.get(mapId);
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -114,9 +125,14 @@ public class OnmsMapRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addMap(final OnmsMap map) {
-        LogUtils.debugf(this, "addMap: Adding map %s", map);
-        m_mapDao.save(map);
-        return Response.ok(map).build();
+        getWriteLock().lock();
+        try {
+            LogUtils.debugf(this, "addMap: Adding map %s", map);
+            m_mapDao.save(map);
+            return Response.ok(map).build();
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
@@ -128,11 +144,16 @@ public class OnmsMapRestService extends OnmsRestService {
     @DELETE
     @Path("{mapId}")
     public Response deleteMap(@PathParam("mapId") final int mapId) {
-        final OnmsMap map = m_mapDao.get(mapId);
-        if (map == null) throw getException(Response.Status.BAD_REQUEST, "deleteMap: Can't find map with id " + mapId);
-        LogUtils.debugf(this, "deleteMap: deleting map %d", mapId);
-        m_mapDao.delete(map);
-        return Response.ok().build();
+        getWriteLock().lock();
+        try {
+            final OnmsMap map = m_mapDao.get(mapId);
+            if (map == null) throw getException(Response.Status.BAD_REQUEST, "deleteMap: Can't find map with id " + mapId);
+            LogUtils.debugf(this, "deleteMap: deleting map %d", mapId);
+            m_mapDao.delete(map);
+            return Response.ok().build();
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
@@ -146,23 +167,29 @@ public class OnmsMapRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{mapId}")
     public Response updateMap(@PathParam("mapId") final int mapId, final MultivaluedMapImpl params) {
-        final OnmsMap map = m_mapDao.get(mapId);
-        if (map == null) throw getException(Response.Status.BAD_REQUEST, "updateMap: Can't find map with id " + mapId);
-
-        LogUtils.debugf(this, "updateMap: updating map %s", map);
-
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(map);
-        for(final String key : params.keySet()) {
-            if (wrapper.isWritableProperty(key)) {
-                final String stringValue = params.getFirst(key);
-				final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
-                wrapper.setPropertyValue(key, value);
+        getWriteLock().lock();
+        
+        try {
+            final OnmsMap map = m_mapDao.get(mapId);
+            if (map == null) throw getException(Response.Status.BAD_REQUEST, "updateMap: Can't find map with id " + mapId);
+    
+            LogUtils.debugf(this, "updateMap: updating map %s", map);
+    
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(map);
+            for(final String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    final String stringValue = params.getFirst(key);
+    				final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                }
             }
+    
+            LogUtils.debugf(this, "updateMap: map %s updated", map);
+            m_mapDao.saveOrUpdate(map);
+            return Response.ok(map).build();
+        } finally {
+            getWriteLock().unlock();
         }
-
-        LogUtils.debugf(this, "updateMap: map %s updated", map);
-        m_mapDao.saveOrUpdate(map);
-        return Response.ok(map).build();
     }
 
     /**
@@ -172,6 +199,11 @@ public class OnmsMapRestService extends OnmsRestService {
      */
     @Path("{mapId}/mapElements")
     public OnmsMapElementResource getMapElementResource() {
-        return m_context.getResource(OnmsMapElementResource.class);
+        getReadLock().lock();
+        try {
+            return m_context.getResource(OnmsMapElementResource.class);
+        } finally {
+            getReadLock().unlock();
+        }
     }
 }
