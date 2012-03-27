@@ -9,11 +9,13 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -41,12 +43,15 @@ import org.springframework.test.context.ContextConfiguration;
 })
         
 /* This test is for bug 3778 */
-@JUnitTemporaryDatabase()
+@JUnitTemporaryDatabase(reuseDatabase=true, dirtiesContext=true)
 @JUnitConfigurationEnvironment()
 public class InvalidRequisitionDataTest {
     
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private EventDao m_eventDao;
     
     @Autowired
     private Provisioner m_provisioner;
@@ -67,6 +72,9 @@ public class InvalidRequisitionDataTest {
             m_nodeDao.delete(node);
         }
         m_nodeDao.flush();
+        for (final OnmsEvent event : m_eventDao.findAll()) {
+        	m_eventDao.delete(event);
+        }
 
         MockLogAppender.setupLogging(true, "DEBUG");
         m_anticipator = new EventAnticipator();
