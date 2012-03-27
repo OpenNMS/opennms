@@ -120,7 +120,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         double[] values = new double[printLines.length];
         
         for (int i = 0; i < printLines.length; i++) {
-            if ("nan".equals(printLines[i])) {
+            if (printLines[i].endsWith("nan")) {
                 values[i] = Double.NaN;
             } else {
                 try {
