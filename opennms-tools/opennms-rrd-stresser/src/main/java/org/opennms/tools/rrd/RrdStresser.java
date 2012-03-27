@@ -170,7 +170,10 @@ public class RrdStresser {
 
     public static void main(final String[] args) throws Exception {
     	
-    	//System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+        String strategy = System.getProperty("org.opennms.rrd.strategyClass");
+        if (strategy == null) {
+            System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+        }
     	
         printHeader();
         print("Starting demo at " + new Date() + " using " + System.getProperty("org.opennms.rrd.strategyClass"));
