@@ -1,0 +1,35 @@
+package org.opennms.features.vaadin.topology.gwt.client;
+
+public class Edge{
+	Vertex m_source;
+	Vertex m_target;
+	
+	public Edge(Vertex source, Vertex target){
+		m_source = source;
+		m_target = target;
+	}
+	
+	public Vertex getSource(){
+		return m_source;
+	}
+	
+	public int getX1(){
+		return getSource().getX();
+	}
+	
+	public int getX2(){
+		return getTarget().getX();
+	}
+	
+	public int getY1(){
+		return getSource().getY();
+	}
+	
+	public int getY2(){
+		return getTarget().getY();
+	}
+	
+	public Vertex getTarget(){
+		return m_target;
+	}
+}

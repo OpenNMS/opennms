@@ -1,5 +1,11 @@
 package org.opennms.features.vaadin.topology.gwt.client;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
 
 import com.google.gwt.core.client.GWT;
@@ -19,65 +25,7 @@ import com.vaadin.terminal.gwt.client.UIDL;
 
 public class VTopologyComponent extends Composite implements Paintable {
 	
-	public static class Node{
-		int m_x;
-		int m_y;
-		
-		public Node(int x, int y){
-			m_x = x;
-			m_y = y;
-		}
-		
-		public int getX() {
-			return m_x;
-		};
-		
-		public int getY(){
-			return m_y;
-		}
-	};
-	
-	public static class Link{
-		Node m_source;
-		Node m_target;
-		
-		public Link(Node source, Node target){
-			m_source = source;
-			m_target = target;
-		}
-		
-		public Node getSource(){
-			return m_source;
-		}
-		
-		public Node getTarget(){
-			return m_target;
-		}
-	};
-	
-	public static class Graph{
-		private Node[] m_nodes;
-		private Link[] m_links;
-		
-		public Graph(){
-			m_nodes = new Node[] {new Node(50,25), new Node(50, 50), new Node(33, 75), new Node(67, 75) };
-			m_links = new Link[] {new Link(m_nodes[0], m_nodes[1]), new Link(m_nodes[1], m_nodes[2]), new Link(m_nodes[1], m_nodes[3])};
-		};
-		public Graph(Node[] nodes, Link[] links){
-			m_nodes = nodes;
-			m_links = links;
-		}
-		
-		public Node[] getNodes(){
-			return m_nodes;
-		}
-		
-		public Link[] getLinks(){
-			return m_links;
-		}
-	}
-	
-    private static VTopologyComponentUiBinder uiBinder = GWT
+	private static VTopologyComponentUiBinder uiBinder = GWT
             .create(VTopologyComponentUiBinder.class);
 
     interface VTopologyComponentUiBinder extends
@@ -91,6 +39,7 @@ public class VTopologyComponent extends Composite implements Paintable {
     private int m_height;
     private Graph m_graph;
 	private D3 m_nodeGroup;
+	private double m_scale;
     
     public VTopologyComponent() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -107,9 +56,9 @@ public class VTopologyComponent extends Composite implements Paintable {
         m_width = 300;
         m_height = 300;
         m_svg = d3.select("#chart-2").append("svg").attr("width", 300).attr("height", 200);
-        m_nodeGroup = m_svg.append("g").attr("transform", "scale(3)");
+        m_nodeGroup = m_svg.append("g").attr("transform", "scale(1)");
         
-        drawGraph(m_graph);
+        //drawGraph(m_graph);
 //        m_runButton.addClickHandler(new ClickHandler() {
 //
 //            public void onClick(ClickEvent event) {
@@ -123,8 +72,18 @@ public class VTopologyComponent extends Composite implements Paintable {
     }
 
     private void drawGraph(Graph graph) {
-		D3 circles = m_nodeGroup.selectAll(".little")
-						.data(graph.getNodes())
+		D3 lines = m_nodeGroup.selectAll("line")
+					.data(graph.getEdges())
+				.enter().append("line")
+					.attr("x1", getX1())
+					.attr("x2", getX2())
+					.attr("y1", getY1())
+					.attr("y2", getY2())
+					.style("stroke", "#ccc");
+				
+    	
+    	D3 circles = m_nodeGroup.selectAll(".little")
+						.data(graph.getVertices())
 						.enter()
 						.append("circle")
 						.attr("class", ".little")
@@ -132,24 +91,55 @@ public class VTopologyComponent extends Composite implements Paintable {
 						.attr("cy", getY())
 						.attr("r", 9);
 		
-		
-		
+			
 		
 						
 		
 	}
     
-    private static native JavaScriptObject getX() /*-{
+    private static native JavaScriptObject getX1() /*-{
+		
+		return function(d, i){
+			var retVal = d.@org.opennms.features.vaadin.topology.gwt.client.Edge::getX1()();
+			return retVal;
+		};
+	}-*/;
+    
+    private static native JavaScriptObject getX2() /*-{
+	
+		return function(d, i){
+			var retVal = d.@org.opennms.features.vaadin.topology.gwt.client.Edge::getX2()();
+			return retVal;
+		};
+	}-*/;
+    
+    private static native JavaScriptObject getY1() /*-{
+	
+		return function(d, i){
+			var retVal = d.@org.opennms.features.vaadin.topology.gwt.client.Edge::getY1()();
+			return retVal;
+		};
+	}-*/;
+    
+    private static native JavaScriptObject getY2() /*-{
+	
+		return function(d, i){
+			var retVal = d.@org.opennms.features.vaadin.topology.gwt.client.Edge::getY2()();
+			return retVal;
+		};
+	}-*/;
+
+	private static native JavaScriptObject getX() /*-{
     
     	return function(d, i){
-    	     var retVal = d.@org.opennms.features.vaadin.topology.gwt.client.VTopologyComponent.Node::getX()();
+    	     var retVal = d.@org.opennms.features.vaadin.topology.gwt.client.Vertex::getX()();
     	     return retVal;
     	};
     }-*/;
     
     private static native JavaScriptObject getY() /*-{
     	return function(d, i){
-    		return d.@org.opennms.features.vaadin.topology.gwt.client.VTopologyComponent.Node::getY()();
+    		return d.@org.opennms.features.vaadin.topology.gwt.client.Vertex::getY()();
     	};
     }-*/;
     
@@ -229,7 +219,57 @@ public class VTopologyComponent extends Composite implements Paintable {
         m_client = client;
         m_paintableId = uidl.getId();
         
-        //drawCirclesJS(uidl.getIntArrayAttribute("dataArray"), m_svg, m_width, m_height);
+        setScale(uidl.getDoubleAttribute("scale"));
+        UIDL graph = uidl.getChildByTagName("graph");
+        Iterator<?> children = graph.getChildIterator();
+        
+        List<Vertex> vertices = new ArrayList<Vertex>();
+        List<Edge> edges = new ArrayList<Edge>();
+        Map<Integer, Vertex> idMap = new HashMap<Integer, Vertex>();
+        while(children.hasNext()) {
+        	UIDL child = (UIDL) children.next();
+        	
+        	if(child.getTag().equals("vertex")) {
+        		
+        		Vertex vertex = new Vertex(child.getIntAttribute("id"), child.getIntAttribute("x"), child.getIntAttribute("y"));
+				vertices.add(vertex);
+        		idMap.put(vertex.getId(), vertex);
+        		
+        	}else if(child.getTag().equals("edge")) {
+        		edges.add(new Edge( idMap.get(child.getIntAttribute("source")), idMap.get( child.getIntAttribute("target")) ));
+        	}
+        	
+        }
+        
+        Graph graphConverted = new Graph(vertices.toArray(new Vertex[0]), edges.toArray(new Edge[0]));
+        setGraph(graphConverted);
+        
     }
+
+	private void setScale(double scale) {
+		if(m_scale != scale) {
+			m_scale = scale;
+			repaintScale();
+		}
+		
+	}
+
+	private void repaintScale() {
+		updateScale(m_scale);
+	}
+
+	private void setGraph(Graph graph) {
+		m_graph = graph;
+		repaintGraph();
+	}
+
+	private void repaintGraph() {
+		drawGraph(m_graph);
+	}
+
+	private void updateScale(double scale) {
+		m_nodeGroup.transition().duration(1000).attr("transform", "scale(" + scale + ")");
+		
+	}
 
 }
