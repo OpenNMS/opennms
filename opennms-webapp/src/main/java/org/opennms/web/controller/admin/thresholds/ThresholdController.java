@@ -689,6 +689,7 @@ public class ThresholdController extends AbstractController implements Initializ
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         //Check all properties set (see example if needed)
         /*if (m_resourceService == null) {

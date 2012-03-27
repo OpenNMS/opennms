@@ -131,6 +131,7 @@ public class RegistrationListenerBean<T> implements RegistrationListener<T>, Ini
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_serviceInterface, "serviceInterface must not be null");
         Assert.notNull(m_target, "target may not be null");

@@ -94,6 +94,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     protected void doAfterPropertiesSet() throws Exception {
         Assert.notNull(this.port, "A port number must be specified");
         Assert.notNull(this.timeout, "A timeout must be specified");

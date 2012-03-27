@@ -137,6 +137,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.notNull(m_defaultExecutor, "defaultExecutor must be set");
         

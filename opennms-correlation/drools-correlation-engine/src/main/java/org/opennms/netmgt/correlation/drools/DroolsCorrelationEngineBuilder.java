@@ -109,6 +109,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         assertSet(m_configDirectory, "configurationDirectory");
         assertSet(m_eventIpcManager, "eventIpcManager");

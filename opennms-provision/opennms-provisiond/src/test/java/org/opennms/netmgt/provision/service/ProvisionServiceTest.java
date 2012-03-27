@@ -202,6 +202,7 @@ public class ProvisionServiceTest implements InitializingBean {
         MockLogAppender.setupLogging();
     }
 
+    @Override
     public void afterPropertiesSet() {
         Assert.assertNotNull(m_provService);
     }

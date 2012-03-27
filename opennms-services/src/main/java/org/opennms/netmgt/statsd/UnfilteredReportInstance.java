@@ -229,6 +229,7 @@ public class UnfilteredReportInstance extends AbstractReportInstance implements 
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         super.afterPropertiesSet();
         

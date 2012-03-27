@@ -72,6 +72,7 @@ public class MultiEngineBuilder implements InitializingBean {
     CorrelationEngineRegistrar m_correlator;
     EventIpcManager m_eventIpcManager;
     
+    @Override
     public void afterPropertiesSet() throws Exception {
         MyEngine engine = new MyEngine();
         engine.setEventIpcManager(m_eventIpcManager);

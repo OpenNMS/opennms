@@ -66,6 +66,7 @@ public class ImporterServiceTest implements InitializingBean {
     @Autowired
     private ImporterService m_daemon;
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_eventIpcMgr);
         assertNotNull(m_daemon);

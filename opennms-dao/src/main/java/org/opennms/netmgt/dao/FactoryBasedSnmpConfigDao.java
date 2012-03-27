@@ -58,6 +58,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         SnmpPeerFactory.init();
     }

@@ -2295,6 +2295,7 @@ public class BroadcastEventProcessor implements InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_suspectEventProcessorFactory != null, "The suspectEventProcessor must be set");
         Assert.state(m_scheduler != null, "The schedule must be set");

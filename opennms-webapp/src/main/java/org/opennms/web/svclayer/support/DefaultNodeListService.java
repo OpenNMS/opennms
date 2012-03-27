@@ -453,6 +453,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_nodeDao != null, "nodeDao property cannot be null");
         Assert.state(m_categoryDao != null, "categoryDao property cannot be null");

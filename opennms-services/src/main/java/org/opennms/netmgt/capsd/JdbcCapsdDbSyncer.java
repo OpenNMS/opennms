@@ -1174,6 +1174,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_jdbcTemplate != null, "property jdbcTemplate must be set to a non-null value");
         Assert.state(m_capsdConfig != null, "property capsdConfig must be set to a non-null value");

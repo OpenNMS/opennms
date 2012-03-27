@@ -279,6 +279,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_groupManager != null, "groupManager property must be set and be non-null");
     }

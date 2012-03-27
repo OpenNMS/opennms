@@ -111,6 +111,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceDao != null, "resourceDao property is not set");
         Assert.state(m_graphDao != null, "graphDao property is not set");

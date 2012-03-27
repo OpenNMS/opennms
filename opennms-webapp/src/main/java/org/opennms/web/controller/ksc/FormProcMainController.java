@@ -128,6 +128,7 @@ public class FormProcMainController extends AbstractController implements Initia
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
     }

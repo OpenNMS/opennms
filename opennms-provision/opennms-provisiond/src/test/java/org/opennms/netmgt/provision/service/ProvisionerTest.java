@@ -191,6 +191,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
 	private MockSnmpDataProvider m_mockSnmpDataProvider;
 
+    @Override
     public void afterPropertiesSet() {
         assertNotNull(m_mockEventIpcManager);
         assertNotNull(m_provisioner);

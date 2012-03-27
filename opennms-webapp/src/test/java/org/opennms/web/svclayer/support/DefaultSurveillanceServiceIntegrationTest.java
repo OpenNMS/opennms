@@ -66,6 +66,7 @@ public class DefaultSurveillanceServiceIntegrationTest implements InitializingBe
     @Autowired
     private DatabasePopulator m_databasePopulator; 
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_surveillanceService);
         assertNotNull(m_databasePopulator);

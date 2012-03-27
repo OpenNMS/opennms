@@ -204,6 +204,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      *
      * @throws java.io.IOException if any.
      */
+    @Override
     public void afterPropertiesSet() throws IOException {
         if (m_rrdDirectory == null) {
             throw new IllegalStateException("rrdDirectory property has not been set");

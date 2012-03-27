@@ -199,6 +199,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.notNull(m_locationDao);
         Assert.notNull(m_applicationDao);

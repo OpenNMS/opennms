@@ -89,6 +89,7 @@ public class DatabaseReportPersister implements ReportPersister, InitializingBea
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_statisticsReportDao != null, "property statisticsReportDao must be set to a non-null value");
         Assert.state(m_resourceReferenceDao != null, "property resourceReferenceDao must be set to a non-null value");

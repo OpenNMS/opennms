@@ -198,6 +198,7 @@ public class FormProcReportController extends AbstractController implements Init
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
         Assert.state(m_kscReportService != null, "property kscReportService must be set");

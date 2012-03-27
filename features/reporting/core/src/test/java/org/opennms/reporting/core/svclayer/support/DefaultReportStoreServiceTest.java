@@ -76,6 +76,7 @@ public class DefaultReportStoreServiceTest implements InitializingBean {
         System.setProperty("opennms.home", "src/test/resources");
     }
     
+    @Override
     public void afterPropertiesSet() {
         Assert.assertNotNull(m_reportStoreService);
         Assert.assertNotNull(m_reportCatalogDao);

@@ -322,6 +322,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
      *
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public void afterPropertiesSet() throws SQLException {
         Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
         Assert.state(m_dataSource != null, "property dataSource must be set");

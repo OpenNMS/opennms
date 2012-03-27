@@ -107,6 +107,7 @@ public class WebOutageRepositoryFilterTest implements InitializingBean {
         m_dbPopulator.getOutageDao().flush();
     }
     
+    @Override
     public void afterPropertiesSet() {
         assertNotNull(m_appContext);
         assertNotNull(m_dbPopulator);

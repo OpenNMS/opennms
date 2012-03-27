@@ -78,6 +78,7 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
      *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_rrdDao != null, "property rrdDao must be set to a non-null value");
         Assert.state(m_consolidationFunction != null, "property consolidationFunction must be set to a non-null value");

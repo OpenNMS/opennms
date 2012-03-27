@@ -69,6 +69,7 @@ public class ReportController extends AbstractCommandController implements Initi
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_statisticsReportService != null, "property statisticsReportService must be set to a non-null value");
         Assert.state(m_successView != null, "property successView must be set to a non-null value");

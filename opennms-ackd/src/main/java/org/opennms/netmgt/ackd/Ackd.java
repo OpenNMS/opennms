@@ -456,6 +456,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
     }
 
