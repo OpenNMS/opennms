@@ -40,7 +40,7 @@ import net.jradius.client.auth.RadiusAuthenticator;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 /**
  */
