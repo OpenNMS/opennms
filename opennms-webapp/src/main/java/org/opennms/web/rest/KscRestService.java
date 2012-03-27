@@ -90,9 +90,15 @@ public class KscRestService extends OnmsRestService {
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Transactional
     public KscReportCollection getReports() throws ParseException {
-        final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportList());
-        reports.setTotalCount(reports.size());
-        return reports;
+        getReadLock().lock();
+
+        try {
+            final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportList());
+            reports.setTotalCount(reports.size());
+            return reports;
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
 	@GET
@@ -100,10 +106,16 @@ public class KscRestService extends OnmsRestService {
 	@Path("{reportId}")
 	@Transactional
 	public KscReport getReport(@PathParam("reportId") final Integer reportId) {
-        final Map<Integer, String> reportList = m_kscReportService.getReportList();
-        final String label = reportList.get(reportId);
-        if (label == null) throw getException(Status.NOT_FOUND, "No such report id " + reportId);
-        return new KscReport(reportId, label);
+	    getReadLock().lock();
+	    
+	    try {
+            final Map<Integer, String> reportList = m_kscReportService.getReportList();
+            final String label = reportList.get(reportId);
+            if (label == null) throw getException(Status.NOT_FOUND, "No such report id " + reportId);
+            return new KscReport(reportId, label);
+	    } finally {
+	        getReadLock().unlock();
+	    }
 	}
 
 	@GET
@@ -111,7 +123,12 @@ public class KscRestService extends OnmsRestService {
 	@Path("count")
 	@Transactional
 	public String getCount() {
-	    return Integer.toString(m_kscReportService.getReportList().size());
+	    getReadLock().lock();
+	    try {
+	        return Integer.toString(m_kscReportService.getReportList().size());
+	    } finally {
+	        getReadLock().unlock();
+	    }
 	}
 
 	@PUT
@@ -124,39 +141,45 @@ public class KscRestService extends OnmsRestService {
         @QueryParam("resourceId") final String resourceId,
         @QueryParam("timespan") String timespan
     ) {
-	    if (kscReportId == null || reportName == null || reportName == "" || resourceId == null || resourceId == "") {
-	        throw getException(Status.BAD_REQUEST, "Invalid request: reportName and resourceId cannot be empty!");
-	    }
-	    final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
-	    final Graph graph = new Graph();
-	    if (title != null) {
-	        graph.setTitle(title);
-	    }
-
-	    boolean found = false;
-	    for (final String valid : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
-	    	if (valid.equals(timespan)) {
-	    		found = true;
-	    		break;
-	    	}
-	    }
-
-	    if (!found) {
-	    	LogUtils.debugf(this, "invalid timespan ('%s'), setting to '7_day' instead.", timespan);
-	    	timespan = "7_day";
-	    }
-
-	    graph.setGraphtype(reportName);
-	    graph.setResourceId(resourceId);
-	    graph.setTimespan(timespan);
-	    report.addGraph(graph);
-	    m_kscReportFactory.setReport(kscReportId, report);
+	    getWriteLock().lock();
+	    
 	    try {
-            m_kscReportFactory.saveCurrent();
-        } catch (final Exception e) {
-            throw getException(Status.BAD_REQUEST, e.getMessage());
-        }
-	    return Response.ok().build();
+    	    if (kscReportId == null || reportName == null || reportName == "" || resourceId == null || resourceId == "") {
+    	        throw getException(Status.BAD_REQUEST, "Invalid request: reportName and resourceId cannot be empty!");
+    	    }
+    	    final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
+    	    final Graph graph = new Graph();
+    	    if (title != null) {
+    	        graph.setTitle(title);
+    	    }
+    
+    	    boolean found = false;
+    	    for (final String valid : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
+    	    	if (valid.equals(timespan)) {
+    	    		found = true;
+    	    		break;
+    	    	}
+    	    }
+    
+    	    if (!found) {
+    	    	LogUtils.debugf(this, "invalid timespan ('%s'), setting to '7_day' instead.", timespan);
+    	    	timespan = "7_day";
+    	    }
+    
+    	    graph.setGraphtype(reportName);
+    	    graph.setResourceId(resourceId);
+    	    graph.setTimespan(timespan);
+    	    report.addGraph(graph);
+    	    m_kscReportFactory.setReport(kscReportId, report);
+    	    try {
+                m_kscReportFactory.saveCurrent();
+            } catch (final Exception e) {
+                throw getException(Status.BAD_REQUEST, e.getMessage());
+            }
+    	    return Response.ok().build();
+	    } finally {
+	        getWriteLock().unlock();
+	    }
 	}
 	
 	@Entity
