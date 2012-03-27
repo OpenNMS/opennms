@@ -55,23 +55,26 @@ public class EventCreator implements TrapProcessor {
     private TrapdIpMgr m_trapdIpMgr;
 
     
-    EventCreator(TrapdIpMgr trapdIpMgr) {
+    public EventCreator(TrapdIpMgr trapdIpMgr) {
         m_trapdIpMgr = trapdIpMgr;
         
         m_eventBuilder = new EventBuilder(null, "trapd");
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setCommunity(String community) {
         m_eventBuilder.setCommunity(community);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setTimeStamp(long timeStamp) {
         m_eventBuilder.setSnmpTimeStamp(timeStamp);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setVersion(String version) {
         m_eventBuilder.setSnmpVersion(version);
     }
@@ -89,11 +92,13 @@ public class EventCreator implements TrapProcessor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setAgentAddress(InetAddress agentAddress) {
         m_eventBuilder.setHost(InetAddressUtils.toIpAddrString(agentAddress));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processVarBind(SnmpObjId name, SnmpValue value) {
         m_eventBuilder.addParam(SyntaxToEvent.processSyntax(name.toString(), value));
         if (EventConstants.OID_SNMP_IFINDEX.isPrefixOf(name)) {
@@ -102,6 +107,7 @@ public class EventCreator implements TrapProcessor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setTrapAddress(InetAddress trapAddress) {
         m_eventBuilder.setSnmpHost(str(trapAddress));
         m_eventBuilder.setInterface(trapAddress);
@@ -112,6 +118,7 @@ public class EventCreator implements TrapProcessor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setTrapIdentity(TrapIdentity trapIdentity) {
         setGeneric(trapIdentity.getGeneric());
         setSpecific(trapIdentity.getSpecific());
@@ -123,7 +130,7 @@ public class EventCreator implements TrapProcessor {
     
     }
 
-    Event getEvent() {
+    public Event getEvent() {
         return m_eventBuilder.getEvent();
     }
     

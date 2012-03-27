@@ -55,13 +55,10 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -71,7 +68,6 @@ public class ThresholderTestCase extends TestCase {
     private EasyMockUtils m_easyMockUtils = new EasyMockUtils();
     
 	private EventAnticipator m_anticipator;
-	private EventProxy m_proxy;
     private RrdStrategy<?,?> m_rrdStrategy;
 	protected Map<Object, Object> m_serviceParameters;
 	protected ThresholdNetworkInterfaceImpl m_iface;
@@ -98,15 +94,6 @@ public class ThresholderTestCase extends TestCase {
 		m_anticipator = new EventAnticipator();
 		m_eventMgr = new MockEventIpcManager();
 		m_eventMgr.setEventAnticipator(m_anticipator);
-		m_proxy = new EventProxy() {
-	        public void send(Event e) {
-	            m_eventMgr.sendNow(e);
-	        }
-	
-	        public void send(Log log) {
-	            m_eventMgr.sendNow(log);
-	        }
-	    };
 	}
 
 	protected void setupThresholdConfig(String dirName, String fileName, int nodeId, String ipAddress, String serviceName, String groupName) throws IOException, UnknownHostException, FileNotFoundException, MarshalException, ValidationException {
@@ -189,7 +176,7 @@ public class ThresholderTestCase extends TestCase {
 	        m_anticipator.anticipateEvent(event.getEvent());
 	    }
 	    for(int i = 0; i < count; i++) {
-	        m_thresholder.check(m_iface, m_proxy, m_parameters);
+	        m_thresholder.check(m_iface, m_eventMgr, m_parameters);
 	    }
 	    verifyAnticipated(1000);
 	}

@@ -128,6 +128,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (getNorthboundInterfaces() != null) {
             for (final Northbounder nb : getNorthboundInterfaces()) {

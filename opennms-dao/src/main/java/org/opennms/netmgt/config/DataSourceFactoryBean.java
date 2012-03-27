@@ -75,6 +75,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         DataSourceFactory.init();
         Vault.setDataSource(DataSourceFactory.getInstance()); // Fix for Bug 4117

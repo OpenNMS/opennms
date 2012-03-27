@@ -68,6 +68,7 @@ public class JdbcWebAlarmRepositoryTest implements InitializingBean {
     @Autowired
     WebAlarmRepository m_alarmRepo;
     
+    @Override
     public void afterPropertiesSet() {
         assertNotNull(m_dbPopulator);
         assertNotNull(m_alarmRepo);

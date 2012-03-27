@@ -45,9 +45,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class BroadcastEventProcessor implements EventListener, InitializingBean, DisposableBean {
     private final EventIpcManager m_eventMgr;
@@ -103,6 +100,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_eventMgr != null, "eventManager not set");
         Assert.state(m_trapdIpMgr != null, "trapIpMgr not set");

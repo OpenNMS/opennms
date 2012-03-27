@@ -311,6 +311,7 @@ public class ReportDefinition implements InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_report != null, "property report must be set to a non-null value");
         Assert.state(m_count != null, "property count must be set to a non-null value");

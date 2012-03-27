@@ -34,18 +34,18 @@ import org.opennms.netmgt.snmp.SnmpValue;
 
 public interface TrapProcessor {
 
-    public abstract void setCommunity(String community);
+    void setCommunity(String community);
 
-    public abstract void setTimeStamp(long timeStamp);
+    void setTimeStamp(long timeStamp);
 
-    public abstract void setVersion(String version);
+    void setVersion(String version);
 
-    public abstract void setAgentAddress(InetAddress agentAddress);
+    void setAgentAddress(InetAddress agentAddress);
 
-    public abstract void processVarBind(SnmpObjId name, SnmpValue value);
+    void processVarBind(SnmpObjId name, SnmpValue value);
 
-    public abstract void setTrapAddress(InetAddress trapAddress);
+    void setTrapAddress(InetAddress trapAddress);
 
-    public abstract void setTrapIdentity(TrapIdentity trapIdentity);
+    void setTrapIdentity(TrapIdentity trapIdentity);
 
 }

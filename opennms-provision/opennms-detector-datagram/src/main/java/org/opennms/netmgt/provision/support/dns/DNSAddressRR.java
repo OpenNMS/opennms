@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.opennms.core.utils.InetAddressUtils;
+
 /**
  * <P>
  * Holds a DNS resource record which is a DNS response that gives the IP address
@@ -185,7 +187,7 @@ public final class DNSAddressRR {
      * @throws java.net.UnknownHostException if any.
      */
     public InetAddress getInetAddress() throws UnknownHostException {
-        return InetAddress.getByName(addressToByteString());
+        return InetAddressUtils.addr(addressToByteString());
     }
 
     /**

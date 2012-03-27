@@ -31,10 +31,9 @@ package org.opennms.netmgt.trapd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
+import java.util.concurrent.Callable;
 
-import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
+import org.opennms.core.concurrent.WaterfallCallable;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.EventConfDao;
@@ -58,27 +57,11 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  *  
  */
-class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
-    /**
-     * The input queue
-     */
-    private FifoQueue<TrapNotification> m_backlogQ;
-
+class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
     /**
      * The name of the local host.
      */
     private static final String LOCALHOST_ADDRESS = InetAddressUtils.getLocalHostName();
-
-    /**
-     * Current status of the fiber
-     */
-    private int m_status;
-
-    /**
-     * The thread that is executing the <code>run</code> method on behalf of
-     * the fiber.
-     */
-    private Thread m_worker;
 
     /**
      * Whether or not a newSuspect event should be generated with a trap from an
@@ -95,6 +78,8 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      * The event configuration DAO that we use to convert from traps to events.
      */
     private EventConfDao m_eventConfDao;
+
+    private TrapNotification m_trapNotification;
 
     /**
      * Process a V2 trap and convert it to an event for transmission.
@@ -162,16 +147,17 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      * In any event, the snmpTrapEnterprise.0 varBind (if present) is ignored in
      * this case.
      * </p>
-     * 
-     * @param info
-     *            V2 trap
      */
-    private void process(TrapNotification info) {
+    @Override
+    public Callable<Void> call() {
         try {
-            processTrapEvent(((EventCreator)info.getTrapProcessor()).getEvent());
+            processTrapEvent(((EventCreator)m_trapNotification.getTrapProcessor()).getEvent());
         } catch (IllegalArgumentException e) {
             log().info(e.getMessage());
+        } catch (Throwable e) {
+            log().error("Unexpected error processing trap: " + e, e);
         }
+        return null;
     }
 
     /**
@@ -179,7 +165,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public void processTrapEvent(final Event event) {
+    private void processTrapEvent(final Event event) {
     	final InetAddress trapInterface = event.getInterfaceAddress();
 
     	final org.opennms.netmgt.xml.eventconf.Event econf = m_eventConfDao.findByEvent(event);
@@ -232,193 +218,13 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
     }
 
     /**
-     * Returns true if the status is ok and the thread should continue running.
-     * If the status returend is false then the thread should exit.
-     *  
-     */
-    private synchronized boolean statusOK() {
-        // Loop until there is a new client or we are shutdown
-        boolean exitThread = false;
-        boolean exitCheck = false;
-        while (!exitCheck) {
-            // check the child thread!
-            if (m_worker.isAlive() == false && m_status != STOP_PENDING) {
-                log().warn(getName() + " terminated abnormally");
-                m_status = STOP_PENDING;
-            }
-
-            // do normal status checks now
-            if (m_status == STOP_PENDING) {
-                exitCheck = true;
-                exitThread = true;
-                m_status = STOPPED;
-            } else if (m_status == PAUSE_PENDING) {
-                pause();
-            } else if (m_status == RESUME_PENDING) {
-                resume();
-            } else if (m_status == PAUSED) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    m_status = STOP_PENDING;
-                }
-            } else if (m_status == RUNNING) {
-                exitCheck = true;
-            }
-
-        } // end !exit check
-
-        return !exitThread;
-
-    } // statusOK
-
-    /**
      * The constructor
      */
     public TrapQueueProcessor() {
     }
 
-
-
-    /**
-     * Starts the current fiber. If the fiber has already been started,
-     * regardless of it's current state, then an IllegalStateException is
-     * thrown.
-     *
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the fiber has already been started.
-     */
-    public synchronized void start() {
-        Assert.state(m_worker == null, "The fiber is running or has already run");
-
-        m_status = STARTING;
-
-        m_worker = new Thread(this, getName());
-        m_worker.start();
-
-        if (log().isDebugEnabled()) {
-            log().debug(getName() + " started");
-        }
-    }
-
-    /**
-     * Pauses the current fiber.
-     */
-    public synchronized void pause() {
-        Assert.state(m_worker != null && m_worker.isAlive(), "The fiber is not running");
-
-        m_status = PAUSED;
-        notifyAll();
-    }
-
-    /**
-     * Resumes the currently paused fiber.
-     */
-    public synchronized void resume() {
-        Assert.state(m_worker != null && m_worker.isAlive(), "The fiber is not running");
-
-        m_status = RUNNING;
-        notifyAll();
-    }
-
-    /**
-     * <p>
-     * Stops this fiber. If the fiber has never been started then an
-     * <code>IllegalStateExceptio</code> is generated.
-     * </p>
-     *
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the fiber has never been started.
-     */
-    public synchronized void stop() {
-        Assert.state(m_worker != null, "The fiber has never run");
-
-        m_status = STOP_PENDING;
-        m_worker.interrupt();
-        notifyAll();
-    }
-
-    /**
-     * Returns the name of the fiber.
-     *
-     * @return The name of the Fiber.
-     */
-    public String getName() {
-        return "TrapQueueProcessor";
-    }
-
-    /**
-     * Returns the current status of the fiber
-     *
-     * @return The status of the Fiber.
-     */
-    public synchronized int getStatus() {
-        if (m_worker != null && !m_worker.isAlive()) {
-            m_status = STOPPED;
-        }
-
-        return m_status;
-    }
-
-    /**
-     * Reads off of the input queue and depending on the type (V1 or V2 trap) of
-     * object read, process the traps to convert them to events and send them
-     * out
-     */
-    public void run() {
-        synchronized (this) {
-            m_status = RUNNING;
-        }
-
-        while (statusOK()) {
-            TrapNotification o = null;
-            try {
-                o = m_backlogQ.remove(1000);
-            } catch (InterruptedException iE) {
-                log().debug("Trapd.QueueProcessor: caught interrupted exception");
-
-                o = null;
-
-                m_status = STOP_PENDING;
-            } catch (FifoQueueException qE) {
-                log().debug("Trapd.QueueProcessor: caught fifo queue exception");
-                log().debug(qE.getLocalizedMessage(), qE);
-
-                o = null;
-
-                m_status = STOP_PENDING;
-            }
-
-            if (o != null && statusOK()) {
-                try {
-                    process(o);
-                } catch (Throwable t) {
-                    log().error("Unexpected error processing trap: " + t, t);
-                }
-            }
-        }
-    }
-
     private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
-    }
-
-    /**
-     * <p>getBacklogQ</p>
-     *
-     * @return a {@link org.opennms.core.queue.FifoQueue} object.
-     */
-    public FifoQueue<TrapNotification> getBacklogQ() {
-        return m_backlogQ;
-    }
-
-    /**
-     * <p>setBacklogQ</p>
-     *
-     * @param backlogQ a {@link org.opennms.core.queue.FifoQueue} object.
-     */
-    public void setBacklogQ(FifoQueue<TrapNotification> backlogQ) {
-        m_backlogQ = backlogQ;
     }
 
     /**
@@ -444,7 +250,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      *
      * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
      */
-    public EventIpcManager getEventMgr() {
+    public EventIpcManager getEventManager() {
         return m_eventMgr;
     }
 
@@ -453,7 +259,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      *
      * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
      */
-    public void setEventMgr(EventIpcManager eventMgr) {
+    public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
     }
 
@@ -475,15 +281,19 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
         m_newSuspect = newSuspect;
     }
 
-    /**
-     * <p>afterPropertiesSet</p>
-     *
-     * @throws java.lang.IllegalStateException if any.
-     */
+    public TrapNotification getTrapNotification() {
+        return m_trapNotification;
+    }
+
+    public void setTrapNotification(TrapNotification info) {
+        m_trapNotification = info;
+    }
+
+    @Override
     public void afterPropertiesSet() throws IllegalStateException {
-        Assert.state(m_backlogQ != null, "property backlogQ must be set");
         Assert.state(m_eventConfDao != null, "property eventConfDao must be set");
         Assert.state(m_eventMgr != null, "property eventMgr must be set");
         Assert.state(m_newSuspect != null, "property newSuspect must be set");
+        Assert.state(m_trapNotification != null, "property trapNotification must be set");
     }
 }

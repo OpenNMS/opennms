@@ -128,6 +128,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_locMonDao, "The LocationMonitorDao must be set");
         Assert.notNull(m_monSvcDao, "The MonitoredServiceDao must be set");

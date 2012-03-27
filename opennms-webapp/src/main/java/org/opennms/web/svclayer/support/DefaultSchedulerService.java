@@ -77,6 +77,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
 
         log().debug("Adding job " + m_jobDetail.getName() + " to scheduler");

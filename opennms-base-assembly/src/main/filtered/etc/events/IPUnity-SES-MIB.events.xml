@@ -4205,7 +4205,7 @@ asTrapInfoString gives the details like name of the node that wentdown.&lt;/p&gt
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
                 clear-key="uei.opennms.org/vendors/ipUnity/asNodeDown:%dpname%:%nodeid%:%interface%" 
                 alarm-type="2" 
-                auto-clean="clear" />
+                auto-clean="true" />
 </event>
 </events>
 <!-- End of auto generated data from MIB: IPUNITY-SES-MIB -->

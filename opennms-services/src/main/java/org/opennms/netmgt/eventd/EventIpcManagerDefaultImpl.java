@@ -38,11 +38,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxyException;
@@ -61,6 +62,29 @@ import org.springframework.util.StringUtils;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
+
+    public static class DiscardTrapsAndSyslogEvents implements RejectedExecutionHandler {
+        /**
+         * Creates a <tt>DiscardOldestPolicy</tt> for the given executor.
+         */
+        public DiscardTrapsAndSyslogEvents() { }
+
+        /**
+         * Obtains and ignores the next task that the executor
+         * would otherwise execute, if one is immediately available,
+         * and then retries execution of task r, unless the executor
+         * is shut down, in which case task r is instead discarded.
+         * @param r the runnable task requested to be executed
+         * @param e the executor attempting to execute this task
+         */
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
+            if (!e.isShutdown()) {
+                e.getQueue().poll();
+                e.execute(r);
+            }
+        }
+    }
+
     /**
      * Hash table of list of event listeners keyed by event UEI
      */
@@ -74,7 +98,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * Hash table of event listener threads keyed by the listener's id
      */
-    private Map<String, ListenerThread> m_listenerThreads = new HashMap<String, ListenerThread>();
+    private Map<String, EventListenerExecutor> m_listenerThreads = new HashMap<String, EventListenerExecutor>();
 
     /**
      * The thread pool handling the events
@@ -85,117 +109,68 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
     private Integer m_handlerPoolSize;
     
+    private Integer m_handlerQueueLength;
+
     private EventIpcManagerProxy m_eventIpcManagerProxy;
 
     /**
      * A thread dedicated to each listener. The events meant for each listener
-     * is added to a dedicated queue when the 'sendNow()' is called. The
-     * ListenerThread reads events off of this queue and sends it to the
-     * appropriate listener
+     * is added to an execution queue when the 'sendNow()' is called. The
+     * ListenerThread reads events off of this queue and sends them to the
+     * appropriate listener.
      */
-    private class ListenerThread implements Runnable {
+    private static class EventListenerExecutor {
         /**
          * Listener to which this thread is dedicated
          */
-        private EventListener m_listener;
-
-        /**
-         * Queue from which events for the listener are to be read
-         */
-        private FifoQueue<Event> m_queue = new FifoQueueImpl<Event>();
+        private final EventListener m_listener;
 
         /**
          * The thread that is running this runnable.
          */
-        private Thread m_delegateThread;
-
-        /**
-         * If set true then the thread should stop processing as soon as possible.
-         */
-        private volatile boolean m_shutdown = true;
+        private final ExecutorService m_delegateThread;
 
         /**
          * Constructor
          */
-        ListenerThread(EventListener listener) {
+        EventListenerExecutor(EventListener listener) {
             m_listener = listener;
-            m_delegateThread = new Thread(this, m_listener.getName());
-        }
-        
-        public void addEvent(Event event) {
-            try {
-                m_queue.add(event);
-                if (log().isDebugEnabled()) {
-                    log().debug("Queued event ID " + event.getDbid() + " to listener thread: " + m_listener.getName());
-                }
-            } catch (FifoQueueException e) {
-                log().error("Error queueing event " + event.getUei() + " to listener thread " + m_listener.getName() + ": " + e, e);
-            } catch (InterruptedException e) {
-                log().error("Error queueing event " + event.getUei() + " to listener thread " + m_listener.getName() + ": " + e, e);
-            }
+            // You could also do Executors.newSingleThreadExecutor() here
+            m_delegateThread = Executors.newFixedThreadPool(1);
         }
 
-        /**
-         * The run method performs the actual work for the runnable. It loops
-         * infinitely until the shutdown flag is set, during which time it
-         * processes queue elements. Each element in the queue should be a
-         * instance of {@link org.opennms.netmgt.xml.event.Event}. After each
-         * event is read, the 'onEvent' method of the listener is invoked.
-         * 
-         */
-        public void run() {
-            if (log().isDebugEnabled()) {
-                log().debug("In ListenerThread " + m_listener.getName() + " run");
-            }
-
-            while (!m_shutdown) {
-                Event event;
-                try {
-                    event = m_queue.remove(500);
-                    if (event == null) {
-                        continue;
-                    }
-                } catch (InterruptedException e) {
-                    m_shutdown = true;
-                    break;
-                } catch (FifoQueueException e) {
-                    m_shutdown = true;
-                    break;
-                }
-
-                try {
-                    if (log().isInfoEnabled()) {
-                        log().info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
+        public void addEvent(final Event event) {
+            m_delegateThread.execute(new Runnable() {
+                public void run() {
+                    if (log().isDebugEnabled()) {
+                        log().debug("In ListenerThread " + m_listener.getName() + " run");
                     }
 
-                    // Make sure we restore our log4j logging prefix after onEvent is called
-                    String log4jPrefix = ThreadCategory.getPrefix(); 
                     try {
-                        m_listener.onEvent(event);
-                    } finally {
-                        ThreadCategory.setPrefix(log4jPrefix);
+                        if (log().isInfoEnabled()) {
+                            log().info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
+                        }
+
+                        // Make sure we restore our log4j logging prefix after onEvent is called
+                        String log4jPrefix = ThreadCategory.getPrefix(); 
+                        try {
+                            m_listener.onEvent(event);
+                        } finally {
+                            ThreadCategory.setPrefix(log4jPrefix);
+                        }
+                    } catch (Throwable t) {
+                        log().warn("run: an unexpected error occured during ListenerThread " + m_listener.getName() + " run: " + t, t);
                     }
-                } catch (Throwable t) {
-                    log().warn("run: an unexpected error occured during ListenerThread " + m_listener.getName() + " run: " + t, t);
                 }
-            }
+            });
         }
 
         /**
-         * Starts up the thread.
-         */
-        public void start() {
-            m_shutdown = false;
-            m_delegateThread.start();
-        }
-
-        /**
-         * Sets the stop flag in the thread.
+         * Stops the execution of this listener.
          */
         public void stop() {
-            m_shutdown = true;
+            m_delegateThread.shutdown();
         }
-
     }
 
     /**
@@ -203,15 +178,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      */
     public EventIpcManagerDefaultImpl() {
     }
-    
-    
 
     /** {@inheritDoc} */
     public void send(Event event) throws EventProxyException {
         sendNow(event);
     }
-
-
 
     /**
      * <p>send</p>
@@ -228,7 +199,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      *
      * Called by a service to send an event to other listeners.
      */
-    public synchronized void sendNow(Event event) {
+    public void sendNow(Event event) {
         Assert.notNull(event, "event argument cannot be null");
 
         Events events = new Events();
@@ -247,7 +218,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      *
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      */
-    public synchronized void sendNow(Log eventLog) {
+    public void sendNow(Log eventLog) {
         Assert.notNull(eventLog, "eventLog argument cannot be null");
 
         try {
@@ -262,7 +233,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * @see org.opennms.netmgt.eventd.EventIpcBroadcaster#broadcastNow(org.opennms.netmgt.xml.event.Event)
      */
     /** {@inheritDoc} */
-    public synchronized void broadcastNow(Event event) {
+    public void broadcastNow(Event event) {
         if (log().isDebugEnabled()) {
             log().debug("Event ID " + event.getDbid() + " to be broadcasted: " + event.getUei());
         }
@@ -451,9 +422,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             return;
         }
         
-        ListenerThread listenerThread = new ListenerThread(listener);
-        listenerThread.start();
-
+        EventListenerExecutor listenerThread = new EventListenerExecutor(listener);
         m_listenerThreads.put(listener.getName(), listenerThread);
     }
 
@@ -495,21 +464,33 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         return m_listeners.remove(listener);
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(EventIpcManagerDefaultImpl.class);
     }
 
     /**
      * <p>afterPropertiesSet</p>
      */
-    public synchronized void afterPropertiesSet() {
+    @Override
+    public void afterPropertiesSet() {
         Assert.state(m_eventHandlerPool == null, "afterPropertiesSet() has already been called");
-        
+
         Assert.state(m_eventHandler != null, "eventHandler not set");
         Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
-        
-        m_eventHandlerPool = Executors.newFixedThreadPool(m_handlerPoolSize);
-        
+
+        /**
+         * Create a fixed-size thread pool. The number of threads can be configured by using
+         * the "receivers" attribute in the config. The queue length for the pool can be configured
+         * with the "queueLength" attribute in the config.
+         */
+        m_eventHandlerPool = new ThreadPoolExecutor(
+            m_handlerPoolSize,
+            m_handlerPoolSize,
+            0L,
+            TimeUnit.MILLISECONDS,
+            m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength)
+        );
+
         // If the proxy is set, make this class its delegate.
         if (m_eventIpcManagerProxy != null) {
             m_eventIpcManagerProxy.setDelegate(this);
@@ -552,6 +533,25 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.state(m_eventHandlerPool == null, "handlerPoolSize property cannot be set after afterPropertiesSet() is called");
         
         m_handlerPoolSize = handlerPoolSize;
+    }
+
+    /**
+     * <p>getHandlerQueueLength</p>
+     *
+     * @return a int.
+     */
+    public int getHandlerQueueLength() {
+        return m_handlerQueueLength;
+    }
+
+    /**
+     * <p>setHandlerQueueLength</p>
+     *
+     * @param size a int.
+     */
+    public void setHandlerQueueLength(int size) {
+        Assert.state(m_eventHandlerPool == null, "handlerQueueLength property cannot be set after afterPropertiesSet() is called");
+        m_handlerQueueLength = size;
     }
 
     /**

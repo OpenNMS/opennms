@@ -151,6 +151,7 @@ public class TransactionAwareEventForwarder implements EventForwarder,
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_eventForwarder != null,
                 "eventForwarder property must be set");

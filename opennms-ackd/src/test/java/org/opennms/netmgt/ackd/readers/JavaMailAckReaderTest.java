@@ -112,7 +112,7 @@ public class JavaMailAckReaderTest implements InitializingBean {
     @Autowired
     private AckService m_ackService;
 
-    
+    @Override
     public void afterPropertiesSet() {
         Assert.assertNotNull(m_ackService);
         Assert.assertNotNull(m_daemon);

@@ -91,6 +91,7 @@ public class RrdSummaryController extends AbstractFormController implements Init
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
+    @Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.state(m_rrdSummaryService != null, "rrdSummaryService must be set");
 	}

@@ -33,12 +33,29 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.springframework.security.Authentication,
-		org.opennms.core.resource.Vault
+		org.opennms.core.resource.Vault,
+		org.opennms.core.utils.DBUtils,
+		java.sql.Connection
 	"
 %>
 
 <%
     boolean role = request.isUserInRole(Authentication.ROLE_ADMIN);
+    
+    final DBUtils d = new DBUtils();
+    String dbName;
+    String dbVersion;
+    try {
+      Connection conn = Vault.getDbConnection();
+      d.watch(conn);
+      dbName = Vault.getDbConnection().getMetaData().getDatabaseProductName();
+      dbVersion = Vault.getDbConnection().getMetaData().getDatabaseProductVersion();
+   	} catch (Exception e) {
+   	  dbName = "Unknown";
+      dbVersion = "Unknown";
+   	} finally {
+   	  d.cleanUp();
+   	}
 %> 
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -83,7 +100,15 @@
   <tr>
     <td class="standardheader">User Agent:</td>
     <td class="standard"><%=request.getHeader( "User-Agent" )%></td>
-  </tr>    
+  </tr>
+  <tr>
+    <td class="standardheader">Database Type:</td>
+    <td class="standard"><%=dbName%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">Database Version:</td>
+    <td class="standard"><%=dbVersion%></td>
+  </tr>
 </table>
 <hr />
 <h3>License and Copyright</h3>

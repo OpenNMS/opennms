@@ -131,7 +131,7 @@ public class AggregateTracker extends CollectionTracker {
             }
             
             if (isRepeater(canonicalIndex)) {
-                return canonicalIndex - getRepeaterStartIndex();
+                return canonicalIndex - getRepeaterStartIndex() + getNonRepeaters();
             }
             
             throw new IllegalArgumentException("index out of range for tracker "+this);

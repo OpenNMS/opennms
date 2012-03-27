@@ -109,6 +109,7 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         if (m_resourceDao == null) {
             throw new IllegalStateException("resourceDao property not set");

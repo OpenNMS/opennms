@@ -33,9 +33,6 @@ import org.opennms.netmgt.xml.event.Event;
 /**
  * Back-end interface for the EventIpcManager.  Used by eventd to send events
  * to interested listeners.
- *
- * @author ranger
- * @version $Id: $
  */
 public interface EventIpcBroadcaster {
     /**
@@ -43,5 +40,5 @@ public interface EventIpcBroadcaster {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public abstract void broadcastNow(Event event);
+    void broadcastNow(Event event);
 }

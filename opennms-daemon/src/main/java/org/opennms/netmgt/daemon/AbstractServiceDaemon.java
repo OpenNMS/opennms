@@ -44,6 +44,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public final void afterPropertiesSet() throws Exception {
         init();
     }

@@ -47,7 +47,7 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockPlatformTransactionManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.nsclient.AbstractNsclientTest;
 import org.opennms.protocols.nsclient.collector.NSClientCollector;

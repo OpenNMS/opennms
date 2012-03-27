@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import last-import="2011-09-15T22:24:36.695Z" foreign-source="somethingcrypt" date-stamp="2011-09-15T22:24:36.569Z" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="cryptstorage.somemediathing.net" foreign-id="1298585663650" building="somethingcrypt">
+        <interface status="1" snmp-primary="N" ip-addr="10.0.8.37" descr="">
+            <monitored-service service-name="RPC-NFS"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="bustle.somemediathing.net" foreign-id="1298585567610" building="somethingcrypt">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.8.36" descr="">
+            <monitored-service service-name="heartbeat_resource"/>
+            <monitored-service service-name="heartbeat"/>
+            <monitored-service service-name="megaRaid"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="Servers"/>
+    </node>
+    <node node-label="hustle.somemediathing.net" foreign-id="1298585147490" building="somethingcrypt">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.8.35" descr="">
+            <monitored-service service-name="megaRaid"/>
+            <monitored-service service-name="ICMP"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="heartbeat"/>
+            <monitored-service service-name="heartbeat_resource"/>
+        </interface>
+        <category name="Production"/>
+        <category name="Servers"/>
+    </node>
+</model-import>

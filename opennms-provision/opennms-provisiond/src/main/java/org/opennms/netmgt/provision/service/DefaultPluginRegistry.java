@@ -87,6 +87,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.notNull(m_serviceRegistry, "ServiceRegistry must not be null");
         addAllExtensions(m_asyncDetectors, AsyncServiceDetector.class, ServiceDetector.class);

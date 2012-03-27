@@ -89,6 +89,7 @@ public class ChooseResourceController extends AbstractController implements Init
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         if (m_chooseResourceService == null) {
             throw new IllegalStateException("chooseResourceService property not set");

@@ -37,7 +37,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
@@ -46,6 +50,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
@@ -82,6 +87,11 @@ public class Nms4335Test {
 
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
+
+    private final List<ExecutorService> m_executorServices = Arrays.asList(new ExecutorService[] {
+            Executors.newFixedThreadPool(3),
+            Executors.newFixedThreadPool(3)
+    });
 
     @Before
     public void setUp() throws Exception {
@@ -176,8 +186,9 @@ public class Nms4335Test {
      * 
      * @throws UnknownHostException 
      * @throws InterruptedException 
+     * @throws ExecutionException 
      */
-    private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg) throws UnknownHostException, InterruptedException {
+    private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg) throws UnknownHostException, InterruptedException, ExecutionException {
         startSyslogdGracefully();
         
         final EventBuilder expectedEventBldr = new EventBuilder(expectedUEI, "syslogd");
@@ -192,8 +203,7 @@ public class Nms4335Test {
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
         final SyslogdConfig config = SyslogdConfigFactory.getInstance();
-        final Thread worker = new Thread(new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()), SyslogConnection.class.getSimpleName());
-        worker.run();
+        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()));
 
         ea.verifyAnticipated(5000,0,0,0,0);
         final Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
@@ -213,5 +223,4 @@ public class Nms4335Test {
             }
         }
     }
-
 }

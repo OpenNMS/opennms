@@ -39,6 +39,7 @@ public class FakeTestGatewayFactoryBean implements InitializingBean {
 	
 	private ServiceRegistry m_serviceRegistry;
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(getServiceRegistry(), "serviceRegistry must not be null");
 		

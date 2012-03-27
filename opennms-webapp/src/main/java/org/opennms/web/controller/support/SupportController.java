@@ -252,6 +252,7 @@ public class SupportController extends AbstractController implements Initializin
         m_systemReport = systemReport;
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_configDao);
         Assert.notNull(m_systemReport);

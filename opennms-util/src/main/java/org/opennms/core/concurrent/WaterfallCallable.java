@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,32 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.queue;
+package org.opennms.core.concurrent;
 
-/**
- * <p>
- * This interface is implemented by objects that need to be notified when a new
- * element is added to a queue. The notification method is invoked aftet the
- * element is added to the queue, the exact semantics of which are defined by
- * the queue.
- * </p>
- *
- * <p>
- * This is most often used to notify a class that an empty queue has new
- * elements that need to be processed. This allows the object to perform other
- * potentially useful work while waiting on new queue elements.
- * </p>
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- */
-public interface InputFifoQueueListener<T> {
-    /**
-     * This method is invoked by a queue implementation when a new element is
-     * added its queue. The exact instance when the method is invoked is
-     * dependent upon the implementation.
-     *
-     * @param queue
-     *            The queue where the element was added.
-     */
-    public void onQueueInput(NotifiableInputFifoQueue<T> queue);
-}
+import java.util.concurrent.Callable;
+
+public interface WaterfallCallable extends Callable<Callable<?>> {}

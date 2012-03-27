@@ -98,6 +98,7 @@ public class SystemReportController extends AbstractController implements Initia
         m_systemReport = report;
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_systemReport);
     }

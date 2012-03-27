@@ -65,6 +65,7 @@ import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -117,6 +118,7 @@ public class CollectdTest extends TestCase {
 
         // Test setup
         m_eventIpcManager = m_easyMockUtils.createMock(EventIpcManager.class);
+        EventIpcManagerFactory.setIpcManager(m_eventIpcManager);
         m_collectorConfigDao = m_easyMockUtils.createMock(CollectorConfigDao.class);
         m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
         m_ipIfDao = m_easyMockUtils.createMock(IpInterfaceDao.class);

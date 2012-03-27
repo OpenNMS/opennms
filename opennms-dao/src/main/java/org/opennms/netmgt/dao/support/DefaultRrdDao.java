@@ -139,6 +139,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_rrdStrategy != null, "property rrdStrategy must be set and be non-null");
         Assert.state(m_rrdBaseDirectory != null, "property rrdBaseDirectory must be set and be non-null");

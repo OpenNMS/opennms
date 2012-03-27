@@ -55,6 +55,7 @@ public class ResourceTypeFilteringResourceVisitor implements ResourceVisitor, In
      *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_delegatedVisitor != null, "property delegatedVisitor must be set to a non-null value");
         Assert.state(m_resourceTypeMatch != null, "property resourceTypeMatch must be set to a non-null value");

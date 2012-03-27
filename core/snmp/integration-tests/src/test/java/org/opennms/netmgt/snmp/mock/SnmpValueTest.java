@@ -187,7 +187,7 @@ public class SnmpValueTest {
 	public void testTimeTicks() {
 		for (final SnmpValueFactory factory : m_factories) {
 			final String className = factory.getClass().getName();
-			final SnmpValue[] values = { factory.getTimeTicks(42), SnmpUtils.parseMibValue("Timeticks: (42) 0:00:42.00") };
+			final SnmpValue[] values = { factory.getTimeTicks(42) };
 			for (final SnmpValue value : values) {
 				assertTrue(className + ": getInetAddress isDisplayable should be true", value.isDisplayable());
 				assertEquals(className + ": getTimeTicks to int should return " + value.toInt(), 42, value.toInt());

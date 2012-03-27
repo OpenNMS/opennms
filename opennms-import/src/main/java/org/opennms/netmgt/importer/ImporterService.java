@@ -169,6 +169,7 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		m_eventManager.addEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
 	}
@@ -429,9 +430,9 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 		public String toString() {
 			StringBuffer buf = new StringBuffer();
 			buf.append("Total ").append(m_name).append(": ");
-			buf.append((double)m_totalTime/(double)1000L).append(" thread-seconds ");
+			buf.append((double)m_totalTime/(double)1000L).append(" thread-seconds");
 			if (m_sectionCount > 0) {
-				buf.append("Avg ").append(m_name).append(": ");
+				buf.append(" Avg ").append(m_name).append(": ");
 				buf.append((double)m_totalTime/(double)m_sectionCount).append(" ms per node");
 			}
 			return buf.toString();

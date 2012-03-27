@@ -68,6 +68,7 @@ public class ResourceTreeWalker implements InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_resourceDao !=  null, "property resourceDao must be set to a non-null value");
         Assert.state(m_visitor !=  null, "property visitor must be set to a non-null value");

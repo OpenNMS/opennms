@@ -38,7 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.web.springframework.security.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -48,15 +48,15 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 public class SpringSecurityContextServiceTest {
 
 	private SpringSecurityContextService m_securityContextService;
-	private final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(
+	private final GrantedAuthority ROLE_USER = new SimpleGrantedAuthority(
 			Authentication.ROLE_USER);
-	private final GrantedAuthority ROLE_ADMIN = new GrantedAuthorityImpl(
+	private final GrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority(
 			Authentication.ROLE_ADMIN);
-	private final GrantedAuthority ROLE_PROVISION = new GrantedAuthorityImpl(
+	private final GrantedAuthority ROLE_PROVISION = new SimpleGrantedAuthority(
 			Authentication.ROLE_PROVISION);
-	private final GrantedAuthority ROLE_ANONYMOUS = new GrantedAuthorityImpl(
+	private final GrantedAuthority ROLE_ANONYMOUS = new SimpleGrantedAuthority(
 			"ROLE_ANONYMOUS");
-	private final GrantedAuthority ROLE_DASHBOARD = new GrantedAuthorityImpl(
+	private final GrantedAuthority ROLE_DASHBOARD = new SimpleGrantedAuthority(
 			Authentication.ROLE_DASHBOARD);
 
 	private final String USERNAME = "opennms";

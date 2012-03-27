@@ -41,9 +41,6 @@ import org.springframework.core.io.Resource;
  *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- * @version $Id: $
  */
 public interface ForeignSourceRepository {
 
@@ -175,4 +172,7 @@ public interface ForeignSourceRepository {
      */
     public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException;
     
+    public void validate(ForeignSource foreignSource) throws ForeignSourceRepositoryException;
+    
+    public void validate(Requisition requisition) throws ForeignSourceRepositoryException;
 }

@@ -29,7 +29,6 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,9 +39,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
-import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -162,7 +162,7 @@ public class BroadcastEventProcessor implements InitializingBean {
     /**
      * The location where suspectInterface events are enqueued for processing.
      */
-    private FifoQueue<Runnable> m_suspectQ;
+    private ExecutorService m_suspectQ;
     
     private SuspectEventProcessorFactory m_suspectEventProcessorFactory;
 
@@ -329,8 +329,8 @@ public class BroadcastEventProcessor implements InitializingBean {
                 // table
                 InetAddress ifaddr;
 				try {
-					ifaddr = InetAddress.getByName(ipaddr);
-				} catch (final UnknownHostException e) {
+					ifaddr = InetAddressUtils.addr(ipaddr);
+				} catch (final IllegalArgumentException e) {
 					throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
 				}
                 int nodeId = rs.getInt(1);
@@ -396,8 +396,8 @@ public class BroadcastEventProcessor implements InitializingBean {
             // add the ipaddess to the database
             InetAddress ifaddress;
 			try {
-				ifaddress = InetAddress.getByName(ipaddr);
-			} catch (final UnknownHostException e) {
+				ifaddress = InetAddressUtils.addr(ipaddr);
+			} catch (final IllegalArgumentException e) {
 				throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
 			}
             DbIpInterfaceEntry ipInterface = DbIpInterfaceEntry.create(node.getNodeId(), ifaddress);
@@ -540,8 +540,8 @@ public class BroadcastEventProcessor implements InitializingBean {
 
                 InetAddress inetAddr;
 				try {
-					inetAddr = InetAddress.getByName(ipaddr);
-				} catch (final UnknownHostException e) {
+					inetAddr = InetAddressUtils.addr(ipaddr);
+				} catch (final IllegalArgumentException e) {
 					throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
 				}
                 final int nodeId = rs.getInt(1);
@@ -1640,7 +1640,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         // new suspect event
         try {
             if (log().isDebugEnabled()) log().debug("onMessage: Adding interface to suspectInterface Q: " + interfaceValue);
-            m_suspectQ.add(m_suspectEventProcessorFactory.createSuspectEventProcessor(interfaceValue));
+            m_suspectQ.execute(m_suspectEventProcessorFactory.createSuspectEventProcessor(interfaceValue));
         } catch (final Throwable ex) {
             log().error("onMessage: Failed to add interface to suspect queue", ex);
         }
@@ -2275,9 +2275,9 @@ public class BroadcastEventProcessor implements InitializingBean {
     /**
      * <p>setSuspectQueue</p>
      *
-     * @param suspectQ a {@link org.opennms.core.queue.FifoQueue} object.
+     * @param suspectQ a {@link java.util.concurrent.ExecutorService} object.
      */
-    public void setSuspectQueue(FifoQueue<Runnable> suspectQ) {
+    public void setSuspectQueue(ExecutorService suspectQ) {
         m_suspectQ = suspectQ;
     }
 
@@ -2295,6 +2295,7 @@ public class BroadcastEventProcessor implements InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_suspectEventProcessorFactory != null, "The suspectEventProcessor must be set");
         Assert.state(m_scheduler != null, "The schedule must be set");

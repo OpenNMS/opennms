@@ -1,6 +1,8 @@
 package org.opennms.features.gwt.graph.resource.list.client.presenter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.opennms.features.gwt.graph.resource.list.client.view.DefaultResourceListView;
@@ -54,6 +56,14 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
         for(int i = 0; i < resourceList.length(); i++) {
             data.add(resourceList.get(i));
         }
+        
+        Collections.sort(data, new Comparator<ResourceListItem>() {
+
+            @Override
+            public int compare(ResourceListItem o1, ResourceListItem o2) {
+                return o1.getValue().toLowerCase().compareTo(o2.getValue().toLowerCase());
+            }
+        });
         return data;
     }
     

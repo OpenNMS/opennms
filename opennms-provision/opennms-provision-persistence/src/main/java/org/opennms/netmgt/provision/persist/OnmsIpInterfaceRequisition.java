@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.persist;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 
@@ -112,7 +113,7 @@ public class OnmsIpInterfaceRequisition {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getSnmpPrimary() {
+    public PrimaryType getSnmpPrimary() {
         return m_iface.getSnmpPrimary();
     }
 

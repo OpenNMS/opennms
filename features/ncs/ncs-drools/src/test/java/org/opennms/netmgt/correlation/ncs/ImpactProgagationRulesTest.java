@@ -32,15 +32,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.drools.FactHandle;
 import org.junit.Before;
@@ -368,6 +365,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
         .getEvent();
     }
 
+	@SuppressWarnings("unused")
     private Event createMplsLspPathDownEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
         
         Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown", "Test")
@@ -380,6 +378,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 		return event;
     }
     
+	@SuppressWarnings("unused")
     private Event createMplsLspPathUpEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
         
         Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp", "Drools")

@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 import org.opennms.core.utils.LogUtils;
 
 public class JuniperSyslogParser extends SyslogParser {
-    //                                                                PRI         TIMESTAMP                                        HOST   PROCESS/ID          MESSAGE
-    private static final Pattern m_juniperPattern = Pattern.compile("^<(\\d+)>\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d) (\\S+) (\\S+)\\[(\\d+)\\]: (.*?)$", Pattern.MULTILINE);
+    //                                                                PRI         TIMESTAMP                                          HOST      PROCESS/ID          MESSAGE
+    private static final Pattern m_juniperPattern = Pattern.compile("^<(\\d+)>\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+(\\S+)\\s+(\\S+)\\[(\\d+)\\]: (.*?)$", Pattern.MULTILINE);
 
     protected JuniperSyslogParser(final String text) {
         super(text);
@@ -54,7 +54,7 @@ public class JuniperSyslogParser extends SyslogParser {
         } catch (final NumberFormatException nfe) {
             LogUtils.debugf(this, nfe, "Unable to parse '%s' as a process ID.", matcher.group(5));
         }
-        message.setMessage(matcher.group(6));
+        message.setMessage(matcher.group(6).trim());
 
         return message;
     }

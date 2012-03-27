@@ -341,9 +341,17 @@ public class Global implements Serializable {
 
 
 	public <T> T convertStringTo(String value, Class<T> typeClass) {
-		final PropertyEditor editor = getDefaultEditor(typeClass);
-		editor.setAsText(value);
-		return typeClass.cast(editor.getValue());
+		if (typeClass == String.class) {
+			return typeClass.cast(value);
+		} else {
+			try {
+				final PropertyEditor editor = getDefaultEditor(typeClass);
+				editor.setAsText(value);
+				return typeClass.cast(editor.getValue());
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Unable to find a property editor for " + typeClass);
+			}
+		}
 	}
 
 

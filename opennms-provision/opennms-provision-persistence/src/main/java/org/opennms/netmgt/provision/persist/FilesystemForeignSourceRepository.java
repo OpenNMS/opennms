@@ -176,9 +176,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     /** {@inheritDoc} */
     public void save(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
-        if (foreignSource == null) {
+    	if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("can't save a null foreign source!");
         }
+
+    	validate(foreignSource);
+
         m_writeLock.lock();
         try {
             if (foreignSource.getName().equals("default")) {
@@ -296,6 +299,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         if (requisition == null) {
             throw new ForeignSourceRepositoryException("can't save a null requisition!");
         }
+        
+        validate(requisition);
+
         m_writeLock.lock();
         try {
             final File outputFile = getOutputFileForRequisition(requisition);

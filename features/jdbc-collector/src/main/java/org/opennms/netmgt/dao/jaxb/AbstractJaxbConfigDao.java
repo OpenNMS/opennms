@@ -98,6 +98,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
         return m_description;
     }
     
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_configResource != null, "property configResource must be set and be non-null");
         

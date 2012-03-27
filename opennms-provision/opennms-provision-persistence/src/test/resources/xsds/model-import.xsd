@@ -13,6 +13,12 @@
       <attribute name="date-stamp" type="dateTime" />
       <attribute name="last-import" type="dateTime" />
       <attribute name="foreign-source" type="string" use="optional" default="imported:" />
+      <attribute name="non-ip-interfaces" type="boolean" use="optional" default="false">
+        <annotation><documentation>This attribute is ignored, and kept only to preserve compatibility with old import XML files.</documentation></annotation>
+      </attribute>
+      <attribute name="non-ip-snmp-primary" type="string" use="optional" default="N">
+        <annotation><documentation>This attribute is ignored, and kept only to preserve compatibility with old import XML files.</documentation></annotation>
+      </attribute>
     </complexType>
   </element>
   <element name="node">
@@ -95,17 +101,18 @@
         <annotation>
           <documentation>
             This attribute is used by OpenNMS to control SNMP data collection. P - Primary interface. This is the "preferred interface used in data collection.
-            S - Secondary interface. This interface meets all the qualifications to be a primary interface. C - Collectable interface. This is a manual setting
-            controlled by the user. N - Not a collectable interface. This is a manual setting controlled by the user.
+            S - Secondary interface. This interface meets all the qualifications to be a primary interface. N - Not a collectable interface.
+            This is a manual setting controlled by the user.
 
             If the snmpStorageFlag is set to "all", then all interfaces not set to 'N' will be collected. If the snmpStorageFlag is set to "select", then all
-            interfaces with 'P|S|C' will be collected. If the snmpStorageFlag is set to "primary", then only the interfaces set to 'P' will be collected.
+            interfaces with 'P|S' will be collected. If the snmpStorageFlag is set to "primary", then only the interfaces set to 'P' will be collected.
           </documentation>
         </annotation>
         <simpleType>
           <restriction base="string">
             <enumeration value="P"/>
             <enumeration value="S"/>
+            <enumeration value="C"/> <!-- only for backwards compatibility with very old requisitions -->
             <enumeration value="N"/>
           </restriction>
         </simpleType>

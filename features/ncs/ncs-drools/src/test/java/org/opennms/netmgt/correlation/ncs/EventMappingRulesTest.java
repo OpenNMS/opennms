@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -219,7 +218,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
     }
 	
 	@Test
-	@Ignore( "Not ready for this yet")
+	//@Ignore( "Not ready for this yet")
     @DirtiesContext
     public void testDupPwDown() throws Exception {
 		

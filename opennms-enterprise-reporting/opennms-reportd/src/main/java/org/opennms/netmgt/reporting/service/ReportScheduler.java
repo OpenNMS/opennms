@@ -74,6 +74,7 @@ public class ReportScheduler implements InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         
         

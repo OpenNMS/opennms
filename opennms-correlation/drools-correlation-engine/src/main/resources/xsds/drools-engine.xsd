@@ -26,6 +26,13 @@
         <element minOccurs="0" maxOccurs="unbounded" ref="this:global" />
       </sequence>
       <attribute name="name" type="string" use="required" />
+      <attribute name="assert-behaviour" use="optional" default="identity" >
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(identity|equality)" />
+          </restriction>
+        </simpleType>
+      </attribute>
     </complexType>
   </element>
   

@@ -30,7 +30,6 @@ package org.opennms.netmgt.model;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 
 public class OnmsIpInterfaceTest extends TestCase {
 

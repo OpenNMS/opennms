@@ -50,6 +50,7 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
      *
      * @throws java.lang.IllegalStateException if any.
      */
+    @Override
     public void afterPropertiesSet() throws IllegalStateException {
         Assert.state(m_eventIpcBroadcaster != null, "property eventIpcBroadcaster must be set");
     }

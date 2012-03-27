@@ -125,7 +125,7 @@ public class CustomSyslogParser extends SyslogParser {
             } else {
                 try {
                     timestamp = SyslogTimeStamp.getInstance().format(new Date());
-                } catch (IllegalArgumentException ex) {
+                } catch (final IllegalArgumentException ex) {
                     LogUtils.debugf(this, "ERROR INTERNAL DATE ERROR!");
                     timestamp = "";
                 }
@@ -199,7 +199,7 @@ public class CustomSyslogParser extends SyslogParser {
 
             try {
                 processId = Integer.parseInt(processIdStr);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 LogUtils.debugf(this, "Bad process id '%s'", processIdStr);
                 processId = 0;
             }
@@ -210,7 +210,7 @@ public class CustomSyslogParser extends SyslogParser {
 
         syslogMessage.setProcessId(processId);
         syslogMessage.setProcessName(processName);
-        syslogMessage.setMessage(message);
+        syslogMessage.setMessage(message.trim());
 
         return syslogMessage;
     }

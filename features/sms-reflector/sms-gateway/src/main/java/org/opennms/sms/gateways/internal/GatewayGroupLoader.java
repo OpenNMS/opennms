@@ -177,6 +177,7 @@ public class GatewayGroupLoader implements InitializingBean {
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		load();
 		for(GatewayGroup group : getGatewayGroups()){

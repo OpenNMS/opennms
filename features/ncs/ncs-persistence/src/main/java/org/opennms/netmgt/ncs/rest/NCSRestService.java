@@ -50,6 +50,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -57,10 +58,9 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,8 +77,6 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("NCS")
 @Transactional
 public class NCSRestService  {
-	
-	private static Logger s_log = LoggerFactory.getLogger(NCSRestService.class);
 	
 	@XmlRootElement(name = "components")
 	public static class ComponentList extends LinkedList<NCSComponent> {
@@ -177,9 +175,10 @@ public class NCSRestService  {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{type}/{foreignSource}:{foreignId}")
     public NCSComponent getComponent(@PathParam("type") String type, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) {
-    	
+    	LogUtils.debugf(this, "getComponent: type = %s, foreignSource = %s, foreignId = %s", type, foreignSource, foreignId);
+
     	if (m_componentRepo == null) {
-    		throw new IllegalStateException("components is null");
+    		throw new IllegalStateException("component repository is null");
     	}
     	
     	NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
@@ -191,11 +190,47 @@ public class NCSRestService  {
     	return component;
     }
     
+    /**
+     * <p>getNodes</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNodeList} object.
+     */
+    @POST
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Path("{type}/{foreignSource}:{foreignId}")
+    public NCSComponent addComponent(@PathParam("type") String type, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, NCSComponent subComponent) {
+    	LogUtils.debugf(this, "addComponent: type = %s, foreignSource = %s, foreignId = %s", type, foreignSource, foreignId);
+
+    	if (m_componentRepo == null) {
+    		throw new IllegalStateException("component repository is null");
+    	}
+    	
+    	final NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
+    	
+    	if (component == null) {
+    		throw new WebApplicationException(Status.BAD_REQUEST);
+    	}
+
+    	component.addSubcomponent(subComponent);
+    	
+    	try {
+    		m_componentRepo.saveOrUpdate(component);
+    	} catch (final DataAccessException e) {
+    		throw new WebApplicationException(e, Status.BAD_REQUEST);
+    	}
+    	return component;
+    }
+    
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addComponent(NCSComponent component) {
-        s_log.info("addComponent: Adding component " + component);
-        m_componentRepo.save(component);
+    public Response addComponents(NCSComponent component) {
+        LogUtils.infof(this, "addComponents: Adding component %s", component);
+        
+        try {
+        	m_componentRepo.save(component);
+    	} catch (final DataAccessException e) {
+    		throw new WebApplicationException(e, Status.BAD_REQUEST);
+    	}
         return Response.ok(component).build();
     }
 
@@ -203,7 +238,7 @@ public class NCSRestService  {
     @DELETE
     @Path("{type}/{foreignSource}:{foreignId}")
     public Response deleteComponent(@PathParam("type") String type, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) {
-        s_log.info(String.format("deleteComponent: Deleting component of type %s and foreignIdentity %s:%s", type, foreignSource, foreignId));
+        LogUtils.infof(this, "deleteComponent: Deleting component of type %s and foreignIdentity %s:%s", type, foreignSource, foreignId);
 
         NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
 

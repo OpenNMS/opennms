@@ -264,6 +264,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_subscriptionService != null, "subscriptionService must be set");        
         Assert.state(m_annotatedListener != null, "must set the annotatedListener property");

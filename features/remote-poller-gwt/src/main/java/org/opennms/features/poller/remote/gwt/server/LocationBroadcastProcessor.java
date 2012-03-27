@@ -99,6 +99,7 @@ public class LocationBroadcastProcessor implements InitializingBean, DisposableB
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         m_task = new TimerTask() {
             private Date m_lastRun = new Date();
