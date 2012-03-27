@@ -29,6 +29,10 @@ public class Edge{
 		return getTarget().getY();
 	}
 	
+	public String getId() {
+	    return getSource().getId() + ":" + getTarget().getId();
+	}
+	
 	public Vertex getTarget(){
 		return m_target;
 	}

@@ -50,15 +50,30 @@ public class TopologyWidgetTestApplication extends Application {
 			public void buttonClick(ClickEvent event) {
 				m_topologyComponent.addRandomNode();
 			}
+        });
+        
+        Button resetButton = new Button("Reset");
+        resetButton.addListener(new ClickListener() {
 
-			
-			
+            public void buttonClick(ClickEvent event) {
+                m_topologyComponent.resetGraph();
+            }
+        });
+        
+        Button removeVertexButton = new Button("Remove Vertex");
+        removeVertexButton.addListener(new ClickListener() {
+
+            public void buttonClick(ClickEvent event) {
+                m_topologyComponent.removeVertex();
+            }
+            
         });
         
         m_window.addComponent(slider);
         m_window.addComponent(addButton);
-        //m_window.addComponent(resetButton);
-        
+        m_window.addComponent(resetButton);
+        m_window.addComponent(removeVertexButton);
+        Tree tree = new Tree();
     }
 
 }

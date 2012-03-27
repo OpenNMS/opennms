@@ -37,6 +37,10 @@ public class D3 extends JavaScriptObject {
     public final native D3 enter() /*-{
         return this.enter();
     }-*/;
+    
+    public final native D3 update() /*-{
+        return this.update();
+    }-*/;
 
     public final native D3 attr(String propName, String value) /*-{
         return this.attr(propName, value);
@@ -73,4 +77,20 @@ public class D3 extends JavaScriptObject {
 	public final native D3 data(Edge[] links) /*-{
 		return this.data(links);
 	}-*/;
+
+    public final native D3 exit() /*-{
+        return this.exit();
+    }-*/;
+
+    public final native D3 remove() /*-{
+        return this.remove();
+    }-*/;
+
+    public final native D3 data(Object[] data, JavaScriptObject idFunc) /*-{
+        return this.data(data, idFunc);
+    }-*/;
+
+    public final native D3 text(JavaScriptObject textFunc) /*-{
+        return this.text(textFunc);
+    }-*/;
 }

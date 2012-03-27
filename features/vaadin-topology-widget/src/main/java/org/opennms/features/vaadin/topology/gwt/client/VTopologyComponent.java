@@ -11,12 +11,8 @@ import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
@@ -38,8 +34,10 @@ public class VTopologyComponent extends Composite implements Paintable {
     private int m_width;
     private int m_height;
     private Graph m_graph;
-	private D3 m_nodeGroup;
+	private D3 m_vertexGroup;
 	private double m_scale;
+    private boolean m_firstTime = true;
+    private D3 m_edgeGroup;
     
     public VTopologyComponent() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -56,7 +54,8 @@ public class VTopologyComponent extends Composite implements Paintable {
         m_width = 300;
         m_height = 300;
         m_svg = d3.select("#chart-2").append("svg").attr("width", 300).attr("height", 200);
-        m_nodeGroup = m_svg.append("g").attr("transform", "scale(1)");
+        m_edgeGroup = m_svg.append("g").attr("transform", "scale(1)");
+        m_vertexGroup = m_svg.append("g").attr("transform", "scale(1)");
         
         //drawGraph(m_graph);
 //        m_runButton.addClickHandler(new ClickHandler() {
@@ -72,30 +71,72 @@ public class VTopologyComponent extends Composite implements Paintable {
     }
 
     private void drawGraph(Graph graph) {
-		D3 lines = m_nodeGroup.selectAll("line")
-					.data(graph.getEdges())
-				.enter().append("line")
-					.attr("x1", getX1())
-					.attr("x2", getX2())
-					.attr("y1", getY1())
-					.attr("y2", getY2())
-					.style("stroke", "#ccc");
-				
-    	
-    	D3 circles = m_nodeGroup.selectAll(".little")
-						.data(graph.getVertices())
-						.enter()
-						.append("circle")
-						.attr("class", ".little")
-						.attr("cx", getX())
-						.attr("cy", getY())
-						.attr("r", 9);
-		
-			
-		
-						
-		
+        D3 lines = m_edgeGroup.selectAll("line")
+                .data(graph.getEdges().toArray(new Edge[0]), getEdgeId());
+        
+        D3 vertexGroup = m_vertexGroup.selectAll(".little")
+                .data(graph.getVertices().toArray(new Vertex[0]), getVertexId());
+        
+        lines.exit().transition().duration(500).attr("opacity", 0).remove();
+        vertexGroup.exit().transition().duration(500).attr("opacity", 0).remove();
+        
+        lines.transition().delay(500).duration(500)
+                .attr("x1", getX1())
+                .attr("x2", getX2())
+                .attr("y1", getY1())
+                .attr("y2", getY2())
+                .attr("opacity", 1);
+        
+        vertexGroup.transition().delay(500).duration(500)
+                .attr("transform", getTranslation())
+                .attr("opacity", 1);
+        
+        lines.enter().append("line")
+                .attr("opacity", 0)
+                .attr("x1", getX1())
+                .attr("x2", getX2())
+                .attr("y1", getY1())
+                .attr("y2", getY2())
+                .style("stroke", "#ccc").transition().delay(1000).duration(500)
+                .attr("opacity", 1);
+        
+        D3 vertex = vertexGroup.enter().append("g").attr("transform", getTranslation())
+                .attr("opacity", 0)
+                .attr("class", "little");
+                
+        vertex.append("circle").attr("r", 9);
+        
+        vertex.append("text").attr("dy", ".35em")
+            .attr("text-anchor", "middle").style("fill", "white")
+            .text(getVertexId());
+        
+        vertex.transition().delay(1000).duration(500).attr("opacity", 1);
+                
+        
 	}
+    
+    
+    private static native JavaScriptObject getTranslation() /*-{
+        return function(d){
+            var x = d.@org.opennms.features.vaadin.topology.gwt.client.Vertex::getX()();
+            var y = d.@org.opennms.features.vaadin.topology.gwt.client.Vertex::getY()();
+            return "translate(" + x + "," + y + ")";
+        }
+    }-*/;
+
+    private static native JavaScriptObject getEdgeId() /*-{
+        return function(d){
+            var retVal = d.@org.opennms.features.vaadin.topology.gwt.client.Edge::getId()();
+            return retVal;
+        }
+    }-*/;
+    
+    private static native JavaScriptObject getVertexId() /*-{
+        return function(d){
+            var retVal = d.@org.opennms.features.vaadin.topology.gwt.client.Vertex::getId()();
+            return retVal;
+        }
+    }-*/;
     
     private static native JavaScriptObject getX1() /*-{
 		
@@ -212,7 +253,6 @@ public class VTopologyComponent extends Composite implements Paintable {
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         
         if(client.updateComponent(this, uidl, true)) {
-            
             return;
         }
         
@@ -241,11 +281,11 @@ public class VTopologyComponent extends Composite implements Paintable {
         	
         }
         
-        Graph graphConverted = new Graph(vertices.toArray(new Vertex[0]), edges.toArray(new Edge[0]));
+        Graph graphConverted = new Graph(vertices, edges);
         setGraph(graphConverted);
         
     }
-
+    
 	private void setScale(double scale) {
 		if(m_scale != scale) {
 			m_scale = scale;
@@ -264,11 +304,12 @@ public class VTopologyComponent extends Composite implements Paintable {
 	}
 
 	private void repaintGraph() {
-		drawGraph(m_graph);
+        drawGraph(m_graph);
 	}
 
 	private void updateScale(double scale) {
-		m_nodeGroup.transition().duration(1000).attr("transform", "scale(" + scale + ")");
+		m_vertexGroup.transition().duration(1000).attr("transform", "scale(" + scale + ")");
+		m_edgeGroup.transition().duration(1000).attr("transform", "scale(" + scale + ")");
 		
 	}
 

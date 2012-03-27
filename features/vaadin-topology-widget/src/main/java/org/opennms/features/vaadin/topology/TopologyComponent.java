@@ -65,13 +65,23 @@ public class TopologyComponent extends AbstractComponent {
 		int x = (int) (Math.random() * 100);
 		int y = (int) (Math.random() * 100);
 		
-		int id = graph.getVertices().length;
+		int id = graph.getVertices().size();
 		Vertex vertex = new Vertex(id, id*10, id*10);
 		graph.addVertex(vertex);
-		graph.addEdge(new Edge(graph.getVertexById(1), vertex));
+		graph.addEdge(new Edge(graph.getVertices().get(0), vertex));
 		
 		requestRepaint();
 	}
+
+    public void resetGraph() {
+        m_graph = new Graph();
+        requestRepaint();
+    }
+
+    public void removeVertex() {
+        m_graph.removeRandomVertext();
+        requestRepaint();
+    }
    
 
 }
