@@ -9,6 +9,7 @@ import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 
 public class ResourceQueryExecuter extends JRAbstractQueryExecuter {
 
+    @SuppressWarnings("unchecked")
     protected ResourceQueryExecuter(JRDataset dataset, Map parametersMap) {
         super(dataset, parametersMap);
         parseQuery();
