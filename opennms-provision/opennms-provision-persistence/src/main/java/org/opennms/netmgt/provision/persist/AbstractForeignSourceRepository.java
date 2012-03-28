@@ -123,13 +123,16 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
     
     public void validate(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    	/*
     	final String name = foreignSource.getName();
 		if (name.contains(":")) {
     		throw new ForeignSourceRepositoryException("Foreign Source (" + name + ") cannot contain a colon!");
     	}
+    	*/
     }
     
     public void validate(final Requisition requisition) throws ForeignSourceRepositoryException {
+    	/*
     	final String foreignSource = requisition.getForeignSource();
 		if (foreignSource.contains(":")) {
     		throw new ForeignSourceRepositoryException("Foreign Source (" + foreignSource + ") cannot contain a colon!");
@@ -140,5 +143,6 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         		throw new ForeignSourceRepositoryException("Foreign ID (" + foreignId + ") for node " + node.getNodeLabel() + " in Foreign Source " + foreignSource + " cannot contain a colon!");
     		}
     	}
+    	*/
     }
 }

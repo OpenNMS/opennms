@@ -74,7 +74,9 @@ public class NCSComponentDao extends AbstractDaoHibernate<NCSComponent, Long> im
 		
 	}
 
+	// enforcing no colons seems to be not very feasible in The Real World
 	private void validateEntity(final NCSComponent entity) throws DataAccessException {
+		/*
 		if (entity.getForeignId().contains(":")) {
 			throw new InvalidForeignIdException("Foreign ID cannot contain a colon!");
 		}
@@ -84,6 +86,7 @@ public class NCSComponentDao extends AbstractDaoHibernate<NCSComponent, Long> im
 		for (final NCSComponent component : entity.getSubcomponents()) {
 			validateEntity(component);
 		}
+		*/
 	}
 
 	public static final class InvalidForeignIdException extends DataAccessException {
