@@ -82,11 +82,17 @@ public class OnmsCategoryResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsCategoryCollection getCategories(@PathParam("nodeCriteria") String nodeCriteria) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "getCategories: Can't find node " + nodeCriteria);
+        getReadLock().lock();
+        
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "getCategories: Can't find node " + nodeCriteria);
+            }
+            return new OnmsCategoryCollection(node.getCategories());
+        } finally {
+            getReadLock().unlock();
         }
-        return new OnmsCategoryCollection(node.getCategories());
     }
 
     /**
@@ -100,11 +106,17 @@ public class OnmsCategoryResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{categoryName}")
     public OnmsCategory getCategory(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "getCategory: Can't find node " + nodeCriteria);
+        getReadLock().lock();
+        
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "getCategory: Can't find node " + nodeCriteria);
+            }
+            return getCategory(node, categoryName);
+        } finally {
+            getReadLock().unlock();
         }
-        return getCategory(node, categoryName);
     }
 
     /**
@@ -117,21 +129,27 @@ public class OnmsCategoryResource extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addCategory(@PathParam("nodeCriteria") String nodeCriteria, OnmsCategory category) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "addCategory: Can't find node " + nodeCriteria);
+        getWriteLock().lock();
+        
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "addCategory: Can't find node " + nodeCriteria);
+            }
+            OnmsCategory found = m_categoryDao.findByName(category.getName());
+            if (found == null) {
+                log().debug("addCategory: Saving category " + category);
+                m_categoryDao.save(category);
+            } else {
+                category = found;
+            }
+            log().debug("addCategory: Adding category " + category + " to node " + nodeCriteria);
+            node.addCategory(category);
+            m_nodeDao.save(node);
+            return Response.ok().build();
+        } finally {
+            getWriteLock().unlock();
         }
-        OnmsCategory found = m_categoryDao.findByName(category.getName());
-        if (found == null) {
-            log().debug("addCategory: Saving category " + category);
-            m_categoryDao.save(category);
-        } else {
-            category = found;
-        }
-        log().debug("addCategory: Adding category " + category + " to node " + nodeCriteria);
-        node.addCategory(category);
-        m_nodeDao.save(node);
-        return Response.ok().build();
     }
     
     /**
@@ -146,26 +164,32 @@ public class OnmsCategoryResource extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{categoryName}")
     public Response updateCategory(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName, MultivaluedMapImpl params) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "updateCategory: Can't find node " + nodeCriteria);
-        }
-        OnmsCategory category = getCategory(node, categoryName);
-        if (category == null) {
-            throw getException(Status.BAD_REQUEST, "updateCategory: Category " + categoryName + " not found on node " + nodeCriteria);
-        }
-        log().debug("updateCategory: updating category " + category);
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
-        for(String key : params.keySet()) {
-            if (wrapper.isWritableProperty(key)) {
-                String stringValue = params.getFirst(key);
-                Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
-                wrapper.setPropertyValue(key, value);
+        getWriteLock().lock();
+        
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "updateCategory: Can't find node " + nodeCriteria);
             }
+            OnmsCategory category = getCategory(node, categoryName);
+            if (category == null) {
+                throw getException(Status.BAD_REQUEST, "updateCategory: Category " + categoryName + " not found on node " + nodeCriteria);
+            }
+            log().debug("updateCategory: updating category " + category);
+            BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
+            for(String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    String stringValue = params.getFirst(key);
+                    Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                }
+            }
+            log().debug("updateCategory: category " + category + " updated");
+            m_nodeDao.saveOrUpdate(node);
+            return Response.ok().build();
+        } finally {
+            getWriteLock().unlock();
         }
-        log().debug("updateCategory: category " + category + " updated");
-        m_nodeDao.saveOrUpdate(node);
-        return Response.ok().build();
     }
     
     /**
@@ -178,18 +202,24 @@ public class OnmsCategoryResource extends OnmsRestService {
     @DELETE
     @Path("{categoryName}")
     public Response deleteCaegory(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "deleteCaegory: Can't find node " + nodeCriteria);
+        getWriteLock().lock();
+        
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "deleteCaegory: Can't find node " + nodeCriteria);
+            }
+            OnmsCategory category = getCategory(node, categoryName);
+            if (category == null) {
+                throw getException(Status.BAD_REQUEST, "deleteCaegory: Category " + categoryName + " not found on node " + nodeCriteria);
+            }
+            log().debug("deleteCaegory: deleting category " + categoryName + " from node " + nodeCriteria);
+            node.getCategories().remove(category);
+            m_nodeDao.saveOrUpdate(node);
+            return Response.ok().build();
+        } finally {
+            getWriteLock().unlock();
         }
-        OnmsCategory category = getCategory(node, categoryName);
-        if (category == null) {
-            throw getException(Status.BAD_REQUEST, "deleteCaegory: Category " + categoryName + " not found on node " + nodeCriteria);
-        }
-        log().debug("deleteCaegory: deleting category " + categoryName + " from node " + nodeCriteria);
-        node.getCategories().remove(category);
-        m_nodeDao.saveOrUpdate(node);
-        return Response.ok().build();
     }
     
     private OnmsCategory getCategory(OnmsNode node, String categoryName) {

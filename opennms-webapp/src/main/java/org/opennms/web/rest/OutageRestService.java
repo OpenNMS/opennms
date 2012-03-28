@@ -97,7 +97,12 @@ public class OutageRestService extends OnmsRestService {
     @Path("{outageId}")
     @Transactional
     public OnmsOutage getOutage(@PathParam("outageId") final String outageId) {
-    	return m_outageDao.get(Integer.valueOf(outageId));
+        getReadLock().lock();
+        try {
+            return m_outageDao.get(Integer.valueOf(outageId));
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
     /**
@@ -110,7 +115,12 @@ public class OutageRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-    	return Integer.toString(m_outageDao.countAll());
+        getReadLock().lock();
+        try {
+            return Integer.toString(m_outageDao.countAll());
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -122,15 +132,20 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsOutageCollection getOutages() {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
-        applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
-
-        final OnmsOutageCollection coll = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
-
-        //For getting totalCount
-        coll.setTotalCount(m_outageDao.countMatching(builder.count().toCriteria()));
-
-        return coll;
+        getReadLock().lock();
+        try {
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+    
+            final OnmsOutageCollection coll = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
+    
+            //For getting totalCount
+            coll.setTotalCount(m_outageDao.countMatching(builder.count().toCriteria()));
+    
+            return coll;
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -144,21 +159,27 @@ public class OutageRestService extends OnmsRestService {
     @Transactional
     @Path("forNode/{nodeId}")
     public OnmsOutageCollection forNodeId(@PathParam("nodeId") final int nodeId) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
-        builder.eq("node.id", nodeId);
-        final Date d = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7));
-        builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", d));
-
-        builder.alias("monitoredService", "monitoredService");
-        builder.alias("monitoredService.ipInterface", "ipInterface");
-        builder.alias("monitoredService.ipInterface.node", "node");
-        builder.alias("monitoredService.serviceType", "serviceType");
-
-        applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
-
-        builder.orderBy("id").desc();
-
-        return new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
+        getReadLock().lock();
+        
+        try {
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+            builder.eq("node.id", nodeId);
+            final Date d = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7));
+            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", d));
+    
+            builder.alias("monitoredService", "monitoredService");
+            builder.alias("monitoredService.ipInterface", "ipInterface");
+            builder.alias("monitoredService.ipInterface.node", "node");
+            builder.alias("monitoredService.serviceType", "serviceType");
+    
+            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+    
+            builder.orderBy("id").desc();
+    
+            return new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
+        } finally {
+            getReadLock().unlock();
+        }
     }
 }
 
