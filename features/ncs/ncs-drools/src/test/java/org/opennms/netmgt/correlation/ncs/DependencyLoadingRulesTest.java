@@ -89,16 +89,16 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
 		NCSComponent svc = new NCSBuilder("Service", "NA-Service", "123")
 		.setName("CokeP2P")
 		.pushComponent("ServiceElement", "NA-ServiceElement", "8765")
-			.setName("PE1:SE1")
+			.setName("PE1,SE1")
 			.setNodeIdentity("space", "1111-PE1")
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:jnxVpnIf")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,jnxVpnIf")
 				.setName("jnxVpnIf")
 				.setNodeIdentity("space", "1111-PE1")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp")
 				.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown")
 				.setAttribute("jnxVpnIfVpnType", "5")
 				.setAttribute("jnxVpnIfVpnName", "ge-1/0/2.50")
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:link")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,link")
 					.setName("link")
 					.setNodeIdentity("space", "1111-PE1")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/linkUp")
@@ -106,7 +106,7 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
 					.setAttribute("linkName", "ge-1/0/2")
 				.popComponent()
 			.popComponent()
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:jnxVpnPw-vcid(50)")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,jnxVpnPw-vcid(50)")
 				.setName("jnxVpnPw-vcid(50)")
 				.setNodeIdentity("space", "1111-PE1")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp")
@@ -114,14 +114,14 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
 				.setAttribute("jnxVpnPwVpnType", "5")
 				.setAttribute("jnxVpnPwVpnName", "ge-1/0/2.50")
 				.setDependenciesRequired(DependencyRequirements.ANY)
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspA-PE1-PE2")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,lspA-PE1-PE2")
 					.setName("lspA-PE1-PE2")
 					.setNodeIdentity("space", "1111-PE1")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
 					.setAttribute("mplsLspName", "lspA-PE1-PE2")
 				.popComponent()
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspB-PE1-PE2")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,lspB-PE1-PE2")
 					.setName("lspB-PE1-PE2")
 					.setNodeIdentity("space", "1111-PE1")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
@@ -131,16 +131,16 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
 			.popComponent()
 		.popComponent()
 		.pushComponent("ServiceElement", "NA-ServiceElement", "9876")
-			.setName("PE2:SE1")
+			.setName("PE2,SE1")
 			.setNodeIdentity("space", "2222-PE2")
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnIf")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnIf")
 				.setName("jnxVpnIf")
 				.setNodeIdentity("space", "2222-PE2")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp")
 				.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown")
 				.setAttribute("jnxVpnIfVpnType", "5")
 				.setAttribute("jnxVpnIfVpnName", "ge-3/1/4.50")
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:link")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,link")
 					.setName("link")
 					.setNodeIdentity("space", "2222-PE2")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/linkUp")
@@ -148,7 +148,7 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
 					.setAttribute("linkName", "ge-3/1/4")
 				.popComponent()
 			.popComponent()
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)")
 				.setName("jnxVpnPw-vcid(50)")
 				.setNodeIdentity("space", "2222-PE2")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp")
@@ -156,14 +156,14 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
 				.setAttribute("jnxVpnPwVpnType", "5")
 				.setAttribute("jnxVpnPwVpnName", "ge-3/1/4.50")
 				.setDependenciesRequired(DependencyRequirements.ANY)
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspA-PE2-PE1")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,lspA-PE2-PE1")
 					.setName("lspA-PE2-PE1")
 					.setNodeIdentity("space", "2222-PE2")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
 					.setAttribute("mplsLspName", "lspA-PE2-PE1")
 				.popComponent()
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspB-PE2-PE1")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,lspB-PE2-PE1")
 					.setName("lspB-PE2-PE1")
 					.setNodeIdentity("space", "2222-PE2")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
@@ -177,7 +177,7 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
 		m_repository.save(svc);
 		
 //		m_pwCompId = svc.getSubcomponent("NA-ServiceElement", "9876")
-//		                 .getSubcomponent("NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)")
+//		                 .getSubcomponent("NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)")
 //		                 .getId();
 		
 		// Get engine
@@ -198,7 +198,7 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
         resetFacts();
         
         // component to request dependencies for
-        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)");
+        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)");
         DependenciesNeeded dependenciesNeeded = new DependenciesNeeded(b, "requestor1");
 
         // this component depends on b
@@ -225,7 +225,7 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
         resetFacts();
         
         // component to request dependencies for
-        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)");
+        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)");
         DependenciesNeeded dependenciesNeeded = new DependenciesNeeded(b, "requestor1");
 
         // this component depends on b
@@ -260,7 +260,7 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
         resetFacts();
         
         // component to request dependencies for
-        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)");
+        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)");
         DependenciesNeeded dependenciesNeeded = new DependenciesNeeded(b, "requestor1");
 
         // this component depends on b
@@ -316,7 +316,7 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
         resetFacts();
         
         // component to request dependencies for
-        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)");
+        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)");
         DependenciesNeeded dependenciesNeeded = new DependenciesNeeded(b, "requestor1");
 
         // this component depends on b
@@ -355,7 +355,7 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
         resetFacts();
         
         // component to request dependencies for
-        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)");
+        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)");
         DependenciesNeeded dependenciesNeeded = new DependenciesNeeded(b, "requestor1");
 
         // this component depends on b
@@ -402,7 +402,7 @@ public class DependencyLoadingRulesTest extends CorrelationRulesTestCase {
         resetFacts();
         
         // component to request dependencies for
-        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)");
+        Component b = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)");
         DependenciesNeeded dependenciesNeeded = new DependenciesNeeded(b, "requestor1");
 
         // this component depends on b

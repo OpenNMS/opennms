@@ -39,6 +39,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -83,6 +84,7 @@ public class UserRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsUserList getUsers() {
         final OnmsUserList list;
+        getReadLock().lock();
         try {
             list = m_userManager.getOnmsUserList();
             Collections.sort(list, new Comparator<OnmsUser>() {
@@ -94,6 +96,8 @@ public class UserRestService extends OnmsRestService {
             return list;
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
+        } finally {
+            getReadLock().unlock();
         }
     }
 
@@ -101,25 +105,32 @@ public class UserRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{username}")
     public OnmsUser getUser(@PathParam("username") final String username) {
+        getReadLock().lock();
         try {
             final OnmsUser user = m_userManager.getOnmsUser(username);
             if (user != null) return user;
+            throw getException(Status.NOT_FOUND, username + " does not exist");
         } catch (final Throwable t) {
+            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
             throw getException(Status.BAD_REQUEST, t);
+        } finally {
+            getReadLock().unlock();
         }
-        throw getException(Status.NOT_FOUND, username + " does not exist");
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addUser(final OnmsUser user) {
-        log().debug("addUser: Adding user " + user);
+        getWriteLock().lock();
         try {
+            log().debug("addUser: Adding user " + user);
             m_userManager.save(user);
+            return Response.ok(user).build();
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
+        } finally {
+            getWriteLock().unlock();
         }
-        return Response.ok(user).build();
     }
     
     @PUT
@@ -127,48 +138,58 @@ public class UserRestService extends OnmsRestService {
     @Path("{userCriteria}")
     public Response updateUser(@PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
         OnmsUser user = null;
+        getWriteLock().lock();
         try {
-            user = m_userManager.getOnmsUser(userCriteria);
-        } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, t);
-        }
-        if (user == null) throw getException(Status.BAD_REQUEST, "updateUser: User does not exist: " + userCriteria);
-        log().debug("updateUser: updating user " + user);
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(user);
-        for(final String key : params.keySet()) {
-            if (wrapper.isWritableProperty(key)) {
-                final String stringValue = params.getFirst(key);
-                @SuppressWarnings("unchecked")
-                final Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
-                wrapper.setPropertyValue(key, value);
+            try {
+                user = m_userManager.getOnmsUser(userCriteria);
+            } catch (final Throwable t) {
+                throw getException(Status.BAD_REQUEST, t);
             }
+            if (user == null) throw getException(Status.BAD_REQUEST, "updateUser: User does not exist: " + userCriteria);
+            log().debug("updateUser: updating user " + user);
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(user);
+            for(final String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    final String stringValue = params.getFirst(key);
+                    @SuppressWarnings("unchecked")
+                    final Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                }
+            }
+            log().debug("updateUser: user " + user + " updated");
+            try {
+                m_userManager.save(user);
+            } catch (final Throwable t) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, t);
+            }
+            return Response.ok(user).build();
+        } finally {
+            getWriteLock().unlock();
         }
-        log().debug("updateUser: user " + user + " updated");
-        try {
-            m_userManager.save(user);
-        } catch (final Throwable t) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
-        }
-        return Response.ok(user).build();
     }
     
     @DELETE
     @Path("{userCriteria}")
     public Response deleteUser(@PathParam("userCriteria") final String userCriteria) {
-        OnmsUser user = null;
+        getWriteLock().lock();
         try {
-            user = m_userManager.getOnmsUser(userCriteria);
-        } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, t);
+            OnmsUser user = null;
+            try {
+                user = m_userManager.getOnmsUser(userCriteria);
+            } catch (final Throwable t) {
+                throw getException(Status.BAD_REQUEST, t);
+            }
+            if (user == null) throw getException(Status.BAD_REQUEST, "deleteUser: User does not exist: " + userCriteria);
+            log().debug("deleteUser: deleting user " + user);
+            try {
+                m_userManager.deleteUser(user.getUsername());
+            } catch (final Throwable t) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, t);
+            }
+            return Response.ok().build();
+        } finally {
+            getWriteLock().unlock();
         }
-        if (user == null) throw getException(Status.BAD_REQUEST, "deleteUser: User does not exist: " + userCriteria);
-        log().debug("deleteUser: deleting user " + user);
-        try {
-            m_userManager.deleteUser(user.getUsername());
-        } catch (final Throwable t) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
-        }
-        return Response.ok().build();
     }
 
 }

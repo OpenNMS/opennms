@@ -31,6 +31,9 @@ package org.opennms.web.rest;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.Method;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -63,6 +66,9 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 1.8.1
  */
 public class OnmsRestService {
+    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
 
 	protected static final int DEFAULT_LIMIT = 10;
 
@@ -75,7 +81,15 @@ public class OnmsRestService {
 		super();
 	}
 
-    protected void applyQueryFilters(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
+	protected Lock getReadLock() {
+	    return m_readLock;
+	}
+	
+	protected Lock getWriteLock() {
+	    return m_writeLock;
+	}
+
+   protected void applyQueryFilters(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
 		final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
 	    params.putAll(p);
 

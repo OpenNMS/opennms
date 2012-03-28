@@ -85,8 +85,13 @@ public class NotificationRestService extends OnmsRestService {
     @Path("{notifId}")
     @Transactional
     public OnmsNotification getNotification(@PathParam("notifId") String notifId) {
-    	OnmsNotification result= m_notifDao.get(new Integer(notifId));
-    	return result;
+        getReadLock().lock();
+        try {
+        	OnmsNotification result= m_notifDao.get(new Integer(notifId));
+        	return result;
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
     /**
@@ -99,7 +104,12 @@ public class NotificationRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-    	return Integer.toString(m_notifDao.countAll());
+        getReadLock().lock();
+        try {
+            return Integer.toString(m_notifDao.countAll());
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -111,15 +121,21 @@ public class NotificationRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsNotificationCollection getNotifications() {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
-        applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
-        builder.orderBy("notifyId").desc();
-
-        OnmsNotificationCollection coll = new OnmsNotificationCollection(m_notifDao.findMatching(builder.toCriteria()));
-
-        coll.setTotalCount(m_notifDao.countMatching(builder.count().toCriteria()));
-
-        return coll;
+        getReadLock().lock();
+        
+        try {
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
+            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+            builder.orderBy("notifyId").desc();
+    
+            OnmsNotificationCollection coll = new OnmsNotificationCollection(m_notifDao.findMatching(builder.toCriteria()));
+    
+            coll.setTotalCount(m_notifDao.countMatching(builder.count().toCriteria()));
+    
+            return coll;
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
     /**
@@ -133,11 +149,17 @@ public class NotificationRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
     public void updateNotification(@PathParam("notifId") String notifId, @FormParam("ack") Boolean ack) {
-    	OnmsNotification notif=m_notifDao.get(new Integer(notifId));
-    	if(ack==null) {
-    		throw new  IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
-    	}
-       	processNotifAck(notif,ack);
+        getWriteLock().lock();
+        
+        try {
+        	OnmsNotification notif=m_notifDao.get(new Integer(notifId));
+        	if(ack==null) {
+        		throw new  IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
+        	}
+           	processNotifAck(notif,ack);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
     
 	/**
@@ -149,19 +171,24 @@ public class NotificationRestService extends OnmsRestService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
 	public void updateNotifications(final MultivaluedMapImpl params) {
-
-		Boolean ack=false;
-		if(params.containsKey("ack")) {
-			ack="true".equals(params.getFirst("ack"));
-			params.remove("ack");
-		}
-
-		final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
-		applyQueryFilters(params, builder);
-		
-		for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
-			processNotifAck(notif, ack);
-		}
+	    getWriteLock().lock();
+	    
+	    try {
+    		Boolean ack=false;
+    		if(params.containsKey("ack")) {
+    			ack="true".equals(params.getFirst("ack"));
+    			params.remove("ack");
+    		}
+    
+    		final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
+    		applyQueryFilters(params, builder);
+    		
+    		for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
+    			processNotifAck(notif, ack);
+    		}
+	    } finally {
+	        getWriteLock().unlock();
+	    }
 	}
 
 

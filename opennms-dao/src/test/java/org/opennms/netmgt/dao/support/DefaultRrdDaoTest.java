@@ -111,7 +111,21 @@ public class DefaultRrdDaoTest extends TestCase {
         assertNotNull("value should not be null", value);
         assertEquals("value", Double.NaN, value);
     }
-    
+
+    // NMS-5275
+    public void testPrintValueWithNegativeNan() throws Exception {
+        long end = System.currentTimeMillis();
+        long start = end - (24 * 60 * 60 * 1000);
+        OnmsResource childResource = preparePrintValueTest(start, end, "-nan");   
+
+        m_mocks.replayAll();
+        Double value = m_dao.getPrintValue(childResource.getAttributes().iterator().next(), "AVERAGE", start, end);
+        m_mocks.verifyAll();
+        
+        assertNotNull("value should not be null", value);
+        assertEquals("value", Double.NaN, value);
+    }
+
     public void testPrintValueWithBogusLine() throws Exception {
         long end = System.currentTimeMillis();
         long start = end - (24 * 60 * 60 * 1000);

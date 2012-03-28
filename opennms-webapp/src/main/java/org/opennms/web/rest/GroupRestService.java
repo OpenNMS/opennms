@@ -39,6 +39,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -82,8 +83,10 @@ public class GroupRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsGroupList getGroups() {
-        final OnmsGroupList list;
+        getReadLock().lock();
+        
         try {
+            final OnmsGroupList list;
             list = m_groupManager.getOnmsGroupList();
             Collections.sort(list, new Comparator<OnmsGroup>() {
                 @Override
@@ -94,6 +97,8 @@ public class GroupRestService extends OnmsRestService {
             return list;
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
+        } finally {
+            getReadLock().unlock();
         }
     }
 
@@ -101,87 +106,122 @@ public class GroupRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{groupName}")
     public OnmsGroup getGroup(@PathParam("groupName") final String groupName) {
+        getReadLock().lock();
+        
         try {
             final OnmsGroup group = m_groupManager.getOnmsGroup(groupName);
             if (group != null) return group;
+            throw getException(Status.NOT_FOUND, groupName + " does not exist");
         } catch (final Throwable t) {
+            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
             throw getException(Status.BAD_REQUEST, t);
+        } finally {
+            getReadLock().unlock();
         }
-        throw getException(Status.NOT_FOUND, groupName + " does not exist");
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addGroup(final OnmsGroup group) {
-        log().debug("addGroup: Adding group " + group);
+        getWriteLock().lock();
+        
         try {
+            log().debug("addGroup: Adding group " + group);
             m_groupManager.save(group);
+            return Response.ok(group).build();
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
+        } finally {
+            getWriteLock().unlock();
         }
-        return Response.ok(group).build();
     }
     
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{groupName}")
     public Response updateGroup(@PathParam("groupName") final String groupName, final MultivaluedMapImpl params) {
-        OnmsGroup group = null;
+        getWriteLock().lock();
+        
         try {
-            group = m_groupManager.getOnmsGroup(groupName);
-        } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, t);
-        }
-        if (group == null) throw getException(Status.BAD_REQUEST, "updateGroup: Group does not exist: " + groupName);
-        log().debug("updateGroup: updating group " + group);
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(group);
-        for(final String key : params.keySet()) {
-            if (wrapper.isWritableProperty(key)) {
-                final String stringValue = params.getFirst(key);
-                @SuppressWarnings("unchecked")
-                final Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
-                wrapper.setPropertyValue(key, value);
+            OnmsGroup group = null;
+            try {
+                group = m_groupManager.getOnmsGroup(groupName);
+            } catch (final Throwable t) {
+                throw getException(Status.BAD_REQUEST, t);
             }
+            if (group == null) throw getException(Status.BAD_REQUEST, "updateGroup: Group does not exist: " + groupName);
+            log().debug("updateGroup: updating group " + group);
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(group);
+            for(final String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    final String stringValue = params.getFirst(key);
+                    @SuppressWarnings("unchecked")
+                    final Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                }
+            }
+            log().debug("updateGroup: group " + group + " updated");
+            try {
+                m_groupManager.save(group);
+            } catch (final Throwable t) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, t);
+            }
+            return Response.ok(group).build();
+        } finally {
+            getWriteLock().unlock();
         }
-        log().debug("updateGroup: group " + group + " updated");
-        try {
-            m_groupManager.save(group);
-        } catch (final Throwable t) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
-        }
-        return Response.ok(group).build();
     }
     
     @DELETE
     @Path("{groupName}")
     public Response deleteGroup(@PathParam("groupName") final String groupName) {
-        final OnmsGroup group = getOnmsGroup(groupName);
-        log().debug("deleteGroup: deleting group " + group);
+        getWriteLock().lock();
         try {
+            final OnmsGroup group = getOnmsGroup(groupName);
+            log().debug("deleteGroup: deleting group " + group);
             m_groupManager.deleteGroup(groupName);
+            return Response.ok().build();
         } catch (final Throwable t) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
+            throw getException(Status.BAD_REQUEST, t);
+        } finally {
+            getWriteLock().unlock();
         }
-        return Response.ok().build();
     }
 
     @PUT
     @Path("{groupName}/users/{userName}")
     public Response addUser(@PathParam("groupName") final String groupName, @PathParam("userName") final String userName) {
-        final OnmsGroup group = getOnmsGroup(groupName);
-        group.addUser(userName);
-        return Response.ok().build();
+        getWriteLock().lock();
+        try {
+            final OnmsGroup group = getOnmsGroup(groupName);
+            group.addUser(userName);
+            m_groupManager.save(group);
+            return Response.ok().build();
+        } catch (final Throwable t) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     @DELETE
     @Path("{groupName}/users/{userName}")
     public Response removeUser(@PathParam("groupName") final String groupName, @PathParam("userName") final String userName) {
-        final OnmsGroup group = getOnmsGroup(groupName);
-        if (group.getUsers().contains(userName)) {
-            group.removeUser(userName);
-            return Response.ok().build();
-        } else {
-            throw getException(Status.BAD_REQUEST, "User is not in the group '" + groupName + "': " + userName);
+        getWriteLock().lock();
+        try {
+            final OnmsGroup group = getOnmsGroup(groupName);
+            if (group.getUsers().contains(userName)) {
+                group.removeUser(userName);
+                m_groupManager.save(group);
+                return Response.ok().build();
+            } else {
+                throw getException(Status.BAD_REQUEST, "User is not in the group '" + groupName + "': " + userName);
+            }
+        } catch (final Throwable t) {
+            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
+        } finally {
+            getWriteLock().unlock();
         }
     }
     
