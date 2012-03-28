@@ -97,11 +97,11 @@ public class OutageRestService extends OnmsRestService {
     @Path("{outageId}")
     @Transactional
     public OnmsOutage getOutage(@PathParam("outageId") final String outageId) {
-        getReadLock().lock();
+        readLock();
         try {
             return m_outageDao.get(Integer.valueOf(outageId));
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -115,11 +115,11 @@ public class OutageRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-        getReadLock().lock();
+        readLock();
         try {
             return Integer.toString(m_outageDao.countAll());
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -132,7 +132,7 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsOutageCollection getOutages() {
-        getReadLock().lock();
+        readLock();
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
             applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
@@ -144,7 +144,7 @@ public class OutageRestService extends OnmsRestService {
     
             return coll;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -159,7 +159,7 @@ public class OutageRestService extends OnmsRestService {
     @Transactional
     @Path("forNode/{nodeId}")
     public OnmsOutageCollection forNodeId(@PathParam("nodeId") final int nodeId) {
-        getReadLock().lock();
+        readLock();
         
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
@@ -178,7 +178,7 @@ public class OutageRestService extends OnmsRestService {
     
             return new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 }

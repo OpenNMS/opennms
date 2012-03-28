@@ -73,14 +73,14 @@ public class OnmsMapElementResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsMapElementList getMapElements(@PathParam("mapId") final int mapId) {
-        getReadLock().lock();
+        readLock();
         try {
             if (log().isDebugEnabled()) log().debug("getMapElements: reading elements for map " + mapId);
             final OnmsMap map = m_mapDao.get(mapId);
             if (map == null) throw getException(Response.Status.BAD_REQUEST, "getMapElements: can't find map " + mapId);
             return new OnmsMapElementList(map.getMapElements());
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 }

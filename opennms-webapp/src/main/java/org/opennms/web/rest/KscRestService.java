@@ -90,14 +90,14 @@ public class KscRestService extends OnmsRestService {
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Transactional
     public KscReportCollection getReports() throws ParseException {
-        getReadLock().lock();
+        readLock();
 
         try {
             final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportList());
             reports.setTotalCount(reports.size());
             return reports;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -106,7 +106,7 @@ public class KscRestService extends OnmsRestService {
 	@Path("{reportId}")
 	@Transactional
 	public KscReport getReport(@PathParam("reportId") final Integer reportId) {
-	    getReadLock().lock();
+	    readLock();
 	    
 	    try {
             final Map<Integer, String> reportList = m_kscReportService.getReportList();
@@ -114,7 +114,7 @@ public class KscRestService extends OnmsRestService {
             if (label == null) throw getException(Status.NOT_FOUND, "No such report id " + reportId);
             return new KscReport(reportId, label);
 	    } finally {
-	        getReadLock().unlock();
+	        readUnlock();
 	    }
 	}
 
@@ -123,11 +123,11 @@ public class KscRestService extends OnmsRestService {
 	@Path("count")
 	@Transactional
 	public String getCount() {
-	    getReadLock().lock();
+	    readLock();
 	    try {
 	        return Integer.toString(m_kscReportService.getReportList().size());
 	    } finally {
-	        getReadLock().unlock();
+	        readUnlock();
 	    }
 	}
 
@@ -141,7 +141,7 @@ public class KscRestService extends OnmsRestService {
         @QueryParam("resourceId") final String resourceId,
         @QueryParam("timespan") String timespan
     ) {
-	    getWriteLock().lock();
+	    writeLock();
 	    
 	    try {
     	    if (kscReportId == null || reportName == null || reportName == "" || resourceId == null || resourceId == "") {
@@ -178,7 +178,7 @@ public class KscRestService extends OnmsRestService {
             }
     	    return Response.ok().build();
 	    } finally {
-	        getWriteLock().unlock();
+	        writeUnlock();
 	    }
 	}
 	

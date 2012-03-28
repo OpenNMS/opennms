@@ -84,7 +84,7 @@ public class UserRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsUserList getUsers() {
         final OnmsUserList list;
-        getReadLock().lock();
+        readLock();
         try {
             list = m_userManager.getOnmsUserList();
             Collections.sort(list, new Comparator<OnmsUser>() {
@@ -97,7 +97,7 @@ public class UserRestService extends OnmsRestService {
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -105,7 +105,7 @@ public class UserRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{username}")
     public OnmsUser getUser(@PathParam("username") final String username) {
-        getReadLock().lock();
+        readLock();
         try {
             final OnmsUser user = m_userManager.getOnmsUser(username);
             if (user != null) return user;
@@ -114,14 +114,14 @@ public class UserRestService extends OnmsRestService {
             if (t instanceof WebApplicationException) throw (WebApplicationException)t;
             throw getException(Status.BAD_REQUEST, t);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addUser(final OnmsUser user) {
-        getWriteLock().lock();
+        writeLock();
         try {
             log().debug("addUser: Adding user " + user);
             m_userManager.save(user);
@@ -129,7 +129,7 @@ public class UserRestService extends OnmsRestService {
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -138,7 +138,7 @@ public class UserRestService extends OnmsRestService {
     @Path("{userCriteria}")
     public Response updateUser(@PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
         OnmsUser user = null;
-        getWriteLock().lock();
+        writeLock();
         try {
             try {
                 user = m_userManager.getOnmsUser(userCriteria);
@@ -164,14 +164,14 @@ public class UserRestService extends OnmsRestService {
             }
             return Response.ok(user).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
     @DELETE
     @Path("{userCriteria}")
     public Response deleteUser(@PathParam("userCriteria") final String userCriteria) {
-        getWriteLock().lock();
+        writeLock();
         try {
             OnmsUser user = null;
             try {
@@ -188,7 +188,7 @@ public class UserRestService extends OnmsRestService {
             }
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 

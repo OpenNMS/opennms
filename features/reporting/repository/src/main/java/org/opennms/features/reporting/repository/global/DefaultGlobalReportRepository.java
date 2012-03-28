@@ -312,8 +312,10 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         m_remoteRepositoryConfigDao = remoteRepositoryConfigDao;
 
         /**
+         * Clear all local-repositories, then
          * Add local-repository to repository list.
          */
+        this.m_repositoryList.clear();
         this.m_repositoryList.add(m_localReportRepository);
 
         /**
@@ -343,6 +345,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     public void reloadConfigurationFiles() {
         try {
             m_remoteRepositoryConfigDao.loadConfiguration();
+            this.setRemoteRepositoryConfigDao(m_remoteRepositoryConfigDao);
             m_localReportRepository.loadConfiguration();
         } catch (Exception e) {
             logger.error("Could not reload configuration on repositories: '{}'", e.getMessage());

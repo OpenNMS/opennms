@@ -85,12 +85,12 @@ public class NotificationRestService extends OnmsRestService {
     @Path("{notifId}")
     @Transactional
     public OnmsNotification getNotification(@PathParam("notifId") String notifId) {
-        getReadLock().lock();
+        readLock();
         try {
         	OnmsNotification result= m_notifDao.get(new Integer(notifId));
         	return result;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -104,11 +104,11 @@ public class NotificationRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-        getReadLock().lock();
+        readLock();
         try {
             return Integer.toString(m_notifDao.countAll());
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -121,7 +121,7 @@ public class NotificationRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsNotificationCollection getNotifications() {
-        getReadLock().lock();
+        readLock();
         
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
@@ -134,7 +134,7 @@ public class NotificationRestService extends OnmsRestService {
     
             return coll;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -149,7 +149,7 @@ public class NotificationRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
     public void updateNotification(@PathParam("notifId") String notifId, @FormParam("ack") Boolean ack) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
         	OnmsNotification notif=m_notifDao.get(new Integer(notifId));
@@ -158,7 +158,7 @@ public class NotificationRestService extends OnmsRestService {
         	}
            	processNotifAck(notif,ack);
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -171,7 +171,7 @@ public class NotificationRestService extends OnmsRestService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
 	public void updateNotifications(final MultivaluedMapImpl params) {
-	    getWriteLock().lock();
+	    writeLock();
 	    
 	    try {
     		Boolean ack=false;
@@ -187,7 +187,7 @@ public class NotificationRestService extends OnmsRestService {
     			processNotifAck(notif, ack);
     		}
 	    } finally {
-	        getWriteLock().unlock();
+	        writeUnlock();
 	    }
 	}
 
