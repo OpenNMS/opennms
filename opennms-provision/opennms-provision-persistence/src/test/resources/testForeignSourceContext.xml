@@ -25,4 +25,9 @@
   <bean id="fusedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FusedForeignSourceRepository">
   	<qualifier value="fused" />
   </bean>
+
+  <bean id="cachingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.CachingForeignSourceRepository">
+  	<qualifier value="caching" />
+  	<property name="foreignSourceRepository" ref="fusedForeignSourceRepository" />
+  </bean>
 </beans>
