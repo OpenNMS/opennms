@@ -2103,8 +2103,8 @@
 <event-file>events/JuniperEvents/mbg/mib-jnx-mobile-gateway-sgw-mfwd.xml</event-file>
 <event-file>events/JuniperEvents/mbg/mib-jnx-mobile-gateway-sgw-sm.xml</event-file>
 <!-- Events for the vse-mcg family -->
-<event-file>events/JuniperEvents/vse-mcg/MME4.0_036.1.39_VSE_eventconf.xml</event-file>
-<event-file>events/JuniperEvents/vse-mcg/MME4.0_036.1.39_APP_eventconf.xml</event-file>
+<event-file>events/JuniperEvents/vse-mcg/MME5.0_032.0.20A_APP_eventconf.xml</event-file>
+<event-file>events/JuniperEvents/vse-mcg/MME5.0_032.0.20A_VSE_eventconf.xml</event-file>
 <!-- Events for the mfc family -->
 <event-file>events/JuniperEvents/mfc/Juniper.MFD.events.xml</event-file>
 <event-file>events/JuniperEvents/mfc/NodeIface.Correlator.events.xml</event-file>
