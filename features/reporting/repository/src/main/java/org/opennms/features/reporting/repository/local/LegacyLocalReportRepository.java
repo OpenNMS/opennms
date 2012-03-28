@@ -44,6 +44,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * <p>LegacyLocalReportRepository class.</p>
@@ -53,7 +54,7 @@ import java.util.List;
  * @author Markus Neumann <markus@opennms.com>
  * @author Ronny Trommer <ronny@opennms.com>
  * @version $Id: $
- * @since 1.8.1
+ * @since 1.10.1
  */
 @ContextConfiguration(locations = {
         "classpath:META-INF/opennms/applicationContext-reportingRepository.xml",
@@ -278,5 +279,16 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     public LocalJasperReportsDao getLocalJasperReportsDao() {
         return m_localJasperReportsDao;
+    }
+
+    @Override
+    public void loadConfiguration() {
+        try {
+            m_localReportsDao.loadConfiguration();
+            m_localJasperReportsDao.loadConfiguration();
+
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(LegacyLocalReportRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

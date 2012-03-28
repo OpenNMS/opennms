@@ -43,7 +43,7 @@ import java.util.List;
  *
  * @author Markus Neumann <markus@opennms.com>
  * @version $Id: $
- * @since 1.8.1
+ * @since 1.10.1
  */
 @ContextConfiguration(locations = {
         "classpath:META-INF/opennms/applicationContext-reportingRepository.xml",
@@ -309,5 +309,10 @@ public class DefaultRemoteRepository implements ReportRepository {
         }
         logger.debug("SDO to BasicReport mapping returns resultList: '{}'", resultList.toString());
         return resultList;
+    }
+
+    @Override
+    public void loadConfiguration() {
+        logger.debug("reloading for configuration was called. No reoad for remote repository possible.");
     }
 }
