@@ -1,5 +1,7 @@
 package org.opennms.features.vaadin.topology;
 
+import java.util.Map;
+
 import org.opennms.features.vaadin.topology.gwt.client.Edge;
 import org.opennms.features.vaadin.topology.gwt.client.Graph;
 import org.opennms.features.vaadin.topology.gwt.client.VTopologyComponent;
@@ -13,7 +15,9 @@ import com.vaadin.ui.ClientWidget;
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent {
 	
-	private Graph m_graph;
+	
+
+    private Graph m_graph;
 	private double m_scale = 1;
 
 	public TopologyComponent() {
@@ -43,6 +47,17 @@ public class TopologyComponent extends AbstractComponent {
         }
         
         target.endTag("graph");
+    }
+    
+    @Override
+    public void changeVariables(Object source, Map<String, Object> variables) {
+        if(variables.containsKey("graph")) {
+            Map<String, Object> graph = (Map<String, Object>) variables.get("graph");
+            Vertex vert = (Vertex) graph.get("vertex");
+            getApplication().getMainWindow().showNotification("I got a new graph: now how do I get the data? ");
+            
+            
+        }
     }
     
     public void setScale(double scale){

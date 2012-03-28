@@ -87,5 +87,11 @@ public class Graph{
         }
         
     }
+    public Map<String, Object> getGraphAsMap() {
+        Map<String, Object> graph = new HashMap<String, Object>();
+        graph.put("vertex", m_vertices.get(0));
+        graph.put("edge", m_edges.get(0));
+        return graph;
+    }
 	
 }

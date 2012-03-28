@@ -11,11 +11,18 @@ import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 
@@ -39,6 +46,9 @@ public class VTopologyComponent extends Composite implements Paintable {
     private boolean m_firstTime = true;
     private D3 m_edgeGroup;
     
+    @UiField
+    Button m_saveButton;
+    
     public VTopologyComponent() {
         initWidget(uiBinder.createAndBindUi(this));
         
@@ -57,18 +67,24 @@ public class VTopologyComponent extends Composite implements Paintable {
         m_edgeGroup = m_svg.append("g").attr("transform", "scale(1)");
         m_vertexGroup = m_svg.append("g").attr("transform", "scale(1)");
         
-        //drawGraph(m_graph);
-//        m_runButton.addClickHandler(new ClickHandler() {
-//
-//            public void onClick(ClickEvent event) {
-//                circle.style("fill", "#aaa").attr("r", 12).attr("cy", y);
-//                circle.transition().duration(500).delay(0).style("fill", "steelBlue");
-//                circle.transition().duration(500).delay(500).attr("cy", 90);
-//                circle.transition().duration(500).delay(1000).attr("r", 30);
-//            }
-//            
-//        });
     }
+    
+    @UiHandler("m_saveButton")
+    public void onSaveButtonClick(ClickEvent e) {
+        Command command = new Command() {
+
+            public void execute() {
+                m_client.updateVariable(m_paintableId, "graph", m_graph.getGraphAsMap(), true);
+                
+            }
+        };
+        
+        if(BrowserInfo.get().isWebkit()) {
+            Scheduler.get().scheduleDeferred(command);
+        }else {
+            command.execute();
+        }
+    };
 
     private void drawGraph(Graph graph) {
         D3 lines = m_edgeGroup.selectAll("line")
