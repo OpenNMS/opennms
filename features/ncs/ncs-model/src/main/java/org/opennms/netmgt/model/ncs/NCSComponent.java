@@ -317,5 +317,4 @@ public class NCSComponent {
 	    // complete visiting this component
 	    visitor.completeComponent(this);
 	}
-
 }

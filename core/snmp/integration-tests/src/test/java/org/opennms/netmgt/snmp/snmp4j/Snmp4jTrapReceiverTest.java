@@ -28,15 +28,17 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
+import static org.junit.Assert.*;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
 
+import org.junit.Test;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -59,7 +61,13 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements TrapProcessorFactory, CommandResponder {
-    private final Snmp4JStrategy m_strategy = new Snmp4JStrategy();
+	
+	@Override
+	protected boolean usingMockStrategy() {
+		return false;
+	}
+
+	private final Snmp4JStrategy m_strategy = new Snmp4JStrategy();
 
     private int trapCount = 0;
 
@@ -103,6 +111,7 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
      * The SNMPv3 users should be configured in trapd-configuration.xml
      *
      */
+    @Test
     public void testTrapReceiverWithoutOpenNMS() throws Exception {
         System.out.println("SNMP4J: Register for Traps");
         trapCount = 0;
@@ -122,6 +131,7 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         assertEquals(2, trapCount);
     }
 
+    @Test
     public void testTrapReceiverWithOpenNMS() throws Exception {
         System.out.println("ONMS: Register for Traps");
         TestTrapListener trapListener = new TestTrapListener();
@@ -142,18 +152,18 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         System.out.println("Sending V2 Trap");
         SnmpObjId enterpriseId = SnmpObjId.get(".0.0");
         SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
-        SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
-        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
-        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
-        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+        SnmpTrapBuilder pdu = m_strategy.getV2TrapBuilder();
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), m_strategy.getValueFactory().getTimeTicks(0));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), m_strategy.getValueFactory().getObjectId(trapOID));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), m_strategy.getValueFactory().getObjectId(enterpriseId));
         pdu.send(InetAddress.getLocalHost().getHostAddress(), 9162, "public");
         Thread.sleep(1000);
 
         System.out.println("Sending V3 Trap");
-        SnmpV3TrapBuilder pduv3 = SnmpUtils.getV3TrapBuilder();
-        pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
-        pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
-        pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+        SnmpV3TrapBuilder pduv3 = m_strategy.getV3TrapBuilder();
+        pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), m_strategy.getValueFactory().getTimeTicks(0));
+        pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), m_strategy.getValueFactory().getObjectId(trapOID));
+        pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), m_strategy.getValueFactory().getObjectId(enterpriseId));
         pduv3.send(InetAddress.getLocalHost().getHostAddress(), 9162, SnmpConfiguration.AUTH_PRIV, "opennmsUser", "0p3nNMSv3", SnmpConfiguration.DEFAULT_AUTH_PROTOCOL, "0p3nNMSv3", SnmpConfiguration.DEFAULT_PRIV_PROTOCOL);
         Thread.sleep(1000);
     }

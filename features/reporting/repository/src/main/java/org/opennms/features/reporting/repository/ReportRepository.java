@@ -131,4 +131,6 @@ public interface ReportRepository {
      * @return a {@link java.lang.String} object
      */
     String getManagementUrl();
+
+    void loadConfiguration();
 }

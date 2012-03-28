@@ -47,4 +47,5 @@ public interface GlobalReportRepository {
     public List<ReportRepository> getRepositoryList();
     public void addReportRepository(ReportRepository repository);
     public ReportRepository getRepositoryById(String repoId);
+    public void reloadConfigurationFiles();
 }

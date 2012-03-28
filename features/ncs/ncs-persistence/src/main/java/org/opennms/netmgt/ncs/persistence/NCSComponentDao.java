@@ -57,24 +57,56 @@ public class NCSComponentDao extends AbstractDaoHibernate<NCSComponent, Long> im
 	}
 
 	@Override
-	public void save(NCSComponent entity) throws DataAccessException {
-		super.save(entity);
-	}
-
-	@Override
-	public void saveOrUpdate(NCSComponent entity) throws DataAccessException {
-		super.saveOrUpdate(entity);
-		
-	}
-
-	@Override
 	public List<NCSComponent> findComponentsByNodeId(int nodeid) {
 			return find("select distinct ncs from NCSComponent as ncs, OnmsNode as n left join fetch ncs.attributes where ncs.nodeIdentification.foreignSource = n.foreignSource and ncs.nodeIdentification.foreignId = n.foreignId and n.id = ?", nodeid);
 	}
 	
-	
-	
-	
-    
+	@Override
+	public void save(final NCSComponent entity) throws DataAccessException {
+		validateEntity(entity);
+		super.save(entity);
+	}
 
+	@Override
+	public void saveOrUpdate(final NCSComponent entity) throws DataAccessException {
+		validateEntity(entity);
+		super.saveOrUpdate(entity);
+		
+	}
+
+	// enforcing no colons seems to be not very feasible in The Real World
+	private void validateEntity(final NCSComponent entity) throws DataAccessException {
+		/*
+		if (entity.getForeignId().contains(":")) {
+			throw new InvalidForeignIdException("Foreign ID cannot contain a colon!");
+		}
+		if (entity.getForeignSource().contains(":")) {
+			throw new InvalidForeignSourceException(entity.getForeignSource(), "Foreign Source cannot contain a colon!");
+		}
+		for (final NCSComponent component : entity.getSubcomponents()) {
+			validateEntity(component);
+		}
+		*/
+	}
+
+	public static final class InvalidForeignIdException extends DataAccessException {
+		private static final long serialVersionUID = -762719422321681955L;
+		public InvalidForeignIdException(final String msg) {
+			super("Invalid Foreign ID: " + msg);
+		}
+		public InvalidForeignIdException(final String foreignId, final String msg) {
+			super("Invalid Foreign ID (" + foreignId + "): " + msg);
+		}
+	}
+	
+	public static final class InvalidForeignSourceException extends DataAccessException {
+		private static final long serialVersionUID = -4762525172339952143L;
+		public InvalidForeignSourceException(final String msg) {
+			super("Invalid Foreign Source: " + msg);
+		}
+		public InvalidForeignSourceException(final String foreignSource, final String msg) {
+			super("Invalid Foreign Source (" + foreignSource + "): " + msg);
+		}
+	}
+	
 }

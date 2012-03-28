@@ -32,8 +32,8 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.protocols.snmp.SnmpCounter32;
 import org.opennms.protocols.snmp.SnmpCounter64;
@@ -51,7 +51,7 @@ import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpTimeTicks;
 import org.opennms.protocols.snmp.SnmpUInt32;
 
-class JoeSnmpValue implements SnmpValue {
+class JoeSnmpValue extends AbstractSnmpValue {
     SnmpSyntax m_value;
     
     JoeSnmpValue(final SnmpSyntax value) {
@@ -279,7 +279,7 @@ class JoeSnmpValue implements SnmpValue {
             return true;
         
         if (getType() == SnmpValue.SNMP_OCTET_STRING) {
-            return SnmpUtils.allBytesDisplayable(getBytes());
+            return allBytesDisplayable(getBytes());
         }
         
         return false;

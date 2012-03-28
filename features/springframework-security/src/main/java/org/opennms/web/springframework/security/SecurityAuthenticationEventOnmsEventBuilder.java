@@ -143,6 +143,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.notNull(m_eventProxy, "property eventProxy must be set");
     }

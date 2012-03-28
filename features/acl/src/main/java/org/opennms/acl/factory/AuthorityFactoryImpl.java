@@ -71,6 +71,7 @@ public class AuthorityFactoryImpl implements AutorityFactory, InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(authorityService != null, "authorityService property must be set and cannot be null");
         Assert.state(aclItemService != null, "aclItemService property must be set and cannot be null");

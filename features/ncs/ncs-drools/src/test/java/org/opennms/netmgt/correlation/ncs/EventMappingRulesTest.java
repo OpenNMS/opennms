@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -98,16 +97,16 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 		m_svc = new NCSBuilder("Service", "NA-Service", "123")
 		.setName("CokeP2P")
 		.pushComponent("ServiceElement", "NA-ServiceElement", "8765")
-			.setName("PE1:SE1")
+			.setName("PE1,SE1")
 			.setNodeIdentity("space", "1111-PE1")
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:jnxVpnIf")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,jnxVpnIf")
 				.setName("jnxVpnIf")
 				.setNodeIdentity("space", "1111-PE1")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp")
 				.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown")
 				.setAttribute("jnxVpnIfVpnType", "5")
 				.setAttribute("jnxVpnIfVpnName", "ge-1/0/2.50")
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:link")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,link")
 					.setName("link")
 					.setNodeIdentity("space", "1111-PE1")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/linkUp")
@@ -115,7 +114,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 					.setAttribute("linkName", "ge-1/0/2")
 				.popComponent()
 			.popComponent()
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:jnxVpnPw-vcid(50)")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,jnxVpnPw-vcid(50)")
 				.setName("jnxVpnPw-vcid(50)")
 				.setNodeIdentity("space", "1111-PE1")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp")
@@ -123,14 +122,14 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 				.setAttribute("jnxVpnPwVpnType", "5")
 				.setAttribute("jnxVpnPwVpnName", "ge-1/0/2.50")
 				.setDependenciesRequired(DependencyRequirements.ANY)
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspA-PE1-PE2")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,lspA-PE1-PE2")
 					.setName("lspA-PE1-PE2")
 					.setNodeIdentity("space", "1111-PE1")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
 					.setAttribute("mplsLspInfoName", "lspA-PE1-PE2")
 				.popComponent()
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspB-PE1-PE2")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,lspB-PE1-PE2")
 					.setName("lspB-PE1-PE2")
 					.setNodeIdentity("space", "1111-PE1")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
@@ -150,16 +149,16 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 			.popComponent()
 		.popComponent()
 		.pushComponent("ServiceElement", "NA-ServiceElement", "9876")
-			.setName("PE2:SE1")
+			.setName("PE2,SE1")
 			.setNodeIdentity("space", "2222-PE2")
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnIf")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnIf")
 				.setName("jnxVpnIf")
 				.setNodeIdentity("space", "2222-PE2")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp")
 				.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown")
 				.setAttribute("jnxVpnIfVpnType", "5")
 				.setAttribute("jnxVpnIfVpnName", "ge-3/1/4.50")
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:link")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,link")
 					.setName("link")
 					.setNodeIdentity("space", "2222-PE2")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/linkUp")
@@ -167,7 +166,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 					.setAttribute("linkName", "ge-3/1/4")
 				.popComponent()
 			.popComponent()
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)")
 				.setName("jnxVpnPw-vcid(50)")
 				.setNodeIdentity("space", "2222-PE2")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp")
@@ -175,14 +174,14 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 				.setAttribute("jnxVpnPwVpnType", "5")
 				.setAttribute("jnxVpnPwVpnName", "ge-3/1/4.50")
 				.setDependenciesRequired(DependencyRequirements.ANY)
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspA-PE2-PE1")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,lspA-PE2-PE1")
 					.setName("lspA-PE2-PE1")
 					.setNodeIdentity("space", "2222-PE2")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
 					.setAttribute("mplsLspInfoName", "lspA-PE2-PE1")
 				.popComponent()
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspB-PE2-PE1")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,lspB-PE2-PE1")
 					.setName("lspB-PE2-PE1")
 					.setNodeIdentity("space", "2222-PE2")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
@@ -224,7 +223,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 		
 		Event event = createVpnPwDownEvent(17, m_pe2NodeId, "10.1.1.1", "5", "ge-3/1/4.50" );
 
-		testEventMapping(event, ComponentDownEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)");
+		testEventMapping(event, ComponentDownEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)");
 
     }
 	
@@ -236,7 +235,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 		Event event = createVpnPwDownEvent(17, m_pe2NodeId, "10.1.1.1", "5", "ge-3/1/4.50" );
 		Event event2 = createVpnPwDownEvent(18, m_pe2NodeId, "10.1.1.1", "5", "ge-3/1/4.50" );
 
-		testEventDup(event, event2, ComponentDownEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)");
+		testEventDup(event, event2, ComponentDownEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)");
 
     }
 
@@ -247,7 +246,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 
 		Event event = createVpnPwUpEvent(27, m_pe2NodeId, "10.1.1.1", "5", "ge-3/1/4.50" );
 
-		testEventMapping(event, ComponentUpEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)");
+		testEventMapping(event, ComponentUpEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)");
 
     }
     
@@ -257,7 +256,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
         
         Event event = createVpnIfDownEvent(17, m_pe1NodeId, "10.1.1.1", "5", "ge-1/0/2.50" );
 
-        testEventMapping(event, ComponentDownEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "8765:jnxVpnIf");
+        testEventMapping(event, ComponentDownEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "8765,jnxVpnIf");
 
     }
     
@@ -267,7 +266,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
         
         Event event = createVpnIfUpEvent(17, m_pe1NodeId, "10.1.1.1", "5", "ge-1/0/2.50" );
 
-        testEventMapping(event, ComponentUpEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "8765:jnxVpnIf");
+        testEventMapping(event, ComponentUpEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "8765,jnxVpnIf");
 
     }
     
@@ -298,7 +297,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 		
 		Event event = createmplsLspInfoDownEvent(37, m_pe2NodeId, "10.1.1.1", "lspA-PE2-PE1");
 
-		testEventMapping(event, ComponentDownEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "9876:lspA-PE2-PE1");
+		testEventMapping(event, ComponentDownEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "9876,lspA-PE2-PE1");
 
 	}
     
@@ -308,7 +307,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 		
 		Event event = createmplsLspInfoUpEvent(37, m_pe2NodeId, "10.1.1.1", "lspA-PE2-PE1");
 
-		testEventMapping(event, ComponentUpEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "9876:lspA-PE2-PE1");
+		testEventMapping(event, ComponentUpEvent.class, "ServiceElementComponent", "NA-SvcElemComp", "9876,lspA-PE2-PE1");
     }
     
     private void testEventMapping(Event event, Class<? extends ComponentEvent> componentEventClass, String componentType, String componentForeignSource, String componentForeignId) {

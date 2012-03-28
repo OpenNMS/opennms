@@ -102,6 +102,7 @@ public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, Ini
 	/**
 	 * <p>afterPropertiesSet</p>
 	 */
+	@Override
 	public void afterPropertiesSet() {
 		m_services = new SmsService[m_gatewayGroups.length];
 

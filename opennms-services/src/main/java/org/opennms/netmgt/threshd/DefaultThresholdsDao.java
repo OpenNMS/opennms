@@ -208,6 +208,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_thresholdingConfigFactory != null, "thresholdingConfigFactory property not set");
     }

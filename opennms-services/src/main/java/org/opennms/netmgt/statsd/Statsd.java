@@ -226,6 +226,7 @@ public class Statsd implements SpringServiceDaemon {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceDao != null, "property resourceDao must be set to a non-null value");
         Assert.state(m_rrdDao != null, "property rrdDao must be set to a non-null value");

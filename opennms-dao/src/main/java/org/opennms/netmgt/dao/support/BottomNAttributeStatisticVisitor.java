@@ -69,6 +69,7 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
      *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_count != null, "property count must be set to a non-null value");
     }

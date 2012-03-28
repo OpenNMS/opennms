@@ -2467,6 +2467,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         }
     }
 
+    @Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(m_nodeDao, "NodeDao must not be null");
 		Assert.notNull(m_ipInterfaceDao, "IpinterfaceDao must not be null");

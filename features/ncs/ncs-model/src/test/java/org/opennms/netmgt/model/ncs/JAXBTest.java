@@ -34,9 +34,9 @@ public class JAXBTest {
 				"<component xmlns=\"http://xmlns.opennms.org/xsd/model/ncs\" type=\"Service\" foreignId=\"123\" foreignSource=\"NA-Service\">\n" + 
 				"    <name>CokeP2P</name>\n" + 
 				"    <component type=\"ServiceElement\" foreignId=\"8765\" foreignSource=\"NA-ServiceElement\">\n" + 
-				"        <name>PE1:SE1</name>\n" + 
+				"        <name>PE1,SE1</name>\n" + 
 				"        <node foreignId=\"1111-PE1\" foreignSource=\"space\"/>\n" + 
-				"        <component type=\"ServiceElementComponent\" foreignId=\"8765:jnxVpnIf\" foreignSource=\"NA-SvcElemComp\">\n" + 
+				"        <component type=\"ServiceElementComponent\" foreignId=\"8765,jnxVpnIf\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"            <name>jnxVpnIf</name>\n" + 
 				"            <upEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</upEventUei>\n" + 
 				"            <downEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</downEventUei>\n" + 
@@ -50,7 +50,7 @@ public class JAXBTest {
 				"                    <value>ge-1/0/2.50</value>\n" + 
 				"                </attribute>\n" + 
 				"            </attributes>\n" + 
-				"            <component type=\"ServiceElementComponent\" foreignId=\"8765:link\" foreignSource=\"NA-SvcElemComp\">\n" + 
+				"            <component type=\"ServiceElementComponent\" foreignId=\"8765,link\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"                <name>link</name>\n" + 
 				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/linkUp</upEventUei>\n" + 
 				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/linkDown</downEventUei>\n" + 
@@ -62,7 +62,7 @@ public class JAXBTest {
 				"                </attributes>\n" + 
 				"            </component>\n" + 
 				"        </component>\n" + 
-				"        <component type=\"ServiceElementComponent\" foreignId=\"8765:jnxVpnPw-vcid(50)\" foreignSource=\"NA-SvcElemComp\">\n" + 
+				"        <component type=\"ServiceElementComponent\" foreignId=\"8765,jnxVpnPw-vcid(50)\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"            <name>jnxVpnPw-vcid(50)</name>\n" + 
 				"            <upEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</upEventUei>\n" + 
 				"            <downEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</downEventUei>\n" + 
@@ -77,7 +77,7 @@ public class JAXBTest {
 				"                    <value>ge-1/0/2.50</value>\n" + 
 				"                </attribute>\n" + 
 				"            </attributes>\n" + 
-				"            <component type=\"ServiceElementComponent\" foreignId=\"8765:lspA-PE1-PE2\" foreignSource=\"NA-SvcElemComp\">\n" + 
+				"            <component type=\"ServiceElementComponent\" foreignId=\"8765,lspA-PE1-PE2\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"                <name>lspA-PE1-PE2</name>\n" + 
 				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</upEventUei>\n" + 
 				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</downEventUei>\n" + 
@@ -88,7 +88,7 @@ public class JAXBTest {
 				"                    </attribute>\n" + 
 				"                </attributes>\n" + 
 				"            </component>\n" + 
-				"            <component type=\"ServiceElementComponent\" foreignId=\"8765:lspB-PE1-PE2\" foreignSource=\"NA-SvcElemComp\">\n" + 
+				"            <component type=\"ServiceElementComponent\" foreignId=\"8765,lspB-PE1-PE2\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"                <name>lspB-PE1-PE2</name>\n" + 
 				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</upEventUei>\n" + 
 				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</downEventUei>\n" + 
@@ -102,9 +102,9 @@ public class JAXBTest {
 				"        </component>\n" + 
 				"    </component>\n" + 
 				"    <component type=\"ServiceElement\" foreignId=\"9876\" foreignSource=\"NA-ServiceElement\">\n" + 
-				"        <name>PE2:SE1</name>\n" + 
+				"        <name>PE2,SE1</name>\n" + 
 				"        <node foreignId=\"2222-PE2\" foreignSource=\"space\"/>\n" + 
-				"        <component type=\"ServiceElementComponent\" foreignId=\"9876:jnxVpnIf\" foreignSource=\"NA-SvcElemComp\">\n" + 
+				"        <component type=\"ServiceElementComponent\" foreignId=\"9876,jnxVpnIf\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"            <name>jnxVpnIf</name>\n" + 
 				"            <upEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</upEventUei>\n" + 
 				"            <downEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</downEventUei>\n" + 
@@ -118,7 +118,7 @@ public class JAXBTest {
 				"                    <value>ge-3/1/4.50</value>\n" + 
 				"                </attribute>\n" + 
 				"            </attributes>\n" + 
-				"            <component type=\"ServiceElementComponent\" foreignId=\"9876:link\" foreignSource=\"NA-SvcElemComp\">\n" + 
+				"            <component type=\"ServiceElementComponent\" foreignId=\"9876,link\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"                <name>link</name>\n" + 
 				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/linkUp</upEventUei>\n" + 
 				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/linkDown</downEventUei>\n" + 
@@ -130,7 +130,7 @@ public class JAXBTest {
 				"                </attributes>\n" + 
 				"            </component>\n" + 
 				"        </component>\n" + 
-				"        <component type=\"ServiceElementComponent\" foreignId=\"9876:jnxVpnPw-vcid(50)\" foreignSource=\"NA-SvcElemComp\">\n" + 
+				"        <component type=\"ServiceElementComponent\" foreignId=\"9876,jnxVpnPw-vcid(50)\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"            <name>jnxVpnPw-vcid(50)</name>\n" + 
 				"            <upEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</upEventUei>\n" + 
 				"            <downEventUei>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</downEventUei>\n" + 
@@ -145,7 +145,7 @@ public class JAXBTest {
 				"                    <value>ge-3/1/4.50</value>\n" + 
 				"                </attribute>\n" + 
 				"            </attributes>\n" + 
-				"            <component type=\"ServiceElementComponent\" foreignId=\"9876:lspA-PE2-PE1\" foreignSource=\"NA-SvcElemComp\">\n" + 
+				"            <component type=\"ServiceElementComponent\" foreignId=\"9876,lspA-PE2-PE1\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"                <name>lspA-PE2-PE1</name>\n" + 
 				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</upEventUei>\n" + 
 				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</downEventUei>\n" + 
@@ -156,7 +156,7 @@ public class JAXBTest {
 				"                    </attribute>\n" + 
 				"                </attributes>\n" + 
 				"            </component>\n" + 
-				"            <component type=\"ServiceElementComponent\" foreignId=\"9876:lspB-PE2-PE1\" foreignSource=\"NA-SvcElemComp\">\n" + 
+				"            <component type=\"ServiceElementComponent\" foreignId=\"9876,lspB-PE2-PE1\" foreignSource=\"NA-SvcElemComp\">\n" + 
 				"                <name>lspB-PE2-PE1</name>\n" + 
 				"                <upEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</upEventUei>\n" + 
 				"                <downEventUei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</downEventUei>\n" + 
@@ -176,35 +176,35 @@ public class JAXBTest {
 		NCSComponent svc = new NCSBuilder("Service", "NA-Service", "123")
 		.setName("CokeP2P")
 		.pushComponent("ServiceElement", "NA-ServiceElement", "8765")
-			.setName("PE1:SE1")
+			.setName("PE1,SE1")
 			.setNodeIdentity("space", "1111-PE1")
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:jnxVpnIf")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,jnxVpnIf")
 				.setName("jnxVpnIf")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp")
 				.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown")
 				.setAttribute("jnxVpnIfVpnType", "5")
 				.setAttribute("jnxVpnIfVpnName", "ge-1/0/2.50")
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:link")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,link")
 					.setName("link")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/linkUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/linkDown")
 					.setAttribute("linkName", "ge-1/0/2")
 				.popComponent()
 			.popComponent()
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:jnxVpnPw-vcid(50)")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,jnxVpnPw-vcid(50)")
 				.setName("jnxVpnPw-vcid(50)")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp")
 				.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown")
 				.setAttribute("jnxVpnPwVpnType", "5")
 				.setAttribute("jnxVpnPwVpnName", "ge-1/0/2.50")
 				.setDependenciesRequired(DependencyRequirements.ANY)
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspA-PE1-PE2")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,lspA-PE1-PE2")
 					.setName("lspA-PE1-PE2")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
 					.setAttribute("mplsLspInfoName", "lspA-PE1-PE2")
 				.popComponent()
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspB-PE1-PE2")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,lspB-PE1-PE2")
 					.setName("lspB-PE1-PE2")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
@@ -213,35 +213,35 @@ public class JAXBTest {
 			.popComponent()
 		.popComponent()
 		.pushComponent("ServiceElement", "NA-ServiceElement", "9876")
-			.setName("PE2:SE1")
+			.setName("PE2,SE1")
 			.setNodeIdentity("space", "2222-PE2")
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnIf")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnIf")
 				.setName("jnxVpnIf")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp")
 				.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown")
 				.setAttribute("jnxVpnIfVpnType", "5")
 				.setAttribute("jnxVpnIfVpnName", "ge-3/1/4.50")
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:link")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,link")
 					.setName("link")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/linkUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/linkDown")
 					.setAttribute("linkName", "ge-3/1/4")
 				.popComponent()
 			.popComponent()
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)")
 				.setName("jnxVpnPw-vcid(50)")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp")
 				.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown")
 				.setAttribute("jnxVpnPwVpnType", "5")
 				.setAttribute("jnxVpnPwVpnName", "ge-3/1/4.50")
 				.setDependenciesRequired(DependencyRequirements.ANY)
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspA-PE2-PE1")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,lspA-PE2-PE1")
 					.setName("lspA-PE2-PE1")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")
 					.setAttribute("mplsLspInfoName", "lspA-PE2-PE1")
 				.popComponent()
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspB-PE2-PE1")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,lspB-PE2-PE1")
 					.setName("lspB-PE2-PE1")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown")

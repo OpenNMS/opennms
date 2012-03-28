@@ -56,6 +56,7 @@ public class NavBarController extends AbstractController implements Initializing
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_navBarItems != null, "navBarItems property has not been set");
     }

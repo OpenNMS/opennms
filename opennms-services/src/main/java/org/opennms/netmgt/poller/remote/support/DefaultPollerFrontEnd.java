@@ -418,6 +418,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_timeAdjustment, "timeAdjustment");
         m_state.initialize();

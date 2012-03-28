@@ -72,6 +72,7 @@ public class DaoWebNotificationRepositoryTest implements InitializingBean {
         m_dbPopulator.populateDatabase();
     }
     
+    @Override
     public void afterPropertiesSet() {
         assertNotNull(m_dbPopulator);
         assertNotNull(m_daoNotificationRepo);

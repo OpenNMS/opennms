@@ -41,7 +41,7 @@ import java.io.InputStream;
  * @author Markus Neumann <markus@opennms.com>
  * @author Ronny Trommer <ronny@opennms.com>
  * @version $Id: $
- * @since 1.8.1
+ * @since 1.10.1
  */
 public interface LocalJasperReportsDao {
 

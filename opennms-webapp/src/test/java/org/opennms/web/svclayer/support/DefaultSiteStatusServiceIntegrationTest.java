@@ -94,6 +94,7 @@ public class DefaultSiteStatusServiceIntegrationTest implements InitializingBean
     @Autowired
     private CategoryDao m_categoryDao;
     
+    @Override
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_aggregateService);
         assertNotNull(m_databasePopulator);

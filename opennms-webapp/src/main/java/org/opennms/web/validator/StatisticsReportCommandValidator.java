@@ -75,6 +75,7 @@ public class StatisticsReportCommandValidator implements Validator, Initializing
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         if (m_statisticsReportDao == null) {
             throw new IllegalStateException("statisticsReportDao property not set");

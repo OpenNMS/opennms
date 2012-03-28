@@ -80,6 +80,7 @@ public class Reportd implements SpringServiceDaemon {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {    
         Assert.notNull(m_eventForwarder, "No Event Forwarder Set");
         Assert.notNull(m_reportScheduler, "No Report Scheduler Set");

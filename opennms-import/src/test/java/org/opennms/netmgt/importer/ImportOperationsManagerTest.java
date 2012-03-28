@@ -106,6 +106,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
     @Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_populator);
         assertNotNull(m_transTemplate);

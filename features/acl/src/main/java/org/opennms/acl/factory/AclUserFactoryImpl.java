@@ -79,6 +79,7 @@ public class AclUserFactoryImpl implements AclUserFactory, InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(authorityService != null, "authorityService property must be set and cannot be null");
         Assert.state(userService != null, "userService property must be set and cannot be null");

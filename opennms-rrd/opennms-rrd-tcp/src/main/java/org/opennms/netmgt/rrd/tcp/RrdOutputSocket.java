@@ -122,8 +122,11 @@ public class RrdOutputSocket {
         String[] values = data.split(":");
         // Skip index zero, that's the timestamp
         for (int i = 1; i < values.length; i++) {
-            // Parse the RRD value for "unknown"
-            if ("U".equals(values[i])) {
+            if (values[i] == null || "null".equals(values[i])) {
+                // Handle null values
+                retval.add(Double.NaN);
+            } else if ("U".equals(values[i])) {
+                // Parse the RRD value for "unknown"
                 retval.add(Double.NaN);
             } else {
                 retval.add(new Double(values[i]));

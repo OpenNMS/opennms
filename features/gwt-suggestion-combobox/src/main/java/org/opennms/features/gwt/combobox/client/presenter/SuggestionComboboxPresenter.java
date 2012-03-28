@@ -1,6 +1,5 @@
 package org.opennms.features.gwt.combobox.client.presenter;
 
-import org.opennms.features.gwt.combobox.client.rest.DefaultNodeService;
 import org.opennms.features.gwt.combobox.client.rest.NodeRestResponseMapper;
 import org.opennms.features.gwt.combobox.client.rest.NodeService;
 import org.opennms.features.gwt.combobox.client.view.NodeDetail;
@@ -71,8 +70,9 @@ public class SuggestionComboboxPresenter implements Presenter, SuggestionCombobo
             public void onResponseReceived(Request request, Response response) {
                 if(response.getStatusCode() == 200) {
                     m_view.setData(NodeRestResponseMapper.mapNodeJSONtoNodeDetail(response.getText()));
+                    Window.alert("Error Occurred Retreiving Nodes");
                 }else {
-                    m_view.setData(NodeRestResponseMapper.mapNodeJSONtoNodeDetail(DefaultNodeService.TEST_RESPONSE));
+                    // m_view.setData(NodeRestResponseMapper.mapNodeJSONtoNodeDetail(DefaultNodeService.TEST_RESPONSE));
                 }
             }
 

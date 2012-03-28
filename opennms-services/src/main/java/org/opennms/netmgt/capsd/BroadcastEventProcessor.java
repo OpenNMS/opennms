@@ -39,8 +39,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
-import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -162,7 +162,7 @@ public class BroadcastEventProcessor implements InitializingBean {
     /**
      * The location where suspectInterface events are enqueued for processing.
      */
-    private FifoQueue<Runnable> m_suspectQ;
+    private ExecutorService m_suspectQ;
     
     private SuspectEventProcessorFactory m_suspectEventProcessorFactory;
 
@@ -1640,7 +1640,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         // new suspect event
         try {
             if (log().isDebugEnabled()) log().debug("onMessage: Adding interface to suspectInterface Q: " + interfaceValue);
-            m_suspectQ.add(m_suspectEventProcessorFactory.createSuspectEventProcessor(interfaceValue));
+            m_suspectQ.execute(m_suspectEventProcessorFactory.createSuspectEventProcessor(interfaceValue));
         } catch (final Throwable ex) {
             log().error("onMessage: Failed to add interface to suspect queue", ex);
         }
@@ -2275,9 +2275,9 @@ public class BroadcastEventProcessor implements InitializingBean {
     /**
      * <p>setSuspectQueue</p>
      *
-     * @param suspectQ a {@link org.opennms.core.queue.FifoQueue} object.
+     * @param suspectQ a {@link java.util.concurrent.ExecutorService} object.
      */
-    public void setSuspectQueue(FifoQueue<Runnable> suspectQ) {
+    public void setSuspectQueue(ExecutorService suspectQ) {
         m_suspectQ = suspectQ;
     }
 
@@ -2295,6 +2295,7 @@ public class BroadcastEventProcessor implements InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_suspectEventProcessorFactory != null, "The suspectEventProcessor must be set");
         Assert.state(m_scheduler != null, "The schedule must be set");

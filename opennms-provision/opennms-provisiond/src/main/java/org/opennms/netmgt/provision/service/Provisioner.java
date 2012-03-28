@@ -195,6 +195,7 @@ public class Provisioner implements SpringServiceDaemon {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(getProvisionService(), "provisionService property must be set");
         Assert.notNull(m_scheduledExecutor, "scheduledExecutor property must be set");

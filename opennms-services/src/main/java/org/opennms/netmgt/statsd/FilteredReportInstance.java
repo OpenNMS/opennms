@@ -248,6 +248,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         super.afterPropertiesSet();
         

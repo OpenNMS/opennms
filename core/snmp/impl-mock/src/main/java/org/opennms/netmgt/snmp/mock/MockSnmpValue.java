@@ -32,11 +32,21 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
-public class MockSnmpValue implements SnmpValue {
+public class MockSnmpValue extends AbstractSnmpValue {
+	private static final class MockSnmpNullValue extends MockSnmpValue {
+		private MockSnmpNullValue(int type, String value) {
+			super(type, value);
+		}
+
+		public boolean isNull() {
+            return true;
+        }
+	}
+
 	public static class NetworkAddressSnmpValue extends MockSnmpValue {
 
         public NetworkAddressSnmpValue(final String value) {
@@ -83,12 +93,20 @@ public class MockSnmpValue implements SnmpValue {
         }
         
         public boolean isDisplayable() {
-            return SnmpUtils.allBytesDisplayable(getBytes());
+            return allBytesDisplayable(getBytes());
         }
 
     }
 
     public static class IpAddressSnmpValue extends MockSnmpValue {
+    	
+    	public IpAddressSnmpValue(InetAddress addr) {
+    		this(InetAddressUtils.str(addr));
+    	}
+    	
+    	public IpAddressSnmpValue(byte[] bytes) {
+    		this(InetAddressUtils.toIpAddrString(bytes));
+    	}
 
         public IpAddressSnmpValue(String value) {
             super(SnmpValue.SNMP_IPADDRESS, value);
@@ -157,8 +175,8 @@ public class MockSnmpValue implements SnmpValue {
     }
     
     public static class Gauge32SnmpValue extends NumberSnmpValue {
-        public Gauge32SnmpValue(int value) {
-            this(Integer.toString(value));
+        public Gauge32SnmpValue(long value) {
+            this(Long.toString(value));
         }
         public Gauge32SnmpValue(String value) {
             super(SnmpValue.SNMP_GAUGE32, value);
@@ -166,17 +184,22 @@ public class MockSnmpValue implements SnmpValue {
     }
    
     public static class Counter32SnmpValue extends NumberSnmpValue {
-        public Counter32SnmpValue(int value) {
-            this(Integer.toString(value));
+		public Counter32SnmpValue(long value) {
+            this(Long.toString(value));
         }
         public Counter32SnmpValue(String value) {
             super(SnmpValue.SNMP_COUNTER32, value);
         }
+
+		@Override
+		public BigInteger toBigInteger() {
+			return BigInteger.valueOf(toLong());
+		}
     }
     
     public static class Counter64SnmpValue extends NumberSnmpValue {
-        public Counter64SnmpValue(long value) {
-            this(Long.toString(value));
+        public Counter64SnmpValue(BigInteger value) {
+            this(value.toString());
         }
         public Counter64SnmpValue(String value) {
             super(SnmpValue.SNMP_COUNTER64, value);
@@ -228,6 +251,10 @@ public class MockSnmpValue implements SnmpValue {
         // Format of string is '(numTicks) HH:mm:ss.hh'
         public TimeticksSnmpValue(String value) {
             super(SnmpValue.SNMP_TIMETICKS, value);
+        }
+        
+        public TimeticksSnmpValue(long centiSeconds) {
+        	this("(" + centiSeconds + ")");
         }
 
         public String getNumberString() {
@@ -305,6 +332,10 @@ public class MockSnmpValue implements SnmpValue {
 
     public static class OidSnmpValue extends MockSnmpValue {
 
+    	public OidSnmpValue(SnmpObjId objId) {
+    		this(objId.toString());
+    	}
+    	
         public OidSnmpValue(String value) {
             super(SnmpValue.SNMP_OBJECT_IDENTIFIER, value);
         }
@@ -322,14 +353,10 @@ public class MockSnmpValue implements SnmpValue {
 
     private int m_type;
     private String m_value;
-    public static final SnmpValue NULL_VALUE = new MockSnmpValue(SnmpValue.SNMP_NULL, null) {
-        public boolean isNull() {
-            return true;
-        }
-    };
-    public static final SnmpValue NO_SUCH_INSTANCE = new MockSnmpValue(SnmpValue.SNMP_NO_SUCH_INSTANCE, "noSuchInstance");
-    public static final SnmpValue NO_SUCH_OBJECT = new MockSnmpValue(SnmpValue.SNMP_NO_SUCH_OBJECT, "noSuchObject");
-    public static final SnmpValue END_OF_MIB = new MockSnmpValue(SnmpValue.SNMP_END_OF_MIB, "endOfMibView");
+    public static final MockSnmpValue NULL_VALUE = new MockSnmpNullValue(SnmpValue.SNMP_NULL, null);
+    public static final MockSnmpValue NO_SUCH_INSTANCE = new MockSnmpNullValue(SnmpValue.SNMP_NO_SUCH_INSTANCE, "noSuchInstance");
+    public static final MockSnmpValue NO_SUCH_OBJECT = new MockSnmpNullValue(SnmpValue.SNMP_NO_SUCH_OBJECT, "noSuchObject") ;
+    public static final MockSnmpValue END_OF_MIB = new MockSnmpNullValue(SnmpValue.SNMP_END_OF_MIB, "endOfMibView");
 
     public MockSnmpValue(int type, String value) {
         m_type = type;
@@ -415,4 +442,6 @@ public class MockSnmpValue implements SnmpValue {
     }
 
  
+
+
 }

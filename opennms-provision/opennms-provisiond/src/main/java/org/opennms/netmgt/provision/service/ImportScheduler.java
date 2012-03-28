@@ -85,6 +85,7 @@ public class ImportScheduler implements InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         
         try {

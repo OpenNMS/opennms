@@ -140,6 +140,7 @@ public abstract class AbstractReportInstance implements InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_reportDefinition != null, "property reportDefinition must be set to a non-null value");
     }

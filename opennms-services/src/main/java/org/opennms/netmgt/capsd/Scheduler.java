@@ -39,10 +39,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -110,7 +110,7 @@ final class Scheduler implements Runnable, PausableFiber {
      * The rescan queue where new RescanProcessor objects are enqueued for
      * execution.
      */
-    private FifoQueue<Runnable> m_rescanQ;
+    private ExecutorService m_rescanQ;
 
     private RescanProcessorFactory m_rescanProcessorFactory;
 
@@ -191,7 +191,7 @@ final class Scheduler implements Runnable, PausableFiber {
      * @param rescanProcessorFactory TODO
      * 
      */
-    Scheduler(FifoQueue<Runnable> rescanQ, RescanProcessorFactory rescanProcessorFactory) throws SQLException {
+    Scheduler(ExecutorService rescanQ, RescanProcessorFactory rescanProcessorFactory) throws SQLException {
 
         m_rescanQ = rescanQ;
         m_rescanProcessorFactory = rescanProcessorFactory;
@@ -363,10 +363,8 @@ final class Scheduler implements Runnable, PausableFiber {
      */
     void forceRescan(int nodeId) {
         try {
-            m_rescanQ.add(m_rescanProcessorFactory.createForcedRescanProcessor(nodeId));
-        } catch (FifoQueueException e) {
-            log().error("forceRescan: Failed to add node " + nodeId + " to the rescan queue.", e);
-        } catch (InterruptedException e) {
+            m_rescanQ.execute(m_rescanProcessorFactory.createForcedRescanProcessor(nodeId));
+        } catch (RejectedExecutionException e) {
             log().error("forceRescan: Failed to add node " + nodeId + " to the rescan queue.", e);
         }
     }
@@ -587,15 +585,12 @@ final class Scheduler implements Runnable, PausableFiber {
                         else {
                             if (log().isDebugEnabled())
                                 log().debug("Scheduler.run: adding node " + node.getNodeId() + " to the rescan queue.");
-                            m_rescanQ.add(node);
+                            m_rescanQ.execute(node);
                             added++;
                         }
-                    } catch (InterruptedException ex) {
-                        log().info("Scheduler.schedule: failed to add new node to rescan queue", ex);
-                        throw new UndeclaredThrowableException(ex);
-                    } catch (FifoQueueException ex) {
-                        log().info("Scheduler.schedule: failed to add new node to rescan queue", ex);
-                        throw new UndeclaredThrowableException(ex);
+                    } catch (RejectedExecutionException e) {
+                        log().info("Scheduler.schedule: failed to add new node to rescan queue", e);
+                        throw new UndeclaredThrowableException(e);
                     }
                 }
             }

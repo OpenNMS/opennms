@@ -506,6 +506,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_usersConfigurationFile != null, "usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
         Assert.state(!m_useGroups || m_groupsConfigurationFile != null, "groupsConfigurationFile parameter must be set to the location of the groups.xml configuration file");

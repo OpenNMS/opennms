@@ -87,6 +87,7 @@ public class RancidProvisioningAdapterIntegrationTest implements InitializingBea
     
     private static final int NODE_ID = 1;
 
+    @Override
     public void afterPropertiesSet() {
         assertNotNull("Autowiring failed, node dao is null", m_nodeDao);
         assertNotNull("Autowiring failed, IPC manager is null", m_mockEventIpcManager);

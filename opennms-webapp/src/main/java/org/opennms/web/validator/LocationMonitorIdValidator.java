@@ -79,6 +79,7 @@ public class LocationMonitorIdValidator implements Validator, InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         if (m_locationMonitorDao == null) {
             throw new IllegalStateException("locationMonitorDao property not set");

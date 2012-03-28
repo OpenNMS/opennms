@@ -323,6 +323,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         m_proxy = proxy;
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_proxy, "expected to have proxy set");
         m_proxy.setDelegate(this);

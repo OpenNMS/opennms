@@ -127,6 +127,7 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
         END_POINT3_ID = m_dbPopulator.getNode3().getId();
     }
     
+    @Override
     public void afterPropertiesSet() {
         assertNotNull(m_dbPopulator);
         assertNotNull(m_nodeDao);

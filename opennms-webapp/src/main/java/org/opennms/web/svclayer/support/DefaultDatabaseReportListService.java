@@ -147,4 +147,10 @@ public class DefaultDatabaseReportListService implements
     public void setGlobalReportRepository(GlobalReportRepository globalReportRepository) {
         m_globalReportRepository = globalReportRepository;
     }
+
+    @Override
+    public void reloadConfigurationFiles() {
+        m_globalReportRepository.reloadConfigurationFiles();
+
+    }
 }

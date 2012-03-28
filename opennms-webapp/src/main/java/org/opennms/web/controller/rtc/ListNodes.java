@@ -58,6 +58,7 @@ public class ListNodes extends AbstractController implements InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_rtcService != null, "property rtcService must be set and non-null");
     }

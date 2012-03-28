@@ -78,6 +78,7 @@ public class MobileMsgTrackerImpl extends RequestTracker<MobileMsgRequest, Mobil
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         start();
     }

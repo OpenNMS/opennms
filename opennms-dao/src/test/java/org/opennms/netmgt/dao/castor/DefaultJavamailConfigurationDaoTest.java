@@ -73,6 +73,7 @@ public class DefaultJavamailConfigurationDaoTest implements InitializingBean {
         MockLogAppender.setupLogging(props);
     }
     
+    @Override
     public void afterPropertiesSet() {
         Assert.assertNotNull(m_jmcDao);
     }

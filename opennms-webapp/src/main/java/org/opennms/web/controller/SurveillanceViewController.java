@@ -79,6 +79,7 @@ public class SurveillanceViewController extends AbstractController implements In
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_service != null, "service property must be set");
     }
