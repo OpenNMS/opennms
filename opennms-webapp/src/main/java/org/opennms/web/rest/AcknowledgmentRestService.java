@@ -198,6 +198,9 @@ public class AcknowledgmentRestService extends OnmsRestService {
 	            throw new IllegalArgumentException(
 	            "Must supply the 'action' parameter, set to either 'ack, 'unack', 'clear', or 'esc'");
 	        }
+
+	        m_ackSvc.processAck(ack);
+	        return ack;
     	} finally {
     		getWriteLock().unlock();
     	}
