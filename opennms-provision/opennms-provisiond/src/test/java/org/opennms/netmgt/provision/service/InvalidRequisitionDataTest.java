@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -44,7 +45,8 @@ import org.springframework.test.context.ContextConfiguration;
         
 /* This test is for bug 3778 */
 @JUnitTemporaryDatabase(reuseDatabase=true, dirtiesContext=true)
-@JUnitConfigurationEnvironment()
+@JUnitConfigurationEnvironment
+@DirtiesContext
 public class InvalidRequisitionDataTest {
     
     @Autowired
