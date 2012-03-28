@@ -30,7 +30,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>commons-exec</groupId>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-exec</artifactId>
       <version>1.1</version>
       <scope>test</scope>
