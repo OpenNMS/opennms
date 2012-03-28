@@ -105,7 +105,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsIpInterfaceList getIpInterfaces(@PathParam("nodeCriteria") final String nodeCriteria) {
-        getReadLock().lock();
+        readLock();
         
         try {
             LogUtils.debugf(this, "getIpInterfaces: reading interfaces for node %s", nodeCriteria);
@@ -127,7 +127,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             
             return interfaceList;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -142,7 +142,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ipAddress}")
     public OnmsIpInterface getIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress) {
-        getReadLock().lock();
+        readLock();
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -151,7 +151,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             }
             return node.getIpInterfaceByIpAddress(InetAddressUtils.getInetAddress(ipAddress));
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -165,7 +165,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, final OnmsIpInterface ipInterface) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -194,7 +194,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             }
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -210,7 +210,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ipAddress}")
     public Response updateIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -236,7 +236,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             m_ipInterfaceDao.saveOrUpdate(ipInterface);
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -250,7 +250,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @DELETE
     @Path("{ipAddress}")
     public Response deleteIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -277,7 +277,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             }
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -288,11 +288,11 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
      */
     @Path("{ipAddress}/services")
     public OnmsMonitoredServiceResource getServices() {
-        getReadLock().lock();
+        readLock();
         try {
             return m_context.getResource(OnmsMonitoredServiceResource.class);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 

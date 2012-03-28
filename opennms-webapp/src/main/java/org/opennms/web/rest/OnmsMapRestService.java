@@ -86,7 +86,7 @@ public class OnmsMapRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsMapList getMaps() {
-        getReadLock().lock();
+        readLock();
         
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsMap.class);
@@ -94,7 +94,7 @@ public class OnmsMapRestService extends OnmsRestService {
             builder.orderBy("lastModifiedTime").desc();
             return new OnmsMapList(m_mapDao.findMatching(builder.toCriteria()));
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -108,11 +108,11 @@ public class OnmsMapRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{mapId}")
     public OnmsMap getMap(@PathParam("mapId") final int mapId) {
-        getReadLock().lock();
+        readLock();
         try {
             return m_mapDao.get(mapId);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -125,13 +125,13 @@ public class OnmsMapRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addMap(final OnmsMap map) {
-        getWriteLock().lock();
+        writeLock();
         try {
             LogUtils.debugf(this, "addMap: Adding map %s", map);
             m_mapDao.save(map);
             return Response.ok(map).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -144,7 +144,7 @@ public class OnmsMapRestService extends OnmsRestService {
     @DELETE
     @Path("{mapId}")
     public Response deleteMap(@PathParam("mapId") final int mapId) {
-        getWriteLock().lock();
+        writeLock();
         try {
             final OnmsMap map = m_mapDao.get(mapId);
             if (map == null) throw getException(Response.Status.BAD_REQUEST, "deleteMap: Can't find map with id " + mapId);
@@ -152,7 +152,7 @@ public class OnmsMapRestService extends OnmsRestService {
             m_mapDao.delete(map);
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -167,7 +167,7 @@ public class OnmsMapRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{mapId}")
     public Response updateMap(@PathParam("mapId") final int mapId, final MultivaluedMapImpl params) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             final OnmsMap map = m_mapDao.get(mapId);
@@ -188,7 +188,7 @@ public class OnmsMapRestService extends OnmsRestService {
             m_mapDao.saveOrUpdate(map);
             return Response.ok(map).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -199,11 +199,11 @@ public class OnmsMapRestService extends OnmsRestService {
      */
     @Path("{mapId}/mapElements")
     public OnmsMapElementResource getMapElementResource() {
-        getReadLock().lock();
+        readLock();
         try {
             return m_context.getResource(OnmsMapElementResource.class);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 }

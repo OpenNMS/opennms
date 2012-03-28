@@ -91,11 +91,11 @@ public class EventRestService extends OnmsRestService {
 	@Path("{eventId}")
 	@Transactional
 	public OnmsEvent getEvent(@PathParam("eventId") final String eventId) {
-	    getReadLock().lock();
+	    readLock();
 	    try {
 	        return m_eventDao.get(new Integer(eventId));
 	    } finally {
-	        getReadLock().unlock();
+	        readUnlock();
 	    }
 	}
 
@@ -109,11 +109,11 @@ public class EventRestService extends OnmsRestService {
 	@Path("count")
 	@Transactional
 	public String getCount() {
-	    getReadLock().lock();
+	    readLock();
 	    try {
 	        return Integer.toString(m_eventDao.countAll());
 	    } finally {
-	        getReadLock().unlock();
+	        readUnlock();
 	    }
 	}
 
@@ -127,7 +127,7 @@ public class EventRestService extends OnmsRestService {
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Transactional
 	public OnmsEventCollection getEvents() throws ParseException {
-	    getReadLock().lock();
+	    readLock();
 	    
 	    try {
     	    final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
@@ -138,7 +138,7 @@ public class EventRestService extends OnmsRestService {
     		
     		return coll;
 	    } finally {
-	        getReadLock().unlock();
+	        readUnlock();
 	    }
 	}
 
@@ -154,7 +154,7 @@ public class EventRestService extends OnmsRestService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
 	public void updateEvent(@PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
-	    getWriteLock().lock();
+	    writeLock();
 	    
 	    try {
     	    final OnmsEvent event = m_eventDao.get(new Integer(eventId));
@@ -163,7 +163,7 @@ public class EventRestService extends OnmsRestService {
     		}
     		processEventAck(event, ack);
 	    } finally {
-	        getWriteLock().unlock();
+	        writeUnlock();
 	    }
 	}
 
@@ -177,7 +177,7 @@ public class EventRestService extends OnmsRestService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
 	public void updateEvents(final MultivaluedMapImpl formProperties) {
-	    getWriteLock().lock();
+	    writeLock();
 	    
 	    try {
     		Boolean ack=false;
@@ -194,7 +194,7 @@ public class EventRestService extends OnmsRestService {
     			processEventAck(event, ack);
     		}
 	    } finally {
-	        getWriteLock().unlock();
+	        writeUnlock();
 	    }
 	}
 

@@ -100,12 +100,12 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Path("{id}")
     @Transactional
     public OnmsAcknowledgment getAcknowledgment(@PathParam("id") String alarmId) {
-        getReadLock().lock();
+        readLock();
         try {
             OnmsAcknowledgment result = m_ackDao.get(new Integer(alarmId));
         	return result;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -119,11 +119,11 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-        getReadLock().lock();
+        readLock();
         try {
             return Integer.toString(m_ackDao.countAll());
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -136,7 +136,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsAcknowledgmentCollection getAcks() {
-        getReadLock().lock();
+        readLock();
         
         try {
             final CriteriaBuilder builder = getQueryFilters(m_uriInfo.getQueryParameters());
@@ -150,7 +150,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
     
             return coll;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -165,7 +165,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
     public OnmsAcknowledgment acknowledge(@FormParam("alarmId") String alarmId, @FormParam("notifId") String notifId, @FormParam("action") String action) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
         	OnmsAcknowledgment ack = null;
@@ -201,7 +201,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
             m_ackSvc.processAck(ack);
             return ack;
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 

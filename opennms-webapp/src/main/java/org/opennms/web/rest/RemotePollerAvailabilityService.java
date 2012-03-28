@@ -118,12 +118,12 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public OnmsMonitoringLocationDefinitionList getRemoteLocationList(){
-        getReadLock().lock();
+        readLock();
         try {
             List<OnmsMonitoringLocationDefinition> monitors = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
             return new OnmsMonitoringLocationDefinitionList(monitors);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -135,7 +135,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("participants")
     public String getParticipants(){
-        getReadLock().lock();
+        readLock();
         try {
             List<OnmsNode> nodes = m_nodeDao.findAll();
             StringBuffer retVal = new StringBuffer();
@@ -153,7 +153,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         
             return retVal.toString();
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -162,7 +162,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("availability")
     public OnmsLocationAvailDefinitionList getAvailability() throws InterruptedException {
-        getReadLock().lock();
+        readLock();
         
         try {
             if(m_timer == null) {
@@ -189,7 +189,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
             
             return m_defList;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -198,7 +198,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("availability/{location}")
     public OnmsLocationAvailDefinitionList getAvailabilityByLocation(@PathParam("location") String location) {
-        getReadLock().lock();
+        readLock();
         try {
             MultivaluedMap<String, String> queryParameters = m_uriInfo.getQueryParameters();
             
@@ -209,7 +209,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
             
             return availList;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     

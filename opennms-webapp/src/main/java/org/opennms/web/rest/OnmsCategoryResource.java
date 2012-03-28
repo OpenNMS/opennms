@@ -82,7 +82,7 @@ public class OnmsCategoryResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsCategoryCollection getCategories(@PathParam("nodeCriteria") String nodeCriteria) {
-        getReadLock().lock();
+        readLock();
         
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -91,7 +91,7 @@ public class OnmsCategoryResource extends OnmsRestService {
             }
             return new OnmsCategoryCollection(node.getCategories());
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -106,7 +106,7 @@ public class OnmsCategoryResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{categoryName}")
     public OnmsCategory getCategory(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
-        getReadLock().lock();
+        readLock();
         
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -115,7 +115,7 @@ public class OnmsCategoryResource extends OnmsRestService {
             }
             return getCategory(node, categoryName);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -129,7 +129,7 @@ public class OnmsCategoryResource extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addCategory(@PathParam("nodeCriteria") String nodeCriteria, OnmsCategory category) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -148,7 +148,7 @@ public class OnmsCategoryResource extends OnmsRestService {
             m_nodeDao.save(node);
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -164,7 +164,7 @@ public class OnmsCategoryResource extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{categoryName}")
     public Response updateCategory(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName, MultivaluedMapImpl params) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -188,7 +188,7 @@ public class OnmsCategoryResource extends OnmsRestService {
             m_nodeDao.saveOrUpdate(node);
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -202,7 +202,7 @@ public class OnmsCategoryResource extends OnmsRestService {
     @DELETE
     @Path("{categoryName}")
     public Response deleteCaegory(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -218,7 +218,7 @@ public class OnmsCategoryResource extends OnmsRestService {
             m_nodeDao.saveOrUpdate(node);
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
