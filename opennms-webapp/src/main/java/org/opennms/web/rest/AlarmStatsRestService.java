@@ -89,7 +89,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         try {
             return getStats(null);
         } finally {
-            getWriteLock().unlock();
+            getReadLock().unlock();
         }
     }
 

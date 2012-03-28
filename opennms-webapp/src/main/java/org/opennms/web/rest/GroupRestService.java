@@ -39,6 +39,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -112,6 +113,7 @@ public class GroupRestService extends OnmsRestService {
             if (group != null) return group;
             throw getException(Status.NOT_FOUND, groupName + " does not exist");
         } catch (final Throwable t) {
+            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
             throw getException(Status.BAD_REQUEST, t);
         } finally {
             getReadLock().unlock();
@@ -180,7 +182,7 @@ public class GroupRestService extends OnmsRestService {
             m_groupManager.deleteGroup(groupName);
             return Response.ok().build();
         } catch (final Throwable t) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
+            throw getException(Status.BAD_REQUEST, t);
         } finally {
             getWriteLock().unlock();
         }
@@ -216,6 +218,7 @@ public class GroupRestService extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, "User is not in the group '" + groupName + "': " + userName);
             }
         } catch (final Throwable t) {
+            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
             throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {
             getWriteLock().unlock();
