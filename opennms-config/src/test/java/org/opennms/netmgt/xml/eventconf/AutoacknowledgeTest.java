@@ -22,10 +22,10 @@ public class AutoacknowledgeTest extends XmlTestNoCastor<Autoacknowledge> {
 		return Arrays.asList(new Object[][] {
 				{autoacknowledge0,
 				"<autoacknowledge/>",
-				"target/classes/xsds/eventconf.xsd" },
+				"target/xsds/eventconf.xsd" },
 				{autoacknowledge1,
 				"<autoacknowledge state=\"on\">These are important data</autoacknowledge>",
-				"target/classes/xsds/eventconf.xsd" } 
+				"target/xsds/eventconf.xsd" } 
 		});
 	}
 

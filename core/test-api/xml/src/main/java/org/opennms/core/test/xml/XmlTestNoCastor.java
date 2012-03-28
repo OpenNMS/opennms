@@ -3,7 +3,7 @@ package org.opennms.core.test.xml;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class XmlTestNoCastor<T> extends XmlTest<T> {
+public abstract class XmlTestNoCastor<T> extends XmlTest<T> {
 	public XmlTestNoCastor(final T sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}

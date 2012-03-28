@@ -22,10 +22,10 @@ public class AutoactionTest extends XmlTestNoCastor<Autoaction> {
 		return Arrays.asList(new Object[][] {
 				{autoaction0,
 				"<autoaction/>",
-				"target/classes/xsds/eventconf.xsd" },
+				"target/xsds/eventconf.xsd" },
 				{autoaction1,
 				"<autoaction state=\"on\">These are important data</autoaction>",
-				"target/classes/xsds/eventconf.xsd" } 
+				"target/xsds/eventconf.xsd" } 
 		});
 	}
 

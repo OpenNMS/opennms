@@ -21,7 +21,7 @@ public class DecodeTest extends XmlTestNoCastor<Decode> {
 		return Arrays.asList(new Object[][] {
 				{decode0,
 				"<decode varbinddecodedstring=\"testing\" varbindvalue=\"3\"/>",
-				"target/classes/xsds/eventconf.xsd" } 
+				"target/xsds/eventconf.xsd" } 
 		});
 	}
 

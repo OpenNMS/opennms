@@ -31,7 +31,7 @@ public class SnmpTest extends XmlTestNoCastor<Snmp> {
 				"<id>.1.3.6.1.4.1.9</id>" +
 				"<version>v2c</version>" +
 				"</snmp>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 				{snmp1,
 				"<snmp>" +
 				"<id>.1.3.6.1.4.1.9</id>" +
@@ -41,7 +41,7 @@ public class SnmpTest extends XmlTestNoCastor<Snmp> {
 				"<generic>6</generic>" +
 				"<community>public</community>" +
 				"</snmp>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 		});
 	}
 

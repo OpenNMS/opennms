@@ -129,7 +129,7 @@ public class EventsTest extends XmlTestNoCastor<Events> {
 				"<severity>normal</severity>" +
 				"</event>" + 
 				"</events>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 				{events1,
 					"<events>" +
 					"  <global>" + 
@@ -193,7 +193,7 @@ public class EventsTest extends XmlTestNoCastor<Events> {
 					"</event>" +
 					"<event-file>test</event-file>" +
 					"</events>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 		});
 	}
 

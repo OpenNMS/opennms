@@ -33,6 +33,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.constraints.Min;
@@ -82,7 +83,7 @@ public class AlarmData implements Serializable {
     @XmlAttribute(name="x733-probable-cause")
     private Integer m_x733ProbableCause;
     
-    @XmlElement(name="update-field")
+    @XmlElement(name="update-field", required=false)
     private List<UpdateField> m_updateFields = new ArrayList<UpdateField>();
 
 
@@ -195,7 +196,7 @@ public class AlarmData implements Serializable {
 	}
 
     public List<UpdateField> getUpdateFieldList() {
-        return m_updateFields;
+        return Collections.unmodifiableList(m_updateFields);
     }
 
     public void setUpdateFieldList(List<UpdateField> updateFields) {

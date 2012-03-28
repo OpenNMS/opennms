@@ -23,10 +23,10 @@ public class ScriptTest extends XmlTestNoCastor<Script> {
 		return Arrays.asList(new Object[][] {
 				{script0,
 				"<script language=\"erlang\"/>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 				{script1,
 					"<script language=\"erlang\">This is a test</script>",
-					"target/classes/xsds/eventconf.xsd" }, 
+					"target/xsds/eventconf.xsd" }, 
 		});
 	}
 

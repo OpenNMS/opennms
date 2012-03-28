@@ -22,10 +22,10 @@ public class ForwardTest extends XmlTestNoCastor<Forward> {
 		return Arrays.asList(new Object[][] {
 				{forward0,
 				"<forward/>",
-				"target/classes/xsds/eventconf.xsd" },
+				"target/xsds/eventconf.xsd" },
 				{forward1,
 				"<forward state=\"on\" mechanism=\"snmpudp\"/>",
-				"target/classes/xsds/eventconf.xsd" } 
+				"target/xsds/eventconf.xsd" } 
 		});
 	}
 

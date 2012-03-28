@@ -24,10 +24,10 @@ public class OperactionTest extends XmlTestNoCastor<Operaction> {
 		return Arrays.asList(new Object[][] {
 				{operaction0,
 				"<operaction menutext=\"Test\"></operaction>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 				{operaction1,
 					"<operaction menutext=\"Test\" state=\"on\">This is a test</operaction>",
-					"target/classes/xsds/eventconf.xsd" }, 
+					"target/xsds/eventconf.xsd" }, 
 		});
 	}
 
