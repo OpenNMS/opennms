@@ -86,11 +86,11 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Path("{alarmId}")
     @Transactional
     public OnmsAlarm getAlarm(@PathParam("alarmId") final String alarmId) {
-        getReadLock().lock();
+        readLock();
         try {
             return m_alarmDao.get(new Integer(alarmId));
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -104,11 +104,11 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Path("count")
     @Transactional
     public String getCount() {
-        getReadLock().lock();
+        readLock();
         try {
             return Integer.toString(m_alarmDao.countAll());
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -121,7 +121,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsAlarmCollection getAlarms() {
-        getReadLock().lock();
+        readLock();
         
         try {
             final CriteriaBuilder builder = getCriteriaBuilder(m_uriInfo.getQueryParameters(), false);
@@ -133,7 +133,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     
             return coll;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -148,7 +148,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
 	public void updateAlarm(@PathParam("alarmId") final String alarmId, @FormParam("ack") final Boolean ack) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
         	final OnmsAlarm alarm = m_alarmDao.get(new Integer(alarmId));
@@ -157,7 +157,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     		}
     		processAlarmAck(alarm, ack);
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
 	}
 
@@ -170,7 +170,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
 	@Transactional
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void updateAlarms(final MultivaluedMapImpl formProperties) {
-	    getWriteLock().lock();
+	    writeLock();
 	    
 	    try {
     		Boolean ack=false;
@@ -187,7 +187,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     			processAlarmAck(alarm, ack);
     		}
 	    } finally {
-	        getWriteLock().unlock();
+	        writeUnlock();
 	    }
 	}
 
