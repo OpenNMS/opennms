@@ -31,6 +31,8 @@ package org.opennms.netmgt.ncs.rest;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -175,19 +177,24 @@ public class NCSRestService  {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{type}/{foreignSource}:{foreignId}")
     public NCSComponent getComponent(@PathParam("type") String type, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) {
-    	LogUtils.debugf(this, "getComponent: type = %s, foreignSource = %s, foreignId = %s", type, foreignSource, foreignId);
-
-    	if (m_componentRepo == null) {
-    		throw new IllegalStateException("component repository is null");
+    	readLock();
+    	try {
+	    	LogUtils.debugf(this, "getComponent: type = %s, foreignSource = %s, foreignId = %s", type, foreignSource, foreignId);
+	
+	    	if (m_componentRepo == null) {
+	    		throw new IllegalStateException("component repository is null");
+	    	}
+	    	
+	    	NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
+	    	
+	    	if (component == null) {
+	    		throw new WebApplicationException(Status.BAD_REQUEST);
+	    	}
+	    	
+	    	return component;
+    	} finally {
+    		readUnlock();
     	}
-    	
-    	NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
-    	
-    	if (component == null) {
-    		throw new WebApplicationException(Status.BAD_REQUEST);
-    	}
-    	
-    	return component;
     }
     
     /**
@@ -199,99 +206,147 @@ public class NCSRestService  {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{type}/{foreignSource}:{foreignId}")
     public NCSComponent addComponent(@PathParam("type") String type, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, NCSComponent subComponent) {
-    	LogUtils.debugf(this, "addComponent: type = %s, foreignSource = %s, foreignId = %s", type, foreignSource, foreignId);
-
-    	if (m_componentRepo == null) {
-    		throw new IllegalStateException("component repository is null");
-    	}
-    	
-    	final NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
-    	
-    	if (component == null) {
-    		throw new WebApplicationException(Status.BAD_REQUEST);
-    	}
-
-    	component.addSubcomponent(subComponent);
-    	
+    	writeLock();
     	try {
-    		m_componentRepo.saveOrUpdate(component);
-    	} catch (final DataAccessException e) {
-    		throw new WebApplicationException(e, Status.BAD_REQUEST);
+	    	LogUtils.debugf(this, "addComponent: type = %s, foreignSource = %s, foreignId = %s", type, foreignSource, foreignId);
+	
+	    	if (m_componentRepo == null) {
+	    		throw new IllegalStateException("component repository is null");
+	    	}
+	    	
+	    	final NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
+	    	
+	    	if (component == null) {
+	    		throw new WebApplicationException(Status.BAD_REQUEST);
+	    	}
+	
+	    	component.addSubcomponent(subComponent);
+	    	
+	    	try {
+	    		m_componentRepo.saveOrUpdate(component);
+	    	} catch (final DataAccessException e) {
+	    		throw new WebApplicationException(e, Status.BAD_REQUEST);
+	    	}
+	    	return component;
+    	} finally {
+    		writeUnlock();
     	}
-    	return component;
     }
     
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addComponents(NCSComponent component) {
-        LogUtils.infof(this, "addComponents: Adding component %s", component);
-        
-        try {
-        	m_componentRepo.save(component);
-    	} catch (final DataAccessException e) {
-    		throw new WebApplicationException(e, Status.BAD_REQUEST);
+    	writeLock();
+    	try {
+	        LogUtils.infof(this, "addComponents: Adding component %s", component);
+	        
+	        try {
+	        	m_componentRepo.save(component);
+	    	} catch (final DataAccessException e) {
+	    		throw new WebApplicationException(e, Status.BAD_REQUEST);
+	    	}
+	        return Response.ok(component).build();
+    	} finally {
+    		writeUnlock();
     	}
-        return Response.ok(component).build();
     }
 
 
     @DELETE
     @Path("{type}/{foreignSource}:{foreignId}")
     public Response deleteComponent(@PathParam("type") String type, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) {
-        LogUtils.infof(this, "deleteComponent: Deleting component of type %s and foreignIdentity %s:%s", type, foreignSource, foreignId);
-
-        NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
-
-
-        if (component == null) {
-            throw new WebApplicationException(Status.BAD_REQUEST);
-        }
-
-        List<NCSComponent> parents = m_componentRepo.findComponentsThatDependOn(component);
-
-        for(NCSComponent parent : parents)
-        {
-            parent.getSubcomponents().remove(component);
-        }
-
-        m_componentRepo.delete(component);
-
-        OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class)
-        .add(Restrictions.like("eventParms", "%componentForeignSource=" + foreignSource +"%"))
-        .add(Restrictions.like("eventParms", "%componentForeignId=" + foreignId +"%"));
-
-        List<OnmsEvent> events = m_eventDao.findMatching(criteria);
-
-        for(OnmsEvent event : events) {
-            m_eventDao.delete(event);
-        }
-
-        m_eventDao.flush();
-
-        OnmsCriteria alarmCriteria = new OnmsCriteria(OnmsAlarm.class)
-        .add(Restrictions.like("eventParms", "%componentForeignSource=" + foreignSource +"%"))
-        .add(Restrictions.like("eventParms", "%componentForeignId=" + foreignId +"%"));
-
-        List<OnmsAlarm> alarms = m_alarmDao.findMatching(alarmCriteria);
-
-        for(OnmsAlarm alarm : alarms) {
-            m_alarmDao.delete(alarm);
-        }
-
-        m_alarmDao.flush();
-
-        return Response.ok().build();
+    	writeLock();
+    	
+    	try {
+	        LogUtils.infof(this, "deleteComponent: Deleting component of type %s and foreignIdentity %s:%s", type, foreignSource, foreignId);
+	
+	        NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
+	
+	
+	        if (component == null) {
+	            throw new WebApplicationException(Status.BAD_REQUEST);
+	        }
+	
+	        List<NCSComponent> parents = m_componentRepo.findComponentsThatDependOn(component);
+	
+	        for(NCSComponent parent : parents)
+	        {
+	            parent.getSubcomponents().remove(component);
+	        }
+	
+	        m_componentRepo.delete(component);
+	
+	        OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class)
+	        .add(Restrictions.like("eventParms", "%componentForeignSource=" + foreignSource +"%"))
+	        .add(Restrictions.like("eventParms", "%componentForeignId=" + foreignId +"%"));
+	
+	        List<OnmsEvent> events = m_eventDao.findMatching(criteria);
+	
+	        for(OnmsEvent event : events) {
+	            m_eventDao.delete(event);
+	        }
+	
+	        m_eventDao.flush();
+	
+	        OnmsCriteria alarmCriteria = new OnmsCriteria(OnmsAlarm.class)
+	        .add(Restrictions.like("eventParms", "%componentForeignSource=" + foreignSource +"%"))
+	        .add(Restrictions.like("eventParms", "%componentForeignId=" + foreignId +"%"));
+	
+	        List<OnmsAlarm> alarms = m_alarmDao.findMatching(alarmCriteria);
+	
+	        for(OnmsAlarm alarm : alarms) {
+	            m_alarmDao.delete(alarm);
+	        }
+	
+	        m_alarmDao.flush();
+	
+	        return Response.ok().build();
+    	} finally {
+    		writeUnlock();
+    	}
     }
     
     @GET
     @Path("attributes")
     public ComponentList getComponentsByAttributes() {
-    	
-    	List<NCSComponent> components = m_componentRepo.findComponentsWithAttribute("jnxVpnPwVpnName", "ge-3/1/4.2");
-    	
-    	return new ComponentList(components);
-    	
+    	readLock();
+    	try {
+	    	List<NCSComponent> components = m_componentRepo.findComponentsWithAttribute("jnxVpnPwVpnName", "ge-3/1/4.2");
+	    	
+	    	return new ComponentList(components);
+    	} finally {
+    		readUnlock();
+    	}
     	
     }
-    
+
+    private final ReentrantReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+
+	protected void readLock() {
+	    m_readLock.lock();
+	}
+	
+	protected void readUnlock() {
+	    if (m_globalLock.getReadHoldCount() > 0) {
+	        m_readLock.unlock();
+	    }
+	}
+
+	protected void writeLock() {
+	    if (m_globalLock.getWriteHoldCount() == 0) {
+	        while (m_globalLock.getReadHoldCount() > 0) {
+	            m_readLock.unlock();
+	        }
+	        m_writeLock.lock();
+	    }
+	}
+
+	protected void writeUnlock() {
+	    if (m_globalLock.getWriteHoldCount() > 0) {
+	        m_writeLock.unlock();
+	    }
+	}
+
 }
