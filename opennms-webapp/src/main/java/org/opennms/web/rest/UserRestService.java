@@ -39,6 +39,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -110,6 +111,7 @@ public class UserRestService extends OnmsRestService {
             if (user != null) return user;
             throw getException(Status.NOT_FOUND, username + " does not exist");
         } catch (final Throwable t) {
+            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
             throw getException(Status.BAD_REQUEST, t);
         } finally {
             getReadLock().unlock();
