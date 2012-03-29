@@ -1,5 +1,6 @@
 package org.opennms.features.vaadin.topology.gwt.client;
 
+
 public class Edge{
 	Vertex m_source;
 	Vertex m_target;
@@ -35,5 +36,10 @@ public class Edge{
 	
 	public Vertex getTarget(){
 		return m_target;
+	}
+	
+	@Override
+	public String toString() {
+	    return "Edge :: source: " + getSource() + " target: " + getTarget();
 	}
 }

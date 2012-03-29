@@ -30,4 +30,11 @@ public class Vertex{
     public void setY(int y) {
         m_y = y;
     }
+    
+    @Override
+    public String toString() {
+        return "Vertex :: id: " + getId() + " x: " + getX() + " y: " + getY();
+        
+    }
+    
 }

@@ -5,7 +5,10 @@
 	-->
 
 	<!-- Inherit DefaultWidgetSet -->
-	<inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" /> 
+	<inherits name="com.google.gwt.json.JSON" /> 
+    <inherits name="com.google.gwt.http.HTTP" />
+	<inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
+	
 	
 	<!-- Widgetset default theme -->
 	<!-- This is relative to widgetset_directory/public -->	

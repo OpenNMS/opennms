@@ -60,6 +60,14 @@ public class VTopologyComponent extends Composite implements Paintable {
     protected void onLoad() {
         super.onLoad();
         
+        Runnable runnable = new Runnable() {
+            
+            public void run() {
+                Window.alert("This is being called from the runable");
+                
+            }
+        };
+        
         D3 d3 = getD3();
         m_width = 300;
         m_height = 300;
@@ -67,6 +75,7 @@ public class VTopologyComponent extends Composite implements Paintable {
         m_edgeGroup = m_svg.append("g").attr("transform", "scale(1)");
         m_vertexGroup = m_svg.append("g").attr("transform", "scale(1)");
         
+        runnable.run();
     }
     
     @UiHandler("m_saveButton")
@@ -74,7 +83,8 @@ public class VTopologyComponent extends Composite implements Paintable {
         Command command = new Command() {
 
             public void execute() {
-                m_client.updateVariable(m_paintableId, "graph", m_graph.getGraphAsMap(), true);
+               //m_client.updateVariable(m_paintableId, "graph", m_graph.getGraphAsMap(), true);
+                m_client.updateVariable(m_paintableId, "graph", GraphJSONConverter.convertGraphToJSON(m_graph), true);
                 
             }
         };

@@ -9,7 +9,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
-import com.vaadin.ui.Tree;
 import com.vaadin.ui.Window;
 
 public class TopologyWidgetTestApplication extends Application {
@@ -73,7 +72,7 @@ public class TopologyWidgetTestApplication extends Application {
         m_window.addComponent(addButton);
         m_window.addComponent(resetButton);
         m_window.addComponent(removeVertexButton);
-        Tree tree = new Tree();
+        
     }
 
 }
