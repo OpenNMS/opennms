@@ -528,6 +528,7 @@ find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
 	grep -v '/WEB-INF/jsp/alarm/ncs' | \
 	grep -v '/WEB-INF/jsp/ncs/' | \
+	grep -v '/WEB-INF/lib/ncs' | \
 	grep -v '/META-INF/opennms/component-service.xml' | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
@@ -573,6 +574,7 @@ rm -rf $RPM_BUILD_ROOT
 %files ncs
 %defattr(644 root root 755)
 %{instprefix}/lib/ncs-*.jar
+%{jettydir}/%{servletdir}/WEB-INF/lib/ncs*
 %config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
 %config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
 %{sharedir}/xsds/ncs-*.xsd
