@@ -391,6 +391,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
 
     // impl
     /** {@inheritDoc} */
+    @Override
     public void visit(MockVisitor v) {
         super.visit(v);
         v.visitNetwork(this);

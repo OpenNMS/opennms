@@ -62,14 +62,14 @@ public interface CapsdDbSyncer {
      * Note that the 'service' table entry will remain in the database since
      * events most likely exist which refer to the service.
      */
-    public abstract void syncServices();
+    void syncServices();
     
     /**
      * Synchronize configured services list with the database.
      *
      * @return a {@link java.util.List} object.
      */
-    public abstract List<String> syncServicesTable();
+    List<String> syncServicesTable();
     
     /**
      * Responsible for syncing up the 'isManaged' field of the ipInterface table
@@ -94,7 +94,7 @@ public interface CapsdDbSyncer {
      * @exception SQLException
      *                Thrown if an error occurs while syncing the database.
      */
-    public abstract void syncManagementState();
+    void syncManagementState();
     
     /**
      * Responsible for syncing up the 'isPrimarySnmp' field of the ipInterface
@@ -105,7 +105,7 @@ public interface CapsdDbSyncer {
      * @exception SQLException
      *                Thrown if an error occurs while syncing the database.
      */
-    public abstract void syncSnmpPrimaryState();
+    void syncSnmpPrimaryState();
     
     /**
      * <p>isInterfaceInDB</p>
@@ -113,7 +113,7 @@ public interface CapsdDbSyncer {
      * @param ifAddress a {@link java.net.InetAddress} object.
      * @return a boolean.
      */
-    public abstract boolean isInterfaceInDB(InetAddress ifAddress);
+    boolean isInterfaceInDB(InetAddress ifAddress);
     
     /**
      * <p>isInterfaceInDB</p>
@@ -123,7 +123,7 @@ public interface CapsdDbSyncer {
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
-    public abstract boolean isInterfaceInDB(Connection dbConn,
+    boolean isInterfaceInDB(Connection dbConn,
             InetAddress ifAddress) throws SQLException;
 
     
@@ -135,7 +135,7 @@ public interface CapsdDbSyncer {
      * @return The result of the lookup, or null if a matching service
      *          name wasn't found
      */
-    public abstract Integer getServiceId(String name);
+    Integer getServiceId(String name);
 
     /**
      * Returns the service name from the service table that was loaded
@@ -145,6 +145,6 @@ public interface CapsdDbSyncer {
      *          ID wasn't found
      * @param id a {@link java.lang.Integer} object.
      */
-    public abstract String getServiceName(Integer id);
+    String getServiceName(Integer id);
 
 }
