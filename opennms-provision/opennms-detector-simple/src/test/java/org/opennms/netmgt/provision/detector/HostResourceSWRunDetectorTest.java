@@ -87,4 +87,11 @@ public class HostResourceSWRunDetectorTest {
         m_detector.setServiceToDetect("cron");
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
+    
+    @Test
+    public void testDetectRegexSuccess() throws UnknownHostException{
+        m_detector.setServiceToDetect("~snmp.*");
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+    }
+
 }
