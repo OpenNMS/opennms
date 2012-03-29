@@ -2,16 +2,19 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
 	">
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <context:annotation-config />
     
     <bean name="xmlRpcNotifier" class="org.opennms.netmgt.capsd.XmlRpcEventHandlerNotifier" >
         <property name="xmlRpcEnabled">
@@ -70,12 +73,9 @@
     
     
     <bean name="daemon" class="org.opennms.netmgt.capsd.Capsd">
-        <property name="suspectEventProcessorFactory" ref="suspectEventProcessorFactory"/>
-        <property name="capsdDbSyncer" ref="syncer" />
         <property name="suspectRunner" ref="suspectRunner" />
         <property name="rescanRunner" ref="rescanRunner" />
         <property name="eventListener" ref="capsdEventListenerAdapter" />
-        <property name="scheduler" ref="capsdScheduler" />
     </bean>
     
 </beans>

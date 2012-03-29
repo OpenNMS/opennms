@@ -38,6 +38,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.DaemonUtils;
 import org.opennms.netmgt.model.events.StoppableEventListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -74,6 +75,7 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * Rescan scheduler thread
      */
+    @Autowired
     private Scheduler m_scheduler;
     
     /**
@@ -96,8 +98,10 @@ public class Capsd extends AbstractServiceDaemon {
     /*
      * Injected properties, the should be asserted in onInit
      */
+    @Autowired
     private SuspectEventProcessorFactory m_suspectEventProcessorFactory;
 
+    @Autowired
     private CapsdDbSyncer m_capsdDbSyncer;
 
     /**
@@ -171,13 +175,13 @@ public class Capsd extends AbstractServiceDaemon {
          */
 
         log().debug("init: Loading services into database...");
-        getCapsdDbSyncer().syncServices();
+        m_capsdDbSyncer.syncServices();
         
         log().debug("init: Syncing management state...");
-        getCapsdDbSyncer().syncManagementState();
+        m_capsdDbSyncer.syncManagementState();
         
         log().debug("init: Syncing primary SNMP interface state...");
-        getCapsdDbSyncer().syncSnmpPrimaryState();
+        m_capsdDbSyncer.syncSnmpPrimaryState();
 
 	}
 
@@ -274,28 +278,6 @@ public class Capsd extends AbstractServiceDaemon {
         }
     }
 
-    private CapsdDbSyncer getCapsdDbSyncer() {
-        return m_capsdDbSyncer;
-    }
-
-    /**
-     * <p>setCapsdDbSyncer</p>
-     *
-     * @param capsdDbSyncer a {@link org.opennms.netmgt.capsd.CapsdDbSyncer} object.
-     */
-    public void setCapsdDbSyncer(CapsdDbSyncer capsdDbSyncer) {
-        m_capsdDbSyncer = capsdDbSyncer;
-    }
-
-    /**
-     * <p>setSuspectEventProcessorFactory</p>
-     *
-     * @param eventProcessorFactory a {@link org.opennms.netmgt.capsd.SuspectEventProcessorFactory} object.
-     */
-    public void setSuspectEventProcessorFactory(SuspectEventProcessorFactory eventProcessorFactory) {
-        m_suspectEventProcessorFactory = eventProcessorFactory;
-    }
-
     /**
      * <p>setSuspectRunner</p>
      *
@@ -321,15 +303,6 @@ public class Capsd extends AbstractServiceDaemon {
      */
     public void setEventListener(StoppableEventListener eventListener) {
         m_eventListener = eventListener;
-    }
-
-    /**
-     * <p>setScheduler</p>
-     *
-     * @param scheduler a {@link org.opennms.netmgt.capsd.Scheduler} object.
-     */
-    public void setScheduler(Scheduler scheduler) {
-        m_scheduler = scheduler;
     }
 
 } // end Capsd class
