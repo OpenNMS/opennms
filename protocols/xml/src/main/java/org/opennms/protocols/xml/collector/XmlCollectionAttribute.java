@@ -43,30 +43,25 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
  */
 public class XmlCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
 
-    /** The Attribute Name. */
-    private String m_name;
-
     /** The Attribute Value. */
     private String m_value;
 
     /** The XML Collection Resource associated with this attribute. */
     private XmlCollectionResource m_resource;
 
-    /** The Attribute Type. */
-    private CollectionAttributeType m_attribType;
+    /** The XML Attribute Type. */
+    private XmlCollectionAttributeType m_attribType;
 
     /**
      * Instantiates a new XML collection attribute.
      *
      * @param resource the resource
      * @param attribType the attribute type
-     * @param name the attribute name
      * @param value the attribute value
      */
-    public XmlCollectionAttribute(XmlCollectionResource resource, CollectionAttributeType attribType, String name, String value) {
+    public XmlCollectionAttribute(XmlCollectionResource resource, XmlCollectionAttributeType attribType, String value) {
         m_resource = resource;
         m_attribType = attribType;
-        m_name = name;
         m_value = value;
     }
 
@@ -81,7 +76,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getName()
      */
     public String getName() {
-        return m_name;
+        return m_attribType.getName();
     }
 
     /* (non-Javadoc)
@@ -135,7 +130,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        return "XmlCollectionAttribute " + m_name + "=" + m_value;
+        return "XmlCollectionAttribute " + getName() + "=" + getStringValue();
     }
 
     /**
