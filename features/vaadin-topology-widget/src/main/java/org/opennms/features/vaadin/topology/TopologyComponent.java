@@ -54,7 +54,7 @@ public class TopologyComponent extends AbstractComponent {
         if(variables.containsKey("graph")) {
             Map<String, Object> graph = (Map<String, Object>) variables.get("graph");
             Vertex vert = (Vertex) graph.get("vertex");
-            getApplication().getMainWindow().showNotification("I got a new graph: now how do I get the data? ");
+            getApplication().getMainWindow().showNotification("I got a new graph: now how do I get the data? graph is " + graph);
             
             
         }

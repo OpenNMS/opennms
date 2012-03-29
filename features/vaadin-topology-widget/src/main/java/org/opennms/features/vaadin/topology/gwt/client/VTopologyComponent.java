@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
+import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -23,6 +24,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.Console;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 
@@ -88,10 +90,23 @@ public class VTopologyComponent extends Composite implements Paintable {
 
     private void drawGraph(Graph graph) {
         D3 lines = m_edgeGroup.selectAll("line")
-                .data(graph.getEdges().toArray(new Edge[0]), getEdgeId());
+                .data(graph.getEdges().toArray(new Edge[0]), new Func<String, Edge>() {
+
+					public String call(Edge edge) {
+						String edgeId = edge.getId();
+						return edgeId;
+					}
+                	
+                });
         
         D3 vertexGroup = m_vertexGroup.selectAll(".little")
-                .data(graph.getVertices().toArray(new Vertex[0]), getVertexId());
+                .data(graph.getVertices().toArray(new Vertex[0]), new Func<String, Vertex>() {
+
+					public String call(Vertex param) {
+						return "" + param.getId();
+					}
+                	
+                });
         
         lines.exit().transition().duration(500).attr("opacity", 0).remove();
         vertexGroup.exit().transition().duration(500).attr("opacity", 0).remove();
@@ -130,7 +145,6 @@ public class VTopologyComponent extends Composite implements Paintable {
                 
         
 	}
-    
     
     private static native JavaScriptObject getTranslation() /*-{
         return function(d){

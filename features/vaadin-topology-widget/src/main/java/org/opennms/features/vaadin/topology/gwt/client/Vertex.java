@@ -30,4 +30,8 @@ public class Vertex{
     public void setY(int y) {
         m_y = y;
     }
+    
+    public String toString() {
+    	return "v" + m_id + "(" + m_x  + "," + m_y + ")";
+    }
 }
