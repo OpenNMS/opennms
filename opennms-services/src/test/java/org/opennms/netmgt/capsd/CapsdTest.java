@@ -120,7 +120,6 @@ public class CapsdTest extends OpenNMSTestCase {
         m_capsd = new Capsd();
         m_capsd.setCapsdDbSyncer(syncer);
         m_capsd.setSuspectEventProcessorFactory(defaultProcessorFactory);
-        m_capsd.setCapsdConfig(capsdConfig);
         m_capsd.setSuspectRunner(suspectRunner);
         m_capsd.setRescanRunner(rescanRunner);
         m_capsd.setScheduler(scheduler);
@@ -179,7 +178,7 @@ public class CapsdTest extends OpenNMSTestCase {
         m_capsd.init();
         m_capsd.start();
         
-        m_capsd.rescanInterfaceParent(77);
+        m_capsd.rescanInterfaceParent(FOREIGN_NODEID);
         
         Thread.sleep(10000);
         
@@ -197,7 +196,7 @@ public class CapsdTest extends OpenNMSTestCase {
         m_capsd.init();
         m_capsd.start();
         
-        m_capsd.rescanInterfaceParent(77);
+        m_capsd.rescanInterfaceParent(FOREIGN_NODEID);
         
         Thread.sleep(10000);
         

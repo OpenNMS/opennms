@@ -48,8 +48,9 @@ import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * In memory database comparable to the postgres database that can be used for unit
- * testing.  Can be populated from a MockNetwork
+ * This class provides additional utility methods on top of the basic {@link TemporaryDatabase}
+ * class. For instance, it can be populated from a {@link MockNetwork}.
+ * 
  * @author brozow
  */
 public class MockDatabase extends TemporaryDatabase implements EventWriter {
@@ -120,9 +121,9 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     public void writeService(MockService svc) {
         String svcName = svc.getSvcName();
         if (!serviceDefined(svcName)) {
-            Object[] svcValues = { new Integer(svc.getId()), svcName };
-            //Object[] svcValues = { getNextServiceId(), svcName };
-            getNextServiceId();
+            //Object[] svcValues = { new Integer(svc.getId()), svcName };
+            Object[] svcValues = { getNextServiceId(), svcName };
+            //getNextServiceId();
             update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
         }
         
@@ -240,6 +241,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     /**
      * @param e
      */
+    @Override
     public void writeEvent(Event e) {
         Integer eventId = getNextEventId();
         

@@ -35,7 +35,6 @@ import java.util.concurrent.ExecutorService;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.DaemonUtils;
 import org.opennms.netmgt.model.events.StoppableEventListener;
@@ -100,8 +99,6 @@ public class Capsd extends AbstractServiceDaemon {
     private SuspectEventProcessorFactory m_suspectEventProcessorFactory;
 
     private CapsdDbSyncer m_capsdDbSyncer;
-    
-    private CapsdConfig m_capsdConfig;
 
     /**
      * <P>
@@ -147,7 +144,6 @@ public class Capsd extends AbstractServiceDaemon {
 	    
         Assert.state(m_suspectEventProcessorFactory != null, "must set the suspectEventProcessorFactory property");
         Assert.state(m_capsdDbSyncer != null, "must set the capsdDbSyncer property");
-        Assert.state(m_capsdConfig != null, "must set the capsdConfig property");
         Assert.state(m_suspectRunner != null, "must set the suspectRunner property");
         Assert.state(m_rescanRunner != null, "must set the rescanRunner property");
         Assert.state(m_scheduler != null, "must set the scheduler property");
@@ -298,15 +294,6 @@ public class Capsd extends AbstractServiceDaemon {
      */
     public void setSuspectEventProcessorFactory(SuspectEventProcessorFactory eventProcessorFactory) {
         m_suspectEventProcessorFactory = eventProcessorFactory;
-    }
-    
-    /**
-     * <p>setCapsdConfig</p>
-     *
-     * @param capsdConfig a {@link org.opennms.netmgt.config.CapsdConfig} object.
-     */
-    public void setCapsdConfig(CapsdConfig capsdConfig) {
-        m_capsdConfig = capsdConfig;
     }
 
     /**

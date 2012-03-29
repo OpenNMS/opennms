@@ -118,7 +118,6 @@ public class ScanSuspectTest extends OpenNMSTestCase {
         m_capsd = new Capsd();
         m_capsd.setCapsdDbSyncer(syncer);
         m_capsd.setSuspectEventProcessorFactory(defaultProcessorFactory);
-        m_capsd.setCapsdConfig(capsdConfig);
         m_capsd.setSuspectRunner(suspectRunner);
         m_capsd.setRescanRunner(rescanRunner);
         m_capsd.setScheduler(scheduler);

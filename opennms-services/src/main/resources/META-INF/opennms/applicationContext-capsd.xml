@@ -72,7 +72,6 @@
     <bean name="daemon" class="org.opennms.netmgt.capsd.Capsd">
         <property name="suspectEventProcessorFactory" ref="suspectEventProcessorFactory"/>
         <property name="capsdDbSyncer" ref="syncer" />
-        <property name="capsdConfig" ref="capsdConfig"/>
         <property name="suspectRunner" ref="suspectRunner" />
         <property name="rescanRunner" ref="rescanRunner" />
         <property name="eventListener" ref="capsdEventListenerAdapter" />

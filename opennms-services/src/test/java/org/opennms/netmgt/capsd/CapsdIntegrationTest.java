@@ -28,75 +28,89 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.io.File;
+import static org.junit.Assert.assertEquals;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpAgent;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.netmgt.config.CapsdConfig;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
+import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.OpenNMSIntegrationTestCase;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
- * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
-    
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-capsd.xml",
+        // Override the capsd config with a stripped-down version
+        "classpath:/META-INF/opennms/capsdTest.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/smallEventConfDao.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+public class CapsdIntegrationTest implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
+
     private static final int FOREIGN_NODEID = 77;
+    private static final String FOREIGN_NODE_IP_ADDRESS = "172.20.1.201";
 
+    private MockNetwork m_mockNetwork = new MockNetwork();
+
+    @Autowired
     private Capsd m_capsd;
-    private MockSnmpAgent m_agent;
 
-   protected String[] getConfigLocations() {
-       try {
-        setupOpenNMSHomeDir();
-    } catch (Throwable e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
-        return new String[] {
-                "classpath:META-INF/opennms/applicationContext-dao.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath:META-INF/opennms/applicationContext-daemon.xml",
-                "classpath:META-INF/opennms/mockEventIpcManager.xml",
-                "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
-                "classpath:META-INF/opennms/applicationContext-capsd.xml",
-                "classpath:META-INF/opennms/smallEventConfDao.xml",
-        };
-    }
+    @Autowired
+    private CapsdConfig m_capsdConfig;
 
-    public void setCapsd(Capsd capsd) {
-        m_capsd = capsd;
-    }
-    
-    @Override
-    protected MockNetwork createMockNetwork() {
-        MockNetwork network = super.createMockNetwork();
-        
-        network.addNode(FOREIGN_NODEID, "ForeignNode");
-        network.addInterface("172.20.1.201");
-        network.addService("ICMP");
-        network.addService("SNMP");
-        
-        return network;
-    }
-
-    
-    
-    @Override
-    protected void onSetUpBeforeTransaction() throws Exception {
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties").getURL(), InetAddressUtils.getLocalHostAddressAsString()+"/9161");
-    }
-    
-    
+    private MockDatabase m_db;
 
     @Override
-    protected void onTearDownAfterTransaction() throws Exception {
-        if (m_agent != null) {
-            m_agent.shutDownAndWait();
-        }
+    public void setTemporaryDatabase(final MockDatabase database) {
+        m_db = database;
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Assert.assertNotNull(m_capsd);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        /*
+        InputStream configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/capsd-configuration.xml");
+        DefaultCapsdConfigManager capsdConfig = new DefaultCapsdConfigManager(configStream);
+        configStream.close();
+        CapsdConfigFactory.setInstance(capsdConfig);
+        */
+
+        assertEquals(2, m_capsdConfig.getConfiguredProtocols().size());
+
+        m_mockNetwork.createStandardNetwork();
+
+        m_mockNetwork.addNode(FOREIGN_NODEID, "ForeignNode");
+        m_mockNetwork.addInterface(FOREIGN_NODE_IP_ADDRESS);
+        m_mockNetwork.addService("ICMP");
+        m_mockNetwork.addService("SNMP");
+
+        m_db.populate(m_mockNetwork);
+    }
+
+    /*
     @Override
     protected String preprocessConfigContents(File srcFile, String contents) {
         if (srcFile.getName().matches("snmp-config.xml")) {
@@ -110,7 +124,9 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
             return contents;
         }
     }
+     */
 
+    /*
     public String getSnmpConfig() {
         return "<?xml version=\"1.0\"?>\n" + 
                 "<snmp-config "+ 
@@ -125,24 +141,22 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
                 "   </definition>\n" + 
                 "</snmp-config>\n";
     }
- 
+     */
+
+    @Test
+    @JUnitSnmpAgent(host=FOREIGN_NODE_IP_ADDRESS, resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
     public final void testRescan() throws Exception {
-        
+
         assertEquals("Initially only 1 interface", 1, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
 
         m_capsd.start();
-        
-        m_capsd.rescanInterfaceParent(77);
-        
-        Thread.sleep(10000);
-        
-        m_capsd.stop();
-        
-        assertEquals("after scanning should be 2 interfaces", 2, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
-    }
-    
- 
-    
-    
 
+        m_capsd.rescanInterfaceParent(FOREIGN_NODEID);
+
+        Thread.sleep(10000);
+
+        m_capsd.stop();
+
+        assertEquals("After scanning should be 2 interfaces", 2, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
+    }
 }
