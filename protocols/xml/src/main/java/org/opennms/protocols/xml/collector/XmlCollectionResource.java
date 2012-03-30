@@ -32,7 +32,6 @@ import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
@@ -75,8 +74,8 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
      * @param type the type
      * @param value the value
      */
-    public void setAttributeValue(CollectionAttributeType type, String value) {
-        XmlCollectionAttribute attr = new XmlCollectionAttribute(this, type, type.getName(), value);
+    public void setAttributeValue(XmlCollectionAttributeType type, String value) {
+        XmlCollectionAttribute attr = new XmlCollectionAttribute(this, type, value);
         addAttribute(attr);
     }
 

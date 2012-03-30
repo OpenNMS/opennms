@@ -274,7 +274,7 @@ public class JavaMailer {
     public Message buildMessage() throws JavaMailerException {
         try {
             checkEnvelopeAndContents();
-            Message message = initializeMessage();
+            MimeMessage message = initializeMessage();
 
             // The next line has been commented, because it prevents the usage of internationalized characters and makes the email unreadable.
             // String encodedText = MimeUtility.encodeText(getMessageText(), m_charSet, m_encoding);
@@ -324,12 +324,12 @@ public class JavaMailer {
      * @throws MessagingException
      * @throws AddressException
      */
-    private Message initializeMessage() throws MessagingException, AddressException {
-        Message message;
+    private MimeMessage initializeMessage() throws MessagingException, AddressException {
+        MimeMessage message;
         message = new MimeMessage(getSession());
         message.setFrom(new InternetAddress(getFrom()));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getTo(), false));
-        message.setSubject(getSubject());
+        message.setSubject(getSubject(), m_charSet);
         for (final String key : getExtraHeaders().keySet()) {
         	message.setHeader(key, m_extraHeaders.get(key));
         }

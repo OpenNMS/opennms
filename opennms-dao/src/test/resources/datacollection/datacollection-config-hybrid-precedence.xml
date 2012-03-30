@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
+  <snmp-collection name="default" snmpStorageFlag="select">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+
+    <include-collection dataCollectionGroup="Cisco"/>
+
+    <groups>
+      <group name="cisco-frame-relay" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.2.1.1" instance="frCircuitIfIndex" alias="frIfName"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.2.1.3" instance="frCircuitIfIndex" alias="frSubifIndex" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.1.1.1" instance="frCircuitIfIndex" alias="frDEins"        type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.1.1.2" instance="frCircuitIfIndex" alias="frDEouts"       type="counter" />
+      </group>
+    </groups>
+    
+    <systems>
+      <systemDef name="Cisco Routers">
+        <sysoidMask>.1.3.6.1.4.1.9.1.</sysoidMask>
+        <collect>
+          <includeGroup>rfc1315-frame-relay</includeGroup>
+          <includeGroup>cisco-frame-relay</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+        </collect>
+      </systemDef>
+    </systems>
+    
+  </snmp-collection>
+
+</datacollection-config>

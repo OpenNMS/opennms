@@ -39,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +55,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
@@ -86,7 +88,7 @@ public class EventconfFactoryTest {
         daoTestConfig.setRelativeHomeDirectory("src/test/resources");
         daoTestConfig.afterPropertiesSet();
 
-        EventconfFactory.init();
+        EventconfFactory.reinit();
     }
 
     @Test
@@ -366,7 +368,7 @@ public class EventconfFactoryTest {
      */
     @Test
     public void testIncludedEventFilesExistAndNoExtras() throws Exception {
-        File eventConfFile = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
+        File eventConfFile = new File("src/test/resources/etc/eventconf.xml");
         File eventsDirFile = new File(eventConfFile.getParentFile(), "events");
         assertTrue("events directory exists at " + eventsDirFile.getAbsolutePath(), eventsDirFile.exists());
         assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());
@@ -377,7 +379,7 @@ public class EventconfFactoryTest {
             } });
         Set<File> eventFilesOnDisk = new HashSet<File>(Arrays.asList(eventFilesOnDiskArray));
 
-        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("eventconf.xml");
+        InputStream is = new FileInputStream(eventConfFile);
         Events events = CastorUtils.unmarshal(Events.class, is);
         is.close();
         Set<File> eventFilesIncluded = new HashSet<File>(events.getEventFileCollection().size());

@@ -21,7 +21,7 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
     
     @Test
     public void testAllLinksArePresent() {
-        assertEquals("Get details", selenium.getValue("css=input[type=submit]"));
+        assertEquals("Get details", selenium.getValue("css=input[type='submit']"));
         assertTrue(selenium.isElementPresent("link=All events"));
         assertTrue(selenium.isElementPresent("link=Advanced Search"));
     }
@@ -33,7 +33,7 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Event(s) outstanding"));
         assertTrue(selenium.isTextPresent("Event Text"));
         assertTrue(selenium.isElementPresent("link=Interface"));
-        selenium.click("css=a[title=Events System Page]");
+        selenium.click("css=a[title='Events System Page']");
         waitForPageToLoad();
         selenium.click("link=Advanced Search");
         waitForPageToLoad();
@@ -42,7 +42,7 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Advanced Event Search"));
         assertTrue(selenium.isElementPresent("name=usebeforetime"));
         assertTrue(selenium.isElementPresent("name=limit"));
-        assertTrue(selenium.isElementPresent("css=input[type=submit]"));
+        assertTrue(selenium.isElementPresent("css=input[type='submit']"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
         waitForPageToLoad();
         selenium.click("link=Log out");
