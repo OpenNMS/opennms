@@ -1,5 +1,7 @@
 package org.opennms.features.vaadin.topology;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.vaadin.topology.gwt.client.Edge;
@@ -19,9 +21,12 @@ public class TopologyComponent extends AbstractComponent {
 
     private Graph m_graph;
 	private double m_scale = 1;
+    private List<VaadinVertex> m_vertices = new ArrayList<VaadinVertex>();
 
 	public TopologyComponent() {
 		m_graph = new Graph();
+		VaadinVertex vertex = new VaadinVertex();
+		addVertex(vertex);
 	}
 	
     @Override
@@ -46,6 +51,15 @@ public class TopologyComponent extends AbstractComponent {
         }
         
         target.endTag("graph");
+        
+        for(VaadinVertex vertex : m_vertices) {
+            vertex.requestRepaint();
+        }
+        
+    }
+    
+    public void addVertex(VaadinVertex vertex) {
+        m_vertices.add(vertex);
     }
     
     @Override

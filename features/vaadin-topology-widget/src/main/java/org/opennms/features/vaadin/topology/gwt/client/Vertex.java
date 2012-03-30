@@ -1,9 +1,16 @@
 package org.opennms.features.vaadin.topology.gwt.client;
 
-public class Vertex{
+import com.google.gwt.user.client.Window;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.UIDL;
+
+public class Vertex implements Paintable{
 	int m_x;
 	int m_y;
 	private int m_id;
+	
+	public Vertex() {};
 	
 	public Vertex(int id, int x, int y){
 		m_id = id;
@@ -33,5 +40,9 @@ public class Vertex{
     
     public String toString() {
     	return "v" + m_id + "(" + m_x  + "," + m_y + ")";
+    }
+
+    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        Window.alert("getting Update from Server");
     }
 }
