@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -120,23 +121,20 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
 
     public void writeService(MockService svc) {
         String svcName = svc.getSvcName();
-        if (!serviceDefined(svcName)) {
+        Integer serviceId = getServiceID(svcName);
+        if (serviceId == null) {
             svc.setId(getNextServiceId());
             Object[] svcValues = { svc.getId(), svcName };
             update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
+            LogUtils.infof(this, "Inserting service \"%s\" into database with ID %d", svcName, svc.getId());
+        } else {
+            svc.setId(serviceId);
         }
-        
         String status = svc.getMgmtStatus().toDbString();
         Object[] values = { new Integer(svc.getNodeId()), str(svc.getAddress()), new Integer(svc.getId()), status };
         update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
     }
-    
-    private boolean serviceDefined(String svcName) {
-        Querier querier = new Querier(this, "select serviceId from service where serviceName = ?");
-        querier.execute(svcName);
-        return querier.getCount() > 0;
-    }
-    
+
     public String getNextOutageIdStatement() {
         return getNextSequenceValStatement("outageNxtId");
     }

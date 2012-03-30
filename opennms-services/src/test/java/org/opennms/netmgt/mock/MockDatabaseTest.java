@@ -135,11 +135,11 @@ public class MockDatabaseTest extends TestCase {
                 String status = rs.getString("status");
                 MockService svc = m_network.getService(nodeId, ipAddr, serviceName);
                 assertNotNull(svc);
-                assertEquals(svc.getNodeId(), nodeId);
-                assertEquals(svc.getIpAddr(), ipAddr);
-                assertEquals(svc.getSvcName(), serviceName);
-                assertEquals(svc.getId(), serviceId);
-                assertEquals(svc.getMgmtStatus().toDbString(), status);
+                assertEquals("Assertion failed: " + svc, svc.getNodeId(), nodeId);
+                assertEquals("Assertion failed: " + svc, svc.getIpAddr(), ipAddr);
+                assertEquals("Assertion failed: " + svc, svc.getSvcName(), serviceName);
+                assertEquals("Assertion failed: " + svc, svc.getId(), serviceId);
+                assertEquals("Assertion failed: " + svc, svc.getMgmtStatus().toDbString(), status);
             }
         };
         querier.execute();
