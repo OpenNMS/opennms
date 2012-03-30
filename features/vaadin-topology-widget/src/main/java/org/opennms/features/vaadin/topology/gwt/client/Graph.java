@@ -75,7 +75,7 @@ public class Graph{
 	    }
 	}
     public void removeRandomVertext() {
-        int random = (int) ((Math.random() * (m_vertices.size() - 2)) + 1);
+        int random = (int)Math.round(Math.random() * (m_vertices.size() - 2)) + 1;
         Vertex vert = m_vertices.remove(random);
         
         Iterator<Edge> it = m_edges.iterator();

@@ -31,10 +31,7 @@ public class Vertex{
         m_y = y;
     }
     
-    @Override
     public String toString() {
-        return "Vertex :: id: " + getId() + " x: " + getX() + " y: " + getY();
-        
+    	return "v" + m_id + "(" + m_x  + "," + m_y + ")";
     }
-    
 }

@@ -54,7 +54,6 @@ public class TopologyComponent extends AbstractComponent {
             String graph = (String) variables.get("graph");
             getApplication().getMainWindow().showNotification("I got a new graph: now how do I get the data? Do I have vert data? " + graph);
             
-            
         }
     }
     

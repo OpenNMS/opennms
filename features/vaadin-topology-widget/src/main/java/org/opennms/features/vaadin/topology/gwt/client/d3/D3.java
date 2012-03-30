@@ -86,8 +86,12 @@ public class D3 extends JavaScriptObject {
         return this.remove();
     }-*/;
 
-    public final native D3 data(Object[] data, JavaScriptObject idFunc) /*-{
-        return this.data(data, idFunc);
+    public final native D3 data(Object[] data, Func<?, ?> func) /*-{
+    	var f = function(d, i) {
+        	return func.@org.opennms.features.vaadin.topology.gwt.client.d3.Func::call(Ljava/lang/Object;)(d);
+        };
+        return this.data(data, f);
+		
     }-*/;
 
     public final native D3 text(JavaScriptObject textFunc) /*-{
