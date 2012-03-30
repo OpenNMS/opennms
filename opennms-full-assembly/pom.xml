@@ -185,6 +185,7 @@
     </plugins>
   </build>
   <modules>
+    <module>../core/build/keystore</module>
     <module>../opennms-install</module>
     <module>../opennms-assemblies</module>
     <module>../opennms-doc</module>
