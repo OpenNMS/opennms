@@ -101,7 +101,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsSnmpInterfaceList getSnmpInterfaces(@PathParam("nodeCriteria") final String nodeCriteria) {
-        getReadLock().lock();
+        readLock();
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
             
@@ -119,7 +119,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     
             return snmpList;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -134,11 +134,11 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ifIndex}")
     public OnmsEntity getSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex) {
-        getReadLock().lock();
+        readLock();
         try {
             return m_nodeDao.get(nodeCriteria).getSnmpInterfaceWithIfIndex(ifIndex);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -152,7 +152,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, final OnmsSnmpInterface snmpInterface) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -169,7 +169,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             m_snmpInterfaceDao.save(snmpInterface);
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -183,7 +183,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @DELETE
     @Path("{ifIndex}")
     public Response deleteSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -198,7 +198,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             // TODO Add important events here
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -214,7 +214,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ifIndex}")
     public Response updateSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex, final MultivaluedMapImpl params) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -262,7 +262,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             }
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 

@@ -83,7 +83,7 @@ public class GroupRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsGroupList getGroups() {
-        getReadLock().lock();
+        readLock();
         
         try {
             final OnmsGroupList list;
@@ -98,7 +98,7 @@ public class GroupRestService extends OnmsRestService {
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -106,7 +106,7 @@ public class GroupRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{groupName}")
     public OnmsGroup getGroup(@PathParam("groupName") final String groupName) {
-        getReadLock().lock();
+        readLock();
         
         try {
             final OnmsGroup group = m_groupManager.getOnmsGroup(groupName);
@@ -116,14 +116,14 @@ public class GroupRestService extends OnmsRestService {
             if (t instanceof WebApplicationException) throw (WebApplicationException)t;
             throw getException(Status.BAD_REQUEST, t);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addGroup(final OnmsGroup group) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             log().debug("addGroup: Adding group " + group);
@@ -132,7 +132,7 @@ public class GroupRestService extends OnmsRestService {
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -140,7 +140,7 @@ public class GroupRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{groupName}")
     public Response updateGroup(@PathParam("groupName") final String groupName, final MultivaluedMapImpl params) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             OnmsGroup group = null;
@@ -168,14 +168,14 @@ public class GroupRestService extends OnmsRestService {
             }
             return Response.ok(group).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
     @DELETE
     @Path("{groupName}")
     public Response deleteGroup(@PathParam("groupName") final String groupName) {
-        getWriteLock().lock();
+        writeLock();
         try {
             final OnmsGroup group = getOnmsGroup(groupName);
             log().debug("deleteGroup: deleting group " + group);
@@ -184,14 +184,14 @@ public class GroupRestService extends OnmsRestService {
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
     @PUT
     @Path("{groupName}/users/{userName}")
     public Response addUser(@PathParam("groupName") final String groupName, @PathParam("userName") final String userName) {
-        getWriteLock().lock();
+        writeLock();
         try {
             final OnmsGroup group = getOnmsGroup(groupName);
             group.addUser(userName);
@@ -200,14 +200,14 @@ public class GroupRestService extends OnmsRestService {
         } catch (final Throwable t) {
             throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
     @DELETE
     @Path("{groupName}/users/{userName}")
     public Response removeUser(@PathParam("groupName") final String groupName, @PathParam("userName") final String userName) {
-        getWriteLock().lock();
+        writeLock();
         try {
             final OnmsGroup group = getOnmsGroup(groupName);
             if (group.getUsers().contains(userName)) {
@@ -221,7 +221,7 @@ public class GroupRestService extends OnmsRestService {
             if (t instanceof WebApplicationException) throw (WebApplicationException)t;
             throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     

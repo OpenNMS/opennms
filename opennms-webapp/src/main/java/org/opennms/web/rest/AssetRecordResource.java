@@ -83,7 +83,7 @@ public class AssetRecordResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsAssetRecord getAssetRecord(@PathParam("nodeCriteria") String nodeCriteria) {
-        getReadLock().lock();
+        readLock();
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             if (node == null) {
@@ -91,7 +91,7 @@ public class AssetRecordResource extends OnmsRestService {
             }
             return getAssetRecord(node);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -105,7 +105,7 @@ public class AssetRecordResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response updateAssetRecord(@PathParam("nodeCriteria") String nodeCriteria,  MultivaluedMapImpl params) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -138,7 +138,7 @@ public class AssetRecordResource extends OnmsRestService {
             
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
