@@ -106,7 +106,8 @@ public class TrapQueueProcessorFactory implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(m_newSuspectOnTrap);
-        Assert.notNull(m_eventManager);
+        Assert.state(m_eventConfDao != null, "eventConfDao must be set");
+        Assert.state(m_newSuspectOnTrap != null, "newSuspectOnTrap must be set");
+        Assert.state(m_eventManager != null, "eventManager must be set");
     }
 }

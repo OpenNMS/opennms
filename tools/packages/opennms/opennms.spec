@@ -529,7 +529,6 @@ find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
 	grep -v '/WEB-INF/jsp/alarm/ncs' | \
 	grep -v '/WEB-INF/jsp/ncs/' | \
 	grep -v '/WEB-INF/lib/ncs' | \
-	grep -v '/META-INF/opennms/component-service.xml' | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config ," | \
@@ -581,7 +580,6 @@ rm -rf $RPM_BUILD_ROOT
 %config %{jettydir}/%{servletdir}/WEB-INF/ncs*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/alarm/ncs-*
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/ncs
-%config %{jettydir}/%{servletdir}/META-INF/opennms/component-service.xml
 %{sharedir}/etc-pristine/drools-engine.d/ncs/*
 %{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
 

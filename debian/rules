@@ -171,7 +171,6 @@ install: build
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/ncs*.xml                                      debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/alarm/ncs-*                               debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/ncs                                       debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/
-	mv debian/temp/jetty-webapps/opennms/META-INF/opennms/component-service.xml                debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/META-INF/opennms/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/drools-engine.d/ncs                  debian/opennms-ncs/var/lib/opennms/etc-pristine/drools-engine.d/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/ncs-northbounder-configuration.xml   debian/opennms-ncs/var/lib/opennms/etc-pristine/
 	

@@ -28,7 +28,7 @@ public class OutagePageTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllFormsArePresent() {
-        assertEquals("Get details", selenium.getValue("css=input[type=submit]"));
+        assertEquals("Get details", selenium.getValue("css=input[type='submit']"));
     }
     
     @Test
@@ -36,18 +36,18 @@ public class OutagePageTest extends OpenNMSSeleniumTestCase {
         selenium.click("link=Current outages");
         waitForPageToLoad();
         assertTrue(selenium.isElementPresent("name=outtype"));
-        assertTrue(selenium.isElementPresent("css=input[type=submit]"));
+        assertTrue(selenium.isElementPresent("css=input[type='submit']"));
         assertTrue(selenium.isElementPresent("link=Interface"));
-        selenium.click("css=a[title=Outages System Page]");
+        selenium.click("css=a[title='Outages System Page']");
         waitForPageToLoad();
         selenium.click("link=All outages");
         waitForPageToLoad();
         assertTrue(selenium.isElementPresent("name=outtype"));
         assertTrue(selenium.isTextPresent("Current Resolved Both Current & Resolved"));
         assertTrue(selenium.isTextPresent("Interface"));
-        selenium.click("css=a[title=Outages System Page]");
+        selenium.click("css=a[title='Outages System Page']");
         waitForPageToLoad();
-        selenium.click("css=input[type=submit]");
+        selenium.click("css=input[type='submit']");
         assertEquals("Please enter a valid outage ID.", selenium.getAlert());
         selenium.click("link=Log out");
         waitForPageToLoad();

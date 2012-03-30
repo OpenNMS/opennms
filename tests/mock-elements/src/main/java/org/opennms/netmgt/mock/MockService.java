@@ -83,7 +83,7 @@ public class MockService extends MockElement implements MonitoredService {
     
     private PollStatus m_pollStatus;
 
-    private final int m_serviceId;
+    private int m_serviceId;
 
     private final String m_svcName;
     
@@ -134,6 +134,11 @@ public class MockService extends MockElement implements MonitoredService {
      */
     public int getId() {
         return m_serviceId;
+    }
+
+
+    public void setId(Integer nextServiceId) {
+        m_serviceId = nextServiceId;
     }
 
     // model

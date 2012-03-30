@@ -63,6 +63,7 @@ abstract public class MockContainer<P extends MockContainer<?,?>, C extends Mock
 
     // FIXME: generic poll listener?
     /** {@inheritDoc} */
+    @Override
     public void addAnticipator(final PollAnticipator trigger) {
         MockVisitor triggerAdder = new MockVisitorAdapter() {
             public void visitService(MockService service) {
@@ -112,6 +113,7 @@ abstract public class MockContainer<P extends MockContainer<?,?>, C extends Mock
      *
      * @return a int.
      */
+    @Override
     public int getPollCount() {
         class PollCounter extends MockVisitorAdapter {
             int pollCount = 0;
@@ -136,6 +138,7 @@ abstract public class MockContainer<P extends MockContainer<?,?>, C extends Mock
      *
      * @return a {@link org.opennms.netmgt.model.PollStatus} object.
      */
+    @Override
     public PollStatus getPollStatus() {
         for (MockElement element : m_members.values()) {
             if (element.getPollStatus().isUp()) {
@@ -147,6 +150,7 @@ abstract public class MockContainer<P extends MockContainer<?,?>, C extends Mock
 
     // FIXME: make a generic poll listener
     /** {@inheritDoc} */
+    @Override
     public void removeAnticipator(final PollAnticipator trigger) {
         MockVisitor triggerRemover = new MockVisitorAdapter() {
             public void visitService(MockService service) {
@@ -171,6 +175,7 @@ abstract public class MockContainer<P extends MockContainer<?,?>, C extends Mock
     /**
      * <p>resetPollCount</p>
      */
+    @Override
     public void resetPollCount() {
         class PollCountReset extends MockVisitorAdapter {
             public void visitService(MockService service) {
@@ -184,6 +189,7 @@ abstract public class MockContainer<P extends MockContainer<?,?>, C extends Mock
 
     // impl
     /** {@inheritDoc} */
+    @Override
     public void visit(MockVisitor v) {
         super.visit(v);
         v.visitContainer(this);
