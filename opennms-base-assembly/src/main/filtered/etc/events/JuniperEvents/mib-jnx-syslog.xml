@@ -101,7 +101,8 @@ the jnxSyslogTrap objects, this notification can include
 			jnxSyslogHostName=%parm[#7]% 
 			jnxSyslogMessage=%parm[#8]%</p>
 		]]></logmsg>
-    <severity>Jnxsyslogseverity-deriveseverityusingthisfieldinthetrap</severity>
+    <!-- <severity>Jnxsyslogseverity-deriveseverityusingthisfieldinthetrap</severity> -->
+    <severity>Major</severity>
     <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%"/>
   </event>
 </events>
