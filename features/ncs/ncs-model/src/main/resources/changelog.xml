@@ -133,7 +133,7 @@
 
 	<changeSet author="rangerrick" id="ncs-unique">
 		<!-- First, clean up duplicate data. -->
-		<sql>
+		<createProcedure>
 			CREATE OR REPLACE FUNCTION cleanUpNcsData() RETURNS BOOLEAN AS $$
 			DECLARE
 			   obsoleteComponent RECORD;
@@ -165,16 +165,15 @@
 
 			   RETURN true;
 			END;
-			$$ LANGUAGE plpgsql;
+			$$ LANGUAGE 'plpgsql';
+		</createProcedure>
 
-			SELECT cleanUpNcsData();
-
-			DROP FUNCTION cleanUpNcsData();
-		</sql>
+        <sql>SELECT cleanUpNcsData();</sql>
+        <sql>DROP FUNCTION IF EXISTS cleanUpNcsData();</sql>
 
 		<!-- Next, add unique constraints. -->
 
-		<addUniqueConstraint tableName="ncscomponent"  columnNames="type, foreignSource, foreignId" />
+		<addUniqueConstraint tableName="ncscomponent"  columnNames="type, foreignsource, foreignid" />
 		<addUniqueConstraint tableName="subcomponents" columnNames="component_id, subcomponent_id" />
 	</changeSet>
 
