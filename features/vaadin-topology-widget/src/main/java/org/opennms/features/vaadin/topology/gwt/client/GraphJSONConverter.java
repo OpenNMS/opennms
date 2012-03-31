@@ -11,12 +11,12 @@ import com.google.gwt.json.client.JSONValue;
 public class GraphJSONConverter {
     
     public static String convertGraphToJSON(Graph graph) {
-        JSONObject obj = new JSONObject();
-        obj.put("graph", new JSONString("graph"));
+        JSONArray obj = new JSONArray();
+        obj.set(0, new JSONString("graph"));
         
-        obj.put("vertices", getVertices(graph.getVertices()));
+        obj.set(1, getVertices(graph.getVertices()));
         
-        obj.put("edges", getEdges(graph.getEdges()));
+        obj.set(2, getEdges(graph.getEdges()));
         
         return obj.toString();
     }
@@ -31,11 +31,16 @@ public class GraphJSONConverter {
     }
     
     private static JSONValue getVertex(Vertex vertex) {
+    	JSONArray array = new JSONArray();
+    	array.set(0, new JSONString("vertex"));
+    	
         JSONObject obj = new JSONObject();
         obj.put("id", new JSONNumber(vertex.getId()));
         obj.put("x", new JSONNumber(vertex.getX()));
-        obj.put("x", new JSONNumber(vertex.getY()));
-        return obj;
+        obj.put("y", new JSONNumber(vertex.getY()));
+        
+        array.set(1, obj);
+        return array;
     }
     
     private static JSONValue getEdges(List<Edge> edges) {
@@ -48,10 +53,15 @@ public class GraphJSONConverter {
     }
     
     private static JSONValue getEdge(Edge edge) {
+    	JSONArray array = new JSONArray();
+    	array.set(0, new JSONString("edge"));
+    	
         JSONObject obj = new JSONObject();
         obj.put("source", getVertex(edge.getSource()));
         obj.put("target", getVertex(edge.getTarget()));
-        return obj;
+        
+        array.set(1, obj);
+        return array;
     }
     
 }

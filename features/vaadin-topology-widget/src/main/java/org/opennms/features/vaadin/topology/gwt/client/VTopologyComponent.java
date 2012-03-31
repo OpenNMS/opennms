@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
+import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events;
 import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.GWT;
@@ -90,7 +91,7 @@ public class VTopologyComponent extends Composite implements Paintable {
         D3 lines = m_edgeGroup.selectAll("line")
                 .data(graph.getEdges().toArray(new Edge[0]), new Func<String, Edge>() {
 
-					public String call(Edge edge) {
+					public String call(Edge edge, int index) {
 						String edgeId = edge.getId();
 						return edgeId;
 					}
@@ -100,15 +101,16 @@ public class VTopologyComponent extends Composite implements Paintable {
         D3 vertexGroup = m_vertexGroup.selectAll(".little")
                 .data(graph.getVertices().toArray(new Vertex[0]), new Func<String, Vertex>() {
 
-					public String call(Vertex param) {
+					public String call(Vertex param, int index) {
 						return "" + param.getId();
 					}
                 	
                 });
-        
+        //Exits
         lines.exit().transition().duration(500).attr("opacity", 0).remove();
         vertexGroup.exit().transition().duration(500).attr("opacity", 0).remove();
         
+        //Updates
         lines.transition().delay(500).duration(500)
                 .attr("x1", getX1())
                 .attr("x2", getX2())
@@ -119,7 +121,12 @@ public class VTopologyComponent extends Composite implements Paintable {
         vertexGroup.transition().delay(500).duration(500)
                 .attr("transform", getTranslation())
                 .attr("opacity", 1);
+		
+		D3 updateCircle = vertexGroup.select("circle");
+		//Window.alert("updateCircle: " + updateCircle);
+		updateCircle.style("fill", selectedFill("Update"));
         
+        //Enters
         lines.enter().append("line")
                 .attr("opacity", 0)
                 .attr("x1", getX1())
@@ -131,9 +138,15 @@ public class VTopologyComponent extends Composite implements Paintable {
         
         D3 vertex = vertexGroup.enter().append("g").attr("transform", getTranslation())
                 .attr("opacity", 0)
-                .attr("class", "little");
+                .attr("class", "little").on(D3Events.CLICK.event(), new D3Events.Handler<Vertex>(){
+
+					public void call(Vertex vertex, int index) {
+						m_client.updateVariable(m_paintableId, "clickedVertex", vertex.getId(), true);
+						
+					}
+				});
                 
-        vertex.append("circle").attr("r", 9);
+        vertex.append("circle").attr("r", 9).style("fill", selectedFill("Enter"));
         
         vertex.append("text").attr("dy", ".35em")
             .attr("text-anchor", "middle").style("fill", "white")
@@ -143,14 +156,36 @@ public class VTopologyComponent extends Composite implements Paintable {
                 
         
 	}
+
+	private Func<String, Vertex> selectedFill(final String caller) {
+		return new Func<String, Vertex>(){
+
+			public String call(Vertex vertex, int index) {
+				
+				//Window.alert("Caller " + caller + " :: Print vertex: " + vertex);
+				
+				return vertex.isSelected() ? "blue" : "black";
+			}
+		};
+	}
+	
+	private static Func<String, Vertex> getTranslation() {
+		return new Func<String, Vertex>() {
+
+			public String call(Vertex datum, int index) {
+				return "translate( " + datum.getX() + "," + datum.getY() + ")";
+			}
+			
+		};
+	}
     
-    private static native JavaScriptObject getTranslation() /*-{
-        return function(d){
-            var x = d.@org.opennms.features.vaadin.topology.gwt.client.Vertex::getX()();
-            var y = d.@org.opennms.features.vaadin.topology.gwt.client.Vertex::getY()();
-            return "translate(" + x + "," + y + ")";
-        }
-    }-*/;
+//    private static native JavaScriptObject getTranslation() /*-{
+//        return function(d){
+//            var x = d.@org.opennms.features.vaadin.topology.gwt.client.Vertex::getX()();
+//            var y = d.@org.opennms.features.vaadin.topology.gwt.client.Vertex::getY()();
+//            return "translate(" + x + "," + y + ")";
+//        }
+//    }-*/;
 
     private static native JavaScriptObject getEdgeId() /*-{
         return function(d){
@@ -218,7 +253,7 @@ public class VTopologyComponent extends Composite implements Paintable {
 
 	private void drawCircles(int[] data) {
 
-    	Window.alert("Received data " + data);
+    	//Window.alert("Received data " + data);
 
 
     	JavaScriptObject x = getD3().scale().ordinal().domain(data).rangePoints(rangeArray(m_width), 1);
@@ -300,6 +335,11 @@ public class VTopologyComponent extends Composite implements Paintable {
         	if(child.getTag().equals("vertex")) {
         		
         		Vertex vertex = new Vertex(child.getIntAttribute("id"), child.getIntAttribute("x"), child.getIntAttribute("y"));
+        		boolean booleanAttribute = child.getBooleanAttribute("selected");
+        		//Window.alert("selected: " + booleanAttribute);
+        		//You were here.
+        		
+				vertex.setSelected(booleanAttribute);
 				vertices.add(vertex);
         		idMap.put(vertex.getId(), vertex);
         		

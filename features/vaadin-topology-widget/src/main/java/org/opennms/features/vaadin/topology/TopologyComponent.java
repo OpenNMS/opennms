@@ -21,12 +21,10 @@ public class TopologyComponent extends AbstractComponent {
 
     private Graph m_graph;
 	private double m_scale = 1;
-    private List<VaadinVertex> m_vertices = new ArrayList<VaadinVertex>();
 
 	public TopologyComponent() {
 		m_graph = new Graph();
-		VaadinVertex vertex = new VaadinVertex();
-		addVertex(vertex);
+		
 	}
 	
     @Override
@@ -40,6 +38,7 @@ public class TopologyComponent extends AbstractComponent {
         	target.addAttribute("id", vert.getId());
         	target.addAttribute("x", vert.getX());
         	target.addAttribute("y", vert.getY());
+        	target.addAttribute("selected", vert.isSelected());
         	target.endTag("vertex");
         }
         
@@ -52,14 +51,7 @@ public class TopologyComponent extends AbstractComponent {
         
         target.endTag("graph");
         
-        for(VaadinVertex vertex : m_vertices) {
-            vertex.requestRepaint();
-        }
         
-    }
-    
-    public void addVertex(VaadinVertex vertex) {
-        m_vertices.add(vertex);
     }
     
     @Override
@@ -69,9 +61,21 @@ public class TopologyComponent extends AbstractComponent {
             getApplication().getMainWindow().showNotification("I got a new graph: now how do I get the data? Do I have vert data? " + graph);
             
         }
+        
+        if(variables.containsKey("clickedVertex")) {
+        	
+        	toggleSelectedVertex((Integer) variables.get("clickedVertex"));
+        }
     }
     
-    public void setScale(double scale){
+    private void toggleSelectedVertex(Integer vertexId) {
+		Vertex vertex = m_graph.getVertexById(vertexId);
+		vertex.setSelected(!vertex.isSelected());
+		
+		requestRepaint();
+	}
+
+	public void setScale(double scale){
     	m_scale = scale;
     	
     	requestRepaint();
@@ -91,7 +95,7 @@ public class TopologyComponent extends AbstractComponent {
 		int x = (int) (Math.random() * 100);
 		int y = (int) (Math.random() * 100);
 		
-		int id = graph.getVertices().size();
+		int id = graph.getNextId();
 		Vertex vertex = new Vertex(id, id*10, id*10);
 		graph.addVertex(vertex);
 		graph.addEdge(new Edge(graph.getVertices().get(0), vertex));

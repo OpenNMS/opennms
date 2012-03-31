@@ -2,6 +2,7 @@ package org.opennms.features.vaadin.topology.gwt.client.d3;
 
 import org.opennms.features.vaadin.topology.gwt.client.Edge;
 import org.opennms.features.vaadin.topology.gwt.client.Vertex;
+import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -24,6 +25,13 @@ public class D3 extends JavaScriptObject {
     
     public final native D3 attr(String propName, JavaScriptObject func) /*-{
         return this.attr(propName, func);
+    }-*/;
+    
+    public final native D3 attr(String attrName, Func<?,?> func) /*-{
+		var f = function(d, i){
+			return func.@org.opennms.features.vaadin.topology.gwt.client.d3.Func::call(Ljava/lang/Object;I)(d,i);
+		}
+		return this.attr(attrName, f);
     }-*/;
 
     public final native D3 selectAll(String selectionName) /*-{
@@ -88,7 +96,7 @@ public class D3 extends JavaScriptObject {
 
     public final native D3 data(Object[] data, Func<?, ?> func) /*-{
     	var f = function(d, i) {
-        	return func.@org.opennms.features.vaadin.topology.gwt.client.d3.Func::call(Ljava/lang/Object;)(d);
+        	return func.@org.opennms.features.vaadin.topology.gwt.client.d3.Func::call(Ljava/lang/Object;I)(d,i);
         };
         return this.data(data, f);
 		
@@ -97,4 +105,20 @@ public class D3 extends JavaScriptObject {
     public final native D3 text(JavaScriptObject textFunc) /*-{
         return this.text(textFunc);
     }-*/;
+
+	public final native D3 on(String event, Handler<?> handler) /*-{
+	   	var f = function(d, i) {
+	   		return handler.@org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler::call(Ljava/lang/Object;I)(d,i);
+	   	}
+	
+		return this.on(event, f);
+	}-*/;
+
+	public final native D3 style(String styleName, Func<String, ?> func) /*-{
+		var f = function(d, i){
+			return func.@org.opennms.features.vaadin.topology.gwt.client.d3.Func::call(Ljava/lang/Object;I)(d,i);
+		}
+		return this.style(styleName, f);
+		
+	}-*/;
 }

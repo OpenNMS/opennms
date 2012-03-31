@@ -12,10 +12,11 @@ public class Graph{
 	private List<Vertex> m_vertices;
 	private List<Edge> m_edges;
 	private Map<Integer, Vertex> m_vertexMap = new HashMap<Integer, Vertex>();
+	private int m_counter = 0;
 
 	
 	public Graph(){
-		m_vertices = new ArrayList<Vertex>(Arrays.asList(new Vertex[] {new Vertex(0,60,25)}));
+		m_vertices = new ArrayList<Vertex>(Arrays.asList(new Vertex[] {new Vertex(getNextId(),60,25)}));
 		m_edges = new ArrayList<Edge>();
 		
 		for(Vertex vert : m_vertices) {
@@ -47,6 +48,7 @@ public class Graph{
 	public void addVertex(Vertex vertex) {
 		m_vertices.add(vertex);
 		
+		m_vertexMap.put(vertex.getId(), vertex);
 		updateLayout();
 	}
 	public void addEdge(Edge edge) {
@@ -75,8 +77,17 @@ public class Graph{
 	    }
 	}
     public void removeRandomVertext() {
-        int random = (int)Math.round(Math.random() * (m_vertices.size() - 2)) + 1;
-        Vertex vert = m_vertices.remove(random);
+    	
+    	if (m_vertices.size() <= 0) return;
+    	
+        int index = (int)Math.round(Math.random() * (m_vertices.size() - 2)) + 1;
+        
+        if (index >= m_vertices.size()) {
+        	return;
+        }
+
+        Vertex vert = m_vertices.remove(index);
+        m_vertexMap.remove(vert.getId());
         
         Iterator<Edge> it = m_edges.iterator();
         while(it.hasNext()) {
@@ -87,6 +98,9 @@ public class Graph{
         }
         
     }
+	public int getNextId() {
+		return m_counter ++;
+	}
     
 	
 }
