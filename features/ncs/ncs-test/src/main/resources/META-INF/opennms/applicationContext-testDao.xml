@@ -68,4 +68,8 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
+  <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
 </beans>

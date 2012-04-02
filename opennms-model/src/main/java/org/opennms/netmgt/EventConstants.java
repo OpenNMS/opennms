@@ -1020,6 +1020,13 @@ public class EventConstants {
     public static final String PARM_ENDPOINT2 = "endPoint2";
 
     //
+    // for NCS service
+    //
+    public static final String COMPONENT_ADDED_UEI   = "uei.opennms.org/internal/ncs/componentAdded";
+    public static final String COMPONENT_DELETED_UEI = "uei.opennms.org/internal/ncs/componentDeleted";
+    public static final String COMPONENT_UPDATED_UEI = "uei.opennms.org/internal/ncs/componentUpdated";
+
+    //
     // For Trapd
     //
 
