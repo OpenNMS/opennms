@@ -5,7 +5,7 @@
 
 	<package name="example1">
 		<filter>IPADDR != '0.0.0.0'</filter>	 
-		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+	    <include-range begin="1.1.1.1" end="254.254.254.254"/>
 		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
 		
 		<service name="SNMP" interval="300000" user-defined="false" status="on">
@@ -18,10 +18,6 @@
 			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 
-        <service name="TCA" interval="10000" user-defined="false" status="on">
-            <parameter key="collection" value="default"/>
-            <parameter key="thresholding-enabled" value="true"/>
-        </service>
 
 
 		<service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
@@ -36,6 +32,17 @@
 			<parameter key="collection" value="jsr160"/>
 			<parameter key="thresholding-enabled" value="true"/>
 		</service>
+	</package>
+	<package name="TCA">
+		<filter>categoryName == 'Monitor_TCA'</filter>	 
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+
+        	<service name="TCA" interval="10000" user-defined="false" status="on">
+            		<parameter key="collection" value="default"/>
+            		<parameter key="thresholding-enabled" value="true"/>
+        	</service>
+		
 	</package>
 	
 	<collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
