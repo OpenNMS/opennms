@@ -453,7 +453,7 @@ inserted into the chassis.</p><table>
 			jnxFruType=%parm[#6]% 
 			jnxFruSlot=%parm[#7]%</p>
 		]]></logmsg>
-    <severity>Clear</severity>
+    <severity>Cleared</severity>
     <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruRemoval:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
   </event>
   <event>
@@ -779,7 +779,7 @@ powered on in the chassis.</p><table>
 			jnxFruLastPowerOff=%parm[#9]% 
 			jnxFruLastPowerOn=%parm[#10]%</p>
 		]]></logmsg>
-    <severity>Clear</severity>
+    <severity>Cleared</severity>
     <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%:%parm[#9]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruPowerOff:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%:%parm[#9]%"/>
   </event>
   <event>
@@ -1104,7 +1104,7 @@ gone online in the chassis.</p><table>
 			jnxFruType=%parm[#6]% 
 			jnxFruSlot=%parm[#7]%</p>
 		]]></logmsg>
-    <severity>Clear</severity>
+    <severity>Cleared</severity>
     <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruOffline:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
   </event>
   <event>
@@ -1498,7 +1498,7 @@ condition.</p><table>
 			jnxContentsDescr=%parm[#5]% 
 			jnxOperatingState=%parm[#6]%</p>
 		]]></logmsg>
-    <severity>Clear</severity>
+    <severity>Cleared</severity>
     <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxPowerSupplyFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%"/>
   </event>
   <event>
@@ -1565,7 +1565,7 @@ has recovered from the failure (not spinning) condition.</p><table>
 			jnxContentsDescr=%parm[#5]% 
 			jnxOperatingState=%parm[#6]%</p>
 		]]></logmsg>
-    <severity>Clear</severity>
+    <severity>Cleared</severity>
     <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFanFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%"/>
   </event>
   <event>
