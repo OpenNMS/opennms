@@ -51,20 +51,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.ncs.NCSComponent;
-import org.opennms.netmgt.model.ncs.NCSComponentRepository;
+import org.opennms.netmgt.ncs.persistence.NCSComponentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
@@ -78,7 +75,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("NCS")
 @Transactional
-public class NCSRestService  {
+public class NCSRestService {
 	
 	@XmlRootElement(name = "components")
 	public static class ComponentList extends LinkedList<NCSComponent> {
@@ -157,8 +154,8 @@ public class NCSRestService  {
 	}
 	
 	@Autowired
-	NCSComponentRepository m_componentRepo;
-	
+	NCSComponentService m_componentService;
+
 	@Autowired
 	EventDao m_eventDao;
 	
@@ -168,6 +165,12 @@ public class NCSRestService  {
     @Context 
     UriInfo m_uriInfo;
     
+    public void afterPropertiesSet() throws RuntimeException {
+    	Assert.notNull(m_componentService);
+    	Assert.notNull(m_eventDao);
+    	Assert.notNull(m_alarmDao);
+    }
+    
     /**
      * <p>getNodes</p>
      *
@@ -176,72 +179,55 @@ public class NCSRestService  {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{type}/{foreignSource}:{foreignId}")
-    public NCSComponent getComponent(@PathParam("type") String type, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) {
+    public NCSComponent getComponent(@PathParam("type") final String type, @PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) {
+    	afterPropertiesSet();
     	readLock();
     	try {
 	    	LogUtils.debugf(this, "getComponent: type = %s, foreignSource = %s, foreignId = %s", type, foreignSource, foreignId);
 	
-	    	if (m_componentRepo == null) {
-	    		throw new IllegalStateException("component repository is null");
+	    	if (m_componentService == null) {
+	    		throw new IllegalStateException("component service is null");
 	    	}
-	    	
-	    	NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
-	    	
-	    	if (component == null) {
-	    		throw new WebApplicationException(Status.BAD_REQUEST);
-	    	}
-	    	
+
+	    	final NCSComponent component = m_componentService.getComponent(type, foreignSource, foreignId);
+	    	if (component == null) throw new WebApplicationException(Status.BAD_REQUEST);
 	    	return component;
     	} finally {
     		readUnlock();
     	}
     }
     
-    /**
-     * <p>getNodes</p>
-     *
-     * @return a {@link org.opennms.netmgt.model.OnmsNodeList} object.
-     */
-    @POST
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @Path("{type}/{foreignSource}:{foreignId}")
-    public NCSComponent addComponent(@PathParam("type") String type, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, NCSComponent subComponent) {
-    	writeLock();
+    @GET
+    @Path("attributes")
+    public ComponentList getComponentsByAttributes() {
+    	afterPropertiesSet();
+    	readLock();
     	try {
-	    	LogUtils.debugf(this, "addComponent: type = %s, foreignSource = %s, foreignId = %s", type, foreignSource, foreignId);
-	
-	    	if (m_componentRepo == null) {
-	    		throw new IllegalStateException("component repository is null");
+	    	if (m_componentService == null) {
+	    		throw new IllegalStateException("component service is null");
 	    	}
-	    	
-	    	final NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
-	    	
-	    	if (component == null) {
-	    		throw new WebApplicationException(Status.BAD_REQUEST);
-	    	}
-	
-	    	component.addSubcomponent(subComponent);
-	    	
-	    	try {
-	    		m_componentRepo.saveOrUpdate(component);
-	    	} catch (final DataAccessException e) {
-	    		throw new WebApplicationException(e, Status.BAD_REQUEST);
-	    	}
-	    	return component;
+
+	    	return m_componentService.findComponentsWithAttribute("jnxVpnPwVpnName", "ge-3/1/4.2");
     	} finally {
-    		writeUnlock();
+    		readUnlock();
     	}
+    	
     }
-    
+
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addComponents(NCSComponent component) {
+    public Response addComponents(final NCSComponent component) {
+    	afterPropertiesSet();
     	writeLock();
     	try {
-	        LogUtils.infof(this, "addComponents: Adding component %s", component);
-	        
+	        LogUtils.debugf(this, "addComponents: Adding component %s", component);
+
+	    	if (m_componentService == null) {
+	    		throw new IllegalStateException("component service is null");
+	    	}
+
 	        try {
-	        	m_componentRepo.save(component);
+	        	m_componentService.addOrUpdateComponents(component);
 	    	} catch (final DataAccessException e) {
 	    		throw new WebApplicationException(e, Status.BAD_REQUEST);
 	    	}
@@ -251,75 +237,58 @@ public class NCSRestService  {
     	}
     }
 
-
+    /**
+     * <p>getNodes</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNodeList} object.
+     */
+    @POST
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Path("{type}/{foreignSource}:{foreignId}")
+    public NCSComponent addComponent(@PathParam("type") String type, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, NCSComponent subComponent) {
+    	afterPropertiesSet();
+    	writeLock();
+    	try {
+	    	LogUtils.debugf(this, "addComponent: type = %s, foreignSource = %s, foreignId = %s", type, foreignSource, foreignId);
+	
+	    	if (m_componentService == null) {
+	    		throw new IllegalStateException("component service is null");
+	    	}
+	    	
+	    	if (subComponent == null) {
+	    		throw new WebApplicationException(Status.BAD_REQUEST);
+	    	}
+	
+	    	try {
+	    		return m_componentService.addSubcomponent(type, foreignSource, foreignId, subComponent);
+	    	} catch (final DataAccessException e) {
+	    		throw new WebApplicationException(e, Status.BAD_REQUEST);
+	    	}
+    	} finally {
+    		writeUnlock();
+    	}
+    }
+    
     @DELETE
     @Path("{type}/{foreignSource}:{foreignId}")
     public Response deleteComponent(@PathParam("type") String type, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) {
+    	afterPropertiesSet();
     	writeLock();
     	
     	try {
 	        LogUtils.infof(this, "deleteComponent: Deleting component of type %s and foreignIdentity %s:%s", type, foreignSource, foreignId);
 	
-	        NCSComponent component = m_componentRepo.findByTypeAndForeignIdentity(type, foreignSource, foreignId);
-	
-	
-	        if (component == null) {
-	            throw new WebApplicationException(Status.BAD_REQUEST);
-	        }
-	
-	        List<NCSComponent> parents = m_componentRepo.findComponentsThatDependOn(component);
-	
-	        for(NCSComponent parent : parents)
-	        {
-	            parent.getSubcomponents().remove(component);
-	        }
-	
-	        m_componentRepo.delete(component);
-	
-	        OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class)
-	        .add(Restrictions.like("eventParms", "%componentForeignSource=" + foreignSource +"%"))
-	        .add(Restrictions.like("eventParms", "%componentForeignId=" + foreignId +"%"));
-	
-	        List<OnmsEvent> events = m_eventDao.findMatching(criteria);
-	
-	        for(OnmsEvent event : events) {
-	            m_eventDao.delete(event);
-	        }
-	
-	        m_eventDao.flush();
-	
-	        OnmsCriteria alarmCriteria = new OnmsCriteria(OnmsAlarm.class)
-	        .add(Restrictions.like("eventParms", "%componentForeignSource=" + foreignSource +"%"))
-	        .add(Restrictions.like("eventParms", "%componentForeignId=" + foreignId +"%"));
-	
-	        List<OnmsAlarm> alarms = m_alarmDao.findMatching(alarmCriteria);
-	
-	        for(OnmsAlarm alarm : alarms) {
-	            m_alarmDao.delete(alarm);
-	        }
-	
-	        m_alarmDao.flush();
-	
+	    	if (m_componentService == null) {
+	    		throw new IllegalStateException("component service is null");
+	    	}
+
+	    	m_componentService.deleteComponent(type, foreignSource, foreignId);
 	        return Response.ok().build();
     	} finally {
     		writeUnlock();
     	}
     }
     
-    @GET
-    @Path("attributes")
-    public ComponentList getComponentsByAttributes() {
-    	readLock();
-    	try {
-	    	List<NCSComponent> components = m_componentRepo.findComponentsWithAttribute("jnxVpnPwVpnName", "ge-3/1/4.2");
-	    	
-	    	return new ComponentList(components);
-    	} finally {
-    		readUnlock();
-    	}
-    	
-    }
-
     private final ReentrantReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
