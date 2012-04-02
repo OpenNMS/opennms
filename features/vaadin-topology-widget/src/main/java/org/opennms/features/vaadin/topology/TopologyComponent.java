@@ -1,7 +1,5 @@
 package org.opennms.features.vaadin.topology;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.vaadin.topology.gwt.client.Edge;
@@ -63,11 +61,32 @@ public class TopologyComponent extends AbstractComponent {
         }
         
         if(variables.containsKey("clickedVertex")) {
+        	Integer vertexId = (Integer) variables.get("clickedVertex");
+            if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
+        	    multiSelectVertex(vertexId);
+        	}else {
+        	    singleSelectVertex(vertexId);
+        	}
         	
-        	toggleSelectedVertex((Integer) variables.get("clickedVertex"));
+        }
+        
+        if(variables.containsKey("vertexContextMenu") && (Boolean)variables.get("vertexContextMenu") == true) {
+            
         }
     }
     
+    private void singleSelectVertex(Integer vertexId) {
+        for(Vertex vertex : m_graph.getVertices()) {
+            vertex.setSelected(false);
+        }
+        
+        toggleSelectedVertex(vertexId);
+    }
+
+    private void multiSelectVertex(Integer vertexId) {
+        toggleSelectedVertex(vertexId);
+    }
+
     private void toggleSelectedVertex(Integer vertexId) {
 		Vertex vertex = m_graph.getVertexById(vertexId);
 		vertex.setSelected(!vertex.isSelected());

@@ -68,7 +68,6 @@ public class TopologyWidgetTestApplication extends Application {
             }
             
         });
-        
         m_window.addComponent(slider);
         m_window.addComponent(addButton);
         m_window.addComponent(resetButton);

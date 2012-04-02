@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events;
+import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.GWT;
@@ -15,18 +16,23 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.VConsole;
 
 public class VTopologyComponent extends Composite implements Paintable {
 	
@@ -35,6 +41,27 @@ public class VTopologyComponent extends Composite implements Paintable {
 
     interface VTopologyComponentUiBinder extends
             UiBinder<Widget, VTopologyComponent> {
+    }
+    
+    public static class KeyMonitor implements KeyDownHandler, KeyUpHandler{
+        private static boolean s_shiftKeyDown = false;
+        public void onKeyDown(KeyDownEvent event) {
+            setShiftKeyDown(event.isShiftKeyDown());
+            
+        }
+        
+        public void onKeyUp(KeyUpEvent event) {
+            setShiftKeyDown(event.isShiftKeyDown());
+        }
+        
+        private void setShiftKeyDown(boolean bool) {
+            s_shiftKeyDown = bool;
+        }
+        
+        public static boolean isShiftKeyDown() {
+            return s_shiftKeyDown;
+        }
+        
     }
     
     private ApplicationConnection m_client;
@@ -55,7 +82,6 @@ public class VTopologyComponent extends Composite implements Paintable {
         initWidget(uiBinder.createAndBindUi(this));
         
         m_graph = new Graph();
-        
     }
     
     @Override
@@ -69,6 +95,14 @@ public class VTopologyComponent extends Composite implements Paintable {
         m_edgeGroup = m_svg.append("g").attr("transform", "scale(1)");
         m_vertexGroup = m_svg.append("g").attr("transform", "scale(1)");
         
+        KeyMonitor keymonitor = new KeyMonitor();
+        addKeyHandler(keymonitor);
+       
+    }
+
+    private void addKeyHandler(KeyMonitor keymonitor) {
+        RootPanel.get().addDomHandler(keymonitor, KeyDownEvent.getType());
+        RootPanel.get().addDomHandler(keymonitor, KeyUpEvent.getType());
     }
     
     @UiHandler("m_saveButton")
@@ -138,13 +172,9 @@ public class VTopologyComponent extends Composite implements Paintable {
         
         D3 vertex = vertexGroup.enter().append("g").attr("transform", getTranslation())
                 .attr("opacity", 0)
-                .attr("class", "little").on(D3Events.CLICK.event(), new D3Events.Handler<Vertex>(){
-
-					public void call(Vertex vertex, int index) {
-						m_client.updateVariable(m_paintableId, "clickedVertex", vertex.getId(), true);
-						
-					}
-				});
+                .attr("class", "little")
+                .on(D3Events.CLICK.event(), vertexClickHandler())
+                .on(D3Events.CONTEXT_MENU.event(), vertexContextMenuHandler());
                 
         vertex.append("circle").attr("r", 9).style("fill", selectedFill("Enter"));
         
@@ -156,6 +186,29 @@ public class VTopologyComponent extends Composite implements Paintable {
                 
         
 	}
+
+    private Handler<Vertex> vertexContextMenuHandler() {
+        return new D3Events.Handler<Vertex>() {
+
+            public void call(Vertex vertex, int index) {
+                VConsole.log("Context Menu on vertex: " + vertex.getId());
+                m_client.updateVariable(m_paintableId, "vertexContextMenu", true, true);
+                D3.eventPreventDefault();
+            }
+        };
+    }
+
+    private Handler<Vertex> vertexClickHandler() {
+        return new D3Events.Handler<Vertex>(){
+
+        	public void call(Vertex vertex, int index) {
+        		m_client.updateVariable(m_paintableId, "clickedVertex", vertex.getId(), false);
+        		m_client.updateVariable(m_paintableId, "shiftKeyPressed", KeyMonitor.isShiftKeyDown(), false);
+        		
+        		m_client.sendPendingVariableChanges();
+        	}
+        };
+    }
 
 	private Func<String, Vertex> selectedFill(final String caller) {
 		return new Func<String, Vertex>(){

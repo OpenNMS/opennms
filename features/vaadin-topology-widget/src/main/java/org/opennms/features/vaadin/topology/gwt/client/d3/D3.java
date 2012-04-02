@@ -121,4 +121,13 @@ public class D3 extends JavaScriptObject {
 		return this.style(styleName, f);
 		
 	}-*/;
+
+    public static final native JavaScriptObject event() /*-{
+        return $wnd.d3.event;
+    }-*/;
+    
+    public static final native void eventPreventDefault() /*-{
+        $wnd.d3.event.preventDefault();
+    }-*/;
+
 }
