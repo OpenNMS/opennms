@@ -7,6 +7,8 @@
   
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm">
+    <!-- Restrict access to SNMP configuration to ROLE_REST and ROLE_ADMIN only -->
+    <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
