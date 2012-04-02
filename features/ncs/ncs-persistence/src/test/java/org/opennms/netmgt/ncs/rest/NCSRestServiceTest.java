@@ -2,16 +2,21 @@ package org.opennms.netmgt.ncs.rest;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.mock.EventAnticipator;
+import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
+import org.opennms.netmgt.ncs.persistence.NCSComponentService;
 import org.opennms.test.mock.MockLogAppender;
 
-public class NCSRestTest extends AbstractSpringJerseyRestTestCase {
-	
+public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	@BeforeClass
 	public static void setupLogging()
 	{
@@ -82,6 +87,22 @@ public class NCSRestTest extends AbstractSpringJerseyRestTestCase {
 			"    </component>\n" + 
 			"</component>\n";
 
+	private static final String[][] m_components = new String[][] {
+		new String[] { "Service", "CokeP2P", "NA-Service", "123" },
+		new String[] { "ServiceElement", "PE1,ge-1/0/2", "NA-ServiceElement", "8765,1234" },
+		new String[] { "ServiceElementComponent", "ge-1/0/2.50", "NA-SvcElemComp", "8765,ge-1/0/2.50" },
+		new String[] { "PhysicalInterface", "ge-1/0/2", "NA-PhysIfs", "8765,ifIndex-1" },
+		new String[] { "ServiceElementComponent", "PE1,vcid(50)", "NA-SvcElemComp", "8765,vcid(50)" },
+		new String[] { "ServiceElementComponent", "lspA-PE1-PE2", "NA-SvcElemComp", "8765,LSP-1234" },
+		new String[] { "ServiceElementComponent", "lspB-PE1-PE2", "NA-SvcElemComp", "8765,LSP-4321" },
+		new String[] { "ServiceElement", "PE2,ge-3/1/4", "NA-ServiceElement", "9876,4321" },
+		new String[] { "ServiceElementComponent", "ge-3/1/4.50", "NA-SvcElemComp", "9876,ge-3/1/4.50" },
+		new String[] { "PhysicalInterface", "ge-3/1/4", "NA-PhysIfs", "9876,ifIndex-3" },
+		new String[] { "ServiceElementComponent", "PE2,vcid(50)", "NA-SvcElemComp", "9876,vcid(50)" },
+		new String[] { "ServiceElementComponent", "lspA-PE2-PE1", "NA-SvcElemComp", "9876,LSP-1234" },
+		new String[] { "ServiceElementComponent", "lspB-PE2-PE1", "NA-SvcElemComp", "9876,LSP-4321" }
+	};
+
 	private static final String m_extraXML = "" +
 			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
 			"<component xmlns=\"http://xmlns.opennms.org/xsd/model/ncs\" type=\"ServiceElementComponent\" foreignId=\"monkey1\" foreignSource=\"NA-SvcElemComp\">\n" + 
@@ -103,9 +124,27 @@ public class NCSRestTest extends AbstractSpringJerseyRestTestCase {
 			"    <name>Blah</name>\n" + 
 			"</component>\n";
 
+	private MockEventIpcManager m_eventIpcManager;
+	private EventAnticipator m_eventAnticipator;
+
+	@Override
+	protected void afterServletStart() {
+		m_eventIpcManager = getWebAppContext().getBean(MockEventIpcManager.class);
+		m_eventAnticipator = m_eventIpcManager.getEventAnticipator();
+		final NCSComponentService service = getWebAppContext().getBean(NCSComponentService.class);
+		service.setEventIpcManager(m_eventIpcManager);
+	}
+
+	@After
+	public void tearDown() {
+		m_eventAnticipator.verifyAnticipated();
+		m_eventAnticipator.reset();
+	}
+	
 	@Test
 	public void testPostAService() throws Exception {
-		
+		anticipateEvents(EventConstants.COMPONENT_ADDED_UEI);
+
 		sendPost("/NCS", m_serviceXML);
 
 		final NCSComponentRepository repo = getBean("ncsComponentRepository", NCSComponentRepository.class);
@@ -122,9 +161,12 @@ public class NCSRestTest extends AbstractSpringJerseyRestTestCase {
 
 	@Test
 	public void testDeleteAComponent() throws Exception {
-		
 		sendPost("/NCS", m_serviceXML);
 		
+		m_eventAnticipator.reset();
+
+		anticipateEvent(EventConstants.COMPONENT_DELETED_UEI, new String[] { "ServiceElementComponent", "PE2,vcid(50)", "NA-SvcElemComp", "9876,vcid(50)" });
+
 		String url = "/NCS/ServiceElementComponent/NA-SvcElemComp:9876%2Cvcid(50)";		
 		// Testing GET Collection
 		String xml = sendRequest(GET, url, 200);
@@ -157,6 +199,8 @@ public class NCSRestTest extends AbstractSpringJerseyRestTestCase {
 		
 		sendPost("/NCS", m_serviceXML);
 		
+		m_eventAnticipator.reset();
+
 		String url = "/NCS/attributes";
 		// Testing GET Collection
 		String xml = sendRequest(GET, url, 200);
@@ -164,9 +208,23 @@ public class NCSRestTest extends AbstractSpringJerseyRestTestCase {
 		assertTrue(xml.contains("jnxVpnPwVpnName"));
 	}
 
+	/*
+	 * <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	 * <component xmlns="http://xmlns.opennms.org/xsd/model/ncs" type="ServiceElementComponent" foreignId="monkey1" foreignSource="NA-SvcElemComp">
+	 *   <name>Monkey (1)</name>
+	 *   <component type="PhysicalInterface" foreignId="shoe2" foreignSource="NA-PhysIfs">
+	 *     <name>Shoe (2)</name>
+	 *   </component>
+	 * </component>
+	 */
 	@Test
 	public void testAddComponents() throws Exception {
 		sendPost("/NCS", m_serviceXML);
+
+		m_eventAnticipator.reset();
+		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "ServiceElement", "PE2,ge-3/1/4", "NA-ServiceElement", "9876,4321" });
+		anticipateEvent(EventConstants.COMPONENT_ADDED_UEI, new String[] { "ServiceElementComponent", "Monkey (1)", "NA-SvcElemComp", "monkey1" });
+		anticipateEvent(EventConstants.COMPONENT_ADDED_UEI, new String[] { "PhysicalInterface", "Shoe (2)", "NA-PhysIfs", "shoe2" });
 
 		String url = "/NCS/ServiceElement/NA-ServiceElement:9876,4321";
 		
@@ -174,6 +232,7 @@ public class NCSRestTest extends AbstractSpringJerseyRestTestCase {
 
 		String xml = sendRequest(GET, url, 200);
 		assertTrue(xml.contains("monkey1"));
+		
 	}
 	
 	@Test
@@ -186,5 +245,20 @@ public class NCSRestTest extends AbstractSpringJerseyRestTestCase {
 	@Ignore("allowing this for now")
 	public void testInvalidForeignId() throws Exception {
 		sendPost("/NCS", m_badForeignIdXML, 400);
+	}
+
+	private void anticipateEvents(final String uei) {
+		for (final String[] componentInfo : m_components) {
+			anticipateEvent(uei, componentInfo);
+		}
+	}
+
+	private void anticipateEvent(final String uei, final String[] componentInfo) {
+		final EventBuilder builder = new EventBuilder(uei, "NCSComponentService");
+		builder.addParam("componentType", componentInfo[0]);
+		builder.addParam("componentName", componentInfo[1]);
+		builder.addParam("componentForeignSource", componentInfo[2]);
+		builder.addParam("componentForeignId", componentInfo[3]);
+		m_eventAnticipator.anticipateEvent(builder.getEvent());
 	}
 }
