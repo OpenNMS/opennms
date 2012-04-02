@@ -33,7 +33,7 @@ from the jnxEventTrap objects, this notification can include
 			jnxEventTrap trap received 
 			jnxEventTrapDescr=%parm[#1]%</p>
 		]]></logmsg>
-    <severity>Undetermined</severity>
+    <severity>Indeterminate</severity>
     <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
   </event>
 </events>
