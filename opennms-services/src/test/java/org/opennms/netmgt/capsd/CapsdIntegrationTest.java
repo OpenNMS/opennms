@@ -111,7 +111,11 @@ public class CapsdIntegrationTest implements TemporaryDatabaseAware<MockDatabase
     }
 
     @Test
-    @JUnitSnmpAgent(host=FOREIGN_NODE_IP_ADDRESS, resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
+    @JUnitSnmpAgents(value={
+    	    @JUnitSnmpAgent(host="172.20.1.201", resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties"),
+    	    @JUnitSnmpAgent(host="172.20.1.204", resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties"),
+    	    @JUnitSnmpAgent(host="172.20.1.205", resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
+    })
     @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public final void testRescan() throws Exception {
 
@@ -122,7 +126,7 @@ public class CapsdIntegrationTest implements TemporaryDatabaseAware<MockDatabase
 
         m_capsd.rescanInterfaceParent(FOREIGN_NODEID);
 
-        Thread.sleep(150000);
+        Thread.sleep(15000);
 
         m_capsd.stop();
 
@@ -133,7 +137,11 @@ public class CapsdIntegrationTest implements TemporaryDatabaseAware<MockDatabase
      * Refactored from org.opennms.netmgt.capsd.CapsdTest
      */
     @Test
-    @JUnitSnmpAgent(host=FOREIGN_NODE_IP_ADDRESS, resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
+    @JUnitSnmpAgents(value={
+    	    @JUnitSnmpAgent(host="172.20.1.201", resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties"),
+    	    @JUnitSnmpAgent(host="172.20.1.204", resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties"),
+    	    @JUnitSnmpAgent(host="172.20.1.205", resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
+    })
     @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public final void testRescanOfForeignNode() throws Exception {
 
