@@ -1218,11 +1218,11 @@ insert into categories values (nextVal('catNxtId'), 'Switches', null);
 --# criteria: SELECT count(*) = 0 from categories
 insert into categories values (nextVal('catNxtId'), 'Servers', null);
 --# criteria: SELECT count(*) = 0 from categories
-insert into categories values (nextVal('catNxtId'), 'Production', null);
+--insert into categories values (nextVal('catNxtId'), 'Production', null);
 --# criteria: SELECT count(*) = 0 from categories
-insert into categories values (nextVal('catNxtId'), 'Test', null);
+--insert into categories values (nextVal('catNxtId'), 'Test', null);
 --# criteria: SELECT count(*) = 0 from categories
-insert into categories values (nextVal('catNxtId'), 'Development', null);
+--insert into categories values (nextVal('catNxtId'), 'Development', null);
 
 --########################################################################
 --# category_node table - Many-to-Many mapping table of categories to nodes
