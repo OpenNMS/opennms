@@ -94,7 +94,7 @@ public class D3 extends JavaScriptObject {
         return this.remove();
     }-*/;
 
-    public final native D3 data(Object[] data, Func<?, ?> func) /*-{
+    public final native <T extends JavaScriptObject> D3 data(JsArray<T> data, Func<?, T> func) /*-{
     	var f = function(d, i) {
         	return func.@org.opennms.features.vaadin.topology.gwt.client.d3.Func::call(Ljava/lang/Object;I)(d,i);
         };
@@ -128,6 +128,16 @@ public class D3 extends JavaScriptObject {
     
     public static final native void eventPreventDefault() /*-{
         $wnd.d3.event.preventDefault();
+    }-*/;
+    
+    public static final native D3 d3() /*-{
+        return $wnd.d3;
+    }-*/;
+    
+    public static final native JavaScriptObject property(String propertName) /*-{
+        return function(d,i){
+            return d[propertName];
+        };
     }-*/;
 
 }

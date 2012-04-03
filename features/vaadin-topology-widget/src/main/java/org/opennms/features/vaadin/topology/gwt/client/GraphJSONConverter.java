@@ -1,7 +1,6 @@
 package org.opennms.features.vaadin.topology.gwt.client;
 
-import java.util.List;
-
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
@@ -10,7 +9,7 @@ import com.google.gwt.json.client.JSONValue;
 
 public class GraphJSONConverter {
     
-    public static String convertGraphToJSON(Graph graph) {
+    public static String convertGraphToJSON(GWTGraph graph) {
         JSONArray obj = new JSONArray();
         obj.set(0, new JSONString("graph"));
         
@@ -21,21 +20,21 @@ public class GraphJSONConverter {
         return obj.toString();
     }
     
-    private static JSONValue getVertices(List<Vertex> vertices) {
+    private static JSONValue getVertices(JsArray<GWTVertex> vertices) {
         JSONArray vertexArray = new JSONArray();
-        for(int i = 0; i < vertices.size(); i++) {
-            Vertex vertex = vertices.get(i);
+        for(int i = 0; i < vertices.length(); i++) {
+            GWTVertex vertex = vertices.get(i);
             vertexArray.set(i, getVertex(vertex));
         }
         return vertexArray;
     }
     
-    private static JSONValue getVertex(Vertex vertex) {
+    private static JSONValue getVertex(GWTVertex vertex) {
     	JSONArray array = new JSONArray();
     	array.set(0, new JSONString("vertex"));
     	
         JSONObject obj = new JSONObject();
-        obj.put("id", new JSONNumber(vertex.getId()));
+        obj.put("id", new JSONString(vertex.getId()));
         obj.put("x", new JSONNumber(vertex.getX()));
         obj.put("y", new JSONNumber(vertex.getY()));
         
@@ -43,16 +42,16 @@ public class GraphJSONConverter {
         return array;
     }
     
-    private static JSONValue getEdges(List<Edge> edges) {
+    private static JSONValue getEdges(JsArray<GWTEdge> edges) {
         JSONArray edgeArray = new JSONArray();
-        for(int j = 0; j < edges.size(); j++) {
-            Edge edge = edges.get(j);
+        for(int j = 0; j < edges.length(); j++) {
+            GWTEdge edge = edges.get(j);
             edgeArray.set(j, getEdge(edge));
         }
         return edgeArray;
     }
     
-    private static JSONValue getEdge(Edge edge) {
+    private static JSONValue getEdge(GWTEdge edge) {
     	JSONArray array = new JSONArray();
     	array.set(0, new JSONString("edge"));
     	

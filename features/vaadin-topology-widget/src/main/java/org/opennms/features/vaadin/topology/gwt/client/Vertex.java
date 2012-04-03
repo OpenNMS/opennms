@@ -10,13 +10,13 @@ import com.vaadin.terminal.gwt.client.UIDL;
 public class Vertex implements Paintable{
 	int m_x;
 	int m_y;
-	private int m_id;
+	private String m_id;
 	private boolean m_selected;
 	private Date m_date = new Date();
 	
 	public Vertex() {};
 	
-	public Vertex(int id, int x, int y){
+	public Vertex(String id, int x, int y){
 		m_id = id;
 		m_x = x;
 		m_y = y;
@@ -30,7 +30,7 @@ public class Vertex implements Paintable{
 		return m_y;
 	}
 	
-	public int getId() {
+	public String getId() {
 		return m_id;
 	}
 

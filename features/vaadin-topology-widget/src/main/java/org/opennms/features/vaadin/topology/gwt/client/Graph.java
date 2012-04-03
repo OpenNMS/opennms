@@ -11,7 +11,7 @@ import java.util.Map;
 public class Graph{
 	private List<Vertex> m_vertices;
 	private List<Edge> m_edges;
-	private Map<Integer, Vertex> m_vertexMap = new HashMap<Integer, Vertex>();
+	private Map<String, Vertex> m_vertexMap = new HashMap<String, Vertex>();
 	private int m_counter = 0;
 
 	
@@ -42,7 +42,7 @@ public class Graph{
 		return m_edges;
 	}
 	
-	public Vertex getVertexById(int id) {
+	public Vertex getVertexById(String id) {
 		return m_vertexMap.get(id);
 	}
 	public void addVertex(Vertex vertex) {
@@ -98,8 +98,8 @@ public class Graph{
         }
         
     }
-	public int getNextId() {
-		return m_counter ++;
+	public String getNextId() {
+		return "" + m_counter ++;
 	}
     
 	

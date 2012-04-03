@@ -61,7 +61,7 @@ public class TopologyComponent extends AbstractComponent {
         }
         
         if(variables.containsKey("clickedVertex")) {
-        	Integer vertexId = (Integer) variables.get("clickedVertex");
+        	String vertexId = (String) variables.get("clickedVertex");
             if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
         	    multiSelectVertex(vertexId);
         	}else {
@@ -75,7 +75,7 @@ public class TopologyComponent extends AbstractComponent {
         }
     }
     
-    private void singleSelectVertex(Integer vertexId) {
+    private void singleSelectVertex(String vertexId) {
         for(Vertex vertex : m_graph.getVertices()) {
             vertex.setSelected(false);
         }
@@ -83,11 +83,11 @@ public class TopologyComponent extends AbstractComponent {
         toggleSelectedVertex(vertexId);
     }
 
-    private void multiSelectVertex(Integer vertexId) {
+    private void multiSelectVertex(String vertexId) {
         toggleSelectedVertex(vertexId);
     }
 
-    private void toggleSelectedVertex(Integer vertexId) {
+    private void toggleSelectedVertex(String vertexId) {
 		Vertex vertex = m_graph.getVertexById(vertexId);
 		vertex.setSelected(!vertex.isSelected());
 		
@@ -114,8 +114,8 @@ public class TopologyComponent extends AbstractComponent {
 		int x = (int) (Math.random() * 100);
 		int y = (int) (Math.random() * 100);
 		
-		int id = graph.getNextId();
-		Vertex vertex = new Vertex(id, id*10, id*10);
+		String id = graph.getNextId();
+		Vertex vertex = new Vertex(id, 10, 10);
 		graph.addVertex(vertex);
 		graph.addEdge(new Edge(graph.getVertices().get(0), vertex));
 		
