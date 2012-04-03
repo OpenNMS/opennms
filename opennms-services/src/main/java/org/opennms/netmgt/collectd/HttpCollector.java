@@ -117,10 +117,6 @@ public class HttpCollector implements ServiceCollector {
     private static final int DEFAULT_RETRY_COUNT = 2;
     private static final String DEFAULT_SO_TIMEOUT = "3000";
 
-    //Don't make this static because each service will have its own
-    //copy and the key won't require the service name as  part of the key.
-    private final HashMap<Integer, String> m_scheduledNodes = new HashMap<Integer, String>();
-
     private static final NumberFormat PARSER;
 
     private static NumberFormat RRD_FORMATTER;
@@ -142,6 +138,7 @@ public class HttpCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
         HttpCollectionSet collectionSet = new HttpCollectionSet(agent, parameters);
         collectionSet.setCollectionTimestamp(new Date());
@@ -666,11 +663,11 @@ public class HttpCollector implements ServiceCollector {
 
     /** {@inheritDoc} 
      * @throws CollectionInitializationException */
+    @Override
     public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
 
         log().debug("initialize: Initializing HttpCollector.");
 
-        m_scheduledNodes.clear();
         initHttpCollectionConfig();
         initDatabaseConnectionFactory();
         initializeRrdRepository();
@@ -743,43 +740,23 @@ public class HttpCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
         log().debug("initialize: Initializing HTTP collection for agent: "+agent);
-        final Integer scheduledNodeKey = agent.getNodeId();
-        final String scheduledAddress = m_scheduledNodes.get(scheduledNodeKey);
 
-        if (scheduledAddress != null) {
-            log().info("initialize: Not scheduling interface for collection: "+scheduledAddress);
-            final StringBuffer sb = new StringBuffer();
-            sb.append("initialize service: ");
-
-            //If they include this parameter, use it for debug logging.
-            sb.append(determineServiceName(parameters));
-
-            sb.append(" for address: ");
-            sb.append(scheduledAddress);
-            sb.append(" already scheduled for collection on node: ");
-            sb.append(agent);
-            log().debug(sb.toString());
-            throw new IllegalStateException(sb.toString());
-        } else {
-            log().info("initialize: Scheduling interface for collection: "+scheduledAddress);
-            m_scheduledNodes.put(scheduledNodeKey, scheduledAddress);
-        }
-    }
-
-    private static String determineServiceName(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedString(parameters, "service-name", "HTTP");
+        // Add any initialization here
     }
 
     /**
      * <p>release</p>
      */
+    @Override
     public void release() {
         // TODO Auto-generated method stub
     }
 
     /** {@inheritDoc} */
+    @Override
     public void release(CollectionAgent agent) {
         // TODO Auto-generated method stub
     }
