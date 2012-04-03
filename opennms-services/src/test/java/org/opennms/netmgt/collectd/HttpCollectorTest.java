@@ -38,11 +38,13 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
@@ -61,6 +63,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +85,7 @@ import org.springframework.transaction.PlatformTransactionManager;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-collectdTest.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
@@ -102,18 +106,23 @@ public class HttpCollectorTest implements TestContextAware {
 
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
-    
+
+    @Autowired
+    private Collectd m_collectd;
+
     private TestContext m_context;
 
     private final OnmsDistPoller m_distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
 
     private final String m_testHostName = "127.0.0.1";
 
+    private HttpCollector m_collector;
     private CollectionSpecification m_collectionSpecification;
     private CollectionSpecification m_httpsCollectionSpecification;
 
     private CollectionAgent m_collectionAgent;
 
+    @Override
     public void setTestContext(TestContext t) {
         m_context = t;
     }
@@ -132,8 +141,10 @@ public class HttpCollectorTest implements TestContextAware {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
         assertNotNull(m_mockEventIpcManager);
-        assertNotNull(m_ipInterfaceDao);
+        assertNotNull(m_transactionManager);
         assertNotNull(m_nodeDao);
+        assertNotNull(m_ipInterfaceDao);
+        assertNotNull(m_serviceTypeDao);
 
         if (m_nodeDao.findByLabel("testnode").size() == 0) {
             NetworkBuilder builder = new NetworkBuilder(m_distPoller);
@@ -142,16 +153,13 @@ public class HttpCollectorTest implements TestContextAware {
             builder.addService(getServiceType("ICMP"));
             builder.addService(getServiceType("HTTP"));
             builder.addService(getServiceType("HTTPS"));
-            if (m_nodeDao == null) {
-                throw new Exception("node DAO does not exist!");
-            }
             OnmsNode n = builder.getCurrentNode();
             assertNotNull(n);
             m_nodeDao.save(n);
             m_nodeDao.flush();
         }
 
-        HttpCollector collector = new HttpCollector();
+        m_collector = new HttpCollector();
 
         Collection<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(m_testHostName);
         assertEquals(1, ifaces.size());
@@ -159,10 +167,10 @@ public class HttpCollectorTest implements TestContextAware {
         
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("collection", "default");
-        collector.initialize(parameters);
+        m_collector.initialize(parameters);
 
-        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", collector, "default");
-        m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", collector, "default");
+        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", m_collector, "default");
+        m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", m_collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
     }
 
@@ -262,13 +270,13 @@ public class HttpCollectorTest implements TestContextAware {
 
         int numUpdates = 2;
         int stepSizeInSecs = 1;
-        
+
         int stepSizeInMillis = stepSizeInSecs*1000;
 
         m_collectionSpecification.initialize(m_collectionAgent);
-        
+
         CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
-        
+
         // node level collection
         File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
 
@@ -282,6 +290,83 @@ public class HttpCollectorTest implements TestContextAware {
         assertEquals("documentType", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
 
         m_collectionSpecification.release(m_collectionAgent);
+    }
+
+    @Test
+    @Ignore("Change so that it expects the invalid regex exception")
+    @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
+    @JUnitCollector(
+        datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-broken-regex.xml", 
+        datacollectionType="http",
+        anticipateRrds={ 
+            "1/TotalAccesses",
+            "1/TotalkBytes",
+            "1/CPULoad",
+            "1/Uptime",
+            "1/ReqPerSec",
+            "1/BytesPerSec",
+            "1/BytesPerReq",
+            "1/BusyWorkers",
+            "1/IdleWorkers"
+        }
+    )
+    public final void testBrokenRegex() throws Exception {
+        File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
+        FileAnticipator anticipator = (FileAnticipator)m_context.getAttribute("fileAnticipator");
+
+        int numUpdates = 2;
+        int stepSizeInSecs = 1;
+
+        int stepSizeInMillis = stepSizeInSecs*1000;
+
+        m_collectionSpecification.initialize(m_collectionAgent);
+
+        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+
+        // node level collection
+        File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
+
+        File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd("TotalAccesses"));
+        File someNumberRrdFile = new File(nodeDir, CollectorTestUtils.rrd("IdleWorkers"));
+
+        // Total Accesses: 175483
+        assertEquals("documentCount", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, stepSizeInMillis));
+
+        // IdleWorkers: 12
+        assertEquals("documentType", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
+
+        m_collectionSpecification.release(m_collectionAgent);
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
+    @JUnitCollector(
+        datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-persist-apache-stats.xml", 
+        datacollectionType="http",
+        anticipateRrds={ 
+            "1/TotalAccesses",
+            "1/TotalkBytes",
+            "1/CPULoad",
+            "1/Uptime",
+            "1/ReqPerSec",
+            "1/BytesPerSec",
+            "1/BytesPerReq",
+            "1/BusyWorkers",
+            "1/IdleWorkers"
+        }
+    )
+    public void testPersistApacheStatsViaCapsd() throws Exception {
+        // TODO: Do we need this init? applicationContext-collectdTest.xml should take care of this
+        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), "nms1", false);
+        CollectdConfigFactory.setInstance(collectdConfig);
+        CollectdConfigFactory.init();
+
+        // Add the HTTP collector to capsd
+        m_collectd.setServiceCollector("HTTP", m_collector);
+        m_collectd.init();
+        m_collectd.start();
+        Thread.sleep(10000);
+        m_collectd.stop();
     }
 
     @Test
