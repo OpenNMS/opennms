@@ -1007,7 +1007,7 @@ tr.Indeterminate td a, tr.Normal td a, tr.Warning td a, tr.Minor td a, tr.Major 
 }
 
 tr.Cleared td.divider a, td nobr a {
-        color: white;
+        color: black;
 }
 
 .GALD-WOGF, .GALD-WOJ, .GALD-WOL{
