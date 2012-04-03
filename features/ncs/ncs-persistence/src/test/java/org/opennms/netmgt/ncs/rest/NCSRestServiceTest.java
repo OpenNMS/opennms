@@ -2,8 +2,10 @@ package org.opennms.netmgt.ncs.rest;
 
 import static org.junit.Assert.assertTrue;
 
+import javax.ws.rs.core.MediaType;
+
 import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.LogUtils;
@@ -15,11 +17,11 @@ import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.opennms.netmgt.ncs.persistence.NCSComponentService;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
-	@BeforeClass
-	public static void setupLogging()
-	{
+	@Before
+	public void setupLogging() {
 		MockLogAppender.setupLogging(true, "DEBUG");
 	}
 	
@@ -102,6 +104,19 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		new String[] { "ServiceElementComponent", "lspA-PE2-PE1", "NA-SvcElemComp", "9876,LSP-1234" },
 		new String[] { "ServiceElementComponent", "lspB-PE2-PE1", "NA-SvcElemComp", "9876,LSP-4321" }
 	};
+
+	private static final String m_serviceXMLFragment = "" +
+			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+			"<component xmlns=\"http://xmlns.opennms.org/xsd/model/ncs\" type=\"ServiceElementComponent\" foreignId=\"9876,vcid(50)\" foreignSource=\"NA-SvcElemComp\">\n" + 
+			"  <name>PE2,vcid(50)</name>\n" + 
+			"  <dependenciesRequired>ANY</dependenciesRequired>\n" + 
+			"</component>\n";
+
+	private static final String m_serviceXMLTopFragment = "" +
+			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+			"<component xmlns=\"http://xmlns.opennms.org/xsd/model/ncs\" type=\"Service\" foreignId=\"123\" foreignSource=\"NA-Service\">\n" + 
+			"    <name>CokeP2P</name>\n" + 
+			"</component>\n";
 
 	private static final String m_extraXML = "" +
 			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
@@ -233,6 +248,62 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		String xml = sendRequest(GET, url, 200);
 		assertTrue(xml.contains("monkey1"));
 		
+	}
+	
+	/*
+	 * Replaced/Updated:
+	 * <component type="ServiceElementComponent" foreignId="9876,vcid(50)" foreignSource="NA-SvcElemComp">
+	 *   <name>PE2,vcid(50)</name>
+	 *   <dependenciesRequired>ANY</dependenciesRequired>
+	 * </component>
+	 *
+	 * Deleted:
+	 * <component type="ServiceElementComponent" foreignId="9876,LSP-1234" foreignSource="NA-SvcElemComp">
+	 *   <name>lspA-PE2-PE1</name>
+	 * </component>
+	 * <component type="ServiceElementComponent" foreignId="9876,LSP-4321" foreignSource="NA-SvcElemComp">
+	 *   <name>lspB-PE2-PE1</name>
+	 * </component>
+	 */
+	@Test
+	public void testDeleteOrphans() throws Exception {
+		sendPost("/NCS", m_serviceXML);
+
+		m_eventAnticipator.reset();
+		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "ServiceElementComponent", "PE2,vcid(50)", "NA-SvcElementComp", "9876,vcid(50)" });
+		anticipateEvent(EventConstants.COMPONENT_DELETED_UEI, new String[] { "ServiceElementComponent", "lspA-PE2-PE1", "NA-SvcElemComp", "9876,LSP-1234" });
+		anticipateEvent(EventConstants.COMPONENT_DELETED_UEI, new String[] { "ServiceElementComponent", "lspB-PE2-PE1", "NA-SvcElemComp", "9876,LSP-4321" });
+
+        final MockHttpServletRequest request = createRequest(POST, "/NCS");
+        // request.setQueryString("deleteOrphans=true");
+        request.setContentType(MediaType.APPLICATION_XML);
+        request.setContent(m_serviceXMLFragment.getBytes());
+        request.setQueryString("deleteOrphans=true");
+        sendRequest(request, 200);
+	}
+
+	/*
+	 * Deletes everything but the top-level "Service" component.
+	 */
+	@Test
+	public void testDeleteOrphansRecursive() throws Exception {
+		sendPost("/NCS", m_serviceXML);
+
+		m_eventAnticipator.reset();
+		
+		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "Service", "CokeP2P", "NA-Service", "123" });
+
+		// skip the 1st, since it will be "updated" instead of "deleted"
+		for (int i = 1; i < m_components.length; i++) {
+			anticipateEvent(EventConstants.COMPONENT_DELETED_UEI, m_components[i]);
+		}
+
+        final MockHttpServletRequest request = createRequest(POST, "/NCS");
+        // request.setQueryString("deleteOrphans=true");
+        request.setContentType(MediaType.APPLICATION_XML);
+        request.setContent(m_serviceXMLTopFragment.getBytes());
+        request.setQueryString("deleteOrphans=true");
+        sendRequest(request, 200);
 	}
 	
 	@Test

@@ -9,9 +9,9 @@ public interface NCSComponentService {
 	public void setEventIpcManager(EventIpcManager eventIpcManager);
 
 	public NCSComponent getComponent(String type, String foreignSource, String foreignId);
-	public NCSComponent addOrUpdateComponents(NCSComponent component);
 	public ComponentList findComponentsWithAttribute(String string, String string2);
-	public void deleteComponent(String type, String foreignSource, String foreignId);
-	public NCSComponent addSubcomponent(String type, String foreignSource, String foreignId, NCSComponent subComponent);
 
+	public NCSComponent addOrUpdateComponents(NCSComponent component, boolean deleteOrphans);
+	public NCSComponent addSubcomponent(String type, String foreignSource, String foreignId, NCSComponent subComponent, boolean deleteOrphans);
+	public void deleteComponent(String type, String foreignSource, String foreignId, boolean deleteOrphans);
 }
