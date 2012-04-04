@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.net.ssl.SSLContext;
 
@@ -168,7 +169,7 @@ public class HttpCollector implements ServiceCollector {
         HttpCollectionSet(CollectionAgent agent, Map<String, Object> parameters) {
             m_agent = agent;
             m_parameters = parameters;
-            m_status=ServiceCollector.COLLECTION_FAILED;
+            m_status=ServiceCollector.COLLECTION_SUCCEEDED;
         }
 
         public void collect() {
@@ -202,7 +203,6 @@ public class HttpCollector implements ServiceCollector {
                     m_status=ServiceCollector.COLLECTION_FAILED;
                 }
             }
-            m_status=ServiceCollector.COLLECTION_SUCCEEDED;
         }
 
         public CollectionAgent getAgent() {
@@ -313,11 +313,15 @@ public class HttpCollector implements ServiceCollector {
             //Not really a persist as such; it just stores data in collectionSet for later retrieval
             persistResponse(collectionSet, collectionResource, client, response);
         } catch (URISyntaxException e) {
-            throw new HttpCollectorException("Error building HttpClient URI");
+            throw new HttpCollectorException("Error building HttpClient URI", e);
         } catch (IOException e) {
-            throw new HttpCollectorException("IO Error retrieving page");
+            throw new HttpCollectorException("IO Error retrieving page", e);
         } catch (NoSuchAlgorithmException e) {
-            throw new HttpCollectorException("Could not find EmptyKeyRelaxedTrustSSLContext to allow connection to untrusted HTTPS hosts");
+            throw new HttpCollectorException("Could not find EmptyKeyRelaxedTrustSSLContext to allow connection to untrusted HTTPS hosts", e);
+        } catch (PatternSyntaxException e) {
+            throw new HttpCollectorException("Invalid regex specified in HTTP collection configuration: " + e.getMessage(), e);
+        } catch (Throwable e) {
+            throw new HttpCollectorException("Unexpected exception caught during HTTP collection: " + e.getMessage(), e);
         } finally {
             // Do we need to do any cleanup?
             // if (method != null) method.releaseConnection();
@@ -501,6 +505,10 @@ public class HttpCollector implements ServiceCollector {
         private static final long serialVersionUID = 4413332529546573490L;
 
         HttpCollectorException(String message) {
+            super(message);
+        }
+
+        HttpCollectorException(String message, Throwable e) {
             super(message);
         }
 
