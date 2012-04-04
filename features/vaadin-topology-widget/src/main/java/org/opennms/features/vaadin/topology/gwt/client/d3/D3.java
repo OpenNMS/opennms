@@ -126,6 +126,10 @@ public class D3 extends JavaScriptObject {
         return $wnd.d3.event;
     }-*/;
     
+    public static final native D3MouseEvent mouseEvent() /*-{
+    	return $wnd.d3.event;
+    }-*/;
+    
     public static final native void eventPreventDefault() /*-{
         $wnd.d3.event.preventDefault();
     }-*/;

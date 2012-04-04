@@ -1,6 +1,9 @@
 package org.opennms.features.vaadin.topology;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.features.vaadin.topology.gwt.client.Edge;
 import org.opennms.features.vaadin.topology.gwt.client.Graph;
@@ -9,16 +12,20 @@ import org.opennms.features.vaadin.topology.gwt.client.Vertex;
 
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.Resource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ClientWidget;
+import com.vaadin.event.Action;
+import com.vaadin.event.Action.Handler;
 
 @ClientWidget(VTopologyComponent.class)
-public class TopologyComponent extends AbstractComponent {
+public class TopologyComponent extends AbstractComponent implements Action.Container {
 	
 	
 
     private Graph m_graph;
 	private double m_scale = 1;
+	private List<Action.Handler> m_actionHandlers = new CopyOnWriteArrayList<Action.Handler>();
 
 	public TopologyComponent() {
 		m_graph = new Graph();
@@ -49,10 +56,23 @@ public class TopologyComponent extends AbstractComponent {
         
         target.endTag("graph");
         
+        target.addAttribute("actionList", getActionsList());
+        
         
     }
     
-    @Override
+    private String[] getActionsList() {
+		List<String> actionList = new ArrayList<String>();
+		for(Action.Handler handler : m_actionHandlers) {
+			Action[] actions = handler.getActions(null, null);
+			for(Action action : actions) {
+				actionList.add(action.getCaption());
+			}
+		}
+		return actionList.toArray(new String[0]);
+	}
+
+	@Override
     public void changeVariables(Object source, Map<String, Object> variables) {
         if(variables.containsKey("graph")) {
             String graph = (String) variables.get("graph");
@@ -70,8 +90,9 @@ public class TopologyComponent extends AbstractComponent {
         	
         }
         
-        if(variables.containsKey("vertexContextMenu") && (Boolean)variables.get("vertexContextMenu") == true) {
-            
+        if(variables.containsKey("action")) {
+        	System.err.println("I just received an action");
+        	
         }
     }
     
@@ -131,6 +152,16 @@ public class TopologyComponent extends AbstractComponent {
         m_graph.removeRandomVertext();
         requestRepaint();
     }
+
+	public void addActionHandler(Handler actionHandler) {
+		m_actionHandlers.add(actionHandler);
+		
+	}
+
+	public void removeActionHandler(Handler actionHandler) {
+		m_actionHandlers.remove(actionHandler);
+		
+	}
    
 
 }

@@ -14,19 +14,19 @@ public class D3MouseEvent extends JavaScriptObject {
         return this.altKey;
     }-*/;
     
-    public final native boolean screenX() /*-{
+    public final native int screenX() /*-{
         return this.screenX;
     }-*/;
     
-    public final native boolean screenY() /*-{
+    public final native int screenY() /*-{
         return this.screenY;
     }-*/;
     
-    public final native boolean clientX() /*-{
+    public final native int clientX() /*-{
         return this.clientX;
     }-*/;
     
-    public final native boolean clientY() /*-{
+    public final native int clientY() /*-{
         return this.clientY;
     }-*/;
     

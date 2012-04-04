@@ -12,16 +12,20 @@ import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Window;
 
-public class TopologyWidgetTestApplication extends Application {
+import com.vaadin.event.Action;
+
+public class TopologyWidgetTestApplication extends Application implements Action.Handler {
 
     private Window m_window;
     private TopologyComponent m_topologyComponent;
+	private Action[] m_actions = new Action[] {new Action("Group")};
     
     @Override
     public void init() {
         m_window = new Window("Topology Widget Test");
         setMainWindow(m_window);
         m_topologyComponent = new TopologyComponent();
+        m_topologyComponent.addActionHandler(this);
         m_window.addComponent(m_topologyComponent);
         
         final Slider slider = new Slider(0, 3);
@@ -74,5 +78,16 @@ public class TopologyWidgetTestApplication extends Application {
         m_window.addComponent(removeVertexButton);
         Tree tree = new Tree();
     }
+
+	public Action[] getActions(Object target, Object sender) {
+		return m_actions;
+	}
+
+	public void handleAction(Action action, Object sender, Object target) {
+		if(action.getCaption().equals("Group")) {
+			//Do Something here
+		}
+		
+	}
 
 }

@@ -24,8 +24,10 @@ import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.VConsole;
+import com.vaadin.terminal.gwt.client.ui.Action;
+import com.vaadin.terminal.gwt.client.ui.ActionOwner;
 
-public class VTopologyComponent extends Composite implements Paintable {
+public class VTopologyComponent extends Composite implements Paintable, ActionOwner {
 	
 	private static VTopologyComponentUiBinder uiBinder = GWT
             .create(VTopologyComponentUiBinder.class);
@@ -47,6 +49,7 @@ public class VTopologyComponent extends Composite implements Paintable {
     
     @UiField
     Button m_saveButton;
+	private String[] m_actions;
     
     public VTopologyComponent() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -153,11 +156,16 @@ public class VTopologyComponent extends Composite implements Paintable {
         return new D3Events.Handler<GWTVertex>() {
 
             public void call(GWTVertex vertex, int index) {
-                VConsole.log("Context Menu on vertex: " + vertex.getId());
-                m_client.updateVariable(m_paintableId, "vertexContextMenu", true, true);
+                //VConsole.log("Context Menu on vertex: " + vertex.getId());
+                //m_client.updateVariable(m_paintableId, "vertexContextMenu", true, true);
+            	m_client.getContextMenu().showAt(getActionOwner(), D3.mouseEvent().clientX(), D3.mouseEvent().clientY());
                 D3.eventPreventDefault();
             }
         };
+    }
+    
+    private final ActionOwner getActionOwner() {
+    	return this;
     }
 
     private Handler<GWTVertex> vertexClickHandler() {
@@ -256,6 +264,8 @@ public class VTopologyComponent extends Composite implements Paintable {
         m_paintableId = uidl.getId();
         
         setScale(uidl.getDoubleAttribute("scale"));
+        setActions(uidl.getStringArrayAttribute("actionList"));
+        
         UIDL graph = uidl.getChildByTagName("graph");
         Iterator<?> children = graph.getChildIterator();
         
@@ -282,6 +292,11 @@ public class VTopologyComponent extends Composite implements Paintable {
         
     }
     
+	private void setActions(String[] actions) {
+		m_actions = actions;
+		
+	}
+
 	private void setScale(double scale) {
 		if(m_scale != scale) {
 			m_scale = scale;
@@ -307,6 +322,31 @@ public class VTopologyComponent extends Composite implements Paintable {
 		m_vertexGroup.transition().duration(1000).attr("transform", "scale(" + scale + ")");
 		m_edgeGroup.transition().duration(1000).attr("transform", "scale(" + scale + ")");
 		
+	}
+
+	public Action[] getActions() {
+		if(m_actions == null) {
+			return new Action[] {};
+		}
+		final Action[] actions = new Action[m_actions.length];
+		for(int i = 0; i < actions.length; i++) {
+			String actionKey = m_actions[i];
+			GraphAction a = new GraphAction(this);
+			a.setCaption(actionKey);
+			
+			actions[i] = a;
+			
+		}
+		
+		return actions;
+	}
+
+	public ApplicationConnection getClient() {
+		return m_client;
+	}
+
+	public String getPaintableId() {
+		return m_paintableId;
 	}
 
 }
