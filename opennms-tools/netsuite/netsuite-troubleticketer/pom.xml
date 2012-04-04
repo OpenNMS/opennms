@@ -11,16 +11,19 @@
   <name>OpenNMS Netsuite Trouble Ticketer</name>
   <dependencies>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>netsuite-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
       <artifactId>org.opennms.features.ticketing.api</artifactId>
       <scope>provided</scope>
     </dependency>
-<!--
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <scope>provided</scope>
     </dependency>
--->
   </dependencies>
 </project>
