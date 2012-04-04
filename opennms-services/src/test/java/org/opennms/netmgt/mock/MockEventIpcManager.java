@@ -49,6 +49,7 @@ import org.opennms.netmgt.eventd.EventIpcBroadcaster;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerProxy;
 import org.opennms.netmgt.eventd.processor.EventExpander;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
@@ -57,7 +58,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
-public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
+public class MockEventIpcManager implements EventForwarder, EventIpcManager, EventIpcBroadcaster, InitializingBean {
 
     static class ListenerKeeper {
     	final EventListener m_listener;

@@ -51,6 +51,10 @@ public class NCSComponentDao extends AbstractDaoHibernate<NCSComponent, Long> im
 		return find("from NCSComponent as ncs where ? in elements(ncs.subcomponents)", component);
 	}
 
+	public List<NCSComponent> findComponentsWithChild(final NCSComponent component) {
+		return find("from NCSComponent as ncs where ? in elements(ncs.parentcomponents)", component);
+	}
+	
 	@Override
 	public List<NCSComponent> findComponentsWithAttribute(String attrKey, String attrValue) {
 		return find("from NCSComponent as ncs where ncs.attributes[?] = ?", attrKey, attrValue);
@@ -108,5 +112,4 @@ public class NCSComponentDao extends AbstractDaoHibernate<NCSComponent, Long> im
 			super("Invalid Foreign Source (" + foreignSource + "): " + msg);
 		}
 	}
-	
 }

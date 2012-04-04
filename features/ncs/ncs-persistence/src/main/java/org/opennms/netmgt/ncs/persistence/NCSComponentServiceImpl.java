@@ -1,6 +1,7 @@
 package org.opennms.netmgt.ncs.persistence;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -10,26 +11,23 @@ import javax.ws.rs.core.Response.Status;
 
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.ncs.rest.NCSRestService.ComponentList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.style.ToStringCreator;
-import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 public class NCSComponentServiceImpl implements NCSComponentService {
+	private static final Set<NCSComponent> EMPTY_COMPONENT_SET = Collections.unmodifiableSet(new HashSet<NCSComponent>());
+
 	@Autowired
 	NCSComponentDao m_componentDao;
 
@@ -42,61 +40,59 @@ public class NCSComponentServiceImpl implements NCSComponentService {
     @Autowired
     private PlatformTransactionManager m_transactionManager;
 
-	EventIpcManager m_eventIpcManager;
+    EventForwarder m_eventForwarder;
 
-	public EventIpcManager getEventIpcManager() {
-		return m_eventIpcManager;
-	}
-
-	public void setEventIpcManager(final EventIpcManager manager) {
-		m_eventIpcManager = manager;
+	public void setEventForwarder(final EventForwarder forwarder) throws Exception {
+		m_eventForwarder = forwarder;
 	}
 
 	@Override
 	@Transactional
 	public NCSComponent getComponent(final String type, final String foreignSource, final String foreignId) {
+		LogUtils.debugf(this, "getComponent(%s, %s, %s)", type, foreignSource, foreignId);
 		return getComponent(new ComponentIdentifier(type, foreignSource, foreignId));
 	}
 
 	@Override
 	@Transactional
 	public ComponentList findComponentsWithAttribute(final String attrKey, final String attrValue) {
+		LogUtils.debugf(this, "findComponentsWithAttribute(%s, %s)", attrKey, attrValue);
 		return new ComponentList(m_componentDao.findComponentsWithAttribute(attrKey, attrValue));
 	}
 
 	@Override
 	@Transactional
 	public NCSComponent addOrUpdateComponents(final NCSComponent component, final boolean deleteOrphans) {
-		return addOrUpdateComponents(getIdentifier(component), component, deleteOrphans);
+		final ComponentIdentifier componentId = getIdentifier(component);
+		LogUtils.debugf(this, "addOrUpdateComponents(%s, %s)", componentId, Boolean.valueOf(deleteOrphans));
+		final ComponentEventQueue ceq = new ComponentEventQueue();
+		final NCSComponent updatedComponent = addOrUpdateComponents(componentId, component, ceq, deleteOrphans);
+		ceq.sendAll(m_eventForwarder);
+		return updatedComponent;
 	}
 
 	@Override
 	@Transactional
 	public NCSComponent addSubcomponent(final String type, final String foreignSource, final String foreignId, final NCSComponent subComponent, final boolean deleteOrphans) {
 		final ComponentIdentifier id = new ComponentIdentifier(type, foreignSource, foreignId);
+		final ComponentIdentifier subComponentId = getIdentifier(subComponent);
+		
+		LogUtils.debugf(this, "addSubcomponent(%s, %s, %s, %s, %s)", type, foreignSource, foreignId, subComponentId, Boolean.valueOf(deleteOrphans));
 
-		LogUtils.debugf(this, "addSubcomponent: %s - %s (deleteOrphans=%s)", id, subComponent, Boolean.toString(deleteOrphans));
-
+		final ComponentEventQueue ceq = new ComponentEventQueue();
 		final NCSComponent component = getComponent(id);
 
 		if (component == null) {
 			throw new ObjectRetrievalFailureException(NCSComponent.class, "Unable to locate component with type=" + type + ", foreignSource=" + foreignSource + ", foreignId=" + foreignId);
 		}
-		LogUtils.debugf(this, "found component: %s", component);
 
-		final NCSComponent updatedSubComponent = addOrUpdateComponents(getIdentifier(subComponent), subComponent, deleteOrphans);
-		
-		LogUtils.debugf(this, "adding subcomponent: %s", updatedSubComponent);
+		final NCSComponent updatedSubComponent = addOrUpdateComponents(subComponentId, subComponent, ceq, deleteOrphans);
 		component.addSubcomponent(updatedSubComponent);
 		
-		LogUtils.debugf(this, "saving");
 		m_componentDao.update(component);
+		ceq.componentUpdated(id);
 
-		try {
-			sendComponentUpdated(component);
-		} catch (final EventProxyException e) {
-			throw new RecoverableDataAccessException("update completed, but unable to send componentUpdated event", e);
-		}
+		ceq.sendAll(m_eventForwarder);
 
 		return getComponent(id);
 	}
@@ -104,8 +100,12 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	@Override
 	@Transactional
 	public void deleteComponent(final String type, final String foreignSource, final String foreignId, final boolean deleteOrphans) {
+		LogUtils.debugf(this, "deleteSubcomponent(%s, %s, %s, %s)", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
+
 		final ComponentIdentifier id = new ComponentIdentifier(type, foreignSource, foreignId);
-		deleteComponent(id, deleteOrphans);
+		final ComponentEventQueue ceq = new ComponentEventQueue();
+		deleteComponent(id, ceq, deleteOrphans);
+		ceq.sendAll(m_eventForwarder);
 	}
 
 
@@ -123,23 +123,16 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	}
 	
 	private ComponentIdentifier getIdentifier(final NCSComponent component) {
-		return new ComponentIdentifier(component.getType(), component.getForeignSource(), component.getForeignId());
+		return new ComponentIdentifier(component.getType(), component.getForeignSource(), component.getForeignId(), component.getName());
 	}
 
 	private NCSComponent getComponent(final ComponentIdentifier id) {
 		return m_componentDao.findByTypeAndForeignIdentity(id.getType(), id.getForeignSource(), id.getForeignId());
 	}
 
-	private NCSComponent addOrUpdateComponents(final ComponentIdentifier id, final NCSComponent component, final boolean deleteOrphans) {
-		LogUtils.debugf(this, "addOrUpdateComponents: %s (deletOrphans=%s)", id, deleteOrphans);
-
+	private NCSComponent addOrUpdateComponents(final ComponentIdentifier id, final NCSComponent component, final ComponentEventQueue ceq, final boolean deleteOrphans) {
 		final Set<NCSComponent> subcomponents = new LinkedHashSet<NCSComponent>();
 		
-		for (final NCSComponent subcomponent : component.getSubcomponents()) {
-			final NCSComponent updatedComponent = addOrUpdateComponents(getIdentifier(subcomponent), subcomponent, deleteOrphans);
-			subcomponents.add(updatedComponent);
-		}
-
 		final NCSComponent existing = new UpsertTemplate<NCSComponent, NCSComponentDao>(m_transactionManager, m_componentDao) {
 			@Override
 			protected NCSComponent query() {
@@ -148,19 +141,25 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 
 			@Override
 			protected NCSComponent doInsert() {
+				for (final NCSComponent subcomponent : component.getSubcomponents()) {
+					final NCSComponent updatedComponent = addOrUpdateComponents(getIdentifier(subcomponent), subcomponent, ceq, deleteOrphans);
+					subcomponents.add(updatedComponent);
+				}
+
 				component.setSubcomponents(subcomponents);
 				m_componentDao.save(component);
-				try {
-					sendComponentAdded(component);
-				} catch (final EventProxyException e) {
-					throw new RecoverableDataAccessException("update completed, but unable to send componentAdded event", e);
-				}
+				ceq.componentAdded(getIdentifier(component));
 				return component;
 			}
 			
 			@Override
 			protected NCSComponent doUpdate(final NCSComponent dbObj) {
-				if (deleteOrphans) deleteOrphanedComponents(getIdentifiers(dbObj.getSubcomponents()), getIdentifiers(subcomponents));
+				for (final NCSComponent subcomponent : component.getSubcomponents()) {
+					final NCSComponent updatedComponent = addOrUpdateComponents(getIdentifier(subcomponent), subcomponent, ceq, deleteOrphans);
+					subcomponents.add(updatedComponent);
+				}
+
+				if (deleteOrphans) deleteOrphanedComponents(getIdentifiers(dbObj.getSubcomponents()), getIdentifiers(subcomponents), ceq);
 
 				dbObj.setName(component.getName());
 				dbObj.setVersion(component.getVersion());
@@ -171,11 +170,7 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 				dbObj.setAttributes(component.getAttributes());
 				dbObj.setSubcomponents(subcomponents);
 				m_componentDao.update(dbObj);
-				try {
-					sendComponentUpdated(dbObj);
-				} catch (final EventProxyException e) {
-					throw new RecoverableDataAccessException("update completed, but unable to send componentUpdated event", e);
-				}
+				ceq.componentUpdated(getIdentifier(dbObj));
 				return dbObj;
 			}
 
@@ -184,43 +179,85 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 		return existing;
 	}
 
-	private void deleteComponent(final ComponentIdentifier id, final boolean deleteOrphans) {
+	private void deleteComponent(final ComponentIdentifier id, final ComponentEventQueue ceq, final boolean deleteOrphans) {
 		final NCSComponent component = getComponent(id);
 
         if (component == null) {
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
 
+        final Set<NCSComponent> parentComponents = component.getParentcomponents();
+    	final Set<ComponentIdentifier> childrenIdentifiers = getIdentifiers(component.getSubcomponents());
+
+        // first, we deal with orphans
         if (deleteOrphans) {
-        	for (final ComponentIdentifier subId : getIdentifiers(component.getSubcomponents())) {
-	        	deleteComponent(subId, deleteOrphans);
+			for (final ComponentIdentifier subId : childrenIdentifiers) {
+				handleOrphanedComponents(component, subId, ceq, deleteOrphans);
 	        }
         }
 
-        for(final NCSComponent parent : m_componentDao.findComponentsThatDependOn(component)) {
+        // first, we remove this component from each of its parents
+        for(final NCSComponent parent : parentComponents) {
             parent.getSubcomponents().remove(component);
             m_componentDao.update(parent);
         }
 
+        // then we delete this component
+    	component.setSubcomponents(EMPTY_COMPONENT_SET);
         m_componentDao.delete(component);
 
+        // and any events or alarms depending on it
         deleteEvents(id.getForeignSource(), id.getForeignId());
         deleteAlarms(id.getForeignSource(), id.getForeignId());
         
-        try {
-			sendComponentDeleted(component);
-		} catch (final EventProxyException e) {
-			throw new RecoverableDataAccessException("update completed, but unable to send componentDeleted event", e);
+        // alert that the component is deleted
+		ceq.componentDeleted(getIdentifier(component));
+
+        // then alert about the parents
+        sendUpdateEvents(ceq, getIdentifiers(parentComponents));
+
+	}
+
+	private void handleOrphanedComponents(final NCSComponent parent, final ComponentIdentifier child, final ComponentEventQueue ceq, final boolean deleteOrphans) {
+		final ComponentIdentifier parentId = getIdentifier(parent);
+		final NCSComponent childComponent = getComponent(child);
+
+		final Set<ComponentIdentifier> childChildren = getIdentifiers(childComponent.getSubcomponents());
+		final Set<ComponentIdentifier> childParents  = getIdentifiers(childComponent.getParentcomponents());
+
+		LogUtils.tracef(this, "handleOrphanedComponents: parent: %s", parentId);
+		LogUtils.tracef(this, "handleOrphanedComponents: child: %s", child);
+		LogUtils.tracef(this, "handleOrphanedComponents: child's children: %s", childChildren);
+		LogUtils.tracef(this, "handleOrphanedComponents: child's parents: %s", childParents);
+
+		if (childParents.size() == 1) {
+			final ComponentIdentifier childParent = childParents.iterator().next();
+			if (childParent.equals(parentId)) {
+				LogUtils.tracef(this, "handleOrphanedComponents: child (%s) has only one parent (%s) and it's being deleted.", child, childParent);
+				deleteComponent(child, ceq, deleteOrphans);
+			} else {
+				LogUtils.tracef(this, "handleOrphanedComponents: child (%s) has only one parent (%s) but it's not the one we expected. This is weird.", child, childParent);
+				ceq.componentUpdated(childParent);
+			}
+		} else {
+			LogUtils.tracef(this, "handleOrphanedComponents: child (%s) has more than one parent, sending updates for remaining parents.", child);
+			for (final ComponentIdentifier childParent : childParents) {
+				ceq.componentUpdated(childParent);
+			}
 		}
 	}
 
-	private void deleteOrphanedComponents(final Set<ComponentIdentifier> oldComponents, final Set<ComponentIdentifier> newComponents) {
-		LogUtils.debugf(this, "deleteOrphanedComponents: old = %s, new = %s", oldComponents, newComponents);
-
+	private void sendUpdateEvents(final ComponentEventQueue ceq, final Collection<ComponentIdentifier> parentIds) {
+		LogUtils.debugf(this, "sendUpdateEvents: parents = %s", parentIds);
+		for (final ComponentIdentifier parentId : parentIds) {
+        	ceq.componentUpdated(parentId);
+        }
+	}
+	
+	private void deleteOrphanedComponents(final Set<ComponentIdentifier> oldComponents, final Set<ComponentIdentifier> newComponents, final ComponentEventQueue ceq) {
 		for (final ComponentIdentifier id : oldComponents) {
 			if (!newComponents.contains(id)) {
-				LogUtils.debugf(this, "deleteOrphanedComponents: deleting %s", id);
-				deleteComponent(id, true);
+				deleteComponent(id, ceq, true);
 			}
 		}
 	}
@@ -243,57 +280,5 @@ public class NCSComponentServiceImpl implements NCSComponentService {
         for(final OnmsEvent event : m_eventDao.findMatching(eventCriteria)) {
             m_eventDao.delete(event);
         }
-	}
-
-	private void sendComponentAdded(final NCSComponent component) throws EventProxyException {
-		final EventBuilder builder = new EventBuilder(EventConstants.COMPONENT_ADDED_UEI, "NCSComponentService");
-		builder.addParam("componentType", component.getType());
-		builder.addParam("componentName", component.getName());
-		builder.addParam("componentForeignSource", component.getForeignSource());
-		builder.addParam("componentForeignId", component.getForeignId());
-		m_eventIpcManager.send(builder.getEvent());
-	}
-	
-	private void sendComponentDeleted(final NCSComponent component) throws EventProxyException {
-		final EventBuilder builder = new EventBuilder(EventConstants.COMPONENT_DELETED_UEI, "NCSComponentService");
-		builder.addParam("componentType", component.getType());
-		builder.addParam("componentName", component.getName());
-		builder.addParam("componentForeignSource", component.getForeignSource());
-		builder.addParam("componentForeignId", component.getForeignId());
-		m_eventIpcManager.send(builder.getEvent());
-	}
-
-	private void sendComponentUpdated(final NCSComponent component) throws EventProxyException {
-		final EventBuilder builder = new EventBuilder(EventConstants.COMPONENT_UPDATED_UEI, "NCSComponentService");
-		builder.addParam("componentType", component.getType());
-		builder.addParam("componentName", component.getName());
-		builder.addParam("componentForeignSource", component.getForeignSource());
-		builder.addParam("componentForeignId", component.getForeignId());
-		m_eventIpcManager.send(builder.getEvent());
-	}
-	
-	public static final class ComponentIdentifier {
-		private final String m_type;
-		private final String m_foreignSource;
-		private final String m_foreignId;
-
-		public ComponentIdentifier(final String type, final String foreignSource, final String foreignId) {
-			m_type          = type;
-			m_foreignSource = foreignSource;
-			m_foreignId     = foreignId;
-		}
-
-		public String getType()          { return m_type; }
-		public String getForeignSource() { return m_foreignSource; }
-		public String getForeignId()     { return m_foreignId; }
-
-		@Override
-		public String toString() {
-			return new ToStringCreator(this)
-				.append("type", m_type)
-				.append("foreignSource", m_foreignSource)
-				.append("foreignId", m_foreignId)
-				.toString();
-		}
 	}
 }
