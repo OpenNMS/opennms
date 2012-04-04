@@ -16,7 +16,7 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <bean id="ncsComponentService" class="org.opennms.netmgt.ncs.persistence.NCSComponentServiceImpl">
+  <bean id="ncsComponentService" class="org.opennms.netmgt.ncs.persistence.NCSComponentServiceImpl" depends-on="eventIpcManager" lazy-init="true">
     <property name="eventForwarder" ref="eventIpcManager" />
   </bean>
 
