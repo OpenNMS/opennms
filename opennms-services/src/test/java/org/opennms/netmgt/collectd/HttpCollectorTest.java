@@ -293,47 +293,17 @@ public class HttpCollectorTest implements TestContextAware {
     }
 
     @Test
-    @Ignore("Change so that it expects the invalid regex exception")
     @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
     @JUnitCollector(
         datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-broken-regex.xml", 
-        datacollectionType="http",
-        anticipateRrds={ 
-            "1/TotalAccesses",
-            "1/TotalkBytes",
-            "1/CPULoad",
-            "1/Uptime",
-            "1/ReqPerSec",
-            "1/BytesPerSec",
-            "1/BytesPerReq",
-            "1/BusyWorkers",
-            "1/IdleWorkers"
-        }
+        datacollectionType="http"
     )
     public final void testBrokenRegex() throws Exception {
-        File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
-        FileAnticipator anticipator = (FileAnticipator)m_context.getAttribute("fileAnticipator");
-
         int numUpdates = 2;
-        int stepSizeInSecs = 1;
-
-        int stepSizeInMillis = stepSizeInSecs*1000;
 
         m_collectionSpecification.initialize(m_collectionAgent);
 
-        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
-
-        // node level collection
-        File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
-
-        File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd("TotalAccesses"));
-        File someNumberRrdFile = new File(nodeDir, CollectorTestUtils.rrd("IdleWorkers"));
-
-        // Total Accesses: 175483
-        assertEquals("documentCount", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, stepSizeInMillis));
-
-        // IdleWorkers: 12
-        assertEquals("documentType", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
+        CollectorTestUtils.failToCollectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
 
         m_collectionSpecification.release(m_collectionAgent);
     }
