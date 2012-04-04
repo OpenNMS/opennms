@@ -1,4 +1,11 @@
 #!/usr/bin/perl
+
+use IO::Handle;
+my $log = '/opt/opennms/logs/failover.log';
+open MYLOG, '>>', $log;
+STDOUT->fdopen( \*MYLOG, 'w' );
+STDERR->fdopen( \*MYLOG, 'w' );
+
         my $isVIP = `ifconfig | grep eth0:0`;
         my $vipTime = "/var/cache/jboss/opennms/vipTime.txt";
         my $snmpTargetReset = "/var/cache/jboss/opennms/snmpTargetReset";
@@ -15,7 +22,7 @@
                         print "VIP has been owned $delta\n";
                         if ($delta >  180 && ! -e $snmpTargetReset) {
 				print "starting opennms services\n";
-				system("sh /opt/opennms/contrib/failover/scripts/failover.sh");
+				system("sh /opt/opennms/contrib/failover/scripts/failover.sh >> $log 2>&1");
 				my $running = isServiceRunning();
 				if ($running == 0) {	
                                 	print "trigger snmp target reset\n";
@@ -23,7 +30,7 @@
                                 	system("touch $snmpTargetReset");
                                 	system("touch $ear");
 				}else {
-					print "ERROR: service opennms faile to run\n";
+					print "ERROR: service opennms failed to run\n";
 				}
                         }elsif ($delta > 0 && $delta < 180) {
                                 if (-e $snmpTargetReset) {
@@ -31,7 +38,7 @@
                                 }
                         }elsif ($delta > 180 ) {
                                print "previous manual stop, starting without discovery";
-                               system("sh /opt/opennms/contrib/failover/scripts/failover.sh");
+                               system("sh /opt/opennms/contrib/failover/scripts/failover.sh >> $log 2>&1");
                        }
 
                 }else { # start timer
