@@ -11,6 +11,7 @@ import org.opennms.features.gwt.ksc.add.client.rest.KscReportService;
 import org.opennms.features.gwt.ksc.add.client.view.KscAddGraphView;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodeEvent;
@@ -134,11 +135,15 @@ public class KscAddGraphPresenter implements Presenter, KscAddGraphView.Presente
                 GWT.log("clicked (showing = " + m_mainPopup.isShowing() + ", visible = " + m_mainPopup.isVisible() + ")");
                 if (m_mainPopup.isShowing()) {
                     m_mainPopup.hide();
+                    m_mainPopup.getElement().getStyle().setDisplay(Display.NONE);
                 } else {
+                    m_mainPopup.getElement().getStyle().setDisplay(Display.BLOCK);
                     m_mainPopup.showRelativeTo(m_addImage);
                 }
             }
         });
+        m_mainPopup.setVisible(false);
+        m_mainPopup.getElement().getStyle().setDisplay(Display.NONE);
         m_mainPopup.addAutoHidePartner(m_addImage.getElement());
 
         Window.addResizeHandler(new ResizeHandler() {
