@@ -27,6 +27,7 @@
         <module>centric-troubleticketer</module>
         <module>jira-troubleticketer</module>
         <module>mib2events</module>
+        <module>netsuite</module>
         <module>quickbase-troubleticketer</module>
         <module>jrobin-spike-hunter</module>
         <module>scriptd-event-proxy</module>
