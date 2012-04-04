@@ -17,7 +17,7 @@
   </bean>
 
   <bean id="ncsComponentService" class="org.opennms.netmgt.ncs.persistence.NCSComponentServiceImpl">
-    <property name="eventIpcManager" ref="eventIpcManager" />
+    <property name="eventForwarder" ref="eventIpcManager" />
   </bean>
 
 </beans>
