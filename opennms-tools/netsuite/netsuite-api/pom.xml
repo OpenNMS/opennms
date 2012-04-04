@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>netsuite-api</artifactId>
-  <version>2011.1-SNAPSHOT</version>
+  <version>2011.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>OpenNMS Netsuite WebServices API</name>
   <build>
@@ -25,7 +25,7 @@
               <sourceRoot>${project.build.directory}/generated/cxf</sourceRoot>
               <wsdlOptions>
                 <wsdlOption>
-                  <wsdl>https://webservices.netsuite.com/wsdl/v2011_1_0/netsuite.wsdl</wsdl>
+                  <wsdl>https://webservices.netsuite.com/wsdl/v2011_2_0/netsuite.wsdl</wsdl>
                 </wsdlOption>
               </wsdlOptions>
             </configuration>
