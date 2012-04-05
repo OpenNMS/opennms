@@ -1,6 +1,7 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,9 +43,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/importerServiceTest.xml"
 })
-        
 /* This test is for bug 3778 */
-@JUnitTemporaryDatabase(reuseDatabase=true, dirtiesContext=true)
+@JUnitTemporaryDatabase
 @JUnitConfigurationEnvironment
 @DirtiesContext
 public class InvalidRequisitionDataTest {
@@ -91,6 +91,7 @@ public class InvalidRequisitionDataTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase
     public void testImportInvalidAsset() throws Exception {
         assertEquals(0, m_nodeDao.countAll());
 
@@ -108,9 +109,41 @@ public class InvalidRequisitionDataTest {
 
         // should still import the node, just skip the asset field
         assertEquals(1, m_nodeDao.countAll());
+        OnmsNode node = m_nodeDao.get(m_nodeDao.getNodeIds().iterator().next());
+        assertEquals("yellow human", node.getAssetRecord().getDescription());
+        assertNull(node.getAssetRecord().getPollerCategory());
+    }
+
+    /**
+     * @see http://issues.opennms.org/browse/NMS-5191
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testImportLegacyAssetNameRequisition() throws Exception {
+        assertEquals(0, m_nodeDao.countAll());
+
+        final Resource resource = getResource("classpath:/import_legacyAssetFieldName.xml");
+
+        m_anticipator.anticipateEvent(getStarted(resource));
+        m_anticipator.anticipateEvent(getSuccessful(resource));
+        m_anticipator.anticipateEvent(getNodeAdded());
+        m_anticipator.anticipateEvent(getNodeGainedInterface());
+        m_anticipator.anticipateEvent(getNodeGainedService());
+
+        // This requisition has an asset called "maintContractNumber" which was changed in
+        // OpenNMS 1.10. We want to preserve backwards compatibility so make sure that the
+        // field still works.
+        m_provisioner.doImport(resource.getURL().toString(), true);
+
+        // should still import the node, just skip the asset field
+        assertEquals(1, m_nodeDao.countAll());
+        OnmsNode node = m_nodeDao.get(m_nodeDao.getNodeIds().iterator().next());
+        assertEquals("yellow human", node.getAssetRecord().getDescription());
+        assertEquals("123456", node.getAssetRecord().getMaintcontract());
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testImportInvalidXml() throws Exception {
         assertEquals(0, m_nodeDao.countAll());
 

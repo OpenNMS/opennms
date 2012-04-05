@@ -131,7 +131,7 @@
 
 	</changeSet>
 
-	<changeSet author="rangerrick" id="ncs-unique">
+	<changeSet author="rangerrick" id="ncs-unique" runOnChange="true">
 		<!-- First, clean up duplicate data. -->
 		<createProcedure>
 			CREATE OR REPLACE FUNCTION cleanUpNcsData() RETURNS BOOLEAN AS $$
@@ -169,7 +169,7 @@
 		</createProcedure>
 
         <sql>SELECT cleanUpNcsData();</sql>
-        <sql>DROP FUNCTION IF EXISTS cleanUpNcsData();</sql>
+        <sql>DROP FUNCTION cleanUpNcsData();</sql>
 
 		<!-- Next, add unique constraints. -->
 
