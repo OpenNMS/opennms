@@ -43,6 +43,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -945,6 +946,18 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
+     *--# maintContractNumber: The maintenance contract number for this asset.
+     *
+     * @deprecated This field is provided for backwards compatibility with OpenNMS < 1.10
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Transient
+    public String getMaintContractNumber() {
+        return getMaintcontract();
+    }
+
+    /**
      * <p>setMaintContractNumber</p>
      * 
      * @deprecated This field is provided for backwards compatibility with OpenNMS < 1.10
@@ -952,7 +965,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param maintcontract a {@link java.lang.String} object.
      */
     public void setMaintContractNumber(String maintcontract) {
-        m_maintcontract = maintcontract;
+        setMaintcontract(maintcontract);
     }
 
     /**
