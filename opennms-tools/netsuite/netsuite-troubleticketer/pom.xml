@@ -13,7 +13,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>netsuite-api</artifactId>
-      <version>2011.1-SNAPSHOT</version>
+      <version>2011.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
