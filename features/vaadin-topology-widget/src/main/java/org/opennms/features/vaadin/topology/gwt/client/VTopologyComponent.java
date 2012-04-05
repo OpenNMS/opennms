@@ -23,7 +23,6 @@ import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.ui.Action;
 import com.vaadin.terminal.gwt.client.ui.ActionOwner;
 
@@ -202,14 +201,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 			
 		};
 	}
-    
-//    private static native JavaScriptObject getTranslation() /*-{
-//        return function(d){
-//            var x = d.@org.opennms.features.vaadin.topology.gwt.client.Vertex::getX()();
-//            var y = d.@org.opennms.features.vaadin.topology.gwt.client.Vertex::getY()();
-//            return "translate(" + x + "," + y + ")";
-//        }
-//    }-*/;
 
     
     
