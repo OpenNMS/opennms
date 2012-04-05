@@ -46,7 +46,7 @@ import org.springframework.test.context.ContextConfiguration;
 /* This test is for bug 3778 */
 @JUnitTemporaryDatabase
 @JUnitConfigurationEnvironment
-//@DirtiesContext
+@DirtiesContext
 public class InvalidRequisitionDataTest {
     
     @Autowired
