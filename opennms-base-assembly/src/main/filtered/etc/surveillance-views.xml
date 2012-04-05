@@ -13,19 +13,22 @@
         <row-def label="Switches" >
           <category name="Switches" />
         </row-def>
-        <row-def label="Servers" >
-          <category name="Servers" />
+        <row-def label="Security Devices" >
+          <category name="Security Devices" />
+        </row-def>
+        <row-def label="Other Devices" >
+          <category name="Other Devices" />
         </row-def>
       </rows>
       <columns>
-        <column-def label="PROD" >
-          <category name="Production" />
+        <column-def label="High End" >
+          <category name="High End" />
         </column-def>
-        <column-def label="TEST" >
-          <category name="Test" />
+        <column-def label="Medium" >
+          <category name="Medium" />
         </column-def>
-        <column-def label="DEV" >
-          <category name="Development" />
+        <column-def label="Low End" >
+          <category name="Low End" />
         </column-def>
       </columns>
     </view>
