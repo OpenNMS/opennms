@@ -1,11 +1,11 @@
 package org.opennms.netmgt.ncs.persistence;
 
-import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.ncs.rest.NCSRestService.ComponentList;
 
 public interface NCSComponentService {
-	public void setEventForwarder(EventForwarder eventForwarder) throws Exception;
+	public void setEventProxy(EventProxy eventProxy) throws Exception;
 
 	public NCSComponent getComponent(String type, String foreignSource, String foreignId);
 	public ComponentList findComponentsWithAttribute(String string, String string2);

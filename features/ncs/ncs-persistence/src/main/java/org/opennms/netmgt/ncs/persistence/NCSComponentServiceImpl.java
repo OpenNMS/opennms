@@ -17,7 +17,8 @@ import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.ncs.rest.NCSRestService.ComponentList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,10 @@ public class NCSComponentServiceImpl implements NCSComponentService {
     @Autowired
     private PlatformTransactionManager m_transactionManager;
 
-    EventForwarder m_eventForwarder;
+    EventProxy m_eventProxy;
 
-	public void setEventForwarder(final EventForwarder forwarder) throws Exception {
-		m_eventForwarder = forwarder;
+	public void setEventProxy(final EventProxy proxy) throws Exception {
+		m_eventProxy = proxy;
 	}
 
 	@Override
@@ -67,7 +68,11 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 		LogUtils.debugf(this, "addOrUpdateComponents(%s, %s)", componentId, Boolean.valueOf(deleteOrphans));
 		final ComponentEventQueue ceq = new ComponentEventQueue();
 		final NCSComponent updatedComponent = addOrUpdateComponents(componentId, component, ceq, deleteOrphans);
-		ceq.sendAll(m_eventForwarder);
+		try {
+			ceq.sendAll(m_eventProxy);
+		} catch (final EventProxyException e) {
+			LogUtils.warnf(this, e, "Component %s added, but an error occured while sending add/delete/update events.", componentId);
+		}
 		return updatedComponent;
 	}
 
@@ -92,7 +97,11 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 		m_componentDao.update(component);
 		ceq.componentUpdated(id);
 
-		ceq.sendAll(m_eventForwarder);
+		try {
+			ceq.sendAll(m_eventProxy);
+		} catch (final EventProxyException e) {
+			LogUtils.warnf(this, e, "Component %s added to %s, but an error occured while sending add/delete/update events.", subComponentId, id);
+		}
 
 		return getComponent(id);
 	}
@@ -105,7 +114,11 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 		final ComponentIdentifier id = new ComponentIdentifier(type, foreignSource, foreignId);
 		final ComponentEventQueue ceq = new ComponentEventQueue();
 		deleteComponent(id, ceq, deleteOrphans);
-		ceq.sendAll(m_eventForwarder);
+		try {
+			ceq.sendAll(m_eventProxy);
+		} catch (final EventProxyException e) {
+			LogUtils.warnf(this, e, "Component %s deleted, but an error occured while sending delete/update events.", id);
+		}
 	}
 
 

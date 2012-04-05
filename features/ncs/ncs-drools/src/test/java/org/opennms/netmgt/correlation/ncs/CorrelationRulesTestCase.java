@@ -47,6 +47,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,7 +56,6 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:META-INF/opennms/applicationContext-testDao.xml",
 		"classpath*:META-INF/opennms/component-dao.xml",
         "classpath:META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:META-INF/opennms/mockEventIpcManager.xml",
         "classpath:META-INF/opennms/correlation-engine.xml",
         "classpath:test-context.xml"
 })
@@ -63,6 +63,7 @@ import org.springframework.test.context.ContextConfiguration;
 public abstract class CorrelationRulesTestCase {
 
     @Autowired
+    @Qualifier("mock")
     private MockEventIpcManager m_eventIpcMgr;
     protected Integer m_anticipatedMemorySize = 0;
     
