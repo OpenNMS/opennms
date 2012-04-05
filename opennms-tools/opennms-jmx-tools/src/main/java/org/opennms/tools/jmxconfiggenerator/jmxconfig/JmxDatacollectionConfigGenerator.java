@@ -131,7 +131,28 @@ public class JmxDatacollectionConfigGenerator {
                         xmlMbean.setName(domainName + "." + typeAndOthers);
 
                         logger.debug("\t" + jmxObjectInstance.getObjectName());
-                        MBeanInfo jmxMbeanInfo = jmxServerConnection.getMBeanInfo(jmxObjectInstance.getObjectName());
+
+                        MBeanInfo jmxMbeanInfo;
+                        try {
+                            jmxMbeanInfo = jmxServerConnection.getMBeanInfo(jmxObjectInstance.getObjectName());
+                        } catch (InstanceNotFoundException e) {
+                            logger.error("InstanceNotFoundException skipping MBean '{}' message: '{}'", jmxObjectInstance.getObjectName(), e.getMessage());
+                            e.printStackTrace();
+                            continue;
+                        } catch (IntrospectionException e) {
+                            logger.error("IntrospectionException skipping MBean '{}' message: '{}'", jmxObjectInstance.getObjectName(), e.getMessage());
+                            e.printStackTrace();
+                            continue;
+                        } catch (ReflectionException e) {
+                            logger.error("ReflectionException skipping MBean '{}' message: '{}'", jmxObjectInstance.getObjectName(), e.getMessage());
+                            e.printStackTrace();
+                            continue;
+                        } catch (Throwable e) {
+                            logger.error("problem during remote call to get MBeanInfo for '{}' skipping this MBean. Message '{}'", jmxObjectInstance.getObjectName(), e.getMessage());
+                            e.printStackTrace();
+                            continue;
+                        }
+
                         logger.debug("--- Attributes for " + jmxObjectInstance.getObjectName());
 
                         for (MBeanAttributeInfo jmxBeanAttributeInfo : jmxMbeanInfo.getAttributes()) {
@@ -181,15 +202,6 @@ public class JmxDatacollectionConfigGenerator {
             e.printStackTrace();
         } catch (MalformedObjectNameException e) {
             logger.error("MalformedObjectNameException '{}'", e.getMessage());
-            e.printStackTrace();
-        } catch (InstanceNotFoundException e) {
-            logger.error("InstanceNotFoundException '{}'", e.getMessage());
-            e.printStackTrace();
-        } catch (IntrospectionException e) {
-            logger.error("IntrospectionException '{}'", e.getMessage());
-            e.printStackTrace();
-        } catch (ReflectionException e) {
-            logger.error("ReflectionException '{}'", e.getMessage());
             e.printStackTrace();
         }
 
