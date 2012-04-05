@@ -163,7 +163,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		m_eventIpcManager = getWebAppContext().getBean(MockEventIpcManager.class);
 		m_eventAnticipator = m_eventIpcManager.getEventAnticipator();
 		final NCSComponentService service = getWebAppContext().getBean(NCSComponentService.class);
-		service.setEventForwarder(m_eventIpcManager);
+		service.setEventProxy(m_eventIpcManager);
 	}
 
 	@After

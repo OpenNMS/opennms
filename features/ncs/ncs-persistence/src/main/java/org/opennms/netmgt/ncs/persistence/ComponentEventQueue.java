@@ -5,7 +5,8 @@ import java.util.Set;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.model.events.EventProxyException;
 
 public final class ComponentEventQueue {
 	private final Set<ComponentIdentifier> m_added   = new LinkedHashSet<ComponentIdentifier>();
@@ -30,14 +31,14 @@ public final class ComponentEventQueue {
 		m_updated.add(identifier);
 	}
 
-	public void sendAll(final EventForwarder forwarder) {
+	public void sendAll(final EventProxy eventProxy) throws EventProxyException {
 		for (final ComponentIdentifier id : m_deleted) {
 			final EventBuilder builder = new EventBuilder(EventConstants.COMPONENT_DELETED_UEI, "NCSComponentService");
 			builder.addParam("componentType", id.getType());
 			builder.addParam("componentName", id.getName());
 			builder.addParam("componentForeignSource", id.getForeignSource());
 			builder.addParam("componentForeignId", id.getForeignId());
-			forwarder.sendNow(builder.getEvent());
+			eventProxy.send(builder.getEvent());
 		}
 		for (final ComponentIdentifier id : m_added) {
 			final EventBuilder builder = new EventBuilder(EventConstants.COMPONENT_ADDED_UEI, "NCSComponentService");
@@ -45,7 +46,7 @@ public final class ComponentEventQueue {
 			builder.addParam("componentName", id.getName());
 			builder.addParam("componentForeignSource", id.getForeignSource());
 			builder.addParam("componentForeignId", id.getForeignId());
-			forwarder.sendNow(builder.getEvent());
+			eventProxy.send(builder.getEvent());
 		}
 		for (final ComponentIdentifier id : m_updated) {
 			final EventBuilder builder = new EventBuilder(EventConstants.COMPONENT_UPDATED_UEI, "NCSComponentService");
@@ -53,7 +54,7 @@ public final class ComponentEventQueue {
 			builder.addParam("componentName", id.getName());
 			builder.addParam("componentForeignSource", id.getForeignSource());
 			builder.addParam("componentForeignId", id.getForeignId());
-			forwarder.sendNow(builder.getEvent());
+			eventProxy.send(builder.getEvent());
 		}
 	}
 }

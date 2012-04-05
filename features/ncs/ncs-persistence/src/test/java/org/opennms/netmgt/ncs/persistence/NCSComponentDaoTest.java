@@ -25,8 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
 		"classpath:META-INF/opennms/applicationContext-datasource.xml",
+		"classpath*:/META-INF/opennms/applicationContext-daemon.xml",
 		"classpath:META-INF/opennms/applicationContext-testDao.xml",
-		"classpath*:META-INF/opennms/component-dao.xml"
+		"file:target/classes/META-INF/opennms/component-dao.xml"
 })
 @Transactional
 public class NCSComponentDaoTest {
