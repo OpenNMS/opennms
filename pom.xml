@@ -768,7 +768,7 @@
    <jasperreportsVersion>3.7.6</jasperreportsVersion>
 	<jettyVersion>7.5.4.v20111024</jettyVersion>
 	<slf4jVersion>1.6.1</slf4jVersion>
-	<liquibaseVersion>2.0.3</liquibaseVersion>
+	<liquibaseVersion>2.0.1</liquibaseVersion>
    <log4jVersion>1.2.16</log4jVersion>
    <minaVersion>2.0.4</minaVersion>
    <oroVersion>2.0.8</oroVersion>
