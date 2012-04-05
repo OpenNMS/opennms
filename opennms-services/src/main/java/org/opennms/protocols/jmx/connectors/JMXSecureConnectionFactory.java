@@ -28,7 +28,17 @@
 
 package org.opennms.protocols.jmx.connectors;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.ThreadCategory;
+
+import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+import javax.net.ssl.*;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.security.KeyStore;
 import java.security.Security;
 import java.security.cert.CertificateException;
@@ -36,40 +46,23 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
-
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
-
 /**
  * <p>JMXSecureConnectionFactory class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public class JMXSecureConnectionFactory
-{
+public class JMXSecureConnectionFactory {
     static ThreadCategory log = ThreadCategory.getInstance(JMXSecureConnectionFactory.class);
 
     /**
      * <p>getMBeanServerConnection</p>
      *
      * @param propertiesMap a {@link java.util.Map} object.
-     * @param address a {@link java.net.InetAddress} object.
+     * @param address       a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.protocols.jmx.connectors.Jsr160ConnectionWrapper} object.
      */
-    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<?,?> propertiesMap, InetAddress address)
-    {
+    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<?, ?> propertiesMap, InetAddress address) {
         Jsr160ConnectionWrapper connectionWrapper = null;
 
         JMXServiceURL url = null;
@@ -80,24 +73,37 @@ public class JMXSecureConnectionFactory
         String urlPath = ParameterMap.getKeyedString(propertiesMap, "urlPath", "");
         String sunCacao = ParameterMap.getKeyedString(propertiesMap, "sunCacao", "false");
 
-        log.debug("JMX: " + factory + " - service:" + protocol + "//" + InetAddressUtils.str(address) + ":" + port + urlPath);
+        // RMI and JMXMP use different URL schemes
+        try {
+            if (protocol.equalsIgnoreCase("jmxmp")) {
 
-        if (factory.equals("SASL"))
-        {
-            try
-            {
+                // Create an JMXMP connector client and
+                // connect it to the JMXMP connector server
+                //
+                url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+            } else {
+                // Fallback, building a URL for RMI
+                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
+            }
+        } catch (MalformedURLException e) {
+            log.error("JMXServiceURL exception: " + url + ". Error message: " + e.getMessage());
+        }
+        log.debug("Set JMXServiceURL: " + url);
+
+        // configure and create Simple Authentication and Security Layer
+        if (factory.equals("SASL")) {
+            try {
                 String username = ParameterMap.getKeyedString(propertiesMap, "username", null);
                 String password = ParameterMap.getKeyedString(propertiesMap, "password", null);
 
                 HashMap<String, Object> env = new HashMap<String, Object>();
 
-                while (true)
-                {
+                // TODO: We can have a deadlock here
+                while (true) {
                     AnyServerX509TrustManager tm;
                     KeyStore ks;
 
-                    try
-                    {
+                    try {
                         ks = KeyStore.getInstance(KeyStore.getDefaultType());
                         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
                         tmf.init(ks);
@@ -107,9 +113,7 @@ public class JMXSecureConnectionFactory
                         ctx.init(null, new TrustManager[]{tm}, null);
                         SSLSocketFactory ssf = ctx.getSocketFactory();
                         env.put("jmx.remote.tls.socket.factory", ssf);
-                    }
-                    catch (Throwable e)
-                    {
+                    } catch (Throwable e) {
                         log.error("Something bad occured: " + e.getMessage());
                         throw e;
                     }
@@ -123,45 +127,30 @@ public class JMXSecureConnectionFactory
                     env.put("jmx.remote.profiles", "TLS SASL/PLAIN");
                     env.put("jmx.remote.credentials", creds);
 
-                    // Create an JMXMP connector client and
-                    // connect it to the JMXMP connector server
-                    //
-                    url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
-
                     JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
 
                     // Connect and invoke an operation on the remote MBeanServer
-                    try
-                    {
+                    try {
                         connector.connect(env);
-                    }
-                    catch (SSLException e)
-                    {
-                        continue;
-                    }
-                    catch (SecurityException x)
-                    {
-                        log.error("Security exception: bad credentials");
-                        throw x;
+                    } catch (SSLException e) {
+                        log.warn("SSLException occured. Error message: " + e.getMessage());
+                    } catch (SecurityException x) {
+                        log.error("Security exception: bad credentials. Error message: " + x.getMessage());
                     }
                     MBeanServerConnection connection = connector.getMBeanServerConnection();
                     connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
                     break;
                 }
-            }
-            catch (Throwable e)
-            {
-                log.error("Unable to get MBeanServerConnection: " + url);
+            } catch (Throwable e) {
+                log.error("Unable to get MBeanServerConnection: " + url + ". Error message: " + e.getMessage());
             }
         }
         return connectionWrapper;
     }
 
-    private static class AnyServerX509TrustManager implements X509TrustManager
-    {
+    private static class AnyServerX509TrustManager implements X509TrustManager {
         // Documented in X509TrustManager
-        public X509Certificate[] getAcceptedIssuers()
-        {
+        public X509Certificate[] getAcceptedIssuers() {
             // since client authentication is not supported by this
             // trust manager, there's no certificate authority trusted
             // for authenticating peers
@@ -170,18 +159,15 @@ public class JMXSecureConnectionFactory
 
         // Documented in X509TrustManager
         public void checkClientTrusted(X509Certificate[] certs, String authType)
-                throws CertificateException
-        {
+                throws CertificateException {
             // this trust manager is dedicated to server authentication
             throw new CertificateException("not supported");
         }
 
         // Documented in X509TrustManager
         public void checkServerTrusted(X509Certificate[] certs, String authType)
-                throws CertificateException
-        {
+                throws CertificateException {
             // any certificate sent by the server is automatically accepted
         }
     }
-
 }
