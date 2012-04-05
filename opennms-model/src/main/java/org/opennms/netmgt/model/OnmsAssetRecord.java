@@ -945,6 +945,17 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
+     * <p>setMaintContractNumber</p>
+     * 
+     * @deprecated This field is provided for backwards compatibility with OpenNMS < 1.10
+     *
+     * @param maintcontract a {@link java.lang.String} object.
+     */
+    public void setMaintContractNumber(String maintcontract) {
+        m_maintcontract = maintcontract;
+    }
+
+    /**
      * <p>getMaintContractExpiration</p>
      *
      * @return a {@link java.lang.String} object.
