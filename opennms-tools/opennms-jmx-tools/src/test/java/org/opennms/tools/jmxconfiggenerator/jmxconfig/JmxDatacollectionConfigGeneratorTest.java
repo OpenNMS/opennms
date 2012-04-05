@@ -27,6 +27,8 @@ package org.opennms.tools.jmxconfiggenerator.jmxconfig;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.management.*;
 import org.junit.*;
 import org.opennms.tools.jmxconfiggenerator.graphs.SnmpGraphConfigGenerator;
@@ -72,6 +74,18 @@ public class JmxDatacollectionConfigGeneratorTest {
     public void testGenerateJmxConfigCassandraLocal() throws AttributeNotFoundException, MBeanException {
         jmxConfigGen.setJmxServerConnection(null);
         jmxConfigGen.generateJmxConfig("cassandra", "localhost", "7199", null, null, true, "test.xml");
+    }
+
+    @Ignore
+    @Test
+    public void testGenerateJmxConfigMyProblemServer() {
+        try {
+            jmxConfigGen.generateJmxConfig("MyProblemServer", "localhost", "9403", null, null, true, "myProbemServer.xml");
+        } catch (AttributeNotFoundException ex) {
+            Logger.getLogger(JmxDatacollectionConfigGeneratorTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MBeanException ex) {
+            Logger.getLogger(JmxDatacollectionConfigGeneratorTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Ignore
