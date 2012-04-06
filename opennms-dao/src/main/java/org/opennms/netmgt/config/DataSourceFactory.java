@@ -36,10 +36,10 @@ import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
@@ -76,9 +76,9 @@ public final class DataSourceFactory implements DataSource {
      */
     private static DataSource m_singleton = null;
 
-    private static Map<String, DataSource> m_dataSources = new HashMap<String, DataSource>();
+    private static final Map<String, DataSource> m_dataSources = new ConcurrentHashMap<String, DataSource>();
     
-    private static List<Runnable> m_closers = new LinkedList<Runnable>();
+    private static final List<Runnable> m_closers = new LinkedList<Runnable>();
 
     /**
      * Load the config from the default config file and create the singleton
@@ -180,7 +180,7 @@ public final class DataSourceFactory implements DataSource {
         setInstance(dsName, lazyProxy);
     }
 
-    private static boolean isLoaded(final String dsName) {
+    private static synchronized boolean isLoaded(final String dsName) {
         return m_dataSources.containsKey(dsName);			
     }
 
@@ -197,8 +197,7 @@ public final class DataSourceFactory implements DataSource {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized DataSource getInstance() {
-//      m_dataSources.put("opennms",m_singleton);
+    public static DataSource getInstance() {
         return getInstance("opennms");
     }
 
@@ -208,13 +207,13 @@ public final class DataSourceFactory implements DataSource {
      * @param name a {@link java.lang.String} object.
      * @return a {@link javax.sql.DataSource} object.
      */
-    public static synchronized DataSource getInstance(final String name) {
-    	final DataSource dataSource = m_dataSources.get(name);
+    public static DataSource getInstance(final String name) {
+    	final DataSource dataSource = getDataSource(name);
         if (dataSource == null) {
             throw new IllegalArgumentException("Unable to locate data source named " + name + ".  Does this need to be init'd?");
+        } else {
+            return dataSource;
         }
-        return m_dataSources.get(name);
-
     }
 
     /**
@@ -242,7 +241,7 @@ public final class DataSourceFactory implements DataSource {
      * @throws java.sql.SQLException if any.
      */
     public Connection getConnection(final String dsName) throws SQLException {
-        return m_dataSources.get(dsName).getConnection();
+        return getDataSource(dsName).getConnection();
     }
 
     /**
@@ -261,7 +260,7 @@ public final class DataSourceFactory implements DataSource {
      * @param dsName a {@link java.lang.String} object.
      * @param singleton a {@link javax.sql.DataSource} object.
      */
-    public static void setInstance(final String dsName, final DataSource singleton) {
+    public static synchronized void setInstance(final String dsName, final DataSource singleton) {
         m_dataSources.put(dsName,singleton);
     }
 
@@ -280,7 +279,7 @@ public final class DataSourceFactory implements DataSource {
      * @param dsName a {@link java.lang.String} object.
      * @return a {@link javax.sql.DataSource} object.
      */
-    public static DataSource getDataSource(final String dsName) {
+    public static synchronized DataSource getDataSource(final String dsName) {
         return m_dataSources.get(dsName);
     }
 
@@ -309,7 +308,7 @@ public final class DataSourceFactory implements DataSource {
      * @throws java.sql.SQLException if any.
      */
     public PrintWriter getLogWriter(final String dsName) throws SQLException {
-        return m_dataSources.get(dsName).getLogWriter();
+        return getDataSource(dsName).getLogWriter();
     }
 
     /** {@inheritDoc} */
@@ -326,7 +325,7 @@ public final class DataSourceFactory implements DataSource {
      * @throws java.sql.SQLException if any.
      */
     public void setLogWriter(final String dsName, final PrintWriter out) throws SQLException {
-        m_dataSources.get(dsName).setLogWriter(out);
+        getDataSource(dsName).setLogWriter(out);
     }
 
     /** {@inheritDoc} */
@@ -343,7 +342,7 @@ public final class DataSourceFactory implements DataSource {
      * @throws java.sql.SQLException if any.
      */
     public void setLoginTimeout(final String dsName, final int seconds) throws SQLException {
-        m_dataSources.get(dsName).setLoginTimeout(seconds);
+        getDataSource(dsName).setLoginTimeout(seconds);
     }
 
     /**
@@ -365,20 +364,7 @@ public final class DataSourceFactory implements DataSource {
      * @throws java.sql.SQLException if any.
      */
     public int getLoginTimeout(final String dsName) throws SQLException {
-        return m_dataSources.get(dsName).getLoginTimeout();
-    }
-
-    /**
-     * <p>initialize</p>
-     *
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     * @throws java.lang.ClassNotFoundException if any.
-     */
-    public void initialize() throws MarshalException, ValidationException, IOException, ClassNotFoundException {
-        // TODO Auto-generated method stub
-
+        return getDataSource(dsName).getLoginTimeout();
     }
 
     /**
