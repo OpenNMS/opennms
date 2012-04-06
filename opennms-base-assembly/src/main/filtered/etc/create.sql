@@ -1213,10 +1213,13 @@ CREATE UNIQUE INDEX category_idx ON categories(categoryName);
 --##################################################################
 --# criteria: SELECT count(*) = 0 from categories
 insert into categories values (nextVal('catNxtId'), 'Routers', null);
---# criteria: SELECT count(*) = 0 from categories
 insert into categories values (nextVal('catNxtId'), 'Switches', null);
---# criteria: SELECT count(*) = 0 from categories
-insert into categories values (nextVal('catNxtId'), 'Servers', null);
+--insert into categories values (nextVal('catNxtId'), 'Servers', null);
+insert into categories values (nextVal('catNxtId'), 'Security Devices', null);
+insert into categories values (nextVal('catNxtId'), 'Other Devices', null);
+insert into categories values (nextVal('catNxtId'), 'High End', null);
+insert into categories values (nextVal('catNxtId'), 'Medium', null);
+insert into categories values (nextVal('catNxtId'), 'Low End', null);
 --# criteria: SELECT count(*) = 0 from categories
 --insert into categories values (nextVal('catNxtId'), 'Production', null);
 --# criteria: SELECT count(*) = 0 from categories
