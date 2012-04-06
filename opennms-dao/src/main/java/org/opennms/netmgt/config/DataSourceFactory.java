@@ -229,6 +229,7 @@ public final class DataSourceFactory implements DataSource {
      *             Thrown if there is an error opening the connection to the
      *             database.
      */
+    @Override
     public Connection getConnection() throws SQLException {
         return getConnection("opennms");
     }
@@ -284,6 +285,7 @@ public final class DataSourceFactory implements DataSource {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Connection getConnection(final String username, final String password) throws SQLException {
         return getConnection();
     }
@@ -294,6 +296,7 @@ public final class DataSourceFactory implements DataSource {
      * @return a {@link java.io.PrintWriter} object.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public PrintWriter getLogWriter() throws SQLException {
         return m_singleton.getLogWriter();
     }
@@ -310,6 +313,7 @@ public final class DataSourceFactory implements DataSource {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setLogWriter(final PrintWriter out) throws SQLException {
         setLogWriter("opennms", out);
     }
@@ -326,6 +330,7 @@ public final class DataSourceFactory implements DataSource {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setLoginTimeout(final int seconds) throws SQLException {
         setLoginTimeout("opennms", seconds);
     }
@@ -347,6 +352,7 @@ public final class DataSourceFactory implements DataSource {
      * @return a int.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public int getLoginTimeout() throws SQLException {
         return getLoginTimeout("opennms");
     }
@@ -399,6 +405,7 @@ public final class DataSourceFactory implements DataSource {
      * @return a T object.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public <T> T unwrap(final Class<T> iface) throws SQLException {
         return null;  //TODO
     }
@@ -410,6 +417,7 @@ public final class DataSourceFactory implements DataSource {
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public boolean isWrapperFor(final Class<?> iface) throws SQLException {
         return false;  //TODO
     }
