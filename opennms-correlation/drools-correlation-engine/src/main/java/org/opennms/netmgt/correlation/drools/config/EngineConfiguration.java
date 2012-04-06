@@ -33,6 +33,7 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.Validator;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.springframework.context.ApplicationContext;
@@ -346,9 +347,12 @@ public class EngineConfiguration implements Serializable {
 
 
 	public CorrelationEngine[] constructEngines(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager) {
+		
+		LogUtils.infof(this, "Creating drools engins for configuration %s.", basePath);
 
 		List<CorrelationEngine> engineList = new ArrayList<CorrelationEngine>();
 		for (final RuleSet ruleSet : getRuleSet()) {
+			LogUtils.debugf(this, "Constucting engind for ruleset %s in configuration %s.", ruleSet.getName(), basePath);
 			engineList.add(ruleSet.constructEngine(basePath, appContext, eventIpcManager));
 	    }
 	    
