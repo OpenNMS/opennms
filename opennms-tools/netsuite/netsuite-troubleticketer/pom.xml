@@ -15,25 +15,23 @@
       <artifactId>netsuite-api</artifactId>
       <version>2012.1-SNAPSHOT</version>
     </dependency>
-      <dependency>
-        <groupId>org.opennms.core</groupId>
-        <artifactId>org.opennms.core.lib</artifactId>
-      </dependency>
-      <dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
       <artifactId>org.opennms.features.ticketing.api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+    </dependency>
+    <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>provided</scope>
-    </dependency>
--->
+    <!-- <dependency> <groupId>org.opennms</groupId> <artifactId>opennms-services</artifactId> <scope>provided</scope> </dependency> -->
   </dependencies>
 </project>

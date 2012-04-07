@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,13 +30,16 @@ package org.opennms.netmgt.netsuite;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
+/**
+ * 
+ * @author <a mailto:"jcallaghan@towerstream.com">Jerome Callaghan</a>
+ *
+ */
 public class NetsuiteUser implements Serializable {
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = -4830811460415894277L;
+	private static final long serialVersionUID = 1L;
 	private long m_id;
     private String m_username;
     private String m_realname;
@@ -66,11 +69,10 @@ public class NetsuiteUser implements Serializable {
     }
     
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("id", m_id)
-            .append("username", m_username)
-            .append("realname", m_realname)
-            .append("email", m_email)
-            .toString();
+        StringBuilder sb = new StringBuilder("id:").append(m_id)
+        .append(", username:").append(m_username)
+        .append(", realname:").append(m_realname)
+           .append(", email:").append(m_email);
+        return sb.toString();
     }
 }
