@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.utils;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -80,10 +79,9 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_proxy);
-        assertNotNull(m_transTemplate);
+        BeanUtils.assertAutowiring(this);
     }
-    
+
     @After
     public void verifyAnticipated() {
         getEventAnticipator().verifyAnticipated(1000, 0, 0, 0, 0);

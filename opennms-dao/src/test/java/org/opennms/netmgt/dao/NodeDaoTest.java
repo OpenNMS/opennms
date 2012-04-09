@@ -56,6 +56,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -74,7 +75,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class NodeDaoTest {
+public class NodeDaoTest implements InitializingBean {
     
     @Autowired
     DistPollerDao m_distPollerDao;
@@ -94,6 +95,11 @@ public class NodeDaoTest {
     private static boolean m_populated = false;
     private static DatabasePopulator m_lastPopulator;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        org.opennms.core.utils.BeanUtils.assertAutowiring(this);
+    }
+
     @BeforeTransaction
     public void setUp() {
         try {

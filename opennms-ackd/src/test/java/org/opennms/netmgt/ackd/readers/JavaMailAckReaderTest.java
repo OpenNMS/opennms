@@ -56,6 +56,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaSendMailer;
 import org.opennms.netmgt.ackd.AckReader;
@@ -113,13 +114,10 @@ public class JavaMailAckReaderTest implements InitializingBean {
     private AckService m_ackService;
 
     @Override
-    public void afterPropertiesSet() {
-        Assert.assertNotNull(m_ackService);
-        Assert.assertNotNull(m_daemon);
-        Assert.assertNotNull(m_jmDao);
-        Assert.assertNotNull(m_processor);
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
-    
+
     /**
      * tests the ability to detect an aknowledgable ID
      */

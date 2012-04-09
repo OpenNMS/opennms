@@ -40,6 +40,7 @@ import org.hibernate.Session;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
@@ -74,9 +75,7 @@ public class AuthorizationTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_alarmDao);
-        assertNotNull(m_categoryDao);
-        assertNotNull(m_populator);
+        BeanUtils.assertAutowiring(this);
     }
 
     private static boolean m_populated = false;

@@ -49,15 +49,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.detector.jmx.MX4JDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class MX4JDetectorTest {
+public class MX4JDetectorTest implements InitializingBean {
        
     @Autowired
     public MX4JDetector m_detector;
@@ -65,6 +67,11 @@ public class MX4JDetectorTest {
     public static MBeanServer m_beanServer;
     private JMXConnectorServer m_connectorServer;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @BeforeClass
     public static void beforeTest() throws RemoteException{
         LocateRegistry.createRegistry(9999);

@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,7 +60,7 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/snmpConfigFactoryContext.xml"
 })
-public class LinkMonitoringSnmpTest {
+public class LinkMonitoringSnmpTest implements InitializingBean {
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
 
@@ -85,6 +87,11 @@ public class LinkMonitoringSnmpTest {
 	private SnmpAgentConfig getAgentConfig(final String address) {
 		return m_snmpPeerFactory.getAgentConfig(addr(address));
 	}
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
     
     @Before
     public void setUp() throws InterruptedException, UnknownHostException {

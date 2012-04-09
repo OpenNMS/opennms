@@ -43,6 +43,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.LocationMonitorDao;
@@ -58,6 +59,7 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.ThrowableAnticipator;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
@@ -73,7 +75,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LocationMonitorDaoHibernateTest {
+public class LocationMonitorDaoHibernateTest implements InitializingBean {
 	@Autowired
 	private LocationMonitorDao m_locationMonitorDao;
 	
@@ -83,6 +85,11 @@ public class LocationMonitorDaoHibernateTest {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 	
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
 	@Test
 	@Transactional
 	public void testSaveLocationMonitor() {

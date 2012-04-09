@@ -36,9 +36,11 @@ import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.Session;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -53,7 +55,7 @@ import org.springframework.jms.core.MessageCreator;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public class JmsNorthbounder extends AbstractNorthbounder {
+public class JmsNorthbounder extends AbstractNorthbounder implements InitializingBean {
     
     protected JmsNorthbounder() {
         super("JmsNorthbounder");
@@ -77,7 +79,10 @@ public class JmsNorthbounder extends AbstractNorthbounder {
         return true;
     }
 
-
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Override
     public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {
