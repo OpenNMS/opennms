@@ -20,6 +20,16 @@
       <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>cglib</groupId>
+          <artifactId>cglib</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
       <artifactId>org.opennms.features.ticketing.api</artifactId>
       <scope>provided</scope>
