@@ -4,15 +4,16 @@ package org.opennms.features.vaadin.topology;
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.Action;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.DragAndDropWrapper;
+import com.vaadin.ui.DragAndDropWrapper.DragStartMode;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Window;
-
-import com.vaadin.event.Action;
 
 public class TopologyWidgetTestApplication extends Application implements Action.Handler {
 
@@ -48,13 +49,18 @@ public class TopologyWidgetTestApplication extends Application implements Action
 			e.printStackTrace();
 		}
         
+        
         Button addButton = new Button("Add a Vertex");
+        addButton.setDescription("Use this button to add a new Vertex");
         addButton.addListener(new ClickListener() {
 
 			public void buttonClick(ClickEvent event) {
 				m_topologyComponent.addRandomNode();
 			}
         });
+        DragAndDropWrapper dndWrapper = new DragAndDropWrapper(addButton);
+        dndWrapper.setDragStartMode(DragStartMode.WRAPPER);
+        dndWrapper.setSizeUndefined();
         
         Button resetButton = new Button("Reset");
         resetButton.addListener(new ClickListener() {
@@ -73,7 +79,8 @@ public class TopologyWidgetTestApplication extends Application implements Action
             
         });
         m_window.addComponent(slider);
-        m_window.addComponent(addButton);
+        m_window.addComponent(dndWrapper);
+        //m_window.addComponent(addButton);
         m_window.addComponent(resetButton);
         m_window.addComponent(removeVertexButton);
         Tree tree = new Tree();

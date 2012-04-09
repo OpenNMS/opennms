@@ -10,18 +10,23 @@ import org.opennms.features.vaadin.topology.gwt.client.Graph;
 import org.opennms.features.vaadin.topology.gwt.client.VTopologyComponent;
 import org.opennms.features.vaadin.topology.gwt.client.Vertex;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Resource;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.ClientWidget;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.ClientWidget;
 
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent implements Action.Container {
 	
 	
+
+    @Override
+    public void attach() {
+        super.attach();
+        setDescription("This is a description");
+    }
 
     private Graph m_graph;
 	private double m_scale = 1;
@@ -93,6 +98,23 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         if(variables.containsKey("action")) {
         	System.err.println("I just received an action");
         	
+        }
+        
+        if(variables.containsKey("updatedVertex")) {
+            String vertexUpdate = (String) variables.get("updatedVertex");
+            String[] vertexProps = vertexUpdate.split("|");
+            System.err.println("vertexProps: " + vertexProps[0]);
+//            String id = vertexProps[0].split(",")[1];
+//            int x = Integer.parseInt(vertexProps[1].split(",")[1]);
+//            int y = Integer.parseInt(vertexProps[2].split(",")[1]);
+//            boolean selected = vertexProps[3].split(",")[1] == "true" ;
+//            
+            Vertex vertex = m_graph.getVertexById("0");
+            //vertex.setX(x);
+            //vertex.setY(y);
+            //vertex.setSelected(selected);
+            getApplication().getMainWindow().showNotification("I am updating vertex: " + vertexUpdate);
+            requestRepaint();
         }
     }
     

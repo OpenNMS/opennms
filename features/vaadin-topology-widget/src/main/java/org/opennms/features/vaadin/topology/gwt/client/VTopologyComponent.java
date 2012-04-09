@@ -3,19 +3,23 @@ package org.opennms.features.vaadin.topology.gwt.client;
 import java.util.Iterator;
 
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
+import org.opennms.features.vaadin.topology.gwt.client.d3.D3Drag;
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events;
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler;
-import org.opennms.features.vaadin.topology.gwt.client.d3.D3MouseEvent;
 import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
@@ -23,12 +27,55 @@ import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.VTooltip;
 import com.vaadin.terminal.gwt.client.ui.Action;
 import com.vaadin.terminal.gwt.client.ui.ActionOwner;
+import com.vaadin.terminal.gwt.client.ui.dd.VDragAndDropManager;
+import com.vaadin.terminal.gwt.client.ui.dd.VDropHandler;
+import com.vaadin.terminal.gwt.client.ui.dd.VHasDropHandler;
+import com.vaadin.terminal.gwt.client.ui.dd.VTransferable;
 
-public class VTopologyComponent extends Composite implements Paintable, ActionOwner {
+public class VTopologyComponent extends Composite implements Paintable, ActionOwner, VHasDropHandler {
 	
-	private static VTopologyComponentUiBinder uiBinder = GWT
+    private static class DragObject{
+        private int m_cursorStartX;
+        private int m_cursorStartY;
+        private int m_vertexStartY;
+        private int m_vertexStartX;
+
+        public DragObject(GWTVertex vertex, int cursorStartX, int cursorStartY) {
+            setVertexStartX(vertex.getX());
+            setVertexStartY(vertex.getY());
+            m_cursorStartX = cursorStartX;
+            m_cursorStartY = cursorStartY;
+        }
+        
+        public int getCursorStartX() {
+            return m_cursorStartX;
+        }
+        
+        public int getCursorStartY() {
+            return m_cursorStartY;
+        }
+
+        public void setVertexStartX(int x) {
+            m_vertexStartX = x;
+        }
+
+        public void setVertexStartY(int y) {
+            m_vertexStartY = y;
+        }
+        
+        public int getVertexStartX() {
+            return m_vertexStartX;
+        }
+        
+        public int getVertexStartY() {
+            return m_vertexStartY;
+        }
+    }
+    
+    private static VTopologyComponentUiBinder uiBinder = GWT
             .create(VTopologyComponentUiBinder.class);
 
     interface VTopologyComponentUiBinder extends
@@ -45,10 +92,12 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	private double m_scale;
     private boolean m_firstTime = true;
     private D3 m_edgeGroup;
+    private DragObject m_dragObject;
     
     @UiField
     Button m_saveButton;
 	private String[] m_actions;
+    private D3Drag m_d3Drag;
     
     public VTopologyComponent() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -60,12 +109,16 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     protected void onLoad() {
         super.onLoad();
         
+        sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS);
+        
         D3 d3 = D3.d3();
         m_width = 300;
         m_height = 300;
         m_svg = d3.select("#chart-2").append("svg").attr("width", 300).attr("height", 200);
         m_edgeGroup = m_svg.append("g");//.attr("transform", "scale(1)");
         m_vertexGroup = m_svg.append("g");//.attr("transform", "scale(1)");
+        
+        m_d3Drag = D3.getDragBehavior();
         
     }
 
@@ -97,7 +150,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                 	
                 });
         
-        D3 vertexGroup = m_vertexGroup.selectAll(".little")
+        final D3 vertexGroup = m_vertexGroup.selectAll(".little")
                 .data(graph.getVertices(), new Func<String, GWTVertex>() {
 
 					public String call(GWTVertex param, int index) {
@@ -134,11 +187,19 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                 .style("stroke", "#ccc").transition().delay(1000).duration(500)
                 .attr("opacity", 1);
         
+      //Drag Handlers
+        m_d3Drag.on(D3Events.DRAG.event(), vertexDragHandler());
+        
+        m_d3Drag.on(D3Events.DRAG_START.event(), vertexDragStartHandler());
+        
+        m_d3Drag.on(D3Events.DRAG_END.event(), vertexDragEndHandler());
+        //End Drag Handlers
+        
         D3 vertex = vertexGroup.enter().append("g").attr("transform", getTranslation())
                 .attr("opacity", 0)
                 .attr("class", "little")
                 .on(D3Events.CLICK.event(), vertexClickHandler())
-                .on(D3Events.CONTEXT_MENU.event(), vertexContextMenuHandler());
+                .on(D3Events.CONTEXT_MENU.event(), vertexContextMenuHandler()).call(m_d3Drag);
                 
         vertex.append("circle").attr("r", 9).style("fill", selectedFill("Enter"));
         
@@ -151,13 +212,37 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
 	}
 
+    
+    
+    
+    @Override
+    public void onBrowserEvent(Event event) {
+        super.onBrowserEvent(event);
+//        if(m_client != null) {
+//            m_client.handleTooltipEvent(event, this);
+//        }
+        
+        switch(DOM.eventGetType(event)) {
+            case Event.ONCONTEXTMENU:
+                event.stopPropagation();
+                break;
+                
+            case Event.ONMOUSEDOWN:
+                VTransferable transferable = new VTransferable();
+                transferable.setDragSource(this);
+                
+                VDragAndDropManager.get().startDrag(transferable, event, true);
+                break;
+        }
+        
+        
+    }
+    
     private Handler<GWTVertex> vertexContextMenuHandler() {
         return new D3Events.Handler<GWTVertex>() {
 
             public void call(GWTVertex vertex, int index) {
-                //VConsole.log("Context Menu on vertex: " + vertex.getId());
-                //m_client.updateVariable(m_paintableId, "vertexContextMenu", true, true);
-            	m_client.getContextMenu().showAt(getActionOwner(), D3.mouseEvent().clientX(), D3.mouseEvent().clientY());
+            	m_client.getContextMenu().showAt(getActionOwner(), D3.getEvent().getClientX(), D3.getEvent().getClientY());
                 D3.eventPreventDefault();
             }
         };
@@ -172,17 +257,65 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
         	public void call(GWTVertex vertex, int index) {
         		m_client.updateVariable(m_paintableId, "clickedVertex", vertex.getId(), false);
-        		m_client.updateVariable(m_paintableId, "shiftKeyPressed", getMouseEvent(D3.event()).shiftKey(), false);
+        		m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
         		
         		m_client.sendPendingVariableChanges();
         	}
         };
     }
     
-	private final native D3MouseEvent getMouseEvent(JavaScriptObject event) /*-{
-        return event;
+    private Handler<GWTVertex> vertexDragEndHandler() {
+        return new Handler<GWTVertex>() {
+
+            public void call(GWTVertex vertex, int index) {
+                m_client.updateVariable(m_paintableId, "updatedVertex", "id," + vertex.getId() + "|x," + vertex.getX() + "|y," + vertex.getY() + "|selected,"+ vertex.isSelected(), true);
+            }
+            
+        };
+    }
+
+    private Handler<GWTVertex> vertexDragStartHandler() {
+        return new Handler<GWTVertex>() {
+
+            public void call(GWTVertex vertex, int index) {
+                NativeEvent event = D3.getEvent();
+                Element elem = Element.as(event.getEventTarget()).getParentElement();
+                int cursorStartX = event.getClientX() + elem.getScrollLeft() + Window.getScrollLeft();
+                int cursorStartY = event.getClientY() + elem.getScrollTop() + Window.getScrollTop();
+                m_dragObject = new DragObject(vertex, cursorStartX, cursorStartY);
+                consoleLog("cursorStartX: " + cursorStartX);
+                consoleLog("cursorStartY: " + cursorStartY);
+            }
+            
+        };
+    }
+    
+    private static final native void consoleLog(String message) /*-{
+        $wnd.console.log(message);
     }-*/;
 
+    private Handler<GWTVertex> vertexDragHandler() {
+        return new Handler<GWTVertex>() {
+
+            public void call(GWTVertex vertex, int index) {
+                NativeEvent event = D3.getEvent();
+                Element selectedElement = Element.as(D3.getEvent().getEventTarget());
+                //get parent element because it somehow is never selected.
+                //But since the circle and the text are both in a g, we shall select the g element
+                Element parentElem = selectedElement.getParentElement();
+                
+                int x = event.getClientX() + parentElem.getScrollLeft() + Window.getScrollLeft();
+                int y = event.getClientY() + parentElem.getScrollTop() + Window.getScrollTop();
+                int newVertexX = (x - m_dragObject.getCursorStartX()) + m_dragObject.getVertexStartX();
+                int newVertexY = (y - m_dragObject.getCursorStartY()) + m_dragObject.getVertexStartY();
+                vertex.setX( newVertexX );
+                vertex.setY( newVertexY );
+                D3.d3().select(parentElem).attr("transform", "translate(" + vertex.getX() + "," + vertex.getY() + ")");
+                //consoleLog("get cursorStartX: " + m_dragObject.getCursorStartX() + " x: " + x + " newVertexX: " + newVertexX);
+            }
+        };
+    }
+    
     private Func<String, GWTVertex> selectedFill(final String caller) {
 		return new Func<String, GWTVertex>(){
 
@@ -201,7 +334,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 			
 		};
 	}
-
     
     
     private Func<Integer, GWTEdge> getSourceX() {
@@ -256,6 +388,13 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
         setScale(uidl.getDoubleAttribute("scale"));
         setActions(uidl.getStringArrayAttribute("actionList"));
+        
+      //Register tooltip
+//        String description = uidl.getStringAttribute("description");
+//        if(description != null && m_client != null) {
+//            TooltipInfo info = new TooltipInfo(description);
+//            m_client.registerTooltip(this, getElement(), info);
+//        }
         
         UIDL graph = uidl.getChildByTagName("graph");
         Iterator<?> children = graph.getChildIterator();
@@ -339,5 +478,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	public String getPaintableId() {
 		return m_paintableId;
 	}
+
+    public VDropHandler getDropHandler() {
+        
+        return null;
+    }
+
 
 }

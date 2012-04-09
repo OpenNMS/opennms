@@ -5,8 +5,7 @@
 		
 	</ui:style>
 	<g:HTMLPanel>
-	   <div>Hello World This is Working</div>
-	   <div id="chart-2" ></div>
+	   <div id="chart-2"></div>
 	   <g:Button ui:field="m_saveButton">Save Layout</g:Button>
 	</g:HTMLPanel>
 	

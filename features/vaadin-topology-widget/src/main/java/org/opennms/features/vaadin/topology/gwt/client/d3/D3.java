@@ -6,6 +6,8 @@ import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 
 public class D3 extends JavaScriptObject {
     
@@ -13,6 +15,10 @@ public class D3 extends JavaScriptObject {
     
     public final native D3 select(String elementId) /*-{
         return this.select(elementId);
+    }-*/;
+    
+    public final native D3 select(Element elem) /*-{
+        return this.select(elem);
     }-*/;
     
     public final native D3 append(String tagName) /*-{
@@ -122,12 +128,11 @@ public class D3 extends JavaScriptObject {
 		
 	}-*/;
 
-    public static final native JavaScriptObject event() /*-{
+    public static final native NativeEvent getEvent() /*-{
+        if(typeof($wnd.d3.event.sourceEvent) != "undefined"){
+            return $wnd.d3.event.sourceEvent;
+        }
         return $wnd.d3.event;
-    }-*/;
-    
-    public static final native D3MouseEvent mouseEvent() /*-{
-    	return $wnd.d3.event;
     }-*/;
     
     public static final native void eventPreventDefault() /*-{
@@ -143,5 +148,31 @@ public class D3 extends JavaScriptObject {
             return d[propertName];
         };
     }-*/;
+    
+    public static final native D3Drag getDragBehavior() /*-{
+        return $wnd.d3.behavior.drag();
+    }-*/;
+
+    public static final native JavaScriptObject drag() /*-{
+        
+        var drag = $wnd.d3.behavior.drag();
+        
+            
+        drag.on("dragstart", function(d,i){ 
+        });
+        
+        //drag.on("drag", function(d,i){ console.log("drag") });
+        
+        drag.on("dragend", function(d,i){ console.log("dragend :: event: " + $wnd.d3.event) });
+        
+        
+        return drag;
+     }-*/;
+
+    public final native D3 call(JavaScriptObject behavior) /*-{
+        return this.call(behavior);
+    }-*/;
+
+    
 
 }
