@@ -9,22 +9,15 @@ import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.VTooltip;
@@ -94,8 +87,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     private D3 m_edgeGroup;
     private DragObject m_dragObject;
     
-    @UiField
-    Button m_saveButton;
+    
 	private String[] m_actions;
     private D3Drag m_d3Drag;
     
@@ -114,30 +106,13 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         D3 d3 = D3.d3();
         m_width = 300;
         m_height = 300;
-        m_svg = d3.select("#chart-2").append("svg").attr("width", 300).attr("height", 200);
-        m_edgeGroup = m_svg.append("g");//.attr("transform", "scale(1)");
-        m_vertexGroup = m_svg.append("g");//.attr("transform", "scale(1)");
+        m_svg = d3.select("#chart-2").append("svg").attr("width", "100%").attr("height", "100%").style("background-color", "white");
+        m_edgeGroup = m_svg.append("g").attr("transform", "scale(1)");
+        m_vertexGroup = m_svg.append("g").attr("transform", "scale(1)");
         
         m_d3Drag = D3.getDragBehavior();
         
     }
-
-    @UiHandler("m_saveButton")
-    public void onSaveButtonClick(ClickEvent e) {
-        Command command = new Command() {
-
-            public void execute() {
-                //Let's change this up in the future and do the conversion in the GWTGraph class
-                m_client.updateVariable(m_paintableId, "graph", GraphJSONConverter.convertGraphToJSON(m_graph), true);
-            }
-        };
-        
-        if(BrowserInfo.get().isWebkit()) {
-            Scheduler.get().scheduleDeferred(command);
-        }else {
-            command.execute();
-        }
-    };
 
     private void drawGraph(GWTGraph graph) {
         D3 lines = m_edgeGroup.selectAll("line")

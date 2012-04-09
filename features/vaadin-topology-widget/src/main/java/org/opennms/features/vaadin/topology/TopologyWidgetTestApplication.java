@@ -1,6 +1,9 @@
 package org.opennms.features.vaadin.topology;
 
 
+import org.opennms.features.vaadin.topology.gwt.client.Graph;
+import org.opennms.features.vaadin.topology.gwt.client.Vertex;
+
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -8,11 +11,12 @@ import com.vaadin.event.Action;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.DragAndDropWrapper;
-import com.vaadin.ui.DragAndDropWrapper.DragStartMode;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.Tree;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 public class TopologyWidgetTestApplication extends Application implements Action.Handler {
@@ -23,11 +27,18 @@ public class TopologyWidgetTestApplication extends Application implements Action
     
     @Override
     public void init() {
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        
         m_window = new Window("Topology Widget Test");
+        m_window.setContent(layout);
         setMainWindow(m_window);
+        
         m_topologyComponent = new TopologyComponent();
         m_topologyComponent.addActionHandler(this);
-        m_window.addComponent(m_topologyComponent);
+        m_topologyComponent.setSizeFull();
+        
+        
         
         final Slider slider = new Slider(0, 3);
         slider.setResolution(2);
@@ -45,7 +56,6 @@ public class TopologyWidgetTestApplication extends Application implements Action
         try {
 			slider.setValue(m_topologyComponent.getScale());
 		} catch (ValueOutOfBoundsException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         
@@ -58,9 +68,6 @@ public class TopologyWidgetTestApplication extends Application implements Action
 				m_topologyComponent.addRandomNode();
 			}
         });
-        DragAndDropWrapper dndWrapper = new DragAndDropWrapper(addButton);
-        dndWrapper.setDragStartMode(DragStartMode.WRAPPER);
-        dndWrapper.setSizeUndefined();
         
         Button resetButton = new Button("Reset");
         resetButton.addListener(new ClickListener() {
@@ -78,15 +85,39 @@ public class TopologyWidgetTestApplication extends Application implements Action
             }
             
         });
-        m_window.addComponent(slider);
-        m_window.addComponent(dndWrapper);
-        //m_window.addComponent(addButton);
-        m_window.addComponent(resetButton);
-        m_window.addComponent(removeVertexButton);
-        Tree tree = new Tree();
+        
+        HorizontalLayout topLayoutBar = new HorizontalLayout();
+        topLayoutBar.addComponent(addButton);
+        topLayoutBar.addComponent(resetButton);
+        topLayoutBar.addComponent(removeVertexButton);
+        topLayoutBar.addComponent(slider);
+        
+        VerticalLayout vLayout = new VerticalLayout();
+        vLayout.setWidth("100px");
+        vLayout.setHeight("100%");
+        vLayout.addComponent(createTree());
+        
+        layout.addComponent(topLayoutBar);
+        layout.addComponent(vLayout);
+        layout.addComponent(m_topologyComponent);
+        layout.setExpandRatio(m_topologyComponent, 1.0f);
+        
     }
 
-	public Action[] getActions(Object target, Object sender) {
+	private Component createTree() {
+	    Tree tree = new Tree();
+	    tree.setWidth("100%");
+	    tree.setHeight("100%");
+	    
+	    Graph graph = m_topologyComponent.getGraph();
+	    for(Vertex vertex : graph.getVertices()) {
+	        tree.addItem(vertex);
+	    }
+	    
+        return tree;
+    }
+
+    public Action[] getActions(Object target, Object sender) {
 		return m_actions;
 	}
 

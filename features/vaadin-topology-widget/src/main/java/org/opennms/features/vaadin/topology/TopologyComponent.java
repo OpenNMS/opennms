@@ -81,7 +81,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     public void changeVariables(Object source, Map<String, Object> variables) {
         if(variables.containsKey("graph")) {
             String graph = (String) variables.get("graph");
-            getApplication().getMainWindow().showNotification("I got a new graph: now how do I get the data? Do I have vert data? " + graph);
+            getApplication().getMainWindow().showNotification("" + graph);
             
         }
         
@@ -102,18 +102,18 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         if(variables.containsKey("updatedVertex")) {
             String vertexUpdate = (String) variables.get("updatedVertex");
-            String[] vertexProps = vertexUpdate.split("|");
-            System.err.println("vertexProps: " + vertexProps[0]);
-//            String id = vertexProps[0].split(",")[1];
-//            int x = Integer.parseInt(vertexProps[1].split(",")[1]);
-//            int y = Integer.parseInt(vertexProps[2].split(",")[1]);
-//            boolean selected = vertexProps[3].split(",")[1] == "true" ;
-//            
-            Vertex vertex = m_graph.getVertexById("0");
-            //vertex.setX(x);
-            //vertex.setY(y);
-            //vertex.setSelected(selected);
-            getApplication().getMainWindow().showNotification("I am updating vertex: " + vertexUpdate);
+            String[] vertexProps = vertexUpdate.split("\\|");
+            
+            String id = vertexProps[0].split(",")[1];
+            int x = Integer.parseInt(vertexProps[1].split(",")[1]);
+            int y = Integer.parseInt(vertexProps[2].split(",")[1]);
+            boolean selected = vertexProps[3].split(",")[1] == "true" ;
+            
+            Vertex vertex = m_graph.getVertexById(id);
+            vertex.setX(x);
+            vertex.setY(y);
+            vertex.setSelected(selected);
+            
             requestRepaint();
         }
     }
