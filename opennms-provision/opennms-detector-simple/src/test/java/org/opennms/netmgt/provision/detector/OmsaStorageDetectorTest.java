@@ -38,10 +38,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.snmp.OmsaStorageDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -51,11 +53,16 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/detectors.xml"
 })
 @JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
-public class OmsaStorageDetectorTest {
+public class OmsaStorageDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.168.0.1";
 
     @Autowired
     private OmsaStorageDetector m_detector;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Before
     public void setUp() throws InterruptedException {

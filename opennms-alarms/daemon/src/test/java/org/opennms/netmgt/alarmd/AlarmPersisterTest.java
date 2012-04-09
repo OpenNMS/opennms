@@ -37,7 +37,9 @@ import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -56,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AlarmPersisterTest {
+public class AlarmPersisterTest implements InitializingBean {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -66,12 +68,15 @@ public class AlarmPersisterTest {
     
     @Autowired
     private EventDao m_eventDao;
-    
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Test
     public void testProcess() {
-        assertNotNull(m_alarmDao);
-        assertNotNull(m_eventDao);
-        assertNotNull(m_mockEventIpcManager);
+        // Do something?
     }
 
 }

@@ -29,11 +29,10 @@
 
 package org.opennms.netmgt.provision.detector;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.detector.simple.CitrixDetector;
 import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector;
 import org.opennms.netmgt.provision.detector.simple.FtpDetector;
@@ -90,19 +89,8 @@ public class DetectorWiringTest implements InitializingBean {
     private TcpDetector m_tcpDetector;
 
     @Override
-    public void afterPropertiesSet() {
-        assertNotNull(m_httpDetector);
-        assertNotNull(m_pop3Detector);
-        assertNotNull(m_citrixDetector);
-        assertNotNull(m_dominoIIOPDetector);
-        assertNotNull(m_ftpDetector);
-        assertNotNull(m_httpsDetector);
-        assertNotNull(m_imapDetector);
-        assertNotNull(m_ldapDetector);
-        assertNotNull(m_ldapsDetector);
-        assertNotNull(m_nrpeDetector);
-        assertNotNull(m_smtpDetector);
-        assertNotNull(m_tcpDetector);
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

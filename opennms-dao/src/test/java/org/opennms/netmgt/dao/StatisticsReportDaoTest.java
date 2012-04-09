@@ -33,11 +33,13 @@ import java.util.Date;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.ResourceReference;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,12 +60,17 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class StatisticsReportDaoTest {
+public class StatisticsReportDaoTest implements InitializingBean {
 	@Autowired
     private StatisticsReportDao m_statisticsReportDao;
 	
 	@Autowired
     private ResourceReferenceDao m_resourceReferenceDao;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
 	@Test
 	@Transactional

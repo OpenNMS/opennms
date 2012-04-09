@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class IpInterfaceDaoHibernateTest {
+public class IpInterfaceDaoHibernateTest implements InitializingBean {
 
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
@@ -72,6 +74,11 @@ public class IpInterfaceDaoHibernateTest {
     private DatabasePopulator m_databasePopulator;
 
     private InetAddress m_testAddress;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Before
     public void setUp() {

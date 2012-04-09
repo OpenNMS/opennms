@@ -402,6 +402,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      * @param obj a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
      * @return a int.
      */
+    @Override
     public int compareTo(final Requisition obj) {
     	return getForeignSource().compareTo(obj.getForeignSource());
     }
