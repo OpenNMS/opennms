@@ -59,6 +59,7 @@ import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
+import org.opennms.netmgt.provision.service.operations.RequisitionImport;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,6 +195,7 @@ public class Provisioner implements SpringServiceDaemon {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(getProvisionService(), "provisionService property must be set");
         Assert.notNull(m_scheduledExecutor, "scheduledExecutor property must be set");
@@ -392,17 +394,15 @@ public class Provisioner implements SpringServiceDaemon {
      * @throws java.lang.Exception if any.
      */
     protected void importModelFromResource(final Resource resource, final Boolean rescanExisting, final ProvisionMonitor monitor) throws Exception {
-        doImport(resource, rescanExisting, monitor, new ImportManager());
-    }
-
-    //FIXME? ImportManager is not used.
-    private void doImport(final Resource resource, Boolean rescanExisting, final ProvisionMonitor monitor, final ImportManager importManager) throws Exception {
-        
         final LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
         doImport.setAttribute("resource", resource);
         doImport.setAttribute("rescanExisting", Boolean.valueOf(rescanExisting));
         doImport.trigger();
         doImport.waitFor();
+        final RequisitionImport ri = doImport.findAttributeByType(RequisitionImport.class);
+        if (ri.isAborted()) {
+            throw new ModelImportException("Import failed for resource " + resource.toString(), ri.getError());
+        }
     }
 
     /**
@@ -487,10 +487,10 @@ public class Provisioner implements SpringServiceDaemon {
     
             send(importSuccessEvent(m_stats, url));
     
-        } catch (Throwable e) {
-            String msg = "Exception importing "+url;
-            log().error(msg, e);
-            send(importFailedEvent((msg+": "+e.getMessage()), url));
+        } catch (final Throwable t) {
+            final String msg = "Exception importing "+url;
+            log().error(msg, t);
+            send(importFailedEvent((msg+": "+t.getMessage()), url));
         }
     }
 
@@ -852,7 +852,7 @@ public class Provisioner implements SpringServiceDaemon {
      */
     public String getStats() { return (m_stats == null ? "No Stats Availabile" : m_stats.toString()); }
 
-    private Event importSuccessEvent(TimeTrackingMonitor stats, String url) {
+    private Event importSuccessEvent(final TimeTrackingMonitor stats, final String url) {
     
         return new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
@@ -860,11 +860,11 @@ public class Provisioner implements SpringServiceDaemon {
             .getEvent();
     }
 
-    private void send(Event event) {
+    private void send(final Event event) {
         m_eventForwarder.sendNow(event);
     }
 
-    private Event importFailedEvent(String msg, String url) {
+    private Event importFailedEvent(final String msg, final String url) {
     
         return new EventBuilder( EventConstants.IMPORT_FAILED_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
@@ -872,7 +872,7 @@ public class Provisioner implements SpringServiceDaemon {
             .getEvent();
     }
 
-    private Event importStartedEvent(Resource resource) {
+    private Event importStartedEvent(final Resource resource) {
     
         return new EventBuilder( EventConstants.IMPORT_STARTED_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, resource.toString() )
@@ -885,7 +885,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      * @return a {@link java.lang.String} object.
      */
-    protected String getEventForeignSource(Event event) {
+    protected String getEventForeignSource(final Event event) {
         return EventUtils.getParm(event, EventConstants.PARM_FOREIGN_SOURCE);
     }
 

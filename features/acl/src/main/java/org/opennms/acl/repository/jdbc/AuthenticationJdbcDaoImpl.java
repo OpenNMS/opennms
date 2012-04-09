@@ -48,9 +48,9 @@ import java.util.Map;
 import org.opennms.acl.domain.AclUser;
 import org.opennms.acl.exception.RepositoryException;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.userdetails.UserDetails;
-import org.springframework.security.userdetails.UsernameNotFoundException;
-import org.springframework.security.userdetails.jdbc.JdbcDaoImpl;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 
 /**
  * Used by Spring security to perform authentication

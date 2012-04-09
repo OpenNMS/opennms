@@ -193,6 +193,7 @@ public class SpectrumTrapImporter {
         m_eventFormats = formats;
     }
     
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (m_baseUei == null) {
             throw new IllegalStateException("The baseUei property must be set");

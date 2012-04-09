@@ -32,18 +32,14 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.ui.AbstractProcessingFilter;
-import org.springframework.security.ui.AuthenticationEntryPoint;
-import org.springframework.security.ui.savedrequest.SavedRequest;
-import org.springframework.security.util.AntUrlPathMatcher;
-import org.springframework.security.util.PortResolverImpl;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.util.AntPathRequestMatcher;
+import org.springframework.security.web.util.RequestMatcher;
 import org.springframework.util.Assert;
 
 /**
@@ -54,9 +50,6 @@ public class AntPatternBasedAuthenticationEntryPointChain implements Authenticat
     private List<String> m_patterns;
     private AuthenticationEntryPoint m_matchingEntryPoint;
     private AuthenticationEntryPoint m_nonMatchingEntryPoint;
-    
-    private AntUrlPathMatcher m_urlPathMatcher = new AntUrlPathMatcher();
-    
     
     /**
      * <p>setPatterns</p>
@@ -85,21 +78,12 @@ public class AntPatternBasedAuthenticationEntryPointChain implements Authenticat
         m_nonMatchingEntryPoint = unmatchedEntryPoint;
     }
     
-    
-    /**
-     * <p>setRequiresLowerCaseUrl</p>
-     *
-     * @param requiresLowerCaseUrl a boolean.
-     */
-    public void setRequiresLowerCaseUrl(boolean requiresLowerCaseUrl) {
-        m_urlPathMatcher.setRequiresLowerCaseUrl(requiresLowerCaseUrl);
-    }
-
     /**
      * <p>afterPropertiesSet</p>
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_nonMatchingEntryPoint, "nonMatchingEntryPoint may not be null");
         Assert.notNull(m_matchingEntryPoint, "matchingEntryPoint may not be null");
@@ -107,19 +91,18 @@ public class AntPatternBasedAuthenticationEntryPointChain implements Authenticat
     }
 
     /** {@inheritDoc} */
-    public void commence(ServletRequest request, ServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         
-        String url = getUrl(request);
-
-        AuthenticationEntryPoint entryPoint = getAppropriateEntryPoint(url);
+        AuthenticationEntryPoint entryPoint = getAppropriateEntryPoint(request);
         
         entryPoint.commence(request, response, authException);
-        
     }
     
-    private AuthenticationEntryPoint getAppropriateEntryPoint(String url) {
+    private AuthenticationEntryPoint getAppropriateEntryPoint(HttpServletRequest request) {
         for (String pattern : m_patterns) {
-            if (m_urlPathMatcher.pathMatchesUrl(m_urlPathMatcher.compile(pattern), url)) {
+            RequestMatcher matcher = new AntPathRequestMatcher(pattern);
+            if (matcher.matches(request)) {
                 return m_matchingEntryPoint;
             }
         }
@@ -127,22 +110,4 @@ public class AntPatternBasedAuthenticationEntryPointChain implements Authenticat
         return m_nonMatchingEntryPoint;
         
     }
-    
-    private String getUrl(ServletRequest request) {
-        return getSavedRequest(request).getRequestUrl();
-    }
-    
-    private SavedRequest getSavedRequest(ServletRequest request) {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        
-        HttpSession httpSession = httpRequest.getSession(false);
-        if (httpSession == null) {
-            return new SavedRequest(httpRequest, new PortResolverImpl());
-        } else {
-            return (SavedRequest) httpSession.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_SAVED_REQUEST_KEY);
-        }
-        
-    }
-
-
 }

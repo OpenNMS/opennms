@@ -92,7 +92,24 @@ public class CollectorTestUtils {
             System.err.println("COLLECTION "+i+" FINISHED");
         
             //need a one second time elapse to update the RRD
-            Thread.sleep(1000);
+            Thread.sleep(1010);
+        }
+    }
+
+    public static void failToCollectNTimes(CollectionSpecification spec, CollectionAgent agent, int numUpdates)
+    throws InterruptedException, CollectionException {
+        for(int i = 0; i < numUpdates; i++) {
+
+            // now do the actual collection
+            CollectionSet collectionSet = spec.collect(agent);
+            assertEquals("collection status", ServiceCollector.COLLECTION_FAILED, collectionSet.getStatus());
+
+            persistCollectionSet(spec, collectionSet);
+
+            System.err.println("COLLECTION "+i+" FINISHED");
+
+            //need a one second time elapse to update the RRD
+            Thread.sleep(1010);
         }
     }
 

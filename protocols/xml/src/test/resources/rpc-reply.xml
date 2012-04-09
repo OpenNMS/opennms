@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<rpc-reply>
+  <cfm-iterator-statistics>
+    <cfm-entry>
+      <cfm-iter-mep-summary>
+        <cfm-maintenance-domain-name>D3456</cfm-maintenance-domain-name>
+        <cfm-level>3</cfm-level>
+        <cfm-maintenance-association-name>ddd11</cfm-maintenance-association-name>
+        <cfm-local-mep-identifier>130</cfm-local-mep-identifier>
+        <cfm-remote-mep-identifier>120</cfm-remote-mep-identifier>
+        <cfm-remote-mep-mac-address>00:21:59:0e:d5:2d</cfm-remote-mep-mac-address>
+      </cfm-iter-mep-summary>
+      <cfm-iter-info>
+        <cfm-iterator-name>sgi</cfm-iterator-name>
+        <cfm-iterator-identifier>1</cfm-iterator-identifier>
+        <cfm-iterator-cycle-time>1048576</cfm-iterator-cycle-time>
+        <cfm-iteration-period>2000</cfm-iteration-period>
+        <cfm-iterator-status>running</cfm-iterator-status>
+        <cfm-iterator-forever-status>true</cfm-iterator-forever-status>
+        <cfm-iterator-counter-reset-time>1970-01-25 11:10:57 PST (2194w2d 02:32 ago)</cfm-iterator-counter-reset-time>
+        <cfm-iterator-counter-reset-reason>Adjacency flap</cfm-iterator-counter-reset-reason>
+      </cfm-iter-info>
+      <cfm-iter-ethlm-entry>
+        <cfm-lmm-sent>9</cfm-lmm-sent>
+        <cfm-lmm-skipped-for-threshold-hit>10</cfm-lmm-skipped-for-threshold-hit>
+        <cfm-lmm-skipped-for-threshold-hit-window>11</cfm-lmm-skipped-for-threshold-hit-window>
+        <cfm-lmr-received>12</cfm-lmr-received>
+        <cfm-lmr-out-of-seq>13</cfm-lmr-out-of-seq>
+        <cfm-lmr-fc-mismatch>14</cfm-lmr-fc-mismatch>
+        <cfm-accu-tx-near-end-cir-loss-stats>15</cfm-accu-tx-near-end-cir-loss-stats>
+        <cfm-accu-tx-far-end-cir-loss-stats>16</cfm-accu-tx-far-end-cir-loss-stats>
+        <cfm-accu-tx-near-end-eir-loss-stats>17</cfm-accu-tx-near-end-eir-loss-stats>
+        <cfm-accu-tx-far-end-eir-loss-stats>18</cfm-accu-tx-far-end-eir-loss-stats>
+        <cfm-accu-loss-near-end-cir-loss-stats>19</cfm-accu-loss-near-end-cir-loss-stats>
+        <cfm-accu-loss-near-end-cir-loss-stats-percent>19.00%</cfm-accu-loss-near-end-cir-loss-stats-percent>
+        <cfm-accu-loss-far-end-cir-loss-stats>20</cfm-accu-loss-far-end-cir-loss-stats>
+        <cfm-accu-loss-far-end-cir-loss-stats-percent>20.00%</cfm-accu-loss-far-end-cir-loss-stats-percent>
+        <cfm-accu-loss-near-end-eir-loss-stats>21</cfm-accu-loss-near-end-eir-loss-stats>
+        <cfm-accu-loss-near-end-eir-loss-stats-percent>21.00%</cfm-accu-loss-near-end-eir-loss-stats-percent>
+        <cfm-accu-loss-far-end-eir-loss-stats>22</cfm-accu-loss-far-end-eir-loss-stats>
+        <cfm-accu-loss-far-end-eir-loss-stats-percent>22.00%</cfm-accu-loss-far-end-eir-loss-stats-percent>
+        <cfm-last-measured-near-end-cir-loss-stats>23</cfm-last-measured-near-end-cir-loss-stats>
+        <cfm-last-measured-far-end-cir-loss-stats>24</cfm-last-measured-far-end-cir-loss-stats>
+        <cfm-last-measured-near-end-eir-loss-stats>25</cfm-last-measured-near-end-eir-loss-stats>
+        <cfm-last-measured-far-end-eir-loss-stats>26</cfm-last-measured-far-end-eir-loss-stats>
+      </cfm-iter-ethlm-entry>
+    </cfm-entry>
+  </cfm-iterator-statistics>
+  <cli>
+    <banner/>
+  </cli>
+</rpc-reply>

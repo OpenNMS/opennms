@@ -11,23 +11,32 @@
   <name>OpenNMS Features</name>
   <modules>
     <module>acl</module>
-    <module>jdbc-collector</module>
     <module>instrumentationLogReader</module>
+    <module>jdbc-collector</module>
+    <module>juniper-tca-collector</module>
     <module>mdns</module>
+    <module>ncs</module>
     <module>poller</module>
     <module>provisioning</module>
-    <module>root-webapp</module>
+    <module>reporting</module>
+    <module>request-tracker</module>
+    <module>springframework-security</module>
+    <module>system-report</module>
     <module>ticketing</module>
+
+    <!-- SMS monitoring -->
     <module>phonebook</module>
     <module>sms-reflector</module>
-    <module>reporting</module>
-    <module>springframework-security</module>
-    <module>request-tracker</module>
-    <module>system-report</module>
+
+    <!-- webapps -->
+    <module>root-webapp</module>
+
+    <!-- GWT UI plugins -->
     <module>node-page-list</module>
     <module>opennms-gwt-theme</module>
     <module>gwt-suggestion-combobox</module>
     <module>gwt-ksc-combobox</module>
+    <module>gwt-ksc-add</module>
     <module>gwt-graph-resource-list</module>
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>

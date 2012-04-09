@@ -40,11 +40,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.ldap.LdapAuthoritiesPopulator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.ldap.SpringSecurityLdapTemplate;
-import org.springframework.security.ldap.populator.DefaultLdapAuthoritiesPopulator;
+import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 
 /**
  * This class adds the ability to provide a concrete map of associations between specific
@@ -101,7 +101,6 @@ public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPop
 					+ this.groupSearchFilter + " in search base '" + super.getGroupSearchBase() + "'");
 		}
 
-		@SuppressWarnings("unchecked")
 		final Set<String> userRoles = ldapTemplate.searchForSingleAttributeValues(
 				super.getGroupSearchBase(), 
 				this.groupSearchFilter,
@@ -114,7 +113,7 @@ public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPop
 			logger.debug("Checking " + group + " for an associated role");
 			if (rolesForGroup != null) {
 				for(String role : rolesForGroup) {
-					authorities.add(new GrantedAuthorityImpl(role));
+					authorities.add(new SimpleGrantedAuthority(role));
 					logger.debug("Added role: " + role + " based on group " + group);
 				}
 			}

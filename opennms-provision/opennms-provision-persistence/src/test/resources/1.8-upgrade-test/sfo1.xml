@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import last-import="2011-05-03T22:55:11.702Z" foreign-source="sfo1" date-stamp="2011-05-03T22:55:11.543Z" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="rabbitvip.somemediathing.net" foreign-id="1298254933588" building="sfo1">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.8.34" descr="">
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="rabbitmq"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="jessica.somemediathing.net" foreign-id="1298254932708" building="sfo1">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.8.32" descr="">
+            <monitored-service service-name="megaRaid"/>
+            <monitored-service service-name="heartbeat_resource"/>
+            <monitored-service service-name="heartbeat"/>
+            <monitored-service service-name="UnixTime"/>
+            <monitored-service service-name="somethingsvn_utilweb"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="Servers"/>
+    </node>
+    <node node-label="roger.somemediathing.net" foreign-id="1298254931956" building="sfo1">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.8.33" descr="">
+            <monitored-service service-name="megaRaid"/>
+            <monitored-service service-name="heartbeat_resource"/>
+            <monitored-service service-name="heartbeat"/>
+            <monitored-service service-name="UnixTime"/>
+            <monitored-service service-name="somethingsvn_utilweb"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Servers"/>
+        <category name="Production"/>
+    </node>
+</model-import>

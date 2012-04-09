@@ -42,11 +42,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.hibernate.FetchMode;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -86,9 +85,13 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{alarmId}")
     @Transactional
-    public OnmsAlarm getAlarm(@PathParam("alarmId") String alarmId) {
-    	OnmsAlarm result= m_alarmDao.get(new Integer(alarmId));
-    	return result;
+    public OnmsAlarm getAlarm(@PathParam("alarmId") final String alarmId) {
+        readLock();
+        try {
+            return m_alarmDao.get(new Integer(alarmId));
+        } finally {
+            readUnlock();
+        }
     }
     
     /**
@@ -101,7 +104,12 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Path("count")
     @Transactional
     public String getCount() {
-    	return Integer.toString(m_alarmDao.countAll());
+        readLock();
+        try {
+            return Integer.toString(m_alarmDao.countAll());
+        } finally {
+            readUnlock();
+        }
     }
 
     /**
@@ -113,16 +121,20 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsAlarmCollection getAlarms() {
-        OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters(), false)));
-
-        //For getting totalCount
-        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        addFiltersToCriteria(m_uriInfo.getQueryParameters(), criteria, OnmsAlarm.class);
-        criteria.setFetchMode("firstEvent", FetchMode.JOIN);
-        criteria.setFetchMode("lastEvent", FetchMode.JOIN);
-        coll.setTotalCount(m_alarmDao.countMatching(criteria));
-
-        return coll;
+        readLock();
+        
+        try {
+            final CriteriaBuilder builder = getCriteriaBuilder(m_uriInfo.getQueryParameters(), false);
+            builder.distinct();
+            final OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(builder.toCriteria()));
+    
+            //For getting totalCount
+            coll.setTotalCount(m_alarmDao.countMatching(builder.clearOrder().limit(0).offset(0).toCriteria()));
+    
+            return coll;
+        } finally {
+            readUnlock();
+        }
     }
     
     /**
@@ -135,15 +147,18 @@ public class AlarmRestService extends AlarmRestServiceBase {
 	@Path("{alarmId}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
-	public void updateAlarm(@PathParam("alarmId")
-	String alarmId, @FormParam("ack")
-	Boolean ack) {
-		OnmsAlarm alarm = m_alarmDao.get(new Integer(alarmId));
-		if (ack == null) {
-			throw new IllegalArgumentException(
-					"Must supply the 'ack' parameter, set to either 'true' or 'false'");
-		}
-		processAlarmAck(alarm, ack);
+	public void updateAlarm(@PathParam("alarmId") final String alarmId, @FormParam("ack") final Boolean ack) {
+        writeLock();
+        
+        try {
+        	final OnmsAlarm alarm = m_alarmDao.get(new Integer(alarmId));
+    		if (ack == null) {
+    			throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
+    		}
+    		processAlarmAck(alarm, ack);
+        } finally {
+            writeUnlock();
+        }
 	}
 
 	/**
@@ -154,19 +169,29 @@ public class AlarmRestService extends AlarmRestServiceBase {
 	@PUT
 	@Transactional
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void updateAlarms(MultivaluedMapImpl formProperties) {
-
-		Boolean ack=false;
-		if(formProperties.containsKey("ack")) {
-			ack="true".equals(formProperties.getFirst("ack"));
-			formProperties.remove("ack");
-		}
-		for (OnmsAlarm alarm : m_alarmDao.findMatching(getQueryFilters(formProperties, false))) {
-			processAlarmAck(alarm, ack);
-		}
+	public void updateAlarms(final MultivaluedMapImpl formProperties) {
+	    writeLock();
+	    
+	    try {
+    		Boolean ack=false;
+    		if(formProperties.containsKey("ack")) {
+    			ack="true".equals(formProperties.getFirst("ack"));
+    			formProperties.remove("ack");
+    		}
+    		
+    		final CriteriaBuilder builder = getCriteriaBuilder(formProperties, false);
+    		builder.distinct();
+    		builder.limit(0);
+    		builder.offset(0);
+    		for (final OnmsAlarm alarm : m_alarmDao.findMatching(builder.toCriteria())) {
+    			processAlarmAck(alarm, ack);
+    		}
+	    } finally {
+	        writeUnlock();
+	    }
 	}
 
-	private void processAlarmAck(OnmsAlarm alarm, Boolean ack) {
+	private void processAlarmAck(final OnmsAlarm alarm, final Boolean ack) {
 		if (ack) {
 			alarm.setAlarmAckTime(new Date());
 			alarm.setAlarmAckUser(m_securityContext.getUserPrincipal().getName());

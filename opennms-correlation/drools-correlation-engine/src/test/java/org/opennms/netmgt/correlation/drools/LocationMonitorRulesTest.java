@@ -42,9 +42,11 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
     
     @Test
     public void testWideSpreadLocationMonitorOutage() throws Exception {
+    	
+    	resetAnticipated();
         
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
-
+        
 		anticipateWideSpreadOutageEvent();
 		
         // received outage events for all monitors
@@ -84,6 +86,8 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
     
     @Test
     public void testSingleLocationMonitorOutage() throws Exception {
+    	
+    	resetAnticipated();
         
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
         
@@ -111,6 +115,8 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
     
     @Test
     public void testDoubleLocationMonitorOutage() throws Exception {
+    	
+    	resetAnticipated();
         
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
 
@@ -140,7 +146,9 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
     @Test
     public void testFlappingMonitor() throws Exception {
         
-        DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
+    	resetAnticipated();
+
+    	DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
         
         /* 
          * for testing the flap rules detect 3 outages that occur within 1000 millis
@@ -215,7 +223,9 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
     @Test
     public void testDontFlapWhenOnlyTwoOutages() throws Exception {
         
-        DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
+    	resetAnticipated();
+
+    	DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
 
         engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "AVAIL", 7));
         

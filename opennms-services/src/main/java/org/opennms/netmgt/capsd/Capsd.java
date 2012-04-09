@@ -31,14 +31,14 @@ package org.opennms.netmgt.capsd;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashSet;
+import java.util.concurrent.ExecutorService;
 
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.DaemonUtils;
 import org.opennms.netmgt.model.events.StoppableEventListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -75,6 +75,7 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * Rescan scheduler thread
      */
+    @Autowired
     private Scheduler m_scheduler;
     
     /**
@@ -86,22 +87,22 @@ public class Capsd extends AbstractServiceDaemon {
      * The pool of threads that are used to executed the SuspectEventProcessor
      * instances queued by the event processor (BroadcastEventProcessor).
      */
-    private RunnableConsumerThreadPool m_suspectRunner;
+    private ExecutorService m_suspectRunner;
 
     /**
      * The pool of threads that are used to executed RescanProcessor instances
      * queued by the rescan scheduler thread.
      */
-    private RunnableConsumerThreadPool m_rescanRunner;
+    private ExecutorService m_rescanRunner;
 
     /*
      * Injected properties, the should be asserted in onInit
      */
+    @Autowired
     private SuspectEventProcessorFactory m_suspectEventProcessorFactory;
 
+    @Autowired
     private CapsdDbSyncer m_capsdDbSyncer;
-    
-    private CapsdConfig m_capsdConfig;
 
     /**
      * <P>
@@ -132,10 +133,10 @@ public class Capsd extends AbstractServiceDaemon {
         m_eventListener.stop();
 
         // Stop the Suspect Event Processor thread pool
-        m_suspectRunner.stop();
+        m_suspectRunner.shutdown();
 
         // Stop the Rescan Processor thread pool
-        m_rescanRunner.stop();
+        m_rescanRunner.shutdown();
 
         if (m_scheduler != null) m_scheduler.stop();
 	}
@@ -147,7 +148,6 @@ public class Capsd extends AbstractServiceDaemon {
 	    
         Assert.state(m_suspectEventProcessorFactory != null, "must set the suspectEventProcessorFactory property");
         Assert.state(m_capsdDbSyncer != null, "must set the capsdDbSyncer property");
-        Assert.state(m_capsdConfig != null, "must set the capsdConfig property");
         Assert.state(m_suspectRunner != null, "must set the suspectRunner property");
         Assert.state(m_rescanRunner != null, "must set the rescanRunner property");
         Assert.state(m_scheduler != null, "must set the scheduler property");
@@ -175,13 +175,13 @@ public class Capsd extends AbstractServiceDaemon {
          */
 
         log().debug("init: Loading services into database...");
-        getCapsdDbSyncer().syncServices();
+        m_capsdDbSyncer.syncServices();
         
         log().debug("init: Syncing management state...");
-        getCapsdDbSyncer().syncManagementState();
+        m_capsdDbSyncer.syncManagementState();
         
         log().debug("init: Syncing primary SNMP interface state...");
-        getCapsdDbSyncer().syncSnmpPrimaryState();
+        m_capsdDbSyncer.syncSnmpPrimaryState();
 
 	}
 
@@ -199,12 +199,6 @@ public class Capsd extends AbstractServiceDaemon {
     	// Likewise, a separate Set for the RescanProcessor
     	RescanProcessor.setQueuedRescansTracker(new HashSet<Integer>());
     	
-		// Start the suspect event and rescan thread pools
-        log().debug("start: Starting runnable thread pools...");
-
-        m_suspectRunner.start();
-        m_rescanRunner.start();
-
         // Start the rescan scheduler
         log().debug("start: Starting rescan scheduler");
         
@@ -253,11 +247,11 @@ public class Capsd extends AbstractServiceDaemon {
      *             Thrown if the address cannot be converted to aa proper
      *             internet address.
      */
-    public void scanSuspectInterface(String ifAddr) throws UnknownHostException {
-        String prefix = ThreadCategory.getPrefix();
+    public void scanSuspectInterface(final String ifAddr) throws UnknownHostException {
+        final String prefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(getName());
-            final InetAddress addr = InetAddress.getByName(ifAddr);
+            final InetAddress addr = InetAddressUtils.addr(ifAddr);
             final SuspectEventProcessor proc = m_suspectEventProcessorFactory.createSuspectEventProcessor(InetAddressUtils.str(addr));
             proc.run();
         } finally {
@@ -284,52 +278,21 @@ public class Capsd extends AbstractServiceDaemon {
         }
     }
 
-    private CapsdDbSyncer getCapsdDbSyncer() {
-        return m_capsdDbSyncer;
-    }
-
-    /**
-     * <p>setCapsdDbSyncer</p>
-     *
-     * @param capsdDbSyncer a {@link org.opennms.netmgt.capsd.CapsdDbSyncer} object.
-     */
-    public void setCapsdDbSyncer(CapsdDbSyncer capsdDbSyncer) {
-        m_capsdDbSyncer = capsdDbSyncer;
-    }
-
-    /**
-     * <p>setSuspectEventProcessorFactory</p>
-     *
-     * @param eventProcessorFactory a {@link org.opennms.netmgt.capsd.SuspectEventProcessorFactory} object.
-     */
-    public void setSuspectEventProcessorFactory(SuspectEventProcessorFactory eventProcessorFactory) {
-        m_suspectEventProcessorFactory = eventProcessorFactory;
-    }
-    
-    /**
-     * <p>setCapsdConfig</p>
-     *
-     * @param capsdConfig a {@link org.opennms.netmgt.config.CapsdConfig} object.
-     */
-    public void setCapsdConfig(CapsdConfig capsdConfig) {
-        m_capsdConfig = capsdConfig;
-    }
-
     /**
      * <p>setSuspectRunner</p>
      *
-     * @param suspectRunner a {@link org.opennms.core.concurrent.RunnableConsumerThreadPool} object.
+     * @param suspectRunner a {@link java.util.concurrent.ExecutorService} object.
      */
-    public void setSuspectRunner(RunnableConsumerThreadPool suspectRunner) {
+    public void setSuspectRunner(ExecutorService suspectRunner) {
         m_suspectRunner = suspectRunner;
     }
 
     /**
      * <p>setRescanRunner</p>
      *
-     * @param rescanRunner a {@link org.opennms.core.concurrent.RunnableConsumerThreadPool} object.
+     * @param rescanRunner a {@link java.util.concurrent.ExecutorService} object.
      */
-    public void setRescanRunner(RunnableConsumerThreadPool rescanRunner) {
+    public void setRescanRunner(ExecutorService rescanRunner) {
         m_rescanRunner = rescanRunner;
     }
 
@@ -340,15 +303,6 @@ public class Capsd extends AbstractServiceDaemon {
      */
     public void setEventListener(StoppableEventListener eventListener) {
         m_eventListener = eventListener;
-    }
-
-    /**
-     * <p>setScheduler</p>
-     *
-     * @param scheduler a {@link org.opennms.netmgt.capsd.Scheduler} object.
-     */
-    public void setScheduler(Scheduler scheduler) {
-        m_scheduler = scheduler;
     }
 
 } // end Capsd class

@@ -257,6 +257,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceService != null, "resourceService property has not been set");
         Assert.state(m_kscReportFactory != null, "kscReportFactory property has not been set");

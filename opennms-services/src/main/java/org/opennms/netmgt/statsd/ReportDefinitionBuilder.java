@@ -123,6 +123,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_statsdConfigDao != null, "property statsdConfigDao must be set to a non-null value");
     }

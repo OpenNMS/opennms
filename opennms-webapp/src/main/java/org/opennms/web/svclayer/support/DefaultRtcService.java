@@ -207,6 +207,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_monitoredServiceDao != null, "property monitoredServiceDao must be set and non-null");
         Assert.state(m_outageDao != null, "property outageDao must be set and non-null");

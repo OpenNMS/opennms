@@ -32,13 +32,15 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.category.*,
-	        org.opennms.web.api.Util,
+	import="
+		org.opennms.web.category.*,
+		org.opennms.web.api.Util,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.MissingParameterException,
 		java.util.*,
 		org.opennms.netmgt.xml.rtc.Node,
-		org.opennms.web.XssRequestWrapper
+		org.opennms.web.XssRequestWrapper,
+		org.springframework.security.core.context.SecurityContextHolder
 		"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -151,7 +153,7 @@
       <% if( category.getComment() != null ) { %>      
         <p><c:out value="<%=category.getComment()%>"/></p>
       <% } %>
-      <% if( AclUtils.shouldFilter() ) { %>
+      <% if( AclUtils.shouldFilter(SecurityContextHolder.getContext().getAuthentication().getAuthorities()) ) { %>
         <p style="color: red"> This list has been filtered to accessible nodes only based on your user group. </p>
       <% } %>
       <c:out escapeXml="false" value="<!-- Last updated "/><c:out value="<%=category.getLastUpdated().toString()%>"/><c:out escapeXml="false" value=" -->"/>

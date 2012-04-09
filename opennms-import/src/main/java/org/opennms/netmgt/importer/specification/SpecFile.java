@@ -32,12 +32,12 @@ import java.io.IOException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.modelimport.Asset;
-import org.opennms.netmgt.config.modelimport.Category;
-import org.opennms.netmgt.config.modelimport.Interface;
-import org.opennms.netmgt.config.modelimport.ModelImport;
-import org.opennms.netmgt.config.modelimport.MonitoredService;
-import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.importer.config.Asset;
+import org.opennms.netmgt.importer.config.Category;
+import org.opennms.netmgt.importer.config.Interface;
+import org.opennms.netmgt.importer.config.ModelImport;
+import org.opennms.netmgt.importer.config.MonitoredService;
+import org.opennms.netmgt.importer.config.Node;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.importer.ModelImportException;
 import org.springframework.core.io.Resource;

@@ -30,22 +30,23 @@ package org.opennms.dashboard.server;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.dashboard.client.NodeRtc;
 import org.opennms.dashboard.client.SurveillanceService;
 import org.opennms.dashboard.client.SurveillanceSet;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.userdetails.User;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -88,8 +89,8 @@ public class DefaultSurveillanceServiceIntegrationTest {
     }
 
     private static UserDetails populateSecurityContext() {
-        UserDetails details = new User("user", "password", true, true, true, true, new GrantedAuthority[0]);
-        Authentication auth = new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
+        UserDetails details = new User("user", "password", true, true, true, true, new ArrayList<GrantedAuthority>());
+        org.springframework.security.core.Authentication auth = new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
         return details;
     }

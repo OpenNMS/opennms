@@ -52,7 +52,6 @@ import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -104,25 +103,36 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Outages getOutages() {
-        Outages outages = new Outages();
-        outages.setOutage(m_configFactory.getOutages());
-        return outages;
+        readLock();
+        try {
+            Outages outages = new Outages();
+            outages.setOutage(m_configFactory.getOutages());
+            return outages;
+        } finally {
+            readUnlock();
+        }
     }
 
     @GET
     @Path("{outageName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Outage getOutage(@PathParam("outageName") String outageName) {
-        Outage outage = m_configFactory.getOutage(outageName);
-        if (outage == null) throw getException(Status.BAD_REQUEST, "Scheduled outage " + outageName + " does not exist.");
-        return outage;
+    public Outage getOutage(@PathParam("outageName") String outageName) throws IllegalArgumentException {
+        readLock();
+        try {
+            Outage outage = m_configFactory.getOutage(outageName);
+            if (outage == null) throw new IllegalArgumentException("Scheduled outage " + outageName + " does not exist.");
+            return outage;
+        } finally {
+            readUnlock();
+        }
     }
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response saveOrUpdateOutage(Outage newOutage) {
-        if (newOutage == null) throw getException(Status.BAD_REQUEST, "Outage object can't be null");
+    public Response saveOrUpdateOutage(final Outage newOutage) {
+        writeLock();
         try {
+            if (newOutage == null) throw getException(Status.BAD_REQUEST, "Outage object can't be null");
             Outage oldOutage = m_configFactory.getOutage(newOutage.getName());
             if (oldOutage == null) {
                 log().debug("saveOrUpdateOutage: adding outage " + newOutage.getName());
@@ -132,136 +142,217 @@ public class ScheduledOutagesRestService extends OnmsRestService {
                 m_configFactory.replaceOutage(oldOutage, newOutage);
             }
             m_configFactory.saveCurrent();
+            sendConfigChangedEvent();
+            return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't save or update the scheduled outage " + newOutage.getName() + " because, " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
-        sendConfigChangedEvent();
-        return Response.ok().build();
     }
 
     @DELETE
     @Path("{outageName}")
     public Response deleteOutage(@PathParam("outageName") String outageName) {
+        writeLock();
         try {
             log().debug("deleteOutage: deleting outage " + outageName);
-            m_configFactory.removeOutage(outageName);
-            m_configFactory.saveCurrent();
             updateCollectd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updatePollerd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updateThreshd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updateNotifd(ConfigAction.REMOVE, outageName);
+            m_configFactory.removeOutage(outageName);
+            m_configFactory.saveCurrent();
+            sendConfigChangedEvent();
+            return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't delete the scheduled outage " + outageName + " because, " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
-        sendConfigChangedEvent();
-        return Response.ok().build();
     }
 
     @PUT
     @Path("{outageName}/collectd/{packageName}")
     public Response addOutageToCollector(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
-        updateCollectd(ConfigAction.ADD, outageName, packageName);
-        sendConfigChangedEvent();
-        return Response.ok().build();
+        writeLock();
+        try {
+            updateCollectd(ConfigAction.ADD, outageName, packageName);
+            sendConfigChangedEvent();
+            return Response.ok().build();
+        } catch (Exception e) {
+            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to collector package " + packageName + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
+        }
     }
 
     @DELETE
     @Path("{outageName}/collectd/{packageName}")
     public Response removeOutageFromCollector(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
-        updateCollectd(ConfigAction.REMOVE, outageName, packageName);
-        sendConfigChangedEvent();
-        return Response.ok().build();
+        writeLock();
+        try {
+            updateCollectd(ConfigAction.REMOVE, outageName, packageName);
+            sendConfigChangedEvent();
+            return Response.ok().build();
+        } catch (Exception e) {
+            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from collector package " + packageName + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
+        }
     }
 
     @PUT
     @Path("{outageName}/pollerd/{packageName}")
     public Response addOutageToPoller(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
-        updatePollerd(ConfigAction.ADD, outageName, packageName);
-        sendConfigChangedEvent();
-        return Response.ok().build();
+        writeLock();
+        try {
+            updatePollerd(ConfigAction.ADD, outageName, packageName);
+            sendConfigChangedEvent();
+            return Response.ok().build();
+        } catch (Exception e) {
+            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to poller package " + packageName  + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
+        }
     }
 
     @DELETE
     @Path("{outageName}/pollerd/{packageName}")
     public Response removeOutageFromPoller(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
-        updatePollerd(ConfigAction.REMOVE, outageName, packageName);
-        sendConfigChangedEvent();
-        return Response.ok().build();
+        writeLock();
+        try {
+            updatePollerd(ConfigAction.REMOVE, outageName, packageName);
+            sendConfigChangedEvent();
+            return Response.ok().build();
+        } catch (Exception e) {
+            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from poller package " + packageName + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
+        }
     }
 
     @PUT
     @Path("{outageName}/threshd/{packageName}")
     public Response addOutageToThresholder(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
-        updateThreshd(ConfigAction.ADD, outageName, packageName);
-        sendConfigChangedEvent();
-        return Response.ok().build();
+        writeLock();
+        try {
+            updateThreshd(ConfigAction.ADD, outageName, packageName);
+            sendConfigChangedEvent();
+            return Response.ok().build();
+        } catch (Exception e) {
+            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to threshold package " + packageName + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
+        }
     }
 
     @DELETE
     @Path("{outageName}/threshd/{packageName}")
     public Response removeOutageFromThresholder(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
-        updateThreshd(ConfigAction.REMOVE, outageName, packageName);
-        sendConfigChangedEvent();
-        return Response.ok().build();
+        writeLock();
+        try {
+            updateThreshd(ConfigAction.REMOVE, outageName, packageName);
+            sendConfigChangedEvent();
+            return Response.ok().build();
+        } catch (Exception e) {
+            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from threshold package " + packageName + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
+        }
     }
 
     @PUT
     @Path("{outageName}/notifd")
     public Response addOutageToNotifications(@PathParam("outageName") String outageName) {
-        updateNotifd(ConfigAction.ADD, outageName);
-        sendConfigChangedEvent();
-        return Response.ok().build();
+        writeLock();
+        try {
+            updateNotifd(ConfigAction.ADD, outageName);
+            sendConfigChangedEvent();
+            return Response.ok().build();
+        } catch (Exception e) {
+            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to notifications because: " + e.getMessage());
+        } finally {
+            writeUnlock();
+        }
     }
 
     @DELETE
     @Path("{outageName}/notifd")
     public Response removeOutageFromNotifications(@PathParam("outageName") String outageName) {
-        updateNotifd(ConfigAction.REMOVE, outageName);
-        sendConfigChangedEvent();
-        return Response.ok().build();
+        writeLock();
+        try {
+            updateNotifd(ConfigAction.REMOVE, outageName);
+            sendConfigChangedEvent();
+            return Response.ok().build();
+        } catch (Exception e) {
+            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from notifications because: " + e.getMessage());
+        } finally {
+            writeUnlock();
+        }
     }
 
     @GET
     @Path("{outageName}/nodeInOutage/{nodeId}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isNodeInOutage(@PathParam("outageName") String outageName, @PathParam("nodeId") Integer nodeId) {
-        Outage outage = getOutage(outageName);
-        Boolean inOutage = m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage);
-        return inOutage.toString();
+        readLock();
+        try {
+            Outage outage = getOutage(outageName);
+            Boolean inOutage = m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage);
+            return inOutage.toString();
+        } finally {
+            readUnlock();
+        }
     }
 
     @GET
     @Path("nodeInOutage/{nodeId}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isNodeInOutage(@PathParam("nodeId") Integer nodeId) {
-        for (Outage outage : m_configFactory.getOutages()) {
-            if (m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage)) {
-                return Boolean.TRUE.toString();
+        readLock();
+        try {
+            for (Outage outage : m_configFactory.getOutages()) {
+                if (m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage)) {
+                    return Boolean.TRUE.toString();
+                }
             }
+            return Boolean.FALSE.toString();
+        } finally {
+            readUnlock();
         }
-        return Boolean.FALSE.toString();
     }
 
     @GET
     @Path("{outageName}/interfaceInOutage/{ipAddr}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isInterfaceInOutage(@PathParam("outageName") String outageName, @PathParam("ipAddr") String ipAddr) {
-        validateAddress(ipAddr);
-        Outage outage = getOutage(outageName);
-        Boolean inOutage = m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage);
-        return inOutage.toString();
+        readLock();
+        try {
+            validateAddress(ipAddr);
+            Outage outage = getOutage(outageName);
+            Boolean inOutage = m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage);
+            return inOutage.toString();
+        } finally {
+            readUnlock();
+        }
     }
 
     @GET
     @Path("interfaceInOutage/{ipAddr}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isInterfaceInOutage(@PathParam("ipAddr") String ipAddr) {
-        for (Outage outage : m_configFactory.getOutages()) {
-            if (m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage)) {
-                return Boolean.TRUE.toString();
+        readLock();
+        try {
+            for (Outage outage : m_configFactory.getOutages()) {
+                if (m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage)) {
+                    return Boolean.TRUE.toString();
+                }
             }
+            return Boolean.FALSE.toString();
+        } finally {
+            readUnlock();
         }
-        return Boolean.FALSE.toString();
     }
 
     private void validateAddress(String ipAddress) {
@@ -276,107 +367,91 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         }
     }
 
-    private void updateCollectd(ConfigAction action, String outageName, String packageName) {
+    private void updateCollectd(ConfigAction action, String outageName, String packageName) throws Exception {
         getOutage(outageName); // Validate if outageName exists.
-        try {
-            if (action.equals(ConfigAction.ADD)) {
-                CollectdPackage pkg = getCollectdPackage(packageName);
-                if (!pkg.getPackage().getOutageCalendarCollection().contains(outageName))
-                    pkg.getPackage().addOutageCalendar(outageName);
-            }
-            if (action.equals(ConfigAction.REMOVE)) {
-                CollectdPackage pkg = getCollectdPackage(packageName);
+        if (action.equals(ConfigAction.ADD)) {
+            CollectdPackage pkg = getCollectdPackage(packageName);
+            if (!pkg.getPackage().getOutageCalendarCollection().contains(outageName))
+                pkg.getPackage().addOutageCalendar(outageName);
+        }
+        if (action.equals(ConfigAction.REMOVE)) {
+            CollectdPackage pkg = getCollectdPackage(packageName);
+            pkg.getPackage().removeOutageCalendar(outageName);
+        }
+        if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
+            for (CollectdPackage pkg : CollectdConfigFactory.getInstance().getCollectdConfig().getPackages()) {
                 pkg.getPackage().removeOutageCalendar(outageName);
             }
-            if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-                for (CollectdPackage pkg : CollectdConfigFactory.getInstance().getCollectdConfig().getPackages()) {
-                    pkg.getPackage().removeOutageCalendar(outageName);
-                }
-            }
-            CollectdConfigFactory.getInstance().saveCurrent();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add/remove scheduled outage " + outageName + " for collector package " + packageName);
         }
+        CollectdConfigFactory.getInstance().saveCurrent();
     }
 
-    private CollectdPackage getCollectdPackage(String packageName) {
+    private CollectdPackage getCollectdPackage(String packageName) throws IllegalArgumentException {
         CollectdPackage pkg = CollectdConfigFactory.getInstance().getPackage(packageName);
-        if (pkg == null) throw getException(Status.BAD_REQUEST, "Collectd package " + packageName + " does not exist.");
+        if (pkg == null) throw new IllegalArgumentException("Collectd package " + packageName + " does not exist.");
         return pkg;
     }
 
-    private void updatePollerd(ConfigAction action, String outageName, String packageName) {
+    private void updatePollerd(ConfigAction action, String outageName, String packageName) throws Exception {
         getOutage(outageName); // Validate if outageName exists.
-        try {
-            if (action.equals(ConfigAction.ADD)) {
-                org.opennms.netmgt.config.poller.Package pkg = getPollerdPackage(packageName);
-                if (!pkg.getOutageCalendarCollection().contains(outageName))
-                    pkg.addOutageCalendar(outageName);
-            }
-            if (action.equals(ConfigAction.REMOVE)) {
-                org.opennms.netmgt.config.poller.Package pkg = getPollerdPackage(packageName);
+        if (action.equals(ConfigAction.ADD)) {
+            org.opennms.netmgt.config.poller.Package pkg = getPollerdPackage(packageName);
+            if (!pkg.getOutageCalendarCollection().contains(outageName))
+                pkg.addOutageCalendar(outageName);
+        }
+        if (action.equals(ConfigAction.REMOVE)) {
+            org.opennms.netmgt.config.poller.Package pkg = getPollerdPackage(packageName);
+            pkg.removeOutageCalendar(outageName);
+        }
+        if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
+            for (org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackage()) {
                 pkg.removeOutageCalendar(outageName);
             }
-            if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-                for (org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackage()) {
-                    pkg.removeOutageCalendar(outageName);
-                }
-            }
-            PollerConfigFactory.getInstance().save();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add/remove scheduled outage " + outageName + " for poller package " + packageName);
         }
+        PollerConfigFactory.getInstance().save();
     }
 
-    private org.opennms.netmgt.config.poller.Package getPollerdPackage(String packageName) {
+    private org.opennms.netmgt.config.poller.Package getPollerdPackage(String packageName) throws IllegalArgumentException {
         org.opennms.netmgt.config.poller.Package pkg = PollerConfigFactory.getInstance().getPackage(packageName);
-        if (pkg == null) throw getException(Status.BAD_REQUEST, "Poller package " + packageName + " does not exist.");
+        if (pkg == null) throw new IllegalArgumentException("Poller package " + packageName + " does not exist.");
         return pkg;
     }
 
-    private void updateThreshd(ConfigAction action, String outageName, String packageName) {
+    private void updateThreshd(ConfigAction action, String outageName, String packageName) throws Exception {
         getOutage(outageName); // Validate if outageName exists.
-        try {
-            if (action.equals(ConfigAction.ADD)) {
-                org.opennms.netmgt.config.threshd.Package pkg = getThreshdPackage(packageName);
-                if (!pkg.getOutageCalendarCollection().contains(outageName))
-                    pkg.addOutageCalendar(outageName);
-            }
-            if (action.equals(ConfigAction.REMOVE)) {
-                org.opennms.netmgt.config.threshd.Package pkg = getThreshdPackage(packageName);
+        if (action.equals(ConfigAction.ADD)) {
+            org.opennms.netmgt.config.threshd.Package pkg = getThreshdPackage(packageName);
+            if (!pkg.getOutageCalendarCollection().contains(outageName))
+                pkg.addOutageCalendar(outageName);
+        }
+        if (action.equals(ConfigAction.REMOVE)) {
+            org.opennms.netmgt.config.threshd.Package pkg = getThreshdPackage(packageName);
+            pkg.removeOutageCalendar(outageName);
+        }
+        if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
+            for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
                 pkg.removeOutageCalendar(outageName);
             }
-            if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-                for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
-                    pkg.removeOutageCalendar(outageName);
-                }
-            }
-            ThreshdConfigFactory.getInstance().saveCurrent();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add/remove scheduled outage " + outageName + " for threshold package " + packageName);
         }
+        ThreshdConfigFactory.getInstance().saveCurrent();
     }
 
-    private org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) {
+    private org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) throws IllegalArgumentException {
         org.opennms.netmgt.config.threshd.Package pkg = ThreshdConfigFactory.getInstance().getPackage(packageName);
-        if (pkg == null) throw getException(Status.BAD_REQUEST, "Threshold package " + packageName + " does not exist.");
+        if (pkg == null) throw new IllegalArgumentException("Threshold package " + packageName + " does not exist.");
         return pkg;
     }
 
-    private void updateNotifd(ConfigAction action, String outageName) {
+    private void updateNotifd(ConfigAction action, String outageName) throws Exception {
         getOutage(outageName); // Validate if outageName exists.
-        try {
-            NotifdConfigFactory factory = NotifdConfigFactory.getInstance();
-            if (action.equals(ConfigAction.ADD)) {
-                factory.getConfiguration().addOutageCalendar(outageName);
-            }
-            if (action.equals(ConfigAction.REMOVE)) {
-                factory.getConfiguration().removeOutageCalendar(outageName);
-            }
-            factory.saveCurrent();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add/remove scheduled outage " + outageName + " for notifications");
+        NotifdConfigFactory factory = NotifdConfigFactory.getInstance();
+        if (action.equals(ConfigAction.ADD)) {
+            factory.getConfiguration().addOutageCalendar(outageName);
         }
+        if (action.equals(ConfigAction.REMOVE) || action.equals(ConfigAction.REMOVE_FROM_ALL)) {
+            factory.getConfiguration().removeOutageCalendar(outageName);
+        }
+        factory.saveCurrent();
     }
 
     private void sendConfigChangedEvent() {

@@ -133,7 +133,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
                 SnmpValue value = entry.getValue();
 
                 // See if the service name is in the list of running services
-                if (stripExtraQuotes(value.toString()).equalsIgnoreCase(serviceName) && !status) {
+                if (match(serviceName, stripExtraQuotes(value.toString())) && !status) {
                     log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + " service name=" + serviceName + " value=" + value);
                     status = true;
                     break;
@@ -150,6 +150,13 @@ public class HostResourceSWRunDetector extends SnmpDetector {
 
         return status;
         
+    }
+
+    private boolean match(String expectedText, String currentText) {
+        if (expectedText.startsWith("~")) {
+            return currentText.matches(expectedText.replaceFirst("~", ""));
+        }
+        return currentText.equalsIgnoreCase(expectedText);
     }
 
     private static String stripExtraQuotes(String string) {

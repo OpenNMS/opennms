@@ -124,8 +124,17 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
             m_adapters.add(new EngineAdapter(engine));
         }
     }
+    
+    
 
-    /** {@inheritDoc} */
+    @Override
+	public void addCorrelationEngines(CorrelationEngine... engines) {
+    	for(CorrelationEngine engine : engines) {
+    		addCorrelationEngine(engine);
+    	}
+	}
+
+	/** {@inheritDoc} */
     public CorrelationEngine findEngineByName(final String name) {
     	for (final CorrelationEngine engine : m_engines) {
             if (name.equals(engine.getName())) {

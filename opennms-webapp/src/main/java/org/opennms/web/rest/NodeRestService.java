@@ -28,6 +28,9 @@
 
 package org.opennms.web.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -40,15 +43,18 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Subqueries;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -98,25 +104,39 @@ public class NodeRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsNodeList getNodes() {
-        OnmsNodeList coll = new OnmsNodeList(m_nodeDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
-
-        //For getting totalCount
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        addFiltersToCriteria(m_uriInfo.getQueryParameters(), criteria, OnmsNode.class);
-        criteria.createAlias("snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
-        criteria.setProjection(
-                Projections.distinct(
-                        Projections.projectionList().add(
-                                Projections.alias( Projections.property("id"), "id" )
-                        )
-                )
-        );
-        OnmsCriteria rootCriteria = new OnmsCriteria(OnmsNode.class);
-        rootCriteria.add(Subqueries.propertyIn("id", criteria.getDetachedCriteria()));
-        coll.setTotalCount(m_nodeDao.countMatching(rootCriteria));
-
-        return coll;
+        readLock();
+        
+        try {
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
+            builder.alias("snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
+            builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+    
+            final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
+            final String type = params.getFirst("type");
+    
+            applyQueryFilters(params, builder);
+            builder.orderBy("label").asc();
+            
+            final Criteria crit = builder.toCriteria();
+    
+            if (type == null) {
+                final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
+                restrictions.add(Restrictions.ne("type", "D"));
+                crit.setRestrictions(restrictions);
+            }
+            
+            final OnmsNodeList coll = new OnmsNodeList(m_nodeDao.findMatching(crit));
+            
+            crit.setLimit(null);
+            crit.setOffset(null);
+            crit.setOrders(new ArrayList<Order>());
+    
+            coll.setTotalCount(m_nodeDao.countMatching(crit));
+    
+            return coll;
+        } finally {
+            readUnlock();
+        }
     }
 
     /**
@@ -128,8 +148,13 @@ public class NodeRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{nodeCriteria}")
-    public OnmsNode getNode(@PathParam("nodeCriteria") String nodeCriteria) {
-        return m_nodeDao.get(nodeCriteria);
+    public OnmsNode getNode(@PathParam("nodeCriteria") final String nodeCriteria) {
+        readLock();
+        try {
+            return m_nodeDao.get(nodeCriteria);
+        } finally {
+            readUnlock();
+        }
     }
 
     /**
@@ -140,15 +165,21 @@ public class NodeRestService extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addNode(OnmsNode node) {
-        log().debug("addNode: Adding node " + node);
-        m_nodeDao.save(node);
+    public Response addNode(final OnmsNode node) {
+        writeLock();
+        
         try {
-            sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId());
-        } catch (EventProxyException ex) {
-            throw getException(Status.BAD_REQUEST, ex.getMessage());
+            LogUtils.debugf(this, "addNode: Adding node %s", node);
+            m_nodeDao.save(node);
+            try {
+                sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId());
+            } catch (EventProxyException ex) {
+                throw getException(Status.BAD_REQUEST, ex.getMessage());
+            }
+            return Response.ok(node).build();
+        } finally {
+            writeUnlock();
         }
-        return Response.ok(node).build();
     }
     
     /**
@@ -161,24 +192,30 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{nodeCriteria}")
-    public Response updateNode(@PathParam("nodeCriteria") String nodeCriteria, MultivaluedMapImpl params) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "updateNode: Can't find node " + nodeCriteria);
-        }
-        log().debug("updateNode: updating node " + node);
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(node);
-        for(String key : params.keySet()) {
-            if (wrapper.isWritableProperty(key)) {
-                String stringValue = params.getFirst(key);
-                @SuppressWarnings("unchecked")
-				Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
-                wrapper.setPropertyValue(key, value);
+    public Response updateNode(@PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
+        writeLock();
+        
+        try {
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) throw getException(Status.BAD_REQUEST, "updateNode: Can't find node " + nodeCriteria);
+    
+            LogUtils.debugf(this, "updateNode: updating node %s", node);
+    
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(node);
+            for(final String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    final String stringValue = params.getFirst(key);
+    				final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                }
             }
+    
+            LogUtils.debugf(this, "updateNode: node %s updated", node);
+            m_nodeDao.saveOrUpdate(node);
+            return Response.ok(node).build();
+        } finally {
+            writeUnlock();
         }
-        log().debug("updateNode: node " + node + " updated");
-        m_nodeDao.saveOrUpdate(node);
-        return Response.ok(node).build();
     }
     
     /**
@@ -189,19 +226,24 @@ public class NodeRestService extends OnmsRestService {
      */
     @DELETE
     @Path("{nodeCriteria}")
-    public Response deleteNode(@PathParam("nodeCriteria") String nodeCriteria) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "deleteNode: Can't find node " + nodeCriteria);
-        }
-        log().debug("deleteNode: deleting node " + nodeCriteria);
-        m_nodeDao.delete(node);
+    public Response deleteNode(@PathParam("nodeCriteria") final String nodeCriteria) {
+        writeLock();
+        
         try {
-            sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId());
-        } catch (EventProxyException ex) {
-            throw getException(Status.BAD_REQUEST, ex.getMessage());
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) throw getException(Status.BAD_REQUEST, "deleteNode: Can't find node " + nodeCriteria);
+    
+            LogUtils.debugf(this, "deleteNode: deleting node %s", nodeCriteria);
+            m_nodeDao.delete(node);
+            try {
+                sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId());
+            } catch (final EventProxyException ex) {
+                throw getException(Status.BAD_REQUEST, ex.getMessage());
+            }
+            return Response.ok().build();
+        } finally {
+            writeUnlock();
         }
-        return Response.ok().build();
     }
 
     /**
@@ -244,30 +286,8 @@ public class NodeRestService extends OnmsRestService {
         return m_context.getResource(AssetRecordResource.class);
     }
     
-    private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-
-        setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
-        addOrdering(params, criteria, false);
-        // Set default ordering
-        addOrdering(
-            new MultivaluedMapImpl(
-                new String[][] { 
-                    new String[] { "orderBy", "label" }, 
-                    new String[] { "order", "asc" } 
-                }
-            ), criteria, false
-        );
-        addFiltersToCriteria(params, criteria, OnmsNode.class);
-
-        criteria.createAlias("snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
-
-        return getDistinctIdCriteria(OnmsNode.class, criteria);
-    }
-    
-    private void sendEvent(String uei, int nodeId) throws EventProxyException {
-        EventBuilder bldr = new EventBuilder(uei, getClass().getName());
+    private void sendEvent(final String uei, final int nodeId) throws EventProxyException {
+        final EventBuilder bldr = new EventBuilder(uei, getClass().getName());
         bldr.setNodeid(nodeId);
         m_eventProxy.send(bldr.getEvent());
     }

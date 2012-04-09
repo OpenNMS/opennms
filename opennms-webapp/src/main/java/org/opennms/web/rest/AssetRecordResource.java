@@ -83,11 +83,16 @@ public class AssetRecordResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsAssetRecord getAssetRecord(@PathParam("nodeCriteria") String nodeCriteria) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "getCategories: Can't find node " + nodeCriteria);
+        readLock();
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "getCategories: Can't find node " + nodeCriteria);
+            }
+            return getAssetRecord(node);
+        } finally {
+            readUnlock();
         }
-        return getAssetRecord(node);
     }
     
     /**
@@ -100,36 +105,41 @@ public class AssetRecordResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response updateAssetRecord(@PathParam("nodeCriteria") String nodeCriteria,  MultivaluedMapImpl params) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "updateAssetRecord: Can't find node " + nodeCriteria);
-        }
-        
-        OnmsAssetRecord assetRecord = getAssetRecord(node);
-        if (assetRecord == null) {
-            throw getException(Status.BAD_REQUEST, "updateAssetRecord: Node " + node  + " could not update ");
-        }
-        log().debug("updateAssetRecord: updating category " + assetRecord);
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
-        for(String key : params.keySet()) {
-            if (wrapper.isWritableProperty(key)) {
-                String stringValue = params.getFirst(key);
-                Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
-                wrapper.setPropertyValue(key, value);
-            }
-        }
-   
-        log().debug("updateAssetRecord: assetRecord " + assetRecord + " updated");
-        m_nodeDao.saveOrUpdate(node);
+        writeLock();
         
         try {
-            sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
-        } catch (EventProxyException e) {
-            throw getException(Status.BAD_REQUEST, e.getMessage());
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "updateAssetRecord: Can't find node " + nodeCriteria);
+            }
+            
+            OnmsAssetRecord assetRecord = getAssetRecord(node);
+            if (assetRecord == null) {
+                throw getException(Status.BAD_REQUEST, "updateAssetRecord: Node " + node  + " could not update ");
+            }
+            log().debug("updateAssetRecord: updating category " + assetRecord);
+            BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
+            for(String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    String stringValue = params.getFirst(key);
+                    Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                }
+            }
+       
+            log().debug("updateAssetRecord: assetRecord " + assetRecord + " updated");
+            m_nodeDao.saveOrUpdate(node);
+            
+            try {
+                sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
+            } catch (EventProxyException e) {
+                throw getException(Status.BAD_REQUEST, e.getMessage());
+            }
+            
+            return Response.ok().build();
+        } finally {
+            writeUnlock();
         }
-        
-        return Response.ok().build();
-    
     }
 
     private OnmsAssetRecord getAssetRecord(OnmsNode node) {

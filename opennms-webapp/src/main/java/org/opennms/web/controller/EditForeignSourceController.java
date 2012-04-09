@@ -37,16 +37,23 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.PropertyPath;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.OnmsSeverityEditor;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.PrimaryTypeEditor;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
+import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.web.rest.support.InetAddressTypeEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Controller;
@@ -287,8 +294,12 @@ public class EditForeignSourceController extends SimpleFormController {
         }
         Set<String> parameters = new TreeSet<String>();
         try {
-            BeanWrapper wrapper = new BeanWrapperImpl(Class.forName(clazz));
-            for (PropertyDescriptor pd : wrapper.getPropertyDescriptors()) {
+            final BeanWrapper wrapper = new BeanWrapperImpl(Class.forName(clazz));
+            wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
+            wrapper.registerCustomEditor(java.net.InetAddress.class, new InetAddressTypeEditor());
+            wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityEditor());
+            wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeEditor());
+            for (final PropertyDescriptor pd : wrapper.getPropertyDescriptors()) {
                 if (!"class".equals(pd.getName())) {
                     parameters.add(pd.getName());
                 }

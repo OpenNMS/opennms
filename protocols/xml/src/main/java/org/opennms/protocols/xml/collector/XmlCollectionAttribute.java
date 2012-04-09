@@ -28,6 +28,7 @@
 
 package org.opennms.protocols.xml.collector;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
@@ -42,30 +43,25 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
  */
 public class XmlCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
 
-    /** The Attribute Name. */
-    private String m_name;
-
     /** The Attribute Value. */
     private String m_value;
 
     /** The XML Collection Resource associated with this attribute. */
     private XmlCollectionResource m_resource;
 
-    /** The Attribute Type. */
-    private CollectionAttributeType m_attribType;
+    /** The XML Attribute Type. */
+    private XmlCollectionAttributeType m_attribType;
 
     /**
      * Instantiates a new XML collection attribute.
      *
      * @param resource the resource
      * @param attribType the attribute type
-     * @param name the attribute name
      * @param value the attribute value
      */
-    public XmlCollectionAttribute(XmlCollectionResource resource, CollectionAttributeType attribType, String name, String value) {
+    public XmlCollectionAttribute(XmlCollectionResource resource, XmlCollectionAttributeType attribType, String value) {
         m_resource = resource;
         m_attribType = attribType;
-        m_name = name;
         m_value = value;
     }
 
@@ -80,14 +76,26 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getName()
      */
     public String getName() {
-        return m_name;
+        return m_attribType.getName();
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getNumericValue()
      */
     public String getNumericValue() {
-        return m_value;
+        try {
+            Double d = Double.parseDouble(m_value); // This covers negative and scientific notation numbers.
+            return d.toString();
+        } catch (Exception e) {
+            log().debug("getNumericValue: the value " + m_value + " is not a valid number. Removing invalid characters and try again.");
+            try {
+                Double d = Double.parseDouble(m_value.replaceAll("[^-\\d.]+", ""));  // Removing Units to return only a numeric value.
+                return d.toString();
+            } catch (Exception ex) {
+                log().warn("getNumericValue: the value " + m_value + " is not parsable as a valid numeric value.");
+            }
+        }
+        return "U"; // Ignoring value from RRDtool/JRobin point of view.
     }
 
     /* (non-Javadoc)
@@ -122,7 +130,16 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        return "XmlCollectionAttribute " + m_name + "=" + m_value;
+        return "XmlCollectionAttribute " + getName() + "=" + getStringValue();
+    }
+
+    /**
+     * Log.
+     *
+     * @return the thread category
+     */
+    protected ThreadCategory log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }

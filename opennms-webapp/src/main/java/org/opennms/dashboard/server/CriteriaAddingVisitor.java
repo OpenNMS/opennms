@@ -165,6 +165,7 @@ public class CriteriaAddingVisitor implements Visitor, InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_view != null, "view property must be set");
         Assert.state(m_categoryDao != null, "categoryDao property must be set");

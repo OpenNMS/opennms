@@ -83,6 +83,7 @@ public class UpsertTest implements InitializingBean {
     @Autowired
     TransactionTemplate m_transTemplate;
     
+    @Override
     public void afterPropertiesSet() {
         assertNotNull(m_upsertService);
         assertNotNull(m_nodeDao);

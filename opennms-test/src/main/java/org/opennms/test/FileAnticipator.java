@@ -105,7 +105,7 @@ public class FileAnticipator extends Assert {
             
             for (ListIterator<File> i = m_deleteMe.listIterator(m_deleteMe.size()); i.hasPrevious(); ) {
                 File f = i.previous();
-                if (!f.delete()) {
+                if (f.exists() && !f.delete()) {
                     StringBuffer b = new StringBuffer();
                     b.append("Could not delete " + f.getAbsolutePath() + ": is it a non-empty directory?");
                     b.append("\nDirectory listing:");

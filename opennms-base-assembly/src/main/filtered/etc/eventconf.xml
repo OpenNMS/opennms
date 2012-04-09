@@ -1919,6 +1919,20 @@
      <severity>Minor</severity>
      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false" />
   </event>
+  <event>
+     <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted</uei>
+     <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryStarted</event-label>
+     <descr>&lt;p&gt;The Linkd process has started its attempt to discover links for this node.&lt;/p&gt;</descr>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd link discovery started.&lt;/p&gt;</logmsg>
+     <severity>Normal</severity>
+  </event>
+  <event>
+     <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted</uei>
+     <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryCompleted</event-label>
+     <descr>&lt;p&gt;The Linkd process has finished its attempt to discover links for this node.&lt;/p&gt;</descr>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd link discovery completed.&lt;/p&gt;</logmsg>
+     <severity>Normal</severity>
+  </event>
 
 
   <event-file>events/Translator.default.events.xml</event-file>

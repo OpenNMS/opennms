@@ -38,12 +38,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.fiber.Fiber;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.HttpUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RTCConfigFactory;
@@ -79,12 +79,7 @@ final class DataSender implements Fiber {
     /**
      * The data sender thread pool
      */
-    private RunnableConsumerThreadPool m_dsrPool;
-
-    /**
-     * The queue to which data send requests are queued
-     */
-    private FifoQueue<Runnable> m_dataSenderQ;
+    private ExecutorService m_dsrPool;
 
     /**
      * The category to XML mapper
@@ -149,10 +144,7 @@ final class DataSender implements Fiber {
         m_catUrlMap = new HashMap<String, Set<HttpPostInfo>>();
 
         // create and start the data sender pool
-        m_dsrPool = new RunnableConsumerThreadPool("DataSenderPool", 0.6f, 1.0f, numSenders);
-
-        // get queue reference
-        m_dataSenderQ = m_dsrPool.getRunQueue();
+        m_dsrPool = Executors.newFixedThreadPool(numSenders);
 
         // create category converter
         m_euiMapper = new EuiLevelMapper();
@@ -166,14 +158,6 @@ final class DataSender implements Fiber {
      */
     public synchronized void start() {
         m_status = STARTING;
-
-        log().info("Starting the datasender thread pool..");
-        try {
-            m_dsrPool.start();
-            log().info("Datasender thread pool started..");
-        } catch (Throwable e) {
-            log().error("Error starting data sender pool", e);
-        }
 
         m_status = RUNNING;
     }
@@ -191,7 +175,7 @@ final class DataSender implements Fiber {
 
         log().info("DataSender - shutting down the data sender pool");
         try {
-            m_dsrPool.stop();
+            m_dsrPool.shutdown();
         } catch (Throwable e) {
             log().error("Error shutting down data sender pool", e);
         }
@@ -464,11 +448,9 @@ final class DataSender implements Fiber {
      */
     public synchronized void notifyToSend() {
         try {
-            m_dataSenderQ.add(new SendRequest());
-        } catch (InterruptedException iE) {
-            log().warn("Unable to queue datasender to the dsConsumer queue", iE);
-        } catch (FifoQueueException qE) {
-            log().warn("Unable to queue datasender to the dsConsumer queue", qE);
+            m_dsrPool.execute(new SendRequest());
+        } catch (RejectedExecutionException e) {
+            log().warn("Unable to queue datasender to the dsConsumer queue", e);
         }
     }
 }

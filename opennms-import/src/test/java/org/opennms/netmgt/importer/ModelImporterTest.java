@@ -37,12 +37,12 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.modelimport.Asset;
-import org.opennms.netmgt.config.modelimport.Category;
-import org.opennms.netmgt.config.modelimport.Interface;
-import org.opennms.netmgt.config.modelimport.ModelImport;
-import org.opennms.netmgt.config.modelimport.MonitoredService;
-import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.importer.config.Asset;
+import org.opennms.netmgt.importer.config.Category;
+import org.opennms.netmgt.importer.config.Interface;
+import org.opennms.netmgt.importer.config.ModelImport;
+import org.opennms.netmgt.importer.config.MonitoredService;
+import org.opennms.netmgt.importer.config.Node;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.ServiceTypeDao;
@@ -102,6 +102,7 @@ public class ModelImporterTest implements InitializingBean {
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
     
+    @Override
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_populator);
         assertNotNull(m_categoryDao);

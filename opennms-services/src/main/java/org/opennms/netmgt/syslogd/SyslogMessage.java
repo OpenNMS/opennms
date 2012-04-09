@@ -55,8 +55,8 @@ public class SyslogMessage {
         }
     };
 
-    private SyslogFacility m_facility;
-    private SyslogSeverity m_severity;
+    private SyslogFacility m_facility = SyslogFacility.UNKNOWN;
+    private SyslogSeverity m_severity = SyslogSeverity.UNKNOWN;
     private Integer m_version;
     private Date m_date;
     private String m_hostname;

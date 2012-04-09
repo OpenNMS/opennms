@@ -39,13 +39,6 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.oculan.com">Oculan Corporation </a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.oculan.com">Oculan Corporation </a>
- * @version $Id: $
  */
 public interface SyslogHandlerMBean extends BaseOnmsMBean {
     /**

@@ -38,12 +38,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.OnmsMapDao;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapList;
 import org.springframework.beans.BeanWrapper;
@@ -69,8 +69,6 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("maps")
 @Transactional
 public class OnmsMapRestService extends OnmsRestService {
-    private static final int LIMIT=10;
-
     @Autowired
     private OnmsMapDao m_mapDao;
 
@@ -88,8 +86,16 @@ public class OnmsMapRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsMapList getMaps() {
-        OnmsCriteria criteria = getQueryFilters();
-        return new OnmsMapList(m_mapDao.findMatching(criteria));
+        readLock();
+        
+        try {
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsMap.class);
+            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+            builder.orderBy("lastModifiedTime").desc();
+            return new OnmsMapList(m_mapDao.findMatching(builder.toCriteria()));
+        } finally {
+            readUnlock();
+        }
     }
 
     /**
@@ -101,8 +107,13 @@ public class OnmsMapRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{mapId}")
-    public OnmsMap getMap(@PathParam("mapId") int mapId) {
-        return m_mapDao.get(mapId);
+    public OnmsMap getMap(@PathParam("mapId") final int mapId) {
+        readLock();
+        try {
+            return m_mapDao.get(mapId);
+        } finally {
+            readUnlock();
+        }
     }
 
     /**
@@ -113,10 +124,15 @@ public class OnmsMapRestService extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addMap(OnmsMap map) {
-        log().debug("addMap: Adding map " + map);
-        m_mapDao.save(map);
-        return Response.ok(map).build();
+    public Response addMap(final OnmsMap map) {
+        writeLock();
+        try {
+            LogUtils.debugf(this, "addMap: Adding map %s", map);
+            m_mapDao.save(map);
+            return Response.ok(map).build();
+        } finally {
+            writeUnlock();
+        }
     }
 
     /**
@@ -127,12 +143,17 @@ public class OnmsMapRestService extends OnmsRestService {
      */
     @DELETE
     @Path("{mapId}")
-    public Response deleteMap(@PathParam("mapId") int mapId) {
-        OnmsMap map = m_mapDao.get(mapId);
-        if (map == null) throw getException(Response.Status.BAD_REQUEST, "deleteMap: Can't find map with id " + mapId);
-        log().debug("deleteMap: deleting map " + mapId);
-        m_mapDao.delete(map);
-        return Response.ok().build();
+    public Response deleteMap(@PathParam("mapId") final int mapId) {
+        writeLock();
+        try {
+            final OnmsMap map = m_mapDao.get(mapId);
+            if (map == null) throw getException(Response.Status.BAD_REQUEST, "deleteMap: Can't find map with id " + mapId);
+            LogUtils.debugf(this, "deleteMap: deleting map %d", mapId);
+            m_mapDao.delete(map);
+            return Response.ok().build();
+        } finally {
+            writeUnlock();
+        }
     }
 
     /**
@@ -145,22 +166,30 @@ public class OnmsMapRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{mapId}")
-    public Response updateMap(@PathParam("mapId") int mapId, MultivaluedMapImpl params) {
-        OnmsMap map = m_mapDao.get(mapId);
-        if (map == null) throw getException(Response.Status.BAD_REQUEST, "updateMap: Can't find map with id " + mapId);
-        log().debug("updateMap: updating map " + map);
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(map);
-        for(String key : params.keySet()) {
-            if (wrapper.isWritableProperty(key)) {
-                String stringValue = params.getFirst(key);
-                @SuppressWarnings("unchecked")
-				Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
-                wrapper.setPropertyValue(key, value);
+    public Response updateMap(@PathParam("mapId") final int mapId, final MultivaluedMapImpl params) {
+        writeLock();
+        
+        try {
+            final OnmsMap map = m_mapDao.get(mapId);
+            if (map == null) throw getException(Response.Status.BAD_REQUEST, "updateMap: Can't find map with id " + mapId);
+    
+            LogUtils.debugf(this, "updateMap: updating map %s", map);
+    
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(map);
+            for(final String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    final String stringValue = params.getFirst(key);
+    				final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                }
             }
+    
+            LogUtils.debugf(this, "updateMap: map %s updated", map);
+            m_mapDao.saveOrUpdate(map);
+            return Response.ok(map).build();
+        } finally {
+            writeUnlock();
         }
-        log().debug("updateMap: map " + map + " updated");
-        m_mapDao.saveOrUpdate(map);
-        return Response.ok(map).build();
     }
 
     /**
@@ -170,26 +199,11 @@ public class OnmsMapRestService extends OnmsRestService {
      */
     @Path("{mapId}/mapElements")
     public OnmsMapElementResource getMapElementResource() {
-        return m_context.getResource(OnmsMapElementResource.class);
-    }
-
-    private OnmsCriteria getQueryFilters() {
-        MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
-        OnmsCriteria criteria = new OnmsCriteria(OnmsMap.class);
-
-    	setLimitOffset(params, criteria, LIMIT, false);
-    	addOrdering(params, criteria, false);
-        // Set default ordering
-        addOrdering(
-                new MultivaluedMapImpl(
-                    new String[][] { 
-                        new String[] { "orderBy", "lastModifiedTime" }, 
-                        new String[] { "order", "desc" } 
-                    }
-                ), criteria, false
-            );
-    	addFiltersToCriteria(params, criteria, OnmsMap.class);
-
-        return getDistinctIdCriteria(OnmsMap.class, criteria);
+        readLock();
+        try {
+            return m_context.getResource(OnmsMapElementResource.class);
+        } finally {
+            readUnlock();
+        }
     }
 }

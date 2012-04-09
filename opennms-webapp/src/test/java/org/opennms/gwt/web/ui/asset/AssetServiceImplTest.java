@@ -31,6 +31,7 @@ package org.opennms.gwt.web.ui.asset;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
@@ -51,16 +52,16 @@ import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.springframework.security.Authentication;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.context.SecurityContext;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.context.SecurityContextImpl;
-import org.springframework.security.providers.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.security.userdetails.User;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
@@ -96,11 +97,11 @@ public class AssetServiceImplTest {
 
 	// private SecurityContextService m_securityContextService;
 
-	private final GrantedAuthority ROLE_ADMIN = new GrantedAuthorityImpl("ROLE_ADMIN");
+	private final GrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority(Authentication.ROLE_ADMIN);
 	
 	/*
-	private final GrantedAuthority ROLE_PROVISION = new GrantedAuthorityImpl("ROLE_PROVISION");
-	private final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl("ROLE_USER");
+	private final GrantedAuthority ROLE_PROVISION = new GrantedAuthorityImpl(Authentication.ROLE_PROVISION);
+	private final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.ROLE_USER);
 	*/
 
 	private final String USERNAME = "opennms";
@@ -125,7 +126,7 @@ public class AssetServiceImplTest {
 	private User invalidPower;
 	*/
 	
-	private Authentication m_auth;
+	private org.springframework.security.core.Authentication m_auth;
 	
 	private SecurityContext m_context;
 
@@ -135,7 +136,7 @@ public class AssetServiceImplTest {
 		m_context = new SecurityContextImpl();
 		
 		validAdmin = new User(USERNAME, PASS, true, true, true, true,
-				new GrantedAuthority[] { ROLE_ADMIN });
+				Arrays.asList(new GrantedAuthority[] { ROLE_ADMIN }));
 		
 		/*
 		invalidAdmin = new User(USERNAME, PASS, true, true, true, true,

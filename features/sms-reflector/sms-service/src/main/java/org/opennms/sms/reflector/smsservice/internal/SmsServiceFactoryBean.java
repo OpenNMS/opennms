@@ -84,6 +84,7 @@ public class SmsServiceFactoryBean implements FactoryBean<SmsService>, Initializ
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notEmpty(m_serviceList, "there must be at least one service in the SMS service list");
 	}

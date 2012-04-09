@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.importer.operations;
 
-import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
+import org.opennms.netmgt.importer.config.types.InterfaceSnmpPrimaryType;
 
 
 /**

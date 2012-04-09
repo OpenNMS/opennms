@@ -1,0 +1,26 @@
+reports=#foreach( $report in $reportsList )
+${report.id}#if( $foreach.hasNext ), \
+#end
+#end
+
+
+#foreach( $report in $reportsBody )
+
+#[[###########################################]]#
+#[[##]]# $report.id
+#[[###########################################]]#
+report.${report.id}.name=${report.name}
+report.${report.id}.columns=${report.graphResources}
+report.${report.id}.type=interfaceSnmp
+report.${report.id}.command=--title="${report.title}" \
+ --vertical-label="${report.verticalLabel}" \
+#foreach($graph in $report.graphs )
+ DEF:${graph.id}={rrd${foreach.count}}:${graph.resourceName}:AVERAGE \
+ AREA:${graph.id}#${graph.coloreB} \
+ LINE2:${graph.id}#${graph.coloreA}:"${graph.description}" \
+ GPRINT:${graph.id}:AVERAGE:" Avg \\: %8.2lf %s" \
+ GPRINT:${graph.id}:MIN:" Min \\: %8.2lf %s" \
+ GPRINT:${graph.id}:MAX:" Max \\: %8.2lf %s\\n" \
+#end
+
+#end

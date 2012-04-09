@@ -56,7 +56,6 @@ import javax.oss.fm.monitor.AlarmValue;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -124,7 +123,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author ranger
  * @version $Id: $
  */
-public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, EventListener, QoSD {
+public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, QoSD {
 
 	/**
 	 * <p>Constructor for QoSDimpl2.</p>
@@ -423,7 +422,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 			throw new UndeclaredThrowableException(ex);
 		}
 
-		// set up thread to handle incomming OpenNMS events
+		// set up thread to handle incoming OpenNMS events
 		log.info("Qosd.start(): initialising OpenNMSEventHandlerThread");
 		try {
 			openNMSEventHandlerThread= new OpenNMSEventHandlerThread();

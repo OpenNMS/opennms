@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.net.ssl.SSLContext;
 
@@ -117,10 +118,6 @@ public class HttpCollector implements ServiceCollector {
     private static final int DEFAULT_RETRY_COUNT = 2;
     private static final String DEFAULT_SO_TIMEOUT = "3000";
 
-    //Don't make this static because each service will have its own
-    //copy and the key won't require the service name as  part of the key.
-    private final HashMap<Integer, String> m_scheduledNodes = new HashMap<Integer, String>();
-
     private static final NumberFormat PARSER;
 
     private static NumberFormat RRD_FORMATTER;
@@ -142,6 +139,7 @@ public class HttpCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
         HttpCollectionSet collectionSet = new HttpCollectionSet(agent, parameters);
         collectionSet.setCollectionTimestamp(new Date());
@@ -171,7 +169,7 @@ public class HttpCollector implements ServiceCollector {
         HttpCollectionSet(CollectionAgent agent, Map<String, Object> parameters) {
             m_agent = agent;
             m_parameters = parameters;
-            m_status=ServiceCollector.COLLECTION_FAILED;
+            m_status=ServiceCollector.COLLECTION_SUCCEEDED;
         }
 
         public void collect() {
@@ -205,7 +203,6 @@ public class HttpCollector implements ServiceCollector {
                     m_status=ServiceCollector.COLLECTION_FAILED;
                 }
             }
-            m_status=ServiceCollector.COLLECTION_SUCCEEDED;
         }
 
         public CollectionAgent getAgent() {
@@ -316,11 +313,15 @@ public class HttpCollector implements ServiceCollector {
             //Not really a persist as such; it just stores data in collectionSet for later retrieval
             persistResponse(collectionSet, collectionResource, client, response);
         } catch (URISyntaxException e) {
-            throw new HttpCollectorException("Error building HttpClient URI");
+            throw new HttpCollectorException("Error building HttpClient URI", e);
         } catch (IOException e) {
-            throw new HttpCollectorException("IO Error retrieving page");
+            throw new HttpCollectorException("IO Error retrieving page", e);
         } catch (NoSuchAlgorithmException e) {
-            throw new HttpCollectorException("Could not find EmptyKeyRelaxedTrustSSLContext to allow connection to untrusted HTTPS hosts");
+            throw new HttpCollectorException("Could not find EmptyKeyRelaxedTrustSSLContext to allow connection to untrusted HTTPS hosts", e);
+        } catch (PatternSyntaxException e) {
+            throw new HttpCollectorException("Invalid regex specified in HTTP collection configuration: " + e.getMessage(), e);
+        } catch (Throwable e) {
+            throw new HttpCollectorException("Unexpected exception caught during HTTP collection: " + e.getMessage(), e);
         } finally {
             // Do we need to do any cleanup?
             // if (method != null) method.releaseConnection();
@@ -507,6 +508,10 @@ public class HttpCollector implements ServiceCollector {
             super(message);
         }
 
+        HttpCollectorException(String message, Throwable e) {
+            super(message);
+        }
+
         @Override
         public String toString() {
             StringBuffer buffer = new StringBuffer();
@@ -666,11 +671,11 @@ public class HttpCollector implements ServiceCollector {
 
     /** {@inheritDoc} 
      * @throws CollectionInitializationException */
+    @Override
     public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
 
         log().debug("initialize: Initializing HttpCollector.");
 
-        m_scheduledNodes.clear();
         initHttpCollectionConfig();
         initDatabaseConnectionFactory();
         initializeRrdRepository();
@@ -743,43 +748,23 @@ public class HttpCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
         log().debug("initialize: Initializing HTTP collection for agent: "+agent);
-        final Integer scheduledNodeKey = agent.getNodeId();
-        final String scheduledAddress = m_scheduledNodes.get(scheduledNodeKey);
 
-        if (scheduledAddress != null) {
-            log().info("initialize: Not scheduling interface for collection: "+scheduledAddress);
-            final StringBuffer sb = new StringBuffer();
-            sb.append("initialize service: ");
-
-            //If they include this parameter, use it for debug logging.
-            sb.append(determineServiceName(parameters));
-
-            sb.append(" for address: ");
-            sb.append(scheduledAddress);
-            sb.append(" already scheduled for collection on node: ");
-            sb.append(agent);
-            log().debug(sb.toString());
-            throw new IllegalStateException(sb.toString());
-        } else {
-            log().info("initialize: Scheduling interface for collection: "+scheduledAddress);
-            m_scheduledNodes.put(scheduledNodeKey, scheduledAddress);
-        }
-    }
-
-    private static String determineServiceName(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedString(parameters, "service-name", "HTTP");
+        // Add any initialization here
     }
 
     /**
      * <p>release</p>
      */
+    @Override
     public void release() {
         // TODO Auto-generated method stub
     }
 
     /** {@inheritDoc} */
+    @Override
     public void release(CollectionAgent agent) {
         // TODO Auto-generated method stub
     }

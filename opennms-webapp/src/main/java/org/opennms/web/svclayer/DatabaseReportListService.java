@@ -60,7 +60,10 @@ public interface DatabaseReportListService {
 
     List<ReportRepositoryDescription> getActiveRepositories();
 
+    @Deprecated
     List<DatabaseReportDescription> getOnlineReportsByRepositoryId(String repositoryId);
 
     List<DatabaseReportDescription> getReportsByRepositoryId(String repositoryId);
+
+    void reloadConfigurationFiles();
 }

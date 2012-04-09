@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="brozow" id="ncs-initialize">
+
+		<!-- 
+		
+		This is the generated hibernate DDL... I have change the hash name to more real names below
+		
+    create table ncscomponent (
+        id int8 not null,
+        depsRequired varchar(255),
+        downEventUei varchar(255),
+        foreignId varchar(255),
+        foreignSource varchar(255),
+        name varchar(255),
+        nodeForeignId varchar(255),
+        nodeForeignSource varchar(255),
+        type varchar(255),
+        upEventUei varchar(255),
+        version int4,
+        primary key (id)
+    )
+
+   create table ncs_attributes (
+        ncscomponent_id int8 not null,
+        value varchar(255) not null,
+        key varchar(255),
+        primary key (ncscomponent_id, key)
+    )
+
+    create table subcomponents (
+        component_id int8 not null,
+        subcomponent_id int8 not null,
+        primary key (component_id, subcomponent_id)
+    )
+
+    alter table ncs_attributes 
+        add constraint FK17D16ED891FC1352 
+        foreign key (ncscomponent_id) 
+        references ncscomponent
+
+    alter table subcomponents 
+        add constraint FK8DED7156781386F4 
+        foreign key (component_id) 
+        references ncscomponent
+
+    alter table subcomponents 
+        add constraint FK8DED71565E29E534 
+        foreign key (subcomponent_id) 
+        references ncscomponent
+
+
+		 -->
+		
+		
+		<createTable tableName="ncscomponent">
+			<column name="id" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_ncsid" />
+			</column>
+			
+			<column name="version" type="integer" />
+			
+			<column name="name" type="varchar(255)" />
+
+			<column name="type" type="varchar(255)" />
+			<column name="foreignsource" type="varchar(255)" />
+			<column name="foreignid" type="varchar(255)" />
+
+			<column name="depsrequired" type="varchar(12)" />
+			
+			<column name="nodeforeignsource" type="varchar(64)" />
+			<column name="nodeforeignid" type="varchar(64)" />
+
+			<column name="upeventuei" type="varchar(255)"/>
+			<column name="downeventuei" type="varchar(255)"/>
+			
+		</createTable>
+		
+		<createTable tableName="ncs_attributes" >
+
+			<column name="ncscomponent_id" type="integer">
+			  <constraints nullable="false"/>
+			</column>
+
+			<column name="key" type="varchar(255)">
+			  <constraints nullable="false"/>
+			</column>
+
+			<column name="value" type="varchar(255)">
+			  <constraints nullable="false"/>
+			</column>
+			
+		</createTable>
+		
+		<addPrimaryKey tableName="ncs_attributes" columnNames="ncscomponent_id, key" />
+		
+		
+		<createTable tableName="subcomponents" >
+		
+			<column name="component_id" type="integer">
+			  <constraints nullable="false"/>
+			</column>
+
+			<column name="subcomponent_id" type="integer">
+			  <constraints nullable="false"/>
+			</column>
+
+        </createTable>
+
+		<addPrimaryKey tableName="subcomponents" columnNames="component_id, subcomponent_id" />		
+		
+
+		<addForeignKeyConstraint constraintName="fk_ncs_attr_comp_id"
+			baseTableName="ncs_attributes" baseColumnNames="ncscomponent_id"
+			referencedTableName="ncscomponent" referencedColumnNames="id" />
+			
+		<addForeignKeyConstraint constraintName="fk_subcomp_comp_id"
+			baseTableName="subcomponents" baseColumnNames="component_id"
+			referencedTableName="ncscomponent" referencedColumnNames="id" />
+
+		<addForeignKeyConstraint constraintName="fk_subcomp_subcomp_id"
+			baseTableName="subcomponents" baseColumnNames="subcomponent_id"
+			referencedTableName="ncscomponent" referencedColumnNames="id" />
+
+	</changeSet>
+
+	<changeSet author="rangerrick" id="ncs-unique" runOnChange="true">
+		<!-- First, clean up duplicate data. -->
+		<createProcedure>
+			CREATE OR REPLACE FUNCTION cleanUpNcsData() RETURNS BOOLEAN AS $$
+			DECLARE
+			   obsoleteComponent RECORD;
+			   currentComponentID INTEGER;
+			BEGIN
+
+			   --# RAISE NOTICE 'cleaning up NCS components...';
+
+			   FOR obsoleteComponent IN SELECT DISTINCT n.id, n.type, n.foreignsource, n.foreignid FROM ncscomponent n WHERE n.id NOT IN (SELECT max(SubN.id) FROM ncscomponent subN GROUP BY subN.type, subN.foreignsource, subN.foreignId) ORDER BY n.type, n.foreignsource, n.foreignid, n.id LOOP
+
+			      currentComponentId := (SELECT max(id) FROM ncscomponent WHERE type=obsoleteComponent.type AND foreignSource=obsoleteComponent.foreignSource AND foreignId=obsoleteComponent.foreignId);
+
+			      --# RAISE NOTICE 'UPDATE subcomponents SET subcomponent_id=% WHERE subcomponent_id=%', currentComponentId, obsoleteComponent.id;
+			      UPDATE subcomponents SET subcomponent_id=currentComponentId WHERE subcomponent_id=obsoleteComponent.id;
+
+			   END LOOP;
+
+			   FOR obsoleteComponent IN SELECT DISTINCT n.id, n.type, n.foreignsource, n.foreignid FROM ncscomponent n WHERE n.id NOT IN (SELECT max(SubN.id) FROM ncscomponent subN GROUP BY subN.type, subN.foreignsource, subN.foreignId) ORDER BY n.type, n.foreignsource, n.foreignid, n.id LOOP
+
+			      --# RAISE NOTICE 'DELETE FROM ncs_attributes WHERE ncscomponent_id=%', obsoleteComponent.id;
+			      DELETE FROM ncs_attributes WHERE ncscomponent_id=obsoleteComponent.id;
+
+			      --# RAISE NOTICE 'DELETE FROM subcomponents WHERE component_id=%', obsoleteComponent.id;
+			      DELETE FROM subcomponents WHERE component_id=obsoleteComponent.id;
+
+			      --# RAISE NOTICE 'DELETE FROM ncscomponent WHERE id=%', obsoleteComponent.id;
+			      DELETE FROM ncscomponent WHERE id=obsoleteComponent.id;
+			   END LOOP;
+
+			   RETURN true;
+			END;
+			$$ LANGUAGE 'plpgsql';
+		</createProcedure>
+
+        <sql>SELECT cleanUpNcsData();</sql>
+        <sql>DROP FUNCTION cleanUpNcsData();</sql>
+
+		<!-- Next, add unique constraints. -->
+
+		<addUniqueConstraint tableName="ncscomponent"  columnNames="type, foreignsource, foreignid" />
+		<addUniqueConstraint tableName="subcomponents" columnNames="component_id, subcomponent_id" />
+	</changeSet>
+
+</databaseChangeLog>

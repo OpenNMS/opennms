@@ -85,6 +85,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.acknowledgments.AckService;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * <p>HypericAckProcessor class.</p>
@@ -646,6 +647,7 @@ public class HypericAckProcessor implements AckProcessor {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
     }
 

@@ -48,6 +48,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      * @return a {@link javax.sql.DataSource} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public DataSource getObject() throws Exception {
         return DataSourceFactory.getDataSource();
     }
@@ -57,6 +58,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      *
      * @return a {@link java.lang.Class} object.
      */
+    @Override
     public Class<? extends DataSource> getObjectType() {
         return (DataSourceFactory.getDataSource() == null ? DataSource.class : DataSourceFactory.getDataSource().getClass());
     }
@@ -66,6 +68,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      *
      * @return a boolean.
      */
+    @Override
     public boolean isSingleton() {
         return true;
     }
@@ -75,6 +78,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         DataSourceFactory.init();
         Vault.setDataSource(DataSourceFactory.getInstance()); // Fix for Bug 4117
@@ -85,6 +89,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void destroy() throws Exception {
         log().info("Closing DataSourceFactory!!!");
         DataSourceFactory.close();

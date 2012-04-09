@@ -47,24 +47,23 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.provision.persist.PrimaryTypeAdapter;
 
 
 /**
  * <p>RequisitionInterface class.</p>
- *
- * @author ranger
- * @version $Id: $
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name="", propOrder = { "m_monitoredServices", "m_categories" })
 @XmlRootElement(name = "interface")
 public class RequisitionInterface implements Comparable<RequisitionInterface> {
 
     //TODO Change these to be sets so that we don't have to verify duplicates in the lists
-    
     @XmlElement(name="monitored-service")
     protected List<RequisitionMonitoredService> m_monitoredServices = new ArrayList<RequisitionMonitoredService>();
 
@@ -80,8 +79,8 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     @XmlAttribute(name="managed")
     protected Boolean m_isManaged;
     
-    @XmlAttribute(name="snmp-primary")
-    protected String m_snmpPrimary;
+    // annotated on the class, for some compatibility/initialization
+    protected PrimaryType m_snmpPrimary;
     
     @XmlAttribute(name="status")
     protected Integer m_status;
@@ -338,7 +337,9 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getSnmpPrimary() {
+    @XmlAttribute(name="snmp-primary")
+    @XmlJavaTypeAdapter(PrimaryTypeAdapter.class)
+    public PrimaryType getSnmpPrimary() {
         return m_snmpPrimary;
     }
 
@@ -347,7 +348,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      *
      * @param value a {@link java.lang.String} object.
      */
-    public void setSnmpPrimary(String value) {
+    public void setSnmpPrimary(final PrimaryType value) {
         m_snmpPrimary = value;
     }
 

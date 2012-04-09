@@ -43,7 +43,6 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.serviceregistration.ServiceRegistrationFactory;
 import org.opennms.serviceregistration.ServiceRegistrationStrategy;
 
@@ -53,7 +52,7 @@ import org.opennms.serviceregistration.ServiceRegistrationStrategy;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class JettyServer extends AbstractServiceDaemon implements SpringServiceDaemon {
+public class JettyServer extends AbstractServiceDaemon {
     
     int m_port = 8080;
 

@@ -49,13 +49,6 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
      * <p>Constructor for AbstractForeignSourceRepository.</p>
      */
     public AbstractForeignSourceRepository() {
-    	/* using JAXBUtils now, it should resolve properly
-        try {
-            m_jaxbContextResolver = new ProvisionPrefixContextResolver();
-        } catch (JAXBException e) {
-            throw new ForeignSourceRepositoryException("unable to get JAXB context resolver", e);
-        }
-        */
     }
 
     /** {@inheritDoc} */
@@ -126,5 +119,29 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         Requisition req = getRequisition(foreignSource);
         return (req == null ? null : req.getNodeRequistion(foreignId));
+    }
+    
+    public void validate(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    	/*
+    	final String name = foreignSource.getName();
+		if (name.contains(":")) {
+    		throw new ForeignSourceRepositoryException("Foreign Source (" + name + ") cannot contain a colon!");
+    	}
+    	*/
+    }
+    
+    public void validate(final Requisition requisition) throws ForeignSourceRepositoryException {
+    	/*
+    	final String foreignSource = requisition.getForeignSource();
+		if (foreignSource.contains(":")) {
+    		throw new ForeignSourceRepositoryException("Foreign Source (" + foreignSource + ") cannot contain a colon!");
+    	}
+    	for (final RequisitionNode node : requisition.getNodes()) {
+    		final String foreignId = node.getForeignId();
+			if (foreignId.contains(":")) {
+        		throw new ForeignSourceRepositoryException("Foreign ID (" + foreignId + ") for node " + node.getNodeLabel() + " in Foreign Source " + foreignSource + " cannot contain a colon!");
+    		}
+    	}
+    	*/
     }
 }

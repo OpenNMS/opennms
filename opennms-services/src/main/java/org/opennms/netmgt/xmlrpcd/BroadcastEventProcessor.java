@@ -128,7 +128,6 @@ final class BroadcastEventProcessor implements EventListener {
             }
         } catch (final InterruptedException ex) {
         	LogUtils.errorf(this, ex, "Failed to process event");
-            Thread.currentThread().interrupt();
             return;
         } catch (final FifoQueueException ex) {
             LogUtils.errorf(this, ex, "Failed to process event");

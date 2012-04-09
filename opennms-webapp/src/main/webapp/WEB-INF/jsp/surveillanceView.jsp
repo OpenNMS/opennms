@@ -39,6 +39,8 @@
 	<jsp:param name="breadcrumb" value="Surveillance" />
 </jsp:include>
 
+<jsp:include page="/includes/surveillance-key.jsp" flush="false" />
+
 <h3>Surveillance View: ${webTable.title}</h3>
 
 <table>

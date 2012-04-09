@@ -612,6 +612,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         
         Assert.notNull(m_onmsNodeDao, "Map Provisioning Adapter requires nodeDao property to be set.");

@@ -53,7 +53,7 @@ import org.opennms.netmgt.xml.event.Log;
 /**
  * This is the interface used to send events into the event subsystem - It is
  * typically used by the poller framework plugins that perform service
- * monitoring to send out aprropriate events. Can also be used by capsd,
+ * monitoring to send out appropriate events. Can also be used by capsd,
  * discovery etc.
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>

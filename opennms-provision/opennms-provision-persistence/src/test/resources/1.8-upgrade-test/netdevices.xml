@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import last-import="2011-07-26T01:23:30.812Z" foreign-source="netdevices" date-stamp="2011-07-26T01:23:30.712Z" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="a200-1.somemediathing.net" foreign-id="1306533060493" building="netdevices">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.1.23" descr="">
+            <monitored-service service-name="SSH"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+    </node>
+    <node node-label="vrrp.somemediathing.net" foreign-id="1278550105636" building="netdevices">
+        <interface status="1" snmp-primary="N" ip-addr="10.0.0.229" descr=""/>
+        <interface status="1" snmp-primary="N" ip-addr="10.0.0.254" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <interface status="1" snmp-primary="N" ip-addr="10.0.8.1" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+    </node>
+    <node node-label="alice-lan.somemediathing.net" foreign-id="1276237314921" building="netdevices">
+        <interface status="1" snmp-primary="N" ip-addr="10.0.8.3" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <interface status="1" snmp-primary="N" ip-addr="10.4.0.2" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.11" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <interface status="1" snmp-primary="N" ip-addr="172.16.101.54" descr=""/>
+        <interface status="1" snmp-primary="P" ip-addr="10.0.0.249" descr="">
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="Routers"/>
+    </node>
+    <node node-label="flo-lan.somemediathing.net" foreign-id="1276237138896" building="netdevices">
+        <interface status="1" snmp-primary="N" ip-addr="10.0.8.4" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <interface status="1" snmp-primary="N" ip-addr="10.4.0.3" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.12" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <interface status="1" snmp-primary="N" ip-addr="172.16.101.55" descr=""/>
+        <interface status="1" snmp-primary="P" ip-addr="10.0.0.248" descr="">
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="Routers"/>
+    </node>
+</model-import>

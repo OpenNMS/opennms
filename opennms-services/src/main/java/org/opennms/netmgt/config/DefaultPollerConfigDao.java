@@ -62,6 +62,7 @@ public class DefaultPollerConfigDao implements InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
         Assert.state(m_localServer != null, "property localServer must be set to a non-null value");

@@ -89,6 +89,7 @@ public class DetectorWiringTest implements InitializingBean {
     @Autowired 
     private TcpDetector m_tcpDetector;
 
+    @Override
     public void afterPropertiesSet() {
         assertNotNull(m_httpDetector);
         assertNotNull(m_pop3Detector);

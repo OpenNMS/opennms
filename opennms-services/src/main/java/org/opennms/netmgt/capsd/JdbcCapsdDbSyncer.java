@@ -383,6 +383,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
      * Returns the service ID from the service table that was loaded
      * during class initialization for the specified name.
      */
+    @Override
     public Integer getServiceId(String name) {
         Assert.notNull(name, "name argument must not be null");
         return m_serviceNameToId.get(name);
@@ -394,6 +395,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
      * Returns the service name from the service table that was loaded
      * during class initialization for the specified ID.
      */
+    @Override
     public String getServiceName(Integer id) {
         Assert.notNull(id, "id argument must not be null");
         return m_serviceIdToName.get(id);
@@ -406,6 +408,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     /**
      * <p>syncServices</p>
      */
+    @Override
     public void syncServices() {
         m_jdbcTemplate.execute(new ConnectionCallback<Object>() {
             public Object doInConnection(Connection con) throws SQLException, DataAccessException {
@@ -476,6 +479,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> syncServicesTable() {
         return m_jdbcTemplate.execute(new ConnectionCallback<List<String>>() {
 
@@ -562,6 +566,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     /**
      * <p>syncManagementState</p>
      */
+    @Override
     public void syncManagementState() {
         m_jdbcTemplate.execute(new ConnectionCallback<Object>() {
 
@@ -866,6 +871,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     /**
      * <p>syncSnmpPrimaryState</p>
      */
+    @Override
     public void syncSnmpPrimaryState() {
         m_jdbcTemplate.execute(new ConnectionCallback<Object>() {
 
@@ -1174,9 +1180,9 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_jdbcTemplate != null, "property jdbcTemplate must be set to a non-null value");
-        Assert.state(m_capsdConfig != null, "property capsdConfig must be set to a non-null value");
         Assert.state(m_opennmsServerConfig != null, "property opennmsServerConfig must be set to a non-null value");
         Assert.state(m_pollerConfig != null, "property pollerConfig must be set to a non-null value");
         Assert.state(m_collectdConfig != null, "property collectdConfig must be set to a non-null value");
@@ -1237,6 +1243,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
      * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#isInterfaceInDB(java.sql.Connection, java.net.InetAddress)
      */
     /** {@inheritDoc} */
+    @Override
     public boolean isInterfaceInDB(final InetAddress ifAddress) {
         return m_jdbcTemplate.execute(new ConnectionCallback<Boolean>() {
 
@@ -1248,6 +1255,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isInterfaceInDB(Connection dbConn, InetAddress ifAddress) throws SQLException {
         boolean result = false;
     

@@ -82,6 +82,7 @@ public class DnsProvisioningAdapterIntegrationTest implements InitializingBean {
     @Autowired
     private DnsProvisioningAdapter m_adapter; 
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_nodeDao, "Autowiring failed, node dao is null");
         Assert.notNull(m_mockEventIpcManager, "Autowiring failed, ipc manager is null");

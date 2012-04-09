@@ -3,28 +3,29 @@
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd"> 
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd"> 
 
 
 	<!-- this is a pidgin version of the context from opennms-webapps, start there if you haven't already -->
 
    <!-- was mappedEntryPoint -->
-	<http realm="OpenNMS Realm" entry-point-ref="_basicAuthenticationEntryPoint">
+	<http pattern="/**" realm="OpenNMS Realm">
       <intercept-url pattern="/"            access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
       <intercept-url pattern="/index.html"  access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
       <intercept-url pattern="/webstart/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
 		<intercept-url pattern="/**"          access="ROLE_ADMIN,ROLE_REMOTING" />
-		<anonymous />
 		<http-basic />
+		<custom-filter position="LAST" ref="authFilterEnabler"/>
 	</http>
 
-	<authentication-provider user-service-ref="openNMSUserDetailsService">
-		<password-encoder ref="upperCaseMd5PasswordEncoder" />
-	</authentication-provider>
+	<authentication-manager>
+		<authentication-provider user-service-ref="openNMSUserDetailsService">
+			<password-encoder ref="upperCaseMd5PasswordEncoder" />
+		</authentication-provider>
+	</authentication-manager>
 
 	<!--  This filter is used to setup the Hibernate query filtering to authorized nodes only -->
 	<beans:bean id="authFilterEnabler" class="org.opennms.web.springframework.security.AuthFilterEnabler">
-		<custom-filter position="LAST"/>
 		<beans:property name="filterManager" ref="filterManager" />
 		<beans:property name="groupDao" ref="groupDao" />
 	</beans:bean>

@@ -426,7 +426,6 @@ public class JasperReportService implements ReportService {
      * @param mainReport   JasperReport a compiled main report
      * @return a sub report parameter map as {@link java.util.HashMap<String,Object>} object
      */
-    @SuppressWarnings("unchecked")
     private HashMap<String, Object> buildSubreport(String mainReportId, JasperReport mainReport) {
         String repositoryId = mainReportId.substring(0, mainReportId.indexOf("_"));
         HashMap<String, Object> subreportMap = new HashMap<String, Object>();
@@ -439,7 +438,7 @@ public class JasperReportService implements ReportService {
             }
         }
 
-        for (@SuppressWarnings("rawtypes") Map.Entry entry : subreportMap.entrySet()) {
+        for (Map.Entry<String,Object> entry : subreportMap.entrySet()) {
             try {
                 entry.setValue(JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(repositoryId + "_" + entry.getKey())));
             } catch (JRException e) {
@@ -447,7 +446,7 @@ public class JasperReportService implements ReportService {
             }
         }
 
-        for (@SuppressWarnings("rawtypes") Map.Entry entry : subreportMap.entrySet()) {
+        for (Map.Entry<String,Object> entry : subreportMap.entrySet()) {
             System.out.println("Key: " + entry.getKey() + " - " + "Value: " + entry.getValue());
         }
         return subreportMap;

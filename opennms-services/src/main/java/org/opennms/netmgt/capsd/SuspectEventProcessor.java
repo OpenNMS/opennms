@@ -1622,7 +1622,7 @@ final class SuspectEventProcessor implements Runnable {
         //
         if (newPrimarySnmpIf != null) {
             if (log().isDebugEnabled())
-                log().debug("setPrimarySnmpInterface:  Updating primary SNMP interface "
+                log().debug("setPrimarySnmpInterface: Updating primary SNMP interface "
                         + str(newPrimarySnmpIf));
 
             // Update the appropriate entry in the 'ipInterface' table
@@ -1637,7 +1637,7 @@ final class SuspectEventProcessor implements Runnable {
 
                 stmt.executeUpdate();
                 if (log().isDebugEnabled())
-                    log().debug("setPrimarySnmpInterface: completed update of new primary interface to PRIMARY.");
+                    log().debug("setPrimarySnmpInterface: Completed update of new primary interface to PRIMARY.");
             } finally {
                 d.cleanUp();
             }

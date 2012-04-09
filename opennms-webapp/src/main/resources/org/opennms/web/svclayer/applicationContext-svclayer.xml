@@ -112,6 +112,7 @@
     <property name="nodeDao" ref="nodeDao"/>
     <property name="categoryDao" ref="categoryDao"/>
     <property name="serviceTypeDao" ref="serviceTypeDao"/>
+    <property name="capsdConfig" ref="capsdConfig"/>
   </bean>
   <!-- Graphing -->
   <bean id="resourceService" class="org.opennms.web.svclayer.support.DefaultResourceService">

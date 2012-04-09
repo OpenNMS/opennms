@@ -8,9 +8,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
   <artifactId>selenium-monitor</artifactId>
-  <name>OpenNMS - Selenium Monitor</name>
+  <name>OpenNMS Selenium Monitor</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <seleniumVersion>2.7.0</seleniumVersion>
   </properties>
 
   <build>
@@ -39,13 +40,11 @@
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence-api</artifactId>
-      <version>1.0</version>
     </dependency>
 
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.2</version>
       <!-- Overrided scope from parent to compile -->
       <scope>compile</scope>
     </dependency>
@@ -53,38 +52,47 @@
     <dependency>
 		<groupId>org.opennms</groupId>
     	<artifactId>opennms-services</artifactId>
-    	<version>${project.version}</version>
     	<scope>provided</scope>
     </dependency>
     
     <dependency>
     	<groupId>org.seleniumhq.selenium</groupId>
     	<artifactId>selenium-java</artifactId>
-    	<version>2.7.0</version>
+    	<version>${seleniumVersion}</version>
     </dependency>
     
     <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-support</artifactId>
-        <version>2.7.0</version>
+        <version>${seleniumVersion}</version>
     </dependency>
     
     <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-firefox-driver</artifactId>
-        <version>2.7.0</version>
+        <version>${seleniumVersion}</version>
     </dependency>
     
     <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-chrome-driver</artifactId>
-        <version>2.7.0</version>
+        <version>${seleniumVersion}</version>
     </dependency>
     
     <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-api</artifactId>
-        <version>2.7.0</version>
+        <version>${seleniumVersion}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+    </dependency>
+    
+    <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
     </dependency>
     
     <dependency>

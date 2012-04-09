@@ -33,6 +33,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.opennms.core.utils.Base64;
@@ -1019,6 +1020,13 @@ public class EventConstants {
     public static final String PARM_ENDPOINT2 = "endPoint2";
 
     //
+    // for NCS service
+    //
+    public static final String COMPONENT_ADDED_UEI   = "uei.opennms.org/internal/ncs/componentAdded";
+    public static final String COMPONENT_DELETED_UEI = "uei.opennms.org/internal/ncs/componentDeleted";
+    public static final String COMPONENT_UPDATED_UEI = "uei.opennms.org/internal/ncs/componentUpdated";
+
+    //
     // For Trapd
     //
 
@@ -1075,7 +1083,19 @@ public class EventConstants {
 
     static final ThreadLocal<DateFormat> FORMATTER_FULL = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+            int timeFormat = DateFormat.FULL;
+            // The DateFormat.FULL format for France/Germany do not include the seconds digit
+            // which is necessary to have sub-minute resolution in event times. For these
+            // locales, we'll fall back to using DateFormat.LONG.
+            //
+            // @see org.opennms.netmgt.DateFormatLocaleTest
+            //
+            if (Locale.getDefault().getLanguage().equals(Locale.FRANCE.getLanguage())) {
+                timeFormat = DateFormat.LONG;
+            } else if (Locale.getDefault().getLanguage().equals(Locale.GERMANY.getLanguage())) {
+                timeFormat = DateFormat.LONG;
+            }
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, timeFormat);
             formatter.setLenient(true);
             return formatter;
         }
@@ -1091,7 +1111,19 @@ public class EventConstants {
     
     static final ThreadLocal<DateFormat> FORMATTER_FULL_GMT = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+            int timeFormat = DateFormat.FULL;
+            // The DateFormat.FULL format for France/Germany do not include the seconds digit
+            // which is necessary to have sub-minute resolution in event times. For these
+            // locales, we'll fall back to using DateFormat.LONG.
+            //
+            // @see org.opennms.netmgt.DateFormatLocaleTest
+            //
+            if (Locale.getDefault().getLanguage().equals(Locale.FRANCE.getLanguage())) {
+                timeFormat = DateFormat.LONG;
+            } else if (Locale.getDefault().getLanguage().equals(Locale.GERMANY.getLanguage())) {
+                timeFormat = DateFormat.LONG;
+            }
+            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, timeFormat);
             formatter.setLenient(true);
             formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
             return formatter;
@@ -1146,6 +1178,18 @@ public class EventConstants {
                 return FORMATTER_FULL.get().parse(timeString);
             }
         }
+    }
+
+    /**
+     * A utility method to format a 'Date' into a string in the locale-specific
+     * FULL DateFormat style for both the date and time.
+     *
+     * @see java.text.DateFormat
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static final String formatToFullString(final Date date) {
+    	return FORMATTER_FULL_GMT.get().format(date);
     }
 
     /**

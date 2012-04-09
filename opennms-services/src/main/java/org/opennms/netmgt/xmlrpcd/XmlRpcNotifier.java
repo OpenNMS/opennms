@@ -148,9 +148,9 @@ public final class XmlRpcNotifier {
     private XmlRpcClient m_xmlrpcClient;
 
     /**
-     * A boolean flag configurated to indicate to how to set the NMS server
+     * A boolean flag to indicate to how to set the NMS server
      * Name: From user opennms server configuration or simply take from
-     * InetAddress.getLocalHost().
+     * InetAddressUtils.getLocalHostAddress().
      */
     private boolean m_verifyServer;
 
@@ -677,9 +677,8 @@ public final class XmlRpcNotifier {
 
                 try {
                     Thread.sleep(m_elapseTime);
-                } catch (InterruptedException ie) {
+                } catch (final InterruptedException ie) {
                 	LogUtils.infof(this, ie, "Interrupted while waiting to retry.");
-                	Thread.currentThread().interrupt();
                 }
             }
 

@@ -109,6 +109,7 @@ public class DefaultAckServiceTest implements InitializingBean {
         m_populator.populateDatabase();
     }
     
+    @Override
     public void afterPropertiesSet() {
         Assert.assertNotNull(m_ackService);
         Assert.assertNotNull(m_ackDao);

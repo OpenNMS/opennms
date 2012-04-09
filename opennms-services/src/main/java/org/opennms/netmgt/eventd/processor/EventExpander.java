@@ -126,13 +126,14 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_eventConfDao != null, "property eventConfDao must be set");
     }
 
     /**
      * This method is used to transform an event configuration mask instance
-     * into an event mask instance. This is used when the incomming event does
+     * into an event mask instance. This is used when the incoming event does
      * not have a mask and the information from the configuration object is
      * copied.
      * 
@@ -167,7 +168,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
 
     /**
      * This method is used to transform an SNMP event configuration instance
-     * into an SNMP event instance. This is used when the incomming event does
+     * into an SNMP event instance. This is used when the incoming event does
      * not have any SNMP information and the information from the configuration
      * object is copied.
      * 
@@ -198,7 +199,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform a log message event configuration
      * instance into a log message event instance. This is used when the
-     * incomming event does not have any log message information and the
+     * incoming event does not have any log message information and the
      * information from the configuration object is copied.
      * 
      * @param src
@@ -220,7 +221,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform a correlation event configuration
      * instance into a correlation event instance. This is used when the
-     * incomming event does not have any correlation information and the
+     * incoming event does not have any correlation information and the
      * information from the configuration object is copied.
      * 
      * @param src
@@ -245,7 +246,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform an auto action event configuration
      * instance into an auto action event instance. This is used when the
-     * incomming event does not have any auto action information and the
+     * incoming event does not have any auto action information and the
      * information from the configuration object is copied.
      * 
      * @param src
@@ -266,7 +267,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform an operator action event configuration
      * instance into an operator action event instance. This is used when the
-     * incomming event does not have any operator action information and the
+     * incoming event does not have any operator action information and the
      * information from the configuration object is copied.
      * 
      * @param src
@@ -288,7 +289,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform an auto acknowledgement event
      * configuration instance into an auto acknowledgement event instance. This
-     * is used when the incomming event does not have any auto acknowledgement
+     * is used when the incoming event does not have any auto acknowledgement
      * information and the information from the configuration object is copied.
      * 
      * @param src
@@ -309,7 +310,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform a trouble ticket event configuration
      * instance into a trouble ticket event instance. This is used when the
-     * incomming event does not have any trouble ticket information and the
+     * incoming event does not have any trouble ticket information and the
      * information from the configuration object is copied.
      * 
      * @param src
