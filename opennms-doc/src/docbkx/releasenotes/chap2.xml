@@ -6,6 +6,71 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="opennms-1.10.1">
+		<title>Changes in OpenNMS 1.10.1</title>
+
+		<section id="opennms-1.10.1-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>ONMS in &quot;fr&quot; and &quot;de&quot; locales: all event times end in hh:mm:00 (no seconds) (Issue <ulink url='http://issues.opennms.org/browse/NMS-3111'>NMS-3111</ulink>)</para></listitem>
+				<listitem><para>Model importer can silently fail and report importSuccessful when given badly formed XML (Issue <ulink url='http://issues.opennms.org/browse/NMS-4205'>NMS-4205</ulink>)</para></listitem>
+				<listitem><para>Errors in master pom.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-4950'>NMS-4950</ulink>)</para></listitem>
+				<listitem><para>KSC Child Resource List is not in alphabetical order (Issue <ulink url='http://issues.opennms.org/browse/NMS-4957'>NMS-4957</ulink>)</para></listitem>
+				<listitem><para>Excluded IP ranges are ignored in discovery (Issue <ulink url='http://issues.opennms.org/browse/NMS-5045'>NMS-5045</ulink>)</para></listitem>
+				<listitem><para>Clicking the search button on the Node Interfaces Gizmo causes strange 128 Interface to appear (Issue <ulink url='http://issues.opennms.org/browse/NMS-5054'>NMS-5054</ulink>)</para></listitem>
+				<listitem><para>missing interfaces on node page -&gt; physical interface list (Issue <ulink url='http://issues.opennms.org/browse/NMS-5127'>NMS-5127</ulink>)</para></listitem>
+				<listitem><para>Asset CSV import will not import new asset fields. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5146'>NMS-5146</ulink>)</para></listitem>
+				<listitem><para>Reload KSC Report Configuration - Button fails (Issue <ulink url='http://issues.opennms.org/browse/NMS-5148'>NMS-5148</ulink>)</para></listitem>
+				<listitem><para>Linkd generates undefined event (Issue <ulink url='http://issues.opennms.org/browse/NMS-5149'>NMS-5149</ulink>)</para></listitem>
+				<listitem><para>Errors inside the Event Analysis Report related with &quot;Top 25 events by node&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-5161'>NMS-5161</ulink>)</para></listitem>
+				<listitem><para>opennms-core RPM is huge - war files packaged in /opt/opennms/lib (Issue <ulink url='http://issues.opennms.org/browse/NMS-5166'>NMS-5166</ulink>)</para></listitem>
+				<listitem><para>Exceptions thrown by one provisioning adapter block further adapters from invocation (Issue <ulink url='http://issues.opennms.org/browse/NMS-5167'>NMS-5167</ulink>)</para></listitem>
+				<listitem><para>etc-pristine in opennms-core contains configuration files from optional packages like the XML Collector (Issue <ulink url='http://issues.opennms.org/browse/NMS-5168'>NMS-5168</ulink>)</para></listitem>
+				<listitem><para>malformed snmp-config.xml entry could cause config to not be read (Issue <ulink url='http://issues.opennms.org/browse/NMS-5172'>NMS-5172</ulink>)</para></listitem>
+				<listitem><para>Only 20 interfaces shown (Issue <ulink url='http://issues.opennms.org/browse/NMS-5176'>NMS-5176</ulink>)</para></listitem>
+				<listitem><para>database report input date wrong (Issue <ulink url='http://issues.opennms.org/browse/NMS-5177'>NMS-5177</ulink>)</para></listitem>
+				<listitem><para>Unable to manually provision service via GUI without first defining detector (Issue <ulink url='http://issues.opennms.org/browse/NMS-5178'>NMS-5178</ulink>)</para></listitem>
+				<listitem><para>Any authenticated user can use the snmpConfig ReST service (Issue <ulink url='http://issues.opennms.org/browse/NMS-5184'>NMS-5184</ulink>)</para></listitem>
+				<listitem><para>Default Provisiond config contains a dns://localhost/localhost URL requisition-def  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5188'>NMS-5188</ulink>)</para></listitem>
+				<listitem><para>Old asset field &quot;maintContractNumber&quot; in legacy requisitions breaks provisioning after uprading to 1.10 (Issue <ulink url='http://issues.opennms.org/browse/NMS-5191'>NMS-5191</ulink>)</para></listitem>
+				<listitem><para>reparenting of snmp interfaces fails (Issue <ulink url='http://issues.opennms.org/browse/NMS-5195'>NMS-5195</ulink>)</para></listitem>
+				<listitem><para>Custom initial-delay not preserved in destination path web editor (Issue <ulink url='http://issues.opennms.org/browse/NMS-5197'>NMS-5197</ulink>)</para></listitem>
+				<listitem><para>Delete an outage through the REST API is not working (Issue <ulink url='http://issues.opennms.org/browse/NMS-5200'>NMS-5200</ulink>)</para></listitem>
+				<listitem><para>The provisioning GUI in the webapp presents the wrong services to add to an interface when creating requisitions (Issue <ulink url='http://issues.opennms.org/browse/NMS-5211'>NMS-5211</ulink>)</para></listitem>
+				<listitem><para>Notifications cannot contain non-ASCII characters and will cause NPEs (Issue <ulink url='http://issues.opennms.org/browse/NMS-5216'>NMS-5216</ulink>)</para></listitem>
+				<listitem><para>TcpHandler in eventd times out too soon (Issue <ulink url='http://issues.opennms.org/browse/NMS-5224'>NMS-5224</ulink>)</para></listitem>
+				<listitem><para>upgrade from 1.8.11 to 1.10.0 breaks provisioning groups and discovery (Issue <ulink url='http://issues.opennms.org/browse/NMS-5229'>NMS-5229</ulink>)</para></listitem>
+				<listitem><para>Nodes marked as deleted in the database still appear in the output of REST calls. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5231'>NMS-5231</ulink>)</para></listitem>
+				<listitem><para>output.log reports java.net.ConnectException error while starting (Issue <ulink url='http://issues.opennms.org/browse/NMS-5238'>NMS-5238</ulink>)</para></listitem>
+				<listitem><para>syslog date parsing fails in non-English locales (Issue <ulink url='http://issues.opennms.org/browse/NMS-5242'>NMS-5242</ulink>)</para></listitem>
+				<listitem><para>The Tcp Exporter cannot process a null Rrd value (Issue <ulink url='http://issues.opennms.org/browse/NMS-5248'>NMS-5248</ulink>)</para></listitem>
+				<listitem><para>A restart is required after changing the resource filter of a threshold (Issue <ulink url='http://issues.opennms.org/browse/NMS-5258'>NMS-5258</ulink>)</para></listitem>
+				<listitem><para>A restart is required after adding a new threshold package. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5259'>NMS-5259</ulink>)</para></listitem>
+				<listitem><para>Resource Types are not ordered on Choose Resources Page (Issue <ulink url='http://issues.opennms.org/browse/NMS-5265'>NMS-5265</ulink>)</para></listitem>
+				<listitem><para>HostResourceSwRunPlugin is not working (Issue <ulink url='http://issues.opennms.org/browse/NMS-5274'>NMS-5274</ulink>)</para></listitem>
+				<listitem><para>Data Export throws an exception when trying to process a &#39;-nan&#39; value. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5275'>NMS-5275</ulink>)</para></listitem>
+				<listitem><para>Small cosmetic problem with the feature &quot;Add to KSC Report&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-5287'>NMS-5287</ulink>)</para></listitem>
+				<listitem><para>Provisioning Groups WebUI error (Issue <ulink url='http://issues.opennms.org/browse/NMS-5290'>NMS-5290</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.1-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Mib2opennms : replace the unreadable html entities by  CDATA sections (Issue <ulink url='http://issues.opennms.org/browse/NMS-5142'>NMS-5142</ulink>)</para></listitem>
+				<listitem><para>import update ArsDigita eclipse code formatter xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-5156'>NMS-5156</ulink>)</para></listitem>
+				<listitem><para>Increase Group Name Size (Issue <ulink url='http://issues.opennms.org/browse/NMS-5181'>NMS-5181</ulink>)</para></listitem>
+				<listitem><para>Handle numbers with units when configuring the XML Collector (Issue <ulink url='http://issues.opennms.org/browse/NMS-5185'>NMS-5185</ulink>)</para></listitem>
+				<listitem><para>Use multiples XPath for the resource identifier (resource key). (Issue <ulink url='http://issues.opennms.org/browse/NMS-5186'>NMS-5186</ulink>)</para></listitem>
+				<listitem><para>Enhance JMXSecureCollector with RMI protocol support (Issue <ulink url='http://issues.opennms.org/browse/NMS-5205'>NMS-5205</ulink>)</para></listitem>
+				<listitem><para>Split jmx-datacollection-config.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-5213'>NMS-5213</ulink>)</para></listitem>
+				<listitem><para>Be able to control the filterOperator attribute from the WebUI (Issue <ulink url='http://issues.opennms.org/browse/NMS-5239'>NMS-5239</ulink>)</para></listitem>
+				<listitem><para>Add any resource graph to a KSC report (Issue <ulink url='http://issues.opennms.org/browse/NMS-5268'>NMS-5268</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.10.0">
 		<title>Changes in OpenNMS 1.10.0</title>
 
