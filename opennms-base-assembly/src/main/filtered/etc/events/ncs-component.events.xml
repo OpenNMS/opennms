@@ -56,10 +56,10 @@ function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Compon
     <uei>uei.opennms.org/internal/ncs/componentAdded</uei>
     <event-label>OpenNMS-defined component event: componentAdded</event-label>
     <descr>
-      &lt;p&gt;%parm[componentType]% %parm[componentName]% was added with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignID]%.&lt;/p&gt;
+      &lt;p&gt;%parm[componentType]% %parm[componentName]% was added with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignId]%.&lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
-      %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignID]%) added
+      %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignId]%) added
     </logmsg>
     <severity>Warning</severity>
   </event>
@@ -67,10 +67,10 @@ function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Compon
     <uei>uei.opennms.org/internal/ncs/componentDeleted</uei>
     <event-label>OpenNMS-defined component event: componentDeleted</event-label>
     <descr>
-      &lt;p&gt;%parm[componentType]% %parm[componentName]% was deleted with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignID]%.&lt;/p&gt;
+      &lt;p&gt;%parm[componentType]% %parm[componentName]% was deleted with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignId]%.&lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
-      %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignID]%) deleted
+      %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignId]%) deleted
     </logmsg>
     <severity>Warning</severity>
   </event>
@@ -78,10 +78,10 @@ function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Compon
     <uei>uei.opennms.org/internal/ncs/componentUpdated</uei>
     <event-label>OpenNMS-defined component event: componentUpdated</event-label>
     <descr>
-      &lt;p&gt;%parm[componentType]% %parm[componentName]% was updated with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignID]%.&lt;/p&gt;
+      &lt;p&gt;%parm[componentType]% %parm[componentName]% was updated with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignId]%.&lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
-      %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignID]%) updated
+      %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignId]%) updated
     </logmsg>
     <severity>Warning</severity>
   </event>
