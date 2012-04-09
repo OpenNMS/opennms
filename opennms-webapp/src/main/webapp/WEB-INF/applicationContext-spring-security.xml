@@ -7,14 +7,20 @@
   
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm">
-    <!-- Restrict access to SNMP configuration to ROLE_REST and ROLE_ADMIN only -->
-    <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_REST,ROLE_ADMIN"/>
+<!-- Changed by Hongyu for allowing anonymous user to use rest APIs. Restrict to only accepting localhost rest requests by configuring httpd fmpm.conf
     <intercept-url pattern="/rest/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
     <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
     <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+-->
+    <intercept-url pattern="/rest/**" method="DELETE" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/**" method="POST" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/**" method="PUT" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/**" method="GET" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
 
     <http-basic />
 
