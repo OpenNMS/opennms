@@ -125,7 +125,6 @@ public class EventTranslatorTest {
         m_translator.stop();
         sleep(200);
         MockLogAppender.assertNoWarningsOrGreater();
-        DataSourceFactory.setInstance(null);
         m_db.drop();
 //        MockUtil.println("------------ End Test "+getName()+" --------------------------");
 //        super.tearDown();

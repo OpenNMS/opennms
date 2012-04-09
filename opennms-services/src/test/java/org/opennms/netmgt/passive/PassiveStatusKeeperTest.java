@@ -119,7 +119,6 @@ public class PassiveStatusKeeperTest {
         m_psk.stop();
         sleep(200);
         MockLogAppender.assertNoWarningsOrGreater();
-        DataSourceFactory.setInstance(null);
         m_db.drop();
 //        MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }

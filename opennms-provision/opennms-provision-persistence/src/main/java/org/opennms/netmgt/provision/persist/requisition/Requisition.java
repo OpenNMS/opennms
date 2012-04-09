@@ -58,9 +58,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.ValidateUsing;
@@ -406,12 +403,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      * @return a int.
      */
     public int compareTo(final Requisition obj) {
-        return new CompareToBuilder()
-            .append(getForeignSource(), obj.getForeignSource())
-            .append(getDateStamp(), obj.getDateStamp())
-            .append(getLastImport(), obj.getLastImport())
-            .append(getNodes(), obj.getNodes())
-            .toComparison();
+    	return getForeignSource().compareTo(obj.getForeignSource());
     }
     
     /** {@inheritDoc} */
@@ -419,14 +411,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     public boolean equals(Object obj) {
         if (obj instanceof Requisition) {
         	final Requisition other = (Requisition) obj;
-            return new EqualsBuilder()
-                .append(getForeignSource(), other.getForeignSource())
-                /*
-                .append(getDateStamp(), other.getDateStamp())
-                .append(getLastImport(), other.getLastImport())
-                .append(getNodes(), other.getNodes())
-                */
-                .isEquals();
+        	return getForeignSource().equals(other.getForeignSource());
         }
         return false;
     }
@@ -434,12 +419,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(37, 29)
-            .append(getForeignSource())
-            .append(getDateStamp())
-            .append(getLastImport())
-            .append(getNodes())
-            .toHashCode();
+    	return getForeignSource().hashCode();
       }
 
     /**
