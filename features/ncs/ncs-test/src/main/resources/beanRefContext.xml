@@ -8,7 +8,9 @@
        <list>
          <value>META-INF/opennms/applicationContext-datasource.xml</value>
          <value>META-INF/opennms/applicationContext-testDao.xml</value>
+         <value>classpath*:/META-INF/opennms/applicationContext-daemon.xml</value>
          <value>classpath*:/META-INF/opennms/component-dao.xml</value>
+         <value>file:src/main/resources/META-INF/opennms/component-service.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="soaContext" />

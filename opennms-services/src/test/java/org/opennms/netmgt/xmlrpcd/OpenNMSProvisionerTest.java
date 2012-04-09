@@ -189,8 +189,6 @@ public class OpenNMSProvisionerTest {
 
     @After
     public void tearDown() throws Exception {
-        
-        DataSourceFactory.setInstance(null);
         MockLogAppender.assertNoWarningsOrGreater();
     }
 

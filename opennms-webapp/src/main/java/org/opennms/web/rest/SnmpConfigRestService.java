@@ -108,7 +108,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ipAddr}")
     public SnmpInfo getSnmpInfo(@PathParam("ipAddr") String ipAddr) {
-        getReadLock().lock();
+        readLock();
         try {
             final InetAddress addr = InetAddressUtils.addr(ipAddr);
             if (addr == null) {
@@ -117,7 +117,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     		SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(addr);
             return new SnmpInfo(config);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -132,7 +132,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_XML)
     @Path("{ipAddr}")
     public Response setSnmpInfo(@PathParam("ipAddr") final String ipAddr, final SnmpInfo snmpInfo) {
-        getWriteLock().lock();
+        writeLock();
         try {
         	final SnmpEventInfo eventInfo = snmpInfo.createEventInfo(ipAddr);
             m_snmpPeerFactory.define(eventInfo);
@@ -142,7 +142,7 @@ public class SnmpConfigRestService extends OnmsRestService {
         } catch (final Throwable e) {
             return Response.serverError().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
    
@@ -158,7 +158,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
     public Response updateInterface(@PathParam("ipAddr") final String ipAddress, final MultivaluedMapImpl params) {
-        getWriteLock().lock();
+        writeLock();
         try {
         	final SnmpInfo info = new SnmpInfo();
             setProperties(params, info);
@@ -169,7 +169,7 @@ public class SnmpConfigRestService extends OnmsRestService {
         } catch (final Throwable e) {
             return Response.serverError().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 

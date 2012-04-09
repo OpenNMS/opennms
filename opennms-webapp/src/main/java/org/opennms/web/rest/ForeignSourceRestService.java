@@ -158,11 +158,11 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("default")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public ForeignSource getDefaultForeignSource() throws ParseException {
-        getReadLock().lock();
+        readLock();
         try {
             return m_deployedForeignSourceRepository.getDefaultForeignSource();
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -175,11 +175,11 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("deployed")
     public ForeignSourceCollection getDeployedForeignSources() throws ParseException {
-        getReadLock().lock();
+        readLock();
         try {
             return new ForeignSourceCollection(m_deployedForeignSourceRepository.getForeignSources());
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -192,11 +192,11 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("deployed/count")
     @Produces(MediaType.TEXT_PLAIN)
     public int getDeployedCount() {
-        getReadLock().lock();
+        readLock();
         try {
             return m_pendingForeignSourceRepository.getForeignSourceCount();
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -209,7 +209,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public ForeignSourceCollection getForeignSources() throws ParseException {
-        getReadLock().lock();
+        readLock();
         
         try {
             Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
@@ -218,7 +218,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             }
             return new ForeignSourceCollection(foreignSources);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -232,11 +232,11 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public int getTotalCount() throws ParseException {
-        getReadLock().lock();
+        readLock();
         try {
             return getActiveForeignSourceNames().size();
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -250,11 +250,11 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{foreignSource}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public ForeignSource getForeignSource(@PathParam("foreignSource") String foreignSource) {
-        getReadLock().lock();
+        readLock();
         try {
             return getActiveForeignSource(foreignSource);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -268,11 +268,11 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{foreignSource}/detectors")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public DetectorCollection getDetectors(@PathParam("foreignSource") String foreignSource) {
-        getReadLock().lock();
+        readLock();
         try {
             return new DetectorCollection(getActiveForeignSource(foreignSource).getDetectors());
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -287,7 +287,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{foreignSource}/detectors/{detector}")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public DetectorWrapper getDetector(@PathParam("foreignSource") String foreignSource, @PathParam("detector") String detector) {
-        getReadLock().lock();
+        readLock();
         try {
             for (PluginConfig pc : getActiveForeignSource(foreignSource).getDetectors()) {
                 if (pc.getName().equals(detector)) {
@@ -296,7 +296,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             }
             return null;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -310,11 +310,11 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{foreignSource}/policies")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public PolicyCollection getPolicies(@PathParam("foreignSource") String foreignSource) {
-        getReadLock().lock();
+        readLock();
         try {
             return new PolicyCollection(getActiveForeignSource(foreignSource).getPolicies());
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -329,7 +329,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{foreignSource}/policies/{policy}")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public PolicyWrapper getPolicy(@PathParam("foreignSource") String foreignSource, @PathParam("policy") String policy) {
-        getReadLock().lock();
+        readLock();
         try {
             for (PluginConfig pc : getActiveForeignSource(foreignSource).getPolicies()) {
                 if (pc.getName().equals(policy)) {
@@ -338,7 +338,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             }
             return null;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -352,13 +352,13 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_XML)
     @Transactional
     public Response addForeignSource(ForeignSource foreignSource) {
-        getWriteLock().lock();
+        writeLock();
         try {
             log().debug("addForeignSource: Adding foreignSource " + foreignSource.getName());
             m_pendingForeignSourceRepository.save(foreignSource);
             return Response.ok(foreignSource).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -374,7 +374,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_XML)
     @Transactional
     public Response addDetector(@PathParam("foreignSource") String foreignSource, DetectorWrapper detector) {
-        getWriteLock().lock();
+        writeLock();
         try {
             log().debug("addDetector: Adding detector " + detector.getName());
             ForeignSource fs = getActiveForeignSource(foreignSource);
@@ -382,7 +382,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             m_pendingForeignSourceRepository.save(fs);
             return Response.ok(detector).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -398,7 +398,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_XML)
     @Transactional
     public Response addPolicy(@PathParam("foreignSource") String foreignSource, PolicyWrapper policy) {
-        getWriteLock().lock();
+        writeLock();
         try {
             log().debug("addPolicy: Adding policy " + policy.getName());
             ForeignSource fs = getActiveForeignSource(foreignSource);
@@ -406,7 +406,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             m_pendingForeignSourceRepository.save(fs);
             return Response.ok(policy).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -422,7 +422,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
     public Response updateForeignSource(@PathParam("foreignSource") String foreignSource, MultivaluedMapImpl params) {
-        getWriteLock().lock();
+        writeLock();
         try {
             ForeignSource fs = getActiveForeignSource(foreignSource);
             log().debug("updateForeignSource: updating foreign source " + foreignSource);
@@ -440,7 +440,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             m_pendingForeignSourceRepository.save(fs);
             return Response.ok(fs).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -454,14 +454,14 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{foreignSource}")
     @Transactional
     public Response deletePendingForeignSource(@PathParam("foreignSource") String foreignSource) {
-        getWriteLock().lock();
+        writeLock();
         try {
             ForeignSource fs = getForeignSource(foreignSource);
             log().debug("deletePendingForeignSource: deleting foreign source " + foreignSource);
             m_pendingForeignSourceRepository.delete(fs);
             return Response.ok(fs).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -475,14 +475,14 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("deployed/{foreignSource}")
     @Transactional
     public Response deleteDeployedForeignSource(@PathParam("foreignSource") String foreignSource) {
-        getWriteLock().lock();
+        writeLock();
         try {
             ForeignSource fs = getForeignSource(foreignSource);
             log().debug("deleteDeployedForeignSource: deleting foreign source " + foreignSource);
             m_deployedForeignSourceRepository.delete(fs);
             return Response.ok(fs).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -497,7 +497,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{foreignSource}/detectors/{detector}")
     @Transactional
     public Response deleteDetector(@PathParam("foreignSource") String foreignSource, @PathParam("detector") String detector) {
-        getWriteLock().lock();
+        writeLock();
         try {
             ForeignSource fs = getActiveForeignSource(foreignSource);
             List<PluginConfig> detectors = fs.getDetectors();
@@ -509,7 +509,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             }
             return Response.notModified().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -524,7 +524,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{foreignSource}/policies/{policy}")
     @Transactional
     public Response deletePolicy(@PathParam("foreignSource") String foreignSource, @PathParam("policy") String policy) {
-        getWriteLock().lock();
+        writeLock();
         try {
             ForeignSource fs = getActiveForeignSource(foreignSource);
             List<PluginConfig> policies = fs.getPolicies();
@@ -536,7 +536,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             }
             return Response.notModified().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 

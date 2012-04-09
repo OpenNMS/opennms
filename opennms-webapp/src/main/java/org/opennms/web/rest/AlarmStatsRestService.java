@@ -85,11 +85,11 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public AlarmStatistics getStats() {
-        getReadLock().lock();
+        readLock();
         try {
             return getStats(null);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -97,7 +97,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     @Path("/by-severity")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public AlarmStatisticsBySeverity getStatsForEachSeverity(@QueryParam("severities") final String severitiesString) {
-        getReadLock().lock();
+        readLock();
 
         try {
             final AlarmStatisticsBySeverity stats = new AlarmStatisticsBySeverity();
@@ -117,7 +117,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
             
             return stats;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     

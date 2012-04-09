@@ -421,6 +421,7 @@ public class TemporaryDatabase implements DataSource {
     }
 
 
+    @Override
     public Connection getConnection() throws SQLException {
         return m_dataSource.getConnection();
     }
@@ -452,22 +453,27 @@ public class TemporaryDatabase implements DataSource {
         return getJdbcTemplate().queryForInt(nxtIdStmt);
     }
 
+    @Override
     public Connection getConnection(String username, String password) throws SQLException {
         return m_dataSource.getConnection(username, password);
     }
 
+    @Override
     public PrintWriter getLogWriter() throws SQLException {
         return m_dataSource.getLogWriter();
     }
 
+    @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
         m_dataSource.setLogWriter(out);
     }
 
+    @Override
     public void setLoginTimeout(int seconds) throws SQLException {
         m_dataSource.setLoginTimeout(seconds);
     }
 
+    @Override
     public int getLoginTimeout() throws SQLException {
         return m_dataSource.getLoginTimeout();
     }
@@ -517,6 +523,7 @@ public class TemporaryDatabase implements DataSource {
      * @throws java.sql.SQLException If no object found that implements the interface
      * @since 1.6
      */
+    @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return null;  //TODO
     }
@@ -536,6 +543,7 @@ public class TemporaryDatabase implements DataSource {
      *                               for an object with the given interface.
      * @since 1.6
      */
+    @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;  //TODO
     }

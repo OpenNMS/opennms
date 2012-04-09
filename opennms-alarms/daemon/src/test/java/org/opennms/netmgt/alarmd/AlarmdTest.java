@@ -45,6 +45,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
@@ -65,6 +66,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.UpdateField;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -86,7 +88,7 @@ import org.springframework.util.StringUtils;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
-public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
+public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
 
     public class MockNorthbounder implements Northbounder {
 
@@ -137,8 +139,14 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
 
     private MockNorthbounder m_northbounder;
 
+    @Override
     public void setTemporaryDatabase(final MockDatabase database) {
         m_database = database;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

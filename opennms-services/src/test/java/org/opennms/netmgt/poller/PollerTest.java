@@ -227,7 +227,6 @@ public class PollerTest {
 		if (m_assertLevel != null) {
 			MockLogAppender.assertNotGreaterOrEqual(m_assertLevel);
 		}
-		DataSourceFactory.setInstance(null);
 		m_db.drop();
 		MockUtil.println("------------ End Test  --------------------------");
 	}

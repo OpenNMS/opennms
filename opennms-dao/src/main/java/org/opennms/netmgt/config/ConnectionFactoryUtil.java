@@ -59,7 +59,7 @@ public class ConnectionFactoryUtil {
             }
         }
         
-        throw new IllegalArgumentException("C3P0ConnectionFactory: DataSource: "+dsName+" is not defined.");
+        throw new IllegalArgumentException("ConnectionFactoryUtil: DataSource: "+dsName+" is not defined.");
     }
 
 }

@@ -43,9 +43,11 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 @Component
 /**
@@ -55,7 +57,7 @@ import org.springframework.stereotype.Component;
  * @version $Id: $
  */
 @Scope("prototype")
-public class SnmpDetector extends AbstractDetector {
+public class SnmpDetector extends AbstractDetector implements InitializingBean {
     
     /** Constant <code>DEFAULT_SERVICE_NAME="SNMP"</code> */
     protected static final String DEFAULT_SERVICE_NAME = "SNMP";
@@ -116,6 +118,11 @@ public class SnmpDetector extends AbstractDetector {
     /** {@inheritDoc} */
     @Override
     public void init() {}
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(m_agentConfigFactory);
+    }
 
     /** {@inheritDoc} */
     @Override

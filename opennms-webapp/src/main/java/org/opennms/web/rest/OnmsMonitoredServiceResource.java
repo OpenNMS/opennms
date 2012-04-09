@@ -104,12 +104,12 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsMonitoredServiceList getServices(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress) {
-        getReadLock().lock();
+        readLock();
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             return new OnmsMonitoredServiceList(node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServices());
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -125,12 +125,12 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{service}")
     public OnmsMonitoredService getService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String service) {
-        getReadLock().lock();
+        readLock();
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             return node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServiceByServiceType(service);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
     
@@ -145,7 +145,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, OnmsMonitoredService service) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -175,7 +175,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             }
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -192,7 +192,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{service}")
     public Response updateService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName, MultivaluedMapImpl params) {
-        getWriteLock().lock();
+        writeLock();
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             if (node == null) throw getException(Status.BAD_REQUEST, "addService: can't find node " + nodeCriteria);
@@ -214,7 +214,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             m_serviceDao.saveOrUpdate(service);
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 
@@ -229,7 +229,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @DELETE
     @Path("{service}")
     public Response deleteService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -254,7 +254,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             }
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     

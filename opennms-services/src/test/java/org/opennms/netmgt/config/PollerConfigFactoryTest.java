@@ -130,7 +130,6 @@ public class PollerConfigFactoryTest extends TestCase {
     }
 
     protected void tearDown() throws Exception {
-        DataSourceFactory.setInstance(null);
         super.tearDown();
 		MockLogAppender.assertNoWarningsOrGreater();
     }

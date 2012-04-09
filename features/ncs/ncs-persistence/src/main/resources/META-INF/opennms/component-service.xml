@@ -13,4 +13,8 @@
 
   <context:component-scan base-package="org.opennms.netmgt.ncs.rest" />
 
+  <bean id="ncsComponentService" class="org.opennms.netmgt.ncs.persistence.NCSComponentServiceImpl" depends-on="eventProxy" lazy-init="true">
+    <property name="eventProxy" ref="eventProxy" />
+  </bean>
+
 </beans>

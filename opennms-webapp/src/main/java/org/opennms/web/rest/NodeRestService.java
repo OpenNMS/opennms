@@ -104,7 +104,7 @@ public class NodeRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsNodeList getNodes() {
-        getReadLock().lock();
+        readLock();
         
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
@@ -135,7 +135,7 @@ public class NodeRestService extends OnmsRestService {
     
             return coll;
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -149,11 +149,11 @@ public class NodeRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{nodeCriteria}")
     public OnmsNode getNode(@PathParam("nodeCriteria") final String nodeCriteria) {
-        getReadLock().lock();
+        readLock();
         try {
             return m_nodeDao.get(nodeCriteria);
         } finally {
-            getReadLock().unlock();
+            readUnlock();
         }
     }
 
@@ -166,7 +166,7 @@ public class NodeRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addNode(final OnmsNode node) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             LogUtils.debugf(this, "addNode: Adding node %s", node);
@@ -178,7 +178,7 @@ public class NodeRestService extends OnmsRestService {
             }
             return Response.ok(node).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -193,7 +193,7 @@ public class NodeRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{nodeCriteria}")
     public Response updateNode(@PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -214,7 +214,7 @@ public class NodeRestService extends OnmsRestService {
             m_nodeDao.saveOrUpdate(node);
             return Response.ok(node).build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
     
@@ -227,7 +227,7 @@ public class NodeRestService extends OnmsRestService {
     @DELETE
     @Path("{nodeCriteria}")
     public Response deleteNode(@PathParam("nodeCriteria") final String nodeCriteria) {
-        getWriteLock().lock();
+        writeLock();
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -242,7 +242,7 @@ public class NodeRestService extends OnmsRestService {
             }
             return Response.ok().build();
         } finally {
-            getWriteLock().unlock();
+            writeUnlock();
         }
     }
 

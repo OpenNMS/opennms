@@ -6,6 +6,18 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="introduction-1.10.1">
+		<title>Release 1.10.1</title>
+
+		<para>
+			Release 1.10.1 is the second in the latest series of stable releases.
+			It contains plenty of bugfixes, as well as a few minor enhancements.
+		</para>
+		<para>
+			The codename for 1.10.1 is <emphasis>Hurdy Gurdy</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.10.0">
 		<title>Release 1.10.0</title>
 

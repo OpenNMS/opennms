@@ -42,34 +42,34 @@ public interface ClosableDataSource extends DataSource {
      *
      * @throws java.sql.SQLException if any.
      */
-    public void close() throws SQLException;
+    void close() throws SQLException;
 
     /**
      * How long, in seconds, an idle connection is kept in the pool before it is removed.
      * @param idleTimeout
      */
-    public void setIdleTimeout(final int idleTimeout);
+    void setIdleTimeout(final int idleTimeout);
 
     /**
      * How long, in seconds, to attempt to make a connection to the database.
      */
-    public void setLoginTimeout(final int loginTimeout) throws SQLException;
+    void setLoginTimeout(final int loginTimeout) throws SQLException;
 
     /**
      * The minimum number of pooled connections to retain.
      * @param minPool
      */
-    public void setMinPool(final int minPool);
+    void setMinPool(final int minPool);
     
     /**
      * The maximum number of pooled connections to retain.
      * @param maxPool
      */
-    public void setMaxPool(final int maxPool);
+    void setMaxPool(final int maxPool);
     
     /**
      * The maximum number of connections that can be created.
      * @param maxSize
      */
-    public void setMaxSize(final int maxSize);
+    void setMaxSize(final int maxSize);
 }

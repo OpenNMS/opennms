@@ -95,6 +95,7 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
      *
      * @return a int.
      */
+    @Override
     public int getSchedulerThreads() {
         return getConfig().getThreads();
     }
@@ -105,6 +106,7 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<Collector> getCollectors() {
         return getConfig().getConfig().getCollectorCollection();
     }
@@ -112,6 +114,7 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
     /**
      * <p>rebuildPackageIpListMap</p>
      */
+    @Override
     public void rebuildPackageIpListMap() {
         getConfig().rebuildPackageIpListMap();
     }
@@ -121,11 +124,13 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<CollectdPackage> getPackages() {
         return getConfig().getPackages();
     }
     
     /** {@inheritDoc} */
+    @Override
     public CollectdPackage getPackage(String name) {
         return getConfig().getPackage(name);
     }

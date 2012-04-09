@@ -766,7 +766,7 @@
 	<commonsValidatorVersion>1.3.1</commonsValidatorVersion>
 	<gwtVersion>2.3.0</gwtVersion>
    <jasperreportsVersion>3.7.6</jasperreportsVersion>
-	<jettyVersion>7.5.1.v20110908</jettyVersion>
+	<jettyVersion>7.5.4.v20111024</jettyVersion>
 	<slf4jVersion>1.6.1</slf4jVersion>
 	<liquibaseVersion>2.0.1</liquibaseVersion>
    <log4jVersion>1.2.16</log4jVersion>
