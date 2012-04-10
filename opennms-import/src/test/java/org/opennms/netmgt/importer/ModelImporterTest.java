@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.importer.config.Asset;
 import org.opennms.netmgt.importer.config.Category;
@@ -104,13 +105,7 @@ public class ModelImporterTest implements InitializingBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_populator);
-        assertNotNull(m_categoryDao);
-        assertNotNull(m_serviceTypeDao);
-        assertNotNull(m_importer);
-        assertNotNull(m_snmpInterfaceDao);
-        assertNotNull(m_snmpPeerFactory);
-        
+        BeanUtils.assertAutowiring(this);
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
     }
 

@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.ackd.AckReader.AckReaderState;
 import org.opennms.netmgt.config.ackd.Reader;
@@ -151,19 +152,8 @@ public class AckdTest implements InitializingBean {
     }
     
     @Override
-    public void afterPropertiesSet() {
-        Assert.assertNotNull(m_ackDao);
-        Assert.assertNotNull(m_alarmDao);
-        Assert.assertNotNull(m_eventDao);
-        Assert.assertNotNull(m_nodeDao);
-        Assert.assertNotNull(m_notificationDao);
-        Assert.assertNotNull(m_userNotificationDao);
-        Assert.assertNotNull(m_mockEventIpcManager);
-        Assert.assertNotNull(m_ackService);
-        Assert.assertNotNull(m_daemon);
-        Assert.assertNotNull(m_populator);
-        Assert.assertNotNull(m_jmConfigDao);
-        
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
         Assert.assertSame("dao from populator should refer to same dao from local properties", m_populator.getAcknowledgmentDao(), m_ackDao);
     }
     

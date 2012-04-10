@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.detector.endpoint;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.adapters.link.EndPointImpl;
@@ -41,6 +42,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -53,7 +55,7 @@ import org.springframework.stereotype.Component;
  * @version $Id: $
  */
 @Scope("prototype")
-public class EndPointDetector extends AbstractDetector {
+public class EndPointDetector extends AbstractDetector implements InitializingBean {
     
     /** Constant <code>DEFAULT_SERVICE_NAME="EndPoint"</code> */
     protected static final String DEFAULT_SERVICE_NAME = "EndPoint";
@@ -91,6 +93,11 @@ public class EndPointDetector extends AbstractDetector {
      */
     public EndPointDetector(String serviceName, int port) {
         super(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     /** {@inheritDoc} */

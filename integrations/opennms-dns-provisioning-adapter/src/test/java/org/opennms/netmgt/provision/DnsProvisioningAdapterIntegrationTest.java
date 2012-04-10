@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.InitializingBean;
@@ -84,10 +85,7 @@ public class DnsProvisioningAdapterIntegrationTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(m_nodeDao, "Autowiring failed, node dao is null");
-        Assert.notNull(m_mockEventIpcManager, "Autowiring failed, ipc manager is null");
-        Assert.notNull(m_populator, "Autowiring failed, db populater is null");
-        Assert.notNull(m_adapter, "Autowiring failed, adapter is null");
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

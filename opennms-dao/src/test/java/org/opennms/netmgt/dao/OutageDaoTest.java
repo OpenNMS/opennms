@@ -42,6 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -113,13 +114,7 @@ public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<T
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_distPollerDao);
-        assertNotNull(m_nodeDao);
-        assertNotNull(m_ipInterfaceDao);
-        assertNotNull(m_monitoredServiceDao);
-        assertNotNull(m_outageDao);
-        assertNotNull(m_serviceTypeDao);
-        assertNotNull(m_eventDao);
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -72,12 +73,12 @@ public class DefaultJavamailConfigurationDaoTest implements InitializingBean {
         props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
         MockLogAppender.setupLogging(props);
     }
-    
+
     @Override
-    public void afterPropertiesSet() {
-        Assert.assertNotNull(m_jmcDao);
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
-    
+
     @Test
     public void testMarshalling() {
         Assert.assertEquals("localhost", m_jmcDao.getDefaultReadmailConfig().getName());

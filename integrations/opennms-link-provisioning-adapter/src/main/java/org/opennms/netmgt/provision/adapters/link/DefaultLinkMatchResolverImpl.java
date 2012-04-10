@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.provision.adapters.link;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.adapters.link.config.dao.DefaultLinkAdapterConfigurationDao;
 import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkPattern;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -38,10 +40,15 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author ranger
  * @version $Id: $
  */
-public class DefaultLinkMatchResolverImpl implements LinkMatchResolver {
+public class DefaultLinkMatchResolverImpl implements LinkMatchResolver, InitializingBean {
     @Autowired
     private DefaultLinkAdapterConfigurationDao m_configDao;
-    
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     /** {@inheritDoc} */
     public String getAssociatedEndPoint(String endPoint) {
         if (m_configDao != null) {

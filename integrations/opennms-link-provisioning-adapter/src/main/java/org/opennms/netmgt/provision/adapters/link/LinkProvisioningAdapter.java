@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.adapters.link;
 
 import static org.opennms.core.utils.LogUtils.debugf;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventUtils;
@@ -37,6 +38,7 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.SimplerQueuedProvisioningAdapter;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -49,7 +51,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 @EventListener(name="LinkProvisioningAdapter")
-public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
+public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter implements InitializingBean {
 
     private static final String ADAPTER_NAME = "LinkAdapter";
     
@@ -58,6 +60,11 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
     
     @Autowired
     private NodeLinkService m_nodeLinkService;
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
     
     /**
      * <p>Constructor for LinkProvisioningAdapter.</p>
