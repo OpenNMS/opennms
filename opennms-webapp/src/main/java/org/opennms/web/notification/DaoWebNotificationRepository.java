@@ -34,6 +34,7 @@ import java.util.List;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.model.AckAction;
@@ -44,6 +45,7 @@ import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.opennms.web.notification.filter.NotificationCriteria.NotificationCriteriaVisitor;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id: $
  * @since 1.8.1
  */
-public class DaoWebNotificationRepository implements WebNotificationRepository {
+public class DaoWebNotificationRepository implements WebNotificationRepository, InitializingBean {
     
     @Autowired
     NotificationDao m_notificationDao;
@@ -62,6 +64,11 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
     @Autowired
     AckService m_ackService;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     private static final OnmsCriteria getOnmsCriteria(final NotificationCriteria notificationCriteria){
         final OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);

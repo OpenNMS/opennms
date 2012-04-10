@@ -30,6 +30,7 @@ package org.opennms.netmgt.trapd;
 
 import javax.annotation.Resource;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
@@ -106,8 +107,7 @@ public class TrapQueueProcessorFactory implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_eventConfDao != null, "eventConfDao must be set");
-        Assert.state(m_newSuspectOnTrap != null, "newSuspectOnTrap must be set");
+        BeanUtils.assertAutowiring(this);
         Assert.state(m_eventManager != null, "eventManager must be set");
     }
 }

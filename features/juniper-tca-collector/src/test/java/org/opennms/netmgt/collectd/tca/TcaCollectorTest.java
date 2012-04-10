@@ -43,9 +43,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.DefaultCollectionAgent;
 import org.opennms.netmgt.collectd.OneToOnePersister;
@@ -71,7 +71,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.test.mock.MockLogAppender;
-
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -90,7 +90,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
 @JUnitSnmpAgent(host = TcaCollectorTest.TEST_NODE_IP, port = 9161, resource = "classpath:juniperTcaSample.properties")
-public class TcaCollectorTest  {
+public class TcaCollectorTest implements InitializingBean {
 
 	/** The Constant TEST_NODE_IP. */
 	public final static String TEST_NODE_IP = "127.0.0.1"; 
@@ -122,6 +122,11 @@ public class TcaCollectorTest  {
 	
 	@Autowired
 	private TcaDataCollectionConfigDao m_configDao;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
 	/**
 	 * Sets the up.

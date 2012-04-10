@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.persist;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpEventInfo;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServ
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
@@ -59,7 +61,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author ranger
  * @version $Id: $
  */
-public class DefaultNodeProvisionService implements NodeProvisionService {
+public class DefaultNodeProvisionService implements NodeProvisionService, InitializingBean {
 
     private EventForwarder m_eventForwarder;
     
@@ -70,6 +72,11 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
     private SnmpPeerFactory m_snmpPeerFactory;
 
     private ForeignSourceRepository m_foreignSourceRepository;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     /** {@inheritDoc} */
     public ModelAndView getModelAndView(HttpServletRequest request) {

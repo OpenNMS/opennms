@@ -42,6 +42,7 @@ import javax.annotation.Resource;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.core.concurrent.WaterfallExecutor;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -159,11 +160,9 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      */
     @Override
     public synchronized void onInit() {
-        Assert.state(m_trapdIpMgr != null, "trapdIpMgr must be set");
-        Assert.state(m_eventReader != null, "eventReader must be set");
+        BeanUtils.assertAutowiring(this);
+
         Assert.state(m_backlogQ != null, "backlogQ must be set");
-        Assert.state(m_snmpTrapAddress != null, "snmpTrapAddress must be set");
-        Assert.state(m_snmpTrapPort != null, "snmpTrapPort must be set");
 
         try {
             m_trapdIpMgr.dataSourceSync();

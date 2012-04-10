@@ -50,6 +50,7 @@ import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
@@ -96,14 +97,9 @@ public class DefaultSiteStatusServiceIntegrationTest implements InitializingBean
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_aggregateService);
-        assertNotNull(m_databasePopulator);
-        assertNotNull(m_nodeDao);
-        assertNotNull(m_categoryDao);
-        assertNotNull(m_outageDao);
-        assertNotNull(m_eventDao);
+        BeanUtils.assertAutowiring(this);
     }
-
+    
     @Test
     @Transactional
     public void testCreateAggregateStatusView() {
