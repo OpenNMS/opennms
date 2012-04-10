@@ -253,6 +253,18 @@ public class OnmsNodeRequisition {
     }
 
     /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#getParentForeignSource()
+     */
+    /**
+     * <p>getParentForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getParentForeignSource() {
+        return m_node.getParentForeignSource();
+    }
+
+    /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.persist.NodeRequisition#getParentForeignId()
      */
     /**
