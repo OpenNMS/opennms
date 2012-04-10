@@ -41,6 +41,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.PropertyPath;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.OnmsPolicy;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.provision.annotations.Policy;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.support.PluginWrapper;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -58,7 +60,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @author ranger
  * @version $Id: $
  */
-public class DefaultForeignSourceService implements ForeignSourceService {
+public class DefaultForeignSourceService implements ForeignSourceService, InitializingBean {
     
     @Autowired
     private ServiceRegistry m_serviceRegistry;
@@ -74,7 +76,12 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     private static Map<String,String> m_detectors;
     private static Map<String,String> m_policies;
     private static Map<String, PluginWrapper> m_wrappers;
-    
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     /** {@inheritDoc} */
     public void setDeployedForeignSourceRepository(ForeignSourceRepository repo) {
         m_deployedForeignSourceRepository = repo;

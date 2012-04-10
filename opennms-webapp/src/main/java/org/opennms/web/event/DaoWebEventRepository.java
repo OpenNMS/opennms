@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.EventDao;
@@ -45,6 +46,7 @@ import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventDisplayFilter;
 import org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor;
 import org.opennms.web.filter.Filter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,11 +57,16 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id: $
  * @since 1.8.1
  */
-public class DaoWebEventRepository implements WebEventRepository {
+public class DaoWebEventRepository implements WebEventRepository, InitializingBean {
     
     @Autowired
     EventDao m_eventDao;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     private OnmsCriteria getOnmsCriteria(final EventCriteria eventCriteria){
         final OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
         criteria.createAlias("alarm", "alarm", OnmsCriteria.LEFT_JOIN);

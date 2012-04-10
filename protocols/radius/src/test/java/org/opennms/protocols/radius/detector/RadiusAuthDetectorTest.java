@@ -37,11 +37,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.protocols.radius.detector.RadiusAuthDetector;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -50,10 +51,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class RadiusAuthDetectorTest implements ApplicationContextAware{
+public class RadiusAuthDetectorTest implements ApplicationContextAware, InitializingBean {
     
     @Autowired
     public RadiusAuthDetector m_detector;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Before
     public void setUp(){
@@ -85,9 +91,9 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware{
 		assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.211.11"), new NullDetectorMonitor()));
 	}
 
-	
+
+	@Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         
     }
-	
 }

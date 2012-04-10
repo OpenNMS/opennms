@@ -46,6 +46,8 @@ import org.opennms.acl.model.UserDTO;
 import org.opennms.acl.service.UserService;
 import org.opennms.acl.ui.validator.UserValidator;
 import org.opennms.acl.util.Constants;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -69,7 +71,7 @@ import org.springframework.web.bind.support.SessionStatus;
  */
 @Controller
 @RequestMapping("/user.edit.page")
-public class UserFormController {
+public class UserFormController implements InitializingBean {
 
     /**
      * <p>processSubmit</p>
@@ -128,4 +130,9 @@ public class UserFormController {
     @Qualifier("userValidator")
     private UserValidator validator;
     private final String userForm = "user/form";
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 }

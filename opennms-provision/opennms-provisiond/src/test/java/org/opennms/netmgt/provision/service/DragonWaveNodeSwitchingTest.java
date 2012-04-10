@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
@@ -46,6 +45,7 @@ import org.opennms.core.test.snmp.MockSnmpDataProvider;
 import org.opennms.core.test.snmp.MockSnmpDataProviderAware;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -104,11 +104,7 @@ public class DragonWaveNodeSwitchingTest implements InitializingBean, MockSnmpDa
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		assertNotNull(m_nodeDao);
-		assertNotNull(m_provisioner);
-		assertNotNull(m_resourceLoader);
-		assertNotNull(m_eventSubscriber);
-		assertNotNull(m_snmpPeerFactory);
+        BeanUtils.assertAutowiring(this);
 
 		// Override the SnmpPeerFactory with an instance that directs all requests to the temporary JUnit SNMP agent
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);

@@ -46,6 +46,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -53,6 +54,7 @@ import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.annotation.DirtiesContext;
@@ -70,7 +72,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SpringSecurityUserDaoImplTest extends TestCase {
+public class SpringSecurityUserDaoImplTest extends TestCase implements InitializingBean {
 
     private static final String MAGIC_USERS_FILE = "src/test/resources/org/opennms/web/springframework/security/magic-users.properties";
     private static final String USERS_XML_FILE = "src/test/resources/org/opennms/web/springframework/security/users.xml";
@@ -83,6 +85,11 @@ public class SpringSecurityUserDaoImplTest extends TestCase {
     
     @Autowired
     GroupManager m_groupManager;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Before
     public void setUp() {

@@ -52,6 +52,8 @@ import org.opennms.acl.model.Pager;
 import org.opennms.acl.service.UserService;
 import org.opennms.acl.ui.util.WebUtils;
 import org.opennms.acl.util.Constants;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,7 +68,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @version $Id: $
  */
 @Controller
-public class UserController {
+public class UserController implements InitializingBean {
 
     /**
      * <p>authorities</p>
@@ -137,4 +139,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 }

@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -91,8 +92,7 @@ public class CapsdIntegrationTest implements TemporaryDatabaseAware<MockDatabase
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.assertNotNull(m_capsd);
-        Assert.assertNotNull(m_capsdConfig);
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

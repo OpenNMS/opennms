@@ -47,6 +47,8 @@ import java.util.List;
 import org.opennms.acl.model.GroupDTO;
 import org.opennms.acl.model.Pager;
 import org.opennms.acl.repository.GroupRepository;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +60,7 @@ import org.springframework.stereotype.Service;
  * @version $Id: $
  */
 @Service("groupService")
-public class GroupServiceImpl implements GroupService {
+public class GroupServiceImpl implements GroupService, InitializingBean {
 
     /** {@inheritDoc} */
     public List<GroupDTO> getUserGroupsWithAutorities(String username) {
@@ -131,4 +133,8 @@ public class GroupServiceImpl implements GroupService {
     @Autowired
     private GroupRepository repository;
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 }

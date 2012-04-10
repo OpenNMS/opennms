@@ -30,8 +30,10 @@
  */
 package org.opennms.web.controller.element;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,9 +47,14 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 @RequestMapping("/element/service.htm")
-public class ServiceController {
+public class ServiceController implements InitializingBean {
 	@Autowired
 	private MonitoredServiceDao m_monitoredServiceDao;
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+	    BeanUtils.assertAutowiring(this);
+	}
 
 	@RequestMapping(method = RequestMethod.GET, params = { "ifserviceid" })
 	public ModelAndView handleService(@RequestParam("ifserviceid") int ifServiceId) {

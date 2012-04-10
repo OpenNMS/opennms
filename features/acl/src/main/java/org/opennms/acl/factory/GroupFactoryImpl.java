@@ -46,6 +46,8 @@ import org.opennms.acl.domain.Group;
 import org.opennms.acl.model.GroupDTO;
 import org.opennms.acl.service.AuthorityService;
 import org.opennms.acl.service.GroupService;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +59,7 @@ import org.springframework.stereotype.Service;
  * @version $Id: $
  */
 @Service("groupFactory")
-public class GroupFactoryImpl implements GroupFactory {
+public class GroupFactoryImpl implements GroupFactory, InitializingBean {
 
     /** {@inheritDoc} */
     public Group getGroup(Integer id) {
@@ -69,4 +71,9 @@ public class GroupFactoryImpl implements GroupFactory {
     private GroupService groupService;
     @Autowired
     private AuthorityService authorityService;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 }

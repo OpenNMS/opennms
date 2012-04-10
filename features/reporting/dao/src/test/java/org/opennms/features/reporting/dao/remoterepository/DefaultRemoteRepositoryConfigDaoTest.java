@@ -28,16 +28,18 @@
 
 package org.opennms.features.reporting.dao.remoterepository;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * <p>DefaultRemoteRepositoryConfigDaoTest class.</p>
@@ -48,13 +50,18 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDaoTest.xml"})
-public class DefaultRemoteRepositoryConfigDaoTest {
+public class DefaultRemoteRepositoryConfigDaoTest implements InitializingBean {
 
     /**
      * Default implementation for remote repository to test
      */
     @Autowired
     private RemoteRepositoryConfigDao m_remoteRepositoryConfigDao;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     /**
      * <p>tearDown</p>

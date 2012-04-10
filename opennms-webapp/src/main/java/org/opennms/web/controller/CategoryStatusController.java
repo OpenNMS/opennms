@@ -28,7 +28,9 @@
 
 package org.opennms.web.controller;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.web.svclayer.catstatus.CategoryStatusService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,13 +44,18 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 @RequestMapping("/catstatus.htm")
-public class CategoryStatusController {
+public class CategoryStatusController implements InitializingBean {
 
     @Autowired
-	private CategoryStatusService m_categorystatusservice;
+    private CategoryStatusService m_categorystatusservice;
 
-	@RequestMapping(method = RequestMethod.GET)
-	public ModelAndView handleRequestInternal() throws Exception {
-		return new ModelAndView("displayCategoryStatus", "statusTree", m_categorystatusservice.getCategoriesStatus());
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ModelAndView handleRequestInternal() throws Exception {
+        return new ModelAndView("displayCategoryStatus", "statusTree", m_categorystatusservice.getCategoriesStatus());
+    }
 }

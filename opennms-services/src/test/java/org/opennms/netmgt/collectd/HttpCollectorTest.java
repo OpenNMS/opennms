@@ -38,11 +38,11 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
@@ -56,7 +56,6 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -66,6 +65,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
@@ -90,11 +90,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase
-public class HttpCollectorTest implements TestContextAware {
+public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
-    @Autowired
-    private MockEventIpcManager m_mockEventIpcManager;
-    
     @Autowired
     private PlatformTransactionManager m_transactionManager;
 
@@ -123,6 +120,11 @@ public class HttpCollectorTest implements TestContextAware {
     private CollectionAgent m_collectionAgent;
 
     @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
+    @Override
     public void setTestContext(TestContext t) {
         m_context = t;
     }
@@ -140,11 +142,6 @@ public class HttpCollectorTest implements TestContextAware {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-        assertNotNull(m_mockEventIpcManager);
-        assertNotNull(m_transactionManager);
-        assertNotNull(m_nodeDao);
-        assertNotNull(m_ipInterfaceDao);
-        assertNotNull(m_serviceTypeDao);
 
         if (m_nodeDao.findByLabel("testnode").size() == 0) {
             NetworkBuilder builder = new NetworkBuilder(m_distPoller);
