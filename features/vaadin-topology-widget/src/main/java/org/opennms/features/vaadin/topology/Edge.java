@@ -1,6 +1,7 @@
 package org.opennms.features.vaadin.topology;
 
 
+
 public class Edge{
 	Vertex m_source;
 	Vertex m_target;
@@ -41,5 +42,10 @@ public class Edge{
 	@Override
 	public String toString() {
 	    return "Edge :: source: " + getSource() + " target: " + getTarget();
+	}
+
+	public Object getItem() {
+		// TODO HACK THIS FOR NOW!! FIX THIS
+		return this;
 	}
 }

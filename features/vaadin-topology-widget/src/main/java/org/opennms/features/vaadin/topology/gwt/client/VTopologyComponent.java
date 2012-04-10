@@ -1,5 +1,6 @@
 package org.opennms.features.vaadin.topology.gwt.client;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
@@ -87,8 +88,14 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     private D3 m_edgeGroup;
     private DragObject m_dragObject;
     
+    /**
+     * This map contains captions and icon urls for actions like: * "33_c" ->
+     * "Edit" * "33_i" -> "http://dom.com/edit.png"
+     */
+    private final HashMap<String, String> m_actionMap = new HashMap<String, String>();
     
-	private String[] m_actions;
+    
+	private String[] m_actionKeys;
     private D3Drag m_d3Drag;
     
     public VTopologyComponent() {
@@ -199,7 +206,9 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
         switch(DOM.eventGetType(event)) {
             case Event.ONCONTEXTMENU:
-                event.stopPropagation();
+//            	m_client.getContextMenu().showAt(this, event.getClientX(), event.getClientY());
+//            	event.preventDefault();
+//                event.stopPropagation();
                 break;
                 
             case Event.ONMOUSEDOWN:
@@ -216,8 +225,25 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     private Handler<GWTVertex> vertexContextMenuHandler() {
         return new D3Events.Handler<GWTVertex>() {
 
-            public void call(GWTVertex vertex, int index) {
-            	m_client.getContextMenu().showAt(getActionOwner(), D3.getEvent().getClientX(), D3.getEvent().getClientY());
+            public void call(final GWTVertex vertex, int index) {
+            	
+            	ActionOwner owner = new ActionOwner() {
+
+        			public Action[] getActions() {
+        				return VTopologyComponent.this.getActions(vertex.getId(), vertex.getActionKeys());
+        			}
+
+        			public ApplicationConnection getClient() {
+        				return VTopologyComponent.this.getClient();
+        			}
+
+        			public String getPaintableId() {
+        				return VTopologyComponent.this.getPaintableId();
+        			}
+            		
+            	};
+            	
+            	m_client.getContextMenu().showAt(owner, D3.getEvent().getClientX(), D3.getEvent().getClientY());
                 D3.eventPreventDefault();
             }
         };
@@ -362,7 +388,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         m_paintableId = uidl.getId();
         
         setScale(uidl.getDoubleAttribute("scale"));
-        setActions(uidl.getStringArrayAttribute("actionList"));
+        setActionKeys(uidl.getStringArrayAttribute("backgroundActions"));
         
       //Register tooltip
 //        String description = uidl.getStringAttribute("description");
@@ -382,23 +408,52 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         		
         		GWTVertex vertex = GWTVertex.create(child.getStringAttribute("id"), child.getIntAttribute("x"), child.getIntAttribute("y"));
         		boolean booleanAttribute = child.getBooleanAttribute("selected");
+        		String[] actionKeys = child.getStringArrayAttribute("actionKeys");
+        		
+        		vertex.setActionKeys(actionKeys);
         		
 				vertex.setSelected(booleanAttribute);
 				graphConverted.addVertex(vertex);
         		
         	}else if(child.getTag().equals("edge")) {
         		GWTEdge edge = GWTEdge.create(graphConverted.findVertexById(child.getStringAttribute("source")), graphConverted.findVertexById( child.getStringAttribute("target") ));
+        		String[] actionKeys = child.getStringArrayAttribute("actionKeys");
+        		edge.setActionKeys(actionKeys);
         		graphConverted.addEdge(edge);
         	}
         	
+        }
+        
+        UIDL actions = uidl.getChildByTagName("actions");
+        if (actions != null) {
+        	updateActionMap(actions);
         }
         
         setGraph(graphConverted);
         
     }
     
-	private void setActions(String[] actions) {
-		m_actions = actions;
+    private void updateActionMap(UIDL c) {
+        final Iterator<?> it = c.getChildIterator();
+        while (it.hasNext()) {
+            final UIDL action = (UIDL) it.next();
+            final String key = action.getStringAttribute("key");
+            final String caption = action.getStringAttribute("caption");
+            m_actionMap.put(key + "_c", caption);
+            if (action.hasAttribute("icon")) {
+                // TODO need some uri handling ??
+                m_actionMap.put(key + "_i", m_client.translateVaadinUri(action
+                        .getStringAttribute("icon")));
+            } else {
+                m_actionMap.remove(key + "_i");
+            }
+        }
+
+    }
+
+    
+	private void setActionKeys(String[] actions) {
+		m_actionKeys = actions;
 		
 	}
 
@@ -428,16 +483,31 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		m_edgeGroup.transition().duration(1000).attr("transform", "scale(" + scale + ")");
 		
 	}
-
+	
+	public String[] getActionKeys() {
+		return m_actionKeys;
+	}
+	
 	public Action[] getActions() {
-		if(m_actions == null) {
+		return getActions(null, getActionKeys());
+	}
+
+
+	public Action[] getActions(String target, String[] actionKeys) {
+		if(actionKeys == null) {
 			return new Action[] {};
 		}
-		final Action[] actions = new Action[m_actions.length];
+		final Action[] actions = new Action[actionKeys.length];
 		for(int i = 0; i < actions.length; i++) {
-			String actionKey = m_actions[i];
-			GraphAction a = new GraphAction(this);
-			a.setCaption(actionKey);
+			String actionKey = actionKeys[i];
+
+			GraphAction a = new GraphAction(this, target, actionKey);
+
+			a.setCaption(m_actionMap.get(actionKey + "_c"));
+
+			if (m_actionMap.containsKey(actionKey+"_i")) {
+				a.setIconUrl(m_actionMap.get(actionKey+"_i"));
+			}
 			
 			actions[i] = a;
 			
@@ -458,6 +528,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
         return null;
     }
+
 
 
 }

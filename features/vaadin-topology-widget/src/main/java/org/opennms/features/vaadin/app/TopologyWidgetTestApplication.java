@@ -2,6 +2,10 @@ package org.opennms.features.vaadin.app;
 
 
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.opennms.features.vaadin.topology.Graph;
 import org.opennms.features.vaadin.topology.TopologyComponent;
 import org.opennms.features.vaadin.topology.Vertex;
@@ -25,7 +29,20 @@ public class TopologyWidgetTestApplication extends Application implements Action
 
     private Window m_window;
     private TopologyComponent m_topologyComponent;
-	private Action[] m_actions = new Action[] {new Action("Group")};
+    
+    private Action[] m_mapAction = new Action[] {
+    		new Action("Redo Layout")
+    };
+    
+    private Action[] m_vertexActions = new Action[] {
+    		new Action("Group"),
+			new Action("Vertex Action"),
+    };
+    
+    private Action[] m_vertexZeroActions = new Action[] {
+			new Action("Vertex 0 Action")
+    };
+
     
     @Override
     public void init() {
@@ -133,14 +150,24 @@ public class TopologyWidgetTestApplication extends Application implements Action
     }
 
     public Action[] getActions(Object target, Object sender) {
-		return m_actions;
+    	List<Action> applicableActions = new LinkedList<Action>();
+    	
+    	if (target == null) {
+    		return m_mapAction;
+    	} else if (target instanceof Vertex && ((Vertex)target).getId().equals("0")) {
+    		applicableActions.addAll(Arrays.asList(m_vertexActions));
+    		applicableActions.addAll(Arrays.asList(m_vertexZeroActions));
+    		return applicableActions.toArray(new Action[0]);
+    	} else if (target instanceof Vertex) {
+    		return m_vertexActions;
+    	} else {
+    		return new Action[0];
+    	}
+    	
 	}
 
 	public void handleAction(Action action, Object sender, Object target) {
-		if(action.getCaption().equals("Group")) {
-			//Do Something here
-		}
-		
+		System.err.println("Topology App: Got Action " + action.getCaption() + " for target " + target);
 	}
 
 }

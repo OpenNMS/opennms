@@ -1,14 +1,17 @@
 package org.opennms.features.vaadin.topology;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.features.vaadin.topology.gwt.client.VTopologyComponent;
 
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
+import com.vaadin.terminal.KeyMapper;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
@@ -17,7 +20,7 @@ import com.vaadin.ui.ClientWidget;
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent implements Action.Container {
 	
-	
+	private KeyMapper m_actionMapper;
 
     @Override
     public void attach() {
@@ -39,6 +42,21 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         super.paintContent(target);
         target.addAttribute("scale", getScale());
         
+        Set<Action> actions = new HashSet<Action>();
+		m_actionMapper = new KeyMapper();
+
+		List<String> bgActionList = new ArrayList<String>();
+		for(Action.Handler handler : m_actionHandlers) {
+			Action[] bgActions = handler.getActions(null, null);
+			for(Action action : bgActions) {
+				bgActionList.add(m_actionMapper.key(action));
+				actions.add(action);
+			}
+		}
+
+		target.addAttribute("backgroundActions", bgActionList.toArray());
+		
+		
         target.startTag("graph");
         for(Vertex vert : m_graph.getVertices()) {
         	target.startTag("vertex");
@@ -46,6 +64,17 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("x", vert.getX());
         	target.addAttribute("y", vert.getY());
         	target.addAttribute("selected", vert.isSelected());
+        	
+    		List<String> vertActionList = new ArrayList<String>();
+    		for(Action.Handler handler : m_actionHandlers) {
+    			Action[] vertActions = handler.getActions(vert.getItem(), null);
+    			for(Action action : vertActions) {
+    				vertActionList.add(m_actionMapper.key(action));
+    				actions.add(action);
+    			}
+    		}
+
+    		target.addAttribute("actionKeys", vertActionList.toArray());
         	target.endTag("vertex");
         }
         
@@ -53,27 +82,46 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.startTag("edge");
         	target.addAttribute("source", edge.getSource().getId());
         	target.addAttribute("target", edge.getTarget().getId());
+
+    		List<String> edgeActionList = new ArrayList<String>();
+    		for(Action.Handler handler : m_actionHandlers) {
+    			Action[] vertActions = handler.getActions(edge.getItem(), null);
+    			for(Action action : vertActions) {
+    				edgeActionList.add(m_actionMapper.key(action));
+    				actions.add(action);
+    			}
+    		}
+
+
+        	target.addAttribute("actionKeys", edgeActionList.toArray());
         	target.endTag("edge");
         }
         
         target.endTag("graph");
         
-        target.addAttribute("actionList", getActionsList());
         
+        
+		target.startTag("actions");
+
+		// send available actions
+		for(Action action : actions) {
+			target.startTag("action");
+			target.addAttribute("key", m_actionMapper.key(action));
+			if (action.getCaption() != null) {
+				target.addAttribute("caption", action.getCaption());
+			}
+			if (action.getIcon() != null) {
+				target.addAttribute("icon", action.getIcon());
+			}
+			target.endTag("action");
+		}
+
+		
+		target.endTag("actions");
+
         
     }
     
-    private String[] getActionsList() {
-		List<String> actionList = new ArrayList<String>();
-		for(Action.Handler handler : m_actionHandlers) {
-			Action[] actions = handler.getActions(null, null);
-			for(Action action : actions) {
-				actionList.add(action.getCaption());
-			}
-		}
-		return actionList.toArray(new String[0]);
-	}
-
 	@Override
     public void changeVariables(Object source, Map<String, Object> variables) {
         if(variables.containsKey("graph")) {
@@ -93,7 +141,17 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         }
         
         if(variables.containsKey("action")) {
-        	System.err.println("I just received an action");
+        	String value = (String) variables.get("action");
+        	String[] data = value.split(",");
+        	String targetId = data[0];
+        	String actionKey = data[1];
+        	
+        	Vertex vertex = m_graph.getVertexById(targetId);
+        	Action action = (Action) m_actionMapper.get(actionKey);
+        	
+        	for(Handler handler : m_actionHandlers) {
+        		handler.handleAction(action, this, vertex);
+        	}
         	
         }
         

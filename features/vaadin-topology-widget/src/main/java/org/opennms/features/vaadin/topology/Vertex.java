@@ -59,4 +59,9 @@ public class Vertex implements Paintable{
 	public boolean isSelected() {
 		return m_selected;
 	}
+
+	public Object getItem() {
+		// TODO HACK FOR NOW!!! FIX THIS
+		return this;
+	}
 }
