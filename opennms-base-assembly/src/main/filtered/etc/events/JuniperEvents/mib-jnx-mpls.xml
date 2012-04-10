@@ -148,7 +148,8 @@ LSP mplsLspInfoName went down</p><table>
 			mplsLspInfoName=%parm[#1]% 
 			mplsPathInfoName=%parm[#2]%</p>
 		]]></logmsg>
-    <severity>Indeterminate</severity>
+    <severity>Major</severity>
+    <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -185,7 +186,8 @@ LSP mplsLspInfoName came up</p><table>
 			mplsLspInfoName=%parm[#1]% 
 			mplsPathInfoName=%parm[#2]%</p>
 		]]></logmsg>
-    <severity>Indeterminate</severity>
+    <severity>Cleared</severity>
+    <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/mplsLspInfoPathDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -335,7 +337,7 @@ LSP mplsLspName went down</p><table>
 			mplsPathName=%parm[#2]%</p>
 		]]></logmsg>
     <severity>Major</severity>
-    <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
+    <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -373,7 +375,7 @@ LSP mplsLspName came up</p><table>
 			mplsPathName=%parm[#2]%</p>
 		]]></logmsg>
     <severity>Cleared</severity>
-    <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
+    <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
   </event>
 </events>
 
