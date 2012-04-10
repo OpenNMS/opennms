@@ -92,15 +92,28 @@ public class TopologyWidgetTestApplication extends Application implements Action
         topLayoutBar.addComponent(removeVertexButton);
         topLayoutBar.addComponent(slider);
         
+        HorizontalLayout bottomLayoutBar = new HorizontalLayout();
+        bottomLayoutBar.addComponent(new Button("Bottom bar"));
+        
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.setWidth("100px");
         vLayout.setHeight("100%");
-        vLayout.addComponent(createTree());
+        vLayout.addComponent(new Button("Hello There"));
+        
+        HorizontalLayout mapLayout = new HorizontalLayout();
+        
+        mapLayout.addComponent(vLayout);
+        mapLayout.addComponent(m_topologyComponent);
+        mapLayout.setSizeFull();
+        mapLayout.setExpandRatio(m_topologyComponent, 1.0f);
+        
+        
         
         layout.addComponent(topLayoutBar);
-        layout.addComponent(vLayout);
-        layout.addComponent(m_topologyComponent);
-        layout.setExpandRatio(m_topologyComponent, 1.0f);
+        layout.addComponent(mapLayout);
+        layout.addComponent(bottomLayoutBar);
+        layout.setExpandRatio(mapLayout, 1.0f);
+        
         
     }
 
