@@ -1,4 +1,4 @@
-package org.opennms.features.vaadin.topology.gwt.client;
+package org.opennms.features.vaadin.topology;
 
 import java.util.ArrayList;
 import java.util.Arrays;

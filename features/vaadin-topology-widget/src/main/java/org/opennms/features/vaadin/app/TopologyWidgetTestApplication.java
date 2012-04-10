@@ -1,8 +1,10 @@
-package org.opennms.features.vaadin.topology;
+package org.opennms.features.vaadin.app;
 
 
-import org.opennms.features.vaadin.topology.gwt.client.Graph;
-import org.opennms.features.vaadin.topology.gwt.client.Vertex;
+
+import org.opennms.features.vaadin.topology.Graph;
+import org.opennms.features.vaadin.topology.TopologyComponent;
+import org.opennms.features.vaadin.topology.Vertex;
 
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;

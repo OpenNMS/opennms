@@ -1,4 +1,4 @@
-package org.opennms.features.vaadin.topology.gwt.client;
+package org.opennms.features.vaadin.topology;
 
 
 public class Edge{

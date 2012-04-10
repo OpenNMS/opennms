@@ -1,7 +1,7 @@
 package org.opennms.features.vaadin.topology.gwt.client.d3;
 
-import org.opennms.features.vaadin.topology.gwt.client.Edge;
-import org.opennms.features.vaadin.topology.gwt.client.Vertex;
+import org.opennms.features.vaadin.topology.Edge;
+import org.opennms.features.vaadin.topology.Vertex;
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -44,7 +44,7 @@ public class D3 extends JavaScriptObject {
         return this.selectAll(selectionName);
     }-*/;
     
-    public final native D3 data(JsArray array) /*-{
+    public final native D3 data(JsArray<?> array) /*-{
         return this.data(array);
     }-*/;
 

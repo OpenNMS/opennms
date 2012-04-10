@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.opennms.features.vaadin.topology.gwt.client.Edge;
-import org.opennms.features.vaadin.topology.gwt.client.Graph;
 import org.opennms.features.vaadin.topology.gwt.client.VTopologyComponent;
-import org.opennms.features.vaadin.topology.gwt.client.Vertex;
 
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
@@ -152,13 +149,11 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		return m_graph;
 	}
 
-	void addRandomNode() {
+	public void addRandomNode() {
 		Graph graph = getGraph();
-		int x = (int) (Math.random() * 100);
-		int y = (int) (Math.random() * 100);
-		
+
 		String id = graph.getNextId();
-		Vertex vertex = new Vertex(id, 10, 10);
+		Vertex vertex = new Vertex(id);
 		graph.addVertex(vertex);
 		graph.addEdge(new Edge(graph.getVertices().get(0), vertex));
 		

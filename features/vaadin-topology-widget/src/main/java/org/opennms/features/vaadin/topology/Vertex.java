@@ -1,4 +1,4 @@
-package org.opennms.features.vaadin.topology.gwt.client;
+package org.opennms.features.vaadin.topology;
 
 import java.util.Date;
 
@@ -14,10 +14,12 @@ public class Vertex implements Paintable{
 	private boolean m_selected;
 	private Date m_date = new Date();
 	
-	public Vertex() {};
+	public Vertex(String id) {
+		m_id = id;
+	}
 	
 	public Vertex(String id, int x, int y){
-		m_id = id;
+		this(id);
 		m_x = x;
 		m_y = y;
 	}
