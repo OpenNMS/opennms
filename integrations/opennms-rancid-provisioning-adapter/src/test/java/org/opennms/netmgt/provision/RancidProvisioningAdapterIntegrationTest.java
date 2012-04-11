@@ -42,6 +42,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -88,11 +89,8 @@ public class RancidProvisioningAdapterIntegrationTest implements InitializingBea
     private static final int NODE_ID = 1;
 
     @Override
-    public void afterPropertiesSet() {
-        assertNotNull("Autowiring failed, node dao is null", m_nodeDao);
-        assertNotNull("Autowiring failed, IPC manager is null", m_mockEventIpcManager);
-        assertNotNull("Autowiring failed, DB populator is null", m_populator);
-        assertNotNull("Autowiring failed, adapter is null", m_adapter);
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

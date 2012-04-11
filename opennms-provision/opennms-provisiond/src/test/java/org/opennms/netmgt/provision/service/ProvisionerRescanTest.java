@@ -44,6 +44,7 @@ import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
@@ -152,22 +153,9 @@ public class ProvisionerRescanTest implements InitializingBean {
     
     private ForeignSource m_foreignSource;
 
-    public void afterPropertiesSet() {
-        assertNotNull(m_mockEventIpcManager);
-        assertNotNull(m_provisioner);
-        assertNotNull(m_serviceTypeDao);
-        assertNotNull(m_monitoredServiceDao);
-        assertNotNull(m_ipInterfaceDao);
-        assertNotNull(m_snmpInterfaceDao);
-        assertNotNull(m_nodeDao);
-        assertNotNull(m_distPollerDao);
-        assertNotNull(m_assetRecordDao);
-        assertNotNull(m_resourceLoader);
-        assertNotNull(m_provisionService);
-        assertNotNull(m_pausibleExecutor);
-        assertNotNull(m_importSchedule);
-        assertNotNull(m_snmpPeerFactory);
-        assertNotNull(m_populator);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

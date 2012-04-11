@@ -28,15 +28,17 @@
 
 package org.opennms.features.reporting.dao.jasper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * <p>LegacyLocalJasperReportsDaoTest class.</p>
@@ -47,13 +49,18 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDaoTest.xml"})
-public class LegacyLocalJasperReportsDaoTest {
+public class LegacyLocalJasperReportsDaoTest implements InitializingBean {
 
     /**
      * Local report data access object to test
      */
     @Autowired
     private LocalJasperReportsDao m_localJasperReportsDao;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     /**
      * <p>tearDown</p>

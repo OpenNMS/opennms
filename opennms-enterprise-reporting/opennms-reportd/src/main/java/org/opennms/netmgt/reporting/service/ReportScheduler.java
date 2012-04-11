@@ -37,6 +37,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.StringUtils;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.dao.ReportdConfigurationDao;
@@ -76,8 +77,8 @@ public class ReportScheduler implements InitializingBean {
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        
-        
+        BeanUtils.assertAutowiring(this);
+
         try {
             getScheduler().setJobFactory(getReportJobFactory());
         } catch (SchedulerException e) {

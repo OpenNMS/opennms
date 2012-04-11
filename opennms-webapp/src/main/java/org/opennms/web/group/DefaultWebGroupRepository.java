@@ -32,10 +32,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id: $
  * @since 1.8.1
  */
-public class DefaultWebGroupRepository implements WebGroupRepository {
+public class DefaultWebGroupRepository implements WebGroupRepository, InitializingBean {
     
     @Autowired
     private GroupDao m_groupDao;
@@ -54,8 +56,11 @@ public class DefaultWebGroupRepository implements WebGroupRepository {
     @Autowired
     private CategoryDao m_categoryDao;
     
-    
-    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     /** {@inheritDoc} */
     @Transactional
     public boolean groupExists(String groupName) {

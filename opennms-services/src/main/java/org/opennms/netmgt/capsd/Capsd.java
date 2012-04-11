@@ -33,6 +33,7 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -145,12 +146,10 @@ public class Capsd extends AbstractServiceDaemon {
 	 * <p>onInit</p>
 	 */
 	protected void onInit() {
-	    
-        Assert.state(m_suspectEventProcessorFactory != null, "must set the suspectEventProcessorFactory property");
-        Assert.state(m_capsdDbSyncer != null, "must set the capsdDbSyncer property");
+        BeanUtils.assertAutowiring(this);
+
         Assert.state(m_suspectRunner != null, "must set the suspectRunner property");
         Assert.state(m_rescanRunner != null, "must set the rescanRunner property");
-        Assert.state(m_scheduler != null, "must set the scheduler property");
         Assert.state(m_eventListener != null, "must set the eventListener property");
 
         if (System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true")) {

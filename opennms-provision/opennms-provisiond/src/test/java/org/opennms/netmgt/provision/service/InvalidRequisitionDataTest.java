@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.EventDao;
@@ -21,6 +22,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
@@ -47,7 +49,7 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitTemporaryDatabase
 @JUnitConfigurationEnvironment
 @DirtiesContext
-public class InvalidRequisitionDataTest {
+public class InvalidRequisitionDataTest implements InitializingBean {
     
     @Autowired
     private NodeDao m_nodeDao;
@@ -66,6 +68,11 @@ public class InvalidRequisitionDataTest {
     private MockEventIpcManager m_eventManager;
 
     private EventAnticipator m_anticipator;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Before
     public void setUp() throws Exception {

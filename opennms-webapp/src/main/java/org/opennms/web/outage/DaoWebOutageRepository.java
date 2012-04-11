@@ -41,6 +41,7 @@ import java.util.Map;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageCriteria.OutageCriteriaVisitor;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id: $
  * @since 1.8.1
  */
-public class DaoWebOutageRepository implements WebOutageRepository {
+public class DaoWebOutageRepository implements WebOutageRepository, InitializingBean {
     
     @Autowired
     private OutageDao m_outageDao;
@@ -67,6 +69,11 @@ public class DaoWebOutageRepository implements WebOutageRepository {
     @Autowired
     private NodeDao m_nodeDao;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     /*
      * NOTE: Criteria building for Outages must included the following aliases"
      * 

@@ -48,6 +48,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.acl.domain.Authority;
 import org.opennms.acl.factory.AutorityFactory;
 import org.opennms.acl.util.Constants;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -61,7 +63,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  * @version $Id: $
  */
 @Service("authoritiesFactoryInterceptor")
-public class AuthorityInterceptor extends HandlerInterceptorAdapter {
+public class AuthorityInterceptor extends HandlerInterceptorAdapter implements InitializingBean {
 
     /** {@inheritDoc} */
     @Override
@@ -77,4 +79,9 @@ public class AuthorityInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private AutorityFactory authorityFactory;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 }

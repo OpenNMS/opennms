@@ -32,8 +32,10 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Set;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
@@ -50,7 +52,7 @@ import org.springframework.core.io.Resource;
  * deployed repository as well.
  * </p>
  */
-public class FusedForeignSourceRepository extends AbstractForeignSourceRepository implements ForeignSourceRepository {
+public class FusedForeignSourceRepository extends AbstractForeignSourceRepository implements ForeignSourceRepository, InitializingBean {
     @Autowired
     @Qualifier("pending")
     private FilesystemForeignSourceRepository m_pendingForeignSourceRepository;
@@ -58,6 +60,11 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
     @Autowired
     @Qualifier("deployed")
     private FilesystemForeignSourceRepository m_deployedForeignSourceRepository;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     /**
      * <p>getActiveForeignSourceNames</p>

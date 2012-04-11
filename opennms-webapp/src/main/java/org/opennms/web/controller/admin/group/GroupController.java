@@ -44,6 +44,7 @@ import javax.servlet.http.HttpSession;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.DutySchedule;
@@ -53,6 +54,7 @@ import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.group.WebGroup;
 import org.opennms.web.group.WebGroupRepository;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -65,7 +67,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @version $Id: $
  * @since 1.8.1
  */
-public class GroupController extends AbstractController {
+public class GroupController extends AbstractController implements InitializingBean {
 
     @Autowired
     private OnmsMapDao m_onmsMapDao;
@@ -78,6 +80,11 @@ public class GroupController extends AbstractController {
     
     @Autowired
     private WebGroupRepository m_groupRepository;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     /** {@inheritDoc} */
     @Override

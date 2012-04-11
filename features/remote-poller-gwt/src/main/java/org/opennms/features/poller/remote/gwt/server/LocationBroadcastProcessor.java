@@ -34,6 +34,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
@@ -101,6 +102,8 @@ public class LocationBroadcastProcessor implements InitializingBean, DisposableB
      */
     @Override
     public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+
         m_task = new TimerTask() {
             private Date m_lastRun = new Date();
 
