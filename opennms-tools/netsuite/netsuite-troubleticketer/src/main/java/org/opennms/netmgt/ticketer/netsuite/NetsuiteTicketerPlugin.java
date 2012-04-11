@@ -46,6 +46,8 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.netsuite.ReadOnlyNetsuiteConfigDao;
+
+//FIXME this is a stub to cover code left over from the axis code generator
 import org.opennms.netmgt.netsuite.NetSuiteServiceLocator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -171,13 +173,13 @@ public class NetsuiteTicketerPlugin implements Plugin {
         try {
             logout();
         } catch (com.netsuite.webservices.platform_2012_1.InvalidSessionFault e) {
-            //TODO need to log
+            //FIXME need to log
             throw new PluginException("Logout Failed, invalid session.", e);
         } catch (com.netsuite.webservices.platform_2012_1.UnexpectedErrorFault e) {
-            //TODO need to log
+            //FIXME need to log
             throw new PluginException("Logout Failed, unexpected error.", e);
         } catch (com.netsuite.webservices.platform_2012_1.ExceededRequestLimitFault e) {
-            //TODO need to log
+            //FIXME need to log
             throw new PluginException("Logout Failed, exceeded the request limit.", e);
         }
         return ticket;
@@ -223,7 +225,8 @@ public class NetsuiteTicketerPlugin implements Plugin {
 
                 // Update in Netsuite
                 log().debug("Do update");
-                UpdateRequest parameters;
+                //FIXME this probably isn't write... just getting it to compile...
+                UpdateRequest parameters = new UpdateRequest();
                 parameters.setRecord(ucase);
                 UpdateResponse updateResponse = m_port.update(parameters);
                 Status status2 = updateResponse.getWriteResponse().getStatus();
@@ -255,7 +258,8 @@ public class NetsuiteTicketerPlugin implements Plugin {
 
                 // Incident date
                 // Incident time
-                ucase.setStartDate(Calendar.getInstance());
+                //FIXME: This must be fixed
+                //ucase.setStartDate(Calendar.getInstance());
 
                 // Case Issue (Other - Other)
                 RecordRef issue = new RecordRef();
@@ -297,7 +301,11 @@ public class NetsuiteTicketerPlugin implements Plugin {
             e.printStackTrace();
         }
 
-        logout();
+        try {
+            logout();
+        } catch (Exception e) {
+          //FIXME do something here
+        }
 
     }
 
@@ -390,7 +398,7 @@ public class NetsuiteTicketerPlugin implements Plugin {
             }
             
         } catch (Exception e) {
-            //TODO: This is badness, we should do something with this exception and
+            //FIXME: This is badness, we should do something with this exception and
             //we need a logger to log this rather than to stderr
             e.printStackTrace();
         }
