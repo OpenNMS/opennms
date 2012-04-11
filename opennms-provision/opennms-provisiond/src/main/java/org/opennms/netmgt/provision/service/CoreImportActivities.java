@@ -174,8 +174,18 @@ public class CoreImportActivities {
         RequisitionVisitor visitor = new AbstractRequisitionVisitor() {
             @Override
             public void visitNode(final OnmsNodeRequisition nodeReq) {
-            	LogUtils.debugf(this, "Scheduling relate of node %s", nodeReq);
-                currentPhase.add(parentSetter(nodeReq, requisition.getForeignSource()));
+                LogUtils.debugf(this, "Scheduling relate of node %s", nodeReq);
+                currentPhase.add(parentSetter(
+                    nodeReq,
+                    // If the node requisition does not include a foreign source
+                    // name, then use the foreign source of the current requisition
+                    // as the default value
+                    //
+                    // @see http://issues.opennms.org/browse/NMS-4109
+                    //
+                    nodeReq.getParentForeignSource() == null ? 
+                        requisition.getForeignSource() : nodeReq.getParentForeignSource()
+                ));
             }
         };
         
