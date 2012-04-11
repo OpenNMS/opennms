@@ -752,7 +752,7 @@ public class Event implements Serializable {
 	 * @return the value of field 'Logmsg'.
 	 */
 	public Logmsg getLogmsg() {
-		return _logmsg;
+		return _logmsg == null? new Logmsg() : _logmsg;
 	}
 
 	/**

@@ -57,7 +57,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
