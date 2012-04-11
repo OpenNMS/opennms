@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class CorrelationTest extends XmlTest<Correlation> {
+public class CorrelationTest extends XmlTestNoCastor<Correlation> {
 
-	public CorrelationTest(final Correlation sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public CorrelationTest(final Correlation sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 
@@ -27,7 +26,7 @@ public class CorrelationTest extends XmlTest<Correlation> {
 		return Arrays.asList(new Object[][] {
 				{correlation0,
 				"<correlation/>",
-				"target/classes/xsds/eventconf.xsd" },
+				"target/xsds/eventconf.xsd" },
 				{correlation1,
 				"<correlation state=\"on\" path=\"pathOutage\">" +
 				"<cuei>vCuei</cuei>" +
@@ -35,7 +34,7 @@ public class CorrelationTest extends XmlTest<Correlation> {
 				"<cmax>cmax</cmax>" +
 				"<ctime>ctime</ctime>" +
 				"</correlation>",
-				"target/classes/xsds/eventconf.xsd" } 
+				"target/xsds/eventconf.xsd" } 
 		});
 	}
 

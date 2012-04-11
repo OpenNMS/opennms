@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class DecodeTest extends XmlTest<Decode> {
+public class DecodeTest extends XmlTestNoCastor<Decode> {
 
-	public DecodeTest(final Decode sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public DecodeTest(final Decode sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 
@@ -22,7 +21,7 @@ public class DecodeTest extends XmlTest<Decode> {
 		return Arrays.asList(new Object[][] {
 				{decode0,
 				"<decode varbinddecodedstring=\"testing\" varbindvalue=\"3\"/>",
-				"target/classes/xsds/eventconf.xsd" } 
+				"target/xsds/eventconf.xsd" } 
 		});
 	}
 

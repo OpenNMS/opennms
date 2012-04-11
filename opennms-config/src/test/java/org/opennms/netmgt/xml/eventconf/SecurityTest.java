@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class SecurityTest extends XmlTest<Security> {
+public class SecurityTest extends XmlTestNoCastor<Security> {
 
-	public SecurityTest(final Security sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public SecurityTest(final Security sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 
@@ -26,13 +25,13 @@ public class SecurityTest extends XmlTest<Security> {
 				"<security>" +
 				"<doNotOverride>I'm very important, don't mess with me!</doNotOverride>" +
 				"</security>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 				{security1,
 					"<security>" +
 					"<doNotOverride>I'm very important, don't mess with me!</doNotOverride>" +
 					"<doNotOverride>Also important</doNotOverride>" +
 					"</security>",
-					"target/classes/xsds/eventconf.xsd" }, 		});
+					"target/xsds/eventconf.xsd" }, 		});
 	}
 
 }

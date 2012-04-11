@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class TticketTest extends XmlTest<Tticket> {
+public class TticketTest extends XmlTestNoCastor<Tticket> {
 
-	public TticketTest(final Tticket sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public TticketTest(final Tticket sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 
@@ -24,10 +23,10 @@ public class TticketTest extends XmlTest<Tticket> {
 		return Arrays.asList(new Object[][] {
 				{tticket0,
 				"<tticket>This is a test</tticket>",
-				"target/classes/xsds/eventconf.xsd" },
+				"target/xsds/eventconf.xsd" },
 				{tticket1,
 				"<tticket state=\"on\">This is a test</tticket>",
-				"target/classes/xsds/eventconf.xsd" } 
+				"target/xsds/eventconf.xsd" } 
 		});
 	}
 

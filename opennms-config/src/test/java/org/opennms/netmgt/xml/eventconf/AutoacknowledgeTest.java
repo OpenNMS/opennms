@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class AutoacknowledgeTest extends XmlTest<Autoacknowledge> {
+public class AutoacknowledgeTest extends XmlTestNoCastor<Autoacknowledge> {
 
-	public AutoacknowledgeTest(final Autoacknowledge sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public AutoacknowledgeTest(final Autoacknowledge sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 
@@ -23,10 +22,10 @@ public class AutoacknowledgeTest extends XmlTest<Autoacknowledge> {
 		return Arrays.asList(new Object[][] {
 				{autoacknowledge0,
 				"<autoacknowledge/>",
-				"target/classes/xsds/eventconf.xsd" },
+				"target/xsds/eventconf.xsd" },
 				{autoacknowledge1,
 				"<autoacknowledge state=\"on\">These are important data</autoacknowledge>",
-				"target/classes/xsds/eventconf.xsd" } 
+				"target/xsds/eventconf.xsd" } 
 		});
 	}
 

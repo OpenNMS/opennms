@@ -93,12 +93,12 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * <p>Constructor for DefaultEventConfDao.</p>
      */
     public DefaultEventConfDao() {
-        super(Events.class, "event configuration");
+        super(Events.class, "event");
     }
 
     /** {@inheritDoc} */
     @Override
-    protected String createLoadedLogMessage(EventConfiguration translatedConfig, long diffTime) {
+    protected String createLoadedLogMessage(final EventConfiguration translatedConfig, final long diffTime) {
         return "Loaded " + getDescription() + " with " + translatedConfig.getEventCount() + " events from " + translatedConfig.getEventFiles().size() + " files in " + diffTime + "ms";
     }
 
@@ -129,8 +129,8 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
     
     /** {@inheritDoc} */
     @Override
-    public EventConfiguration translateConfig(Events events) throws DataAccessException {
-        EventConfiguration eventConfiguration = new EventConfiguration();
+    public EventConfiguration translateConfig(final Events events) throws DataAccessException {
+    	final EventConfiguration eventConfiguration = new EventConfiguration();
 
         processEvents(events, getConfigResource(), eventConfiguration, "root", false);
 
@@ -138,28 +138,22 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
             eventConfiguration.getSecureTags().addAll(events.getGlobal().getSecurity().getDoNotOverrideCollection());
         }
 
-        for (String eventFilePath : events.getEventFileCollection()) {
-            Resource childResource = m_resourceLoader.getResource(eventFilePath);
-            
-            loadAndProcessEvents(childResource, eventConfiguration, "included", true);
+        for (final String eventFilePath : events.getEventFileCollection()) {
+            loadAndProcessEvents(m_resourceLoader.getResource(eventFilePath), eventConfiguration, "included", true);
         }
         
         return eventConfiguration;
     }
 
-    private Events loadAndProcessEvents(Resource rootResource, EventConfiguration eventConfiguration, String resourceDescription, boolean denyIncludes) {
-        if (log().isDebugEnabled()) {
-            log().debug("DefaultEventConfDao: Loading " + resourceDescription + " event configuration from " + rootResource);
-        }
-        
-        final Events events = JaxbUtils.unmarshal(Events.class, rootResource);
+    private Events loadAndProcessEvents(final Resource rootResource, final EventConfiguration eventConfiguration, final String resourceDescription, final boolean denyIncludes) {
+    	LogUtils.debugf(this, "DefaultEventConfDao: Loading %s event configuration from %s", resourceDescription, rootResource);
 
+    	final Events events = JaxbUtils.unmarshal(Events.class, rootResource);
         processEvents(events, rootResource, eventConfiguration, resourceDescription, denyIncludes);
-        
         return events;
     }
 
-    private void processEvents(Events events, Resource resource, EventConfiguration eventConfiguration, String resourceDescription, boolean denyIncludes) {
+    private void processEvents(final Events events, final Resource resource, final EventConfiguration eventConfiguration, final String resourceDescription, final boolean denyIncludes) {
         if (denyIncludes) {
             if (events.getGlobal() != null) {
                 throw new ObjectRetrievalFailureException(Resource.class, resource, "The event resource " + resource + " included from the root event configuration file cannot have a 'global' element", null);
@@ -170,11 +164,11 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
         }
 
         eventConfiguration.getEventFiles().put(resource, events);
-        for (Event event : events.getEventCollection()) {
+        for (final Event event : events.getEventCollection()) {
             eventConfiguration.getEventConfData().put(event);
         }
         
-        log().info("DefaultEventConfDao: Loaded " + events.getEventCollection().size() + " events from " + resourceDescription + " event configuration resource: " + resource);
+        LogUtils.infof(this, "DefaultEventConfDao: Loaded %d events from %s event configuration resource: %s", events.getEventCollection().size(), resourceDescription, resource);
         
         eventConfiguration.incrementEventCount(events.getEventCount());
     }
@@ -183,11 +177,11 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#getEvents(java.lang.String)
      */
     /** {@inheritDoc} */
-    public List<Event> getEvents(String uei) {
-        List<Event> events = new ArrayList<Event>();
+    public List<Event> getEvents(final String uei) {
+    	final List<Event> events = new ArrayList<Event>();
 
-        for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
-            for (Event event : fileEvents.getEventCollection()) {
+        for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
+            for (final Event event : fileEvents.getEventCollection()) {
                 if (event.getUei().equals(uei)) {
                     events.add(event);
                 }
@@ -210,8 +204,8 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @return a {@link java.util.List} object.
      */
     public List<String> getEventUEIs() {
-        List<String> eventUEIs = new ArrayList<String>();
-        for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
+        final List<String> eventUEIs = new ArrayList<String>();
+        for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
             for (Event event : fileEvents.getEventCollection()) {
                 eventUEIs.add(event.getUei());
             }
@@ -228,9 +222,9 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @return a {@link java.util.Map} object.
      */
     public Map<String, String> getEventLabels() {
-        Map<String, String> eventLabels = new TreeMap<String, String>();
-        for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
-            for (Event event : fileEvents.getEventCollection()) {
+        final Map<String, String> eventLabels = new TreeMap<String, String>();
+        for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
+            for (final Event event : fileEvents.getEventCollection()) {
                 eventLabels.put(event.getUei(), event.getEventLabel());
             }
         }
@@ -242,9 +236,9 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#getEventLabel(java.lang.String)
      */
     /** {@inheritDoc} */
-    public String getEventLabel(String uei) {
-        for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
-            for (Event event : fileEvents.getEventCollection()) {
+    public String getEventLabel(final String uei) {
+        for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
+            for (final Event event : fileEvents.getEventCollection()) {
                 if (event.getUei().equals(uei)) {
                     return event.getEventLabel();
                 }   
@@ -260,62 +254,56 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * <p>saveCurrent</p>
      */
     public synchronized void saveCurrent() {
-        for (Entry<Resource, Events> entry : getEventConfiguration().getEventFiles().entrySet()) {
-            Resource resource = entry.getKey();
-            Events fileEvents = entry.getValue();
+        for (final Entry<Resource, Events> entry : getEventConfiguration().getEventFiles().entrySet()) {
+            final Resource resource = entry.getKey();
+            final Events fileEvents = entry.getValue();
             
-            StringWriter stringWriter = new StringWriter();
-            try {
-            	JaxbUtils.marshal(fileEvents, stringWriter);
-            } catch (DataAccessException e) {
-                throw new DataAccessResourceFailureException("Could not marshal configuration file for " + resource + ": " + e, e);
-            }
+            final StringWriter stringWriter = new StringWriter();
+            JaxbUtils.marshal(fileEvents, stringWriter);
             
             if (stringWriter.toString() != null) {
                 File file;
                 try {
                     file = resource.getFile();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     throw new DataAccessResourceFailureException("Event resource '" + resource + "' is not a file resource and cannot be saved.  Nested exception: " + e, e);
                 }
                 
-                Writer fileWriter;
+                final Writer fileWriter;
                 try {
                     fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     throw new DataAccessResourceFailureException("Event file '" + file + "' could not be opened.  Nested exception: " + e, e);
                 }
                 
                 try {
                     fileWriter.write(stringWriter.toString());
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     throw new DataAccessResourceFailureException("Event file '" + file + "' could not be written to.  Nested exception: " + e, e);
                 }
                 
                 try {
                     fileWriter.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     throw new DataAccessResourceFailureException("Event file '" + file + "' could not be closed.  Nested exception: " + e, e);
                 }
             }
         }
         
-        File programmaticStoreFile;
+        final File programmaticStoreFile;
         try {
             programmaticStoreFile = getProgrammaticStoreConfigResource().getFile();
-        } catch (IOException e) {
-            log().info("Programmatic store resource '" + getProgrammaticStoreConfigResource() + "'; not attempting to delete an unused programmatic store file if it exists (since we can't test for it).");
-            programmaticStoreFile = null;
-        }
         
-        if (programmaticStoreFile != null) {
             // Delete the programmatic store if it exists on disk, but isn't in the main store.  This is for cleanliness
             if (programmaticStoreFile.exists() && (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource()))) {
-                log().info("Deleting programmatic store configuration file because it is no longer referenced in the root config file " + getConfigResource());
+                LogUtils.infof(this, "Deleting programmatic store configuration file because it is no longer referenced in the root config file %s", getConfigResource());
                 if (!programmaticStoreFile.delete()) {
                     LogUtils.warnf(this, "Attempted to delete %s, but failed.", programmaticStoreFile);
                 }
             }
+
+        } catch (final IOException e) {
+            LogUtils.infof(this, "Programmatic store resource '%s'; not attempting to delete an unused programmatic store file if it exists (since we can't test for it).", getProgrammaticStoreConfigResource());
         }
         
         /*
@@ -334,8 +322,8 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @return a {@link java.util.List} object.
      */
     public List<Event> getEventsByLabel() {
-        List<Event> list = new ArrayList<Event>();
-        for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
+        final List<Event> list = new ArrayList<Event>();
+        for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
             list.addAll(fileEvents.getEventCollection());
         }
         Collections.sort(list, new EventLabelComparator());
@@ -346,16 +334,15 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#addEvent(org.opennms.netmgt.xml.eventconf.Event)
      */
     /** {@inheritDoc} */
-    public void addEvent(Event event) {
-        Events events = getRootEvents();
-        events.addEvent(event);
+    public void addEvent(final Event event) {
+        getRootEvents().addEvent(event);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#addEventToProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event)
      */
     /** {@inheritDoc} */
-    public void addEventToProgrammaticStore(Event event) {
+    public void addEventToProgrammaticStore(final Event event) {
         // Check for, and possibly add the programmatic store to the in-memory structure
         if (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource())) {
             // Programmatic store did not already exist.  Add an empty Events object for that file
@@ -363,7 +350,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
         }
         
         // Check for, and possibly add, the programmatic store event-file entry to the in-memory structure of the root config file
-        Events root = getRootEvents();
+        final Events root = getRootEvents();
         if (!root.getEventFileCollection().contains(getProgrammaticStoreRelativeUrl())) {
             root.addEventFile(getProgrammaticStoreRelativeUrl());
         }
@@ -384,13 +371,13 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#removeEventFromProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event)
      */   
     /** {@inheritDoc} */
-    public boolean removeEventFromProgrammaticStore(Event event) {
+    public boolean removeEventFromProgrammaticStore(final Event event) {
         if (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource())) {
             return false; // Oops, doesn't exist
         }
         
-        Events events = getProgrammaticStoreEvents();
-        boolean result = events.removeEvent(event);
+        final Events events = getProgrammaticStoreEvents();
+        final boolean result = events.removeEvent(event);
         if (events.getEventCount() == 0) {
             getEventConfiguration().getEventFiles().remove(getProgrammaticStoreConfigResource());
             getRootEvents().removeEventFile(getProgrammaticStoreRelativeUrl());
@@ -402,7 +389,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#isSecureTag(java.lang.String)
      */
     /** {@inheritDoc} */
-    public boolean isSecureTag(String tag) {
+    public boolean isSecureTag(final String tag) {
         return getEventConfiguration().getSecureTags().contains(tag);
     }
 
@@ -410,7 +397,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#findByUei(java.lang.String)
      */
     /** {@inheritDoc} */
-    public Event findByUei(String uei) {
+    public Event findByUei(final String uei) {
         return getEventConfiguration().getEventConfData().getEventByUEI(uei);
     }
 
@@ -418,7 +405,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#findByEvent(org.opennms.netmgt.xml.event.Event)
      */
     /** {@inheritDoc} */
-    public Event findByEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
+    public Event findByEvent(final org.opennms.netmgt.xml.event.Event matchingEvent) {
         return getEventConfiguration().getEventConfData().getEvent(matchingEvent);
     }
 
@@ -426,7 +413,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
         if (m_programmaticStoreConfigResource == null) {
             try {
                 m_programmaticStoreConfigResource = getConfigResource().createRelative(getProgrammaticStoreRelativeUrl());
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log().warn("Could not get a relative resource for the programmatic store configuration file using relative URL '" + getProgrammaticStoreRelativeUrl() + "': " + e, e);
                 throw new DataAccessResourceFailureException("Could not get a relative resource for the programmatic store configuration file using relative URL '" + getProgrammaticStoreRelativeUrl() + "': " + e, e);
             }
@@ -449,7 +436,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      *
      * @param programmaticStoreRelativeUrl a {@link java.lang.String} object.
      */
-    public void setProgrammaticStoreRelativeUrl(String programmaticStoreRelativeUrl) {
+    public void setProgrammaticStoreRelativeUrl(final String programmaticStoreRelativeUrl) {
         m_programmaticStoreRelativeUrl = programmaticStoreRelativeUrl;
     }
 
@@ -459,17 +446,17 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
 
     private class EventResourceLoader extends DefaultResourceLoader {
         @Override
-        public Resource getResource(String location) {
+        public Resource getResource(final String location) {
             if (location.contains(":")) {
                 return super.getResource(location);
             } else {
-                File file = new File(location);
+            	final File file = new File(location);
                 if (file.isAbsolute()) {
                     return new FileSystemResource(file);
                 } else {
                     try {
                         return getConfigResource().createRelative(location);
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         throw new ObjectRetrievalFailureException(Resource.class, location, "Resource location has a relative path, however the configResource does not reference a file, so the relative path cannot be resolved.  The location is: " + location, null);
                     }
                 }

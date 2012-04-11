@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class EventTest extends XmlTest<Event> {
+public class EventTest extends XmlTestNoCastor<Event> {
 
-	public EventTest(final Event sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public EventTest(final Event sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 
@@ -118,7 +117,7 @@ public class EventTest extends XmlTest<Event> {
 				"<logmsg>log message</logmsg>" +
 				"<severity>normal</severity>" +
 				"</event>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 				{event1,
 					"<event xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">" +
 					"  <mask>\n" + 
@@ -173,7 +172,7 @@ public class EventTest extends XmlTest<Event> {
 					"  <mouseovertext>mouseovertext</mouseovertext>" +
 					"  <alarm-data reduction-key=\"%uei%:%dpname%:%nodeid%\" alarm-type=\"3\" auto-clean=\"true\" clear-key=\"uei.opennms.org/internal/importer/importFailed:%parm[importResource]%\"/>" +
 					"</event>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 		});
 	}
 

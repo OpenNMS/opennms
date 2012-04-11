@@ -71,7 +71,7 @@ abstract public class XmlTest<T> {
 	private String m_sampleXml;
 	private String m_schemaFile;
 
-	public XmlTest(final T sampleObject, final String sampleXml, String schemaFile) {
+	public XmlTest(final T sampleObject, final String sampleXml, final String schemaFile) {
 		m_sampleObject = sampleObject;
 		m_sampleXml = sampleXml;
 		m_schemaFile = schemaFile;

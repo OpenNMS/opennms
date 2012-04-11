@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class SnmpTest extends XmlTest<Snmp> {
+public class SnmpTest extends XmlTestNoCastor<Snmp> {
 
-	public SnmpTest(final Snmp sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public SnmpTest(final Snmp sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 
@@ -32,7 +31,7 @@ public class SnmpTest extends XmlTest<Snmp> {
 				"<id>.1.3.6.1.4.1.9</id>" +
 				"<version>v2c</version>" +
 				"</snmp>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 				{snmp1,
 				"<snmp>" +
 				"<id>.1.3.6.1.4.1.9</id>" +
@@ -42,7 +41,7 @@ public class SnmpTest extends XmlTest<Snmp> {
 				"<generic>6</generic>" +
 				"<community>public</community>" +
 				"</snmp>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 		});
 	}
 

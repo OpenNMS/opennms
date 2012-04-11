@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class EventsTest extends XmlTest<Events> {
+public class EventsTest extends XmlTestNoCastor<Events> {
 
-	public EventsTest(final Events sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public EventsTest(final Events sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 
@@ -121,16 +120,16 @@ public class EventsTest extends XmlTest<Events> {
 
 		return Arrays.asList(new Object[][] {
 				{events0,
-				"<events>" +
+				"<events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">" +
 				"<event>" +
-				"<uei>uei</uei>" +
+				"<uei xmlns=\"\">uei</uei>" +
 				"<event-label>event-label</event-label>" +
 				"<descr>descr</descr>" +
 				"<logmsg>log message</logmsg>" +
 				"<severity>normal</severity>" +
 				"</event>" + 
 				"</events>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 				{events1,
 					"<events>" +
 					"  <global>" + 
@@ -194,7 +193,7 @@ public class EventsTest extends XmlTest<Events> {
 					"</event>" +
 					"<event-file>test</event-file>" +
 					"</events>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 		});
 	}
 

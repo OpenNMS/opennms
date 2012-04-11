@@ -659,8 +659,11 @@
             </documentation>
           </annotation>
           <complexType>
-            <attribute name="name" type="string" use="required" />
-            <attribute name="update-on-reduction" type="boolean" use="optional" default="true" />
+            <simpleContent>
+              <extension base="string">
+                <attribute name="update" type="boolean" use="optional" default="true" />
+              </extension>
+            </simpleContent>
           </complexType>
         </element>
       </sequence>
