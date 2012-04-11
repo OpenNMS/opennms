@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="psantann@gmail.com" id="space-integration-12.1-change-default-categories">
+		<insert tableName="categories"><column name="categoryname" value="Security Devices" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Other Devices" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="High End" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Medium" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Low End" /></insert>
+		<delete tableName="categories"><where>categoryname='Servers'</where></delete>
+		<delete tableName="categories"><where>categoryname='Production'</where></delete>
+		<delete tableName="categories"><where>categoryname='Test'</where></delete>
+		<delete tableName="categories"><where>categoryname='Development'</where></delete>
+
+        <rollback>
+		    <delete tableName="categories"><where>categoryname='Security Devices'</where></delete>
+		    <delete tableName="categories"><where>categoryname='Other Devices'</where></delete>
+		    <delete tableName="categories"><where>categoryname='High End'</where></delete>
+		    <delete tableName="categories"><where>categoryname='Medium'</where></delete>
+		    <delete tableName="categories"><where>categoryname='Low End'</where></delete>
+		    <insert tableName="categories"><column name="categoryname" value="Servers" /></insert>
+		    <insert tableName="categories"><column name="categoryname" value="Production" /></insert>
+		    <insert tableName="categories"><column name="categoryname" value="Test" /></insert>
+		    <insert tableName="categories"><column name="categoryname" value="Development" /></insert>
+        </rollback>
+    </changeSet>
+
+
+</databaseChangeLog>
