@@ -34,17 +34,18 @@ import com.vaadin.terminal.gwt.client.ui.dd.VTransferable;
 
 public class VTopologyComponent extends Composite implements Paintable, ActionOwner, VHasDropHandler {
 	
-    private static class DragObject{
+    static class DragObject{
         private int m_cursorStartX;
         private int m_cursorStartY;
         private int m_vertexStartY;
         private int m_vertexStartX;
 
-        public DragObject(GWTVertex vertex, int cursorStartX, int cursorStartY) {
+        public DragObject(GWTVertex vertex, NativeEvent event, Element elem, int startX, int startY) {
+        	Window.alert("vertex x: " + vertex.getX() + " vertex y: " + vertex.getY() + "\nelem: " + elem.getAttribute("transform"));
             setVertexStartX(vertex.getX());
             setVertexStartY(vertex.getY());
-            m_cursorStartX = cursorStartX;
-            m_cursorStartY = cursorStartY;
+            m_cursorStartX = getCursorStartX(event, elem);
+            m_cursorStartY = getCursorStartY(event, elem);
         }
         
         public int getCursorStartX() {
@@ -70,6 +71,22 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         public int getVertexStartY() {
             return m_vertexStartY;
         }
+
+		protected int getCursorStartX(NativeEvent event, Element elem) {
+			return event.getClientX() + elem.getScrollLeft() + Window.getScrollLeft();
+		}
+
+		int getCursorStartY(NativeEvent event, Element elem) {
+			return event.getClientY() + elem.getScrollTop() + Window.getScrollTop();
+		}
+
+		int calculateDeltaX(NativeEvent event, Element parentElem) {
+			return (getCursorStartX(event, parentElem) - getCursorStartX()) + getVertexStartX();
+		}
+
+		int calculateDeltaY(NativeEvent event, Element parentElem) {
+			return (getCursorStartY(event, parentElem) - getCursorStartY()) + getVertexStartY();
+		}
     }
     
     private static VTopologyComponentUiBinder uiBinder = GWT
@@ -99,7 +116,9 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     
     
 	private String[] m_actionKeys;
-    private D3Drag m_d3Drag;
+    private D3Drag m_d3VertexDrag;
+	private D3 m_svgViewPort;
+	private D3Drag m_d3PanDrag;
     
     public VTopologyComponent() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -117,14 +136,50 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         m_width = 300;
         m_height = 300;
         m_svg = d3.select("#chart-2").append("svg").attr("width", "100%").attr("height", "100%").style("background-color", "white");
-        m_edgeGroup = m_svg.append("g").attr("transform", "scale(1)");
-        m_vertexGroup = m_svg.append("g").attr("transform", "scale(1)");
+        m_svgViewPort = m_svg.append("g").attr("id", "viewport");
+        m_edgeGroup = m_svgViewPort.append("g").attr("transform", "scale(1)");
+        m_vertexGroup = m_svgViewPort.append("g").attr("transform", "scale(1)");
         
-        m_d3Drag = D3.getDragBehavior();
+        setupPanningBehavior(m_svgViewPort);
+        
+        m_d3VertexDrag = D3.getDragBehavior();
+        
         
     }
 
-    private void drawGraph(GWTGraph graph) {
+    private void setupPanningBehavior(D3 svgViewPort) {
+		D3Drag d3Pan = D3.getDragBehavior();
+		d3Pan.on(D3Events.DRAG_START.event(), new Handler<Object>() {
+
+			public void call(Object t, int index) {
+				//TODO: Pan viewport
+				//m_dragObject = null;
+				//m_dragObject = new DragObject(vertex, event, elem);
+				
+			}
+		});
+		
+		d3Pan.on(D3Events.DRAG.event(), new Handler<Object>() {
+
+			public void call(Object t, int index) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		d3Pan.on(D3Events.DRAG_END.event(), new Handler<Object>() {
+
+			public void call(Object t, int index) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+    	svgViewPort.call(d3Pan);
+		
+	}
+
+	private void drawGraph(GWTGraph graph) {
         D3 lines = m_edgeGroup.selectAll("line")
                 .data(graph.getEdges(), new Func<String, GWTEdge>() {
 
@@ -173,18 +228,18 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                 .attr("opacity", 1);
         
       //Drag Handlers
-        m_d3Drag.on(D3Events.DRAG.event(), vertexDragHandler());
+        m_d3VertexDrag.on(D3Events.DRAG.event(), vertexDragHandler());
         
-        m_d3Drag.on(D3Events.DRAG_START.event(), vertexDragStartHandler());
+        m_d3VertexDrag.on(D3Events.DRAG_START.event(), vertexDragStartHandler());
         
-        m_d3Drag.on(D3Events.DRAG_END.event(), vertexDragEndHandler());
+        m_d3VertexDrag.on(D3Events.DRAG_END.event(), vertexDragEndHandler());
         //End Drag Handlers
         
         D3 vertex = vertexGroup.enter().append("g").attr("transform", getTranslation())
                 .attr("opacity", 0)
                 .attr("class", "little")
                 .on(D3Events.CLICK.event(), vertexClickHandler())
-                .on(D3Events.CONTEXT_MENU.event(), vertexContextMenuHandler()).call(m_d3Drag);
+                .on(D3Events.CONTEXT_MENU.event(), vertexContextMenuHandler()).call(m_d3VertexDrag);
                 
         vertex.append("circle").attr("r", 9).style("fill", selectedFill("Enter"));
         
@@ -221,10 +276,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     		break;
 
     	case Event.ONMOUSEDOWN:
-    		VTransferable transferable = new VTransferable();
-    		transferable.setDragSource(this);
-
-    		VDragAndDropManager.get().startDrag(transferable, event, true);
+    		
     		break;
     	}
 
@@ -279,6 +331,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
             public void call(GWTVertex vertex, int index) {
                 m_client.updateVariable(m_paintableId, "updatedVertex", "id," + vertex.getId() + "|x," + vertex.getX() + "|y," + vertex.getY() + "|selected,"+ vertex.isSelected(), true);
+                D3.getEvent().preventDefault();
+                D3.getEvent().stopPropagation();
             }
             
         };
@@ -290,12 +344,12 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             public void call(GWTVertex vertex, int index) {
                 NativeEvent event = D3.getEvent();
                 Element elem = Element.as(event.getEventTarget()).getParentElement();
-                int cursorStartX = event.getClientX() + elem.getScrollLeft() + Window.getScrollLeft();
-                int cursorStartY = event.getClientY() + elem.getScrollTop() + Window.getScrollTop();
-                m_dragObject = new DragObject(vertex, cursorStartX, cursorStartY);
-                consoleLog("cursorStartX: " + cursorStartX);
-                consoleLog("cursorStartY: " + cursorStartY);
+                
+                m_dragObject = new DragObject(vertex, event, elem, 0, 0);
+                D3.getEvent().preventDefault();
+                D3.getEvent().stopPropagation();
             }
+
             
         };
     }
@@ -314,17 +368,16 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                 //But since the circle and the text are both in a g, we shall select the g element
                 Element parentElem = selectedElement.getParentElement();
                 
-                int x = event.getClientX() + parentElem.getScrollLeft() + Window.getScrollLeft();
-                int y = event.getClientY() + parentElem.getScrollTop() + Window.getScrollTop();
-                int newVertexX = (x - m_dragObject.getCursorStartX()) + m_dragObject.getVertexStartX();
-                int newVertexY = (y - m_dragObject.getCursorStartY()) + m_dragObject.getVertexStartY();
-                vertex.setX( newVertexX );
-                vertex.setY( newVertexY );
+                vertex.setX( m_dragObject.calculateDeltaX(event, parentElem) );
+                vertex.setY( m_dragObject.calculateDeltaY(event, parentElem) );
                 D3.d3().select(parentElem).attr("transform", "translate(" + vertex.getX() + "," + vertex.getY() + ")");
                 //consoleLog("get cursorStartX: " + m_dragObject.getCursorStartX() + " x: " + x + " newVertexX: " + newVertexX);
+                D3.getEvent().preventDefault();
+                D3.getEvent().stopPropagation();
             }
         };
     }
+   
     
     private Func<String, GWTVertex> selectedFill(final String caller) {
 		return new Func<String, GWTVertex>(){
