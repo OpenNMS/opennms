@@ -20,8 +20,7 @@
     <logmsg dest='logonly'>MATCH-ANY-UEI event.</logmsg>
     <severity>Indeterminate</severity>
     <alarm-data reduction-key="" alarm-type="3" auto-clean="false">
-      <update-field>severity</update-field>
-      <update-field>logmsg</update-field>
+      <update-field field-name="severity" update-on-reduction="true"/>
     </alarm-data>
   </event>
 
