@@ -10,8 +10,11 @@ import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -199,27 +202,33 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     
     @Override
     public void onBrowserEvent(Event event) {
-        super.onBrowserEvent(event);
-//        if(m_client != null) {
-//            m_client.handleTooltipEvent(event, this);
-//        }
-        
-        switch(DOM.eventGetType(event)) {
-            case Event.ONCONTEXTMENU:
-//            	m_client.getContextMenu().showAt(this, event.getClientX(), event.getClientY());
-//            	event.preventDefault();
-//                event.stopPropagation();
-                break;
-                
-            case Event.ONMOUSEDOWN:
-                VTransferable transferable = new VTransferable();
-                transferable.setDragSource(this);
-                
-                VDragAndDropManager.get().startDrag(transferable, event, true);
-                break;
-        }
-        
-        
+    	super.onBrowserEvent(event);
+    	//        if(m_client != null) {
+    	//            m_client.handleTooltipEvent(event, this);
+    	//        }
+
+    	switch(DOM.eventGetType(event)) {
+    	case Event.ONCONTEXTMENU:
+    		EventTarget target = event.getEventTarget();
+
+    		Element svg = this.getElement().getElementsByTagName("svg").getItem(0);
+
+    		if (target.equals(svg)) {
+    			m_client.getContextMenu().showAt(this, event.getClientX(), event.getClientY());
+    			event.preventDefault();
+    			event.stopPropagation();
+    		}
+    		break;
+
+    	case Event.ONMOUSEDOWN:
+    		VTransferable transferable = new VTransferable();
+    		transferable.setDragSource(this);
+
+    		VDragAndDropManager.get().startDrag(transferable, event, true);
+    		break;
+    	}
+
+
     }
     
     private Handler<GWTVertex> vertexContextMenuHandler() {
