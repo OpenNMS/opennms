@@ -7,6 +7,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.netmgt.xml.event.Event;
 
 public final class ComponentEventQueue {
 	private final Set<ComponentIdentifier> m_added   = new LinkedHashSet<ComponentIdentifier>();
@@ -33,28 +34,28 @@ public final class ComponentEventQueue {
 
 	public void sendAll(final EventProxy eventProxy) throws EventProxyException {
 		for (final ComponentIdentifier id : m_deleted) {
-			final EventBuilder builder = new EventBuilder(EventConstants.COMPONENT_DELETED_UEI, "NCSComponentService");
-			builder.addParam("componentType", id.getType());
-			builder.addParam("componentName", id.getName());
-			builder.addParam("componentForeignSource", id.getForeignSource());
-			builder.addParam("componentForeignId", id.getForeignId());
-			eventProxy.send(builder.getEvent());
+			final String uei = EventConstants.COMPONENT_DELETED_UEI;
+			eventProxy.send(getEvent(uei, id));
 		}
 		for (final ComponentIdentifier id : m_added) {
-			final EventBuilder builder = new EventBuilder(EventConstants.COMPONENT_ADDED_UEI, "NCSComponentService");
-			builder.addParam("componentType", id.getType());
-			builder.addParam("componentName", id.getName());
-			builder.addParam("componentForeignSource", id.getForeignSource());
-			builder.addParam("componentForeignId", id.getForeignId());
-			eventProxy.send(builder.getEvent());
+			final String uei = EventConstants.COMPONENT_ADDED_UEI;
+			eventProxy.send(getEvent(uei, id));
 		}
 		for (final ComponentIdentifier id : m_updated) {
-			final EventBuilder builder = new EventBuilder(EventConstants.COMPONENT_UPDATED_UEI, "NCSComponentService");
-			builder.addParam("componentType", id.getType());
-			builder.addParam("componentName", id.getName());
-			builder.addParam("componentForeignSource", id.getForeignSource());
-			builder.addParam("componentForeignId", id.getForeignId());
-			eventProxy.send(builder.getEvent());
+			final String uei = EventConstants.COMPONENT_UPDATED_UEI;
+			eventProxy.send(getEvent(uei, id));
 		}
+	}
+
+	private Event getEvent(final String uei, final ComponentIdentifier id) {
+		final EventBuilder builder = new EventBuilder(uei, "NCSComponentService");
+		builder.addParam("componentId",            id.getId());
+		builder.addParam("componentType",          id.getType());
+		builder.addParam("componentName",          id.getName());
+		builder.addParam("componentForeignSource", id.getForeignSource());
+		builder.addParam("componentForeignId",     id.getForeignId());
+		builder.addParam("dependencyRequirements", id.getDependencyRequirements().toString());
+		final Event event = builder.getEvent();
+		return event;
 	}
 }

@@ -1,31 +1,31 @@
 package org.opennms.netmgt.ncs.persistence;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.opennms.netmgt.model.ncs.NCSComponent.DependencyRequirements;
 
 public final class ComponentIdentifier implements Comparable<ComponentIdentifier> {
+	private final Long m_id;
 	private final String m_type;
 	private final String m_name;
 	private final String m_foreignSource;
 	private final String m_foreignId;
+	private final DependencyRequirements m_dependencyRequirements;
 
-	public ComponentIdentifier(final String type, final String foreignSource, final String foreignId) {
-		m_type          = type;
-		m_name          = null;
-		m_foreignSource = foreignSource;
-		m_foreignId     = foreignId;
+	public ComponentIdentifier(final Long id, final String type, final String foreignSource, final String foreignId, final String name, final DependencyRequirements requirements) {
+		m_id                     = id;
+		m_type                   = type;
+		m_name                   = name;
+		m_foreignSource          = foreignSource;
+		m_foreignId              = foreignId;
+		m_dependencyRequirements = requirements == null? DependencyRequirements.ALL : requirements;
 	}
 
-	public ComponentIdentifier(final String type, final String foreignSource, final String foreignId, final String name) {
-		m_type          = type;
-		m_name          = name;
-		m_foreignSource = foreignSource;
-		m_foreignId     = foreignId;
-	}
-
+	public Long getId()              { return m_id; }
 	public String getType()          { return m_type; }
 	public String getName()          { return m_name; }
 	public String getForeignSource() { return m_foreignSource; }
 	public String getForeignId()     { return m_foreignId; }
+	public DependencyRequirements getDependencyRequirements() { return m_dependencyRequirements; }
 
 	@Override
 	public String toString() {
@@ -69,10 +69,12 @@ public final class ComponentIdentifier implements Comparable<ComponentIdentifier
 	@Override
 	public int compareTo(final ComponentIdentifier o) {
 		return new CompareToBuilder()
+			.append(m_id, o.getId())
 			.append(m_foreignId, o.getForeignId())
 			.append(m_foreignSource, o.getForeignSource())
 			.append(m_type, o.getType())
 			.append(m_name, o.getName())
+			.append(m_dependencyRequirements, o.getDependencyRequirements())
 			.toComparison();
 	}
 
