@@ -157,6 +157,14 @@ public class WillItUnmarshalTest {
         System.out.println("Unmarshalling: " + resource.getURI());
         JaxbUtils.unmarshal(Events.class, resource);
     }
+    
+    @Test
+    public void testUpdateFields() throws Exception {
+        Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-update-fields.xml");
+        System.out.println("Unmarshalling: " + resource.getURI());
+        JaxbUtils.unmarshal(Events.class, resource);
+    }
+
 
     @Test
     public void testFailOnInvalidElement() throws Exception {
