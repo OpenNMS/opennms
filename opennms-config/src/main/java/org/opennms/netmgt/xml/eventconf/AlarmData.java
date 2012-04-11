@@ -11,9 +11,13 @@ package org.opennms.netmgt.xml.eventconf;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -70,6 +74,9 @@ public class AlarmData implements java.io.Serializable {
      */
     @XmlAttribute(name="x733-probable-cause")
     private Integer m_x733ProbableCause;
+    
+    @XmlElement(name="update-field")
+    private List<UpdateField> m_updateFieldList = new ArrayList<UpdateField>();
 
 
       //----------------/
@@ -99,6 +106,7 @@ public class AlarmData implements java.io.Serializable {
         m_x733ProbableCause= null;
     }
 
+    
     /**
      * Overrides the java.lang.Object.equals method.
      * 
@@ -386,8 +394,7 @@ public class AlarmData implements java.io.Serializable {
      * @throws org.exolab.castor.xml.ValidationException if this
      * object is an invalid instance according to the schema
      */
-    public void validate(
-    )
+    public void validate()
     throws org.exolab.castor.xml.ValidationException {
         org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
         validator.validate(this);
@@ -397,5 +404,20 @@ public class AlarmData implements java.io.Serializable {
 		m_autoClean = null;
 	}
 
+	public boolean hasUpdateFields() {
+	    return m_updateFieldList.isEmpty() ? false : true;
+	}
+
+    public List<UpdateField> getUpdateFieldList() {
+        return m_updateFieldList;
+    }
+
+    public void setUpdateFieldList(List<UpdateField> updateFieldList) {
+        m_updateFieldList = updateFieldList;
+    }
+    
+    public void deleteUpdateFieldList() {
+        m_updateFieldList = new ArrayList<UpdateField>();
+    }
 
 }

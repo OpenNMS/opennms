@@ -260,14 +260,15 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
                 "Y",
                 e.getTticket() == null ? "" : e.getTticket().getContent(),
                 Integer.valueOf(e.getTticket() == null ? "0" : e.getTticket().getState()),
-                Parameter.format(e)
+                Parameter.format(e),
+                e.getLogmsg().getContent()
         };
         e.setDbid(eventId.intValue());
         update("insert into events (" +
                 "eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, " +
                 "nodeId, ipAddr, serviceId, eventDpName, " +
-                "eventLog, eventDisplay, eventtticket, eventtticketstate, eventparms) " +
-                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
+                "eventLog, eventDisplay, eventtticket, eventtticketstate, eventparms, eventlogmsg) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
     }
     
     public void setServiceStatus(MockService svc, char newStatus) {
