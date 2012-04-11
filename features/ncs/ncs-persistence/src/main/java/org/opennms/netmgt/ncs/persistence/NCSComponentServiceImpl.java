@@ -51,7 +51,7 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	@Transactional
 	public NCSComponent getComponent(final String type, final String foreignSource, final String foreignId) {
 		LogUtils.debugf(this, "getComponent(%s, %s, %s)", type, foreignSource, foreignId);
-		return getComponent(new ComponentIdentifier(type, foreignSource, foreignId));
+		return getComponent(new ComponentIdentifier(null, type, foreignSource, foreignId, null, null));
 	}
 
 	@Override
@@ -79,13 +79,13 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	@Override
 	@Transactional
 	public NCSComponent addSubcomponent(final String type, final String foreignSource, final String foreignId, final NCSComponent subComponent, final boolean deleteOrphans) {
-		final ComponentIdentifier id = new ComponentIdentifier(type, foreignSource, foreignId);
 		final ComponentIdentifier subComponentId = getIdentifier(subComponent);
 		
 		LogUtils.debugf(this, "addSubcomponent(%s, %s, %s, %s, %s)", type, foreignSource, foreignId, subComponentId, Boolean.valueOf(deleteOrphans));
 
+		final NCSComponent component = getComponent(type, foreignSource, foreignId);
+		final ComponentIdentifier id = getIdentifier(component);
 		final ComponentEventQueue ceq = new ComponentEventQueue();
-		final NCSComponent component = getComponent(id);
 
 		if (component == null) {
 			throw new ObjectRetrievalFailureException(NCSComponent.class, "Unable to locate component with type=" + type + ", foreignSource=" + foreignSource + ", foreignId=" + foreignId);
@@ -111,7 +111,8 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	public void deleteComponent(final String type, final String foreignSource, final String foreignId, final boolean deleteOrphans) {
 		LogUtils.debugf(this, "deleteSubcomponent(%s, %s, %s, %s)", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
 
-		final ComponentIdentifier id = new ComponentIdentifier(type, foreignSource, foreignId);
+		final NCSComponent component = getComponent(type, foreignSource, foreignId);
+		final ComponentIdentifier id = getIdentifier(component);
 		final ComponentEventQueue ceq = new ComponentEventQueue();
 		deleteComponent(id, ceq, deleteOrphans);
 		try {
@@ -136,7 +137,7 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	}
 	
 	private ComponentIdentifier getIdentifier(final NCSComponent component) {
-		return new ComponentIdentifier(component.getType(), component.getForeignSource(), component.getForeignId(), component.getName());
+		return new ComponentIdentifier(component.getId(), component.getType(), component.getForeignSource(), component.getForeignId(), component.getName(), component.getDependenciesRequired());
 	}
 
 	private NCSComponent getComponent(final ComponentIdentifier id) {
