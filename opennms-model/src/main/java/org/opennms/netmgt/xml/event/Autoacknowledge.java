@@ -60,6 +60,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="autoacknowledge")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class Autoacknowledge implements Serializable {
 	private static final long serialVersionUID = -3959431672151994490L;
 

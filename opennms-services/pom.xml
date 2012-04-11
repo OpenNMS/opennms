@@ -56,6 +56,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+      <scope>test</scope>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-config-utils</artifactId>
       <scope>compile</scope>
     </dependency>

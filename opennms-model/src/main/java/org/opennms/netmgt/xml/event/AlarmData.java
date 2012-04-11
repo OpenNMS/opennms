@@ -53,6 +53,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="alarm-data")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class AlarmData implements Serializable {
 	private static final long serialVersionUID = 3681502418413339216L;
 

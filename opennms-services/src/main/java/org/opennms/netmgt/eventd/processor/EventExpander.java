@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.eventd.processor;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.EventConfDao;
@@ -41,6 +43,7 @@ import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Tticket;
+import org.opennms.netmgt.xml.event.UpdateField;
 import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
@@ -595,7 +598,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
             // Copy the log message if any
             //
             if (m_eventConfDao.isSecureTag("logmsg")) {
-                e.setLogmsg(null);
+                e.setLogmsg(new Logmsg());
             }
             if (e.getLogmsg() == null && econf.getLogmsg() != null) {
                 e.setLogmsg(transform(econf.getLogmsg()));
@@ -724,10 +727,22 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 alarmData.setX733AlarmType(econf.getAlarmData().getX733AlarmType());
                 alarmData.setX733ProbableCause(econf.getAlarmData().getX733ProbableCause());
                 alarmData.setClearKey(econf.getAlarmData().getClearKey());
+                
+                List<org.opennms.netmgt.xml.eventconf.UpdateField> updateFieldList = econf.getAlarmData().getUpdateFieldList();
+                if (updateFieldList.size() > 0) {
+                    List<UpdateField> updateFields = new ArrayList<UpdateField>();
+                    for (org.opennms.netmgt.xml.eventconf.UpdateField econfUpdateField : updateFieldList) {
+                        UpdateField eventField = new UpdateField();
+                        eventField.setFieldName(econfUpdateField.getFieldName());
+                        eventField.setUpdateOnReduction(econfUpdateField.isUpdateOnReduction());
+                        updateFields.add(eventField);
+                    }
+                    alarmData.setUpdateField(updateFields);
+                }
+                
                 e.setAlarmData(alarmData);
             }
-
-        } 
+        }
         
         Map<String, Map<String, String>> decode = new HashMap<String, Map<String,String>>();
         if (econf != null && econf.getVarbindsdecode() != null) {

@@ -57,6 +57,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="correlation")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class Correlation implements Serializable {
 	private static final long serialVersionUID = 7883869597194555535L;
 

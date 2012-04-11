@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class OperactionTest extends XmlTest<Operaction> {
+public class OperactionTest extends XmlTestNoCastor<Operaction> {
 
-	public OperactionTest(final Operaction sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public OperactionTest(final Operaction sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 
@@ -25,10 +24,10 @@ public class OperactionTest extends XmlTest<Operaction> {
 		return Arrays.asList(new Object[][] {
 				{operaction0,
 				"<operaction menutext=\"Test\"></operaction>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 				{operaction1,
 					"<operaction menutext=\"Test\" state=\"on\">This is a test</operaction>",
-					"target/classes/xsds/eventconf.xsd" }, 
+					"target/xsds/eventconf.xsd" }, 
 		});
 	}
 

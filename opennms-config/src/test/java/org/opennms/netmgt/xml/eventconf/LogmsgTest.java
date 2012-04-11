@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class LogmsgTest extends XmlTest<Logmsg> {
+public class LogmsgTest extends XmlTestNoCastor<Logmsg> {
 
-	public LogmsgTest(final Logmsg sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public LogmsgTest(final Logmsg sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 
@@ -24,10 +23,10 @@ public class LogmsgTest extends XmlTest<Logmsg> {
 		return Arrays.asList(new Object[][] {
 				{logmsg0,
 				"<logmsg/>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 				{logmsg1,
 					"<logmsg dest=\"logndisplay\" notify=\"false\">This is a test</logmsg>",
-					"target/classes/xsds/eventconf.xsd" } 
+					"target/xsds/eventconf.xsd" } 
 		});
 	}
 

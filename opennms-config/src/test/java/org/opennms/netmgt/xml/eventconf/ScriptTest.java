@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class ScriptTest extends XmlTest<Script> {
+public class ScriptTest extends XmlTestNoCastor<Script> {
 
-	public ScriptTest(final Script sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public ScriptTest(final Script sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 
@@ -24,10 +23,10 @@ public class ScriptTest extends XmlTest<Script> {
 		return Arrays.asList(new Object[][] {
 				{script0,
 				"<script language=\"erlang\"/>",
-				"target/classes/xsds/eventconf.xsd" }, 
+				"target/xsds/eventconf.xsd" }, 
 				{script1,
 					"<script language=\"erlang\">This is a test</script>",
-					"target/classes/xsds/eventconf.xsd" }, 
+					"target/xsds/eventconf.xsd" }, 
 		});
 	}
 
