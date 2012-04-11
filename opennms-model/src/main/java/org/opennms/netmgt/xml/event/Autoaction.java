@@ -58,6 +58,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="autoaction")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class Autoaction implements Serializable {
 	private static final long serialVersionUID = 4199016016259171845L;
 

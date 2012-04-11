@@ -58,6 +58,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="tticket")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class Tticket implements Serializable {
 	private static final long serialVersionUID = -691077894886561643L;
 

@@ -651,7 +651,7 @@
     </annotation>
     <complexType>
       <sequence>
-        <element name="update-field" minOccurs="1" maxOccurs="unbounded" type="string" >
+        <element name="update-field" minOccurs="0" maxOccurs="unbounded">
           <annotation>
             <documentation>
             This element provides a list of the fields that will be updated during alarm reduction in addition to the defaults. For
@@ -659,7 +659,8 @@
             </documentation>
           </annotation>
           <complexType>
-            <attribute name="update" type="boolean" use="optional" default="true" />
+            <attribute name="name" type="string" use="required" />
+            <attribute name="update-on-reduction" type="boolean" use="optional" default="true" />
           </complexType>
         </element>
       </sequence>

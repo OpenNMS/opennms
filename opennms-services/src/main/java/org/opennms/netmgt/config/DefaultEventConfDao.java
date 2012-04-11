@@ -31,7 +31,6 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -41,13 +40,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.beans.factory.InitializingBean;
@@ -66,7 +64,7 @@ import org.springframework.util.StringUtils;
  * @author ranger
  * @version $Id: $
  */
-public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventConfiguration> implements EventConfDao, InitializingBean {
+public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConfiguration> implements EventConfDao, InitializingBean {
     private static final String DEFAULT_PROGRAMMATIC_STORE_RELATIVE_URL = "events/programmatic.events.xml";
 
     private final EventResourceLoader m_resourceLoader = new EventResourceLoader();
@@ -154,19 +152,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
             log().debug("DefaultEventConfDao: Loading " + resourceDescription + " event configuration from " + rootResource);
         }
         
-        InputStream in;
-        try {
-            in = rootResource.getInputStream();
-        } catch (IOException e) {
-            throw new DataAccessResourceFailureException("Could not get an input stream for resource '" + rootResource + "'; nested exception: " + e, e);
-        }
-        
-        Events events;
-        try {
-            events =  CastorUtils.unmarshalWithTranslatedExceptions(Events.class, in);
-        } finally {
-            IOUtils.closeQuietly(in);
-        }
+        final Events events = JaxbUtils.unmarshal(Events.class, rootResource);
 
         processEvents(events, rootResource, eventConfiguration, resourceDescription, denyIncludes);
         
@@ -280,7 +266,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
             
             StringWriter stringWriter = new StringWriter();
             try {
-                CastorUtils.marshalWithTranslatedExceptions(fileEvents, stringWriter);
+            	JaxbUtils.marshal(fileEvents, stringWriter);
             } catch (DataAccessException e) {
                 throw new DataAccessResourceFailureException("Could not marshal configuration file for " + resource + ": " + e, e);
             }

@@ -59,6 +59,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="operaction")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class Operaction implements Serializable {
 	private static final long serialVersionUID = -4021848582976244135L;
 

@@ -60,6 +60,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="forward")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class Forward implements Serializable {
 	private static final long serialVersionUID = -4795441559557516585L;
 

@@ -56,6 +56,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="log")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class Log implements Serializable {
 	private static final long serialVersionUID = 8526177705077223094L;
 

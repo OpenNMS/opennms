@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="update-field")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class UpdateField {
     
     @XmlAttribute(name="field-name", required=true)

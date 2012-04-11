@@ -58,6 +58,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="script")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class Script implements Serializable {
 	private static final long serialVersionUID = -4421693308782820218L;
 
