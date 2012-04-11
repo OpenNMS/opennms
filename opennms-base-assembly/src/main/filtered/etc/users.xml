@@ -2,7 +2,7 @@
 <userinfo xmlns="http://xmlns.opennms.org/xsd/users">
     <header>
         <rev>.9</rev>
-        <created>Thursday, November 3, 2011 9:28:08 PM GMT</created>
+        <created></created>
         <mstation>master.nmanage.com</mstation>
     </header>
     <users>
@@ -10,7 +10,7 @@
             <user-id>admin</user-id>
             <full-name>Administrator</full-name>
             <user-comments>Default administrator, do not delete</user-comments>
-            <password>F684547CB2681E124CDAAEEADD9FC848</password>
+            <password>A24F3D36F6BAA87C72B521EC3FC01E2E</password>
         </user>
     </users>
 </userinfo>
