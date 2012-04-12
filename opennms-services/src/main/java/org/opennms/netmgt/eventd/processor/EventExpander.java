@@ -598,7 +598,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
             // Copy the log message if any
             //
             if (m_eventConfDao.isSecureTag("logmsg")) {
-                e.setLogmsg(new Logmsg());
+                e.setLogmsg(null);
             }
             if (e.getLogmsg() == null && econf.getLogmsg() != null) {
                 e.setLogmsg(transform(econf.getLogmsg()));
