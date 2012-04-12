@@ -95,15 +95,6 @@ public class ImportSchedulerTest implements InitializingBean {
         MockLogAppender.setupLogging();
     }
 
-    @Before
-    public void verifyWiring() {
-        Assert.assertNotNull(m_importScheduler);
-        Assert.assertNotNull(m_factory);
-        Assert.assertNotNull(m_provisioner);
-        Assert.assertNotNull(m_dao);
-    }
-
-    
     @Test
     public void createJobAndVerifyImportJobFactoryIsRegistered() throws SchedulerException, InterruptedException {
         

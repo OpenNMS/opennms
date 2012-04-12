@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;

@@ -44,7 +44,6 @@ package org.opennms.acl.factory;
 
 import org.opennms.acl.domain.GenericUser;
 import org.opennms.acl.model.UserAuthoritiesDTO;
-import org.opennms.acl.service.AuthorityService;
 import org.opennms.acl.service.GroupService;
 import org.opennms.acl.service.UserService;
 import org.opennms.core.utils.BeanUtils;
@@ -86,8 +85,6 @@ public class AclUserFactoryImpl implements AclUserFactory, InitializingBean {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private AuthorityService authorityService;
     @Autowired
     private GroupService groupService;
 }

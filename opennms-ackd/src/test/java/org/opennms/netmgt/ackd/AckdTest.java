@@ -48,13 +48,11 @@ import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.dao.UserNotificationDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -98,9 +96,6 @@ public class AckdTest implements InitializingBean {
     private AckService m_ackService;
     
     @Autowired
-    private MockEventIpcManager m_mockEventIpcManager;
-    
-    @Autowired
     private AlarmDao m_alarmDao;
     
     @Autowired
@@ -124,9 +119,6 @@ public class AckdTest implements InitializingBean {
     @Autowired
     private UserNotificationDao m_userNotificationDao;
     
-    @Autowired
-    private JavaMailConfigurationDao m_jmConfigDao;
-
     private static boolean m_populated = false;
     
     @BeforeTransaction

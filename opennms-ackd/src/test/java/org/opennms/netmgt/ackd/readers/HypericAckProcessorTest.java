@@ -43,8 +43,6 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -60,7 +58,6 @@ import org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -87,9 +84,6 @@ public class HypericAckProcessorTest implements InitializingBean {
 
     @Autowired
     private Ackd m_daemon;
-
-    @Autowired
-    private AckService m_ackService;
 
     @Autowired
     private HypericAckProcessor m_processor;

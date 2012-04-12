@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -49,14 +48,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
@@ -101,56 +93,32 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @DirtiesContext
 public class ProvisionerRescanTest implements InitializingBean {
-    
+
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
-    
+
     @Autowired
     private Provisioner m_provisioner;
-    
-    @Autowired
-    private ServiceTypeDao m_serviceTypeDao;
-    
-    @Autowired
-    private MonitoredServiceDao m_monitoredServiceDao;
-    
-    @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
-    
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-    
+
     @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
-    private DistPollerDao m_distPollerDao;
-    
-    @Autowired
-    private AssetRecordDao m_assetRecordDao;
-    
-    @Autowired
     private ResourceLoader m_resourceLoader;
-    
+
     @Autowired
     private ProvisionService m_provisionService;
-    
+
     @Autowired
     private PausibleScheduledThreadPoolExecutor m_pausibleExecutor;
-    
-    @Autowired
-    private ImportScheduler m_importSchedule;
-    
+
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
-    
-    @Autowired
-    private DatabasePopulator m_populator;
-    
+
     private EventAnticipator m_eventAnticipator;
 
     private ForeignSourceRepository m_foreignSourceRepository;
-    
+
     private ForeignSource m_foreignSource;
 
     @Override
