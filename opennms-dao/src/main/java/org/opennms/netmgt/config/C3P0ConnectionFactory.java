@@ -43,7 +43,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
-import org.springframework.util.Assert;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 

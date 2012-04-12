@@ -29,7 +29,6 @@
 package org.opennms.netmgt.importer;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,18 +37,18 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.importer.config.Asset;
-import org.opennms.netmgt.importer.config.Category;
-import org.opennms.netmgt.importer.config.Interface;
-import org.opennms.netmgt.importer.config.ModelImport;
-import org.opennms.netmgt.importer.config.MonitoredService;
-import org.opennms.netmgt.importer.config.Node;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.importer.config.Asset;
+import org.opennms.netmgt.importer.config.Category;
+import org.opennms.netmgt.importer.config.Interface;
+import org.opennms.netmgt.importer.config.ModelImport;
+import org.opennms.netmgt.importer.config.MonitoredService;
+import org.opennms.netmgt.importer.config.Node;
 import org.opennms.netmgt.importer.specification.ImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
 import org.opennms.netmgt.model.OnmsAssetRecord;

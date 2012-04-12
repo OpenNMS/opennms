@@ -54,6 +54,7 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitTemporaryDatabase
 public class OpenNmsDaemonApplicationContextTest implements InitializingBean {
     @Autowired
+    @SuppressWarnings("unused")
     private EventIpcManager m_eventIpcManager;
 
     @Override

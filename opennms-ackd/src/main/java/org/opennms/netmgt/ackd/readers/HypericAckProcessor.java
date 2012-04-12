@@ -85,7 +85,6 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.acknowledgments.AckService;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * <p>HypericAckProcessor class.</p>

@@ -184,12 +184,24 @@ public class Provisioner implements SpringServiceDaemon {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void start() throws Exception {
         m_manager.initializeAdapters();
         scheduleRescanForExistingNodes();
         m_importSchedule.start();
     }
-	
+
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
+    @Override
+    public void destroy() throws Exception {
+        m_importSchedule.stop();
+        m_scheduledExecutor.shutdown();
+    }
+
     /**
      * <p>afterPropertiesSet</p>
      *

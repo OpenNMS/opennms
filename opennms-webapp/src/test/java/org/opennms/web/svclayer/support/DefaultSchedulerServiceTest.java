@@ -51,7 +51,6 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.JobDetailBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.webflow.test.MockRequestContext;
@@ -73,9 +72,6 @@ public class DefaultSchedulerServiceTest implements InitializingBean {
     @Autowired
     private SchedulerFactoryBean m_schedulerFactory;
     
-    @Autowired
-    private JobDetailBean m_jobDetail;
- 
     @Autowired
     private ReportWrapperService m_reportWrapperService;
     
