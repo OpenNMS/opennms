@@ -136,6 +136,7 @@ public class Statsd implements SpringServiceDaemon {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void start() throws Exception {
         log().debug("start: acquiring lock...");
         synchronized (m_scheduler) {
@@ -148,7 +149,16 @@ public class Statsd implements SpringServiceDaemon {
         }
         log().debug("start: lock released (unless reentrant).");
     }
-    
+
+    @Override
+    public void destroy() throws Exception {
+        log().debug("start: acquiring lock...");
+        synchronized (m_scheduler) {
+            m_scheduler.shutdown();
+        }
+        log().debug("start: lock released (unless reentrant).");
+    }
+
     /**
      * <p>unscheduleReports</p>
      *

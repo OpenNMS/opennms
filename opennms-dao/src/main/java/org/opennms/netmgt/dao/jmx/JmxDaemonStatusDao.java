@@ -85,7 +85,7 @@ public class JmxDaemonStatusDao implements DaemonStatusDao {
 			ServiceDaemon serviceDaemon = buildProxy(mBeanName);
 
 			String name = serviceDaemon.getName();
-			String status = serviceDaemon.status();
+			String status = serviceDaemon.getStatusText();
 			serviceInfo.put(name, new ServiceInfo(name, status));
 		}
 

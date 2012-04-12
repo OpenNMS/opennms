@@ -69,10 +69,19 @@ public class Reportd implements SpringServiceDaemon {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void start() throws Exception {
           reportDirectory = m_reportConfigurationDao.getStorageDirectory();
 
           m_reportScheduler.start();
+    }
+
+    /**
+     * <p>destroy</p>
+     */
+    @Override
+    public void destroy() throws Exception {
+          m_reportScheduler.destroy();
     }
     
     /**

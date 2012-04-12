@@ -46,9 +46,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	
@@ -110,7 +107,18 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void start() throws Exception {
+        // DO NOTHING?
+    }
+
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
+    @Override
+    public void destroy() throws Exception {
         // DO NOTHING?
     }
 

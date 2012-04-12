@@ -88,6 +88,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     final public String getName() { return m_name; }
 
     /**
@@ -105,7 +106,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      *
      * @param status a int.
      */
-    protected void setStatus(final int status) {
+    protected final void setStatus(final int status) {
         synchronized (m_statusLock) {
             m_status = status;
             m_statusLock.notifyAll();
@@ -119,7 +120,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param timeout a long.
      * @throws java.lang.InterruptedException if any.
      */
-    protected void waitForStatus(final int status, final long timeout) throws InterruptedException {
+    protected final void waitForStatus(final int status, final long timeout) throws InterruptedException {
         synchronized (m_statusLock) {
             
             final long last = System.currentTimeMillis();
@@ -139,7 +140,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @param status a int.
      * @throws java.lang.InterruptedException if any.
      */
-    protected void waitForStatus(final int status) throws InterruptedException {
+    protected final void waitForStatus(final int status) throws InterruptedException {
         synchronized (m_statusLock) {
             while (status != m_status) {
                 m_statusLock.wait();
@@ -152,6 +153,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         synchronized (m_statusLock) {
             return m_status;
@@ -163,6 +165,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         return STATUS_NAMES[getStatus()];
     }
@@ -171,18 +174,12 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>status</p>
      *
      * @return a {@link java.lang.String} object.
+     * 
+     * @deprecated Use {@link #getStatusText()} instead. This field is only for 
+     * backwards compatibility with JMX operations.
      */
     public String status() {
         return getStatusText();
-    }
-
-    /**
-     * <p>isStartPending</p>
-     *
-     * @return a boolean.
-     */
-    protected synchronized boolean isStartPending() {
-        return getStatus() == START_PENDING;
     }
 
     /**
@@ -357,6 +354,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     /**
      * <p>pause</p>
      */
+    @Override
     final public void pause() {
         final String prefix = ThreadCategory.getPrefix();
         try {
@@ -380,6 +378,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     /**
      * <p>resume</p>
      */
+    @Override
     final public void resume() {
         final String prefix = ThreadCategory.getPrefix();
         try {
@@ -401,6 +400,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     /**
      * <p>start</p>
      */
+    @Override
     final public synchronized void start() {
         final String prefix = ThreadCategory.getPrefix();
         try {
@@ -422,6 +422,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * Stops the currently running service. If the service is not running then
      * the command is silently discarded.
      */
+    @Override
     final public synchronized void stop() {
         final String prefix = ThreadCategory.getPrefix();
         try {
@@ -436,6 +437,14 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
         } finally {
             ThreadCategory.setPrefix(prefix);
         }
+    }
+
+    /**
+     * Destroys the current service.
+     */
+    @Override
+    final public void destroy() {
+        stop();
     }
 
 }

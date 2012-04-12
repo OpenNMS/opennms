@@ -42,7 +42,7 @@ public class TestDaemon extends AbstractServiceDaemon {
 	}
 
 	public String status() {
-		String status = super.status();
+		String status = super.getStatusText();
 		System.err.println("Status: "+getName()+" = "+status);
 		return status;
 	}

@@ -38,7 +38,7 @@ public class ServiceDaemonStub implements ServiceDaemonStubMBean {
 	public ServiceDaemonStub(String name) {
 		this.name = name;
 	}
-	public String status() {
+	public String getStatusText() {
 		// TODO Auto-generated method stub
 		return statusStr;
 	}

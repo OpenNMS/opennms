@@ -29,14 +29,10 @@
 package org.opennms.netmgt.reporting.service;
 
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.text.ParseException;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.util.StringUtils;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.reportd.Report;
@@ -47,6 +43,11 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -55,7 +56,7 @@ import org.quartz.spi.JobFactory;
  * @author ranger
  * @version $Id: $
  */
-public class ReportScheduler implements InitializingBean {
+public class ReportScheduler implements InitializingBean, DisposableBean {
 
     /** Constant <code>JOB_GROUP="Reportd"</code> */
     protected static final String JOB_GROUP = "Reportd";
@@ -276,5 +277,14 @@ public class ReportScheduler implements InitializingBean {
         buildReportSchedule();
         printCurrentSchedule();
     }
-    
+
+    /**
+     * <p>destroy</p>
+     *
+     * @throws org.quartz.SchedulerException if any.
+     */
+    @Override
+    public void destroy() throws SchedulerException {
+        getScheduler().shutdown();
+    }
 }
