@@ -33,7 +33,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -67,7 +66,7 @@ public class Operaction implements Serializable {
 	@XmlAttribute(name="state")
     private String m_state;
 
-	@NotNull
+	// @NotNull
 	@XmlAttribute(name="menutext", required=true)
     private String m_menutext;
 

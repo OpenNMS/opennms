@@ -33,7 +33,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
-import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -61,7 +60,7 @@ public class Autoaction implements Serializable {
 	@XmlValue
     private String m_content = "";
 
-	@Pattern(regexp="(on|off)")
+	// @Pattern(regexp="(on|off)")
 	@XmlAttribute(name="state", required=false)
     private String m_state;
 
