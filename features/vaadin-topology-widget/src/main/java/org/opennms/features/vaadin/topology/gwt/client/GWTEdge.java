@@ -1,5 +1,7 @@
 package org.opennms.features.vaadin.topology.gwt.client;
 
+import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
@@ -52,6 +54,46 @@ public final class GWTEdge extends JavaScriptObject {
 		}
 		return keys;
 	}
+
+    static Func<Integer, GWTEdge> getTargetY() {
+        
+        return new Func<Integer, GWTEdge>(){
+    
+            public Integer call(GWTEdge datum, int index) {
+                return datum.getTarget().getY();
+            }
+        };
+    }
+
+    static Func<Integer, GWTEdge> getSourceY() {
+        
+        return new Func<Integer, GWTEdge>(){
+    
+            public Integer call(GWTEdge datum, int index) {
+                return datum.getSource().getY();
+            }
+        };
+    }
+
+    static Func<Integer, GWTEdge> getTargetX() {
+    
+    	return new Func<Integer, GWTEdge>(){
+    
+            public Integer call(GWTEdge datum, int index) {
+                return datum.getTarget().getX();
+            }
+        };
+    }
+
+    static Func<Integer, GWTEdge> getSourceX() {
+    	
+    	return new Func<Integer, GWTEdge>(){
+    
+            public Integer call(GWTEdge datum, int index) {
+                return datum.getSource().getX();
+            }
+        };
+    }
 
 
 }

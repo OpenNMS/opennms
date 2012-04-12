@@ -1,5 +1,7 @@
 package org.opennms.features.vaadin.topology.gwt.client;
 
+import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
@@ -67,6 +69,25 @@ public final class GWTVertex extends JavaScriptObject {
     		keys[i] = actionKeys.get(i);
     	}
     	return keys;
+    }
+
+    static Func<String, GWTVertex> selectedFill(final String caller) {
+    	return new Func<String, GWTVertex>(){
+    
+    		public String call(GWTVertex vertex, int index) {
+    			return vertex.isSelected() ? "blue" : "black";
+    		}
+    	};
+    }
+
+    static Func<String, GWTVertex> getTranslation() {
+    	return new Func<String, GWTVertex>() {
+    
+    		public String call(GWTVertex datum, int index) {
+    			return "translate( " + datum.getX() + "," + datum.getY() + ")";
+    		}
+    		
+    	};
     }
     
     

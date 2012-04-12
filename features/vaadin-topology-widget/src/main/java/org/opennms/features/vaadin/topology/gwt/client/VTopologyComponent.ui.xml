@@ -5,7 +5,15 @@
 		
 	</ui:style>
 	<g:HTMLPanel>
-	   <div id="chart-2" style="width: 100%; height: 100% background-color:red;"></div>
+	   <div id="chart-2" style="width: 100%; height: 100% background-color:red;">
+	       <svg ui:field="m_svg" width="100%" height="100%" style="background-color:white;">
+	           <g ui:field="m_svgViewPort" transform="translate(0,0)">
+	               <g ui:field="m_edgeGroup" transform="scale(1)"></g>
+	               <g ui:field="m_vertexGroup" transform="scale(1)"></g>
+	           </g>
+	       
+	       </svg>
+	   </div>
 	</g:HTMLPanel>
 	
 </ui:UiBinder> 
