@@ -11,6 +11,8 @@ import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArrayInteger;
+import com.google.gwt.core.client.JsArrayNumber;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
@@ -35,58 +37,36 @@ import com.vaadin.terminal.gwt.client.ui.dd.VTransferable;
 public class VTopologyComponent extends Composite implements Paintable, ActionOwner, VHasDropHandler {
 	
     static class DragObject{
-        private int m_cursorStartX;
-        private int m_cursorStartY;
-        private int m_vertexStartY;
-        private int m_vertexStartX;
+		private Element m_element;
+		private int m_startX;
+		private int m_startY;
 
-        public DragObject(GWTVertex vertex, NativeEvent event, Element elem, int startX, int startY) {
-        	Window.alert("vertex x: " + vertex.getX() + " vertex y: " + vertex.getY() + "\nelem: " + elem.getAttribute("transform"));
-            setVertexStartX(vertex.getX());
-            setVertexStartY(vertex.getY());
-            m_cursorStartX = getCursorStartX(event, elem);
-            m_cursorStartY = getCursorStartY(event, elem);
+        public DragObject(Element containerElement) {
+        	m_element = containerElement;
+            JsArrayInteger position = D3.getMouse(containerElement);
+            m_startX = position.get(0);
+            m_startY = position.get(1);
         }
         
-        public int getCursorStartX() {
-            return m_cursorStartX;
-        }
-        
-        public int getCursorStartY() {
-            return m_cursorStartY;
-        }
+    	public int getCurrentX() {
+    		JsArrayInteger position = D3.getMouse(m_element);
+    		return position.get(0);
+    	}
+    	
+    	public int getCurrentY() {
+    		JsArrayInteger position = D3.getMouse(m_element);
+    		return position.get(1);
+    	}
 
-        public void setVertexStartX(int x) {
-            m_vertexStartX = x;
-        }
-
-        public void setVertexStartY(int y) {
-            m_vertexStartY = y;
-        }
-        
-        public int getVertexStartX() {
-            return m_vertexStartX;
-        }
-        
-        public int getVertexStartY() {
-            return m_vertexStartY;
-        }
-
-		protected int getCursorStartX(NativeEvent event, Element elem) {
-			return event.getClientX() + elem.getScrollLeft() + Window.getScrollLeft();
+		public int getStartX() {
+			return m_startX;
+		}
+		
+		public int getStartY() {
+			return m_startY;
 		}
 
-		int getCursorStartY(NativeEvent event, Element elem) {
-			return event.getClientY() + elem.getScrollTop() + Window.getScrollTop();
-		}
 
-		int calculateDeltaX(NativeEvent event, Element parentElem) {
-			return (getCursorStartX(event, parentElem) - getCursorStartX()) + getVertexStartX();
-		}
-
-		int calculateDeltaY(NativeEvent event, Element parentElem) {
-			return (getCursorStartY(event, parentElem) - getCursorStartY()) + getVertexStartY();
-		}
     }
     
     private static VTopologyComponentUiBinder uiBinder = GWT
@@ -135,8 +115,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         D3 d3 = D3.d3();
         m_width = 300;
         m_height = 300;
-        m_svg = d3.select("#chart-2").append("svg").attr("width", "100%").attr("height", "100%").style("background-color", "white");
-        m_svgViewPort = m_svg.append("g").attr("id", "viewport");
+        m_svg = d3.select("#chart-2").append("svg").attr("width", "100%").attr("height", "100%").style("background-color", "white").call(setupPanningBehavior(null));
+        m_svgViewPort = m_svg.append("g").attr("id", "viewport").attr("transform", "translate(0,0)");
         m_edgeGroup = m_svgViewPort.append("g").attr("transform", "scale(1)");
         m_vertexGroup = m_svgViewPort.append("g").attr("transform", "scale(1)");
         
@@ -147,14 +127,18 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
     }
 
-    private void setupPanningBehavior(D3 svgViewPort) {
+    private D3Drag setupPanningBehavior(D3 x) {
 		D3Drag d3Pan = D3.getDragBehavior();
 		d3Pan.on(D3Events.DRAG_START.event(), new Handler<Object>() {
 
 			public void call(Object t, int index) {
 				//TODO: Pan viewport
-				//m_dragObject = null;
-				//m_dragObject = new DragObject(vertex, event, elem);
+				
+				NativeEvent event = D3.getEvent();
+				Element elem = Element.as(event.getEventTarget());
+				
+				m_dragObject = null;
+				m_dragObject = new DragObject(elem);
 				
 			}
 		});
@@ -163,19 +147,23 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 			public void call(Object t, int index) {
 				// TODO Auto-generated method stub
-				
+				int deltaX = m_dragObject.getCurrentX() - m_dragObject.getStartX();
+				int deltaY = m_dragObject.getCurrentY() - m_dragObject.getStartY();
+				String transform = D3.d3().select("#viewport").attr("transform");
+				consoleLog("elemnt x: " + transform);
+				//TODO: add the d3.transform stuff to the d3 object
+				//D3.d3().select("#viewport").attr("transform", "translate(" + deltaX + "," + deltaY + ")");
 			}
 		});
 		
 		d3Pan.on(D3Events.DRAG_END.event(), new Handler<Object>() {
 
 			public void call(Object t, int index) {
-				// TODO Auto-generated method stub
-				
+				m_dragObject = null;
 			}
 		});
 		
-    	svgViewPort.call(d3Pan);
+    	return d3Pan;
 		
 	}
 
@@ -345,7 +333,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                 NativeEvent event = D3.getEvent();
                 Element elem = Element.as(event.getEventTarget()).getParentElement();
                 
-                m_dragObject = new DragObject(vertex, event, elem, 0, 0);
+                m_dragObject = new DragObject(elem.getParentElement());
                 D3.getEvent().preventDefault();
                 D3.getEvent().stopPropagation();
             }
@@ -368,8 +356,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                 //But since the circle and the text are both in a g, we shall select the g element
                 Element parentElem = selectedElement.getParentElement();
                 
-                vertex.setX( m_dragObject.calculateDeltaX(event, parentElem) );
-                vertex.setY( m_dragObject.calculateDeltaY(event, parentElem) );
+                vertex.setX( m_dragObject.getCurrentX() );
+                vertex.setY( m_dragObject.getCurrentY() );
                 D3.d3().select(parentElem).attr("transform", "translate(" + vertex.getX() + "," + vertex.getY() + ")");
                 //consoleLog("get cursorStartX: " + m_dragObject.getCursorStartX() + " x: " + x + " newVertexX: " + newVertexX);
                 D3.getEvent().preventDefault();

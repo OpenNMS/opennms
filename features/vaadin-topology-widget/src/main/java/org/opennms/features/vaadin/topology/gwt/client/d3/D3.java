@@ -4,6 +4,7 @@ import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.JsArrayNumber;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -160,13 +161,18 @@ public class D3 extends JavaScriptObject {
         return this.call(behavior);
     }-*/;
 
-	public static final native JsArrayNumber getMouse(Element elem) /*-{
+	public static final native JsArrayInteger getMouse(Element elem) /*-{
 		return $wnd.d3.mouse(elem);
 		
 	}-*/;
 
 	public static final native JsArrayNumber getMouse(D3 select) /*-{
 		return $wnd.d3.mouse(select);
+	}-*/;
+
+	public final native String attr(String property) /*-{
+		// TODO Auto-generated method stub
+		return this.attr(property);
 	}-*/;
 
     
