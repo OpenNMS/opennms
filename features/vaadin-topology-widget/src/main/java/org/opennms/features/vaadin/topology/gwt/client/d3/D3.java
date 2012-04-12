@@ -17,6 +17,15 @@ public class D3 extends JavaScriptObject {
         return this.select(elementId);
     }-*/;
     
+    public final native Element selectElement(String elementId) /*-{
+        var retElement = this.select(elementId);
+        if(retElement.length > 0){
+            return retElement[0][0];
+        }
+        
+        return null;
+    }-*/;
+    
     public final native D3 select(Element elem) /*-{
         return this.select(elem);
     }-*/;
@@ -175,6 +184,9 @@ public class D3 extends JavaScriptObject {
 		return this.attr(property);
 	}-*/;
 
+	public static final native D3Transform getTransform(String transform)/*-{
+	    return $wnd.d3.transform(transform);
+	}-*/;
     
 
 }

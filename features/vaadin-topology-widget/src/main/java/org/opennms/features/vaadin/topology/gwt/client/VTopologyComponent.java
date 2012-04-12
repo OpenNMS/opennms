@@ -10,17 +10,13 @@ import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
-import com.google.gwt.core.client.JsArrayNumber;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
@@ -29,32 +25,41 @@ import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.VTooltip;
 import com.vaadin.terminal.gwt.client.ui.Action;
 import com.vaadin.terminal.gwt.client.ui.ActionOwner;
-import com.vaadin.terminal.gwt.client.ui.dd.VDragAndDropManager;
 import com.vaadin.terminal.gwt.client.ui.dd.VDropHandler;
 import com.vaadin.terminal.gwt.client.ui.dd.VHasDropHandler;
-import com.vaadin.terminal.gwt.client.ui.dd.VTransferable;
 
 public class VTopologyComponent extends Composite implements Paintable, ActionOwner, VHasDropHandler {
 	
-    static class DragObject{
-		private Element m_element;
+    public class DragObject{
+		private Element m_containerElement;
+		private Element m_draggableElement;
 		private int m_startX;
 		private int m_startY;
 
-        public DragObject(Element containerElement) {
-        	m_element = containerElement;
+        public DragObject(Element draggableElement, Element containerElement) {
+            m_draggableElement = draggableElement;
+            m_containerElement = containerElement;
+        	
             JsArrayInteger position = D3.getMouse(containerElement);
             m_startX = position.get(0);
             m_startY = position.get(1);
         }
         
+        public Element getContainerElement() {
+            return m_containerElement;
+        }
+        
+        public Element getDraggableElement() {
+            return m_draggableElement;
+        }
+        
     	public int getCurrentX() {
-    		JsArrayInteger position = D3.getMouse(m_element);
+    		JsArrayInteger position = D3.getMouse(m_containerElement);
     		return position.get(0);
     	}
     	
     	public int getCurrentY() {
-    		JsArrayInteger position = D3.getMouse(m_element);
+    		JsArrayInteger position = D3.getMouse(m_containerElement);
     		return position.get(1);
     	}
 
@@ -66,6 +71,9 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 			return m_startY;
 		}
 
+        public void move() {
+            VTopologyComponent.this.repaintGraphNow();
+        }
 
     }
     
@@ -106,6 +114,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         m_graph = GWTGraph.create();
     }
     
+    
+
     @Override
     protected void onLoad() {
         super.onLoad();
@@ -120,7 +130,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         m_edgeGroup = m_svgViewPort.append("g").attr("transform", "scale(1)");
         m_vertexGroup = m_svgViewPort.append("g").attr("transform", "scale(1)");
         
-        setupPanningBehavior(m_svgViewPort);
+        //setupPanningBehavior(m_svgViewPort);
         
         m_d3VertexDrag = D3.getDragBehavior();
         
@@ -137,8 +147,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				NativeEvent event = D3.getEvent();
 				Element elem = Element.as(event.getEventTarget());
 				
-				m_dragObject = null;
-				m_dragObject = new DragObject(elem);
+//				m_dragObject = null;
+//				m_dragObject = new DragObject(null, elem);
 				
 			}
 		});
@@ -147,12 +157,9 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 			public void call(Object t, int index) {
 				// TODO Auto-generated method stub
-				int deltaX = m_dragObject.getCurrentX() - m_dragObject.getStartX();
-				int deltaY = m_dragObject.getCurrentY() - m_dragObject.getStartY();
-				String transform = D3.d3().select("#viewport").attr("transform");
-				consoleLog("elemnt x: " + transform);
-				//TODO: add the d3.transform stuff to the d3 object
-				//D3.d3().select("#viewport").attr("transform", "translate(" + deltaX + "," + deltaY + ")");
+//				int deltaX = m_dragObject.getCurrentX() - m_dragObject.getStartX();
+//				int deltaY = m_dragObject.getCurrentY() - m_dragObject.getStartY();
+//				D3.d3().select("#viewport").attr("transform", "translate(" + deltaX + "," + deltaY + ")");
 			}
 		});
 		
@@ -239,6 +246,74 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                 
         
 	}
+	
+	private void drawGraphNow(GWTGraph graph) {
+        D3 lines = m_edgeGroup.selectAll("line")
+                .data(graph.getEdges(), new Func<String, GWTEdge>() {
+
+                    public String call(GWTEdge edge, int index) {
+                        String edgeId = edge.getId();
+                        return edgeId;
+                    }
+                    
+                });
+        
+        final D3 vertexGroup = m_vertexGroup.selectAll(".little")
+                .data(graph.getVertices(), new Func<String, GWTVertex>() {
+
+                    public String call(GWTVertex param, int index) {
+                        return "" + param.getId();
+                    }
+                    
+                });
+        //Exits
+        lines.exit().remove();
+        vertexGroup.exit().remove();
+        
+        //Updates
+        lines.attr("x1", getSourceX())
+                .attr("x2", getTargetX())
+                .attr("y1", getSourceY())
+                .attr("y2", getTargetY())
+                .attr("opacity", 1);
+        
+        vertexGroup.attr("transform", getTranslation())
+                .attr("opacity", 1);
+        
+        D3 updateCircle = vertexGroup.select("circle");
+        updateCircle.style("fill", selectedFill("Update"));
+        
+        //Enters
+        lines.enter().append("line")
+                .attr("opacity", 1)
+                .attr("x1", getSourceX())
+                .attr("x2", getTargetX())
+                .attr("y1", getSourceY())
+                .attr("y2", getTargetY())
+                .style("stroke", "#ccc");
+        
+      //Drag Handlers
+        m_d3VertexDrag.on(D3Events.DRAG.event(), vertexDragHandler());
+        
+        m_d3VertexDrag.on(D3Events.DRAG_START.event(), vertexDragStartHandler());
+        
+        m_d3VertexDrag.on(D3Events.DRAG_END.event(), vertexDragEndHandler());
+        //End Drag Handlers
+        
+        D3 vertex = vertexGroup.enter().append("g").attr("transform", getTranslation())
+                .attr("opacity", 1)
+                .attr("class", "little")
+                .on(D3Events.CLICK.event(), vertexClickHandler())
+                .on(D3Events.CONTEXT_MENU.event(), vertexContextMenuHandler()).call(m_d3VertexDrag);
+                
+        vertex.append("circle").attr("r", 9).style("fill", selectedFill("Enter"));
+        
+        vertex.append("text").attr("dy", ".35em")
+            .attr("text-anchor", "middle").style("fill", "white")
+            .text(D3.property("id"));
+        
+        
+    }
 
     
     
@@ -331,9 +406,10 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
             public void call(GWTVertex vertex, int index) {
                 NativeEvent event = D3.getEvent();
-                Element elem = Element.as(event.getEventTarget()).getParentElement();
+                Element draggableElement = Element.as(event.getEventTarget()).getParentElement();
                 
-                m_dragObject = new DragObject(elem.getParentElement());
+                m_dragObject = new DragObject(draggableElement, D3.d3().selectElement("#viewport"));
+                
                 D3.getEvent().preventDefault();
                 D3.getEvent().stopPropagation();
             }
@@ -341,6 +417,14 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             
         };
     }
+    
+    public static final native void eval(Element elem) /*-{
+        $wnd.console.log($wnd.eval(elem));
+    }-*/;
+    
+    public static final native void typeof(Element elem) /*-{
+        $wnd.console.log("typeof: " + typeof(elem));
+    }-*/;
     
     private static final native void consoleLog(String message) /*-{
         $wnd.console.log(message);
@@ -350,15 +434,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         return new Handler<GWTVertex>() {
 
             public void call(GWTVertex vertex, int index) {
-                NativeEvent event = D3.getEvent();
-                Element selectedElement = Element.as(D3.getEvent().getEventTarget());
-                //get parent element because it somehow is never selected.
-                //But since the circle and the text are both in a g, we shall select the g element
-                Element parentElem = selectedElement.getParentElement();
                 
                 vertex.setX( m_dragObject.getCurrentX() );
                 vertex.setY( m_dragObject.getCurrentY() );
-                D3.d3().select(parentElem).attr("transform", "translate(" + vertex.getX() + "," + vertex.getY() + ")");
+                
+                m_dragObject.move();
                 //consoleLog("get cursorStartX: " + m_dragObject.getCursorStartX() + " x: " + x + " newVertexX: " + newVertexX);
                 D3.getEvent().preventDefault();
                 D3.getEvent().stopPropagation();
@@ -527,6 +607,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	private void repaintGraph() {
         drawGraph(m_graph);
 	}
+	
+	public void repaintGraphNow() {
+        drawGraphNow(m_graph);
+        
+    }
 
 	private void updateScale(double scale) {
 		m_vertexGroup.transition().duration(1000).attr("transform", "scale(" + scale + ")");

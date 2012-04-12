@@ -160,8 +160,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             String[] vertexProps = vertexUpdate.split("\\|");
             
             String id = vertexProps[0].split(",")[1];
-            int x = Integer.parseInt(vertexProps[1].split(",")[1]);
-            int y = Integer.parseInt(vertexProps[2].split(",")[1]);
+            int x = (int) Double.parseDouble(vertexProps[1].split(",")[1]);
+            int y = (int) Double.parseDouble(vertexProps[2].split(",")[1]);
             boolean selected = vertexProps[3].split(",")[1] == "true" ;
             
             Vertex vertex = m_graph.getVertexById(id);
