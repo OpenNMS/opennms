@@ -27,7 +27,7 @@ public class VarbindsdecodeTest extends XmlTestNoCastor<Varbindsdecode> {
 				"<parmid>parm[#1]</parmid>" +
 				"<decode varbinddecodedstring=\"testing\" varbindvalue=\"3\"/>" +
 				"</varbindsdecode>",
-				"target/xsds/eventconf.xsd" }, 
+				"target/classes/xsds/eventconf.xsd" }, 
 		});
 	}
 

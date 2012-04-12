@@ -23,10 +23,10 @@ public class LogmsgTest extends XmlTestNoCastor<Logmsg> {
 		return Arrays.asList(new Object[][] {
 				{logmsg0,
 				"<logmsg/>",
-				"target/xsds/eventconf.xsd" }, 
+				"target/classes/xsds/eventconf.xsd" }, 
 				{logmsg1,
 					"<logmsg dest=\"logndisplay\" notify=\"false\">This is a test</logmsg>",
-					"target/xsds/eventconf.xsd" } 
+					"target/classes/xsds/eventconf.xsd" } 
 		});
 	}
 

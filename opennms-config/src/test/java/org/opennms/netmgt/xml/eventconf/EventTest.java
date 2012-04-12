@@ -117,7 +117,7 @@ public class EventTest extends XmlTestNoCastor<Event> {
 				"<logmsg>log message</logmsg>" +
 				"<severity>normal</severity>" +
 				"</event>",
-				"target/xsds/eventconf.xsd" }, 
+				"target/classes/xsds/eventconf.xsd" }, 
 				{event1,
 					"<event xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">" +
 					"  <mask>\n" + 
@@ -172,7 +172,7 @@ public class EventTest extends XmlTestNoCastor<Event> {
 					"  <mouseovertext>mouseovertext</mouseovertext>" +
 					"  <alarm-data reduction-key=\"%uei%:%dpname%:%nodeid%\" alarm-type=\"3\" auto-clean=\"true\" clear-key=\"uei.opennms.org/internal/importer/importFailed:%parm[importResource]%\"/>" +
 					"</event>",
-				"target/xsds/eventconf.xsd" }, 
+				"target/classes/xsds/eventconf.xsd" }, 
 		});
 	}
 
