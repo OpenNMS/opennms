@@ -39,12 +39,11 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -57,7 +56,7 @@ import org.xml.sax.ContentHandler;
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("eventconf.xsd")
-// @XmlType(propOrder={})
+@XmlType(propOrder={})
 public class Event implements Serializable {
 	private static final long serialVersionUID = 565808183599950549L;
 
@@ -77,14 +76,14 @@ public class Event implements Serializable {
     /**
      * The Universal Event Identifier
      */
-	@NotNull
+	// @NotNull
 	@XmlElement(name="uei", required=true)
     private String m_uei;
 
     /**
      * A human readable name used to identify an event in the web ui
      */
-	@NotNull
+	// @NotNull
 	@XmlElement(name="event-label", required=true)
     private String m_eventLabel;
 
@@ -97,21 +96,21 @@ public class Event implements Serializable {
     /**
      * The event description
      */
-	@NotNull
+	// @NotNull
 	@XmlElement(name="descr", required=true)
     private String m_descr;
 
     /**
      * The event logmsg
      */
-	@NotNull
+	// @NotNull
 	@XmlElement(name="logmsg", required=true)
     private Logmsg m_logmsg;
 
     /**
      * The event severity
      */
-	@NotNull
+	// @NotNull
 	@XmlElement(name="severity", required=true)
     private String m_severity;
 
@@ -130,21 +129,21 @@ public class Event implements Serializable {
     /**
      * The automatic action to occur when this event occurs
      */
-	@Size(min=0)
+	// @Size(min=0)
 	@XmlElement(name="autoaction", required=false)
     private List<Autoaction> m_autoactions = new ArrayList<Autoaction>();
 
     /**
      * The varbind decoding tag used to decode value into a string
      */
-	@Size(min=0)
+	// @Size(min=0)
 	@XmlElement(name="varbindsdecode", required=false)
     private List<Varbindsdecode> m_varbindsdecodes = new ArrayList<Varbindsdecode>();
 
     /**
      * The operator action to be taken when this event occurs
      */
-	@Size(min=0)
+	// @Size(min=0)
 	@XmlElement(name="operaction", required=false)
     private List<Operaction> m_operactions = new ArrayList<Operaction>();
 
@@ -157,7 +156,7 @@ public class Event implements Serializable {
     /**
      * A logical group with which to associate this event
      */
-	@Size(min=0)
+	// @Size(min=0)
 	@XmlElement(name="loggroup", required=false)
     private List<String> m_loggroups = new ArrayList<String>();
 
@@ -170,14 +169,14 @@ public class Event implements Serializable {
     /**
      * The forwarding information for this event
      */
-	@Size(min=0)
+	// @Size(min=0)
 	@XmlElement(name="forward", required=false)
     private List<Forward> m_forwards = new ArrayList<Forward>();
 
     /**
      * The script information for this event
      */
-	@Size(min=0)
+	// @Size(min=0)
 	@XmlElement(name="script", required=false)
     private List<Script> m_scripts = new ArrayList<Script>();
 

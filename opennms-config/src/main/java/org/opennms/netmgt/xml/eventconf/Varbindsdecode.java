@@ -35,8 +35,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -66,15 +64,15 @@ public class Varbindsdecode implements Serializable {
 	/**
      * The identifier of the parameters to be decoded
      */
-	@NotNull
+	// @NotNull
 	@XmlElement(name="parmid", required=true)
     private String m_parmid;
 
     /**
      * The value to string decoding map
      */
-	@Size(min=1)
-	@NotNull
+	// @Size(min=1)
+	// @NotNull
 	@XmlElement(name="decode", required=true)
     private List<Decode> m_decodes = new ArrayList<Decode>();
 

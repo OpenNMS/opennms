@@ -33,7 +33,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
-import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -64,7 +63,7 @@ public class Forward implements Serializable {
 	@XmlAttribute(name="state", required=false)
     private String m_state;
 
-	@Pattern(regexp="(snmpudp|snmptcp|xmltcp|xmludp)")
+	// @Pattern(regexp="(snmpudp|snmptcp|xmltcp|xmludp)")
 	@XmlAttribute(name="mechanism", required=false)
     private String m_mechanism;
 

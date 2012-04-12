@@ -38,8 +38,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -65,12 +63,12 @@ public class Maskelement implements Serializable {
 	private static final long serialVersionUID = -3932312038903008806L;
 	private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-	@NotNull
+	// @NotNull
 	@XmlElement(name="mename", required=true)
     private String m_name;
 
-	@NotNull
-	@Size(min=1)
+	// @NotNull
+	// @Size(min=1)
 	@XmlElement(name="mevalue", required=true)
     private List<String> m_values = new ArrayList<String>();
 

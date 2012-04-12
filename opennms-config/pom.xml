@@ -10,6 +10,7 @@
   <name>OpenNMS Configuration</name>
   <build>
     <plugins>
+      <!-- don't generate eventconf.xsd for now, we have some issues with validation...
       <plugin>
         <groupId>com.sun.tools.jxc.maven2</groupId>
         <artifactId>maven-jaxb-schemagen-plugin</artifactId>
@@ -37,6 +38,7 @@
           </execution>
         </executions>
       </plugin>
+      -->
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>castor-maven-plugin</artifactId>

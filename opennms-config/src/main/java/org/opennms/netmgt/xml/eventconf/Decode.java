@@ -33,7 +33,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -57,11 +56,11 @@ import org.xml.sax.ContentHandler;
 public class Decode implements Serializable {
 	private static final long serialVersionUID = 3617401172106159899L;
 
-	@NotNull
+	// @NotNull
 	@XmlAttribute(name="varbindvalue", required=true)
     private String m_varbindvalue;
 
-	@NotNull
+	// @NotNull
 	@XmlAttribute(name="varbinddecodedstring",required=true)
     private String m_varbinddecodedstring;
 

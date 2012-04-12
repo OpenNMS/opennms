@@ -54,10 +54,12 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+    <!-- breaks generation :(
     <dependency>
       <groupId>org.wicketstuff</groupId>
       <artifactId>jsr303</artifactId>
       <version>1.4.9.2</version>
     </dependency>
+    -->
   </dependencies>
 </project>

@@ -33,7 +33,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -61,7 +60,7 @@ public class Snmp implements Serializable {
 	/**
      * The SNMP enterprise ID
      */
-	@NotNull
+	// @NotNull
 	@XmlElement(name="id", required=true)
     private String m_id;
 
@@ -74,7 +73,7 @@ public class Snmp implements Serializable {
     /**
      * The SNMP version
      */
-	@NotNull
+	// @NotNull
 	@XmlElement(name="version", required=true)
     private String m_version;
 

@@ -38,8 +38,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -67,12 +65,12 @@ public class Varbind implements Serializable {
     @XmlAttribute(name="textual-convention", required=false)
     private String m_textualConvention;
 
-	@NotNull
+    // @NotNull
 	@XmlElement(name="vbnumber", required=true)
     private Integer m_vbnumber;
 
-	@Size(min=1)
-	@NotNull
+	// @Size(min=1)
+	// @NotNull
 	@XmlElement(name="vbvalue", required=true)
     private List<String> m_values = new ArrayList<String>();
 

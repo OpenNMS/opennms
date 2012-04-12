@@ -38,8 +38,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -67,8 +65,8 @@ public class Security implements Serializable {
      * Event element whose value cannot be overridden by a
      *  value in an incoming event
      */
-	@NotNull
-	@Size(min=1)
+	// @NotNull
+	// @Size(min=1)
 	@XmlElement(name="doNotOverride", required=true)
     private List<String> m_doNotOverride = new ArrayList<String>();
 
