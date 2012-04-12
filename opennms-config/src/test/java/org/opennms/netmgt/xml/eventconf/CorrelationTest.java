@@ -26,7 +26,7 @@ public class CorrelationTest extends XmlTestNoCastor<Correlation> {
 		return Arrays.asList(new Object[][] {
 				{correlation0,
 				"<correlation/>",
-				"target/xsds/eventconf.xsd" },
+				"target/classes/xsds/eventconf.xsd" },
 				{correlation1,
 				"<correlation state=\"on\" path=\"pathOutage\">" +
 				"<cuei>vCuei</cuei>" +
@@ -34,7 +34,7 @@ public class CorrelationTest extends XmlTestNoCastor<Correlation> {
 				"<cmax>cmax</cmax>" +
 				"<ctime>ctime</ctime>" +
 				"</correlation>",
-				"target/xsds/eventconf.xsd" } 
+				"target/classes/xsds/eventconf.xsd" } 
 		});
 	}
 

@@ -23,10 +23,10 @@ public class TticketTest extends XmlTestNoCastor<Tticket> {
 		return Arrays.asList(new Object[][] {
 				{tticket0,
 				"<tticket>This is a test</tticket>",
-				"target/xsds/eventconf.xsd" },
+				"target/classes/xsds/eventconf.xsd" },
 				{tticket1,
 				"<tticket state=\"on\">This is a test</tticket>",
-				"target/xsds/eventconf.xsd" } 
+				"target/classes/xsds/eventconf.xsd" } 
 		});
 	}
 

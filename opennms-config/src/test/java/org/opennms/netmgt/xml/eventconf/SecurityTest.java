@@ -25,13 +25,13 @@ public class SecurityTest extends XmlTestNoCastor<Security> {
 				"<security>" +
 				"<doNotOverride>I'm very important, don't mess with me!</doNotOverride>" +
 				"</security>",
-				"target/xsds/eventconf.xsd" }, 
+				"target/classes/xsds/eventconf.xsd" }, 
 				{security1,
 					"<security>" +
 					"<doNotOverride>I'm very important, don't mess with me!</doNotOverride>" +
 					"<doNotOverride>Also important</doNotOverride>" +
 					"</security>",
-					"target/xsds/eventconf.xsd" }, 		});
+					"target/classes/xsds/eventconf.xsd" }, 		});
 	}
 
 }

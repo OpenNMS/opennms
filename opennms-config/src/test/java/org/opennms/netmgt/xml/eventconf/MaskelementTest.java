@@ -25,10 +25,10 @@ public class MaskelementTest extends XmlTestNoCastor<Maskelement> {
 		return Arrays.asList(new Object[][] {
 				{maskelement0,
 				"<maskelement> <mename>specific</mename> <mevalue>3</mevalue></maskelement>",
-				"target/xsds/eventconf.xsd" }, 
+				"target/classes/xsds/eventconf.xsd" }, 
 				{maskelement1,
 					"<maskelement> <mename>specific</mename> <mevalue>3</mevalue><mevalue>4</mevalue></maskelement>",
-					"target/xsds/eventconf.xsd" }, 
+					"target/classes/xsds/eventconf.xsd" }, 
 		});
 	}
 

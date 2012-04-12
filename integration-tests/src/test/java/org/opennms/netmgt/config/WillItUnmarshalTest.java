@@ -168,7 +168,7 @@ public class WillItUnmarshalTest {
 
     @Test
     public void testFailOnInvalidElement() throws Exception {
-        unmarshalAndAnticipateException("eventconf-bad-element.xml", "unexpected element (uri:\"http://xmlns.opennms.org/xsd/eventconf\", local:\"bad-element\")");
+        unmarshalAndAnticipateException("eventconf-bad-element.xml", "Invalid content was found starting with element 'bad-element'.");
     }
 
     @Test

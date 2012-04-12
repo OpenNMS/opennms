@@ -29,7 +29,7 @@ public class MaskTest extends XmlTestNoCastor<Mask> {
 		return Arrays.asList(new Object[][] {
 				{mask0,
 				"<mask><maskelement><mename>specific</mename><mevalue>3</mevalue></maskelement></mask>",
-				"target/xsds/eventconf.xsd" }, 
+				"target/classes/xsds/eventconf.xsd" }, 
 				{mask1,
 					" <mask> " +
 					"<maskelement>" +
@@ -41,7 +41,7 @@ public class MaskTest extends XmlTestNoCastor<Mask> {
 					"<vbvalue>0</vbvalue>" +
 					"</varbind>" +
 					"</mask>",
-					"target/xsds/eventconf.xsd" } 
+					"target/classes/xsds/eventconf.xsd" } 
 		});
 	}
 
