@@ -573,6 +573,15 @@ public class WillItUnmarshalTest {
         allXml.remove("drools-engine.xml");
         allXml.remove("nodeParentRules-context.xml");
         allXml.remove("nsclient-config.xml");
+
+        final Iterator<String> allIterator = allXml.iterator();
+        while (allIterator.hasNext()) {
+        	final String file = allIterator.next();
+        	if (file.startsWith("Juniper/mbg/")) {
+        		allIterator.remove();
+        	}
+        }
+
         if (allXml.size() > 0) {
             List<String> files = new ArrayList<String>(allXml);
             Collections.sort(files);
