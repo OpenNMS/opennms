@@ -44,8 +44,7 @@
 
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="1" name="doNotOverride"
-                 type="string">
+        <element maxOccurs="unbounded" minOccurs="1" name="doNotOverride" type="string">
           <annotation>
             <documentation>Event element whose value cannot be overridden by a
             value in an incoming event</documentation>
@@ -56,7 +55,7 @@
   </element>
 
   <element name="event">
-    <complexType>
+    <complexType mixed="true">
       <sequence>
         <element maxOccurs="1" minOccurs="0" ref="this:mask">
           <annotation>
@@ -203,7 +202,7 @@
       information about varbind</documentation>
     </annotation>
 
-    <complexType>
+    <complexType mixed="true">
       <sequence>
         <element maxOccurs="unbounded" minOccurs="1" ref="this:maskelement"/>
 
@@ -217,7 +216,7 @@
       <documentation>The mask element</documentation>
     </annotation>
 
-    <complexType>
+    <complexType mixed="true">
       <sequence>
         <element maxOccurs="1" minOccurs="1" name="mename" type="string">
           <annotation>
@@ -269,7 +268,7 @@
       <documentation>The mask element</documentation>
     </annotation>
 
-       <complexType>
+    <complexType mixed="true">
       <attribute name="eventparm"     type="string" use="required" />
       <attribute name="pattern"       type="string" use="required" />
       <attribute name="replacement"   type="string" use="required" />
@@ -281,7 +280,7 @@
       <documentation>The snmp information from the trap</documentation>
     </annotation>
 
-    <complexType>
+    <complexType mixed="true">
       <sequence>
         <element maxOccurs="1" minOccurs="1" name="id" type="string">
           <annotation>
@@ -356,7 +355,7 @@
       <documentation>The event correlation information</documentation>
     </annotation>
 
-    <complexType>
+    <complexType mixed="true">
       <sequence>
         <element maxOccurs="unbounded" minOccurs="0" name="cuei" type="string">
           <annotation>
@@ -548,16 +547,16 @@
       <documentation>This element is used for converting event 
       varbind value in static decoded string.</documentation>
     </annotation>
-    <complexType>
+    <complexType mixed="true">
       <sequence>
-          <element maxOccurs="1" minOccurs="1" name="parmid" type="string">
+        <element maxOccurs="1" minOccurs="1" name="parmid" type="string">
           <annotation>
             <documentation>The identifier of the parameters to be
             decoded
             </documentation>
           </annotation>
         </element>     
-          <element maxOccurs="unbounded" minOccurs="1" ref="this:decode">
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:decode">
           <annotation>
             <documentation>The value to string decoding map
             </documentation>
@@ -625,7 +624,7 @@
       <documentation>The varbind element</documentation>
     </annotation>
 
-    <complexType>
+    <complexType mixed="true">
       <sequence>
         <element maxOccurs="1" minOccurs="1" name="vbnumber" type="int">
           <annotation>
@@ -633,8 +632,7 @@
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="1" name="vbvalue"
-                 type="string">
+        <element maxOccurs="unbounded" minOccurs="1" name="vbvalue" type="string">
           <annotation>
             <documentation>The varbind element value</documentation>
           </annotation>
