@@ -56,7 +56,7 @@
 
   <element name="event">
     <complexType mixed="true">
-      <sequence>
+      <choice minOccurs="0" maxOccurs="unbounded">
         <element maxOccurs="1" minOccurs="0" ref="this:mask">
           <annotation>
             <documentation>The event mask which helps to uniquely identify an
@@ -190,7 +190,7 @@
           </annotation>
         </element>
 
-      </sequence>
+      </choice>
       
     </complexType>
   </element>
@@ -202,7 +202,7 @@
       information about varbind</documentation>
     </annotation>
 
-    <complexType mixed="true">
+    <complexType>
       <sequence>
         <element maxOccurs="unbounded" minOccurs="1" ref="this:maskelement"/>
 
@@ -216,7 +216,7 @@
       <documentation>The mask element</documentation>
     </annotation>
 
-    <complexType mixed="true">
+    <complexType>
       <sequence>
         <element maxOccurs="1" minOccurs="1" name="mename" type="string">
           <annotation>
@@ -268,7 +268,7 @@
       <documentation>The mask element</documentation>
     </annotation>
 
-    <complexType mixed="true">
+    <complexType>
       <attribute name="eventparm"     type="string" use="required" />
       <attribute name="pattern"       type="string" use="required" />
       <attribute name="replacement"   type="string" use="required" />
@@ -281,7 +281,7 @@
     </annotation>
 
     <complexType mixed="true">
-      <sequence>
+      <choice minOccurs="0" maxOccurs="unbounded">
         <element maxOccurs="1" minOccurs="1" name="id" type="string">
           <annotation>
             <documentation>The snmp enterprise id</documentation>
@@ -317,7 +317,7 @@
             <documentation>The community name</documentation>
           </annotation>
         </element>
-      </sequence>
+      </choice>
     </complexType>
   </element>
 
@@ -356,7 +356,7 @@
     </annotation>
 
     <complexType mixed="true">
-      <sequence>
+      <choice minOccurs="0" maxOccurs="unbounded">
         <element maxOccurs="unbounded" minOccurs="0" name="cuei" type="string">
           <annotation>
             <documentation>A cancelling UEI for this event</documentation>
@@ -380,7 +380,7 @@
             <documentation>The correlation time for this event</documentation>
           </annotation>
         </element>
-      </sequence>
+      </choice>
 
       <attribute default="off" name="state" use="optional">
         <annotation>
@@ -548,7 +548,7 @@
       varbind value in static decoded string.</documentation>
     </annotation>
     <complexType mixed="true">
-      <sequence>
+      <choice minOccurs="0" maxOccurs="unbounded">
         <element maxOccurs="1" minOccurs="1" name="parmid" type="string">
           <annotation>
             <documentation>The identifier of the parameters to be
@@ -562,7 +562,7 @@
             </documentation>
           </annotation>
         </element>     
-        </sequence>
+      </choice>
     </complexType>
    </element>
 
@@ -625,7 +625,7 @@
     </annotation>
 
     <complexType mixed="true">
-      <sequence>
+      <choice minOccurs="0" maxOccurs="unbounded">
         <element maxOccurs="1" minOccurs="1" name="vbnumber" type="int">
           <annotation>
             <documentation>The varbind element number</documentation>
@@ -637,7 +637,7 @@
             <documentation>The varbind element value</documentation>
           </annotation>
         </element>
-      </sequence>
+      </choice>
       <attribute name="textual-convention" type="this:rfc1903-snmp-tc" use="optional" />
     </complexType>
   </element>
