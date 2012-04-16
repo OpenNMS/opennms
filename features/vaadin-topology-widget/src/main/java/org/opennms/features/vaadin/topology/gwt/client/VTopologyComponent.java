@@ -1,15 +1,20 @@
 package org.opennms.features.vaadin.topology.gwt.client;
 
+import static org.opennms.features.vaadin.topology.gwt.client.d3.TransitionBuilder.fadeIn;
+import static org.opennms.features.vaadin.topology.gwt.client.d3.TransitionBuilder.fadeOut;
+
 import java.util.HashMap;
 import java.util.Iterator;
 
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
+import org.opennms.features.vaadin.topology.gwt.client.d3.D3Behavior;
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3Drag;
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events;
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
@@ -31,16 +36,60 @@ import com.vaadin.terminal.gwt.client.ui.dd.VHasDropHandler;
 
 public class VTopologyComponent extends Composite implements Paintable, ActionOwner, VHasDropHandler {
 	
-    static class GraphDrawer{
+    public class GraphDrawerNoTransition extends GraphDrawer{
+        
+        public GraphDrawerNoTransition(GWTGraph graph, Element vertexGroup,Element edgeGroup, D3Behavior dragBehavior, Handler<GWTVertex> clickHandler, Handler<GWTVertex> contextMenuHandler) {
+            super(graph, vertexGroup, edgeGroup, dragBehavior, clickHandler,contextMenuHandler);
+        }
+        
+        @Override
+        protected D3Behavior enterTransition() {
+            return new D3Behavior() {
+
+                @Override
+                public D3 run(D3 selection) {
+                    return selection;
+                }
+                
+            };
+        }
+
+        @Override
+        protected D3Behavior exitTransition() {
+            return new D3Behavior() {
+
+                @Override
+                public D3 run(D3 selection) {
+                    return selection;
+                }
+                
+            };
+        }
+
+        @Override
+        protected D3Behavior updateTransition() {
+            return new D3Behavior() {
+
+                @Override
+                public D3 run(D3 selection) {
+                    return selection;
+                }
+                
+            };
+        }
+
+    }
+    
+    public class GraphDrawer{
         GWTGraph m_graph;
         Element m_vertexGroup;
         Element m_edgeGroup;
-        D3Drag m_dragBehavior;
+        D3Behavior m_dragBehavior;
         Handler<GWTVertex> m_clickHandler;
         Handler<GWTVertex> m_contextMenuHandler;
         
 
-        public GraphDrawer(GWTGraph graph, Element vertexGroup, Element edgeGroup, D3Drag dragBehavior, Handler<GWTVertex> clickHandler, Handler<GWTVertex> contextMenuHandler) {
+        public GraphDrawer(GWTGraph graph, Element vertexGroup, Element edgeGroup, D3Behavior dragBehavior, Handler<GWTVertex> clickHandler, Handler<GWTVertex> contextMenuHandler) {
             m_graph = graph;
             m_vertexGroup = vertexGroup;
             m_edgeGroup = edgeGroup;
@@ -48,6 +97,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             setClickHandler(clickHandler);
             setContextMenuHandler(contextMenuHandler);
             
+        }
+        
+        public void updateGraph(GWTGraph graph) {
+            m_graph = graph;
+            draw();
         }
         
         public Handler<GWTVertex> getClickHandler() {
@@ -86,7 +140,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             return D3.d3().select(getVertexGroupElement());
         }
 
-        public D3Drag getDragBehavior() {
+        public D3Behavior getDragBehavior() {
             return m_dragBehavior;
         }
 
@@ -94,8 +148,71 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             
             GWTGraph graph = getGraph();
             
-            D3 edgeGroup = getEdgeGroup();
-            D3 lines = edgeGroup.selectAll("line")
+            D3 edgeSelection = getEdgeSelection(graph);
+            
+            D3 vertexSelection = getVertexSelection(graph);
+            
+            //Exits
+            edgeSelection.exit().with(exitTransition()).remove();
+            vertexSelection.exit().with(exitTransition()).remove();
+            
+            
+            //Updates
+            edgeSelection.with(updateTransition()).call(GWTEdge.draw()).attr("opacity", 1);
+            
+            vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
+        	
+            
+            //Enters
+            edgeSelection.enter().create(GWTEdge.create()).with(enterTransition());
+            
+            vertexSelection.enter().create(GWTVertex.create()).call(setupEventHandlers()).with(enterTransition())
+                    ;
+
+        }
+
+        protected D3Behavior enterTransition() {
+            return fadeIn(500, 1000);
+        }
+
+        protected D3Behavior exitTransition() {
+            return fadeOut(500, 0);
+        }
+        
+        protected D3Behavior updateTransition() {
+            return new D3Behavior() {
+
+                @Override
+                public D3 run(D3 selection) {
+                    return selection.transition().delay(500).duration(500);
+                }
+            };
+        }
+        
+        private D3Behavior setupEventHandlers() {
+            return new D3Behavior() {
+
+                @Override
+                public D3 run(D3 selection) {
+                    return selection.on(D3Events.CLICK.event(), getClickHandler())
+                            .on(D3Events.CONTEXT_MENU.event(), getContextMenuHandler()).call(getDragBehavior());
+                }
+            };
+        }
+
+        private D3 getVertexSelection(GWTGraph graph) {
+            return getVertexGroup().selectAll(".little")
+                    .data(graph.getVertices(), new Func<String, GWTVertex>() {
+        
+        				public String call(GWTVertex param, int index) {
+        					return "" + param.getId();
+        				}
+                    	
+                    });
+        }
+
+        private D3 getEdgeSelection(GWTGraph graph) {
+            return getEdgeGroup().selectAll("line")
                     .data(graph.getEdges(), new Func<String, GWTEdge>() {
         
         				public String call(GWTEdge edge, int index) {
@@ -104,121 +221,24 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         				}
                     	
                     });
-            
-            D3 vGroup = getVertexGroup();
-            final D3 vertexGroup = vGroup.selectAll(".little")
-                    .data(graph.getVertices(), new Func<String, GWTVertex>() {
-        
-        				public String call(GWTVertex param, int index) {
-        					return "" + param.getId();
-        				}
-                    	
-                    });
-            //Exits
-            lines.exit().transition().duration(500).attr("opacity", 0).remove();
-            vertexGroup.exit().transition().duration(500).attr("opacity", 0).remove();
-            
-            //Updates
-            lines.transition().delay(500).duration(500)
-                    .attr("x1", GWTEdge.getSourceX())
-                    .attr("x2", GWTEdge.getTargetX())
-                    .attr("y1", GWTEdge.getSourceY())
-                    .attr("y2", GWTEdge.getTargetY())
-                    .attr("opacity", 1);
-            
-            vertexGroup.transition().delay(500).duration(500)
-                    .attr("transform", GWTVertex.getTranslation())
-                    .attr("opacity", 1);
-        	
-        	D3 updateCircle = vertexGroup.select("circle");
-        	updateCircle.style("fill", GWTVertex.selectedFill("Update"));
-            
-            //Enters
-            lines.enter().append("line")
-                    .attr("opacity", 0)
-                    .attr("x1", GWTEdge.getSourceX())
-                    .attr("x2", GWTEdge.getTargetX())
-                    .attr("y1", GWTEdge.getSourceY())
-                    .attr("y2", GWTEdge.getTargetY())
-                    .style("stroke", "#ccc").transition().delay(1000).duration(500)
-                    .attr("opacity", 1);
-            
-            D3Drag dragBehavior = getDragBehavior();
-            
-            D3 vertex = vertexGroup.enter().append("g").attr("transform", GWTVertex.getTranslation())
-                    .attr("opacity", 0)
-                    .attr("class", "little")
-                    .on(D3Events.CLICK.event(), getClickHandler())
-                    .on(D3Events.CONTEXT_MENU.event(), getContextMenuHandler()).call(dragBehavior);
-                    
-            vertex.append("circle").attr("r", 9).style("fill", GWTVertex.selectedFill("Enter"));
-            
-            vertex.append("text").attr("dy", ".35em")
-                .attr("text-anchor", "middle").style("fill", "white")
-                .text(D3.property("id"));
-            
-            vertex.transition().delay(1000).duration(500).attr("opacity", 1);
         }
 
-        void drawNow() {
-            GWTGraph graph = getGraph();
-            
-            D3 lines = getEdgeGroup().selectAll("line")
-                    .data(graph.getEdges(), new Func<String, GWTEdge>() {
         
-                        public String call(GWTEdge edge, int index) {
-                            String edgeId = edge.getId();
-                            return edgeId;
-                        }
-                        
-                    });
-            
-            final D3 vertexGroup = getVertexGroup().selectAll(".little")
-                    .data(graph.getVertices(), new Func<String, GWTVertex>() {
         
-                        public String call(GWTVertex param, int index) {
-                            return "" + param.getId();
-                        }
-                        
-                    });
-            //Exits
-            lines.exit().remove();
-            vertexGroup.exit().remove();
-            
-            //Updates
-            lines.attr("x1", GWTEdge.getSourceX())
-                    .attr("x2", GWTEdge.getTargetX())
-                    .attr("y1", GWTEdge.getSourceY())
-                    .attr("y2", GWTEdge.getTargetY())
-                    .attr("opacity", 1);
-            
-            vertexGroup.attr("transform", GWTVertex.getTranslation())
-                    .attr("opacity", 1);
-            
-            D3 updateCircle = vertexGroup.select("circle");
-            updateCircle.style("fill", GWTVertex.selectedFill("Update"));
-            
-            //Enters
-            lines.enter().append("line")
-                    .attr("opacity", 1)
-                    .attr("x1", GWTEdge.getSourceX())
-                    .attr("x2", GWTEdge.getTargetX())
-                    .attr("y1", GWTEdge.getSourceY())
-                    .attr("y2", GWTEdge.getTargetY())
-                    .style("stroke", "#ccc");
-            
-            D3 vertex = vertexGroup.enter().append("g").attr("transform", GWTVertex.getTranslation())
-                    .attr("opacity", 1)
-                    .attr("class", "little")
-                    .on(D3Events.CLICK.event(), getClickHandler())
-                    .on(D3Events.CONTEXT_MENU.event(), getContextMenuHandler()).call(getDragBehavior());
-                    
-            vertex.append("circle").attr("r", 9).style("fill", GWTVertex.selectedFill("Enter"));
-            
-            vertex.append("text").attr("dy", ".35em")
-                .attr("text-anchor", "middle").style("fill", "white")
-                .text(D3.property("id"));
+    }
+    
+    public class PanObject extends DragObject{
+        
+        public PanObject(Element draggableElement, Element containerElement) {
+            super(draggableElement, containerElement);
         }
+        @Override
+        public void move() {
+            
+            
+        }
+
+        
         
     }
     
@@ -281,7 +301,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     
     private GWTGraph m_graph;
 	private double m_scale;
-    private boolean m_firstTime = true;
     private DragObject m_dragObject;
     
     @UiField
@@ -304,9 +323,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     
     
 	private String[] m_actionKeys;
-    private D3Drag m_d3VertexDrag;
 	
 	private D3Drag m_d3PanDrag;
+    private GraphDrawer m_graphDrawer;
+    private GraphDrawerNoTransition m_graphDrawerNoTransition;
+    protected PanObject m_panObject;
     
     public VTopologyComponent() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -314,76 +335,67 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         m_graph = GWTGraph.create();
     }
     
-    
-
     @Override
     protected void onLoad() {
         super.onLoad();
         
         sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS);
         
-        D3 d3 = D3.d3();
-        //setupPanningBehavior(m_svgViewPort);
+        setupPanningBehavior(m_svgViewPort);
         
-        m_d3VertexDrag = D3.getDragBehavior();
+        D3Behavior dragBehavior = new D3Behavior() {
+
+            @Override
+            public D3 run(D3 selection) {
+                D3Drag drag = D3.getDragBehavior();
+                drag.on(D3Events.DRAG_START.event(), vertexDragStartHandler());
+                drag.on(D3Events.DRAG.event(), vertexDragHandler());
+                drag.on(D3Events.DRAG_END.event(), vertexDragEndHandler());
+                
+                selection.call(drag);
+                return selection;
+            }
+            
+        };
         
-        
+        m_graphDrawer = new GraphDrawer(m_graph, m_vertexGroup, m_edgeGroup, dragBehavior, vertexClickHandler(), vertexContextMenuHandler());
+        m_graphDrawerNoTransition = new GraphDrawerNoTransition(m_graph, m_vertexGroup, m_edgeGroup, dragBehavior, vertexClickHandler(), vertexContextMenuHandler());
     }
 
-    private D3Drag setupPanningBehavior(D3 x) {
+    private void setupPanningBehavior(final Element panElem) {
 		D3Drag d3Pan = D3.getDragBehavior();
 		d3Pan.on(D3Events.DRAG_START.event(), new Handler<Object>() {
 
 			public void call(Object t, int index) {
-				//TODO: Pan viewport
-				
-				NativeEvent event = D3.getEvent();
-				Element elem = Element.as(event.getEventTarget());
-				
-//				m_dragObject = null;
-//				m_dragObject = new DragObject(null, elem);
-				
+				m_panObject = new PanObject(panElem, m_svg);
 			}
 		});
 		
 		d3Pan.on(D3Events.DRAG.event(), new Handler<Object>() {
 
 			public void call(Object t, int index) {
-				// TODO Auto-generated method stub
-//				int deltaX = m_dragObject.getCurrentX() - m_dragObject.getStartX();
-//				int deltaY = m_dragObject.getCurrentY() - m_dragObject.getStartY();
-//				D3.d3().select("#viewport").attr("transform", "translate(" + deltaX + "," + deltaY + ")");
+			    m_panObject.move();
 			}
 		});
 		
 		d3Pan.on(D3Events.DRAG_END.event(), new Handler<Object>() {
 
 			public void call(Object t, int index) {
-				m_dragObject = null;
+				m_panObject = null;
 			}
 		});
 		
-    	return d3Pan;
 		
 	}
 
 	private void drawGraph(GWTGraph g, boolean now) {
-	    m_d3VertexDrag.on(D3Events.DRAG.event(), vertexDragHandler());
-        
-        m_d3VertexDrag.on(D3Events.DRAG_START.event(), vertexDragStartHandler());
-        
-        m_d3VertexDrag.on(D3Events.DRAG_END.event(), vertexDragEndHandler());
-        
-	    GraphDrawer drawer = new GraphDrawer(g, m_vertexGroup, m_edgeGroup, m_d3VertexDrag, vertexClickHandler(), vertexContextMenuHandler());
 	    
 	    if(now) {  
-	        drawer.drawNow();
+	        m_graphDrawerNoTransition.updateGraph(g);
 	    }else {
-	        drawer.draw();
+	        m_graphDrawer.updateGraph(g);
 	    }
 	    
-                
-        
 	}
 
     @Override
@@ -486,7 +498,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         };
     }
     
-    public static final native void eval(Element elem) /*-{
+    public static final native void eval(JavaScriptObject elem) /*-{
         $wnd.console.log($wnd.eval(elem));
     }-*/;
     

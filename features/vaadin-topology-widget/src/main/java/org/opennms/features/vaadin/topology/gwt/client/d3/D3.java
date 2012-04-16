@@ -69,6 +69,10 @@ public class D3 extends JavaScriptObject {
         return this.attr(propName, value);
     }-*/;
     
+    public final native D3 attr(String propName, double value) /*-{
+        return this.attr(propName, value);
+    }-*/;
+    
     public final native D3Scale scale() /*-{
         return this.scale;
     }-*/;
@@ -169,6 +173,35 @@ public class D3 extends JavaScriptObject {
     public final native D3 call(JavaScriptObject behavior) /*-{
         return this.call(behavior);
     }-*/;
+    
+    /**
+     * Takes a D3Behavior and returns the current selection passed into the run method
+     * @param behavior
+     * @return
+     */
+    public final native D3 call(D3Behavior behavior) /*-{
+        behavior.@org.opennms.features.vaadin.topology.gwt.client.d3.D3Behavior::run(Lorg/opennms/features/vaadin/topology/gwt/client/d3/D3;)(this);
+        return this;
+    }-*/;
+    
+    /**
+     * Takes a D3Behavior and returns the resulting selection
+     * @param behavior
+     * @return
+     */
+    public final native D3 with(D3Behavior behavior) /*-{
+        return behavior.@org.opennms.features.vaadin.topology.gwt.client.d3.D3Behavior::run(Lorg/opennms/features/vaadin/topology/gwt/client/d3/D3;)(this);
+    }-*/;
+    
+    /**
+     * Create is intended to be used with enter methods. 
+     * And the behavior is expected to return the created selection
+     * @param behavior
+     * @return
+     */
+    public final D3 create(D3Behavior behavior) {
+        return with(behavior);
+    };
 
 	public static final native JsArrayInteger getMouse(Element elem) /*-{
 		return $wnd.d3.mouse(elem);
@@ -180,13 +213,16 @@ public class D3 extends JavaScriptObject {
 	}-*/;
 
 	public final native String attr(String property) /*-{
-		// TODO Auto-generated method stub
 		return this.attr(property);
 	}-*/;
 
 	public static final native D3Transform getTransform(String transform)/*-{
 	    return $wnd.d3.transform(transform);
 	}-*/;
+
+    
+	
+	
     
 
 }

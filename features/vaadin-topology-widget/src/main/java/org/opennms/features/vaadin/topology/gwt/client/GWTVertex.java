@@ -1,5 +1,7 @@
 package org.opennms.features.vaadin.topology.gwt.client;
 
+import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
+import org.opennms.features.vaadin.topology.gwt.client.d3.D3Behavior;
 import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -71,7 +73,7 @@ public final class GWTVertex extends JavaScriptObject {
     	return keys;
     }
 
-    static Func<String, GWTVertex> selectedFill(final String caller) {
+    static Func<String, GWTVertex> selectedFill() {
     	return new Func<String, GWTVertex>(){
     
     		public String call(GWTVertex vertex, int index) {
@@ -90,7 +92,34 @@ public final class GWTVertex extends JavaScriptObject {
     	};
     }
     
+    public static D3Behavior draw() {
+        return new D3Behavior() {
+
+            @Override
+            public D3 run(D3 selection) {
+                return selection.attr("transform", GWTVertex.getTranslation()).select("circle").style("fill", GWTVertex.selectedFill());
+            }
+        };
+    }
     
+    public static D3Behavior create() {
+        return new D3Behavior() {
+
+            @Override
+            public D3 run(D3 selection) {
+                D3 vertex = selection.append("g").attr("class", "little");
+                vertex.attr("opacity",1e-6);
+                vertex.append("circle").attr("r", 9);
+                vertex.call(draw());
+                
+                vertex.append("text").attr("dy", ".35em")
+                    .attr("text-anchor", "middle").style("fill", "white")
+                    .text(D3.property("id"));
+                
+                return vertex;
+            }
+        };
+    }
     
 
 }

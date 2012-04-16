@@ -1,5 +1,7 @@
 package org.opennms.features.vaadin.topology.gwt.client;
 
+import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
+import org.opennms.features.vaadin.topology.gwt.client.d3.D3Behavior;
 import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -91,6 +93,32 @@ public final class GWTEdge extends JavaScriptObject {
     
             public Integer call(GWTEdge datum, int index) {
                 return datum.getSource().getX();
+            }
+        };
+    }
+    
+    public static D3Behavior draw() {
+        return new D3Behavior() {
+
+            @Override
+            public D3 run(D3 selection) {
+                
+                return selection
+                        .attr("x1", GWTEdge.getSourceX())
+                        .attr("x2", GWTEdge.getTargetX())
+                        .attr("y1", GWTEdge.getSourceY())
+                        .attr("y2", GWTEdge.getTargetY());
+            }
+        };
+    }
+    
+    public static D3Behavior create() {
+        return new D3Behavior() {
+
+            @Override
+            public D3 run(D3 selection) {
+                return selection.append("line").attr("opacity", 0).style("stroke", "#ccc")
+                        .call(draw());
             }
         };
     }
