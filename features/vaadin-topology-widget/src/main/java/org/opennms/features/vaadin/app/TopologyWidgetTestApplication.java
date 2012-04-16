@@ -14,7 +14,7 @@ import com.vaadin.event.Action;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
@@ -106,22 +106,30 @@ public class TopologyWidgetTestApplication extends Application implements Action
         vLayout.setHeight("100%");
         vLayout.addComponent(new Button("Hello There"));
         
-        HorizontalLayout mapLayout = new HorizontalLayout();
+        AbsoluteLayout mapLayout = new AbsoluteLayout();
         
-        mapLayout.addComponent(vLayout);
-        mapLayout.addComponent(m_topologyComponent);
+        //mapLayout.addComponent(vLayout);
+        mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
+        mapLayout.addComponent(slider, "top: 20px; left: 20px; z-index:1000;");
         mapLayout.setSizeFull();
-        mapLayout.setExpandRatio(m_topologyComponent, 1.0f);
+        //mapLayout.setExpandRatio(m_topologyComponent, 1.0f);
+        
+        HorizontalSplitPanel treeMapSplitPanel = new HorizontalSplitPanel();
+        treeMapSplitPanel.setFirstComponent(vLayout);
+        treeMapSplitPanel.setSecondComponent(mapLayout);
+        treeMapSplitPanel.setSplitPosition(100, Sizeable.UNITS_PIXELS);
+        treeMapSplitPanel.setSizeFull();
+        
         
         VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-        bottomLayoutBar.setFirstComponent(mapLayout);
+        bottomLayoutBar.setFirstComponent(treeMapSplitPanel);
         bottomLayoutBar.setSecondComponent(new Button("Bottom bar"));
         bottomLayoutBar.setSplitPosition(80, Sizeable.UNITS_PERCENTAGE);
         bottomLayoutBar.setSizeFull();
         
         layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
         layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
-        layout.addComponent(slider, "top: 56px; left: 130px; z-index:1000;");
+        //layout.addComponent(slider, "top: 56px; left: 130px; z-index:1000;");
         
         
     }
