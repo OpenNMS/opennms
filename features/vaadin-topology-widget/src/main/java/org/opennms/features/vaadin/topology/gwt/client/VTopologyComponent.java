@@ -264,14 +264,18 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		private Element m_draggableElement;
 		private int m_startX;
 		private int m_startY;
+		private D3Transform m_transform;
 
         public DragObject(Element draggableElement, Element containerElement) {
             m_draggableElement = draggableElement;
             m_containerElement = containerElement;
         	
+            //User m_vertexgroup because this is what we scale instead of every vertex element
+            m_transform = D3.getTransform(D3.d3().select(m_vertexGroup).attr("transform"));
+            
             JsArrayInteger position = D3.getMouse(containerElement);
-            m_startX = position.get(0);
-            m_startY = position.get(1);
+            m_startX = (int) (position.get(0) / m_transform.getScale().get(0));
+            m_startY = (int) (position.get(1) / m_transform.getScale().get(1));
         }
         
         public Element getContainerElement() {
@@ -284,12 +288,12 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
     	public int getCurrentX() {
     		JsArrayInteger position = D3.getMouse(m_containerElement);
-    		return position.get(0);
+    		return (int) (position.get(0) / m_transform.getScale().get(0));
     	}
     	
     	public int getCurrentY() {
     		JsArrayInteger position = D3.getMouse(m_containerElement);
-    		return position.get(1);
+    		return (int) (position.get(1) / m_transform.getScale().get(1));
     	}
 
 		public int getStartX() {
@@ -661,7 +665,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	
 	public void repaintGraphNow() {
         drawGraph(m_graph, true);
-        
     }
 
 	private void updateScale(double scale) {
