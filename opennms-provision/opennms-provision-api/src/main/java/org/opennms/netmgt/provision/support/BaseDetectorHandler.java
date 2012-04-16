@@ -67,11 +67,13 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void sessionCreated(IoSession session) throws Exception {
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void sessionOpened(IoSession session) throws Exception {
         if(!getConversation().hasBanner() && getConversation().getRequest() != null) {
             Object request = getConversation().getRequest();
@@ -80,6 +82,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void sessionClosed(IoSession session) throws Exception {
         if(!getFuture().isDone()) {
             getFuture().setServiceDetected(false);
@@ -87,6 +90,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
         if(getConversation().hasBanner() && status == IdleStatus.READER_IDLE) {
             getFuture().setServiceDetected(false);
@@ -95,6 +99,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
         LogUtils.debugf(this, cause, "Caught a Throwable in BaseDetectorHandler");
         getFuture().setException(cause);
@@ -102,6 +107,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     @SuppressWarnings("unchecked")
     public void messageReceived(IoSession session, Object message) throws Exception {
         try {
@@ -135,6 +141,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void messageSent(IoSession session, Object message) throws Exception {}
 
     /**

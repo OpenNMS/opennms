@@ -150,6 +150,8 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
             detectFuture.setException(e);
         } catch (IOException e) {
             detectFuture.setException(e);
+        } catch (Throwable e) {
+            detectFuture.setException(e);
         }
 
         return detectFuture;
@@ -158,6 +160,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     /**
      * <p>dispose</p>
      */
+    @Override
     public void dispose(){
         LogUtils.debugf(this, "calling dispose on detector %s", getServiceName());
         ConnectionFactory.dispose(m_connectionFactory);
