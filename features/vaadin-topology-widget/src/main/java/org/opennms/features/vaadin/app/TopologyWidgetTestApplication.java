@@ -1,9 +1,11 @@
 package org.opennms.features.vaadin.app;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.features.vaadin.topology.Graph;
 import org.opennms.features.vaadin.topology.TopologyComponent;
 import org.opennms.features.vaadin.topology.Vertex;
 
@@ -19,6 +21,7 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
+import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
@@ -42,6 +45,7 @@ public class TopologyWidgetTestApplication extends Application implements Action
     };
     
     private MenuBar m_menuBar = new MenuBar();
+    private Tree m_tree;
 
     
     @Override
@@ -57,6 +61,7 @@ public class TopologyWidgetTestApplication extends Application implements Action
             
             public void menuSelected(MenuItem selectedItem) {
                 m_topologyComponent.addRandomNode();
+                updateTree();
             }
         });
         
@@ -64,6 +69,7 @@ public class TopologyWidgetTestApplication extends Application implements Action
             
             public void menuSelected(MenuItem selectedItem) {
                 m_topologyComponent.removeVertex();
+                updateTree();
             }
         });
         
@@ -71,6 +77,7 @@ public class TopologyWidgetTestApplication extends Application implements Action
             
             public void menuSelected(MenuItem selectedItem) {
                 m_topologyComponent.resetGraph();
+                updateTree();
             }
         });
         m_menuBar.setWidth("100%");
@@ -101,18 +108,19 @@ public class TopologyWidgetTestApplication extends Application implements Action
 			e.printStackTrace();
 		}
         
+        m_tree = createTree();
+        
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.setWidth("100px");
         vLayout.setHeight("100%");
         vLayout.addComponent(new Button("Hello There"));
+        vLayout.addComponent(m_tree);
         
         AbsoluteLayout mapLayout = new AbsoluteLayout();
         
-        //mapLayout.addComponent(vLayout);
         mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
         mapLayout.addComponent(slider, "top: 20px; left: 20px; z-index:1000;");
         mapLayout.setSizeFull();
-        //mapLayout.setExpandRatio(m_topologyComponent, 1.0f);
         
         HorizontalSplitPanel treeMapSplitPanel = new HorizontalSplitPanel();
         treeMapSplitPanel.setFirstComponent(vLayout);
@@ -129,9 +137,30 @@ public class TopologyWidgetTestApplication extends Application implements Action
         
         layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
         layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
-        //layout.addComponent(slider, "top: 56px; left: 130px; z-index:1000;");
         
+    }
+    
+    protected void updateTree() {
+        m_tree.removeAllItems();
+        for(Vertex vert : m_topologyComponent.getGraph().getVertices()) {
+            m_tree.addItem(vert);
+        }
+    }
+
+    private Tree createTree() {
+        Graph graph = m_topologyComponent.getGraph();
         
+        Tree tree = new Tree("Vertices");
+        
+        for(Vertex vert : graph.getVertices()) {
+            tree.addItem(vert);
+        }
+        tree.setImmediate(true);
+        
+        for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
+            tree.expandItemsRecursively(it.next());
+        }
+        return tree;
     }
 
     public Action[] getActions(Object target, Object sender) {
