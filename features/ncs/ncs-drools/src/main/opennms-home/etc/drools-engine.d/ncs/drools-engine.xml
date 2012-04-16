@@ -22,6 +22,9 @@
     <event>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rdi</event>
     <event>uei.opennms.org/nodes/nodeDown</event>
     <event>uei.opennms.org/nodes/nodeUp</event>
+    <event>uei.opennms.org/internal/ncs/componentAdded</event>
+    <event>uei.opennms.org/internal/ncs/componentDeleted</event>
+    <event>uei.opennms.org/internal/ncs/componentUpdated</event>
     <app-context>dependencyRules-context.xml</app-context>
     <global name="correlationService" ref="ncsCorrelationService"/>
   </rule-set>

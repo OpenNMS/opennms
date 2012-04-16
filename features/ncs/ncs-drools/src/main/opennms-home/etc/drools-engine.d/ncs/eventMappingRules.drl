@@ -22,6 +22,7 @@ import org.opennms.netmgt.capsd.EventUtils;
 import org.drools.spi.KnowledgeHelper;
 import org.opennms.netmgt.correlation.ncs.NCSCorrelationService;
 import org.opennms.netmgt.correlation.ncs.NCSCorrelationService.AttrParmMap;
+import org.opennms.netmgt.model.ncs.NCSComponent.DependencyRequirements;
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
 global org.opennms.netmgt.correlation.ncs.NCSCorrelationService correlationService;
@@ -52,6 +53,33 @@ then
 		Component c = new Component( ncs );
 		insert( new ComponentUpEvent( c, $e ) );
 	}
+end
+
+rule "component deleted event"
+	salience 100
+when
+	$e : Event( $uei: uei matches ".*componentDeleted" )
+then
+	retract( $e );
+	//List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("jnxVpnPwVpnType", 1), map("jnxVpnPwVpnName", 2));
+	//for ( NCSComponent ncs : list ) {
+		//Component c = new Component( ncs );
+		long id = EventUtils.getLongParm( $e, "componentId", -1 );
+        String type = EventUtils.getParm( $e, "componentType" );
+        String name = EventUtils.getParm( $e, "componentName" );
+        String foreignSource = EventUtils.getParm( $e, "componentForeignSource" );
+        String foreignId = EventUtils.getParm( $e, "componentForeignId" );
+        String dr = EventUtils.getParm( $e, "dependencyRequirements" );
+        DependencyRequirements dependenciesRequired = Enum.valueOf( DependencyRequirements.class, dr );
+        if ( id != -1 ) {
+			Component c = new Component( id, type, name, foreignSource, foreignId, dependenciesRequired);
+			println(" Inserting component up event" + c + " because component was deleted" );
+			insert( new ComponentUpEvent( c, $e ) );
+		}
+		else {
+			println(" ERROR: Received component delete event with no component id" );
+		}
+	//}
 end
 
 rule "Vpn interface (UNI) component down"

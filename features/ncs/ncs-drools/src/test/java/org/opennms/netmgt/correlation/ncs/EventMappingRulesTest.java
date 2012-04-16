@@ -270,6 +270,21 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
 
     }
     
+    @Test
+    @DirtiesContext
+    public void testMapComponentDeleted() throws Exception {
+        
+    	
+		NCSComponent c = m_repository.findByTypeAndForeignIdentity("ServiceElementComponent", "NA-SvcElemComp", "8765,jnxVpnIf");
+    	// long componentId, String type, String name, String foreignSource,
+		// String foreignId, DependencyRequirements dependenciesRequired
+        Event event = createComponentDeletedEvent(17, c.getId(), c.getType(), c.getName(), c.getForeignSource(), c.getForeignId(),
+        		                                      c.getDependenciesRequired() );
+
+        testEventMapping(event, ComponentUpEvent.class, c.getType(), c.getForeignSource(), c.getForeignId());
+
+    }
+    
 	@Test
     @DirtiesContext
     // Down event for a syslog error
@@ -500,6 +515,25 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
                 .setInterface( addr( ipaddr ) )
                 .addParam("1.2.3.1", pwtype )
                 .addParam("1.2.3.2", pwname )
+                .getEvent();
+        event.setDbid(dbId);
+        return event;
+    }
+    
+ private Event createComponentDeletedEvent( int dbId, long componentId, String type, String name, String foreignSource,
+			String foreignId, DependencyRequirements dependenciesRequired ) {
+	 
+	 		if ( dependenciesRequired == null ) {
+	 			dependenciesRequired = DependencyRequirements.ALL;
+	 		}
+        
+        Event event = new EventBuilder("uei.opennms.org/internal/ncs/componentDeleted", "Test")
+                .addParam("componentId", componentId )
+                .addParam("componentType", type )
+                .addParam("componentName", name )
+                .addParam("componentForeignSource", foreignSource )
+                .addParam("componentForeignId", foreignId )
+                .addParam("dependencyRequirements", dependenciesRequired.toString() )
                 .getEvent();
         event.setDbid(dbId);
         return event;
