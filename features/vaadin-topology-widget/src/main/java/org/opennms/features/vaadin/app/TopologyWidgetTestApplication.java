@@ -1,7 +1,5 @@
 package org.opennms.features.vaadin.app;
 
-
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,10 +14,9 @@ import com.vaadin.event.Action;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.VerticalLayout;
@@ -43,6 +40,8 @@ public class TopologyWidgetTestApplication extends Application implements Action
     private Action[] m_vertexZeroActions = new Action[] {
 			new Action("Vertex 0 Action")
     };
+    
+    private MenuBar m_menuBar = new MenuBar();
 
     
     @Override
@@ -53,6 +52,28 @@ public class TopologyWidgetTestApplication extends Application implements Action
         m_window = new Window("Topology Widget Test");
         m_window.setContent(layout);
         setMainWindow(m_window);
+        
+        final MenuBar.MenuItem addVertex  = m_menuBar.addItem("Add Vertex", new MenuBar.Command() {
+            
+            public void menuSelected(MenuItem selectedItem) {
+                m_topologyComponent.addRandomNode();
+            }
+        });
+        
+        final MenuBar.MenuItem removeVertex = m_menuBar.addItem("Remove Vertex", new MenuBar.Command() {
+            
+            public void menuSelected(MenuItem selectedItem) {
+                m_topologyComponent.removeVertex();
+            }
+        });
+        
+        final MenuBar.MenuItem reset = m_menuBar.addItem("Reset", new MenuBar.Command() {
+            
+            public void menuSelected(MenuItem selectedItem) {
+                m_topologyComponent.resetGraph();
+            }
+        });
+        m_menuBar.setWidth("100%");
         
         m_topologyComponent = new TopologyComponent();
         m_topologyComponent.addActionHandler(this);
@@ -80,49 +101,6 @@ public class TopologyWidgetTestApplication extends Application implements Action
 			e.printStackTrace();
 		}
         
-        CheckBox showOverlayCheckBox = new CheckBox();
-        showOverlayCheckBox.setCaption("show scale control");
-        showOverlayCheckBox.addListener(new ClickListener() {
-			
-			public void buttonClick(ClickEvent event) {
-				System.err.println("click event on the showScale");
-				slider.setVisible(!slider.isVisible());
-				slider.setImmediate(true);
-			}
-		});
-        
-        
-        Button addButton = new Button("Add a Vertex");
-        addButton.setDescription("Use this button to add a new Vertex");
-        addButton.addListener(new ClickListener() {
-
-			public void buttonClick(ClickEvent event) {
-				m_topologyComponent.addRandomNode();
-			}
-        });
-        
-        Button resetButton = new Button("Reset");
-        resetButton.addListener(new ClickListener() {
-
-            public void buttonClick(ClickEvent event) {
-                m_topologyComponent.resetGraph();
-            }
-        });
-        
-        Button removeVertexButton = new Button("Remove Vertex");
-        removeVertexButton.addListener(new ClickListener() {
-
-            public void buttonClick(ClickEvent event) {
-                m_topologyComponent.removeVertex();
-            }
-            
-        });
-        
-        HorizontalLayout topLayoutBar = new HorizontalLayout();
-        topLayoutBar.addComponent(addButton);
-        topLayoutBar.addComponent(resetButton);
-        topLayoutBar.addComponent(removeVertexButton);
-        
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.setWidth("100px");
         vLayout.setHeight("100%");
@@ -141,8 +119,8 @@ public class TopologyWidgetTestApplication extends Application implements Action
         bottomLayoutBar.setSplitPosition(80, Sizeable.UNITS_PERCENTAGE);
         bottomLayoutBar.setSizeFull();
         
-        layout.addComponent(topLayoutBar, "top: 0px; left: 0px; right:0px;");
-        layout.addComponent(bottomLayoutBar, "top: 26px; left: 0px; right:0px; bottom:0px;");
+        layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
+        layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
         layout.addComponent(slider, "top: 56px; left: 130px; z-index:1000;");
         
         
