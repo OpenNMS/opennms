@@ -61,7 +61,7 @@ public class Vertex implements Paintable{
 	}
 
 	public Object getItem() {
-		// TODO HACK FOR NOW!!! FIX THIS
+		// TODO HACK FOR NOW!!! FIX THIS, WE SAY FIX THIS BUT WHAT IS BROKEN ABOUT IT?
 		return this;
 	}
 }

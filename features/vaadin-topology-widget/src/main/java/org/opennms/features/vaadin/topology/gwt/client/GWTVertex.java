@@ -52,6 +52,10 @@ public final class GWTVertex extends JavaScriptObject {
     	return this.actions;
     }-*/;
     
+    public String getTooltipText() {
+        return "id: " + getId();
+    }
+    
     
     public void setActionKeys(String[] keys) {
     	JsArrayString actionKeys = actionKeys(newStringArray());
@@ -109,6 +113,7 @@ public final class GWTVertex extends JavaScriptObject {
             public D3 run(D3 selection) {
                 D3 vertex = selection.append("g").attr("class", "little");
                 vertex.attr("opacity",1e-6);
+                vertex.style("cursor", "pointer");
                 vertex.append("circle").attr("r", 9);
                 vertex.call(draw());
                 
