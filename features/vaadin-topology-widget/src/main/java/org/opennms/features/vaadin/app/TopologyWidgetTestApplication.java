@@ -111,9 +111,8 @@ public class TopologyWidgetTestApplication extends Application implements Action
         m_tree = createTree();
         
         VerticalLayout vLayout = new VerticalLayout();
-        vLayout.setWidth("100px");
+        vLayout.setWidth("100%");
         vLayout.setHeight("100%");
-        vLayout.addComponent(new Button("Hello There"));
         vLayout.addComponent(m_tree);
         
         AbsoluteLayout mapLayout = new AbsoluteLayout();
