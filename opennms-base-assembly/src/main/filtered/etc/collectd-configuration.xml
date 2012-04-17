@@ -4,7 +4,7 @@
 	threads="50">
 
 	<package name="example1">
-		<filter>( categoryName == 'Monitor_SNMP' ) &amp; ( IPADDR != '0.0.0.0' )</filter>	 
+		<filter>catincMonitor_SNMP</filter>	 
 	    <include-range begin="1.1.1.1" end="254.254.254.254"/>
 		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
 		
@@ -34,7 +34,7 @@
 		</service>
 	</package>
 	<package name="TCA">
-		<filter>categoryName == 'Monitor_TCA'</filter>	 
+		<filter>catincMonitor_TCA</filter>	 
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
 		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
 
