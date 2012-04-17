@@ -55,10 +55,10 @@ public class Graph{
 		m_edges.add(edge);
 	}
 	
-	private void updateLayout() {
-	    int r = 30;
-	    int cx = 50;
-	    int cy = 50;
+	void updateLayout() {
+	    int r = 100;
+	    int cx = 500;
+	    int cy = 500;
 	    for(int i = 0; i < m_vertices.size(); i++) {
 	        Vertex vertex = m_vertices.get(i);
 	        if(i == 0) {
@@ -77,7 +77,6 @@ public class Graph{
 	    }
 	}
     public void removeRandomVertext() {
-    	
     	if (m_vertices.size() <= 0) return;
     	
         int index = (int)Math.round(Math.random() * (m_vertices.size() - 2)) + 1;
@@ -89,6 +88,10 @@ public class Graph{
         Vertex vert = m_vertices.remove(index);
         m_vertexMap.remove(vert.getId());
         
+        removeEdges(vert);
+        
+    }
+    private void removeEdges(Vertex vert) {
         Iterator<Edge> it = m_edges.iterator();
         while(it.hasNext()) {
             Edge edge = it.next();
@@ -96,11 +99,29 @@ public class Graph{
                 it.remove();
             }
         }
-        
     }
 	public String getNextId() {
 		return "" + m_counter ++;
 	}
+    public void addVertexTo(Vertex source) {
+        Vertex target = new Vertex(getNextId());
+        Edge edge = new Edge(source, target);
+        addVertex(target);
+        addEdge(edge);
+    }
+    public void removeVertex(Vertex target) {
+        if (m_vertices.size() <= 0) return;
+        
+        Iterator<Vertex> it = m_vertices.iterator();
+        while(it.hasNext()) {
+            Vertex vertex = it.next();
+            if(vertex == target) {
+                it.remove();
+                
+            }
+        }
+        removeEdges(target);
+    }
     
 	
 }

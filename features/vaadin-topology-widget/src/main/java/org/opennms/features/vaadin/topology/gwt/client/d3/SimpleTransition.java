@@ -5,7 +5,7 @@ public class SimpleTransition extends D3Behavior {
     private int m_duration;
     private int m_delay;
     private String m_property;
-    private int m_value;
+    private double m_value;
 
     public SimpleTransition(String property, int value, int duration, int delay) {
         m_duration = duration;
@@ -14,6 +14,10 @@ public class SimpleTransition extends D3Behavior {
         m_value = value;
     }
     
+    public SimpleTransition(String property, double d, int duration, int delay) {
+        
+    }
+
     @Override
     public D3 run(D3 selection) {
         return selection.transition().duration(m_duration).delay(m_delay).attr(m_property, m_value);

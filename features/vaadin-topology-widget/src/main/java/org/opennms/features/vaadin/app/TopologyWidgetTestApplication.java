@@ -5,7 +5,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.features.vaadin.topology.Edge;
 import org.opennms.features.vaadin.topology.Graph;
+import org.opennms.features.vaadin.topology.MenuBarBuilder;
 import org.opennms.features.vaadin.topology.TopologyComponent;
 import org.opennms.features.vaadin.topology.Vertex;
 
@@ -18,7 +20,6 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.Tree;
@@ -30,6 +31,100 @@ public class TopologyWidgetTestApplication extends Application implements Action
 
     private Window m_window;
     private TopologyComponent m_topologyComponent;
+    
+    private Command[] m_commands = new Command[] {new Command("Redo Layout") {
+
+        @Override
+        public void doCommand(Object target) {
+            m_topologyComponent.redoLayout();
+        }
+
+        @Override
+        public void undoCommand() {
+            
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+            //Applies to background as a whole
+            return target == null;
+        }
+    }.setAction(),
+    new Command("Add Vertex") {
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+            if(target instanceof Edge) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+            if(target instanceof Vertex) {
+                m_topologyComponent.addVertexTo((Vertex)target);
+            }else {
+                m_topologyComponent.addRandomNode();
+            }
+            updateTree();
+        }
+
+        @Override
+        public void undoCommand() {
+            // TODO Auto-generated method stub
+            
+        }
+    }.setParentMenu("File").setAction(),
+    new Command("Remove Vertex") {
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+            if(target instanceof Edge) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+            if(target instanceof Vertex) {
+                m_topologyComponent.removeVertex((Vertex)target);
+            }else {
+                m_topologyComponent.removeVertex();
+            }
+            
+            updateTree();
+        }
+
+        @Override
+        public void undoCommand() {
+            // TODO Auto-generated method stub
+            
+        }
+        
+    }.setParentMenu("File").setAction(),
+    new Command("Reset") {
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+            return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+            m_topologyComponent.resetGraph();
+            updateTree();
+        }
+
+        @Override
+        public void undoCommand() {
+            // TODO Auto-generated method stub
+            
+        }
+    }.setParentMenu(null)
+    
+    };
     
     private Action[] m_mapAction = new Action[] {
     		new Action("Redo Layout")
@@ -44,7 +139,6 @@ public class TopologyWidgetTestApplication extends Application implements Action
 			new Action("Vertex 0 Action")
     };
     
-    private MenuBar m_menuBar = new MenuBar();
     private Tree m_tree;
 
     
@@ -57,36 +151,10 @@ public class TopologyWidgetTestApplication extends Application implements Action
         m_window.setContent(layout);
         setMainWindow(m_window);
         
-        final MenuBar.MenuItem addVertex  = m_menuBar.addItem("Add Vertex", new MenuBar.Command() {
-            
-            public void menuSelected(MenuItem selectedItem) {
-                m_topologyComponent.addRandomNode();
-                updateTree();
-            }
-        });
-        
-        final MenuBar.MenuItem removeVertex = m_menuBar.addItem("Remove Vertex", new MenuBar.Command() {
-            
-            public void menuSelected(MenuItem selectedItem) {
-                m_topologyComponent.removeVertex();
-                updateTree();
-            }
-        });
-        
-        final MenuBar.MenuItem reset = m_menuBar.addItem("Reset", new MenuBar.Command() {
-            
-            public void menuSelected(MenuItem selectedItem) {
-                m_topologyComponent.resetGraph();
-                updateTree();
-            }
-        });
-        m_menuBar.setWidth("100%");
-        
         m_topologyComponent = new TopologyComponent();
-        m_topologyComponent.addActionHandler(this);
+        addActionHandlersToTopologyMap();
+        //m_topologyComponent.addActionHandler(this);
         m_topologyComponent.setSizeFull();
-        
-        
         
         final Slider slider = new Slider(0, 3);
         slider.setResolution(2);
@@ -134,7 +202,11 @@ public class TopologyWidgetTestApplication extends Application implements Action
         bottomLayoutBar.setSplitPosition(80, Sizeable.UNITS_PERCENTAGE);
         bottomLayoutBar.setSizeFull();
         
-        layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
+        MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
+        menuBarBuilder.addCommands(m_commands);
+        MenuBar menuBar = menuBarBuilder.get();
+        menuBar.setWidth("100%");
+        layout.addComponent(menuBar, "top: 0px; left: 0px; right:0px;");
         layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
         
     }
@@ -178,6 +250,12 @@ public class TopologyWidgetTestApplication extends Application implements Action
     	}
     	
 	}
+    
+    public void addActionHandlersToTopologyMap() {
+        for(Command command : m_commands) {
+            m_topologyComponent.addActionHandler(command);
+        }
+    }
 
 	public void handleAction(Action action, Object sender, Object target) {
 		System.err.println("Topology App: Got Action " + action.getCaption() + " for target " + target);

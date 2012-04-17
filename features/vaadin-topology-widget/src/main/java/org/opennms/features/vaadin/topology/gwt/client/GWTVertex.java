@@ -4,6 +4,7 @@ import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3Behavior;
 import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
@@ -114,12 +115,13 @@ public final class GWTVertex extends JavaScriptObject {
                 D3 vertex = selection.append("g").attr("class", "little");
                 vertex.attr("opacity",1e-6);
                 vertex.style("cursor", "pointer");
-                vertex.append("circle").attr("r", 9);
-                vertex.call(draw());
+                vertex.append("svg:image").attr("xlink:href", GWT.getModuleBaseURL() + "topologywidget/images/server.png")
+                      .attr("x", "-24px")
+                      .attr("y", "-24px")
+                      .attr("width", "48px")
+                      .attr("height", "48px");
                 
-                vertex.append("text").attr("dy", ".35em")
-                    .attr("text-anchor", "middle").style("fill", "white")
-                    .text(D3.property("id"));
+                vertex.call(draw());
                 
                 return vertex;
             }

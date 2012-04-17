@@ -237,6 +237,21 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		m_actionHandlers.remove(actionHandler);
 		
 	}
+
+    public void redoLayout() {
+        m_graph.updateLayout();
+        requestRepaint();
+    }
+
+    public void addVertexTo(Vertex target) {
+        m_graph.addVertexTo(target);
+        requestRepaint();
+    }
+
+    public void removeVertex(Vertex target) {
+        m_graph.removeVertex(target);
+        requestRepaint();
+    }
    
 
 }
