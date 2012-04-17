@@ -233,6 +233,7 @@ experienced over temperature condition.&lt;/p&gt;&lt;table&gt;
 </event>
 <!-- End of auto generated data from MIB: JUNIPER-V1-TRAPS-CHAS -->
 <!-- Start of auto generated data from MIB: JUNIPER-V1-TRAPS-MPLS -->
+<!--
 <event>
 	<mask>
 		<maskelement>
@@ -345,6 +346,7 @@ up state before and after the switch over&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Warning</severity>
 </event>
+-->
 <!-- End of auto generated data from MIB: JUNIPER-V1-TRAPS-MPLS -->
 <!-- Start of auto generated data from MIB: JUNIPER-V1-TRAPS-OSPF -->
 <event>

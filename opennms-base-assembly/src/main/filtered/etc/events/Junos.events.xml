@@ -2046,6 +2046,7 @@ the last neighbor when jnxLdpSesDownReason is allAdjacenciesDown (3).&lt;/p&gt;&
 </event>
 <!-- End of auto generated data from MIB: JUNIPER-LDP-MIB -->
 <!-- Start of auto generated data from MIB: MPLS-MIB -->
+<!--
 <event>
 	<mask>
 		<maskelement>
@@ -2418,6 +2419,7 @@ LSP mplsLspName came up&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Normal</severity>
 </event>
+-->
 <!-- End of auto generated data from MIB: MPLS-MIB -->
 <!-- Start of auto generated data from MIB: JUNIPER-MPLS-LDP-MIB -->
 <event>
