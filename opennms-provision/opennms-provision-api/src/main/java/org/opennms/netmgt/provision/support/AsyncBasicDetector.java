@@ -50,6 +50,7 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.ssl.SslFilter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectorMonitor;
@@ -142,7 +143,9 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
 
             // Start communication
             final InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
-            final ConnectFuture cf = m_connectionFactory.connect(socketAddress, init);
+            // Get an ephemeral port on the localhost interface
+            final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
+            final ConnectFuture cf = m_connectionFactory.connect(socketAddress, localAddress, init);
             cf.addListener(retryAttemptListener(m_connectionFactory, detectFuture, socketAddress, init, getRetries() ));
         } catch (KeyManagementException e) {
             detectFuture.setException(e);
@@ -205,7 +208,9 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
                         final ConnectFuture cf = m_connectionFactory.connect(address, init);
                         cf.addListener(retryAttemptListener( m_connectionFactory, detectFuture, address, init, retryAttempt - 1));
                         */
-                        future = connector.reConnect(address, init);
+                        // Get an ephemeral port on the localhost interface
+                        final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
+                        future = connector.reConnect(address, localAddress, init);
                         future.addListener(retryAttemptListener(connector, detectFuture, address, init, retryAttempt - 1));
                     }
                 }else if(cause instanceof Throwable) {
