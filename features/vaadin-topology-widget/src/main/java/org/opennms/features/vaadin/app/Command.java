@@ -4,7 +4,7 @@ import com.vaadin.event.Action;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 
-public abstract class Command extends Action implements MenuBar.Command, Action.Handler {
+public abstract class Command extends Action implements MenuBar.Command {
 	
     public Command(String caption) {
         super(caption);
@@ -18,21 +18,6 @@ public abstract class Command extends Action implements MenuBar.Command, Action.
     
     public abstract boolean appliesToTarget(Object target);
     
-    public Action[] getActions(Object target, Object sender) {
-        if(m_action && appliesToTarget(target)) {
-            return new Action[] {this};
-        }else {
-            return EMPTY_ACTIONS;
-        }
-        
-    }
-
-    public void handleAction(Action action, Object sender, Object target) {
-        if(action == this) {
-            this.doCommand(target);
-        }
-    }
-
     public void menuSelected(MenuItem selectedItem) {
         this.doCommand(null);
     }
@@ -54,6 +39,14 @@ public abstract class Command extends Action implements MenuBar.Command, Action.
     public Command setAction() {
         m_action = true;
         return this;
+    }
+
+    public boolean isAction() {
+        return m_action;
+    }
+    
+    public String toString() {
+        return getCaption();
     }
 
 }

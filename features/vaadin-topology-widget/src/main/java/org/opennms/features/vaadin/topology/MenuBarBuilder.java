@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opennms.features.vaadin.app.Command;
-
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 
 
@@ -19,16 +18,6 @@ public class MenuBarBuilder {
     private LinkedHashMap<String, Object> m_menuBar = new LinkedHashMap<String, Object>();
     public MenuBarBuilder() {
         
-    }
-    
-    public void addCommands(Command... commands) {
-        for(Command command : commands) {
-            String menuPosition = command.getMenuPosition();
-            if(menuPosition != null) {
-                LinkedList<String> menuPath = new LinkedList(Arrays.asList(menuPosition.split("\\|")));
-                add(menuPath, command, m_menuBar);
-            }
-        }
     }
     
     private void add(List<String> menuPath, Command command, Map<String, Object> menu) {
@@ -87,6 +76,17 @@ public class MenuBarBuilder {
                 subMenu.addItem(entry.getKey(), (Command) entry.getValue());
             }
             
+        }
+    }
+
+    public void add(LinkedList<String> menuPath, Command command) {
+        add(menuPath, command, m_menuBar);
+    }
+
+    public void addMenuCommand(Command command, String menuPosition) {
+        if(menuPosition != null) {
+            LinkedList<String> menuPath = new LinkedList(Arrays.asList(menuPosition.split("\\|")));
+            add(menuPath, command);
         }
     }
 }

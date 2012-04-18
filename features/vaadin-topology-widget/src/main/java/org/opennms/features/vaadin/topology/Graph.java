@@ -13,22 +13,23 @@ public class Graph{
 	private List<Edge> m_edges;
 	private Map<String, Vertex> m_vertexMap = new HashMap<String, Vertex>();
 	private int m_counter = 0;
+	private LayoutAlgorithm m_layoutAlgorithm = new SimpleLayoutAlgorithm();
 
 	
 	public Graph(){
-		m_vertices = new ArrayList<Vertex>(Arrays.asList(new Vertex[] {new Vertex(getNextId(),60,25)}));
+		setVertices(new ArrayList<Vertex>(Arrays.asList(new Vertex[] {new Vertex(getNextId(),60,25)})));
 		m_edges = new ArrayList<Edge>();
 		
-		for(Vertex vert : m_vertices) {
+		for(Vertex vert : getVertices()) {
 			m_vertexMap.put(vert.getId(), vert);
 		}
 		
 		updateLayout();
 	}
 	public Graph(List<Vertex> vertex, List<Edge> edges){
-		m_vertices = vertex;
+		setVertices(vertex);
 		m_edges = edges;
-		for(Vertex vert : m_vertices) {
+		for(Vertex vert : getVertices()) {
 			m_vertexMap.put(vert.getId(), vert);
 		}
 		updateLayout();
@@ -46,7 +47,7 @@ public class Graph{
 		return m_vertexMap.get(id);
 	}
 	public void addVertex(Vertex vertex) {
-		m_vertices.add(vertex);
+		getVertices().add(vertex);
 		
 		m_vertexMap.put(vertex.getId(), vertex);
 		updateLayout();
@@ -55,37 +56,31 @@ public class Graph{
 		m_edges.add(edge);
 	}
 	
-	void updateLayout() {
-	    int r = 100;
-	    int cx = 500;
-	    int cy = 500;
-	    for(int i = 0; i < m_vertices.size(); i++) {
-	        Vertex vertex = m_vertices.get(i);
-	        if(i == 0) {
-	            vertex.setX(cx);
-	            vertex.setY(cy);
-	        }else {
-    	        int n = i - 1;
-    	        double a = (2*Math.PI)/(m_vertices.size() -1);
-    	        
-    	        int x = (int) (r * Math.cos(n*a) + cx);
-    	        int y = (int) (r * Math.sin(n*a) + cy);
-    	        
-    	        vertex.setX(x);
-    	        vertex.setY(y);
-	        }
-	    }
+	public List<Edge> getEdgesForVertex(Vertex vertex){
+	    List<Edge> edgeList = new ArrayList<Edge>();
+	    Iterator<Edge> it = m_edges.iterator();
+        while(it.hasNext()) {
+            Edge edge = it.next();
+            if(edge.getSource() == vertex || edge.getTarget() == vertex) {
+                edgeList.add(edge);
+            }
+        }
+	    return edgeList;
 	}
+	
+	void updateLayout() {
+        getLayoutAlgorithm().updateLayout(this);
+    }
     public void removeRandomVertext() {
-    	if (m_vertices.size() <= 0) return;
+    	if (getVertices().size() <= 0) return;
     	
-        int index = (int)Math.round(Math.random() * (m_vertices.size() - 2)) + 1;
+        int index = (int)Math.round(Math.random() * (getVertices().size() - 2)) + 1;
         
-        if (index >= m_vertices.size()) {
+        if (index >= getVertices().size()) {
         	return;
         }
 
-        Vertex vert = m_vertices.remove(index);
+        Vertex vert = getVertices().remove(index);
         m_vertexMap.remove(vert.getId());
         
         removeEdges(vert);
@@ -110,9 +105,9 @@ public class Graph{
         addEdge(edge);
     }
     public void removeVertex(Vertex target) {
-        if (m_vertices.size() <= 0) return;
+        if (getVertices().size() <= 0) return;
         
-        Iterator<Vertex> it = m_vertices.iterator();
+        Iterator<Vertex> it = getVertices().iterator();
         while(it.hasNext()) {
             Vertex vertex = it.next();
             if(vertex == target) {
@@ -121,6 +116,15 @@ public class Graph{
             }
         }
         removeEdges(target);
+    }
+    private void setVertices(List<Vertex> vertices) {
+        m_vertices = vertices;
+    }
+    private LayoutAlgorithm getLayoutAlgorithm() {
+        return m_layoutAlgorithm;
+    }
+    private void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
+        m_layoutAlgorithm = layoutAlgorithm;
     }
     
 	

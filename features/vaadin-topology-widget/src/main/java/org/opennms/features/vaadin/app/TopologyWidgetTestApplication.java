@@ -1,24 +1,21 @@
 package org.opennms.features.vaadin.app;
 
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.features.vaadin.topology.Edge;
 import org.opennms.features.vaadin.topology.Graph;
-import org.opennms.features.vaadin.topology.MenuBarBuilder;
 import org.opennms.features.vaadin.topology.TopologyComponent;
 import org.opennms.features.vaadin.topology.Vertex;
 
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.Action;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
@@ -27,123 +24,129 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
-public class TopologyWidgetTestApplication extends Application implements Action.Handler {
+public class TopologyWidgetTestApplication extends Application{
 
     private Window m_window;
     private TopologyComponent m_topologyComponent;
-    
-    private Command[] m_commands = new Command[] {new Command("Redo Layout") {
-
-        @Override
-        public void doCommand(Object target) {
-            m_topologyComponent.redoLayout();
-        }
-
-        @Override
-        public void undoCommand() {
-            
-        }
-
-        @Override
-        public boolean appliesToTarget(Object target) {
-            //Applies to background as a whole
-            return target == null;
-        }
-    }.setAction(),
-    new Command("Add Vertex") {
-
-        @Override
-        public boolean appliesToTarget(Object target) {
-            if(target instanceof Edge) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public void doCommand(Object target) {
-            if(target instanceof Vertex) {
-                m_topologyComponent.addVertexTo((Vertex)target);
-            }else {
-                m_topologyComponent.addRandomNode();
-            }
-            updateTree();
-        }
-
-        @Override
-        public void undoCommand() {
-            // TODO Auto-generated method stub
-            
-        }
-    }.setParentMenu("File").setAction(),
-    new Command("Remove Vertex") {
-
-        @Override
-        public boolean appliesToTarget(Object target) {
-            if(target instanceof Edge) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public void doCommand(Object target) {
-            if(target instanceof Vertex) {
-                m_topologyComponent.removeVertex((Vertex)target);
-            }else {
-                m_topologyComponent.removeVertex();
-            }
-            
-            updateTree();
-        }
-
-        @Override
-        public void undoCommand() {
-            // TODO Auto-generated method stub
-            
-        }
-        
-    }.setParentMenu("File").setAction(),
-    new Command("Reset") {
-
-        @Override
-        public boolean appliesToTarget(Object target) {
-            return true;
-        }
-
-        @Override
-        public void doCommand(Object target) {
-            m_topologyComponent.resetGraph();
-            updateTree();
-        }
-
-        @Override
-        public void undoCommand() {
-            // TODO Auto-generated method stub
-            
-        }
-    }.setParentMenu(null)
-    
-    };
-    
-    private Action[] m_mapAction = new Action[] {
-    		new Action("Redo Layout")
-    };
-    
-    private Action[] m_vertexActions = new Action[] {
-    		new Action("Group"),
-			new Action("Vertex Action"),
-    };
-    
-    private Action[] m_vertexZeroActions = new Action[] {
-			new Action("Vertex 0 Action")
-    };
-    
+    private CommandManager m_commandManager = new CommandManager();
     private Tree m_tree;
-
     
     @Override
     public void init() {
+        m_commandManager.addCommand(new Command("Redo Layout") {;
+
+            @Override
+            public void doCommand(Object target) {
+                m_topologyComponent.redoLayout();
+            }
+    
+            @Override
+            public void undoCommand() {
+                
+            }
+    
+            @Override
+            public boolean appliesToTarget(Object target) {
+                //Applies to background as a whole
+                return target == null;
+            }
+        }, true);
+        
+        m_commandManager.addCommand(new Command("Add Vertex") {
+
+            @Override
+            public boolean appliesToTarget(Object target) {
+                if(target instanceof Edge) {
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public void doCommand(Object target) {
+                if(target instanceof Vertex) {
+                    m_topologyComponent.addVertexTo((Vertex)target);
+                }else {
+                    m_topologyComponent.addRandomNode();
+                }
+                updateTree();
+            }
+
+            @Override
+            public void undoCommand() {
+                // TODO Auto-generated method stub
+                
+            }
+        }, true, "File");
+        
+        m_commandManager.addCommand(new Command("Remove Vertex") {
+
+            @Override
+            public boolean appliesToTarget(Object target) {
+                if(target instanceof Edge) {
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public void doCommand(Object target) {
+                if(target instanceof Vertex) {
+                    m_topologyComponent.removeVertex((Vertex)target);
+                }else {
+                    m_topologyComponent.removeVertex();
+                }
+                
+                updateTree();
+            }
+
+            @Override
+            public void undoCommand() {
+                // TODO Auto-generated method stub
+                
+            }
+            
+        }, true, "File");
+        
+        m_commandManager.addCommand(new Command("Reset") {
+
+            @Override
+            public boolean appliesToTarget(Object target) {
+                return true;
+            }
+
+            @Override
+            public void doCommand(Object target) {
+                m_topologyComponent.resetGraph();
+                updateTree();
+            }
+
+            @Override
+            public void undoCommand() {
+                // TODO Auto-generated method stub
+                
+            }
+        }, false, null);
+        
+        m_commandManager.addCommand(new Command("History") {
+
+            @Override
+            public boolean appliesToTarget(Object target) {
+                return true;
+            }
+
+            @Override
+            public void doCommand(Object target) {
+                showHistoryList(m_commandManager.getHistoryList());
+            }
+
+            @Override
+            public void undoCommand() {
+                // TODO Auto-generated method stub
+                
+            }}, false, null);
+        
+        
         AbsoluteLayout layout = new AbsoluteLayout();
         layout.setSizeFull();
         
@@ -152,7 +155,7 @@ public class TopologyWidgetTestApplication extends Application implements Action
         setMainWindow(m_window);
         
         m_topologyComponent = new TopologyComponent();
-        addActionHandlersToTopologyMap();
+        m_commandManager.addActionHandlers(m_topologyComponent);
         //m_topologyComponent.addActionHandler(this);
         m_topologyComponent.setSizeFull();
         
@@ -202,15 +205,26 @@ public class TopologyWidgetTestApplication extends Application implements Action
         bottomLayoutBar.setSplitPosition(80, Sizeable.UNITS_PERCENTAGE);
         bottomLayoutBar.setSizeFull();
         
-        MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
-        menuBarBuilder.addCommands(m_commands);
-        MenuBar menuBar = menuBarBuilder.get();
+        MenuBar menuBar = m_commandManager.getMenuBar();
         menuBar.setWidth("100%");
         layout.addComponent(menuBar, "top: 0px; left: 0px; right:0px;");
         layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
         
     }
-    
+
+    protected void showHistoryList(List<Command> historyList) {
+        
+        Window window = new Window();
+        window.setModal(true);
+        
+        for(Command command : historyList) {
+            window.addComponent(new Label(command.toString()));
+        }
+        
+        getMainWindow().addWindow(window);
+        
+    }
+
     protected void updateTree() {
         m_tree.removeAllItems();
         for(Vertex vert : m_topologyComponent.getGraph().getVertices()) {
@@ -233,32 +247,5 @@ public class TopologyWidgetTestApplication extends Application implements Action
         }
         return tree;
     }
-
-    public Action[] getActions(Object target, Object sender) {
-    	List<Action> applicableActions = new LinkedList<Action>();
-    	
-    	if (target == null) {
-    		return m_mapAction;
-    	} else if (target instanceof Vertex && ((Vertex)target).getId().equals("0")) {
-    		applicableActions.addAll(Arrays.asList(m_vertexActions));
-    		applicableActions.addAll(Arrays.asList(m_vertexZeroActions));
-    		return applicableActions.toArray(new Action[0]);
-    	} else if (target instanceof Vertex) {
-    		return m_vertexActions;
-    	} else {
-    		return new Action[0];
-    	}
-    	
-	}
-    
-    public void addActionHandlersToTopologyMap() {
-        for(Command command : m_commands) {
-            m_topologyComponent.addActionHandler(command);
-        }
-    }
-
-	public void handleAction(Action action, Object sender, Object target) {
-		System.err.println("Topology App: Got Action " + action.getCaption() + " for target " + target);
-	}
 
 }
