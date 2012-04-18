@@ -149,7 +149,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private EventForwarder m_eventForwarder;
     
     @Autowired
-    @Qualifier("caching")
+    @Qualifier("fused")
     private ForeignSourceRepository m_foreignSourceRepository;
     
     @Autowired
