@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -41,10 +42,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
+import org.opennms.netmgt.provision.support.ConnectionFactory;
 import org.opennms.netmgt.provision.support.DefaultDetectFuture;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
@@ -73,6 +76,8 @@ public class AsyncDetectorFileDescriptorLeakTest {
     @BeforeClass
     public static void beforeTest(){
         System.setProperty("org.opennms.netmgt.provision.maxConcurrentConnectors", "2000");
+        // Make sure that the ConnectionFactory reloads the system properties
+        ConnectionFactory.init();
     }
     
     @After
@@ -122,11 +127,13 @@ public class AsyncDetectorFileDescriptorLeakTest {
                 m_detector.setPort(port);
 
                 final DefaultDetectFuture future = (DefaultDetectFuture)m_detector.isServiceDetected(address, new NullDetectorMonitor());
+                /*
                 future.addListener(new IoFutureListener<DetectFuture>() {
                     public void operationComplete(final DetectFuture future) {
                         m_detector.dispose();
                     }
                 });
+                */
 
                 future.awaitUninterruptibly();
                 assertNotNull(future);
@@ -150,7 +157,8 @@ public class AsyncDetectorFileDescriptorLeakTest {
         m_detector.setPort(1999);
         System.err.printf("Starting testNoServerPresent with detector: %s\n", m_detector);
         
-        final DetectFuture future = m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
+        final DetectFuture future = m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress(), new NullDetectorMonitor());
+        /*
         future.addListener(new IoFutureListener<DetectFuture>() {
 
             public void operationComplete(final DetectFuture future) {
@@ -158,9 +166,11 @@ public class AsyncDetectorFileDescriptorLeakTest {
             }
             
         });
+        */
         assertNotNull(future);
         future.awaitUninterruptibly();
         assertFalse(future.isServiceDetected());
+        assertNull(future.getException());
         
         System.err.printf("Finished testNoServerPresent with detector: %s\n", m_detector);
     }
