@@ -36,7 +36,8 @@ path for the LSP is mplsPathInfoName.</p><table>
 			mplsLspInfoName=%parm[#1]% 
 			mplsPathInfoName=%parm[#2]%</p>
 		]]></logmsg>
-    <severity>Indeterminate</severity>
+    <severity>Cleared</severity>
+<alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -73,7 +74,8 @@ active path mplsPathInfoName went down.</p><table>
 			mplsLspInfoName=%parm[#1]% 
 			mplsPathInfoName=%parm[#2]%</p>
 		]]></logmsg>
-    <severity>Indeterminate</severity>
+    <severity>Major</severity>
+	<alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
