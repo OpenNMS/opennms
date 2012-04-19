@@ -224,7 +224,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
      */
     private boolean doCheck(DetectFuture serviceDetected) throws InterruptedException {
         DetectFuture future = serviceDetected;
-        future.await();
+        future.awaitFor();
         
         return future.isServiceDetected();
     }

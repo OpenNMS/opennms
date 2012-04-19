@@ -36,7 +36,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import org.apache.mina.core.future.IoFutureListener;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -126,22 +125,14 @@ public class AsyncDetectorFileDescriptorLeakTest {
 
                 m_detector.setPort(port);
 
-                final DefaultDetectFuture future = (DefaultDetectFuture)m_detector.isServiceDetected(address, new NullDetectorMonitor());
-                /*
-                future.addListener(new IoFutureListener<DetectFuture>() {
-                    public void operationComplete(final DetectFuture future) {
-                        m_detector.dispose();
-                    }
-                });
-                */
+                final DetectFuture future = (DefaultDetectFuture)m_detector.isServiceDetected(address, new NullDetectorMonitor());
 
-                future.awaitUninterruptibly();
+                future.awaitForUninterruptibly();
                 assertNotNull(future);
                 if (future.getException() != null) {
                     LogUtils.debugf(this, future.getException(), "got future exception");
                     throw future.getException();
                 }
-                LogUtils.debugf(this, "got value: %s", future.getObjectValue());
                 assertTrue(future.isServiceDetected());
 
                 i++;
@@ -158,17 +149,8 @@ public class AsyncDetectorFileDescriptorLeakTest {
         System.err.printf("Starting testNoServerPresent with detector: %s\n", m_detector);
         
         final DetectFuture future = m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress(), new NullDetectorMonitor());
-        /*
-        future.addListener(new IoFutureListener<DetectFuture>() {
-
-            public void operationComplete(final DetectFuture future) {
-                m_detector.dispose();
-            }
-            
-        });
-        */
         assertNotNull(future);
-        future.awaitUninterruptibly();
+        future.awaitForUninterruptibly();
         assertFalse(future.isServiceDetected());
         assertNull(future.getException());
         

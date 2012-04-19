@@ -30,8 +30,10 @@
 package org.opennms.netmgt.provision.support;
 
 import org.apache.mina.core.future.DefaultIoFuture;
+import org.apache.mina.core.future.IoFutureListener;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.DetectFutureListener;
 
 /**
  * <p>DefaultDetectFuture class.</p>
@@ -91,7 +93,7 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
 
     /** {@inheritDoc} */
     public void setException(final Throwable throwable) {
-//        System.err.println("setting exeception to " + throwable);
+//        System.err.println("setting exception to " + throwable);
         setValue(throwable);
     }
 
@@ -102,5 +104,25 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
      */
     public Object getObjectValue() {
         return super.getValue();
+    }
+
+    public void awaitFor() throws InterruptedException {
+        super.await();
+    }
+
+    public void awaitForUninterruptibly() {
+        super.awaitUninterruptibly();
+    }
+
+    public DetectFuture addListener(final DetectFutureListener<DetectFuture> listener) {
+        super.addListener(new IoFutureListener<DefaultDetectFuture>() {
+
+            @Override
+            public void operationComplete(DefaultDetectFuture future) {
+                listener.operationComplete(future);
+            }
+
+        });
+        return this;
     }
 }

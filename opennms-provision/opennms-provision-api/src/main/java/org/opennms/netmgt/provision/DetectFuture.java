@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision;
 
-import org.apache.mina.core.future.IoFuture;
 
 /**
  * <p>DetectFuture interface.</p>
@@ -36,7 +35,7 @@ import org.apache.mina.core.future.IoFuture;
  * @author thedesloge
  * @version $Id: $
  */
-public interface DetectFuture extends IoFuture {
+public interface DetectFuture {
     
     /**
      * <p>getServiceDetector</p>
@@ -73,4 +72,25 @@ public interface DetectFuture extends IoFuture {
      */
     public void setException(Throwable throwable);
     
+    /**
+     * <p>awaitFor</p>
+     * 
+     * @throws InterruptedException 
+     */
+    void awaitFor() throws InterruptedException;
+    
+    /**
+     * <p>awaitForUninterruptibly</p>
+     */
+    void awaitForUninterruptibly();
+    
+    /**
+     * <p>isDone</p>
+     */
+    boolean isDone();
+    
+    /**
+     * <p>addListener</p>
+     */
+    public DetectFuture addListener(DetectFutureListener<DetectFuture> listener);
 }

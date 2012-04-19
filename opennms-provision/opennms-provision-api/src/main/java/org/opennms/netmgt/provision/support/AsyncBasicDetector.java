@@ -109,7 +109,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     
     /** {@inheritDoc} */
     @Override
-    public DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor) {
+    public final DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor) {
 
         final DetectFuture detectFuture = new DefaultDetectFuture(this);
 

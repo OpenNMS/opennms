@@ -211,7 +211,7 @@ public class NotesDetectorTest {
         return server;
     }
     private boolean doCheck(DetectFuture future) throws InterruptedException {
-        future.await();
+        future.awaitFor();
         return future.isServiceDetected();
     }
 }

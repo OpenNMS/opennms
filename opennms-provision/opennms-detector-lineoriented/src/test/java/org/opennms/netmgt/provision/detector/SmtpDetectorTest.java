@@ -172,7 +172,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
     }
     
     private boolean doCheck(DetectFuture future) throws InterruptedException {
-        future.await();
+        future.awaitFor();
         return future.isServiceDetected();
     }
     

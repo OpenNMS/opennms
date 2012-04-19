@@ -93,7 +93,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
         //assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
         DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
         assertNotNull(future);
-        future.awaitUninterruptibly();
+        future.awaitForUninterruptibly();
         assertFalse(future.isServiceDetected());
     }
     
@@ -106,7 +106,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
         //assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
         DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
         assertNotNull(future);
-        future.awaitUninterruptibly();
+        future.awaitForUninterruptibly();
         assertFalse(future.isServiceDetected());
     }
     
@@ -119,7 +119,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
         //assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
         DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
         assertNotNull(future);
-        future.awaitUninterruptibly();
+        future.awaitForUninterruptibly();
         assertTrue(future.isServiceDetected());
     }
     

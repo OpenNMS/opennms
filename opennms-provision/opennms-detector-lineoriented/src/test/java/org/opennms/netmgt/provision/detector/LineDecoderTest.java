@@ -183,7 +183,7 @@ public class LineDecoderTest {
     
     private boolean  doCheck(DetectFuture future) throws Exception {
         
-        future.await();
+        future.awaitFor();
         
         return future.isServiceDetected();
     }

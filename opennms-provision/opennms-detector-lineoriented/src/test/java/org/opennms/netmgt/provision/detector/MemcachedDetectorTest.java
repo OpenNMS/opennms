@@ -96,7 +96,7 @@ public class MemcachedDetectorTest {
             m_detector.setIdleTime(100);
             DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
             assertNotNull(future);
-            future.awaitUninterruptibly();
+            future.awaitForUninterruptibly();
             assertTrue(future.isServiceDetected());
         } finally {
             m_server.stopServer();
@@ -123,7 +123,7 @@ public class MemcachedDetectorTest {
             m_detector.setIdleTime(100);
             DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
             assertNotNull(future);
-            future.awaitUninterruptibly();
+            future.awaitForUninterruptibly();
             assertFalse(future.isServiceDetected());
         } finally {
             m_server.stopServer();
