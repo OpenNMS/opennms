@@ -13,6 +13,10 @@ import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events;
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3Transform;
 import org.opennms.features.vaadin.topology.gwt.client.d3.Func;
+import org.opennms.features.vaadin.topology.gwt.client.svg.SVGElement;
+import org.opennms.features.vaadin.topology.gwt.client.svg.SVGGElement;
+import org.opennms.features.vaadin.topology.gwt.client.svg.SVGMatrix;
+import org.opennms.features.vaadin.topology.gwt.client.svg.SVGPoint;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -235,27 +239,25 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     }
     
     public class PanObject extends DragObject{
-        private int m_dragElemStartX;
-        private int m_dragElemStartY;
+        private SVGMatrix m_stateTf;
+        private SVGPoint m_stateOrigin;
         
         public PanObject(Element draggableElement, Element containerElement) {
             super(draggableElement, containerElement);
             
-            D3 select = D3.d3().select(draggableElement);
-            D3Transform transform = D3.getTransform(select.attr("transform"));
-            m_dragElemStartX = transform.getX();
-            m_dragElemStartY = transform.getY();
+            SVGGElement g = draggableElement.cast();
+            m_stateTf = g.getCTM().inverse();
+            
+            m_stateOrigin = getEventPoint(D3.getEvent()).matrixTransform(m_stateTf); 
             
         }
+        
         @Override
         public void move() {
-            int deltaX = getCurrentX() - getStartX();
-            int deltaY = getCurrentY() - getStartY();
-            String translateValue = "translate(" + (m_dragElemStartX + deltaX) + "," + (m_dragElemStartY + deltaY ) + ")";
-            D3.d3().select(getDraggableElement()).attr("transform", translateValue);
+            SVGPoint p = getEventPoint(D3.getEvent()).matrixTransform(m_stateTf);
+            getDraggableElement().setAttribute("transform", matrixTransform( m_stateTf.inverse().translate(p.getX() - m_stateOrigin.getX(), p.getY() - m_stateOrigin.getY() )));
+            
         }
-
-        
         
     }
     
@@ -267,6 +269,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		private D3Transform m_transform;
 
         public DragObject(Element draggableElement, Element containerElement) {
+            
             m_draggableElement = draggableElement;
             m_containerElement = containerElement;
         	
@@ -307,6 +310,14 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         public void move() {
             VTopologyComponent.this.repaintGraphNow();
         }
+        
+        protected SVGPoint getEventPoint(NativeEvent event) {
+            SVGElement svg = m_svg.cast();
+            SVGPoint p = svg.createSVGPoint();
+            p.setX(event.getClientX());
+            p.setY(event.getClientY());
+            return p;
+        }
 
     }
     
@@ -321,7 +332,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     private String m_paintableId;
     
     private GWTGraph m_graph;
-	private double m_scale;
+	private double m_scale = 1;
     private DragObject m_dragObject;
     
     @UiField
@@ -360,7 +371,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     protected void onLoad() {
         super.onLoad();
         
-        sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS);
+        sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
         
         setupPanningBehavior(m_svg);
         
@@ -424,9 +435,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     @Override
     public void onBrowserEvent(Event event) {
     	super.onBrowserEvent(event);
-//        if(m_client != null) {
-//            m_client.handleTooltipEvent(event, this);
-//        }
     
     	switch(DOM.eventGetType(event)) {
     	case Event.ONCONTEXTMENU:
@@ -444,6 +452,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     	case Event.ONMOUSEDOWN:
     		
     		break;
+    	
+    	case Event.ONMOUSEWHEEL:
+    	    NativeEvent e = D3.getEvent();
+    	    consoleLog("event on scroll: " + e);
+    	    break;
     	}
 
 
@@ -557,7 +570,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                 vertex.setY( m_dragObject.getCurrentY() );
                 
                 m_dragObject.move();
-                //consoleLog("get cursorStartX: " + m_dragObject.getCursorStartX() + " x: " + x + " newVertexX: " + newVertexX);
                 D3.getEvent().preventDefault();
                 D3.getEvent().stopPropagation();
             }
@@ -644,14 +656,15 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	private void setScale(double scale) {
 		if(m_scale != scale) {
+		    double oldScale = m_scale;
 			m_scale = scale;
-			repaintScale();
+			repaintScale(oldScale);
 		}
 		
 	}
-
-	private void repaintScale() {
-		updateScale(m_scale);
+	
+    private void repaintScale(double oldScale) {
+		updateScale(oldScale, m_scale);
 	}
 
 	private void setGraph(GWTGraph graph) {
@@ -667,13 +680,57 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         drawGraph(m_graph, true);
     }
 
-	private void updateScale(double scale) {
-		D3.d3().select(m_vertexGroup).transition().duration(1000).attr("transform", "scale(" + scale + ")");
-		D3.d3().select(m_edgeGroup).transition().duration(1000).attr("transform", "scale(" + scale + ")");
-		
+	private void updateScale(double oldScale, double newScale) {
+	    SVGElement svg = getSVGElement();
+	    
+	    double zoomFactor = newScale/oldScale;
+	    consoleLog("zoomFactor:" + zoomFactor);
+	    // (x in new coord system - x in old coord system)/x coordinate
+	    
+	    int cx = svg.getClientWidth()/2;
+	    int cy = svg.getClientWidth()/2;
+	    
+	    
+	    SVGGElement g = m_svgViewPort.cast();
+	    
+	    SVGPoint p = svg.createSVGPoint();
+	    p = p.matrixTransform(g.getCTM().inverse());
+	    
+	    SVGMatrix m = svg.createSVGMatrix()
+	        .translate(p.getX(),p.getY())
+	        .scale(zoomFactor)
+	        .translate(-p.getX(), -p.getY());
+	    
+	    SVGMatrix ctm = g.getCTM().multiply(m);
+	    
+		D3.d3().select(m_svgViewPort).transition().duration(1000).attr("transform", matrixTransform(ctm));
 	}
 	
-	public String[] getActionKeys() {
+	private SVGPoint getPoint(int x, int y) {
+	    SVGPoint p = getSVGElement().createSVGPoint();
+	    p.setX(x);
+	    p.setY(y);
+	    return p;
+	}
+
+    private SVGElement getSVGElement() {
+        return m_svg.cast();
+    }
+	
+	private void setCTM(SVGGElement elem, SVGMatrix matrix) {
+        elem.setAttribute("transform", matrixTransform(matrix));
+    }
+
+    private String matrixTransform(SVGMatrix matrix) {
+        return "matrix(" + matrix.getA() +
+                ", " + matrix.getB() +
+                ", " + matrix.getC() + 
+                ", " + matrix.getD() +
+                ", " + matrix.getE() + 
+                ", " + matrix.getF() + ")";
+    }
+
+    public String[] getActionKeys() {
 		return m_actionKeys;
 	}
 	
