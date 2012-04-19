@@ -120,11 +120,12 @@ public class Graph{
     private void setVertices(List<Vertex> vertices) {
         m_vertices = vertices;
     }
-    private LayoutAlgorithm getLayoutAlgorithm() {
+    public LayoutAlgorithm getLayoutAlgorithm() {
         return m_layoutAlgorithm;
     }
-    private void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
+    public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
         m_layoutAlgorithm = layoutAlgorithm;
+        updateLayout();
     }
     
 	

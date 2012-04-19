@@ -214,6 +214,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		Vertex vertex = new Vertex(id);
 		graph.addVertex(vertex);
 		graph.addEdge(new Edge(graph.getVertices().get(0), vertex));
+		graph.updateLayout();
 		
 		requestRepaint();
 	}
@@ -252,6 +253,11 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         m_graph.removeVertex(target);
         requestRepaint();
     }
+
+	public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
+		m_graph.setLayoutAlgorithm(layoutAlgorithm);
+		requestRepaint();
+	}
    
 
 }

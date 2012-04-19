@@ -10,13 +10,13 @@ public abstract class Command extends Action implements MenuBar.Command {
         super(caption);
     }
 
-    private final static Action[] EMPTY_ACTIONS = new Action[0];
     private String m_parentMenu;
     private boolean m_action = false;
     private boolean m_menu = false;
     
-    
-    public abstract boolean appliesToTarget(Object target);
+    public boolean appliesToTarget(Object target) {
+    	return true;
+    }
     
     public void menuSelected(MenuItem selectedItem) {
         this.doCommand(null);
