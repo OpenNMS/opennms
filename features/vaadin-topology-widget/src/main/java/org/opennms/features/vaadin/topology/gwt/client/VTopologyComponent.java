@@ -454,8 +454,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     		break;
     	
     	case Event.ONMOUSEWHEEL:
-    	    NativeEvent e = D3.getEvent();
-    	    consoleLog("event on scroll: " + e);
+    	    double delta = event.getMouseWheelVelocityY() / 30.0;
+    	    double oldScale = m_scale;
+    	    double newScale = oldScale + delta;
+    	     
+    	    setScale(newScale);
     	    break;
     	}
 
@@ -605,6 +608,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         		vertex.setActionKeys(actionKeys);
         		
 				vertex.setSelected(booleanAttribute);
+				vertex.setIcon(child.getStringAttribute("iconUrl"));
 				graphConverted.addVertex(vertex);
 				
 				if(m_client != null) {
@@ -658,7 +662,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		if(m_scale != scale) {
 		    double oldScale = m_scale;
 			m_scale = scale;
-			repaintScale(oldScale);
+		    repaintScale(oldScale);
 		}
 		
 	}
@@ -682,18 +686,21 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	private void updateScale(double oldScale, double newScale) {
 	    SVGElement svg = getSVGElement();
-	    
-	    double zoomFactor = newScale/oldScale;
-	    consoleLog("zoomFactor:" + zoomFactor);
-	    // (x in new coord system - x in old coord system)/x coordinate
-	    
 	    int cx = svg.getClientWidth()/2;
-	    int cy = svg.getClientWidth()/2;
+        int cy = svg.getClientWidth()/2;
 	    
-	    
+	    updateScale(oldScale, newScale, svg, cx, cy);
+	}
+
+    private void updateScale(double oldScale, double newScale, SVGElement svg,int cx, int cy) {
+        
+        double zoomFactor = newScale/oldScale;
+	    // (x in new coord system - x in old coord system)/x coordinate
 	    SVGGElement g = m_svgViewPort.cast();
 	    
 	    SVGPoint p = svg.createSVGPoint();
+	    p.setX(cx);
+	    p.setY(cy);
 	    p = p.matrixTransform(g.getCTM().inverse());
 	    
 	    SVGMatrix m = svg.createSVGMatrix()
@@ -702,9 +709,9 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	        .translate(-p.getX(), -p.getY());
 	    
 	    SVGMatrix ctm = g.getCTM().multiply(m);
-	    
+	    consoleLog("zoomFactor: " + zoomFactor + " oldScale: " + oldScale + " newScale:" + newScale);
 		D3.d3().select(m_svgViewPort).transition().duration(1000).attr("transform", matrixTransform(ctm));
-	}
+    }
 	
 	private SVGPoint getPoint(int x, int y) {
 	    SVGPoint p = getSVGElement().createSVGPoint();

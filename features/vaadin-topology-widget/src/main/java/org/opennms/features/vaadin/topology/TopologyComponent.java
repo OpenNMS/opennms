@@ -16,11 +16,14 @@ import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ClientWidget;
+import com.vaadin.ui.Slider;
+import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent implements Action.Container {
 	
 	private KeyMapper m_actionMapper;
+	private Slider m_scaleSlider;
 
     @Override
     public void attach() {
@@ -35,6 +38,10 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	public TopologyComponent() {
 		m_graph = new Graph();
 		
+	}
+	
+	public void setScaleSlider(Slider slider) {
+	    m_scaleSlider = slider;
 	}
 	
     @Override
@@ -64,6 +71,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("x", vert.getX());
         	target.addAttribute("y", vert.getY());
         	target.addAttribute("selected", vert.isSelected());
+        	target.addAttribute("iconUrl", vert.getIconUrl());
         	
     		List<String> vertActionList = new ArrayList<String>();
     		for(Action.Handler handler : m_actionHandlers) {
@@ -171,6 +179,23 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             
             requestRepaint();
         }
+        
+        if(variables.containsKey("mapScale")) {
+            double newScale = (Double)variables.get("mapScale");
+            
+            if(newScale <= m_scaleSlider.getResolution()) {
+                try {
+                    m_scaleSlider.setValue(newScale);
+                    setScale(newScale);
+                } catch (ValueOutOfBoundsException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            
+            
+        }
+        
     }
     
     private void singleSelectVertex(String vertexId) {
@@ -258,6 +283,11 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		m_graph.setLayoutAlgorithm(layoutAlgorithm);
 		requestRepaint();
 	}
+
+    public void addSwitchVertexTo(Vertex source) {
+        m_graph.addSwitchVertex(source);
+        requestRepaint();
+    }
    
 
 }

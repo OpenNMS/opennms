@@ -81,6 +81,33 @@ public class TopologyWidgetTestApplication extends Application{
             }
         }, true, "File");
         
+        m_commandManager.addCommand(new Command("Add Switch Vertex") {
+
+            @Override
+            public boolean appliesToTarget(Object target) {
+                if(target instanceof Edge) {
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public void doCommand(Object target) {
+                if(target instanceof Vertex) {
+                    m_topologyComponent.addSwitchVertexTo((Vertex)target);
+                }else {
+                    m_topologyComponent.addRandomNode();
+                }
+                updateTree();
+            }
+
+            @Override
+            public void undoCommand() {
+                // TODO Auto-generated method stub
+                
+            }
+        }, true);
+        
         m_commandManager.addCommand(new Command("Remove Vertex") {
 
             @Override
@@ -209,6 +236,8 @@ public class TopologyWidgetTestApplication extends Application{
 			}
 		});
         slider.setImmediate(true);
+        
+        m_topologyComponent.setScaleSlider(slider);
         
         try {
 			slider.setValue(m_topologyComponent.getScale());

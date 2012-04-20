@@ -13,6 +13,7 @@ public class Vertex implements Paintable{
 	private String m_id;
 	private boolean m_selected;
 	private Date m_date = new Date();
+    private String m_iconUrl = "VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png";
 	
 	public Vertex(String id) {
 		m_id = id;
@@ -64,4 +65,12 @@ public class Vertex implements Paintable{
 		// TODO HACK FOR NOW!!! FIX THIS, WE SAY FIX THIS BUT WHAT IS BROKEN ABOUT IT?
 		return this;
 	}
+
+    public void setIconUrl(String iconUrl) {
+        m_iconUrl = iconUrl;
+    }
+    
+    public String getIconUrl() {
+        return m_iconUrl;
+    }
 }

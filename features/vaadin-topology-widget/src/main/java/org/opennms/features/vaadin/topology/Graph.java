@@ -104,6 +104,8 @@ public class Graph{
         addVertex(target);
         addEdge(edge);
     }
+    
+    
     public void removeVertex(Vertex target) {
         if (getVertices().size() <= 0) return;
         
@@ -126,6 +128,13 @@ public class Graph{
     public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
         m_layoutAlgorithm = layoutAlgorithm;
         updateLayout();
+    }
+    public void addSwitchVertex(Vertex source) {
+        Vertex target = new Vertex(getNextId());
+        target.setIconUrl("VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/srx100.png");
+        Edge edge = new Edge(source, target);
+        addVertex(target);
+        addEdge(edge);
     }
     
 	

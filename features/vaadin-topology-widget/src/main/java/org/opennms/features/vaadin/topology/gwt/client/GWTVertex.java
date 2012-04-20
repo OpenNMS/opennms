@@ -10,6 +10,8 @@ import com.google.gwt.core.client.JsArrayString;
 
 public final class GWTVertex extends JavaScriptObject {
 
+    private static String m_iconPath;
+
     protected GWTVertex() {};
     
     public final native String getId()/*-{
@@ -33,7 +35,7 @@ public final class GWTVertex extends JavaScriptObject {
     }-*/;
     
     public static final native GWTVertex create(String id, int x, int y) /*-{
-        return {"id":id, "x":x, "y":y, "selected":false, "actions":[]};
+        return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":""};
     }-*/;
 
     public final native void setX(int newX) /*-{
@@ -77,6 +79,14 @@ public final class GWTVertex extends JavaScriptObject {
     	}
     	return keys;
     }
+    
+    public final native String getIconUrl() /*-{
+        return this.iconUrl;
+    }-*/;
+    
+    public final native void setIcon(String iconUrl) /*-{
+        this.iconUrl = iconUrl;
+    }-*/;
 
     static Func<String, GWTVertex> selectedFill() {
     	return new Func<String, GWTVertex>(){
@@ -97,6 +107,20 @@ public final class GWTVertex extends JavaScriptObject {
     	};
     }
     
+    static Func<String, GWTVertex> getIconPath(){
+        return new Func<String, GWTVertex>(){
+
+            public String call(GWTVertex datum, int index) {
+                if(datum.getIconUrl().equals("")) {
+                    return GWT.getModuleBaseURL() + "topologywidget/images/server.png";
+                }else {
+                    return datum.getIconUrl();
+                }
+                
+            }
+        };
+    }
+    
     public static D3Behavior draw() {
         return new D3Behavior() {
 
@@ -115,7 +139,7 @@ public final class GWTVertex extends JavaScriptObject {
                 D3 vertex = selection.append("g").attr("class", "little");
                 vertex.attr("opacity",1e-6);
                 vertex.style("cursor", "pointer");
-                vertex.append("svg:image").attr("xlink:href", GWT.getModuleBaseURL() + "topologywidget/images/server.png")
+                vertex.append("svg:image").attr("xlink:href", getIconPath())
                       .attr("x", "-24px")
                       .attr("y", "-24px")
                       .attr("width", "48px")
@@ -127,6 +151,5 @@ public final class GWTVertex extends JavaScriptObject {
             }
         };
     }
-    
 
 }
