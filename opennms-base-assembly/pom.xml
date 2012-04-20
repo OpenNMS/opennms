@@ -483,5 +483,11 @@
       <artifactId>jasper-extensions</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- TODO: Is this the better place for the following dependency? -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jradius-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
   </dependencies>
 </project>

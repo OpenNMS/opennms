@@ -490,11 +490,14 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
 	grep -v 'provisioning-adapter' | \
 	grep -v 'org.opennms.protocols.dhcp' | \
+	grep -v 'jdhcp' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'gnu-crypto' | \
+	grep -v 'jradius' | \
 	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
+	grep -v 'Xmp' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
@@ -585,6 +588,7 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/dhcp*.xml
+%{instprefix}/lib/jdhcp-*.jar
 %{instprefix}/lib/org.opennms.protocols.dhcp*.jar
 %{sharedir}/etc-pristine/dhcp*.xml
 %{sharedir}/xsds/dhcp*.xsd
@@ -600,6 +604,7 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-protocol-radius
 %defattr(664 root root 775)
 %{instprefix}/lib/gnu-crypto*.jar
+%{instprefix}/lib/jradius-*.jar
 %{instprefix}/lib/org.opennms.protocols.radius*.jar
 
 %files plugin-protocol-xml
@@ -617,6 +622,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/xmp*.xml
 %{instprefix}/lib/org.opennms.protocols.xmp-*.jar
+%{instprefix}/lib/Xmp-*.jar
 %{sharedir}/etc-pristine/xmp*.xml
 %{sharedir}/xsds/xmp*.xsd
 

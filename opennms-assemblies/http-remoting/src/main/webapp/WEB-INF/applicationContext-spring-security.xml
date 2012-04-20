@@ -64,6 +64,9 @@
 		If the reply from the radius server does not actually contain the
 		specified attribute, the user will be assigned the roles specified by
 		the defaultRoles property.
+
+                IMPORTANT: To use this feature the following package must be installed:
+                opennms-plugin-protocols-radius
 	-->
 	<!-- 
 	<beans:bean id="radiusAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">

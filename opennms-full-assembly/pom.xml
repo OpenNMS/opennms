@@ -333,6 +333,13 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.dhcp</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>lib</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.nsclient</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -381,6 +388,13 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.xmp</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>lib</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
       <artifactId>selenium-monitor</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -390,6 +404,13 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>etc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>selenium-monitor</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>lib</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
