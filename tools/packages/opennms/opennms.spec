@@ -621,6 +621,8 @@ pushd "%{_tmppath}"
 	done
 popd
 
+touch "$RPM_BUILD_ROOT%{instprefix}/bin/config-tools/.upgrade-%{version}-%{release}"
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -751,11 +753,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %files config-data
 %defattr(644 root root 755)
-%{instprefix}/bin/config-tools
+%{instprefix}/bin/config-tools/*.tar.gz
 %attr(755,root,root) %{instprefix}/bin/config-tools/*.pl
 
 %files upgrade
-# no files, uses files from from opennms-config-data
+%{instprefix}/bin/config-tools/.upgrade-%{version}-%{release}
 
 %post config-data
 if [ -n "$DEBUG" ]; then
@@ -795,7 +797,7 @@ fi
 echo -e "$CURRENT_VERSION\c" > "$RPM_INSTALL_PREFIX0/.version"
 
 pushd "$RPM_INSTALL_PREFIX0/etc"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" upgrade -f "$UPGRADE_FROM_VERSION" "$UPGRADE_TO_VERSION" || exit 152
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" upgrade -f "$UPGRADE_FROM_VERSION" -t "$UPGRADE_TO_VERSION" || exit 152
 	git checkout -b opennms-git-config-work "opennms-git-config-pristine-$CURRENT_VERSION" || exit 153
 popd
 
