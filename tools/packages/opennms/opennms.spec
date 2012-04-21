@@ -758,6 +758,11 @@ rm -rf $RPM_BUILD_ROOT
 # no files, uses files from from opennms-config-data
 
 %post config-data
+if [ -n "$DEBUG" ]; then
+	echo "=== config-data ==="
+	env | sort -u
+fi
+
 if [ -n "$OPENNMS_SKIP_CONFIG_UPGRADE" ]; then
 	exit 0;
 fi
@@ -774,6 +779,11 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -v "$CURRENT_VERSION" || exit 151
 
 %pre upgrade
+if [ -n "$DEBUG" ]; then
+	echo "=== config-data ==="
+	env | sort -u
+fi
+
 if [ -n "$OPENNMS_SKIP_CONFIG_UPGRADE" ]; then
 	exit 0;
 fi
