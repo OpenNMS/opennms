@@ -66,6 +66,9 @@ public class Starter {
     @Option(name = "-skipDefaultVM", usage = "set to process default JavaVM Beans.")
     private boolean skipDefaultVM = false;
 
+    @Option(name = "-runWritableMBeans", usage = "include MBeans that are read- and writable.")
+    private boolean runWritableMBeans = false;
+
     @Option(name = "-graph", usage = "Generate snmp-graph.properties linke file to out, by reading jmx-datacollection.xml like file from input")
     private boolean graph = false;
 
@@ -104,7 +107,7 @@ public class Starter {
                 if (dictionaryFile != null) {
                     NameTools.loadExtermalDictionary(dictionaryFile);
                 }
-                JmxDatacollectionConfigGenerator.generateJmxConfig(serviceName, hostName, port, username, password, !skipDefaultVM, outFile);
+                JmxDatacollectionConfigGenerator.generateJmxConfig(serviceName, hostName, port, username, password, !skipDefaultVM, runWritableMBeans, outFile);
                 return;
             }
             if (graph && inputFile != null && outFile != null) {

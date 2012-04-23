@@ -35,5 +35,7 @@ public interface JmxTestMBean {
 
     public int getX();
 
-//    public void setX(int x);
+    public Integer getInteger();
+
+    public Long getLong();
 }

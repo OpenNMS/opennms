@@ -66,21 +66,21 @@ public class JmxDatacollectionConfigGeneratorTest {
         JmxTestMBean testMBean = new JmxTest();
         platformMBeanServer.registerMBean(testMBean, objectName);
         jmxConfigGen.setJmxServerConnection(platformMBeanServer);
-        jmxConfigGen.generateJmxConfig("testService", "localhost", "0000", null, null, true, "testOutFile.xml");
+        jmxConfigGen.generateJmxConfig("testService", "localhost", "0000", null, null, false, false, "testOutFile.xml");
     }
 
     @Ignore
     @Test
     public void testGenerateJmxConfigCassandraLocal() throws AttributeNotFoundException, MBeanException {
         jmxConfigGen.setJmxServerConnection(null);
-        jmxConfigGen.generateJmxConfig("cassandra", "localhost", "7199", null, null, true, "test.xml");
+        jmxConfigGen.generateJmxConfig("cassandra", "localhost", "7199", null, null, true, false, "test.xml");
     }
 
     @Ignore
     @Test
     public void testGenerateJmxConfigMyProblemServer() {
         try {
-            jmxConfigGen.generateJmxConfig("MyProblemServer", "localhost", "9403", null, null, true, "myProbemServer.xml");
+            jmxConfigGen.generateJmxConfig("MyProblemServer", "localhost", "9403", null, null, true, false, "myProbemServer.xml");
         } catch (AttributeNotFoundException ex) {
             Logger.getLogger(JmxDatacollectionConfigGeneratorTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MBeanException ex) {

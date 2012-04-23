@@ -67,13 +67,13 @@ public class JmxDatacollectionConfigGenerator {
         standardVmBeans.add("java.lang");
         standardVmBeans.add("java.nio");
         standardVmBeans.add("java.util.logging");
-	
-        numbers.add("Integer");
+
         numbers.add("int");
         numbers.add("long");
         numbers.add("double");
         numbers.add("float");
-        numbers.add("class java.lang.Long");
+        numbers.add("java.lang.Long");
+        numbers.add("java.lang.Integer");
 
         // rrd setup
         rrd.setStep(300);
@@ -85,8 +85,8 @@ public class JmxDatacollectionConfigGenerator {
         rrd.getRra().addAll(rras);
     }
 
-    public static void generateJmxConfig(String serviceName, String hostName, String port, String username, String password, Boolean runStandardVmBeans, String outFile) throws AttributeNotFoundException, MBeanException {
-        logger.debug("Startup values: \n serviceName: " + serviceName + "\n hostName: " + hostName + "\n port:" + port + "\n runStandardVmBeans: " + runStandardVmBeans + "\n username: " + username + "\n password: " + password + "\n");
+    public static void generateJmxConfig(String serviceName, String hostName, String port, String username, String password, Boolean runStandardVmBeans, Boolean runWritableMBeans, String outFile) throws AttributeNotFoundException, MBeanException {
+        logger.debug("Startup values: \n serviceName: " + serviceName + "\n hostName: " + hostName + "\n port:" + port + "\n runStandardVmBeans: " + runStandardVmBeans + "\n runWritableMBeans: " + runWritableMBeans +"\n username: " + username + "\n password: " + password + "\n");
         JMXServiceURL jmxServiceURL;
         JmxDatacollectionConfig xmlJmxDatacollectionConfig = xmlObjectFactory.createJmxDatacollectionConfig();
         JmxCollection xmlJmxCollection = xmlObjectFactory.createJmxCollection();
@@ -158,26 +158,28 @@ public class JmxDatacollectionConfigGenerator {
 
                         for (MBeanAttributeInfo jmxBeanAttributeInfo : jmxMbeanInfo.getAttributes()) {
 
-                            // process just readable and not writable mbeans
-                            if (jmxBeanAttributeInfo.isReadable() && !jmxBeanAttributeInfo.isWritable()) {
-                                logger.info("Add Elements for mBean: '{}'", jmxObjectInstance.getObjectName().toString());
+                            // process just readable mbeans
+                            if (jmxBeanAttributeInfo.isReadable()) {
+                                // precess writable mbeans if run writable mbeans is set
+                                if (!jmxBeanAttributeInfo.isWritable() || runWritableMBeans) {
+                                    logger.info("Add Elements for mBean: '{}', writable: '{}'", jmxObjectInstance.getObjectName().toString(), jmxBeanAttributeInfo.isWritable());
+                                    logger.info("Add Elements for mBean: '{}', type: '{}'", jmxObjectInstance.getObjectName().toString(), jmxBeanAttributeInfo.getType());
 
-                                // check for CompositeData
-                                if ("javax.management.openmbean.CompositeData".equals(jmxBeanAttributeInfo.getType())) {
-                                    logger.error("actual mBean: '{}'", jmxObjectInstance.getObjectName());
-                                    CompAttrib compAttrib = createCompAttrib(jmxObjectInstance, jmxBeanAttributeInfo);
-                                    if (compAttrib != null) {
-                                        logger.debug("xmlMbean got CompAttrib");
-                                        xmlMbean.getCompAttrib().add(compAttrib);
+                                    // check for CompositeData
+                                    if ("javax.management.openmbean.CompositeData".equals(jmxBeanAttributeInfo.getType())) {
+                                        logger.error("actual mBean: '{}'", jmxObjectInstance.getObjectName());
+                                        CompAttrib compAttrib = createCompAttrib(jmxObjectInstance, jmxBeanAttributeInfo);
+                                        if (compAttrib != null) {
+                                            logger.debug("xmlMbean got CompAttrib");
+                                            xmlMbean.getCompAttrib().add(compAttrib);
+                                        }
                                     }
-                                }
 
-                                if (numbers.contains(jmxBeanAttributeInfo.getType())) {
-                                    Attrib xmlJmxAttribute = createAttr(jmxBeanAttributeInfo);
-                                    // logger.info("\tAdded attribute: '{}' with alias: '{}'",
-                                    // xmlJmxAttribute.getName(),
-                                    // xmlJmxAttribute.getAlias());
-                                    xmlMbean.getAttrib().add(xmlJmxAttribute);
+                                    if (numbers.contains(jmxBeanAttributeInfo.getType())) {
+                                        Attrib xmlJmxAttribute = createAttr(jmxBeanAttributeInfo);
+                                        logger.info("\tAdded attribute: '{}' with alias: '{}'", xmlJmxAttribute.getName(), xmlJmxAttribute.getAlias());
+                                        xmlMbean.getAttrib().add(xmlJmxAttribute);
+                                    }
                                 }
                             }
                         }

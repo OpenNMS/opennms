@@ -46,8 +46,13 @@ public class JmxTest implements JmxTestMBean {
         return x;
     }
 
-//    @Override
-//    public void setX(int x) {
-//        this.x = x;
-//    }
+    @Override
+    public Integer getInteger() {
+        return new Integer(42);
+    }
+
+    @Override
+    public Long getLong() {
+        return new Long(42);
+    }
 }
