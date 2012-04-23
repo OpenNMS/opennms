@@ -67,7 +67,8 @@ public class JmxDatacollectionConfigGenerator {
         standardVmBeans.add("java.lang");
         standardVmBeans.add("java.nio");
         standardVmBeans.add("java.util.logging");
-
+	
+        numbers.add("Integer");
         numbers.add("int");
         numbers.add("long");
         numbers.add("double");
