@@ -33,7 +33,7 @@ import java.nio.charset.Charset;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
-import org.opennms.netmgt.provision.support.AsyncBasicDetector;
+import org.opennms.netmgt.provision.support.AsyncBasicDetectorMinaImpl;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.LineOrientedCodecFactory;
 
@@ -43,7 +43,7 @@ import org.opennms.netmgt.provision.support.codec.LineOrientedCodecFactory;
  * @author Donald Desloge
  * @version $Id: $
  */
-public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineOrientedRequest, LineOrientedResponse> {
+public abstract class AsyncLineOrientedDetector extends AsyncBasicDetectorMinaImpl<LineOrientedRequest, LineOrientedResponse> {
 
     protected static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
@@ -72,10 +72,6 @@ public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineO
     }
 
     /** {@inheritDoc} */
-    @Override
-    abstract protected void onInit();
-    
-    /** {@inheritDoc} */
     protected ResponseValidator<LineOrientedResponse> startsWith(final String prefix) {
         return new ResponseValidator<LineOrientedResponse>() {
 
@@ -87,6 +83,7 @@ public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineO
     }
     
     /** {@inheritDoc} */
+    @Override
     public ResponseValidator<LineOrientedResponse> find(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 

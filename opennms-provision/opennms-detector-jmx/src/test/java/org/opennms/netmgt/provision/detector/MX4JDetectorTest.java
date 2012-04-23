@@ -96,21 +96,21 @@ public class MX4JDetectorTest {
    
     @Test
     public void testDetectorSuccess() throws IOException{
-        m_detector.onInit();
+        m_detector.init();
         assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
     }
     
     @Test
     public void testDetectorWrongPort() throws UnknownHostException{
         m_detector.setPort(9000);
-        m_detector.onInit();
+        m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
     }
     
     @Test
     public void testDetectorWrongUrlPath() throws UnknownHostException{
         m_detector.setUrlPath("wrongpath");
-        m_detector.onInit();
+        m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
     }
 }

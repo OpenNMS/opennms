@@ -39,7 +39,8 @@ public class Pop3Server extends SimpleServer {
     /**
      * <p>onInit</p>
      */
-    public void onInit(){
+    @Override
+    protected void onInit(){
         setTimeout(3000);
         setBanner("+OK");
         addResponseHandler(matches("QUIT"), shutdownServer("+OK"));

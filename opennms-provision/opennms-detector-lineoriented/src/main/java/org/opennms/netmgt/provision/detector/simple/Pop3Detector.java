@@ -65,6 +65,7 @@ public class Pop3Detector extends AsyncLineOrientedDetector {
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit(){
         expectBanner(startsWith("+OK"));
         send(request("QUIT"), startsWith("+OK"));

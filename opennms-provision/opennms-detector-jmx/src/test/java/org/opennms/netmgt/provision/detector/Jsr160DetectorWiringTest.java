@@ -70,6 +70,7 @@ public class Jsr160DetectorWiringTest implements ApplicationContextAware {
         testWiredDetector(Jsr160Detector.class);
     }
     
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }

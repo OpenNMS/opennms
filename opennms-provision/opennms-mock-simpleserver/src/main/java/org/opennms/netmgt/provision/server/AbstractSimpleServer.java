@@ -147,7 +147,7 @@ abstract public class AbstractSimpleServer {
      *
      * @throws java.lang.Exception if any.
      */
-    public void init() throws Exception{
+    public final void init() throws Exception{
         m_serverSocket = new ServerSocket();
         m_serverSocket.bind(null);
         onInit();
@@ -157,7 +157,9 @@ abstract public class AbstractSimpleServer {
     /**
      * <p>onInit</p>
      */
-    public void onInit() {} 
+    protected void onInit() {
+        // Do nothing by default
+    } 
     
     /**
      * <p>startServer</p>

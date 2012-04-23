@@ -101,7 +101,7 @@ public class Jsr160DetectorTest {
         
         m_detector.setPort(9123);
         m_detector.setUrlPath("/server");
-        m_detector.onInit();
+        m_detector.init();
 
         assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
        
@@ -112,7 +112,7 @@ public class Jsr160DetectorTest {
         
         m_detector.setPort(9000);
         m_detector.setUrlPath("/server");
-        m_detector.onInit();
+        m_detector.init();
 
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
         
@@ -123,7 +123,7 @@ public class Jsr160DetectorTest {
         
         m_detector.setPort(9000);
         m_detector.setUrlPath("/wrongurlpath");
-        m_detector.onInit();
+        m_detector.init();
 
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
         

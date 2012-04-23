@@ -68,7 +68,8 @@ public class SmtpDetector extends AsyncMultilineDetector {
     /**
      * <p>onInit</p>
      */
-    public void onInit() {
+    @Override
+    protected void onInit() {
         setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory(CHARSET_UTF8, "-")));
         
         expectBanner(startsWith("220"));

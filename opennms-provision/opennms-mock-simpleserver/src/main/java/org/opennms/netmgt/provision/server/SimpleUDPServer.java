@@ -115,7 +115,9 @@ public class SimpleUDPServer {
     /**
      * <p>onInit</p>
      */
-    public void onInit() {} 
+    public void onInit() {
+        // Do nothing by default
+    } 
     
     /**
      * <p>startServer</p>

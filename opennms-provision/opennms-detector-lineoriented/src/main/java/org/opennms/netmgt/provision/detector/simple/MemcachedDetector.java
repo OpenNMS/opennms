@@ -64,7 +64,8 @@ public class MemcachedDetector extends AsyncLineOrientedDetector {
     /**
      * <p>onInit</p>
      */
-    public void onInit(){
+    @Override
+    protected void onInit(){
         send(request("version"), startsWith("VERSION"));
     }
     

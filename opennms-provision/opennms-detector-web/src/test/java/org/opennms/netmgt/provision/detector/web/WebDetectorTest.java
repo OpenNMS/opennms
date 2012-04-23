@@ -209,8 +209,9 @@ public class WebDetectorTest {
         return serverOKResponse;
     }
 
-    private SimpleServer createServer(final String httpResponse) throws Exception {
+    private static SimpleServer createServer(final String httpResponse) throws Exception {
         SimpleServer server = new SimpleServer() {
+            @Override
             public void init() throws Exception {
                 super.init();
                 setServerSocket(new ServerSocket(9000, 0, InetAddress.getLocalHost()));
