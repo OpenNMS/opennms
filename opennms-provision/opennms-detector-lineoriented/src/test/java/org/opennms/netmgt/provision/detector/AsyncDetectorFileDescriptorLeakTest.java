@@ -48,7 +48,6 @@ import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.ConnectionFactory;
 import org.opennms.netmgt.provision.support.DefaultDetectFuture;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
@@ -125,7 +124,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
 
                 m_detector.setPort(port);
 
-                final DetectFuture future = (DefaultDetectFuture)m_detector.isServiceDetected(address, new NullDetectorMonitor());
+                final DetectFuture future = (DefaultDetectFuture)m_detector.isServiceDetected(address);
 
                 future.awaitForUninterruptibly();
                 assertNotNull(future);
@@ -148,7 +147,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
         m_detector.setPort(1999);
         System.err.printf("Starting testNoServerPresent with detector: %s\n", m_detector);
         
-        final DetectFuture future = m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress(), new NullDetectorMonitor());
+        final DetectFuture future = m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress());
         assertNotNull(future);
         future.awaitForUninterruptibly();
         assertFalse(future.isServiceDetected());

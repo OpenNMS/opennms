@@ -40,7 +40,6 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.ImapDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -92,8 +91,8 @@ public class ImapDetectorTest implements ApplicationContextAware {
             m_detector.setPort(m_server.getLocalPort());
             m_detector.setIdleTime(100);
             
-            //assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
-            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+            //assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
+            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
             assertNotNull(future);
             
             future.awaitForUninterruptibly();
@@ -120,9 +119,9 @@ public class ImapDetectorTest implements ApplicationContextAware {
         try {
             m_detector.setPort(m_server.getLocalPort());
             
-            //assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+            //assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
             
-            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
             assertNotNull(future);
             
             future.awaitForUninterruptibly();
@@ -149,9 +148,9 @@ public class ImapDetectorTest implements ApplicationContextAware {
         try {
             m_detector.setPort(m_server.getLocalPort());
             
-            //assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+            //assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
             
-            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
             assertNotNull(future);
             
             future.awaitForUninterruptibly();

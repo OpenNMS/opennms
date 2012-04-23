@@ -32,7 +32,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.adapters.link.EndPointImpl;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
@@ -99,7 +98,7 @@ public class EndPointDetector extends AbstractDetector {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
+    public boolean isServiceDetected(InetAddress address) {
         try {
 
             SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);

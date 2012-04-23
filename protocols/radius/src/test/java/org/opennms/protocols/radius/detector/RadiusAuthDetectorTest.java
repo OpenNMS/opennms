@@ -38,8 +38,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.protocols.radius.detector.RadiusAuthDetector;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +67,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware{
 	    m_detector.setSecret("service");
 	    m_detector.setUser("1273849127348917234891720348901234789012374");
 	    m_detector.onInit();
-		assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.100"), new NullDetectorMonitor()));
+		assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.100")));
 	}
 
 	@Test
@@ -82,7 +80,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware{
 	    m_detector.setSecret("testing123");
 	    m_detector.setUser("testing");
 	    m_detector.onInit();
-		assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.211.11"), new NullDetectorMonitor()));
+		assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.211.11")));
 	}
 
 	

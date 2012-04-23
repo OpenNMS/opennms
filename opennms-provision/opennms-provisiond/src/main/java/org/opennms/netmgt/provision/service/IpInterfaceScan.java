@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.provision.service;
 
-import static org.opennms.core.utils.LogUtils.infof;
 import static org.opennms.core.utils.InetAddressUtils.str;
+import static org.opennms.core.utils.LogUtils.infof;
 
 import java.net.InetAddress;
 import java.util.Collection;
@@ -43,7 +43,6 @@ import org.opennms.core.tasks.Task;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 /**
  * <p>IpInterfaceScan class.</p>
@@ -168,7 +167,7 @@ public class IpInterfaceScan implements RunInBatch {
             public void run() {
                 try {
                     infof(this, "Attemping to detect service %s on address %s", detector.getServiceName(), str(getAddress()));
-                    cb.complete(detector.isServiceDetected(getAddress(), new NullDetectorMonitor()));
+                    cb.complete(detector.isServiceDetected(getAddress()));
                 } catch (final Throwable t) {
                     cb.handleException(t);
                 } finally {

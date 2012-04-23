@@ -53,7 +53,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -103,7 +102,7 @@ public class Jsr160DetectorTest {
         m_detector.setUrlPath("/server");
         m_detector.init();
 
-        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
        
     }
     
@@ -114,7 +113,7 @@ public class Jsr160DetectorTest {
         m_detector.setUrlPath("/server");
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
         
     }
     
@@ -125,7 +124,7 @@ public class Jsr160DetectorTest {
         m_detector.setUrlPath("/wrongurlpath");
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
         
     }
 }

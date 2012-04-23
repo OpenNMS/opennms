@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -91,7 +90,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
      * service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
+    public boolean isServiceDetected(InetAddress address) {
         
         boolean status = false;
 

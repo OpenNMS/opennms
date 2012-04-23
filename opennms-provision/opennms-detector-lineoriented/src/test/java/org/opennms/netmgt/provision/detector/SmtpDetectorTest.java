@@ -42,7 +42,6 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.SmtpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -101,7 +100,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
         tempServer.startServer();
         m_detector.setPort(tempServer.getLocalPort());
         
-        assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress())));
     }
     
     @Test
@@ -121,7 +120,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
         tempServer.startServer();
         m_detector.setPort(tempServer.getLocalPort());
         
-        assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress())));
     }
     
     @Test
@@ -142,7 +141,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
         m_detector.setPort(tempServer.getLocalPort());
         m_detector.setIdleTime(1000);
         
-        assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress())));
     }
     
     @Test
@@ -151,24 +150,24 @@ public class SmtpDetectorTest implements ApplicationContextAware {
         m_server.setBanner("bogus");
         m_detector.setPort(m_server.getLocalPort());
         
-        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     @Test
     public void testDetectorFailServerStopped() throws Exception {
         m_server.stopServer();
-        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     @Test
     public void testDetectorFailWrongPort() throws Exception {
         m_detector.setPort(1);
-        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     @Test
     public void testDetectorSucess() throws Exception {
-        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     private boolean doCheck(DetectFuture future) throws InterruptedException {

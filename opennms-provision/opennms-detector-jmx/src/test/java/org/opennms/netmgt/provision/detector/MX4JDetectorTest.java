@@ -50,7 +50,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.detector.jmx.MX4JDetector;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -97,20 +96,20 @@ public class MX4JDetectorTest {
     @Test
     public void testDetectorSuccess() throws IOException{
         m_detector.init();
-        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
     @Test
     public void testDetectorWrongPort() throws UnknownHostException{
         m_detector.setPort(9000);
         m_detector.init();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
     @Test
     public void testDetectorWrongUrlPath() throws UnknownHostException{
         m_detector.setUrlPath("wrongpath");
         m_detector.init();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 }

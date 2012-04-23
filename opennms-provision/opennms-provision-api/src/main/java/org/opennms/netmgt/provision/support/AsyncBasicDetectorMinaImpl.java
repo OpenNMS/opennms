@@ -51,7 +51,6 @@ import org.apache.mina.filter.ssl.SslFilter;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
 
 /**
@@ -105,7 +104,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
     
     /** {@inheritDoc} */
     @Override
-    public final DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor) {
+    public final DetectFuture isServiceDetected(final InetAddress address) {
 
         final DetectFuture detectFuture = new DefaultDetectFuture(this);
 

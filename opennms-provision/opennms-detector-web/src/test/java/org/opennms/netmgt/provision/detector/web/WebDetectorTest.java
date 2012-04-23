@@ -41,11 +41,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -136,7 +133,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -147,7 +144,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -158,7 +155,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -169,7 +166,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -179,7 +176,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -189,7 +186,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -198,7 +195,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     public void setServerOKResponse(String serverOKResponse) {

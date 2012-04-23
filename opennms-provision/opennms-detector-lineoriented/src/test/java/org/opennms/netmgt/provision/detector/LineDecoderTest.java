@@ -42,7 +42,6 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.AsyncLineOrientedDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 
 /**
@@ -138,7 +137,7 @@ public class LineDecoderTest {
         
         m_detector = createDetector(m_server.getLocalPort());
         m_detector.setIdleTime(100);
-        assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     
@@ -149,7 +148,7 @@ public class LineDecoderTest {
         
         m_detector = createDetector(m_server.getLocalPort());
         
-        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
         
     }
     
@@ -159,7 +158,7 @@ public class LineDecoderTest {
         m_server.setBanner(null);
         m_detector = createDetector(m_server.getLocalPort());
         
-        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
         
     }
     
@@ -169,7 +168,7 @@ public class LineDecoderTest {
         
         m_detector = createDetector(9000);
         
-        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
     }
     
     private TestDetector createDetector(int port) {

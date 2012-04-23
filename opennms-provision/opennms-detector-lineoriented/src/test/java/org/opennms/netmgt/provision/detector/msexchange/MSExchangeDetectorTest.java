@@ -40,7 +40,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -109,7 +108,7 @@ public class MSExchangeDetectorTest {
         m_detector.setImapPort(m_imapServer.getLocalPort());
         m_detector.setPop3Port(m_pop3Server.getLocalPort());
         m_detector.onInit();
-        assertTrue(m_detector.isServiceDetected(m_pop3Server.getInetAddress(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_pop3Server.getInetAddress()));
     }
     
     @Test
@@ -117,7 +116,7 @@ public class MSExchangeDetectorTest {
         m_imapServer.stopServer();
         m_detector.setPop3Port(m_pop3Server.getLocalPort());
         m_detector.onInit();
-        assertTrue(m_detector.isServiceDetected(m_pop3Server.getInetAddress(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_pop3Server.getInetAddress()));
     }
     
     @Test
@@ -125,7 +124,7 @@ public class MSExchangeDetectorTest {
         m_pop3Server.stopServer();
         m_detector.setImapPort(m_imapServer.getLocalPort());
         m_detector.onInit();
-        assertTrue(m_detector.isServiceDetected(m_pop3Server.getInetAddress(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_pop3Server.getInetAddress()));
     }
     
     @Test
@@ -133,6 +132,6 @@ public class MSExchangeDetectorTest {
         m_detector.setImapPort(9000);
         m_detector.setPop3Port(9001);
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(m_pop3Server.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(m_pop3Server.getInetAddress()));
     }
 }

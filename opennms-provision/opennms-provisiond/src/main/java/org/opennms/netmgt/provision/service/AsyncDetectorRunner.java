@@ -36,7 +36,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectFutureListener;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 class AsyncDetectorRunner implements Async<Boolean> {
     
@@ -58,7 +57,7 @@ class AsyncDetectorRunner implements Async<Boolean> {
     public void submit(Callback<Boolean> cb) {
         try {
             infof(this, "Attemping to detect service %s on address %s", m_detector.getServiceName(), getHostAddress());
-            DetectFuture future = m_detector.isServiceDetected(m_ifaceScan.getAddress(), new NullDetectorMonitor());
+            DetectFuture future = m_detector.isServiceDetected(m_ifaceScan.getAddress());
             future.addListener(listener(cb));
         } catch (Throwable e) {
             cb.handleException(e);
