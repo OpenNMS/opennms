@@ -261,6 +261,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
 
             public void run() {
+                final String prefix = ThreadCategory.getPrefix();
                 try {
                     ThreadCategory.setPrefix(LOG4J_CATEGORY);
                     scheduleExistingInterfaces();
@@ -270,6 +271,7 @@ public class Collectd extends AbstractServiceDaemon implements
                                 e);
                 } finally {
                     setSchedulingCompleted(true);
+                    ThreadCategory.setPrefix(prefix);
                 }
 
             }

@@ -478,18 +478,26 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.state(m_eventHandler != null, "eventHandler not set");
         Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
 
-        /**
-         * Create a fixed-size thread pool. The number of threads can be configured by using
-         * the "receivers" attribute in the config. The queue length for the pool can be configured
-         * with the "queueLength" attribute in the config.
-         */
-        m_eventHandlerPool = new ThreadPoolExecutor(
-            m_handlerPoolSize,
-            m_handlerPoolSize,
-            0L,
-            TimeUnit.MILLISECONDS,
-            m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength)
-        );
+        final String prefix = ThreadCategory.getPrefix();
+        try {
+            
+            ThreadCategory.setPrefix(Eventd.LOG4J_CATEGORY);
+
+            /**
+             * Create a fixed-size thread pool. The number of threads can be configured by using
+             * the "receivers" attribute in the config. The queue length for the pool can be configured
+             * with the "queueLength" attribute in the config.
+             */
+            m_eventHandlerPool = new ThreadPoolExecutor(
+                m_handlerPoolSize,
+                m_handlerPoolSize,
+                0L,
+                TimeUnit.MILLISECONDS,
+                m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength)
+            );
+        } finally {
+            ThreadCategory.setPrefix(prefix);
+        }
 
         // If the proxy is set, make this class its delegate.
         if (m_eventIpcManagerProxy != null) {
