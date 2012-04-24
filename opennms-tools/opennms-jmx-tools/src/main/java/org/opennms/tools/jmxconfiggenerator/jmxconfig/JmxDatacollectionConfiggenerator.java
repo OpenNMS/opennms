@@ -101,7 +101,7 @@ public class JmxDatacollectionConfiggenerator {
         } else {
             ignores.addAll(standardVmBeans);
         }
-        
+
         try {
             for (String domainName : mBeanServerConnection.getDomains()) {
 
@@ -147,8 +147,9 @@ public class JmxDatacollectionConfiggenerator {
                             if (jmxBeanAttributeInfo.isReadable()) {
                                 // precess writable mbeans if run writable mbeans is set
                                 if (!jmxBeanAttributeInfo.isWritable() || runWritableMBeans) {
-                                    logger.info("Add Elements for mBean: '{}', writable: '{}'", jmxObjectInstance.getObjectName().toString(), jmxBeanAttributeInfo.isWritable());
-                                    logger.info("Add Elements for mBean: '{}', type: '{}'", jmxObjectInstance.getObjectName().toString(), jmxBeanAttributeInfo.getType());
+
+                                    logger.debug("Check mBean: '{}', attribute: '{}'", jmxObjectInstance.getObjectName().toString(), jmxBeanAttributeInfo.getName());
+                                    logger.debug("isWritable: '{}', type: '{}'", jmxBeanAttributeInfo.isWritable(), jmxBeanAttributeInfo.getType());
 
                                     // check for CompositeData
                                     if ("javax.management.openmbean.CompositeData".equals(jmxBeanAttributeInfo.getType())) {
@@ -162,7 +163,7 @@ public class JmxDatacollectionConfiggenerator {
 
                                     if (numbers.contains(jmxBeanAttributeInfo.getType())) {
                                         Attrib xmlJmxAttribute = createAttr(jmxBeanAttributeInfo);
-                                        logger.info("\tAdded attribute: '{}' with alias: '{}'", xmlJmxAttribute.getName(), xmlJmxAttribute.getAlias());
+                                        logger.info("Added MBean: '{}' Added attribute: '{}'", xmlMbean.getObjectname(), xmlJmxAttribute.getName() + " as " + xmlJmxAttribute.getAlias());
                                         xmlMbean.getAttrib().add(xmlJmxAttribute);
                                     }
                                 }
@@ -197,9 +198,9 @@ public class JmxDatacollectionConfiggenerator {
         MBeanServerConnection jmxServerConnection = null;
 
         try {
-            if(jmxmp) {
+            if (jmxmp) {
                 jmxServiceURL = new JMXServiceURL("service:jmx:jmxmp://" + hostName + ":" + port);
-            }else {
+            } else {
                 jmxServiceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + ":" + port + "/jmxrmi");
             }
             if (username != null && password != null) {
@@ -283,7 +284,6 @@ public class JmxDatacollectionConfiggenerator {
 
         xmlJmxAttribute.setType("gauge");
         xmlJmxAttribute.setName(jmxMBeanAttributeInfo.getName());
-
         String alias = NameTools.trimByDictionary(jmxMBeanAttributeInfo.getName());
         alias = createAndRegisterUniceAlias(alias);
         xmlJmxAttribute.setAlias(alias);
